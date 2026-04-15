@@ -1,0 +1,23 @@
+{
+  "name": "cmhk-competitive-intelligence",
+  "version": "1.0.0",
+  "description": "CMHK竞对动态监测与行业趋势研判系统",
+  "engines": {
+    "node": "20.x || 22.x"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test:smoke": "node scripts/smoke-test.js",
+    "test:e2e": "node scripts/e2e-test.js"
+  },
+  "dependencies": {
+    "docx": "^9.6.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-cron": "^4.0.7",
+    "pdfkit": "^0.18.0",
+    "puppeteer-core": "^24.8.1"
+  }
+}

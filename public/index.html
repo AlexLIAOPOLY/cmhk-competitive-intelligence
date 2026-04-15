@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMHK 竞对监测与研判平台</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="page-header">
+    <div class="page-header__inner">
+      <div>
+        <h1>CMHK 竞对情报中枢</h1>
+        <p>全球运营商与香港竞对动态监测</p>
+      </div>
+      <div class="header-status">
+        <div id="header-status-line">状态加载中...</div>
+        <label class="inline-control">
+          自动刷新
+          <select id="auto-refresh-select">
+            <option value="0">关闭</option>
+            <option value="10000">10秒</option>
+            <option value="20000" selected>20秒</option>
+            <option value="30000">30秒</option>
+            <option value="60000">60秒</option>
+          </select>
+        </label>
+        <div id="last-refresh-at" class="subtle-text">上次刷新：-</div>
+      </div>
+    </div>
+    <div id="header-kpi-strip" class="header-kpi-strip"></div>
+  </header>
+
+  <main class="page-main">
+    <nav class="tabs" aria-label="系统导航">
+      <button class="tab active" data-tab="dashboard" type="button">系统总览</button>
+      <button class="tab" data-tab="board" type="button">竞对经营看板</button>
+      <button class="tab" data-tab="findings" type="button">情报库</button>
+      <button class="tab" data-tab="reports" type="button">报告中心</button>
+      <button class="tab" data-tab="jobs" type="button">任务日志</button>
+    </nav>
+
+    <section id="dashboard" class="tab-panel active" aria-label="系统总览">
+      <section class="panel panel--ops">
+        <h2>运行操作</h2>
+        <div class="ops-grid">
+          <div class="ops-actions">
+            <button class="btn" id="btn-scan" type="button">立即执行全量扫描</button>
+            <button class="btn btn-danger" id="btn-scan-stop" type="button">截停当前扫描</button>
+            <label class="inline-control">
+              报告类型
+              <select id="dashboard-report-type">
+                <option value="weekly">竞对动态周报</option>
+                <option value="trend">行业趋势研判报告</option>
+              </select>
+            </label>
+            <button class="btn" id="btn-dashboard-generate-report" type="button">生成报告</button>
+            <button class="btn btn-outline" id="btn-config-toggle" type="button">展开监测配置面板</button>
+          </div>
+          <div id="dashboard-message" class="message message--inline" role="status"></div>
+        </div>
+      </section>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-main">
+          <section class="panel">
+            <h2>心跳调度</h2>
+            <form id="heartbeat-form" class="filters filters--heartbeat">
+              <label>
+                自动检索
+                <select id="hb-scan-enabled">
+                  <option value="1">启用</option>
+                  <option value="0">关闭</option>
+                </select>
+              </label>
+              <label>
+                检索间隔（分钟）
+                <input id="hb-scan-interval" type="number" min="5" max="1440" step="1" value="30">
+              </label>
+              <label>
+                自动周报
+                <select id="hb-weekly-enabled">
+                  <option value="1">启用</option>
+                  <option value="0">关闭</option>
+                </select>
+              </label>
+              <label>
+                周报执行日
+                <select id="hb-weekly-day">
+                  <option value="1">周一</option>
+                  <option value="2">周二</option>
+                  <option value="3">周三</option>
+                  <option value="4">周四</option>
+                  <option value="5">周五</option>
+                  <option value="6">周六</option>
+                  <option value="0">周日</option>
+                </select>
+              </label>
+              <label>
+                周报时间
+                <input id="hb-weekly-time" type="time" value="09:00">
+              </label>
+              <label>
+                自动趋势报告
+                <select id="hb-trend-enabled">
+                  <option value="1">启用</option>
+                  <option value="0">关闭</option>
+                </select>
+              </label>
+              <label>
+                趋势报告时间
+                <input id="hb-trend-time" type="time" value="09:20">
+              </label>
+              <div class="filters__actions">
+                <button class="btn" id="btn-heartbeat-save" type="button">保存心跳策略</button>
+              </div>
+            </form>
+            <div id="heartbeat-message" class="message" role="status"></div>
+          </section>
+
+          <section class="panel">
+            <h2>监测统计</h2>
+            <div class="chart-grid">
+              <div class="chart-box">
+                <div class="chart-title">按竞对统计（最近 200 条）</div>
+                <div id="chart-competitors" class="simple-chart"></div>
+              </div>
+              <div class="chart-box">
+                <div class="chart-title">按类别统计（最近 200 条）</div>
+                <div id="chart-categories" class="simple-chart"></div>
+              </div>
+              <div class="chart-box chart-box--full">
+                <div class="chart-title">近 14 天情报数量趋势</div>
+                <div id="chart-trend" class="trend-chart"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>监测范围</h2>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>竞对</th>
+                  <th>区域</th>
+                  <th>监测类别</th>
+                  <th>检索语句数</th>
+                </tr>
+              </thead>
+              <tbody id="coverage-table-body"></tbody>
+            </table>
+          </section>
+        </div>
+
+        <div class="dashboard-side">
+          <section class="panel">
+            <h2>监测配置编辑</h2>
+            <div class="action-row">
+              <button class="btn" id="btn-config-add-competitor" type="button">新增竞对</button>
+              <button class="btn" id="btn-config-save" type="button">保存监测配置</button>
+              <button class="btn btn-outline" id="btn-config-fold-toggle" type="button">展开全部</button>
+            </div>
+            <div id="config-message" class="message" role="status"></div>
+            <div id="config-editor-list" class="config-editor-list"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="board" class="tab-panel" aria-label="竞对经营看板">
+      <section class="panel">
+        <h2>竞对经营看板</h2>
+        <div class="board-toolbar">
+          <label>
+            统计窗口
+            <select id="board-days-select">
+              <option value="30">近30天</option>
+              <option value="90">近90天</option>
+              <option value="180" selected>近180天</option>
+              <option value="365">近365天</option>
+            </select>
+          </label>
+          <div id="board-message" class="message message--inline" role="status"></div>
+        </div>
+
+        <div id="board-summary" class="board-summary"></div>
+        <div id="board-competitor-pills" class="board-competitor-pills"></div>
+
+        <div class="board-chart-wrap">
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">竞对情报热度</div>
+            <div id="board-chart-activity" class="board-bar-chart"></div>
+          </div>
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">财务披露覆盖</div>
+            <div id="board-chart-coverage" class="board-bar-chart"></div>
+          </div>
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">营收同比变化（可比来源）</div>
+            <div id="board-chart-revenue-yoy" class="board-yoy-chart"></div>
+          </div>
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">情报类别占比</div>
+            <div id="board-chart-category-pie" class="board-pie-chart"></div>
+          </div>
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">区域覆盖结构</div>
+            <div id="board-chart-region-pie" class="board-pie-chart"></div>
+          </div>
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">竞对动量分布</div>
+            <div id="board-chart-momentum-pie" class="board-pie-chart"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>竞对深度视图（点击竞对联动）</h2>
+        <div id="board-focus-header" class="board-focus-header"></div>
+        <div id="board-focus-metrics" class="board-focus-metrics"></div>
+        <div class="board-focus-grid">
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">选中竞对类别占比</div>
+            <div id="board-focus-category-pie" class="board-pie-chart"></div>
+          </div>
+          <div class="board-chart-card">
+            <div class="board-chart-card__title">选中竞对近12周趋势</div>
+            <div id="board-focus-trend-line" class="board-line-chart"></div>
+          </div>
+        </div>
+        <div id="board-focus-sources" class="board-focus-sources"></div>
+      </section>
+
+      <section class="panel">
+        <h2>关键经营指标对比</h2>
+        <div class="table-wrap">
+          <table class="data-table data-table--board">
+            <thead>
+              <tr>
+                <th>竞对</th>
+                <th>区域</th>
+                <th>情报量</th>
+                <th>营业收入</th>
+                <th>EBITDA</th>
+                <th>净利润</th>
+                <th>资本开支</th>
+                <th>移动用户</th>
+                <th>5G用户</th>
+                <th>5G渗透率</th>
+                <th>最近更新</th>
+              </tr>
+            </thead>
+            <tbody id="board-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>来源动态（最新）</h2>
+        <div id="board-source-list" class="board-source-list"></div>
+      </section>
+
+      <section class="panel">
+        <h2>近12周动态趋势</h2>
+        <div id="board-trend-grid" class="board-trend-grid"></div>
+      </section>
+    </section>
+
+    <section id="findings" class="tab-panel" aria-label="情报库">
+      <section class="panel panel--findings">
+        <h2>情报库</h2>
+        <form id="findings-filter-form" class="filters filters--findings">
+          <label>
+            竞对
+            <div id="filter-competitor" class="multi-pick">
+              <button id="filter-competitor-trigger" class="multi-pick__trigger" type="button" aria-expanded="false">全部竞对</button>
+              <div id="filter-competitor-panel" class="multi-pick__panel" hidden>
+                <div id="filter-competitor-options" class="multi-pick__options"></div>
+              </div>
+            </div>
+            <div id="filter-competitor-chips" class="multi-pick__chips"></div>
+            <small class="subtle-text">支持多选；不选表示全部竞对。</small>
+          </label>
+          <label>
+            类别
+            <select id="filter-category" name="category">
+              <option value="">全部</option>
+            </select>
+          </label>
+          <label>
+            关键词
+            <input id="filter-keyword" name="keyword" type="text" placeholder="标题/摘要/关键词">
+          </label>
+          <label>
+            时间范围
+            <div class="date-range-inline">
+              <input id="filter-from" name="from" type="date" aria-label="起始日期">
+              <span>至</span>
+              <input id="filter-to" name="to" type="date" aria-label="截止日期">
+            </div>
+          </label>
+          <div class="filters__actions">
+            <button class="btn" type="submit">查询</button>
+          </div>
+        </form>
+        <div id="findings-message" class="message" role="status"></div>
+        <div class="table-wrap">
+          <table class="data-table data-table--findings">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>竞对</th>
+                <th>类别</th>
+                <th>标题</th>
+                <th>关键提炼</th>
+                <th>影响研判</th>
+                <th>来源</th>
+              </tr>
+            </thead>
+            <tbody id="findings-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <section id="reports" class="tab-panel" aria-label="报告中心">
+      <section class="panel">
+        <h2>报告查询</h2>
+        <div class="filters filters--inline">
+          <label>
+            报告类型
+            <select id="report-type-filter">
+              <option value="">全部</option>
+              <option value="weekly">竞对动态周报</option>
+              <option value="trend">行业趋势研判报告</option>
+            </select>
+          </label>
+        </div>
+        <div class="action-row">
+          <label class="inline-control">
+            生成类型
+            <select id="report-generate-type">
+              <option value="weekly">竞对动态周报</option>
+              <option value="trend">行业趋势研判报告</option>
+            </select>
+          </label>
+          <button class="btn" id="btn-report-generate" type="button">生成报告</button>
+          <label class="inline-control">
+            导出格式
+            <select id="report-export-format">
+              <option value="word">Word</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </label>
+          <button class="btn btn-outline" id="btn-report-export" type="button">导出当前报告</button>
+        </div>
+        <div id="reports-message" class="message" role="status"></div>
+      </section>
+
+      <section class="panel">
+        <h2>历史报告</h2>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>生成时间</th>
+                <th>报告名称</th>
+                <th>类型</th>
+                <th>来源条数</th>
+                <th>时间窗口</th>
+              </tr>
+            </thead>
+            <tbody id="reports-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>报告内容</h2>
+        <div id="report-meta" class="report-meta">请选择一份报告查看详情。</div>
+        <div id="report-content" class="report-content"></div>
+        <div class="report-qa">
+          <div class="report-qa__head">报告问答互动</div>
+          <div class="report-qa__ask">
+            <textarea id="report-qa-question" placeholder="请输入问题，例如：Vodafone近期动作对CMHK企业市场收入目标的影响是什么？"></textarea>
+            <button class="btn" id="btn-report-qa-ask" type="button">提问并生成答复</button>
+          </div>
+          <div id="report-qa-message" class="message" role="status"></div>
+          <div id="report-qa-list" class="report-qa-list"></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="jobs" class="tab-panel" aria-label="任务日志">
+      <section class="panel">
+        <h2>任务日志</h2>
+        <div id="jobs-message" class="message" role="status"></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>类型</th>
+                <th>状态</th>
+                <th>消息</th>
+              </tr>
+            </thead>
+            <tbody id="jobs-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: cmhk-competitive-intelligence
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SCAN_TIMEZONE
+        value: Asia/Hong_Kong
+      - key: SCAN_SCHEDULE
+        value: "*/30 * * * *"
+      - key: SCAN_INTERVAL_MINUTES
+        value: "30"
+      - key: DATA_DIR
+        value: /var/data
+      - key: CHROME_PATH
+        value: /usr/bin/chromium
+      - key: DS_MODEL
+        value: deepseek-chat
+      - key: DS_TIMEOUT_MS
+        value: "30000"
+      - key: DS_REPORT_TIMEOUT_MS
+        value: "420000"
+      - key: DS_REPORT_QA_TIMEOUT_MS
+        value: "180000"
+      - key: TAVILY_TIMEOUT_MS
+        value: "15000"
+      - key: MAX_RESULTS_PER_QUERY
+        value: "8"
+      - key: DS_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+    disk:
+      name: cmhk-data
+      mountPath: /var/data
+      sizeGB: 10
