@@ -114,6 +114,12 @@ git push -u origin main
 - `.env`、`data/`、`node_modules/` 已在 `.gitignore` 中，不会被推送
 - 不要把 API Key 提交到仓库
 
+若 `git push` 报 `Could not resolve host: github.com` 或本地代理不可用，可先临时关闭 Git 代理再推送：
+
+```bash
+git -c http.proxy= -c https.proxy= push -u origin main
+```
+
 ## 9. Render 部署步骤
 
 ### 9.1 创建服务
