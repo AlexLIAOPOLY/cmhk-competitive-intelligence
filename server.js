@@ -34,6 +34,17 @@ const { validateMonitoredCompetitors } = require('./src/config');
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
+const apiAliasPaths = new Set([
+  '/health',
+  '/config',
+  '/status',
+  '/heartbeat',
+  '/scan/state',
+  '/metrics',
+  '/findings',
+  '/reports',
+  '/jobs'
+]);
 
 function safeExportFilename(value) {
   const text = String(value || 'report')
@@ -48,6 +59,22 @@ function safeExportFilename(value) {
 
 ensureDb();
 app.use(express.json({ limit: '5mb' }));
+
+// Backward-compat alias: if a cached/legacy frontend requests /status or /findings
+// without /api prefix, internally rewrite to /api/* and keep JSON contract stable.
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    next();
+    return;
+  }
+
+  if (apiAliasPaths.has(req.path)) {
+    req.url = `/api${req.url}`;
+  }
+
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/health', (req, res) => {
