@@ -1,6 +1,19 @@
-const { setGlobalDispatcher, EnvHttpProxyAgent } = require('undici');
-
 let initialized = false;
+let undiciApi = null;
+
+function getUndiciApi() {
+  if (undiciApi !== null) return undiciApi;
+  try {
+    // Optional dependency: in some deploy images undici is not installed as a standalone module.
+    // Node 20+ still provides global fetch, so we only enable proxy dispatcher when undici is available.
+    // eslint-disable-next-line global-require
+    const { setGlobalDispatcher, EnvHttpProxyAgent } = require('undici');
+    undiciApi = { setGlobalDispatcher, EnvHttpProxyAgent };
+  } catch {
+    undiciApi = undefined;
+  }
+  return undiciApi;
+}
 
 function normalizeProxyEnv() {
   if (!process.env.HTTP_PROXY && process.env.http_proxy) {
@@ -29,8 +42,11 @@ function ensureProxySupport() {
 
   if (!hasProxy) return;
 
+  const api = getUndiciApi();
+  if (!api) return;
+
   try {
-    setGlobalDispatcher(new EnvHttpProxyAgent());
+    api.setGlobalDispatcher(new api.EnvHttpProxyAgent());
   } catch (error) {
     // 代理配置失败时保持默认直连，避免影响本地接口调用
     console.warn(`proxy setup skipped: ${error.message}`);
