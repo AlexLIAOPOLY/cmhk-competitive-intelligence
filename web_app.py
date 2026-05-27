@@ -550,8 +550,8 @@ class AppHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     port = int(os.environ.get("PORT", "8765"))
-    server = ThreadingHTTPServer(("127.0.0.1", port), AppHandler)
-    print(f"Weekly report UI: http://127.0.0.1:{port}")
+    server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
+    print(f"Weekly report UI: http://0.0.0.0:{port}")
     server.serve_forever()
 
 
