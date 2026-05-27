@@ -1,0 +1,115 @@
+{
+  "row": 13,
+  "need": "股价异动",
+  "status": "no_extraction",
+  "object": "HKBN",
+  "entities": [
+    "HKBN"
+  ],
+  "selected_fields": [
+    "股价异动"
+  ],
+  "source_urls": [
+    "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+  ],
+  "attempted_urls": [
+    "https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities?sc_lang=en",
+    "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+  ],
+  "extracted": {},
+  "missing_fields": [
+    "股价异动"
+  ],
+  "entity_results": [
+    {
+      "entity": "HKBN",
+      "status": "no_extraction",
+      "source_urls": [
+        "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+      ],
+      "extracted": {},
+      "missing_fields": [
+        "股价异动"
+      ],
+      "raw_records": [
+        {
+          "row": 13,
+          "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+          "final_url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "Announcements & Circulars | HKBN",
+          "bytes": 882395,
+          "elapsed_seconds": 0.799,
+          "method": "httpx",
+          "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
+          "content_hash": "a2927d0edae3e2ce24eb2919696836b3f9b1bfac865a4361fcd3c343e2f6e2ac",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKBN"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [
+    "HKBN:股价异动"
+  ],
+  "raw_records": [
+    {
+      "row": 13,
+      "url": "https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities?sc_lang=en",
+      "final_url": "https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities?sc_lang=en",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "unregistered",
+      "jurisdiction": "unknown",
+      "tos_status": "unreviewed",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 13,
+      "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+      "final_url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "Announcements & Circulars | HKBN",
+      "bytes": 882395,
+      "elapsed_seconds": 0.799,
+      "method": "httpx",
+      "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
+      "content_hash": "a2927d0edae3e2ce24eb2919696836b3f9b1bfac865a4361fcd3c343e2f6e2ac",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "HKBN"
+      ]
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:57.248042+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:57.248060+08:00"
+}

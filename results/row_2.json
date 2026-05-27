@@ -1,0 +1,446 @@
+{
+  "row": 2,
+  "need": "运营收入（年报中常用：总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、宽频线数/家宽用户数、ARPU、资本开支",
+  "status": "partial",
+  "object": "HKT / csl / 1O1O",
+  "entities": [
+    "HKT",
+    "csl",
+    "1O1O"
+  ],
+  "selected_fields": [
+    "运营收入/总收益",
+    "服务收入",
+    "EBITDA",
+    "净利润",
+    "客户数/用户数",
+    "5G用户数",
+    "ARPU",
+    "资本开支",
+    "宽频线数/家宽用户数"
+  ],
+  "source_urls": [
+    "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+    "https://www.1010.com.hk/"
+  ],
+  "attempted_urls": [
+    "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+    "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",
+    "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+    "https://www.1010.com.hk/",
+    "https://stockanalysis.com/quote/hkg/6823/revenue/",
+    "https://stockanalysis.com/quote/hkg/6823/financials/",
+    "https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/"
+  ],
+  "extracted": {
+    "客户数/用户数": "r uplink) provided via three sections of 20MHz continuous 4G spectrum each, which is only available to designated locations with the use of a compatible device. Actual speeds that customers experience are less than the s",
+    "5G用户数": "paid-sim-card Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support H",
+    "宽频线数/家宽用户数": "r Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Ter"
+  },
+  "missing_fields": [
+    "运营收入/总收益",
+    "服务收入",
+    "EBITDA",
+    "净利润",
+    "ARPU",
+    "资本开支"
+  ],
+  "entity_results": [
+    {
+      "entity": "HKT",
+      "status": "partial",
+      "source_urls": [
+        "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+        "https://www.1010.com.hk/"
+      ],
+      "extracted": {
+        "客户数/用户数": "r uplink) provided via three sections of 20MHz continuous 4G spectrum each, which is only available to designated locations with the use of a compatible device. Actual speeds that customers experience are less than the s",
+        "5G用户数": "paid-sim-card Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support H",
+        "宽频线数/家宽用户数": "r Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Ter"
+      },
+      "missing_fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "ARPU",
+        "资本开支"
+      ],
+      "raw_records": [
+        {
+          "row": 2,
+          "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "status": 200,
+          "content_type": "text/html;charset=UTF-8",
+          "title": "Local Prepaid SIM Card in Hong Kong | csl",
+          "bytes": 199467,
+          "elapsed_seconds": 1.557,
+          "method": "httpx",
+          "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Tertiary Student 5G U-Plan",
+          "content_hash": "19b6f26ca1ea40f8b588c042cd409464c9f3eaa816ed415c31128c1656f2484b",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 2,
+          "url": "https://www.1010.com.hk/",
+          "final_url": "https://www.1010.com.hk/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+          "bytes": 160054,
+          "elapsed_seconds": 1.175,
+          "method": "httpx",
+          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us [REDACTED_PHONE_OR_ID] $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        }
+      ]
+    },
+    {
+      "entity": "csl",
+      "status": "partial",
+      "source_urls": [
+        "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+        "https://www.1010.com.hk/"
+      ],
+      "extracted": {
+        "客户数/用户数": "r uplink) provided via three sections of 20MHz continuous 4G spectrum each, which is only available to designated locations with the use of a compatible device. Actual speeds that customers experience are less than the s",
+        "5G用户数": "paid-sim-card Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support H",
+        "宽频线数/家宽用户数": "r Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Ter"
+      },
+      "missing_fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "ARPU",
+        "资本开支"
+      ],
+      "raw_records": [
+        {
+          "row": 2,
+          "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "status": 200,
+          "content_type": "text/html;charset=UTF-8",
+          "title": "Local Prepaid SIM Card in Hong Kong | csl",
+          "bytes": 199467,
+          "elapsed_seconds": 1.557,
+          "method": "httpx",
+          "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Tertiary Student 5G U-Plan",
+          "content_hash": "19b6f26ca1ea40f8b588c042cd409464c9f3eaa816ed415c31128c1656f2484b",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 2,
+          "url": "https://www.1010.com.hk/",
+          "final_url": "https://www.1010.com.hk/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+          "bytes": 160054,
+          "elapsed_seconds": 1.175,
+          "method": "httpx",
+          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us [REDACTED_PHONE_OR_ID] $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        }
+      ]
+    },
+    {
+      "entity": "1O1O",
+      "status": "partial",
+      "source_urls": [
+        "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+        "https://www.1010.com.hk/"
+      ],
+      "extracted": {
+        "客户数/用户数": "r uplink) provided via three sections of 20MHz continuous 4G spectrum each, which is only available to designated locations with the use of a compatible device. Actual speeds that customers experience are less than the s",
+        "5G用户数": "paid-sim-card Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support H",
+        "宽频线数/家宽用户数": "r Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Ter"
+      },
+      "missing_fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "ARPU",
+        "资本开支"
+      ],
+      "raw_records": [
+        {
+          "row": 2,
+          "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "status": 200,
+          "content_type": "text/html;charset=UTF-8",
+          "title": "Local Prepaid SIM Card in Hong Kong | csl",
+          "bytes": 199467,
+          "elapsed_seconds": 1.557,
+          "method": "httpx",
+          "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Tertiary Student 5G U-Plan",
+          "content_hash": "19b6f26ca1ea40f8b588c042cd409464c9f3eaa816ed415c31128c1656f2484b",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 2,
+          "url": "https://www.1010.com.hk/",
+          "final_url": "https://www.1010.com.hk/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+          "bytes": 160054,
+          "elapsed_seconds": 1.175,
+          "method": "httpx",
+          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us [REDACTED_PHONE_OR_ID] $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [
+    "HKT:运营收入/总收益,服务收入,EBITDA,净利润,ARPU,资本开支",
+    "csl:运营收入/总收益,服务收入,EBITDA,净利润,ARPU,资本开支",
+    "1O1O:运营收入/总收益,服务收入,EBITDA,净利润,ARPU,资本开支"
+  ],
+  "raw_records": [
+    {
+      "row": 2,
+      "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+      "final_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 10.189,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "robots_error",
+      "robots_allowed": false,
+      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "entity_hits": []
+    },
+    {
+      "row": 2,
+      "url": "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",
+      "final_url": "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "robots_error",
+      "robots_allowed": false,
+      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "entity_hits": []
+    },
+    {
+      "row": 2,
+      "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+      "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "title": "Local Prepaid SIM Card in Hong Kong | csl",
+      "bytes": 199467,
+      "elapsed_seconds": 1.557,
+      "method": "httpx",
+      "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Tertiary Student 5G U-Plan",
+      "content_hash": "19b6f26ca1ea40f8b588c042cd409464c9f3eaa816ed415c31128c1656f2484b",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "HKT",
+        "csl",
+        "1O1O"
+      ]
+    },
+    {
+      "row": 2,
+      "url": "https://www.1010.com.hk/",
+      "final_url": "https://www.1010.com.hk/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+      "bytes": 160054,
+      "elapsed_seconds": 1.175,
+      "method": "httpx",
+      "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us [REDACTED_PHONE_OR_ID] $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+      "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "HKT",
+        "csl",
+        "1O1O"
+      ]
+    },
+    {
+      "row": 2,
+      "url": "https://stockanalysis.com/quote/hkg/6823/revenue/",
+      "final_url": "https://stockanalysis.com/quote/hkg/6823/revenue/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "US",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 2,
+      "url": "https://stockanalysis.com/quote/hkg/6823/financials/",
+      "final_url": "https://stockanalysis.com/quote/hkg/6823/financials/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "US",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 2,
+      "url": "https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/",
+      "final_url": "https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "EU",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:17.076631+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:17.076938+08:00"
+}

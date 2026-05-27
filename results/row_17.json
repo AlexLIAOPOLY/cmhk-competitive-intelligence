@@ -1,0 +1,315 @@
+{
+  "row": 17,
+  "need": "运营收入、服务收入、EBITDA、净利润、宽频线数/家宽用户数、ARPU、资本开支、网络覆盖",
+  "status": "partial",
+  "object": "iCable",
+  "entities": [
+    "iCable"
+  ],
+  "selected_fields": [
+    "运营收入/总收益",
+    "服务收入",
+    "EBITDA",
+    "净利润",
+    "客户数/用户数",
+    "5G用户数",
+    "ARPU",
+    "资本开支",
+    "宽频线数/家宽用户数",
+    "网络覆盖"
+  ],
+  "source_urls": [
+    "https://www.i-cablecomm.com/en/annual-interim-reports",
+    "https://www.i-cablecomm.com/en/contact-us",
+    "https://www.i-cablecomm.com/annual-interim-reports?lang=en"
+  ],
+  "attempted_urls": [
+    "https://www.i-cablecomm.com/en/annual-interim-reports",
+    "https://www.i-cablecomm.com/en/contact-us",
+    "https://www.aastocks.com/en/stocks/analysis/stock-aafn/01097/0/all/1",
+    "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+    "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+    "https://stockanalysis.com/quote/hkg/1097/financials/",
+    "https://dataxis.com/actor-profile/357941/i-cable-television-and-telecom/"
+  ],
+  "extracted": {
+    "客户数/用户数": "eports?lang=en 年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited 繁 EN 主頁 關於有線寬頻 管理層 發展里程 企業願景、使命宣言 和價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 年報 / 中期報告 年報 2025 年報 2024 年報 2023 "
+  },
+  "missing_fields": [
+    "运营收入/总收益",
+    "服务收入",
+    "EBITDA",
+    "净利润",
+    "5G用户数",
+    "ARPU",
+    "资本开支",
+    "宽频线数/家宽用户数",
+    "网络覆盖"
+  ],
+  "entity_results": [
+    {
+      "entity": "iCable",
+      "status": "partial",
+      "source_urls": [
+        "https://www.i-cablecomm.com/en/annual-interim-reports",
+        "https://www.i-cablecomm.com/en/contact-us",
+        "https://www.i-cablecomm.com/annual-interim-reports?lang=en"
+      ],
+      "extracted": {
+        "客户数/用户数": "eports?lang=en 年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited 繁 EN 主頁 關於有線寬頻 管理層 發展里程 企業願景、使命宣言 和價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 年報 / 中期報告 年報 2025 年報 2024 年報 2023 "
+      },
+      "missing_fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "5G用户数",
+        "ARPU",
+        "资本开支",
+        "宽频线数/家宽用户数",
+        "网络覆盖"
+      ],
+      "raw_records": [
+        {
+          "row": 17,
+          "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+          "final_url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "Annual & Interim Reports - 有線寬頻 | i-CABLE Communications Limited",
+          "bytes": 28582,
+          "elapsed_seconds": 0.775,
+          "method": "httpx",
+          "text_sample": "Annual & Interim Reports - 有線寬頻 | i-CABLE Communications Limited 繁 EN Home About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Governance Financial Calender Annual & Interim Reports Announcements Shareholder Services Newsroom Career Opportunities i-CABLE Internship Programme Contact Us Feedback Form Annual & Interim Reports Annual Report 2025 Annual Report 2024 Annual Report 2023 Annual Report 2022 Annual Report Interim Reports 2025 Interim Report 2024 Interim Report 2023 Interim Report 2022 Interim Report 7th Floor, Cable TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong ‍ Tel : (852) [REDACTED_PHONE_OR_ID] Fax : (852) [REDACTED_PHONE_OR_ID] E-mail : [REDACTED_EMAIL] About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Govern",
+          "content_hash": "abcb5b42885b4a942cdbba061ae9a109b1a8015d43b9393f91f9b114a3e0cc34",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "iCable"
+          ]
+        },
+        {
+          "row": 17,
+          "url": "https://www.i-cablecomm.com/en/contact-us",
+          "final_url": "https://www.i-cablecomm.com/en/contact-us",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "Contact Us - 有線寬頻 | i-CABLE Communications Limited",
+          "bytes": 19549,
+          "elapsed_seconds": 0.238,
+          "method": "httpx",
+          "text_sample": "Contact Us - 有線寬頻 | i-CABLE Communications Limited 繁 EN Home About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Governance Financial Calender Annual & Interim Reports Announcements Shareholder Services Newsroom Career Opportunities i-CABLE Internship Programme Contact Us Feedback Form Contact Us We attach great importance to your valuable comments and are always here to assist you,welcome to contact us through the following ways. Registered Office Address 7th Floor, CABLE TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong ‍ TEL: (852) [REDACTED_PHONE_OR_ID] FAX: (852) [REDACTED_PHONE_OR_ID] Website: http://www.i-cablecomm.com E-mail: [REDACTED_EMAIL] Media Enquiries 7th Floor, CABLE TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong ‍ Website: http://www.i-cablecomm.com E-mail: [REDACTED_EMAIL] 7th Floor, Cable TV T",
+          "content_hash": "3e7b2c0afbdcf5643edb378d15cae0971b73a83a98146d5d1a721a69b12566f4",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "iCable"
+          ]
+        },
+        {
+          "row": 17,
+          "url": "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+          "final_url": "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited",
+          "bytes": 28724,
+          "elapsed_seconds": 0.501,
+          "method": "httpx",
+          "text_sample": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited 繁 EN 主頁 關於有線寬頻 管理層 發展里程 企業願景、使命宣言 和價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 年報 / 中期報告 年報 2025 年報 2024 年報 2023 年報 2022 年報 中期報告 2025 中期報告 2024 中期報告 2023 中期報告 2022 中期報告 香港荃灣海盛路九號有線電視大樓七樓 電話: (852) [REDACTED_PHONE_OR_ID] 傳真: (852) [REDACTED_PHONE_OR_ID] 電郵: [REDACTED_EMAIL] 關於有線寬頻 管理層 發展里程 企業願景、使命宣言和 價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 私隱政策 個人資料收集聲明 © 2023 有線寬頻免責聲明及版權(版權所有)",
+          "content_hash": "276a42d6ae1fe2ce20e45b94ca420281e743f063bfc446ed57c24b2cfb8b6538",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "iCable"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [
+    "iCable:运营收入/总收益,服务收入,EBITDA,净利润,5G用户数,ARPU,资本开支,宽频线数/家宽用户数,网络覆盖"
+  ],
+  "raw_records": [
+    {
+      "row": 17,
+      "url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+      "final_url": "https://www.i-cablecomm.com/en/annual-interim-reports",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "Annual & Interim Reports - 有線寬頻 | i-CABLE Communications Limited",
+      "bytes": 28582,
+      "elapsed_seconds": 0.775,
+      "method": "httpx",
+      "text_sample": "Annual & Interim Reports - 有線寬頻 | i-CABLE Communications Limited 繁 EN Home About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Governance Financial Calender Annual & Interim Reports Announcements Shareholder Services Newsroom Career Opportunities i-CABLE Internship Programme Contact Us Feedback Form Annual & Interim Reports Annual Report 2025 Annual Report 2024 Annual Report 2023 Annual Report 2022 Annual Report Interim Reports 2025 Interim Report 2024 Interim Report 2023 Interim Report 2022 Interim Report 7th Floor, Cable TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong ‍ Tel : (852) [REDACTED_PHONE_OR_ID] Fax : (852) [REDACTED_PHONE_OR_ID] E-mail : [REDACTED_EMAIL] About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Govern",
+      "content_hash": "abcb5b42885b4a942cdbba061ae9a109b1a8015d43b9393f91f9b114a3e0cc34",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "iCable"
+      ]
+    },
+    {
+      "row": 17,
+      "url": "https://www.i-cablecomm.com/en/contact-us",
+      "final_url": "https://www.i-cablecomm.com/en/contact-us",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "Contact Us - 有線寬頻 | i-CABLE Communications Limited",
+      "bytes": 19549,
+      "elapsed_seconds": 0.238,
+      "method": "httpx",
+      "text_sample": "Contact Us - 有線寬頻 | i-CABLE Communications Limited 繁 EN Home About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Governance Financial Calender Annual & Interim Reports Announcements Shareholder Services Newsroom Career Opportunities i-CABLE Internship Programme Contact Us Feedback Form Contact Us We attach great importance to your valuable comments and are always here to assist you,welcome to contact us through the following ways. Registered Office Address 7th Floor, CABLE TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong ‍ TEL: (852) [REDACTED_PHONE_OR_ID] FAX: (852) [REDACTED_PHONE_OR_ID] Website: http://www.i-cablecomm.com E-mail: [REDACTED_EMAIL] Media Enquiries 7th Floor, CABLE TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong ‍ Website: http://www.i-cablecomm.com E-mail: [REDACTED_EMAIL] 7th Floor, Cable TV T",
+      "content_hash": "3e7b2c0afbdcf5643edb378d15cae0971b73a83a98146d5d1a721a69b12566f4",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "iCable"
+      ]
+    },
+    {
+      "row": 17,
+      "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/01097/0/all/1",
+      "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/01097/0/all/1",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "HK",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 17,
+      "url": "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+      "final_url": "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited",
+      "bytes": 28724,
+      "elapsed_seconds": 0.501,
+      "method": "httpx",
+      "text_sample": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited 繁 EN 主頁 關於有線寬頻 管理層 發展里程 企業願景、使命宣言 和價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 年報 / 中期報告 年報 2025 年報 2024 年報 2023 年報 2022 年報 中期報告 2025 中期報告 2024 中期報告 2023 中期報告 2022 中期報告 香港荃灣海盛路九號有線電視大樓七樓 電話: (852) [REDACTED_PHONE_OR_ID] 傳真: (852) [REDACTED_PHONE_OR_ID] 電郵: [REDACTED_EMAIL] 關於有線寬頻 管理層 發展里程 企業願景、使命宣言和 價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 私隱政策 個人資料收集聲明 © 2023 有線寬頻免責聲明及版權(版權所有)",
+      "content_hash": "276a42d6ae1fe2ce20e45b94ca420281e743f063bfc446ed57c24b2cfb8b6538",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "iCable"
+      ]
+    },
+    {
+      "row": 17,
+      "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+      "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "EU",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 17,
+      "url": "https://stockanalysis.com/quote/hkg/1097/financials/",
+      "final_url": "https://stockanalysis.com/quote/hkg/1097/financials/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "US",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 17,
+      "url": "https://dataxis.com/actor-profile/357941/i-cable-television-and-telecom/",
+      "final_url": "https://dataxis.com/actor-profile/357941/i-cable-television-and-telecom/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "unknown",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:44:04.655988+00:00",
+  "fetched_at_hkt": "2026-05-27T16:44:04.656008+08:00"
+}

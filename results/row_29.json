@@ -1,0 +1,253 @@
+{
+  "row": 29,
+  "need": "ITU数字发展/频谱/宽带指标、GSMA移动经济、OECD数字经济和AI政策、World Bank/IMF宏观、UN/UNCTAD数字贸易和数据流动",
+  "status": "ok",
+  "object": "国际组织/行业权威机构",
+  "entities": [
+    "国际组织",
+    "行业权威机构"
+  ],
+  "selected_fields": [
+    "ITU数字发展",
+    "宽带指标",
+    "OECD数字经济",
+    "World Bank/IMF宏观"
+  ],
+  "source_urls": [
+    "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+    "https://www.itu.int/",
+    "https://www.gsma.com/newsroom/press-releases/"
+  ],
+  "attempted_urls": [
+    "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+    "https://www.itu.int/",
+    "https://oecd.ai/",
+    "https://www.gsma.com/newsroom/press-releases/"
+  ],
+  "extracted": {
+    "ITU数字发展": "\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
+    "宽带指标": "Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for G",
+    "OECD数字经济": "e\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About IT",
+    "World Bank/IMF宏观": "SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"2026-04-08\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.C"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "国际组织",
+      "status": "ok",
+      "source_urls": [
+        "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+        "https://www.itu.int/",
+        "https://www.gsma.com/newsroom/press-releases/"
+      ],
+      "extracted": {
+        "ITU数字发展": "\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
+        "宽带指标": "Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for G",
+        "OECD数字经济": "e\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About IT",
+        "World Bank/IMF宏观": "SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"2026-04-08\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.C"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 29,
+          "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+          "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+          "status": 200,
+          "content_type": "application/json;charset=utf-8",
+          "title": "",
+          "bytes": 1179,
+          "elapsed_seconds": 0.618,
+          "method": "httpx",
+          "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":[REDACTED_PHONE_OR_ID].342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":[REDACTED_PHONE_OR_ID].935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
+          "content_hash": "27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "public_api",
+          "jurisdiction": "international",
+          "tos_status": "public_api",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": []
+        },
+        {
+          "row": 29,
+          "url": "https://www.itu.int/",
+          "final_url": "https://www.itu.int/en/Pages/default.aspx",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "ITU: Connecting the world and beyond",
+          "bytes": 100302,
+          "elapsed_seconds": 3.382,
+          "method": "httpx",
+          "text_sample": "ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About ITU Media Centre Events Publications Statistics Action areas Regional Presence Careers General Secretariat Radiocommunication Standardization Development News Members' Zone Join ITU Connecting the world and beyond You are here ITU > Homepage Share Arts in the spotlight at AI for Good ​Artists, technologists, musicians, filmmakers, and innovators are coming together in July to explore how artificial intelligence is reshaping human creativity. Read the blog ​ ​ GSR-26: Actively charting the digital frontier ​​​Cosmas Luckyson Zavazava, Director of the Telecommunication Development Bureau, offers thoughts on the latest guidelines from ITU’s Global Symposium for Regulators. Read the blog Girls and space: Pathways to the stars ​Women at the intersection of space syst",
+          "content_hash": "daaae7a70a02304dec22a45df046417b0764aaf4ce0f0fe725c40bee45d3d244",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "international_org",
+          "jurisdiction": "international",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": []
+        }
+      ]
+    },
+    {
+      "entity": "行业权威机构",
+      "status": "ok",
+      "source_urls": [
+        "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+        "https://www.itu.int/",
+        "https://www.gsma.com/newsroom/press-releases/"
+      ],
+      "extracted": {
+        "ITU数字发展": "\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
+        "宽带指标": "Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for G",
+        "OECD数字经济": "e\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About IT",
+        "World Bank/IMF宏观": "SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"2026-04-08\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.C"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 29,
+          "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+          "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+          "status": 200,
+          "content_type": "application/json;charset=utf-8",
+          "title": "",
+          "bytes": 1179,
+          "elapsed_seconds": 0.618,
+          "method": "httpx",
+          "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":[REDACTED_PHONE_OR_ID].342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":[REDACTED_PHONE_OR_ID].935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
+          "content_hash": "27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "public_api",
+          "jurisdiction": "international",
+          "tos_status": "public_api",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": []
+        },
+        {
+          "row": 29,
+          "url": "https://www.itu.int/",
+          "final_url": "https://www.itu.int/en/Pages/default.aspx",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "ITU: Connecting the world and beyond",
+          "bytes": 100302,
+          "elapsed_seconds": 3.382,
+          "method": "httpx",
+          "text_sample": "ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About ITU Media Centre Events Publications Statistics Action areas Regional Presence Careers General Secretariat Radiocommunication Standardization Development News Members' Zone Join ITU Connecting the world and beyond You are here ITU > Homepage Share Arts in the spotlight at AI for Good ​Artists, technologists, musicians, filmmakers, and innovators are coming together in July to explore how artificial intelligence is reshaping human creativity. Read the blog ​ ​ GSR-26: Actively charting the digital frontier ​​​Cosmas Luckyson Zavazava, Director of the Telecommunication Development Bureau, offers thoughts on the latest guidelines from ITU’s Global Symposium for Regulators. Read the blog Girls and space: Pathways to the stars ​Women at the intersection of space syst",
+          "content_hash": "daaae7a70a02304dec22a45df046417b0764aaf4ce0f0fe725c40bee45d3d244",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "international_org",
+          "jurisdiction": "international",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": []
+        }
+      ]
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 29,
+      "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+      "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "title": "",
+      "bytes": 1179,
+      "elapsed_seconds": 0.618,
+      "method": "httpx",
+      "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":[REDACTED_PHONE_OR_ID].342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":[REDACTED_PHONE_OR_ID].935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
+      "content_hash": "27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "public_api",
+      "jurisdiction": "international",
+      "tos_status": "public_api",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": []
+    },
+    {
+      "row": 29,
+      "url": "https://www.itu.int/",
+      "final_url": "https://www.itu.int/en/Pages/default.aspx",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "ITU: Connecting the world and beyond",
+      "bytes": 100302,
+      "elapsed_seconds": 3.382,
+      "method": "httpx",
+      "text_sample": "ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About ITU Media Centre Events Publications Statistics Action areas Regional Presence Careers General Secretariat Radiocommunication Standardization Development News Members' Zone Join ITU Connecting the world and beyond You are here ITU > Homepage Share Arts in the spotlight at AI for Good ​Artists, technologists, musicians, filmmakers, and innovators are coming together in July to explore how artificial intelligence is reshaping human creativity. Read the blog ​ ​ GSR-26: Actively charting the digital frontier ​​​Cosmas Luckyson Zavazava, Director of the Telecommunication Development Bureau, offers thoughts on the latest guidelines from ITU’s Global Symposium for Regulators. Read the blog Girls and space: Pathways to the stars ​Women at the intersection of space syst",
+      "content_hash": "daaae7a70a02304dec22a45df046417b0764aaf4ce0f0fe725c40bee45d3d244",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "international_org",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": []
+    },
+    {
+      "row": 29,
+      "url": "https://oecd.ai/",
+      "final_url": "https://oecd.ai/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 30.003,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "source_policy": "allow",
+      "source_type": "international_org",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "robots_status": "robots_error",
+      "robots_allowed": false,
+      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "entity_hits": []
+    },
+    {
+      "row": 29,
+      "url": "https://www.gsma.com/newsroom/press-releases/",
+      "final_url": "https://www.gsma.com/newsroom/press-releases/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Press Releases - Newsroom",
+      "bytes": 108240,
+      "elapsed_seconds": 1.67,
+      "method": "httpx",
+      "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
+      "content_hash": "bb2ed74819c8d55e35d967ba5d4e58b9280957fcd6ca9b649f9d55fa6bb50fd5",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "industry_association",
+      "jurisdiction": "international",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:45:56.991752+00:00",
+  "fetched_at_hkt": "2026-05-27T16:45:56.991764+08:00"
+}

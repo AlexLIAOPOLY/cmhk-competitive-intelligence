@@ -1,0 +1,230 @@
+{
+  "row": 7,
+  "need": "战略合作、中标、5G-A、企业ICT、IoT、区域动作",
+  "status": "ok",
+  "object": "3HK / Hutchison",
+  "entities": [
+    "3HK",
+    "Hutchison"
+  ],
+  "selected_fields": [
+    "战略合作",
+    "中标",
+    "5G-A",
+    "企业ICT",
+    "IoT",
+    "区域动作"
+  ],
+  "source_urls": [
+    "https://m.hthkh.com/en/media/press.php",
+    "https://www.hthkh.com/en/media/press_3hk.php"
+  ],
+  "attempted_urls": [
+    "https://m.hthkh.com/en/media/press.php",
+    "https://www.hthkh.com/en/media/press_3hk.php"
+  ],
+  "extracted": {
+    "战略合作": "Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI f",
+    "中标": "ivity and Roam-like-Home Experiences, 11 July Launch of Satellite Communications Value-added Service with Pre-registration Commencing 1 July 12 Jun 2024 HTHK Wins Arts Sponsorship Award for Hong Kong's First 5G Live Broa",
+    "5G-A": "h Backup Phone Service and 100+ Global Privileges 18 Jun 2025 HTHK and Huawei Sign Strategic MoU on Deployment of Cloud-native Intelligent Infrastructure 29 May 2025 HTHK Pioneers 5.5G x Agentic AI to Enhance Network Cov",
+    "企业ICT": "to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Holdings (stock code: 1). Hong Kong HTHKH offers consumers and enterprises diverse and cutting-edge mobi",
+    "IoT": "at Phone Scams by Offering Customers Aged 60 or Above with Free Incoming Calls Management Pack to Block Scam and Nuisance Calls 02 Apr 2024 HTHK Supports HK Electric to Deploy 5G \"Smart Inspector\" Robotic Solution, Enabl",
+    "区域动作": "SOURCE: https://m.hthkh.com/en/media/press.php Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliv"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "3HK",
+      "status": "ok",
+      "source_urls": [
+        "https://m.hthkh.com/en/media/press.php",
+        "https://www.hthkh.com/en/media/press_3hk.php"
+      ],
+      "extracted": {
+        "战略合作": "Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI f",
+        "中标": "ivity and Roam-like-Home Experiences, 11 July Launch of Satellite Communications Value-added Service with Pre-registration Commencing 1 July 12 Jun 2024 HTHK Wins Arts Sponsorship Award for Hong Kong's First 5G Live Broa",
+        "5G-A": "h Backup Phone Service and 100+ Global Privileges 18 Jun 2025 HTHK and Huawei Sign Strategic MoU on Deployment of Cloud-native Intelligent Infrastructure 29 May 2025 HTHK Pioneers 5.5G x Agentic AI to Enhance Network Cov",
+        "企业ICT": "to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Holdings (stock code: 1). Hong Kong HTHKH offers consumers and enterprises diverse and cutting-edge mobi",
+        "IoT": "at Phone Scams by Offering Customers Aged 60 or Above with Free Incoming Calls Management Pack to Block Scam and Nuisance Calls 02 Apr 2024 HTHK Supports HK Electric to Deploy 5G \"Smart Inspector\" Robotic Solution, Enabl",
+        "区域动作": "SOURCE: https://m.hthkh.com/en/media/press.php Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliv"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 7,
+          "url": "https://m.hthkh.com/en/media/press.php",
+          "final_url": "https://m.hthkh.com/en/media/press.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "bytes": 21441,
+          "elapsed_seconds": 0.553,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launch World Plan with Data Usable Across Hong Kong and 220+ World Destinations, Experience '3 for You' Brand Value with Backup Phone Service and 100+ Global Privileges 18 Jun 2025 HTHK and Huawei Sign Strategi",
+          "content_hash": "aaa79a9a60cd24d44f6236251aae79bd0b2f97f6f73c7f968fc469652b6319b6",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 7,
+          "url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+          "bytes": 27383,
+          "elapsed_seconds": 0.462,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
+          "content_hash": "6841cbb4107d3b0b37d6bf33bb2cd068bf816bf7242b59495bfd68d289ec4394",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        }
+      ]
+    },
+    {
+      "entity": "Hutchison",
+      "status": "ok",
+      "source_urls": [
+        "https://m.hthkh.com/en/media/press.php",
+        "https://www.hthkh.com/en/media/press_3hk.php"
+      ],
+      "extracted": {
+        "战略合作": "Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI f",
+        "中标": "ivity and Roam-like-Home Experiences, 11 July Launch of Satellite Communications Value-added Service with Pre-registration Commencing 1 July 12 Jun 2024 HTHK Wins Arts Sponsorship Award for Hong Kong's First 5G Live Broa",
+        "5G-A": "h Backup Phone Service and 100+ Global Privileges 18 Jun 2025 HTHK and Huawei Sign Strategic MoU on Deployment of Cloud-native Intelligent Infrastructure 29 May 2025 HTHK Pioneers 5.5G x Agentic AI to Enhance Network Cov",
+        "企业ICT": "to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Holdings (stock code: 1). Hong Kong HTHKH offers consumers and enterprises diverse and cutting-edge mobi",
+        "IoT": "at Phone Scams by Offering Customers Aged 60 or Above with Free Incoming Calls Management Pack to Block Scam and Nuisance Calls 02 Apr 2024 HTHK Supports HK Electric to Deploy 5G \"Smart Inspector\" Robotic Solution, Enabl",
+        "区域动作": "SOURCE: https://m.hthkh.com/en/media/press.php Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliv"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 7,
+          "url": "https://m.hthkh.com/en/media/press.php",
+          "final_url": "https://m.hthkh.com/en/media/press.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "bytes": 21441,
+          "elapsed_seconds": 0.553,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launch World Plan with Data Usable Across Hong Kong and 220+ World Destinations, Experience '3 for You' Brand Value with Backup Phone Service and 100+ Global Privileges 18 Jun 2025 HTHK and Huawei Sign Strategi",
+          "content_hash": "aaa79a9a60cd24d44f6236251aae79bd0b2f97f6f73c7f968fc469652b6319b6",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 7,
+          "url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+          "bytes": 27383,
+          "elapsed_seconds": 0.462,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
+          "content_hash": "6841cbb4107d3b0b37d6bf33bb2cd068bf816bf7242b59495bfd68d289ec4394",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 7,
+      "url": "https://m.hthkh.com/en/media/press.php",
+      "final_url": "https://m.hthkh.com/en/media/press.php",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+      "bytes": 21441,
+      "elapsed_seconds": 0.553,
+      "method": "httpx",
+      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launch World Plan with Data Usable Across Hong Kong and 220+ World Destinations, Experience '3 for You' Brand Value with Backup Phone Service and 100+ Global Privileges 18 Jun 2025 HTHK and Huawei Sign Strategi",
+      "content_hash": "aaa79a9a60cd24d44f6236251aae79bd0b2f97f6f73c7f968fc469652b6319b6",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "3HK",
+        "Hutchison"
+      ]
+    },
+    {
+      "row": 7,
+      "url": "https://www.hthkh.com/en/media/press_3hk.php",
+      "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+      "bytes": 27383,
+      "elapsed_seconds": 0.462,
+      "method": "httpx",
+      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
+      "content_hash": "6841cbb4107d3b0b37d6bf33bb2cd068bf816bf7242b59495bfd68d289ec4394",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "3HK",
+        "Hutchison"
+      ]
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:30.375682+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:30.375694+08:00"
+}

@@ -1,0 +1,222 @@
+{
+  "row": 10,
+  "need": "战略合作、中标、5G-A、家宽布局、区域动作",
+  "status": "ok",
+  "object": "SmarTone",
+  "entities": [
+    "SmarTone"
+  ],
+  "selected_fields": [
+    "战略合作",
+    "中标",
+    "5G-A",
+    "家宽布局",
+    "区域动作"
+  ],
+  "source_urls": [
+    "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+    "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+  ],
+  "attempted_urls": [
+    "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+    "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+    "https://www.mobileworldlive.com/operators/smartone-turns-to-ericsson-for-5g-a-gear/",
+    "https://www.ericsson.com/en/press-releases/2/2026/smartone-strengthens-network-with-ericsson-5g-advanced-technology"
+  ],
+  "extracted": {
+    "战略合作": "demand for premium home connectivity. • Enhanced home service offering now includes 5G Broadband, Disney+ content, and Home Phone Plus—a compelling family proposition. • Strategic partnerships and tailored offerings for ",
+    "中标": "Tech Corner • Service Corner at retail shops to help customers with their devices • One-on-one AI consultation services Hong Kong Retail Management Association Service & Courtesy Awards 9 awards for shops and individual ",
+    "5G-A": "Central as a start 14 Leading the Future: From Smart Infrastructure to Advanced Network Intelligence Premier 5G network x SmarTone PRIORITY • Deliver 3× network resources through 5G-Advanced technology and network slicin",
+    "家宽布局": "ear to HK$3,561 million • Local service revenue grew 3% vs 2H’25 to HK$1,871 million • Consumer outbound data roaming revenue increased by 7% • Strong momentum continued in the 5G Home Broadband business, with revenue gr",
+    "区域动作": "mplification, resulting in reduction in operating costs by 6% year-on-year (HK$52 million) • The Board declared an interim dividend of 14.5 cents per share, the same as last year (Hong Kong, 24 February 2026) SmarTone Te"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "SmarTone",
+      "status": "ok",
+      "source_urls": [
+        "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+        "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+      ],
+      "extracted": {
+        "战略合作": "demand for premium home connectivity. • Enhanced home service offering now includes 5G Broadband, Disney+ content, and Home Phone Plus—a compelling family proposition. • Strategic partnerships and tailored offerings for ",
+        "中标": "Tech Corner • Service Corner at retail shops to help customers with their devices • One-on-one AI consultation services Hong Kong Retail Management Association Service & Courtesy Awards 9 awards for shops and individual ",
+        "5G-A": "Central as a start 14 Leading the Future: From Smart Infrastructure to Advanced Network Intelligence Premier 5G network x SmarTone PRIORITY • Deliver 3× network resources through 5G-Advanced technology and network slicin",
+        "家宽布局": "ear to HK$3,561 million • Local service revenue grew 3% vs 2H’25 to HK$1,871 million • Consumer outbound data roaming revenue increased by 7% • Strong momentum continued in the 5G Home Broadband business, with revenue gr",
+        "区域动作": "mplification, resulting in reduction in operating costs by 6% year-on-year (HK$52 million) • The Board declared an interim dividend of 14.5 cents per share, the same as last year (Hong Kong, 24 February 2026) SmarTone Te"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 10,
+          "url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+          "final_url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 195743,
+          "elapsed_seconds": 0.483,
+          "method": "httpx",
+          "text_sample": "SmarTone Delivers Solid Performance with Quality Growth and Structural Efficiency Gains • Profit attributable to equity holders increased 8% year-on-year to HK$278 million • Revenues increased by 2% year-on-year to HK$3,561 million • Local service revenue grew 3% vs 2H’25 to HK$1,871 million • Consumer outbound data roaming revenue increased by 7% • Strong momentum continued in the 5G Home Broadband business, with revenue growing 12% and EBIT rising 36% • Continuous efficiency gains achieved through higher AI adoption and platform simplification, resulting in reduction in operating costs by 6% year-on-year (HK$52 million) • The Board declared an interim dividend of 14.5 cents per share, the same as last year (Hong Kong, 24 February 2026) SmarTone Telecommunications Holdings Limited (\"SmarTone\"; SEHK: 315), a subsidiary of Sun Hung Kai Properties (SEHK: 0016), today announced its interim ",
+          "content_hash": "a795063c60bc5c338234179c84174e44db034aedd0f0f4b4571893cd31e17091",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        },
+        {
+          "row": 10,
+          "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 3484296,
+          "elapsed_seconds": 0.48,
+          "method": "httpx",
+          "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
+          "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 10,
+      "url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+      "final_url": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 195743,
+      "elapsed_seconds": 0.483,
+      "method": "httpx",
+      "text_sample": "SmarTone Delivers Solid Performance with Quality Growth and Structural Efficiency Gains • Profit attributable to equity holders increased 8% year-on-year to HK$278 million • Revenues increased by 2% year-on-year to HK$3,561 million • Local service revenue grew 3% vs 2H’25 to HK$1,871 million • Consumer outbound data roaming revenue increased by 7% • Strong momentum continued in the 5G Home Broadband business, with revenue growing 12% and EBIT rising 36% • Continuous efficiency gains achieved through higher AI adoption and platform simplification, resulting in reduction in operating costs by 6% year-on-year (HK$52 million) • The Board declared an interim dividend of 14.5 cents per share, the same as last year (Hong Kong, 24 February 2026) SmarTone Telecommunications Holdings Limited (\"SmarTone\"; SEHK: 315), a subsidiary of Sun Hung Kai Properties (SEHK: 0016), today announced its interim ",
+      "content_hash": "a795063c60bc5c338234179c84174e44db034aedd0f0f4b4571893cd31e17091",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 10,
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+      "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 3484296,
+      "elapsed_seconds": 0.48,
+      "method": "httpx",
+      "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
+      "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 10,
+      "url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+      "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "HK",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 10,
+      "url": "https://www.mobileworldlive.com/operators/smartone-turns-to-ericsson-for-5g-a-gear/",
+      "final_url": "https://www.mobileworldlive.com/operators/smartone-turns-to-ericsson-for-5g-a-gear/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "media",
+      "jurisdiction": "unknown",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 10,
+      "url": "https://www.ericsson.com/en/press-releases/2/2026/smartone-strengthens-network-with-ericsson-5g-advanced-technology",
+      "final_url": "https://www.ericsson.com/en/press-releases/2/2026/smartone-strengthens-network-with-ericsson-5g-advanced-technology",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.194,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "SE",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "robots_unavailable",
+      "robots_allowed": false,
+      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:39.574470+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:39.574485+08:00"
+}

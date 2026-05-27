@@ -1,0 +1,263 @@
+{
+  "row": 8,
+  "need": "运营收入（收入）、服务收入（服務收入及其他相關服務）、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、ARPU、资本开支",
+  "status": "partial",
+  "object": "SmarTone",
+  "entities": [
+    "SmarTone"
+  ],
+  "selected_fields": [
+    "运营收入/总收益",
+    "服务收入",
+    "EBITDA",
+    "净利润",
+    "客户数/用户数",
+    "5G用户数",
+    "ARPU",
+    "资本开支"
+  ],
+  "source_urls": [
+    "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+    "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf"
+  ],
+  "attempted_urls": [
+    "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+    "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+    "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2026/33085922/",
+    "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2025/17900712/"
+  ],
+  "extracted": {
+    "运营收入/总收益": "those expressed or implied or forecasted in any of these forward-looking statements. 2 Solid business performance in a competitive market Year-on-Year Financial Achievements Total Revenue Consumer +2% Outbound Data +7% P",
+    "服务收入": "p 18 Financial review & Outlook Fiona Lau Chief Executive Officer Danny Ho Chief Financial Officer 19 Financial Highlights (HK$ million) FY24 FY25 Variance Revenue 6,221 6,253 +1% Service revenue (Revenue excl. Handset s",
+    "EBITDA": "l Revenue Consumer +2% Outbound Data +7% Profit After Tax +8% Roaming Revenue Mobile Postpaid $224 +1% 5G Home Revenue +12% ARPU 5G ARPU 2x 4G Broadband EBIT +36% OPEX -6% Service EBITDA 54% CAPEX -3% Margin (Stable) Int",
+    "客户数/用户数": "ive incremental margins 7 Roaming: Continue to Capture Growing Demand • Roaming services remained stable and resilient • Growing base of cross-border and international travelers • Customers' choice to roam onto the best-",
+    "5G用户数": "performance in a competitive market Year-on-Year Financial Achievements Total Revenue Consumer +2% Outbound Data +7% Profit After Tax +8% Roaming Revenue Mobile Postpaid $224 +1% 5G Home Revenue +12% ARPU 5G ARPU 2x 4G B",
+    "ARPU": "petitive market Year-on-Year Financial Achievements Total Revenue Consumer +2% Outbound Data +7% Profit After Tax +8% Roaming Revenue Mobile Postpaid $224 +1% 5G Home Revenue +12% ARPU 5G ARPU 2x 4G Broadband EBIT +36% O",
+    "资本开支": "level of 54%. 22 Prudent Capital Investment Discipline Capex (HK$’M) Spectrum costs (HK$’M) 245 270 268 266 184 179 -1% -3% YoY YoY 1H'24 1H'25 1H'26 1H'24 1H'25 1H'26 • Reducing capital expenditure without compromising "
+  },
+  "missing_fields": [
+    "净利润"
+  ],
+  "entity_results": [
+    {
+      "entity": "SmarTone",
+      "status": "partial",
+      "source_urls": [
+        "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+        "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+        "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf"
+      ],
+      "extracted": {
+        "运营收入/总收益": "those expressed or implied or forecasted in any of these forward-looking statements. 2 Solid business performance in a competitive market Year-on-Year Financial Achievements Total Revenue Consumer +2% Outbound Data +7% P",
+        "服务收入": "p 18 Financial review & Outlook Fiona Lau Chief Executive Officer Danny Ho Chief Financial Officer 19 Financial Highlights (HK$ million) FY24 FY25 Variance Revenue 6,221 6,253 +1% Service revenue (Revenue excl. Handset s",
+        "EBITDA": "l Revenue Consumer +2% Outbound Data +7% Profit After Tax +8% Roaming Revenue Mobile Postpaid $224 +1% 5G Home Revenue +12% ARPU 5G ARPU 2x 4G Broadband EBIT +36% OPEX -6% Service EBITDA 54% CAPEX -3% Margin (Stable) Int",
+        "客户数/用户数": "ive incremental margins 7 Roaming: Continue to Capture Growing Demand • Roaming services remained stable and resilient • Growing base of cross-border and international travelers • Customers' choice to roam onto the best-",
+        "5G用户数": "performance in a competitive market Year-on-Year Financial Achievements Total Revenue Consumer +2% Outbound Data +7% Profit After Tax +8% Roaming Revenue Mobile Postpaid $224 +1% 5G Home Revenue +12% ARPU 5G ARPU 2x 4G B",
+        "ARPU": "petitive market Year-on-Year Financial Achievements Total Revenue Consumer +2% Outbound Data +7% Profit After Tax +8% Roaming Revenue Mobile Postpaid $224 +1% 5G Home Revenue +12% ARPU 5G ARPU 2x 4G Broadband EBIT +36% O",
+        "资本开支": "level of 54%. 22 Prudent Capital Investment Discipline Capex (HK$’M) Spectrum costs (HK$’M) 245 270 268 266 184 179 -1% -3% YoY YoY 1H'24 1H'25 1H'26 1H'24 1H'25 1H'26 • Reducing capital expenditure without compromising "
+      },
+      "missing_fields": [
+        "净利润"
+      ],
+      "raw_records": [
+        {
+          "row": 8,
+          "url": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+          "final_url": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "title": "Financial Reports - Investors Relations",
+          "bytes": 52244,
+          "elapsed_seconds": 0.663,
+          "method": "httpx",
+          "text_sample": "Financial Reports - Investors Relations Customer Business Contact Us 中 {{item.menuDesc}} {{item.menuDesc}} Customer Business Contact Us {{item.menuDesc}} 中文 Financial Reports Financial Reports Home Investor Relations Financial Reports Prev Results Financial Reports next 2025/26 2024/25 2023/24 2022/23 2021/22 2020/21 2019/20 2018/19 2017/18 2016/17 2015/16 2014/15 2013/14 2012/13 © Copyright 2026. All rights reserved. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability). FOLLOW US FOLLOW SMARTONE ON WECHAT NOW Save QR code 1 Launch your WeChat app Save the QR code in your device then launch your WeChat app 2 Tap the “+” button in the top right-hand corner, and tap “Scan QR Code” 3 Scan the QR code and view our official account right away",
+          "content_hash": "0ce11be5cb206c6cee057d0bc29735de0c21f706b86579686a0d9c3dc1cd8a1b",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        },
+        {
+          "row": 8,
+          "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 3484296,
+          "elapsed_seconds": 0.746,
+          "method": "httpx",
+          "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
+          "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        },
+        {
+          "row": 8,
+          "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+          "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 2933734,
+          "elapsed_seconds": 0.449,
+          "method": "httpx",
+          "text_sample": "SmarTone Telecommunications Holdings Limited FY25 Annual Results Presentation For the year ended 30 June 2025 3 September 2025 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties are made on ",
+          "content_hash": "1299698eeac2192835ee8e1aaec82219dd2992823197e5ef4d323d076e92a382",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [
+    "SmarTone:净利润"
+  ],
+  "raw_records": [
+    {
+      "row": 8,
+      "url": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+      "final_url": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "title": "Financial Reports - Investors Relations",
+      "bytes": 52244,
+      "elapsed_seconds": 0.663,
+      "method": "httpx",
+      "text_sample": "Financial Reports - Investors Relations Customer Business Contact Us 中 {{item.menuDesc}} {{item.menuDesc}} Customer Business Contact Us {{item.menuDesc}} 中文 Financial Reports Financial Reports Home Investor Relations Financial Reports Prev Results Financial Reports next 2025/26 2024/25 2023/24 2022/23 2021/22 2020/21 2019/20 2018/19 2017/18 2016/17 2015/16 2014/15 2013/14 2012/13 © Copyright 2026. All rights reserved. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability). FOLLOW US FOLLOW SMARTONE ON WECHAT NOW Save QR code 1 Launch your WeChat app Save the QR code in your device then launch your WeChat app 2 Tap the “+” button in the top right-hand corner, and tap “Scan QR Code” 3 Scan the QR code and view our official account right away",
+      "content_hash": "0ce11be5cb206c6cee057d0bc29735de0c21f706b86579686a0d9c3dc1cd8a1b",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 8,
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+      "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 3484296,
+      "elapsed_seconds": 0.746,
+      "method": "httpx",
+      "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
+      "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 8,
+      "url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+      "final_url": "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 2933734,
+      "elapsed_seconds": 0.449,
+      "method": "httpx",
+      "text_sample": "SmarTone Telecommunications Holdings Limited FY25 Annual Results Presentation For the year ended 30 June 2025 3 September 2025 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties are made on ",
+      "content_hash": "1299698eeac2192835ee8e1aaec82219dd2992823197e5ef4d323d076e92a382",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 8,
+      "url": "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2026/33085922/",
+      "final_url": "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2026/33085922/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "EU",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 8,
+      "url": "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2025/17900712/",
+      "final_url": "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2025/17900712/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "commercial_data",
+      "jurisdiction": "EU",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:32.243659+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:32.243682+08:00"
+}

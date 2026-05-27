@@ -1,0 +1,223 @@
+{
+  "row": 32,
+  "need": "收购、融资、合资、股权交易等",
+  "status": "partial",
+  "object": "行业资讯",
+  "entities": [
+    "行业资讯"
+  ],
+  "selected_fields": [
+    "收购",
+    "融资",
+    "合资",
+    "股权交易"
+  ],
+  "source_urls": [
+    "https://www.investhk.gov.hk/en/news/",
+    "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval"
+  ],
+  "attempted_urls": [
+    "https://www.investhk.gov.hk/en/news/",
+    "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+    "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
+    "https://www.totaltele.com/",
+    "https://www.mobileworldlive.com/"
+  ],
+  "extracted": {
+    "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
+    "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
+    "股权交易": "dified on 21.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
+  },
+  "missing_fields": [
+    "合资"
+  ],
+  "entity_results": [
+    {
+      "entity": "行业资讯",
+      "status": "partial",
+      "source_urls": [
+        "https://www.investhk.gov.hk/en/news/",
+        "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval"
+      ],
+      "extracted": {
+        "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
+        "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
+        "股权交易": "dified on 21.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
+      },
+      "missing_fields": [
+        "合资"
+      ],
+      "raw_records": [
+        {
+          "row": 32,
+          "url": "https://www.investhk.gov.hk/en/news/",
+          "final_url": "https://www.investhk.gov.hk/en/news/",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "News | InvestHK",
+          "bytes": 128425,
+          "elapsed_seconds": 0.472,
+          "method": "httpx",
+          "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News InvestHK Go Global Press Rel",
+          "content_hash": "6b620f9a55032c85385ca8cb76053281e713110adcbaa6ef976c73340f1bec39",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+          "final_url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
+          "bytes": 395829,
+          "elapsed_seconds": 2.922,
+          "method": "httpx",
+          "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
+          "content_hash": "1113f5336000b68a261dc31c06dcc957b51c6545e2f71494a9df0f440ce6f3d0",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "US",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [
+    "行业资讯:合资"
+  ],
+  "raw_records": [
+    {
+      "row": 32,
+      "url": "https://www.investhk.gov.hk/en/news/",
+      "final_url": "https://www.investhk.gov.hk/en/news/",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "News | InvestHK",
+      "bytes": 128425,
+      "elapsed_seconds": 0.472,
+      "method": "httpx",
+      "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News InvestHK Go Global Press Rel",
+      "content_hash": "6b620f9a55032c85385ca8cb76053281e713110adcbaa6ef976c73340f1bec39",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+      "final_url": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
+      "bytes": 395829,
+      "elapsed_seconds": 2.922,
+      "method": "httpx",
+      "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
+      "content_hash": "1113f5336000b68a261dc31c06dcc957b51c6545e2f71494a9df0f440ce6f3d0",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 32,
+      "url": "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
+      "final_url": "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "robots_unavailable",
+      "robots_allowed": false,
+      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "entity_hits": []
+    },
+    {
+      "row": 32,
+      "url": "https://www.totaltele.com/",
+      "final_url": "https://www.totaltele.com/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "media",
+      "jurisdiction": "UK",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 32,
+      "url": "https://www.mobileworldlive.com/",
+      "final_url": "https://www.mobileworldlive.com/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "media",
+      "jurisdiction": "unknown",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:46:06.124792+00:00",
+  "fetched_at_hkt": "2026-05-27T16:46:06.124802+08:00"
+}

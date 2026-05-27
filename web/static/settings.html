@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>爬取设置 | 战略内参周报生成</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell settings-shell">
+      <header class="brand-bar">
+        <div class="brand-mark" aria-label="中国移动">
+          <img class="cm-logo-image" src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+          <span>战略部公开信息监测</span>
+        </div>
+        <div class="header-tools">
+          <span id="headerTime">-</span>
+          <a class="quiet-button nav-link" href="/">返回首页</a>
+        </div>
+      </header>
+
+      <section class="settings-hero">
+        <div>
+          <p class="system-label">爬取范围配置</p>
+          <h1>控制公司与具体数据内容</h1>
+          <p>这里的设置会写入本地配置文件，爬虫和周报生成都会按同一范围执行。</p>
+        </div>
+        <div class="settings-actions">
+          <button class="quiet-button" id="resetButton" type="button">恢复全量</button>
+          <button class="quiet-button" id="crawlButton" type="button">按设置爬取</button>
+          <button class="primary-button" id="saveButton" type="button">保存设置</button>
+        </div>
+      </section>
+
+      <section class="settings-toolbar">
+        <input id="filterInput" type="search" placeholder="搜索行号、公司、字段或数据内容" />
+        <span id="settingsSummary">加载中</span>
+      </section>
+
+      <section class="settings-list" id="settingsList" aria-label="爬取设置列表"></section>
+
+      <section class="section-block settings-log-block">
+        <div class="section-heading compact">
+          <span class="section-index">日志</span>
+          <div>
+            <h2>执行记录</h2>
+            <p>保存设置、触发爬取或接口异常会显示在这里。</p>
+          </div>
+        </div>
+        <pre id="logBox">等待操作。</pre>
+      </section>
+    </main>
+
+    <script src="/static/settings.js"></script>
+  </body>
+</html>

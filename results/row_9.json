@@ -1,0 +1,153 @@
+{
+  "row": 9,
+  "need": "5G套餐、家宽、企业方案、漫游、促销折扣",
+  "status": "ok",
+  "object": "SmarTone",
+  "entities": [
+    "SmarTone"
+  ],
+  "selected_fields": [
+    "5G套餐",
+    "家宽",
+    "企业方案",
+    "漫游",
+    "促销折扣"
+  ],
+  "source_urls": [
+    "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+    "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"
+  ],
+  "attempted_urls": [
+    "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+    "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"
+  ],
+  "extracted": {
+    "5G套餐": "SOURCE: https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/ SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 La | SOURCE: https://5g.",
+    "家宽": "de-in Service Samsung Corner HONOR Corner Smartphone Tablet & Laptop Accessories Handset Super Offer Subscriber Special Price - Handset Offer 5G Broadband & Home Services SmarTone Home 5G Broadband 【Online Exclusive】Free",
+    "企业方案": "SOURCE: https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/ SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updat",
+    "漫游": "AI Platforms AI Smart Lifestyle by SmarTone eSIM Handbook Learn More Service Plans & Prepaid Cards 4.5G Service Plans Monthly fee from $99 Free 1GB/month Chinese Mainland & Macau Roaming Data Mobile Services 5G Service P",
+    "促销折扣": "SOURCE: https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/ SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updat"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "SmarTone",
+      "status": "ok",
+      "source_urls": [
+        "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+        "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"
+      ],
+      "extracted": {
+        "5G套餐": "SOURCE: https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/ SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 La | SOURCE: https://5g.",
+        "家宽": "de-in Service Samsung Corner HONOR Corner Smartphone Tablet & Laptop Accessories Handset Super Offer Subscriber Special Price - Handset Offer 5G Broadband & Home Services SmarTone Home 5G Broadband 【Online Exclusive】Free",
+        "企业方案": "SOURCE: https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/ SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updat",
+        "漫游": "AI Platforms AI Smart Lifestyle by SmarTone eSIM Handbook Learn More Service Plans & Prepaid Cards 4.5G Service Plans Monthly fee from $99 Free 1GB/month Chinese Mainland & Macau Roaming Data Mobile Services 5G Service P",
+        "促销折扣": "SOURCE: https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/ SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updat"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 9,
+          "url": "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+          "final_url": "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
+          "bytes": 1673266,
+          "elapsed_seconds": 0.844,
+          "method": "httpx",
+          "text_sample": "SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updates Stay Ahead of the Trend with AI Plan Key Highlights Stay Ahead of the Trend with AI Plan Samsung Galaxy S26 Series Offers iPhone 17 Series | iPhone Air Offers Disney+ Special Offer Other Offers & Updates Latest SmarTone 5G Offers AI Connect: Direct Access to Leading AI Platforms AI Smart Lifestyle by SmarTone eSIM Handbook Learn More Service Plans & Prepaid Cards 4.5G Service Plans Monthly fee from $99 Free 1GB/month Chinese Mainland & Macau Roaming Data Mobile Services 5G Service Plans 4.5G Service Plans Undergrad 5G Plan Re-contract Online Refer & Earn Prepaid Cards Value-Added Services Travel Security Music Entertainment Utilities Phones & Products Online Store 5 Key Incentives for Online Device Purchases From exclusive discounts and freebies ",
+          "content_hash": "7b99468f9b6910b40b70e2d62e59c573926917a18061b974db17c87dfa0aa995",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        },
+        {
+          "row": 9,
+          "url": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
+          "final_url": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
+          "bytes": 117980,
+          "elapsed_seconds": 5.321,
+          "method": "httpx",
+          "text_sample": "× Scan QR Code by using SmarTone mobile network × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and download the App × Please scan the QR code × Please scan QR Code × Please scan QR Code SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor ",
+          "content_hash": "e2ee8552010d45e4f49d17c4beb5e42190af269c459a4139a61f67956f944726",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "SmarTone"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 9,
+      "url": "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+      "final_url": "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
+      "bytes": 1673266,
+      "elapsed_seconds": 0.844,
+      "method": "httpx",
+      "text_sample": "SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updates Stay Ahead of the Trend with AI Plan Key Highlights Stay Ahead of the Trend with AI Plan Samsung Galaxy S26 Series Offers iPhone 17 Series | iPhone Air Offers Disney+ Special Offer Other Offers & Updates Latest SmarTone 5G Offers AI Connect: Direct Access to Leading AI Platforms AI Smart Lifestyle by SmarTone eSIM Handbook Learn More Service Plans & Prepaid Cards 4.5G Service Plans Monthly fee from $99 Free 1GB/month Chinese Mainland & Macau Roaming Data Mobile Services 5G Service Plans 4.5G Service Plans Undergrad 5G Plan Re-contract Online Refer & Earn Prepaid Cards Value-Added Services Travel Security Music Entertainment Utilities Phones & Products Online Store 5 Key Incentives for Online Device Purchases From exclusive discounts and freebies ",
+      "content_hash": "7b99468f9b6910b40b70e2d62e59c573926917a18061b974db17c87dfa0aa995",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    },
+    {
+      "row": 9,
+      "url": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
+      "final_url": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
+      "bytes": 117980,
+      "elapsed_seconds": 5.321,
+      "method": "httpx",
+      "text_sample": "× Scan QR Code by using SmarTone mobile network × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and download the App × Please scan the QR code × Please scan QR Code × Please scan QR Code SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor ",
+      "content_hash": "e2ee8552010d45e4f49d17c4beb5e42190af269c459a4139a61f67956f944726",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "SmarTone"
+      ]
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:38.412691+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:38.412731+08:00"
+}

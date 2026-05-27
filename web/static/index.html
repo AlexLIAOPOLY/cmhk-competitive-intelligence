@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>战略竞对检测情报中心</title>
+    <link rel="stylesheet" href="/static/styles.css?v=22" />
+  </head>
+  <body class="dashboard-page">
+    <main class="app-shell">
+      <header class="brand-bar">
+        <div class="brand-mark" aria-label="中国移动">
+          <img class="cm-logo-image" src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+        </div>
+        <div class="header-tools">
+          <span id="headerTime">-</span>
+          <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
+          <a class="icon-button nav-link" href="/settings.html" title="爬取设置" aria-label="爬取设置">⚙</a>
+          <button class="icon-button" id="refreshButton" type="button" title="刷新状态" aria-label="刷新状态">↻</button>
+        </div>
+      </header>
+
+      <section class="console-shell">
+        <section class="operations" aria-label="周报生成流程">
+          <header class="page-titlebar">
+            <h1>战略竞对检测情报中心</h1>
+          </header>
+
+          <section class="command-strip">
+            <div>
+              <strong id="runState" role="status">准备就绪</strong>
+              <span id="statusSummary">数据源 - · 范围 - · 最近输出 -</span>
+            </div>
+            <button class="quiet-button" id="crawlButtonSecondary" type="button">重新爬取</button>
+            <button class="primary-button" id="generateButtonSecondary" type="button">生成周报</button>
+          </section>
+
+          <section class="section-block" id="outputArea">
+            <div class="output-toolbar">
+              <div class="segmented-filter" id="typeFilter" aria-label="文件类型筛选">
+                <button type="button" class="is-active" data-type="all">全部文件</button>
+                <button type="button" data-type="docx">Word</button>
+                <button type="button" data-type="html">HTML</button>
+                <button type="button" data-type="md">Markdown</button>
+              </div>
+              <button class="quiet-button small" id="deleteSelectedButton" disabled style="color:var(--danger); border-color:var(--danger);">批量删除</button>
+              <input id="fileSearchInput" type="search" placeholder="搜索文件名或说明" />
+              <select id="fileSortSelect" aria-label="排序">
+                <option value="mtime-desc">最新优先</option>
+                <option value="mtime-asc">最早优先</option>
+                <option value="name-asc">文件名 A-Z</option>
+              </select>
+              <span id="fileCountText">-</span>
+            </div>
+            <div class="output-table" id="fileList"></div>
+          </section>
+        </section>
+      </section>
+
+      <button class="chat-fab" id="chatFab" type="button" aria-label="打开 AI 助手">
+        <span>AI</span>
+      </button>
+
+      <section class="modal-backdrop chat-backdrop" id="chatModal" hidden>
+        <aside class="chat-panel floating-chat" aria-label="AI 对话">
+          <div class="chat-header">
+            <div>
+              <h2>AI 助手</h2>
+              <p>LLM + RAG：基于周报、爬取结果和审计文件回答。</p>
+            </div>
+            <button class="quiet-button small" id="aiSettingsButton" type="button">设置</button>
+            <button class="quiet-button small" id="clearChatButton" type="button">清空</button>
+            <button class="close-btn" id="closeChatButton" type="button" aria-label="关闭">&times;</button>
+          </div>
+          <div class="messages" id="messages">
+            <div class="message assistant">
+              <span class="avatar">AI</span>
+              <div class="message-body">您好，我会先检索本地周报和爬取结果，再调用 LLM 总结内容、分析风险并给出建议。</div>
+            </div>
+          </div>
+          <form class="chat-form" id="chatForm">
+            <textarea id="chatInput" rows="1" autocomplete="off" placeholder="问周报重点、风险建议，或输入：重新生成周报"></textarea>
+            <button id="chatSubmitButton" type="submit">发送</button>
+          </form>
+        </aside>
+      </section>
+
+      <section class="modal-backdrop" id="logModal" hidden>
+        <div class="log-modal">
+          <header>
+            <h2>执行日志</h2>
+            <div>
+              <button class="quiet-button small" id="clearLogButton" type="button">清空</button>
+              <button class="close-btn" id="closeLogButton" type="button" aria-label="关闭">&times;</button>
+            </div>
+          </header>
+          <pre id="logBox">等待操作。</pre>
+        </div>
+      </section>
+
+      <section class="modal-backdrop" id="aiSettingsModal" hidden>
+        <form class="settings-modal" id="aiSettingsForm">
+          <header>
+            <div>
+              <h2>AI 设置</h2>
+              <p>配置 LLM Provider、模型和 API Key。保存后 AI 助手会用 RAG 上下文调用模型。</p>
+            </div>
+            <button class="close-btn" id="closeAiSettings" type="button" aria-label="关闭">&times;</button>
+          </header>
+          <label>
+            <span>Provider</span>
+            <select id="aiProvider">
+              <option value="deepseek">DeepSeek</option>
+              <option value="openai">OpenAI</option>
+              <option value="custom">OpenAI-compatible</option>
+            </select>
+          </label>
+          <label>
+            <span>Base URL</span>
+            <input id="aiBaseUrl" type="url" autocomplete="off" />
+          </label>
+          <label>
+            <span>Model</span>
+            <input id="aiModel" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span>API Key</span>
+            <input id="aiApiKey" type="password" autocomplete="off" placeholder="已保存则可留空" />
+          </label>
+          <div class="modal-status" id="aiConfigStatus">默认 DeepSeek：api.deepseek.com / deepseek-v4-flash</div>
+          <footer>
+            <button class="quiet-button" id="testAiConfig" type="button">测试连接</button>
+            <button class="primary-button" type="submit">保存设置</button>
+          </footer>
+        </form>
+      </section>
+    </main>
+
+    <script src="/static/app.js?v=22"></script>
+  </body>
+</html>

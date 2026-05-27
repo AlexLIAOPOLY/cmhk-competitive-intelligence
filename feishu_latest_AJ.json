@@ -1,0 +1,2076 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "revision": 500,
+    "spreadsheetToken": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",
+    "valueRange": {
+      "majorDimension": "ROWS",
+      "range": "9c638d!A1:H46",
+      "revision": 500,
+      "values": [
+        [
+          "zhong",
+          "数据板块",
+          "对象/内部大类",
+          "指标包/数据类",
+          "具体需要收集的数据",
+          "可能来源/系统",
+          "信息获取渠道",
+          "更新频率"
+        ],
+        [
+          "竞争对手与行业情报监测",
+          "香港本地竞对",
+          "HKT / csl / 1O1O",
+          "财报经营指标",
+          [
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "运营收入（年报中常用：总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "宽频线数/家宽用户数",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "、ARPU、资本开支",
+              "type": "text"
+            }
+          ],
+          [
+            {
+              "text": "【HKT】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+              "text": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",
+              "text": "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【csl】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+              "text": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【1O1O】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+              "text": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "半年度/年度；每周检查新公告"
+        ],
+        [
+          null,
+          null,
+          null,
+          "产品与价格",
+          "5G套餐（产品规格、合约期、资费、增值服务）、家宽套餐（产品规格、合约期、资费、叠加服务）、企业专线、漫游、融合套餐、促销折扣",
+          [
+            {
+              "text": "【HKT】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
+              "text": "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮not_found_allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.netvigator.com/eng/",
+              "text": "https://www.netvigator.com/eng/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【csl】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
+              "text": "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮not_found_allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.netvigator.com/eng/",
+              "text": "https://www.netvigator.com/eng/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【1O1O】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
+              "text": "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮not_found_allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.netvigator.com/eng/",
+              "text": "https://www.netvigator.com/eng/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周；促销/资费变动期每日检查"
+        ],
+        [
+          null,
+          null,
+          null,
+          "重大动态/技术",
+          "战略合作、中标、投资并购、重点技术（5G-A、网络API、边缘计算、数据中心等）、高管人事变动",
+          [
+            {
+              "text": "【HKT】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "text": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution",
+              "text": "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮robots_unavailable; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【csl】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "text": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "text": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方页面; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution",
+              "text": "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮robots_unavailable; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【1O1O】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "text": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution",
+              "text": "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮robots_unavailable; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "3HK / Hutchison",
+          "财报经营指标",
+          "运营收入（总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、ARPU、资本开支",
+          [
+            {
+              "text": "【3HK】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hthkh.com/en/ir/reports.php",
+              "text": "https://www.hthkh.com/en/ir/reports.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR年报/中报页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://m.hthkh.com/en/ir/presentations.php",
+              "text": "https://m.hthkh.com/en/ir/presentations.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR业绩演示页; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "半年度/年度；每周检查新公告"
+        ],
+        [
+          null,
+          null,
+          null,
+          "产品与价格",
+          "5G套餐、SoSIM/Mo+、企业方案、漫游、促销折扣",
+          [
+            {
+              "text": "【3HK】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://web.three.com.hk/plans/3business5g/index-en.html",
+              "text": "https://web.three.com.hk/plans/3business5g/index-en.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://web.three.com.hk/plans/apac/index2-en.html",
+              "text": "https://web.three.com.hk/plans/apac/index2-en.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方漫游/套餐页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hthkh.com/en/",
+              "text": "https://www.hthkh.com/en/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方网站; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【Hutchison】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://web.three.com.hk/plans/3business5g/index-en.html",
+              "text": "https://web.three.com.hk/plans/3business5g/index-en.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周；促销/资费变动期每日检查"
+        ],
+        [
+          null,
+          null,
+          null,
+          "重大动态/技术",
+          "战略合作、中标、5G-A、企业ICT、IoT、区域动作",
+          [
+            {
+              "text": "【3HK】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://m.hthkh.com/en/media/press.php",
+              "text": "https://m.hthkh.com/en/media/press.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hthkh.com/en/media/press_3hk.php",
+              "text": "https://www.hthkh.com/en/media/press_3hk.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方3HK新闻页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【Hutchison】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://m.hthkh.com/en/media/press.php",
+              "text": "https://m.hthkh.com/en/media/press.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "SmarTone",
+          "财报经营指标",
+          "运营收入（收入）、服务收入（服務收入及其他相關服務）、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、ARPU、资本开支",
+          [
+            {
+              "text": "【SmarTone】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+              "text": "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR财报页; robots: 未成功验证; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "text": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR PDF; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "半年度/年度；每周检查新公告"
+        ],
+        [
+          null,
+          null,
+          null,
+          "产品与价格",
+          "5G套餐、家宽、企业方案、漫游、促销折扣",
+          [
+            {
+              "text": "【SmarTone】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+              "text": "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
+              "text": "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方漫游资费页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周；促销/资费变动期每日检查"
+        ],
+        [
+          null,
+          null,
+          null,
+          "重大动态/技术",
+          "战略合作、中标、5G-A、家宽布局、区域动作",
+          [
+            {
+              "text": "【SmarTone】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+              "text": "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/02/2026_02_24_526.pdf",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻PDF; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "text": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR PDF; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "HKBN",
+          "企业经营指标",
+          [
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "总收入、",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "各板块收入分拆（企业方案及相关产品、住宅方案、手机及其他产品）",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "、EBITDA、净利润、",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "融资成本、资本开支、商誉、资产负债率（可能需要加工）、用户数（企业宽频用户数、住宅宽频用户数、流动通讯用户数）、商业楼宇覆盖率",
+              "type": "text"
+            }
+          ],
+          [
+            {
+              "text": "【HKBN】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "text": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方FY25业绩新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+              "text": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方年报PDF; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "半年度/年度；每周检查新公告"
+        ],
+        [
+          null,
+          null,
+          null,
+          "重要公告",
+          "业绩报告公告、董事会、股东大会、派息、持续性关联交易",
+          [
+            {
+              "text": "【HKBN】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "text": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方FY25业绩新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+              "text": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方公告/通函页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          null,
+          "股价",
+          "股价异动",
+          [
+            {
+              "text": "【HKEX】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities?sc_lang=en",
+              "text": "https://www.hkex.com.hk/Market-Data/Securities-Prices/Equities?sc_lang=en",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 交易所行情页; robots: 待检查/遵守ToS; 采集: 优先人工或授权行情源, 不自动抓实时行情 【robots未确认/暂不自动爬】\n\n【HKBN】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+              "text": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方公告页用于解释异动背景; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周复核；重大事件即时刷新"
+        ],
+        [
+          null,
+          null,
+          null,
+          "产品与动态",
+          "宽带套餐、企业ICT、云/安全、融合产品、重大合作、区域布局",
+          [
+            {
+              "text": "【HKBN】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "text": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方业绩/业务动态新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
+              "text": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方企业方案合作新闻; robots: 上轮reg.hkbn robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+              "text": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方宽带/Wi-Fi产品新闻; robots: 上轮reg.hkbn robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周；促销/资费变动期每日检查"
+        ],
+        [
+          null,
+          null,
+          "HGC",
+          "固网/企业经营指标",
+          [
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "家宽用户数、网络覆盖、",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "企业通信、跨境链路、数据中心、云网产品相关披露（非上市公司，公开数据受限，可理解）",
+              "type": "text"
+            }
+          ],
+          [
+            {
+              "text": "【HGC】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
+              "text": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方企业洞察页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hgc-intl.com/",
+              "text": "https://www.hgc-intl.com/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方网站; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周复核；重大事件即时刷新"
+        ],
+        [
+          null,
+          null,
+          null,
+          "产品与动态",
+          "海缆/跨境链路、数据中心、企业网络、合作项目",
+          [
+            {
+              "text": "【HGC】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
+              "text": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方企业动态页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hgc-intl.com/",
+              "text": "https://www.hgc-intl.com/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方网站; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "iCable ",
+          "固网/企业经营指标",
+          "运营收入、服务收入、EBITDA、净利润、宽频线数/家宽用户数、ARPU、资本开支、网络覆盖",
+          [
+            {
+              "text": "【iCable】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.i-cablecomm.com/en/annual-interim-reports",
+              "text": "https://www.i-cablecomm.com/en/annual-interim-reports",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方年报/中报页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.i-cablecomm.com/en/contact-us",
+              "text": "https://www.i-cablecomm.com/en/contact-us",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方公司联系方式/公司页; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "半年度/年度；每周检查新公告"
+        ],
+        [
+          null,
+          null,
+          null,
+          "产品与动态",
+          "宽带套餐、电讯业务战略合作",
+          [
+            {
+              "text": "【iCable】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.i-cablebroadband-offer.com/",
+              "text": "https://www.i-cablebroadband-offer.com/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer",
+              "text": "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻页; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周；促销/资费变动期每日检查"
+        ],
+        [
+          null,
+          "全球标杆运营商",
+          "亚太运营商",
+          "全球趋势案例",
+          "Singtel、Telstra、SK Telecom、KT、NTT Docomo、KDDI、SoftBank、Jio、Airtel 的AI、5G-A、云、企业ICT、Capex方向",
+          [
+            {
+              "text": "【Singtel】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+              "text": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【SK Telecom】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://news.sktelecom.com/en/2787",
+              "text": "https://news.sktelecom.com/en/2787",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【KT】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://news.sktelecom.com/en/2787",
+              "text": "https://news.sktelecom.com/en/2787",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【NTT Docomo】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://news.sktelecom.com/en/2787",
+              "text": "https://news.sktelecom.com/en/2787",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+              "text": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮not_found_allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【KDDI】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://newsroom.kddi.com/english/news/detail/kddi_nr-560_3842.html",
+              "text": "https://newsroom.kddi.com/english/news/detail/kddi_nr-560_3842.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮not_found_allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【SoftBank】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+              "text": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【Airtel】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.airtel.in/press-release/04-2026/airtel-worlds-second-largest-telco-hits-650-million-customer-milestone",
+              "text": "https://www.airtel.in/press-release/04-2026/airtel-worlds-second-largest-telco-hits-650-million-customer-milestone",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          null,
+          "全球趋势案例",
+          "Vodafone、Deutsche Telekom、Orange、Telefonica、BT/EE、TIM、Verizon、AT&T、T-Mobile US 的网络API、Open RAN、边缘计算、FWA、AI网络",
+          [
+            {
+              "text": "【BT/EE】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+              "text": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【TIM】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+              "text": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.gruppotim.it/en/press-archive.html",
+              "text": "https://www.gruppotim.it/en/press-archive.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻归档; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【Verizon】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.verizon.com/business/solutions/network-apis/",
+              "text": "https://www.verizon.com/business/solutions/network-apis/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方产品页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【T-Mobile US】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.telekom.com/en/media/media-information",
+              "text": "https://www.telekom.com/en/media/media-information",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方媒体信息页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.t-mobile.com/news/network/t-mobile-and-deutsche-telekom-6g-innovation-hub",
+              "text": "https://www.t-mobile.com/news/network/t-mobile-and-deutsche-telekom-6g-innovation-hub",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 上轮robots_unavailable; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          null,
+          "全球趋势案例",
+          "e&、stc、中国移动、中国电信、中国联通的AI、算力网络、云、DICT、5G-A、资本开支",
+          [
+            {
+              "text": "【e&】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
+              "text": "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+              "text": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方新闻; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【stc】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.stc.com/en/investors.html",
+              "text": "https://www.stc.com/en/investors.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方投资者页; robots: 上轮checked allow但HTTP 500; 采集: 稳定2xx后httpx+BeautifulSoup 【robots可爬】\n\n【中国移动】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.chinamobileltd.com/en/ir/reports.php",
+              "text": "https://www.chinamobileltd.com/en/ir/reports.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR报告页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【中国电信】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.chinatelecom-h.com/en/ir/reports.php",
+              "text": "https://www.chinatelecom-h.com/en/ir/reports.php",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IR报告页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【China Unicom】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+              "text": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方年报PDF; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+          "半年度/年度；每周检查新公告"
+        ],
+        [
+          null,
+          "香港本地重点资讯",
+          [
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "政治资讯",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "（和25行可能存在重合，请Alex考虑是否合并）",
+              "type": "text"
+            }
+          ],
+          "香港本地重点政策",
+          "施政报告、战略规划、区域发展、重大投资",
+          [
+            {
+              "text": "【政治资讯（和25行可能存在重合，请Alex考虑是否合并）】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.digitalpolicy.gov.hk/en/",
+              "text": "https://www.digitalpolicy.gov.hk/en/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方政策页; robots: 上轮not_found_allow/curl 200; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.itib.gov.hk/en/index.html",
+              "text": "https://www.itib.gov.hk/en/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方政策局页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【香港政府/监管】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.policyaddress.gov.hk/2025/en/index.html",
+              "text": "https://www.policyaddress.gov.hk/2025/en/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方施政报告页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描监管/政策更新；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          [
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#1f2329",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "经济资讯",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "（和30行可能存在重合，请Alex考虑是否合并）",
+              "type": "text"
+            }
+          ],
+          "经济指标及政策",
+          "宏观数据（人口、零售额、PMI、失业率）",
+          [
+            {
+              "text": "【经济资讯（和30行可能存在重合，请Alex考虑是否合并）】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.censtatd.gov.hk/en/scode200.html",
+              "text": "https://www.censtatd.gov.hk/en/scode200.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.censtatd.gov.hk/en/scode460.html",
+              "text": "https://www.censtatd.gov.hk/en/scode460.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方统计页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://data.gov.hk/en-data/dataset/hk-censtatd-commonidds-common-idds",
+              "text": "https://data.gov.hk/en-data/dataset/hk-censtatd-commonidds-common-idds",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 政府开放数据页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官方HTML/JSON API优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按字段词典抽取证据，保存状态码、标题、正文片段、hash。",
+          "月度/季度；官方发布日自动刷新"
+        ],
+        [
+          null,
+          null,
+          "行业资讯",
+          "科创前沿动态",
+          "跨境贸易、科技创投、人工智能、低空经济、Web3",
+          [
+            {
+              "text": "【行业资讯】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.digitalpolicy.gov.hk/en/",
+              "text": "https://www.digitalpolicy.gov.hk/en/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方数字政策页; robots: 上轮not_found_allow/curl 200; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+              "text": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方施政重点页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【香港政府/监管】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.investhk.gov.hk/en/news/",
+              "text": "https://www.investhk.gov.hk/en/news/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方招商新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "社会资讯",
+          "本地生活新闻",
+          "本地生活咨询（例如公屋轮候等）",
+          [
+            {
+              "text": "【社会资讯】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+              "text": "https://www.housingauthority.gov.hk/en/about-us/news-centre/press-releases/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方房委会新闻页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【香港政府/监管】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.info.gov.hk/gia/general/today.htm",
+              "text": "https://www.info.gov.hk/gia/general/today.htm",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 政府新闻页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每周复核；重大事件即时刷新"
+        ],
+        [
+          null,
+          "国际资讯",
+          "香港本地监管/政策",
+          "本地政策风险",
+          "OFCA政策、频谱/牌照、服务质量、退网、网络安全；PCPD个人资料/AI指引；港府数字经济、AI、数据跨境、科创政策",
+          [
+            {
+              "text": "【香港本地监管】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.ofca.gov.hk/en/home/index.html",
+              "text": "https://www.ofca.gov.hk/en/home/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方监管机构页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.digitalpolicy.gov.hk/en/",
+              "text": "https://www.digitalpolicy.gov.hk/en/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方数字政策页; robots: 上轮not_found_allow/curl 200; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.pcpd.org.hk/english/artificial_intelligence/index.html",
+              "text": "https://www.pcpd.org.hk/english/artificial_intelligence/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方PCPD AI页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【政策】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.ofca.gov.hk/en/home/index.html",
+              "text": "https://www.ofca.gov.hk/en/home/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方监管机构页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.digitalpolicy.gov.hk/en/",
+              "text": "https://www.digitalpolicy.gov.hk/en/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方数字政策页; robots: 上轮not_found_allow/curl 200; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.pcpd.org.hk/english/artificial_intelligence/index.html",
+              "text": "https://www.pcpd.org.hk/english/artificial_intelligence/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方PCPD AI页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描监管/政策更新；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "重点国家/地区AI与数据监管",
+          "AI/数据/隐私法规",
+          "EU AI Act、EU Data Act、GDPR/DSA；美国AI行政令/州级隐私法/FCC/FTC规则；英国AI监管/数据保护；新加坡AI治理与数据保护；日本/韩国/澳洲/印度AI和数据新规",
+          [
+            {
+              "text": "【欧盟官方】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+              "text": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 欧盟官方AI Act页; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act",
+              "text": "https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 欧盟官方AI Act FAQ; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【新加坡官方】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
+              "text": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 新加坡IMDA官方新闻; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.pdpc.gov.sg/help-and-resources/2020/01/model-ai-governance-framework",
+              "text": "https://www.pdpc.gov.sg/help-and-resources/2020/01/model-ai-governance-framework",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 新加坡PDPC官方框架页; robots: 待检查; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描监管/政策更新；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "通信监管机构",
+          "电信/频谱/网络政策",
+          [
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#000000",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "频谱拍卖、5G/6G规划、网络共享、覆盖义务、网络安全、关键基础设施、卫星通信、号码/携转、漫游监管；",
+              "type": "text"
+            },
+            {
+              "segmentStyle": {
+                "bold": false,
+                "fontSize": 10,
+                "foreColor": "#f54a45",
+                "italic": false,
+                "strikeThrough": false,
+                "underline": false
+              },
+              "text": "信息/数据安全",
+              "type": "text"
+            }
+          ],
+          [
+            {
+              "text": "【通信监管机构】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.ofca.gov.hk/en/home/index.html",
+              "text": "https://www.ofca.gov.hk/en/home/index.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方监管机构页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.enisa.europa.eu/news",
+              "text": "https://www.enisa.europa.eu/news",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方欧盟网络安全机构新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【新加坡官方】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.imda.gov.sg/regulations-and-licensing-listing/spectrum-management",
+              "text": "https://www.imda.gov.sg/regulations-and-licensing-listing/spectrum-management",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方IMDA频谱页; robots: 上轮checked allow/部分路径需复核; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描监管/政策更新；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "国际组织/行业权威机构",
+          "行业趋势与基准",
+          "ITU数字发展/频谱/宽带指标、GSMA移动经济、OECD数字经济和AI政策、World Bank/IMF宏观、UN/UNCTAD数字贸易和数据流动",
+          [
+            {
+              "text": "【国际组织】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+              "text": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: World Bank公共API; robots: 上轮not_found_allow; 采集: API JSON, 字段化, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.itu.int/",
+              "text": "https://www.itu.int/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 国际组织官网; robots: 上轮curl/httpx成功; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【行业权威机构】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+              "text": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: World Bank公共API; robots: 上轮not_found_allow; 采集: API JSON, 字段化, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.itu.int/",
+              "text": "https://www.itu.int/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 国际组织官网; robots: 上轮curl/httpx成功; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【国际组织/行业协会】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://oecd.ai/",
+              "text": "https://oecd.ai/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: OECD AI页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.gsma.com/newsroom/press-releases/",
+              "text": "https://www.gsma.com/newsroom/press-releases/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: GSMA官方新闻; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官方HTML/JSON API优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按字段词典抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描监管/政策更新；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "宏观经济/人口/消费",
+          "外部需求变量",
+          "访港旅客、人口、零售指数、失业率、CPI、利率、汇率、企业注册/倒闭、旅游和会展活动",
+          [
+            {
+              "text": "【香港统计/开放数据】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "text": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方旅发局统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【宏观经济】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.censtatd.gov.hk/en/scode200.html",
+              "text": "https://www.censtatd.gov.hk/en/scode200.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+              "text": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方HKMA统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【人口】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.censtatd.gov.hk/en/scode200.html",
+              "text": "https://www.censtatd.gov.hk/en/scode200.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+              "text": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方HKMA统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【消费】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.censtatd.gov.hk/en/scode200.html",
+              "text": "https://www.censtatd.gov.hk/en/scode200.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+              "text": "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方HKMA统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官方HTML/JSON API优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按字段词典抽取证据，保存状态码、标题、正文片段、hash。",
+          "月度/季度；官方发布日自动刷新"
+        ],
+        [
+          null,
+          null,
+          "行业资讯",
+          "科技动态",
+          "技术动态、市场趋势、企业重大合作、前沿产品发布等",
+          [
+            {
+              "text": "【国际组织/行业协会】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.gsma.com/newsroom/press-releases/",
+              "text": "https://www.gsma.com/newsroom/press-releases/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: GSMA官方新闻; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【Ericsson】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.ericsson.com/en/press-releases",
+              "text": "https://www.ericsson.com/en/press-releases",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方供应商新闻; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n\n【SoftBank】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+              "text": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方技术新闻; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          null,
+          "投资并购",
+          "收购、融资、合资、股权交易等",
+          [
+            {
+              "text": "【香港政府/监管】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.investhk.gov.hk/en/news/",
+              "text": "https://www.investhk.gov.hk/en/news/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方投资推广新闻; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【行业资讯】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+              "text": "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方公司交易新闻; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
+              "text": "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方公司交易新闻; robots: 上轮robots_unavailable; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "政治新闻",
+          "重点政治新闻",
+          "地缘政治与经济、重大政策/声明等",
+          [
+            {
+              "text": "【政治新闻】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.mfa.gov.cn/eng/",
+              "text": "https://www.mfa.gov.cn/eng/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方外交部英文页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://english.www.gov.cn/",
+              "text": "https://english.www.gov.cn/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方中国政府英文页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【中国政府】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.gov.cn/",
+              "text": "https://www.gov.cn/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方中国政府中文页; robots: 上轮not_found_allow/待复核; 采集: 仅人工参考/待robots或授权确认 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
+          "每日扫描官方新闻/公告；每周汇总复核"
+        ],
+        [
+          null,
+          null,
+          "宏观指标",
+          "宏观经济指标",
+          "GDP、进出口、失业率、旅游业数据等",
+          [
+            {
+              "text": "【宏观指标】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.stats.gov.cn/english/",
+              "text": "https://www.stats.gov.cn/english/",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方国家统计局英文页; robots: 上轮not_found_allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.censtatd.gov.hk/en/scode200.html",
+              "text": "https://www.censtatd.gov.hk/en/scode200.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方香港统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【国际组织/行业协会】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+              "text": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: World Bank公共API; robots: 上轮not_found_allow但请求失败需重试; 采集: API JSON, 字段化, 不保存raw 【robots可爬】\n\n【香港统计/开放数据】\n- ",
+              "type": "text"
+            },
+            {
+              "cellPosition": null,
+              "link": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "text": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "type": "url"
+            },
+            {
+              "text": "\n  备注: 官方旅发局旅游统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+              "type": "text"
+            }
+          ],
+          "验证-only爬虫：官方HTML/JSON API优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按字段词典抽取证据，保存状态码、标题、正文片段、hash。",
+          "月度/季度；官方发布日自动刷新"
+        ],
+        [
+          "经营趋势预测与沙盘推演",
+          "CMHK内部数据",
+          "财务经营",
+          "经营结果",
+          "归母净利润（并表）、ROA、应收账款占收比、主营业务收入、通信服务收入、算力/智能服务收入、资本开支",
+          "财务系统；经营分析月报；战略部经营报表",
+          "内部ETL/API：财务系统、经营分析月报、战略部经营报表；按统一口径抽取净利润、ROA、收入口径、capex；需权限审计",
+          "月度；季度/年度关账后复核"
+        ],
+        [
+          null,
+          null,
+          "客户与产品",
+          "客户/收入结构",
+          "后付客户、预付客户、家庭客户、整体/后付/预付ARPU、大众/政企市场收入、重点产品收入",
+          "CRM/BOSS；产品系统；经营分析报表",
+          "内部ETL/API：CRM/BOSS、产品系统、经营分析报表；按客户类型/市场/产品维度抽取客户数、ARPU、收入结构",
+          "月度"
+        ],
+        [
+          null,
+          null,
+          null,
+          "变化驱动指标",
+          "客户净增、流失率、套餐结构、5G套餐占比、合约到期客户",
+          "CRM/BOSS；产品系统；携转/合约记录",
+          "内部ETL/API：CRM/BOSS、产品系统、携转/合约记录；抽取净增、流失、套餐结构、5G占比、合约到期批次",
+          "月度；关键活动期每周"
+        ],
+        [
+          null,
+          null,
+          "网络体验",
+          "网络使用与质量",
+          "移动/5G活跃用户、上网满意度、网络万投率、日均用量、5G日均用量、分流比",
+          "网管平台；DPI；网络质量报表",
+          "内部ETL/API：网管平台、DPI、网络质量报表；抽取活跃用户、满意度、万投率、DOU、5G DOU、分流比",
+          "月度；网络质量异常可每日"
+        ],
+        [
+          null,
+          null,
+          "投诉客服",
+          "客户体验",
+          "分区客户投诉率、投诉原因、NPS、处理时长、重复投诉率",
+          "客服系统；投诉工单；满意度调研",
+          "内部ETL/API：客服系统、投诉工单、满意度调研；按区域/原因/处理时长/NPS 聚合，保留脱敏口径",
+          "月度；重大投诉每日监控"
+        ],
+        [
+          null,
+          null,
+          "渠道营销",
+          "销售与营销投入",
+          "线上/线下渠道销量、门店表现、代理渠道贡献、营销费用、补贴、渠道佣金",
+          "渠道系统；营销报表；财务报表",
+          "内部ETL/API：渠道系统、营销报表、财务报表；抽取线上/线下销量、门店、代理贡献、营销费、补贴、佣金",
+          "月度；营销活动期每周"
+        ],
+        [
+          null,
+          null,
+          "成本资源",
+          "成本与利润结构",
+          "OPEX、网络维护成本、销售费用、人工成本、毛利率、EBITDA Margin",
+          "财务系统；成本中心报表",
+          "内部ETL/API：财务系统、成本中心、网络维护成本报表；按成本中心抽取 OPEX、维护成本、销售费、人工、毛利率、EBITDA margin",
+          "月度；季度关账后复核"
+        ],
+        [
+          null,
+          "外部解释变量",
+          "政策/竞对/宏观变量",
+          "外部输入",
+          "竞对价格、促销活动、市场份额、竞对重大动态；AI/数据/电信监管变化；旅客、人口、零售、失业率、利率、汇率",
+          "复用项目一公开源：第2-34行竞对/政策/宏观链接；OFCA；政府统计处；旅发局；ITU；World Bank",
+          "自建聚合任务：复用第2-34行公开源结果表，生成竞对价格、促销、重大动态、政策、旅客/宏观变量；统一 source_id 去重",
+          "月度；外部重大事件即时"
+        ],
+        [
+          null,
+          "经营预测模型必需数据",
+          "预测目标与历史基础",
+          "预测目标和历史序列",
+          "收入、ARPU、客户规模、EBITDA、净利润；至少24到36个月月度历史，最好5年；包含预算、实际、同比、环比和口径变更记录",
+          "财务系统；经营分析报表；CRM/BOSS；预算文件",
+          "内部ETL/API：财务、经营分析、CRM/BOSS、预算文件；构建 24-60 个月历史序列，记录预算/实际/同比/环比/口径变更",
+          "月度；预算调整即时更新"
+        ],
+        [
+          null,
+          null,
+          "经营核心驱动",
+          "收入和客户驱动",
+          "收入拆解、客户新增、客户流失、净增客户、套餐结构、5G套餐占比、价格折扣、促销活动、渠道销量",
+          "财务系统；CRM/BOSS；产品系统；渠道系统；营销系统",
+          "内部ETL/API：财务、CRM/BOSS、产品、渠道、营销系统；构建收入拆解、客户新增/流失、套餐、折扣、渠道销量特征表",
+          "月度；营销活动期每周"
+        ],
+        [
+          null,
+          null,
+          "利润和资源约束",
+          "成本和利润驱动",
+          "OPEX、网络维护成本、销售费用、人工成本、渠道成本、补贴、坏账、毛利率、EBITDA Margin、资本开支、折旧摊销",
+          "财务系统；成本中心报表；网络维护成本报表",
+          "内部ETL/API：财务系统、成本中心、网络维护成本报表；构建成本/利润/折旧摊销/补贴/坏账特征表",
+          "月度；季度关账后复核"
+        ],
+        [
+          null,
+          null,
+          "外部变量与模型验证",
+          "外部驱动和评估",
+          "旅客、零售、失业率、CPI、利率、汇率、竞对价格、竞对促销、市场份额、政策监管变化；训练集、验证集、测试集、MAPE、RMSE、人工预测基准、预算基准、异常月份标记、模型版本、复盘结论",
+          "内部模型训练记录/预测结果库；复用第23/30/34行官方宏观API；复用第2-21行竞对公开源",
+          "模型管线：内部模型训练记录/预测结果库 + 第23/30/34行官方宏观API + 第2-21行竞对公开源；自动计算 MAPE/RMSE/基准对比/异常月份标记",
+          "月度；每次模型重训/预测后更新"
+        ]
+      ]
+    }
+  }
+}

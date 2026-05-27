@@ -1,0 +1,246 @@
+{
+  "row": 31,
+  "need": "技术动态、市场趋势、企业重大合作、前沿产品发布等",
+  "status": "partial",
+  "object": "行业资讯",
+  "entities": [
+    "行业资讯"
+  ],
+  "selected_fields": [
+    "技术动态",
+    "市场趋势",
+    "企业重大合作",
+    "前沿产品"
+  ],
+  "source_urls": [
+    "https://www.gsma.com/newsroom/press-releases/",
+    "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/"
+  ],
+  "attempted_urls": [
+    "https://www.gsma.com/newsroom/press-releases/",
+    "https://www.ericsson.com/en/press-releases",
+    "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+    "https://www.gsma.com/solutions-and-impact/technologies/networks/",
+    "https://www.mobileworldlive.com/",
+    "https://www.totaltele.com/"
+  ],
+  "extracted": {
+    "技术动态": "learn about our history and discover our career opportunities. Our leadership Our leadership Chair Director General GSMA Board Our leadership Who we are Who we are Our history Our technology Sustainability GSMA Foundatio",
+    "企业重大合作": "WC Barcelona 2026, SoftBank has announced the following initiatives to realize Telco AI Cloud: Advancing Telecommunications Networks for the Physical AI Era Following the start of collaboration with Yaskawa Electric Corp",
+    "前沿产品": "w GSMA study finds Read article Tuesday 5 May, 2026 GSMA Announces Senior Leadership Changes Across Events and Industry Services Portfolio Read article Tuesday 28 April, 2026 Zain launches landmark ‘Regulatory Academy’ w"
+  },
+  "missing_fields": [
+    "市场趋势"
+  ],
+  "entity_results": [
+    {
+      "entity": "行业资讯",
+      "status": "partial",
+      "source_urls": [
+        "https://www.gsma.com/newsroom/press-releases/",
+        "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/"
+      ],
+      "extracted": {
+        "技术动态": "learn about our history and discover our career opportunities. Our leadership Our leadership Chair Director General GSMA Board Our leadership Who we are Who we are Our history Our technology Sustainability GSMA Foundatio",
+        "企业重大合作": "WC Barcelona 2026, SoftBank has announced the following initiatives to realize Telco AI Cloud: Advancing Telecommunications Networks for the Physical AI Era Following the start of collaboration with Yaskawa Electric Corp",
+        "前沿产品": "w GSMA study finds Read article Tuesday 5 May, 2026 GSMA Announces Senior Leadership Changes Across Events and Industry Services Portfolio Read article Tuesday 28 April, 2026 Zain launches landmark ‘Regulatory Academy’ w"
+      },
+      "missing_fields": [
+        "市场趋势"
+      ],
+      "raw_records": [
+        {
+          "row": 31,
+          "url": "https://www.gsma.com/newsroom/press-releases/",
+          "final_url": "https://www.gsma.com/newsroom/press-releases/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Press Releases - Newsroom",
+          "bytes": 108089,
+          "elapsed_seconds": 1.095,
+          "method": "httpx",
+          "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
+          "content_hash": "bb2ed74819c8d55e35d967ba5d4e58b9280957fcd6ca9b649f9d55fa6bb50fd5",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "industry_association",
+          "jurisdiction": "international",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 31,
+          "url": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+          "final_url": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
+          "bytes": 89423,
+          "elapsed_seconds": 0.483,
+          "method": "httpx",
+          "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
+          "content_hash": "fb58f2bf714a2a86b12d64d71bc4253a2822d078eb7551f0dd9c27cd6c6e3b0c",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "JP",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [
+    "行业资讯:市场趋势"
+  ],
+  "raw_records": [
+    {
+      "row": 31,
+      "url": "https://www.gsma.com/newsroom/press-releases/",
+      "final_url": "https://www.gsma.com/newsroom/press-releases/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Press Releases - Newsroom",
+      "bytes": 108089,
+      "elapsed_seconds": 1.095,
+      "method": "httpx",
+      "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
+      "content_hash": "bb2ed74819c8d55e35d967ba5d4e58b9280957fcd6ca9b649f9d55fa6bb50fd5",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "industry_association",
+      "jurisdiction": "international",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 31,
+      "url": "https://www.ericsson.com/en/press-releases",
+      "final_url": "https://www.ericsson.com/en/press-releases",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "SE",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "robots_unavailable",
+      "robots_allowed": false,
+      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "entity_hits": []
+    },
+    {
+      "row": 31,
+      "url": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+      "final_url": "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
+      "bytes": 89423,
+      "elapsed_seconds": 0.483,
+      "method": "httpx",
+      "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
+      "content_hash": "fb58f2bf714a2a86b12d64d71bc4253a2822d078eb7551f0dd9c27cd6c6e3b0c",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "JP",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 31,
+      "url": "https://www.gsma.com/solutions-and-impact/technologies/networks/",
+      "final_url": "https://www.gsma.com/solutions-and-impact/technologies/networks/",
+      "status": 403,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Just a moment...",
+      "bytes": 5809,
+      "elapsed_seconds": 0.291,
+      "method": "httpx",
+      "text_sample": "Just a moment...",
+      "content_hash": "301dc171e5fa8c5fdeb69592a92a5c378f5f758f68d2338200235d60eb04b9ad",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "industry_association",
+      "jurisdiction": "international",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": []
+    },
+    {
+      "row": 31,
+      "url": "https://www.mobileworldlive.com/",
+      "final_url": "https://www.mobileworldlive.com/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "media",
+      "jurisdiction": "unknown",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    },
+    {
+      "row": 31,
+      "url": "https://www.totaltele.com/",
+      "final_url": "https://www.totaltele.com/",
+      "status": 0,
+      "content_type": "",
+      "title": "",
+      "bytes": 0,
+      "elapsed_seconds": 0.0,
+      "method": "skipped",
+      "text_sample": "",
+      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "error": "source policy is deny",
+      "source_policy": "deny",
+      "source_type": "media",
+      "jurisdiction": "UK",
+      "tos_status": "not_approved",
+      "robots_status": "not_checked",
+      "robots_allowed": false,
+      "skip_reason": "source policy is deny",
+      "entity_hits": []
+    }
+  ],
+  "fetched_at": "2026-05-27T08:46:02.727910+00:00",
+  "fetched_at_hkt": "2026-05-27T16:46:02.727942+08:00"
+}

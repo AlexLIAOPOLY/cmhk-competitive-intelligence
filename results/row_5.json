@@ -1,0 +1,289 @@
+{
+  "row": 5,
+  "need": "运营收入（总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、ARPU、资本开支",
+  "status": "ok",
+  "object": "3HK / Hutchison",
+  "entities": [
+    "3HK",
+    "Hutchison"
+  ],
+  "selected_fields": [
+    "运营收入/总收益",
+    "服务收入",
+    "EBITDA",
+    "净利润",
+    "客户数/用户数",
+    "5G用户数",
+    "ARPU",
+    "资本开支"
+  ],
+  "source_urls": [
+    "https://www.hthkh.com/en/ir/reports.php",
+    "https://m.hthkh.com/en/ir/presentations.php",
+    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+  ],
+  "attempted_urls": [
+    "https://www.hthkh.com/en/ir/reports.php",
+    "https://m.hthkh.com/en/ir/presentations.php",
+    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+  ],
+  "extracted": {
+    "运营收入/总收益": "effect from 8 December 2025 2 Hutchison Telecommunications Hong Kong Holdings Limited Financial Highlights 2025 2024 (1) HK$ million HK$ million Change Hong Kong operations Total revenue 5,448 4,643 +17% Net customer ser",
+    "服务收入": "on Telecommunications Hong Kong Holdings Limited Financial Highlights 2025 2024 (1) HK$ million HK$ million Change Hong Kong operations Total revenue 5,448 4,643 +17% Net customer service revenue 3,619 3,425 +6% Local se",
+    "EBITDA": "nge Hong Kong operations Total revenue 5,448 4,643 +17% Net customer service revenue 3,619 3,425 +6% Local service revenue 2,764 2,772 – Roaming service revenue 855 653 +31% Total EBITDA (2) 1,508 1,511 – Total EBIT (3) ",
+    "净利润": "g service revenue 855 653 +31% Total EBITDA (2) 1,508 1,511 – Total EBIT (3) 18 17 +6% Profit from Hong Kong operations 18 31 –42% Loss from Macau operations (43) (25) –72% (Loss)/profit attributable to shareholders (25)",
+    "客户数/用户数": "nt, the Group is progressing towards 5.5G. In 2025, HTHKH introduced the “3 for You” brand value, reaffirming our commitment to going beyond conventional telecoms services to meet customers’ diverse everyday needs and st",
+    "5G用户数": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
+    "ARPU": "3% points Postpaid customers’ contribution to net customer service revenue (%) 76% 82% –6% points Monthly churn rate of postpaid customers (%) 0.9% 1.0% +0.1% point Postpaid gross ARPU (HK$) 187 190 –2% Postpaid net ARPU",
+    "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o"
+  },
+  "missing_fields": [],
+  "entity_results": [
+    {
+      "entity": "3HK",
+      "status": "ok",
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports.php",
+        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+      ],
+      "extracted": {
+        "运营收入/总收益": "effect from 8 December 2025 2 Hutchison Telecommunications Hong Kong Holdings Limited Financial Highlights 2025 2024 (1) HK$ million HK$ million Change Hong Kong operations Total revenue 5,448 4,643 +17% Net customer ser",
+        "服务收入": "on Telecommunications Hong Kong Holdings Limited Financial Highlights 2025 2024 (1) HK$ million HK$ million Change Hong Kong operations Total revenue 5,448 4,643 +17% Net customer service revenue 3,619 3,425 +6% Local se",
+        "EBITDA": "nge Hong Kong operations Total revenue 5,448 4,643 +17% Net customer service revenue 3,619 3,425 +6% Local service revenue 2,764 2,772 – Roaming service revenue 855 653 +31% Total EBITDA (2) 1,508 1,511 – Total EBIT (3) ",
+        "净利润": "g service revenue 855 653 +31% Total EBITDA (2) 1,508 1,511 – Total EBIT (3) 18 17 +6% Profit from Hong Kong operations 18 31 –42% Loss from Macau operations (43) (25) –72% (Loss)/profit attributable to shareholders (25)",
+        "客户数/用户数": "nt, the Group is progressing towards 5.5G. In 2025, HTHKH introduced the “3 for You” brand value, reaffirming our commitment to going beyond conventional telecoms services to meet customers’ diverse everyday needs and st",
+        "5G用户数": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
+        "ARPU": "3% points Postpaid customers’ contribution to net customer service revenue (%) 76% 82% –6% points Monthly churn rate of postpaid customers (%) 0.9% 1.0% +0.1% point Postpaid gross ARPU (HK$) 187 190 –2% Postpaid net ARPU",
+        "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 5,
+          "url": "https://www.hthkh.com/en/ir/reports.php",
+          "final_url": "https://www.hthkh.com/en/ir/reports.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
+          "bytes": 38857,
+          "elapsed_seconds": 0.912,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
+          "content_hash": "f6bb516105a812081e67b76d1422a2ba11987c43981efd4f515f01f2f2054fab",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 5,
+          "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+          "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 12551396,
+          "elapsed_seconds": 3.583,
+          "method": "httpx",
+          "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
+          "content_hash": "ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "exchange_public_disclosure",
+          "jurisdiction": "HK",
+          "tos_status": "public_disclosure",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        }
+      ]
+    },
+    {
+      "entity": "Hutchison",
+      "status": "ok",
+      "source_urls": [
+        "https://www.hthkh.com/en/ir/reports.php",
+        "https://m.hthkh.com/en/ir/presentations.php",
+        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
+      ],
+      "extracted": {
+        "运营收入/总收益": "effect from 8 December 2025 2 Hutchison Telecommunications Hong Kong Holdings Limited Financial Highlights 2025 2024 (1) HK$ million HK$ million Change Hong Kong operations Total revenue 5,448 4,643 +17% Net customer ser",
+        "服务收入": "on Telecommunications Hong Kong Holdings Limited Financial Highlights 2025 2024 (1) HK$ million HK$ million Change Hong Kong operations Total revenue 5,448 4,643 +17% Net customer service revenue 3,619 3,425 +6% Local se",
+        "EBITDA": "nge Hong Kong operations Total revenue 5,448 4,643 +17% Net customer service revenue 3,619 3,425 +6% Local service revenue 2,764 2,772 – Roaming service revenue 855 653 +31% Total EBITDA (2) 1,508 1,511 – Total EBIT (3) ",
+        "净利润": "g service revenue 855 653 +31% Total EBITDA (2) 1,508 1,511 – Total EBIT (3) 18 17 +6% Profit from Hong Kong operations 18 31 –42% Loss from Macau operations (43) (25) –72% (Loss)/profit attributable to shareholders (25)",
+        "客户数/用户数": "nt, the Group is progressing towards 5.5G. In 2025, HTHKH introduced the “3 for You” brand value, reaffirming our commitment to going beyond conventional telecoms services to meet customers’ diverse everyday needs and st",
+        "5G用户数": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
+        "ARPU": "3% points Postpaid customers’ contribution to net customer service revenue (%) 76% 82% –6% points Monthly churn rate of postpaid customers (%) 0.9% 1.0% +0.1% point Postpaid gross ARPU (HK$) 187 190 –2% Postpaid net ARPU",
+        "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o"
+      },
+      "missing_fields": [],
+      "raw_records": [
+        {
+          "row": 5,
+          "url": "https://www.hthkh.com/en/ir/reports.php",
+          "final_url": "https://www.hthkh.com/en/ir/reports.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
+          "bytes": 38857,
+          "elapsed_seconds": 0.912,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
+          "content_hash": "f6bb516105a812081e67b76d1422a2ba11987c43981efd4f515f01f2f2054fab",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 5,
+          "url": "https://m.hthkh.com/en/ir/presentations.php",
+          "final_url": "https://m.hthkh.com/en/ir/presentations.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "bytes": 24989,
+          "elapsed_seconds": 0.555,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 08 Aug [REDACTED_PHONE_OR_ID] Interim Results Presentation 14 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 05 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 29 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 25 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 27 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 25 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 01 Aug 2017 Transcript : Ver",
+          "content_hash": "1ab5de7214d2f5596e955a5a793484ec147061f615f44fd7851856f2a9063a61",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 5,
+          "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+          "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+          "status": 200,
+          "content_type": "application/pdf",
+          "title": "PDF extracted by pdftotext",
+          "bytes": 12551396,
+          "elapsed_seconds": 3.583,
+          "method": "httpx",
+          "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
+          "content_hash": "ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "exchange_public_disclosure",
+          "jurisdiction": "HK",
+          "tos_status": "public_disclosure",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        }
+      ]
+    }
+  ],
+  "entity_missing": [],
+  "raw_records": [
+    {
+      "row": 5,
+      "url": "https://www.hthkh.com/en/ir/reports.php",
+      "final_url": "https://www.hthkh.com/en/ir/reports.php",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
+      "bytes": 38857,
+      "elapsed_seconds": 0.912,
+      "method": "httpx",
+      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
+      "content_hash": "f6bb516105a812081e67b76d1422a2ba11987c43981efd4f515f01f2f2054fab",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "3HK",
+        "Hutchison"
+      ]
+    },
+    {
+      "row": 5,
+      "url": "https://m.hthkh.com/en/ir/presentations.php",
+      "final_url": "https://m.hthkh.com/en/ir/presentations.php",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+      "bytes": 24989,
+      "elapsed_seconds": 0.555,
+      "method": "httpx",
+      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 08 Aug [REDACTED_PHONE_OR_ID] Interim Results Presentation 14 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 05 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 29 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 25 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 27 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 25 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 01 Aug 2017 Transcript : Ver",
+      "content_hash": "1ab5de7214d2f5596e955a5a793484ec147061f615f44fd7851856f2a9063a61",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "Hutchison"
+      ]
+    },
+    {
+      "row": 5,
+      "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+      "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 12551396,
+      "elapsed_seconds": 3.583,
+      "method": "httpx",
+      "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
+      "content_hash": "ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b",
+      "error": "",
+      "source_policy": "allow",
+      "source_type": "exchange_public_disclosure",
+      "jurisdiction": "HK",
+      "tos_status": "public_disclosure",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "3HK",
+        "Hutchison"
+      ]
+    }
+  ],
+  "fetched_at": "2026-05-27T08:43:27.765343+00:00",
+  "fetched_at_hkt": "2026-05-27T16:43:27.765396+08:00"
+}
