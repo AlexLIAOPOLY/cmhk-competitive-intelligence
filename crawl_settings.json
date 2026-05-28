@@ -1,0 +1,508 @@
+{
+  "version": 1,
+  "updatedAt": "2026-05-28 11:09:25",
+  "rows": {
+    "2": {
+      "enabled": true,
+      "entities": [
+        "HKT",
+        "csl",
+        "1O1O"
+      ],
+      "fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "客户数/用户数",
+        "5G用户数",
+        "资本开支",
+        "宽频线数/家宽用户数",
+        "ARPU"
+      ]
+    },
+    "3": {
+      "enabled": true,
+      "entities": [
+        "HKT",
+        "csl",
+        "1O1O"
+      ],
+      "fields": [
+        "5G套餐",
+        "产品规格",
+        "合约期",
+        "资费",
+        "增值服务",
+        "家宽套餐",
+        "企业专线",
+        "漫游",
+        "促销折扣"
+      ]
+    },
+    "4": {
+      "enabled": true,
+      "entities": [
+        "HKT",
+        "csl",
+        "1O1O"
+      ],
+      "fields": [
+        "战略合作",
+        "中标",
+        "投资并购",
+        "5G-A",
+        "网络API",
+        "边缘计算",
+        "数据中心",
+        "高管人事"
+      ]
+    },
+    "5": {
+      "enabled": true,
+      "entities": [
+        "3HK",
+        "Hutchison"
+      ],
+      "fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "客户数/用户数",
+        "5G用户数",
+        "ARPU",
+        "资本开支"
+      ]
+    },
+    "6": {
+      "enabled": true,
+      "entities": [
+        "3HK",
+        "Hutchison"
+      ],
+      "fields": [
+        "5G套餐",
+        "SoSIM/Mo+",
+        "企业方案",
+        "漫游",
+        "促销折扣"
+      ]
+    },
+    "7": {
+      "enabled": true,
+      "entities": [
+        "3HK",
+        "Hutchison"
+      ],
+      "fields": [
+        "战略合作",
+        "中标",
+        "5G-A",
+        "企业ICT",
+        "IoT",
+        "区域动作"
+      ]
+    },
+    "8": {
+      "enabled": true,
+      "entities": [
+        "SmarTone"
+      ],
+      "fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "客户数/用户数",
+        "5G用户数",
+        "ARPU",
+        "资本开支"
+      ]
+    },
+    "9": {
+      "enabled": true,
+      "entities": [
+        "SmarTone"
+      ],
+      "fields": [
+        "5G套餐",
+        "家宽",
+        "企业方案",
+        "漫游",
+        "促销折扣"
+      ]
+    },
+    "10": {
+      "enabled": true,
+      "entities": [
+        "SmarTone"
+      ],
+      "fields": [
+        "战略合作",
+        "中标",
+        "5G-A",
+        "家宽布局",
+        "区域动作"
+      ]
+    },
+    "11": {
+      "enabled": true,
+      "entities": [
+        "HKBN"
+      ],
+      "fields": [
+        "总收入",
+        "板块收入分拆",
+        "EBITDA",
+        "净利润",
+        "融资成本",
+        "资本开支",
+        "商誉",
+        "资产负债率",
+        "用户数",
+        "商业楼宇覆盖率"
+      ]
+    },
+    "12": {
+      "enabled": true,
+      "entities": [
+        "HKBN"
+      ],
+      "fields": [
+        "业绩报告公告",
+        "董事会",
+        "股东大会",
+        "派息",
+        "持续性关联交易"
+      ]
+    },
+    "13": {
+      "enabled": true,
+      "entities": [
+        "HKBN"
+      ],
+      "fields": [
+        "股价异动"
+      ]
+    },
+    "14": {
+      "enabled": true,
+      "entities": [
+        "HKBN"
+      ],
+      "fields": [
+        "宽带套餐",
+        "企业ICT",
+        "云/安全",
+        "融合产品",
+        "重大合作",
+        "区域布局"
+      ]
+    },
+    "15": {
+      "enabled": true,
+      "entities": [
+        "HGC"
+      ],
+      "fields": [
+        "家宽用户数",
+        "网络覆盖",
+        "企业通信",
+        "跨境链路",
+        "数据中心",
+        "云网产品"
+      ]
+    },
+    "16": {
+      "enabled": true,
+      "entities": [
+        "HGC"
+      ],
+      "fields": [
+        "海缆/跨境链路",
+        "数据中心",
+        "企业网络",
+        "合作项目"
+      ]
+    },
+    "17": {
+      "enabled": true,
+      "entities": [
+        "iCable"
+      ],
+      "fields": [
+        "运营收入/总收益",
+        "服务收入",
+        "EBITDA",
+        "净利润",
+        "客户数/用户数",
+        "5G用户数",
+        "ARPU",
+        "资本开支",
+        "宽频线数/家宽用户数",
+        "网络覆盖"
+      ]
+    },
+    "18": {
+      "enabled": true,
+      "entities": [
+        "iCable"
+      ],
+      "fields": [
+        "宽带套餐",
+        "电讯业务战略合作"
+      ]
+    },
+    "19": {
+      "enabled": true,
+      "entities": [
+        "Singtel",
+        "Telstra",
+        "SK Telecom",
+        "KT",
+        "NTT Docomo",
+        "KDDI",
+        "SoftBank",
+        "Jio",
+        "Airtel"
+      ],
+      "fields": [
+        "AI",
+        "5G-A",
+        "云",
+        "企业ICT",
+        "Capex方向",
+        "Singtel",
+        "Telstra",
+        "SK Telecom",
+        "KT",
+        "NTT Docomo",
+        "KDDI",
+        "SoftBank",
+        "Jio",
+        "Airtel"
+      ]
+    },
+    "20": {
+      "enabled": true,
+      "entities": [
+        "Vodafone",
+        "Deutsche Telekom",
+        "Orange",
+        "Telefonica",
+        "BT/EE",
+        "TIM",
+        "Verizon",
+        "AT&T",
+        "T-Mobile US"
+      ],
+      "fields": [
+        "网络API",
+        "Open RAN",
+        "边缘计算",
+        "FWA",
+        "AI网络",
+        "Vodafone",
+        "Deutsche Telekom",
+        "Orange",
+        "Telefonica",
+        "BT/EE",
+        "TIM",
+        "Verizon",
+        "AT&T",
+        "T-Mobile US"
+      ]
+    },
+    "21": {
+      "enabled": true,
+      "entities": [
+        "e&",
+        "stc",
+        "中国移动",
+        "中国电信",
+        "中国联通"
+      ],
+      "fields": [
+        "AI",
+        "算力网络",
+        "云",
+        "DICT",
+        "5G-A",
+        "资本开支",
+        "e&",
+        "stc",
+        "中国移动",
+        "中国电信",
+        "中国联通"
+      ]
+    },
+    "22": {
+      "enabled": true,
+      "entities": [
+        "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
+      ],
+      "fields": [
+        "施政报告",
+        "战略规划",
+        "区域发展",
+        "重大投资"
+      ]
+    },
+    "23": {
+      "enabled": true,
+      "entities": [
+        "经济资讯（和30行可能存在重合，请Alex考虑是否合并）"
+      ],
+      "fields": [
+        "人口",
+        "零售额",
+        "PMI",
+        "失业率"
+      ]
+    },
+    "24": {
+      "enabled": true,
+      "entities": [
+        "行业资讯"
+      ],
+      "fields": [
+        "跨境贸易",
+        "科技创投",
+        "人工智能",
+        "低空经济",
+        "Web3"
+      ]
+    },
+    "25": {
+      "enabled": true,
+      "entities": [
+        "社会资讯"
+      ],
+      "fields": [
+        "本地生活咨询"
+      ]
+    },
+    "26": {
+      "enabled": true,
+      "entities": [
+        "香港本地监管",
+        "政策"
+      ],
+      "fields": [
+        "OFCA政策",
+        "频谱/牌照",
+        "服务质量",
+        "网络安全",
+        "PCPD/AI指引",
+        "数据跨境"
+      ]
+    },
+    "27": {
+      "enabled": true,
+      "entities": [
+        "重点国家",
+        "地区AI与数据监管"
+      ],
+      "fields": [
+        "EU AI Act",
+        "EU Data Act",
+        "GDPR/DSA",
+        "新加坡AI治理",
+        "隐私法规"
+      ]
+    },
+    "28": {
+      "enabled": true,
+      "entities": [
+        "通信监管机构"
+      ],
+      "fields": [
+        "频谱拍卖",
+        "5G/6G规划",
+        "网络共享",
+        "覆盖义务",
+        "网络安全",
+        "卫星通信",
+        "携号转网/漫游"
+      ]
+    },
+    "29": {
+      "enabled": true,
+      "entities": [
+        "国际组织",
+        "行业权威机构"
+      ],
+      "fields": [
+        "ITU数字发展",
+        "宽带指标",
+        "OECD数字经济",
+        "World Bank/IMF宏观"
+      ]
+    },
+    "30": {
+      "enabled": true,
+      "entities": [
+        "宏观经济",
+        "人口",
+        "消费"
+      ],
+      "fields": [
+        "访港旅客",
+        "人口",
+        "零售",
+        "失业率",
+        "CPI",
+        "利率",
+        "汇率"
+      ]
+    },
+    "31": {
+      "enabled": true,
+      "entities": [
+        "行业资讯"
+      ],
+      "fields": [
+        "技术动态",
+        "市场趋势",
+        "企业重大合作",
+        "前沿产品"
+      ]
+    },
+    "32": {
+      "enabled": true,
+      "entities": [
+        "行业资讯"
+      ],
+      "fields": [
+        "收购",
+        "融资",
+        "合资",
+        "股权交易"
+      ]
+    },
+    "33": {
+      "enabled": true,
+      "entities": [
+        "政治新闻"
+      ],
+      "fields": [
+        "地缘政治",
+        "经济",
+        "重大政策/声明"
+      ]
+    },
+    "34": {
+      "enabled": true,
+      "entities": [
+        "宏观指标"
+      ],
+      "fields": [
+        "GDP",
+        "进出口",
+        "失业率",
+        "旅游业数据"
+      ]
+    }
+  }
+}
