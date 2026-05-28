@@ -76,7 +76,11 @@ def get_agent():
     api_key = (os.environ.get("OPENAI_API_KEY") or str(config.get("api_key") or "")).strip()
     
     provider = str(config.get("provider") or "deepseek").lower()
-    model_name = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-v4-flash")
+    model_name = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-chat")
+    # 强制将 deepseek-reasoner 降级为 deepseek-chat，因为 reasoner 在多轮 Tool Call 中会报 reasoning_content 丢失的 API 400 错误
+    if "reasoner" in model_name.lower():
+        model_name = "deepseek-chat"
+        
     base_url = str(config.get("base_url") or "https://api.deepseek.com").rstrip("/")
     
     llm = ChatDeepSeek(
