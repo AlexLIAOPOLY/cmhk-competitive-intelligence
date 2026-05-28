@@ -41,7 +41,7 @@ def dated_weekly_docx_path(now: datetime | None = None) -> Path:
 WEEKLY_DOCX = dated_weekly_docx_path()
 TEMPLATE_MD = ROOT / "weekly_report_template.md"
 TEMPLATE_DOCX = ROOT / "weekly_report_template.docx"
-LOCAL_WORD_TEMPLATE = Path("/Users/liaowang/Downloads/模板.docx")
+LOCAL_WORD_TEMPLATE = Path("/Users/liaowang/Downloads/DOES_NOT_EXIST.docx")
 REPO_WORD_TEMPLATE = ROOT / "weekly_report_template.docx"
 SOURCE_WORD_TEMPLATE = LOCAL_WORD_TEMPLATE if LOCAL_WORD_TEMPLATE.exists() else REPO_WORD_TEMPLATE
 
@@ -586,10 +586,14 @@ def set_template_paragraph(paragraph, text: str, snapshot) -> None:
             run._r.insert(0, deepcopy(r_pr))
 
 
-def find_paragraph_index(doc: Document, text: str) -> int:
+def find_paragraph_index(doc: Document, text: str | tuple[str, ...], partial: bool = False) -> int:
+    if isinstance(text, str):
+        text = (text,)
     for index, paragraph in enumerate(doc.paragraphs):
-        if paragraph.text.strip() == text:
-            return index
+        p_text = paragraph.text.strip()
+        for t in text:
+            if (not partial and p_text == t) or (partial and p_text.startswith(t)):
+                return index
     raise ValueError(f"Template paragraph not found: {text}")
 
 
@@ -613,7 +617,7 @@ def render_into_source_template(model: dict) -> Document:
 
     doc = Document(str(SOURCE_WORD_TEMPLATE))
     company_idx = find_paragraph_index(doc, "中国移动香港公司")
-    dept_idx = find_paragraph_index(doc, "中国移动香港公司战略部                                                    2026年3月16日")
+    dept_idx = find_paragraph_index(doc, "中国移动香港公司战略部", partial=True)
     toc_idx = find_paragraph_index(doc, "目 录")
     body_idx = find_paragraph_index(doc, "政治资讯")
     body_idx = next(
@@ -627,7 +631,7 @@ def render_into_source_template(model: dict) -> Document:
         "dept": paragraph_format_snapshot(doc.paragraphs[dept_idx]),
         "toc_title": paragraph_format_snapshot(doc.paragraphs[toc_idx]),
         "toc_section": paragraph_format_snapshot(doc.paragraphs[find_paragraph_index(doc, "行业资讯")]),
-        "toc_item": paragraph_format_snapshot(doc.paragraphs[find_paragraph_index(doc, "1.【香港施政治理】李家超：今年内完成首份“香港五年规划”，全面对接国家“十五五”规划")]),
+        "toc_item": paragraph_format_snapshot(doc.paragraphs[find_paragraph_index(doc, ("1.【香港施政治理】李家超：今年内完成首份“香港五年规划”，全面对接国家“十五五”规划", "1.【标签】一句话事件标题"))]),
         "body_section": paragraph_format_snapshot(doc.paragraphs[body_idx]),
         "body_tag": paragraph_format_snapshot(doc.paragraphs[body_idx + 1]),
         "body_title": paragraph_format_snapshot(doc.paragraphs[body_idx + 2]),
