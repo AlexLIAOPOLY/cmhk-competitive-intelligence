@@ -1,7 +1,7 @@
 {
   "row": 32,
   "need": "收购、融资、合资、股权交易等",
-  "status": "partial",
+  "status": "ok",
   "object": "行业资讯",
   "entities": [
     "行业资讯"
@@ -14,7 +14,9 @@
   ],
   "source_urls": [
     "https://www.investhk.gov.hk/en/news/",
-    "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval"
+    "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+    "https://www.totaltele.com/",
+    "https://www.mobileworldlive.com/"
   ],
   "attempted_urls": [
     "https://www.investhk.gov.hk/en/news/",
@@ -26,27 +28,27 @@
   "extracted": {
     "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
     "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
-    "股权交易": "dified on 21.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
+    "合资": "k Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersecurity coalition. ",
+    "股权交易": "dified on 27.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
   },
-  "missing_fields": [
-    "合资"
-  ],
+  "missing_fields": [],
   "entity_results": [
     {
       "entity": "行业资讯",
-      "status": "partial",
+      "status": "ok",
       "source_urls": [
         "https://www.investhk.gov.hk/en/news/",
-        "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval"
+        "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
+        "https://www.totaltele.com/",
+        "https://www.mobileworldlive.com/"
       ],
       "extracted": {
         "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
         "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
-        "股权交易": "dified on 21.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
+        "合资": "k Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersecurity coalition. ",
+        "股权交易": "dified on 27.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
       },
-      "missing_fields": [
-        "合资"
-      ],
+      "missing_fields": [],
       "raw_records": [
         {
           "row": 32,
@@ -56,10 +58,10 @@
           "content_type": "text/html",
           "title": "News | InvestHK",
           "bytes": 128425,
-          "elapsed_seconds": 0.472,
+          "elapsed_seconds": 0.273,
           "method": "httpx",
           "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News InvestHK Go Global Press Rel",
-          "content_hash": "6b620f9a55032c85385ca8cb76053281e713110adcbaa6ef976c73340f1bec39",
+          "content_hash": "3e0ffeb8211b2d269cfc983481f86e9d571c87b66d7df1c64b5ef49fc755f756",
           "error": "",
           "source_policy": "allow",
           "source_type": "government_public_info",
@@ -79,8 +81,8 @@
           "status": 200,
           "content_type": "text/html",
           "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
-          "bytes": 395829,
-          "elapsed_seconds": 2.922,
+          "bytes": 399203,
+          "elapsed_seconds": 1.515,
           "method": "httpx",
           "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
           "content_hash": "1113f5336000b68a261dc31c06dcc957b51c6545e2f71494a9df0f440ce6f3d0",
@@ -95,13 +97,59 @@
           "entity_hits": [
             "行业资讯"
           ]
+        },
+        {
+          "row": 32,
+          "url": "https://www.totaltele.com/",
+          "final_url": "https://totaltele.com/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Total Telecom - News, analysis and events for global telecoms",
+          "bytes": 651189,
+          "elapsed_seconds": 0.149,
+          "method": "httpx",
+          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page UK’s fibre fiesta sees CityFibre’s Project Gigabit contracts ‘re-scoped’ Posted by Harry Baldock | May 26, 2026 The Persian Gulf topped our 2026 cable risk index. Here’s what it means for operators and what they can do about i",
+          "content_hash": "f05fae2695de79ebcb7cae713eeb8497a4eb15eef15870f762b03733b9fc53dc",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "media",
+          "jurisdiction": "UK",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 32,
+          "url": "https://www.mobileworldlive.com/",
+          "final_url": "https://www.mobileworldlive.com/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Mobile World Live - News & Insights for the Global Mobile...",
+          "bytes": 242014,
+          "elapsed_seconds": 0.128,
+          "method": "httpx",
+          "text_sample": "Mobile World Live - News & Insights for the Global Mobile... Skip to content 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs ES FR 中文 ES FR 中文 Topics 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More... View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs Subscribe Homepage Featured Posts Network Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersec",
+          "content_hash": "3db8ced25a6da68d5d7b3bcba1be39d1826c934d8c73180ea91c8c709b7e3527",
+          "error": "",
+          "source_policy": "allow",
+          "source_type": "media",
+          "jurisdiction": "unknown",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
         }
       ]
     }
   ],
-  "entity_missing": [
-    "行业资讯:合资"
-  ],
+  "entity_missing": [],
   "raw_records": [
     {
       "row": 32,
@@ -111,10 +159,10 @@
       "content_type": "text/html",
       "title": "News | InvestHK",
       "bytes": 128425,
-      "elapsed_seconds": 0.472,
+      "elapsed_seconds": 0.273,
       "method": "httpx",
       "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News InvestHK Go Global Press Rel",
-      "content_hash": "6b620f9a55032c85385ca8cb76053281e713110adcbaa6ef976c73340f1bec39",
+      "content_hash": "3e0ffeb8211b2d269cfc983481f86e9d571c87b66d7df1c64b5ef49fc755f756",
       "error": "",
       "source_policy": "allow",
       "source_type": "government_public_info",
@@ -134,8 +182,8 @@
       "status": 200,
       "content_type": "text/html",
       "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
-      "bytes": 395829,
-      "elapsed_seconds": 2.922,
+      "bytes": 399203,
+      "elapsed_seconds": 1.515,
       "method": "httpx",
       "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
       "content_hash": "1113f5336000b68a261dc31c06dcc957b51c6545e2f71494a9df0f440ce6f3d0",
@@ -155,69 +203,73 @@
       "row": 32,
       "url": "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
       "final_url": "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
-      "status": 0,
-      "content_type": "",
-      "title": "",
-      "bytes": 0,
-      "elapsed_seconds": 0.0,
-      "method": "skipped",
-      "text_sample": "",
-      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "error": "robots.txt does not allow this URL or robots could not be verified",
+      "status": 403,
+      "content_type": "text/html",
+      "title": "Access Denied",
+      "bytes": 450,
+      "elapsed_seconds": 0.155,
+      "method": "httpx",
+      "text_sample": "Access Denied Access Denied You don't have permission to access \"http://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition\" on this server. Reference #18.6d2fc017.[REDACTED_PHONE_OR_ID].1a887fb9 https://errors.edgesuite.net/18.6d2fc017.[REDACTED_PHONE_OR_ID].1a887fb9",
+      "content_hash": "7db1fd25319b61775483d8393e7bb58f73c66e90a50ea297e17f3893e7f96df2",
+      "error": "",
       "source_policy": "allow",
       "source_type": "company_official",
       "jurisdiction": "US",
       "tos_status": "requires_periodic_review",
       "robots_status": "robots_unavailable",
-      "robots_allowed": false,
-      "skip_reason": "robots.txt does not allow this URL or robots could not be verified",
+      "robots_allowed": true,
+      "skip_reason": "",
       "entity_hits": []
     },
     {
       "row": 32,
       "url": "https://www.totaltele.com/",
-      "final_url": "https://www.totaltele.com/",
-      "status": 0,
-      "content_type": "",
-      "title": "",
-      "bytes": 0,
-      "elapsed_seconds": 0.0,
-      "method": "skipped",
-      "text_sample": "",
-      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "error": "source policy is deny",
-      "source_policy": "deny",
+      "final_url": "https://totaltele.com/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Total Telecom - News, analysis and events for global telecoms",
+      "bytes": 651189,
+      "elapsed_seconds": 0.149,
+      "method": "httpx",
+      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page UK’s fibre fiesta sees CityFibre’s Project Gigabit contracts ‘re-scoped’ Posted by Harry Baldock | May 26, 2026 The Persian Gulf topped our 2026 cable risk index. Here’s what it means for operators and what they can do about i",
+      "content_hash": "f05fae2695de79ebcb7cae713eeb8497a4eb15eef15870f762b03733b9fc53dc",
+      "error": "",
+      "source_policy": "allow",
       "source_type": "media",
       "jurisdiction": "UK",
-      "tos_status": "not_approved",
-      "robots_status": "not_checked",
-      "robots_allowed": false,
-      "skip_reason": "source policy is deny",
-      "entity_hits": []
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
     },
     {
       "row": 32,
       "url": "https://www.mobileworldlive.com/",
       "final_url": "https://www.mobileworldlive.com/",
-      "status": 0,
-      "content_type": "",
-      "title": "",
-      "bytes": 0,
-      "elapsed_seconds": 0.0,
-      "method": "skipped",
-      "text_sample": "",
-      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "error": "source policy is deny",
-      "source_policy": "deny",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Mobile World Live - News & Insights for the Global Mobile...",
+      "bytes": 242014,
+      "elapsed_seconds": 0.128,
+      "method": "httpx",
+      "text_sample": "Mobile World Live - News & Insights for the Global Mobile... Skip to content 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs ES FR 中文 ES FR 中文 Topics 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More... View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs Subscribe Homepage Featured Posts Network Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersec",
+      "content_hash": "3db8ced25a6da68d5d7b3bcba1be39d1826c934d8c73180ea91c8c709b7e3527",
+      "error": "",
+      "source_policy": "allow",
       "source_type": "media",
       "jurisdiction": "unknown",
-      "tos_status": "not_approved",
-      "robots_status": "not_checked",
-      "robots_allowed": false,
-      "skip_reason": "source policy is deny",
-      "entity_hits": []
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
     }
   ],
-  "fetched_at": "2026-05-27T08:46:06.124792+00:00",
-  "fetched_at_hkt": "2026-05-27T16:46:06.124802+08:00"
+  "fetched_at": "2026-05-28T07:26:36.841203+00:00",
+  "fetched_at_hkt": "2026-05-28T15:26:36.841221+08:00"
 }

@@ -2,21 +2,25 @@ const state = {
   busy: false,
   chatBusy: false,
   outputs: [],
+  editingFile: null,
+  multiSelect: false,
   selectedFiles: new Set(),
-  fileType: "all",
-  fileSearch: "",
-  fileSort: "mtime-desc",
 };
 
 const els = {
   headerTime: document.querySelector("#headerTime"),
   statusSummary: document.querySelector("#statusSummary"),
   fileList: document.getElementById("fileList"),
-  deleteSelectedButton: document.getElementById("deleteSelectedButton"),
-  typeFilter: document.getElementById("typeFilter"),
-  fileSearchInput: document.querySelector("#fileSearchInput"),
-  fileSortSelect: document.querySelector("#fileSortSelect"),
   fileCountText: document.querySelector("#fileCountText"),
+  multiSelectButton: document.querySelector("#multiSelectButton"),
+  deleteSelectedButton: document.querySelector("#deleteSelectedButton"),
+  fileEditModal: document.querySelector("#fileEditModal"),
+  fileEditForm: document.querySelector("#fileEditForm"),
+  closeFileEdit: document.querySelector("#closeFileEdit"),
+  cancelFileEdit: document.querySelector("#cancelFileEdit"),
+  editFileName: document.querySelector("#editFileName"),
+  editFileNote: document.querySelector("#editFileNote"),
+  fileEditStatus: document.querySelector("#fileEditStatus"),
   logBox: document.querySelector("#logBox"),
   generateButtons: [
     document.querySelector("#generateButton"),
@@ -90,55 +94,50 @@ function fileType(fileName) {
   const getIcon = (paths) => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
   const base = '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline>';
   const wordSvg = base + '<line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line>';
-  const htmlSvg = base + '<polyline points="10 13 8 15 10 17"></polyline><polyline points="14 13 16 15 14 17"></polyline>';
-  const mdSvg = base + '<line x1="12" y1="11" x2="12" y2="17"></line><polyline points="9 14 12 17 15 14"></polyline>';
 
-  if (fileName.endsWith(".docx")) return { label: "Word 文档", icon: getIcon(wordSvg), className: "type-docx" };
-  if (fileName.endsWith(".html")) return { label: "HTML 报告", icon: getIcon(htmlSvg), className: "type-html" };
-  return { label: "Markdown", icon: getIcon(mdSvg), className: "type-md" };
+  return { label: "Word 文档", icon: getIcon(wordSvg), className: "type-docx" };
+}
+
+function iconSvg(name) {
+  const icons = {
+    edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>',
+    trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+  };
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ""}</svg>`;
 }
 
 function fileDescription(file) {
-  let desc = "";
-  if (file.name === "weekly_report.docx") desc = "周报（Word 正式版）";
-  else if (file.name === "weekly_report_from_word_template.docx") desc = "周报（Word 模板版）";
-  else if (file.name === "weekly_report.html") desc = "周报（HTML 预览）";
-  else desc = "周报（Markdown 版本）";
+  let desc = file.note ? escapeHtml(file.note) : "正式 Word 周报";
   
   if (file.is_archive) {
-    desc = `<span style="color:var(--orange)">[历史归档: ${file.archive_batch}]</span> ` + desc;
+    desc = `<span class="archive-label">历史归档 ${file.archive_batch}</span> ` + desc;
   }
   return desc;
 }
 
 function filteredOutputs() {
-  const query = state.fileSearch.trim().toLowerCase();
-  const files = state.outputs
-    .filter((file) => {
-      if (state.fileType !== "all" && !file.name.endsWith(`.${state.fileType}`)) return false;
-      if (!query) return true;
-      return `${file.name} ${fileDescription(file)}`.toLowerCase().includes(query);
-    })
-    .sort((a, b) => {
-      if (state.fileSort === "mtime-asc") return a.mtime - b.mtime;
-      if (state.fileSort === "name-asc") return a.name.localeCompare(b.name);
-      return b.mtime - a.mtime;
-    });
-  return files;
+  return [...state.outputs].sort((a, b) => b.mtime - a.mtime);
 }
 
 function renderFileList() {
   const files = filteredOutputs();
-  els.fileCountText.textContent = `${files.length} / ${state.outputs.length} 个文件`;
+  const selectedCount = state.selectedFiles.size;
+  els.fileCountText.textContent = state.multiSelect ? `选择模式 · 已选 ${selectedCount} / ${files.length}` : `${files.length} 个文件`;
+  if (els.multiSelectButton) {
+    els.multiSelectButton.classList.toggle("is-active", state.multiSelect);
+  }
+  if (els.deleteSelectedButton) {
+    els.deleteSelectedButton.hidden = !state.multiSelect;
+    els.deleteSelectedButton.disabled = selectedCount === 0;
+  }
+  const selectColumn = state.multiSelect ? "<span></span>" : "";
   if (!state.outputs.length) {
     els.fileList.innerHTML = `
       <div class="file-header">
-        <span style="flex:0 0 40px;text-align:center;"><input type="checkbox" disabled></span>
-        <span>文件类型</span><span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
+        ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
       </div>
       <div class="file-row">
-        <span style="flex:0 0 40px;"></span>
-        <strong>暂无输出</strong><span>请先生成周报</span><span>-</span><span>-</span><span>-</span>
+        ${selectColumn}<strong>暂无周报</strong><span>请先生成 Word 周报</span><span>-</span><span>-</span>
       </div>
     `;
     return;
@@ -146,70 +145,62 @@ function renderFileList() {
   if (!files.length) {
     els.fileList.innerHTML = `
       <div class="file-header">
-        <span style="flex:0 0 40px;text-align:center;"><input type="checkbox" disabled></span>
-        <span>文件类型</span><span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
+        ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
       </div>
       <div class="file-row">
-        <span style="flex:0 0 40px;"></span>
-        <strong>无匹配结果</strong><span>请尝试更改过滤条件</span><span>-</span><span>-</span><span>-</span>
+        ${selectColumn}<strong>无周报文件</strong><span>请重新生成</span><span>-</span><span>-</span>
       </div>
     `;
     return;
   }
 
   let html = `
-    <div class="file-header">
-      <span style="flex:0 0 40px;text-align:center;"><input type="checkbox" id="selectAllCheckbox"></span>
-      <span>文件类型</span><span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
+    <div class="file-header ${state.multiSelect ? "with-select" : ""}">
+      ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
     </div>
   `;
   files.forEach((file) => {
     const type = fileType(file.name);
+    const safePath = escapeHtml(file.path_str);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
     html += `
-      <div class="file-row ${type.className}">
-        <span style="flex:0 0 40px;text-align:center;"><input type="checkbox" class="file-checkbox" data-path="${file.path_str}" ${checked}></span>
-        <span class="file-type-cell">${type.icon} ${type.label}</span>
-        <span class="file-name-cell" title="${file.name}">${file.name}</span>
+      <div class="file-row ${type.className} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
+        ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
+        <span class="file-name-cell" title="${file.name}">${type.icon} ${file.name}</span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
+          <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
+          <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
           <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
         </span>
       </div>
     `;
   });
   els.fileList.innerHTML = html;
-  
-  const selectAll = document.getElementById("selectAllCheckbox");
-  const checkboxes = document.querySelectorAll(".file-checkbox");
-  
-  const updateDeleteBtn = () => {
-    els.deleteSelectedButton.disabled = state.selectedFiles.size === 0;
-    els.deleteSelectedButton.textContent = state.selectedFiles.size > 0 ? `批量删除 (${state.selectedFiles.size})` : "批量删除";
-  };
-  
-  if (selectAll) {
-    selectAll.checked = files.length > 0 && files.every(f => state.selectedFiles.has(f.path_str));
-    selectAll.addEventListener("change", (e) => {
-      files.forEach(f => {
-        if (e.target.checked) state.selectedFiles.add(f.path_str);
-        else state.selectedFiles.delete(f.path_str);
-      });
+  els.fileList.querySelectorAll(".edit-file-button").forEach((button) => {
+    button.addEventListener("click", () => openFileEditor(button.dataset.path));
+  });
+  els.fileList.querySelectorAll(".delete-file-button").forEach((button) => {
+    button.addEventListener("click", () => deleteFiles([button.dataset.path]));
+  });
+  els.fileList.querySelectorAll(".file-checkbox").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) state.selectedFiles.add(checkbox.dataset.path);
+      else state.selectedFiles.delete(checkbox.dataset.path);
       renderFileList();
     });
-  }
-  
-  checkboxes.forEach(cb => {
-    cb.addEventListener("change", (e) => {
-      if (e.target.checked) state.selectedFiles.add(e.target.dataset.path);
-      else state.selectedFiles.delete(e.target.dataset.path);
-      updateDeleteBtn();
-      if (selectAll) selectAll.checked = files.length > 0 && files.every(f => state.selectedFiles.has(f.path_str));
+  });
+  els.fileList.querySelectorAll(".file-row.with-select").forEach((row) => {
+    row.addEventListener("click", (event) => {
+      if (event.target.closest("button, a, input")) return;
+      const path = row.dataset.path;
+      if (!path) return;
+      if (state.selectedFiles.has(path)) state.selectedFiles.delete(path);
+      else state.selectedFiles.add(path);
+      renderFileList();
     });
   });
-  
-  updateDeleteBtn();
 }
 
 function renderStatus(status) {
@@ -218,23 +209,22 @@ function renderStatus(status) {
     els.aiConfigStatus.textContent = `${status.ai.provider} / ${status.ai.model} / ${status.ai.base_url} / ${status.ai.has_api_key ? "API Key 已保存" : "未保存 API Key"}`;
   }
   state.outputs = status.outputs || [];
-  
-  const existingPaths = new Set(state.outputs.map(o => o.path_str));
-  for (const p of state.selectedFiles) {
-    if (!existingPaths.has(p)) state.selectedFiles.delete(p);
+  const existing = new Set(state.outputs.map((item) => item.path_str));
+  for (const path of state.selectedFiles) {
+    if (!existing.has(path)) state.selectedFiles.delete(path);
   }
-  
   renderFileList();
 }
 
 function appendLog(text) {
-  els.logBox.textContent += text;
+  els.logBox.appendChild(document.createTextNode(text));
   els.logBox.scrollTop = els.logBox.scrollHeight;
   localStorage.setItem("appLogs", els.logBox.textContent);
 }
 
 function setLog(text) {
-  els.logBox.textContent = text;
+  els.logBox.innerHTML = "";
+  els.logBox.appendChild(document.createTextNode(text));
   els.logBox.scrollTop = els.logBox.scrollHeight;
   localStorage.setItem("appLogs", text);
 }
@@ -300,6 +290,59 @@ async function fetchStatus() {
   renderStatus(data.status);
 }
 
+function openFileEditor(pathStr) {
+  const file = state.outputs.find((item) => item.path_str === pathStr);
+  if (!file) return;
+  state.editingFile = file;
+  els.editFileName.value = file.name;
+  els.editFileNote.value = file.note || "";
+  els.fileEditStatus.textContent = "";
+  els.fileEditModal.hidden = false;
+  setTimeout(() => els.editFileName.focus(), 0);
+}
+
+function closeFileEditor() {
+  els.fileEditModal.hidden = true;
+  state.editingFile = null;
+}
+
+async function saveFileEdit() {
+  if (!state.editingFile) return;
+  els.fileEditStatus.textContent = "正在保存...";
+  const response = await fetch("/api/report-file", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      path: state.editingFile.path_str,
+      name: els.editFileName.value.trim(),
+      note: els.editFileNote.value.trim(),
+    }),
+  });
+  const data = await response.json();
+  if (!data.ok) throw new Error(data.error || "保存失败");
+  renderStatus(data.status);
+  closeFileEditor();
+}
+
+async function deleteFiles(paths) {
+  const list = paths.filter(Boolean);
+  if (!list.length) return;
+  if (!confirm(`确定删除选中的 ${list.length} 个周报文件吗？此操作不可恢复。`)) return;
+  const response = await fetch("/api/delete-files", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paths: list }),
+  });
+  const data = await response.json();
+  if (!data.ok) {
+    alert(data.error || "删除失败");
+    return;
+  }
+  list.forEach((path) => state.selectedFiles.delete(path));
+  if (!state.selectedFiles.size) state.multiSelect = false;
+  renderStatus(data.status);
+}
+
 async function runCrawl(source = "按钮") {
   setBusy(true, "正在重新爬取");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`);
@@ -325,6 +368,55 @@ async function runCrawl(source = "按钮") {
           if (event.text) {
             appendLog(event.text + "\n");
           }
+        } else if (event.type === "crawl_summary") {
+          const successCount = event.success ? event.success.length : 0;
+          const failedCount = event.failed ? event.failed.length : 0;
+          let html = `<div class="crawl-summary-card">
+            <div class="summary-header">
+              <span class="summary-title">爬取报告汇总</span>
+              <div class="summary-stats">
+                <span class="stat-success">成功: ${successCount}</span>
+                <span class="stat-failed">失败: ${failedCount}</span>
+              </div>
+            </div>`;
+            
+          html += `<details class="summary-details"><summary>查看失败明细 (${failedCount})</summary><div class="details-content">`;
+          if (failedCount > 0) {
+            html += `<table class="summary-table"><tr><th>拦截原因/错误</th><th>URL</th></tr>`;
+            event.failed.forEach(item => {
+              let extraLink = '';
+              if (item.reason.includes('robots.txt')) {
+                try {
+                  const urlObj = new URL(item.url);
+                  const robotsUrl = urlObj.origin + '/robots.txt';
+                  extraLink = `<br><a href="${escapeHtml(robotsUrl)}" target="_blank" style="font-size: 11px; color: #5f6368; margin-top: 4px; display: inline-block;">查看该站点的 robots.txt</a>`;
+                } catch (e) {}
+              }
+              html += `<tr><td><span class="tag-error">${escapeHtml(item.reason)}</span>${extraLink}</td><td><a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.url)}</a></td></tr>`;
+            });
+            html += `</table>`;
+          } else {
+            html += `<p class="empty-msg">所有链接均抓取成功。</p>`;
+          }
+          html += `</div></details>`;
+          
+          html += `<details class="summary-details"><summary>查看成功明细 (${successCount})</summary><div class="details-content">`;
+          if (successCount > 0) {
+            html += `<table class="summary-table"><tr><th>状态</th><th>URL</th></tr>`;
+            event.success.forEach(item => {
+              html += `<tr><td><span class="tag-success">OK</span></td><td><a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.url)}</a></td></tr>`;
+            });
+            html += `</table>`;
+          } else {
+            html += `<p class="empty-msg">未找到成功的链接。</p>`;
+          }
+          html += `</div></details></div>\n`;
+          
+          // Append raw HTML safely since we are creating it
+          const div = document.createElement('div');
+          div.innerHTML = html;
+          els.logBox.appendChild(div);
+          els.logBox.scrollTop = els.logBox.scrollHeight;
         } else if (event.type === "done") {
           appendLog(`\n[爬取结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           renderStatus(event.status);
@@ -356,31 +448,6 @@ async function generateReport(source = "按钮") {
       .join("\n"));
   } catch (error) {
     appendLog(`\n生成失败：${error.message}`);
-  } finally {
-    setBusy(false);
-  }
-}
-
-async function deleteSelectedFiles() {
-  if (state.selectedFiles.size === 0) return;
-  if (!confirm(`确定要彻底删除选中的 ${state.selectedFiles.size} 个文件吗？此操作不可恢复。`)) return;
-  
-  setBusy(true, "正在删除");
-  try {
-    const response = await fetch("/api/delete-files", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paths: Array.from(state.selectedFiles) })
-    });
-    const data = await response.json();
-    if (data.ok) {
-      state.selectedFiles.clear();
-      renderStatus(data.status);
-    } else {
-      alert("删除失败: " + data.error);
-    }
-  } catch (err) {
-    alert("请求异常: " + err.message);
   } finally {
     setBusy(false);
   }
@@ -474,9 +541,10 @@ function markdownToHtml(markdown) {
 }
 
 function setMessageContent(node, content, markdown = false) {
-  const text = node.querySelector(".message-text");
+  const text = node.querySelector(".message-text") || node.querySelector(".markdown-body");
   if (markdown) {
-    let html = markdownToHtml(content);
+    if (text.className === "message-text") text.className = "markdown-body";
+    let html = typeof marked !== 'undefined' ? marked.parse(content) : content;
     html = html.replace(/\[(\d+)\]/g, '<sup class="citation-link">[$1]</sup>');
     text.innerHTML = html;
   } else {
@@ -583,6 +651,14 @@ async function sendChat(message) {
         } else if (event.type === "error") {
           answer += `\n\n**错误：** ${event.text}`;
           setMessageContent(assistantNode, answer, true);
+        } else if (event.type === "tool_start") {
+          answer += `\n\n> ⏳ **正在运行工具**: \`${event.name}\`\n> 参数: \`${event.input}\`\n\n`;
+          setMessageContent(assistantNode, answer, true);
+          els.messages.scrollTop = els.messages.scrollHeight;
+        } else if (event.type === "tool_end") {
+          answer += `\n\n> ✅ **工具返回结果**:\n> \`\`\`\n> ${event.output}\n> \`\`\`\n\n`;
+          setMessageContent(assistantNode, answer, true);
+          els.messages.scrollTop = els.messages.scrollHeight;
         } else if (event.type === "action_result") {
           if (event.generation) {
             appendLog([
@@ -628,28 +704,6 @@ els.refreshButton.addEventListener("click", () => {
   });
 });
 
-if (els.deleteSelectedButton) {
-  els.deleteSelectedButton.addEventListener("click", deleteSelectedFiles);
-}
-
-els.typeFilter.addEventListener("click", (event) => {
-  const button = event.target.closest("button[data-type]");
-  if (!button) return;
-  state.fileType = button.dataset.type;
-  els.typeFilter.querySelectorAll("button").forEach((item) => item.classList.toggle("is-active", item === button));
-  renderFileList();
-});
-
-els.fileSearchInput.addEventListener("input", () => {
-  state.fileSearch = els.fileSearchInput.value;
-  renderFileList();
-});
-
-els.fileSortSelect.addEventListener("change", (e) => {
-  state.fileSort = e.target.value;
-  renderFileList();
-});
-
 els.aiSettingsButton.addEventListener("click", () => {
   els.aiSettingsModal.hidden = false;
   loadAiConfig().catch((error) => {
@@ -676,6 +730,29 @@ els.aiSettingsForm.addEventListener("submit", (event) => {
     });
 });
 
+els.fileEditForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  saveFileEdit().catch((error) => {
+    els.fileEditStatus.textContent = error.message;
+  });
+});
+
+els.closeFileEdit.addEventListener("click", closeFileEditor);
+els.cancelFileEdit.addEventListener("click", closeFileEditor);
+els.fileEditModal.addEventListener("click", (event) => {
+  if (event.target === els.fileEditModal) closeFileEditor();
+});
+
+els.multiSelectButton.addEventListener("click", () => {
+  state.multiSelect = !state.multiSelect;
+  if (!state.multiSelect) state.selectedFiles.clear();
+  renderFileList();
+});
+
+els.deleteSelectedButton.addEventListener("click", () => {
+  deleteFiles(Array.from(state.selectedFiles));
+});
+
 els.testAiConfig.addEventListener("click", () => {
   saveAiConfig()
     .then(testAiConfig)
@@ -690,6 +767,7 @@ els.clearLogButton.addEventListener("click", () => {
 
 els.logButton.addEventListener("click", () => {
   els.logModal.hidden = false;
+  setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 10);
 });
 
 els.closeLogButton.addEventListener("click", () => {

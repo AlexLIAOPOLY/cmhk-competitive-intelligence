@@ -39,8 +39,8 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "Announcements & Circulars | HKBN",
-          "bytes": 882395,
-          "elapsed_seconds": 0.799,
+          "bytes": 882416,
+          "elapsed_seconds": 0.347,
           "method": "httpx",
           "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
           "content_hash": "a2927d0edae3e2ce24eb2919696836b3f9b1bfac865a4361fcd3c343e2f6e2ac",
@@ -75,14 +75,14 @@
       "method": "skipped",
       "text_sample": "",
       "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "error": "source policy is deny",
-      "source_policy": "deny",
+      "error": "tos_status is unreviewed",
+      "source_policy": "allow",
       "source_type": "unregistered",
       "jurisdiction": "unknown",
       "tos_status": "unreviewed",
       "robots_status": "not_checked",
       "robots_allowed": false,
-      "skip_reason": "source policy is deny",
+      "skip_reason": "tos_status is unreviewed",
       "entity_hits": []
     },
     {
@@ -92,8 +92,8 @@
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "Announcements & Circulars | HKBN",
-      "bytes": 882395,
-      "elapsed_seconds": 0.799,
+      "bytes": 882416,
+      "elapsed_seconds": 0.347,
       "method": "httpx",
       "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
       "content_hash": "a2927d0edae3e2ce24eb2919696836b3f9b1bfac865a4361fcd3c343e2f6e2ac",
@@ -110,6 +110,6 @@
       ]
     }
   ],
-  "fetched_at": "2026-05-27T08:43:57.248042+00:00",
-  "fetched_at_hkt": "2026-05-27T16:43:57.248060+08:00"
+  "fetched_at": "2026-05-28T07:24:52.766789+00:00",
+  "fetched_at_hkt": "2026-05-28T15:24:52.766800+08:00"
 }

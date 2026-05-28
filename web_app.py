@@ -9,13 +9,14 @@ import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote, urlparse
 
 import crawl
 from ai_config import load_ai_config, save_ai_config
 from crawl_settings import SETTINGS_PATH, load_settings, save_settings
 from extractors import row_fields
 from rag_llm import ask_llm_with_rag, stream_llm_with_rag
+from agent import stream_agent
 
 
 ROOT = Path(__file__).resolve().parent
@@ -24,12 +25,14 @@ RESULTS_DIR = ROOT / "results"
 LOCAL_TEMPLATE_PATH = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_TEMPLATE_PATH = ROOT / "weekly_report_template.docx"
 TEMPLATE_PATH = LOCAL_TEMPLATE_PATH if LOCAL_TEMPLATE_PATH.exists() else REPO_TEMPLATE_PATH
-OUTPUT_FILES = [
+REPORT_FILE_RE = re.compile(r"^\d{1,2}月\d{1,2}日周报(?: \(\d+\))?\.docx$")
+REPORT_METADATA_PATH = ROOT / "report_file_metadata.json"
+EXCLUDED_REPORT_NAMES = {
     "weekly_report.docx",
     "weekly_report_from_word_template.docx",
-    "weekly_report.html",
-    "weekly_report.md",
-]
+    "weekly_report_template.docx",
+    "模板.docx",
+}
 REFERENCE_FILES = {"final_audit.md", "coverage_report.tsv", "run_log.tsv"}
 
 
@@ -48,11 +51,15 @@ def settings_rows() -> list[dict]:
     rows = []
     for source_row in crawl.parse_latest_sheet():
         row_no = str(source_row["row"])
-        available_entities = list(source_row.get("entities") or [])
-        available_fields = list(row_fields(int(row_no)))
         cfg = configured.get(row_no, {}) if isinstance(configured, dict) else {}
-        selected_entities = [item for item in cfg.get("entities", []) if item in available_entities]
-        selected_fields = [item for item in cfg.get("fields", []) if item in available_fields]
+        cfg_entities = [str(item).strip() for item in cfg.get("entities", []) if str(item).strip()]
+        cfg_fields = [str(item).strip() for item in cfg.get("fields", []) if str(item).strip()]
+        cfg_urls = [str(item).strip() for item in cfg.get("sourceUrls", []) if str(item).strip()]
+        available_entities = list(dict.fromkeys([*(source_row.get("entities") or []), *cfg_entities]))
+        available_fields = list(dict.fromkeys([*list(row_fields(int(row_no))), *cfg_fields]))
+        cfg = configured.get(row_no, {}) if isinstance(configured, dict) else {}
+        selected_entities = [item for item in cfg_entities if item in available_entities]
+        selected_fields = [item for item in cfg_fields if item in available_fields]
         rows.append(
             {
                 "row": row_no,
@@ -61,6 +68,7 @@ def settings_rows() -> list[dict]:
                 "package": source_row.get("package", ""),
                 "need": source_row.get("need", ""),
                 "sources": source_row.get("sources", ""),
+                "sourceUrls": cfg_urls,
                 "entities": available_entities,
                 "fields": available_fields,
                 "enabled": bool(cfg.get("enabled", True)),
@@ -99,18 +107,65 @@ def save_settings_payload(payload: dict) -> dict:
         row_no = str(item.get("row") or "").strip()
         if row_no not in source_rows:
             continue
-        available_entities = list(source_rows[row_no].get("entities") or [])
-        available_fields = list(row_fields(int(row_no)))
-        entity_set = set(available_entities)
-        field_set = set(available_fields)
-        entities = [value for value in item.get("selectedEntities", []) if value in entity_set]
-        fields = [value for value in item.get("selectedFields", []) if value in field_set]
+        source_entities = list(source_rows[row_no].get("entities") or [])
+        source_fields = list(row_fields(int(row_no)))
+        incoming_entities = [str(value).strip() for value in item.get("selectedEntities", []) if str(value).strip()]
+        incoming_fields = [str(value).strip() for value in item.get("selectedFields", []) if str(value).strip()]
+        entities = list(dict.fromkeys(incoming_entities))
+        fields = list(dict.fromkeys(incoming_fields))
+        source_urls = []
+        for value in item.get("sourceUrls", []):
+            url = str(value).strip()
+            if not url:
+                continue
+            if not re.match(r"^https?://", url):
+                raise ValueError("目标链接必须以 http:// 或 https:// 开头")
+            if url not in source_urls:
+                source_urls.append(url)
         next_rows[row_no] = {
             "enabled": bool(item.get("enabled", True)),
-            "entities": entities or available_entities,
-            "fields": fields or available_fields,
+            "entities": entities or source_entities,
+            "fields": fields or source_fields,
+            "sourceUrls": source_urls,
         }
     save_settings(next_rows)
+    return build_settings_payload()
+
+
+def save_settings_row_payload(payload: dict) -> dict:
+    row_no = str(payload.get("row") or "").strip()
+    if not row_no:
+        raise ValueError("row is required")
+    source_rows = {str(row["row"]): row for row in crawl.parse_latest_sheet()}
+    if row_no not in source_rows:
+        raise ValueError("row not found")
+
+    settings = load_settings()
+    rows = settings.get("rows", {})
+    if not isinstance(rows, dict):
+        rows = {}
+
+    source_entities = list(source_rows[row_no].get("entities") or [])
+    source_fields = list(row_fields(int(row_no)))
+    incoming_entities = [str(value).strip() for value in payload.get("selectedEntities", []) if str(value).strip()]
+    incoming_fields = [str(value).strip() for value in payload.get("selectedFields", []) if str(value).strip()]
+    source_urls = []
+    for value in payload.get("sourceUrls", []):
+        url = str(value).strip()
+        if not url:
+            continue
+        if not re.match(r"^https?://", url):
+            raise ValueError("目标链接必须以 http:// 或 https:// 开头")
+        if url not in source_urls:
+            source_urls.append(url)
+
+    rows[row_no] = {
+        "enabled": bool(payload.get("enabled", True)),
+        "entities": list(dict.fromkeys(incoming_entities)) or source_entities,
+        "fields": list(dict.fromkeys(incoming_fields)) or source_fields,
+        "sourceUrls": source_urls,
+    }
+    save_settings(rows)
     return build_settings_payload()
 
 
@@ -137,21 +192,118 @@ def read_request_json(handler: BaseHTTPRequestHandler) -> dict:
     return json.loads(raw.decode("utf-8") or "{}")
 
 
+def load_report_metadata() -> dict:
+    if not REPORT_METADATA_PATH.exists():
+        return {}
+    try:
+        data = json.loads(REPORT_METADATA_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_report_metadata(data: dict) -> None:
+    REPORT_METADATA_PATH.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def is_report_path(path: Path) -> bool:
+    if not path.exists() or not path.is_file() or path.suffix.lower() != ".docx":
+        return False
+    if path.name in EXCLUDED_REPORT_NAMES:
+        return False
+    try:
+        path.relative_to(ROOT)
+    except ValueError:
+        return False
+    return path.parent == ROOT or ROOT / "archives" in path.parents
+
+
 def file_info(path: Path, url: str = None) -> dict:
     stat = path.stat()
+    rel_path = str(path.relative_to(ROOT))
+    metadata = load_report_metadata().get(rel_path, {})
     return {
         "name": path.name,
         "size": stat.st_size,
         "mtime": stat.st_mtime,
         "mtimeText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stat.st_mtime)),
-        "url": url or f"/outputs/{path.name}",
-        "path_str": str(path.relative_to(ROOT)),
+        "url": url or f"/outputs/{quote(path.name)}",
+        "path_str": rel_path,
+        "note": metadata.get("note", "") if isinstance(metadata, dict) else "",
     }
+
+
+def is_report_file_name(name: str) -> bool:
+    return name.endswith(".docx") and "/" not in name and "\\" not in name and name not in EXCLUDED_REPORT_NAMES
+
+
+def current_report_files() -> list[Path]:
+    files = [path for path in ROOT.glob("*.docx") if is_report_path(path)]
+    return sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)
+
+
+def report_target_from_rel(path_str: str) -> Path | None:
+    if not path_str or path_str.startswith("/") or ".." in Path(path_str).parts:
+        return None
+    target = ROOT / path_str
+    try:
+        target.relative_to(ROOT)
+    except ValueError:
+        return None
+    return target if is_report_path(target) else None
+
+
+def update_report_file(payload: dict) -> dict:
+    target = report_target_from_rel(str(payload.get("path") or ""))
+    if not target:
+        raise ValueError("文件不存在或不允许修改")
+    new_name = Path(str(payload.get("name") or "").strip()).name
+    if not new_name:
+        raise ValueError("文件名不能为空")
+    if not new_name.endswith(".docx"):
+        new_name += ".docx"
+    if not is_report_file_name(new_name):
+        raise ValueError("文件名只能是 Word 文档，不能包含路径字符")
+    new_note = re.sub(r"\s+", " ", str(payload.get("note") or "")).strip()[:500]
+    new_target = target.with_name(new_name)
+    if new_target != target and new_target.exists():
+        raise ValueError("同名文件已存在")
+
+    metadata = load_report_metadata()
+    old_rel = str(target.relative_to(ROOT))
+    if new_target != target:
+        target.rename(new_target)
+        existing = metadata.pop(old_rel, {})
+    else:
+        existing = metadata.get(old_rel, {})
+    new_rel = str(new_target.relative_to(ROOT))
+    if not isinstance(existing, dict):
+        existing = {}
+    existing["note"] = new_note
+    existing["updatedAt"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    metadata[new_rel] = existing
+    save_report_metadata(metadata)
+    return build_status()
+
+
+def delete_report_files(paths: list[str]) -> dict:
+    metadata = load_report_metadata()
+    deleted = 0
+    for path_str in paths:
+        target = report_target_from_rel(str(path_str))
+        if not target:
+            continue
+        rel_path = str(target.relative_to(ROOT))
+        target.unlink()
+        metadata.pop(rel_path, None)
+        deleted += 1
+    save_report_metadata(metadata)
+    return {"deleted": deleted, "status": build_status()}
 
 
 def build_status() -> dict:
     result_files = sorted(RESULTS_DIR.glob("row_*.json"), key=lambda p: int(p.stem.split("_")[1]))
-    outputs = [file_info(ROOT / name) for name in OUTPUT_FILES if (ROOT / name).exists()]
+    outputs = [file_info(path) for path in current_report_files()]
     ok_count = 0
     partial_count = 0
     for path in result_files:
@@ -166,17 +318,6 @@ def build_status() -> dict:
     latest = max((item["mtime"] for item in outputs), default=None)
     settings = build_settings_payload()
     
-    archive_dir = ROOT / "archives"
-    if archive_dir.exists():
-        for sub in archive_dir.iterdir():
-            if sub.is_dir():
-                for p in sub.glob("*"):
-                    if p.is_file():
-                        info = file_info(p, url=f"/archives/{sub.name}/{p.name}")
-                        info["is_archive"] = True
-                        info["archive_batch"] = sub.name
-                        outputs.append(info)
-                        
     # Sort outputs by mtime descending
     outputs.sort(key=lambda x: x["mtime"], reverse=True)
         
@@ -242,7 +383,7 @@ def run_report_generation() -> dict:
 def report_overview() -> str:
     md_path = ROOT / "weekly_report.md"
     if not md_path.exists():
-        return "当前还没有生成周报。你可以先点击“生成周报”，系统会按 Word 模板输出 Word、HTML 和 Markdown 文件。"
+        return "当前还没有生成周报。你可以先点击“生成周报”，系统会按 Word 模板输出正式 Word 周报。"
     text = md_path.read_text(encoding="utf-8", errors="ignore")
     lines = [line.strip("#- 　\t ") for line in text.splitlines() if line.strip()]
     useful = [line for line in lines if line and not line.startswith("来源")][:8]
@@ -260,9 +401,9 @@ def output_overview() -> str:
     status = build_status()
     outputs = status.get("outputs", [])
     if not outputs:
-        return "当前还没有输出文件。点击“生成周报”后会生成 Word、HTML 和 Markdown。"
+        return "当前还没有输出文件。点击“生成周报”后会生成正式 Word 周报。"
     names = "、".join(item["name"] for item in outputs)
-    return f"当前可用输出文件有：{names}。Word 文件用于正式提交，HTML 用于浏览器预览，Markdown 用于快速查看或二次编辑。"
+    return f"当前可用输出文件有：{names}。这里仅展示正式 Word 周报，用于下载和提交。"
 
 
 def check_local_action(message: str) -> dict | None:
@@ -286,7 +427,7 @@ def check_local_action(message: str) -> dict | None:
         result = run_report_generation()
         if result["ok"]:
             return {
-                "content": "已按 Word 模板重新生成周报。右侧输出区可以打开或下载 Word 文件，也可以看 HTML 预览。",
+                "content": "已按 Word 模板重新生成正式 Word 周报。你可以在输出区下载最新文件。",
                 "generation": result,
             }
         return {
@@ -356,8 +497,9 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if parsed.path.startswith("/outputs/"):
             name = Path(unquote(parsed.path.removeprefix("/outputs/"))).name
-            if name in OUTPUT_FILES and (ROOT / name).exists():
-                self.serve_head(ROOT / name, download=name.endswith(".docx"))
+            target = ROOT / name
+            if is_report_path(target):
+                self.serve_head(target, download=True)
                 return
         if parsed.path.startswith("/references/"):
             target = reference_path(unquote(parsed.path.removeprefix("/references/")))
@@ -366,8 +508,8 @@ class AppHandler(BaseHTTPRequestHandler):
                 return
         if parsed.path.startswith("/archives/"):
             target = ROOT / unquote(parsed.path.lstrip("/"))
-            if target.exists() and target.is_file():
-                self.serve_head(target, download=target.name.endswith(".docx"))
+            if is_report_path(target):
+                self.serve_head(target, download=True)
                 return
         self.send_response(404)
         self.end_headers()
@@ -381,21 +523,40 @@ class AppHandler(BaseHTTPRequestHandler):
         if path in {"/settings", "/settings.html"}:
             self.serve_file(STATIC_DIR / "settings.html")
             return
+        if path in {"/schedule", "/schedule.html"}:
+            self.serve_file(STATIC_DIR / "schedule.html")
+            return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
             return
         if path == "/api/settings":
             json_response(self, {"ok": True, "settings": build_settings_payload()})
             return
+        if path == "/api/schedule":
+            try:
+                rows = crawl.parse_latest_sheet()
+                for r in rows:
+                    res_path = ROOT / "results" / f"row_{r['row']}.json"
+                    if res_path.exists():
+                        try:
+                            data = json.loads(res_path.read_text(encoding="utf-8"))
+                            r["last_fetched"] = data.get("fetched_at_hkt")
+                        except Exception:
+                            pass
+                json_response(self, {"ok": True, "rows": rows})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 500)
+            return
         if path == "/api/ai-config":
             json_response(self, {"ok": True, "config": load_ai_config(include_key=False)})
             return
         if path.startswith("/outputs/"):
             name = Path(unquote(path.removeprefix("/outputs/"))).name
-            if name not in OUTPUT_FILES:
+            target = ROOT / name
+            if not is_report_path(target):
                 json_response(self, {"ok": False, "error": "file not allowed"}, 404)
                 return
-            self.serve_file(ROOT / name, download=name.endswith(".docx"))
+            self.serve_file(target, download=True)
             return
         if path.startswith("/references/"):
             target = reference_path(unquote(path.removeprefix("/references/")))
@@ -433,8 +594,47 @@ class AppHandler(BaseHTTPRequestHandler):
                 payload = json.dumps({"type": "log", "text": line.strip()}, ensure_ascii=False)
                 self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
                 self.wfile.flush()
-            
+
             proc.wait()
+
+            # Sync to Feishu after full crawl
+            if proc.returncode == 0 and (ROOT / "write_payload.json").exists():
+                sync_proc = subprocess.run([sys.executable, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"], capture_output=True, text=True)
+                if sync_proc.returncode != 0:
+                    payload = json.dumps({"type": "log", "text": f"同步飞书失败: {sync_proc.stderr[-500:]}"}, ensure_ascii=False)
+                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+                else:
+                    payload = json.dumps({"type": "log", "text": "✅ 飞书表格同步成功！"}, ensure_ascii=False)
+                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+
+            try:
+                run_log_path = ROOT / "run_log.json"
+                if run_log_path.exists():
+                    with run_log_path.open("r", encoding="utf-8") as f:
+                        run_log_data = json.load(f)
+                    success_items = []
+                    failure_items = []
+                    for item in run_log_data:
+                        url = item.get("url", "")
+                        status = item.get("http_status")
+                        if status == 200:
+                            success_items.append({"url": url, "reason": "OK"})
+                        else:
+                            reason = item.get("error") or item.get("skip_reason") or f"HTTP {status}"
+                            failure_items.append({"url": url, "reason": reason})
+                    summary_payload = json.dumps({
+                        "type": "crawl_summary",
+                        "success": success_items,
+                        "failed": failure_items,
+                        "total": len(run_log_data)
+                    }, ensure_ascii=False)
+                    self.wfile.write(f"data: {summary_payload}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+            except Exception as e:
+                pass
+
             duration_ms = round((time.time() - started) * 1000)
             payload = json.dumps({
                 "type": "done",
@@ -448,26 +648,79 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/generate":
             json_response(self, run_report_generation())
             return
+        if parsed.path == "/api/report-file":
+            try:
+                json_response(self, {"ok": True, "status": update_report_file(read_request_json(self))})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
         if parsed.path == "/api/delete-files":
-            length = int(self.headers.get("Content-Length", 0))
-            if length > 0:
-                body = json.loads(self.rfile.read(length))
-                paths_to_delete = body.get("paths", [])
-                deleted = 0
-                for rel_path in paths_to_delete:
-                    if ".." in rel_path or rel_path.startswith("/"):
-                        continue
-                    target = ROOT / rel_path
-                    if target.is_relative_to(ROOT) and target.exists() and target.is_file():
-                        target.unlink()
-                        deleted += 1
-                json_response(self, {"ok": True, "deleted": deleted, "status": build_status()})
-            else:
-                json_response(self, {"ok": False, "error": "Empty body"}, 400)
+            try:
+                body = read_request_json(self)
+                result = delete_report_files(body.get("paths", []))
+                json_response(self, {"ok": True, **result})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
         if parsed.path == "/api/settings":
             try:
                 json_response(self, {"ok": True, "settings": save_settings_payload(read_request_json(self))})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+        if parsed.path == "/api/settings/row":
+            try:
+                json_response(self, {"ok": True, "settings": save_settings_row_payload(read_request_json(self))})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+        if parsed.path == "/api/schedule":
+            try:
+                payload = read_request_json(self)
+                rows = payload.get("rows", [])
+                freq_map = {str(r["row"]): r.get("frequency", "") for r in rows}
+                values = [[freq_map.get(str(idx), "")] for idx in range(2, 35)]
+                cmd = [
+                    crawl.LARK_CLI, "sheets", "+write",
+                    "--spreadsheet-token", crawl.SPREADSHEET_TOKEN,
+                    "--range", f"{crawl.MAIN_SHEET_ID}!H2:H34",
+                    "--values", json.dumps(values, ensure_ascii=False)
+                ]
+                proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                if proc.returncode != 0:
+                    json_response(self, {"ok": False, "error": f"Feishu API failed: {proc.stderr}"}, 500)
+                    return
+                json_response(self, {"ok": True, "feishu_result": json.loads(proc.stdout)})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+        if parsed.path == "/api/crawl-row":
+            try:
+                payload = read_request_json(self)
+                row_id = str(payload.get("row"))
+                if not row_id.isdigit():
+                    raise ValueError("Invalid row ID")
+                env = os.environ.copy()
+                env["CMHK_ROWS"] = row_id
+                proc = subprocess.run([sys.executable, str(ROOT / "crawl.py")], env=env, capture_output=True, text=True)
+                if proc.returncode != 0:
+                    json_response(self, {"ok": False, "error": f"Crawl failed: {proc.stderr[-500:]}"}, 500)
+                    return
+                # Trigger Feishu sync after crawling
+                result_text = ""
+                if (ROOT / "write_payload.json").exists():
+                    sync_proc = subprocess.run([sys.executable, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"], capture_output=True, text=True)
+                    if sync_proc.returncode != 0:
+                        json_response(self, {"ok": False, "error": f"Sync failed: {sync_proc.stderr[-500:]}"}, 500)
+                        return
+                    try:
+                        payload_data = json.loads((ROOT / "write_payload.json").read_text(encoding="utf-8"))
+                        row_idx = int(row_id) - 2
+                        i_cell = payload_data.get("I2:K34", [])[row_idx][0]
+                        result_text = i_cell
+                    except Exception as e:
+                        result_text = f"读取爬虫结果失败: {e}"
+                json_response(self, {"ok": True, "result_text": result_text})
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
@@ -510,7 +763,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                 self.wfile.flush()
             else:
-                for event in stream_llm_with_rag(message):
+                for event in stream_agent(message):
                     body = json.dumps(event, ensure_ascii=False)
                     self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                     self.wfile.flush()

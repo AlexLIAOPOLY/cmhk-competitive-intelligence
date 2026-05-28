@@ -24,13 +24,26 @@ RESULTS_DIR = ROOT / "results"
 
 WEEKLY_MD = ROOT / "weekly_report.md"
 WEEKLY_HTML = ROOT / "weekly_report.html"
-WEEKLY_DOCX = ROOT / "weekly_report.docx"
+def dated_weekly_docx_path(now: datetime | None = None) -> Path:
+    value = now or datetime.now(ZoneInfo("Asia/Hong_Kong"))
+    base_name = f"{value.month}月{value.day}日周报"
+    path = ROOT / f"{base_name}.docx"
+    if not path.exists():
+        return path
+    counter = 1
+    while True:
+        path = ROOT / f"{base_name} ({counter}).docx"
+        if not path.exists():
+            return path
+        counter += 1
+
+
+WEEKLY_DOCX = dated_weekly_docx_path()
 TEMPLATE_MD = ROOT / "weekly_report_template.md"
 TEMPLATE_DOCX = ROOT / "weekly_report_template.docx"
 LOCAL_WORD_TEMPLATE = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_WORD_TEMPLATE = ROOT / "weekly_report_template.docx"
 SOURCE_WORD_TEMPLATE = LOCAL_WORD_TEMPLATE if LOCAL_WORD_TEMPLATE.exists() else REPO_WORD_TEMPLATE
-WEEKLY_TEMPLATE_DOCX = ROOT / "weekly_report_from_word_template.docx"
 
 # Keep these aliases so older automation does not keep serving the wrong
 # "agent run" report format.
@@ -529,8 +542,6 @@ def add_p(doc: Document, text: str, *, size: int = 11, bold: bool = False, align
 def weekly_to_docx(model: dict, path: Path) -> None:
     doc = render_into_source_template(model)
     doc.save(path)
-    if path == WEEKLY_DOCX:
-        doc.save(WEEKLY_TEMPLATE_DOCX)
 
 
 def has_drawing(paragraph) -> bool:
@@ -681,7 +692,6 @@ def main() -> None:
     print(" ->", WEEKLY_MD)
     print(" ->", WEEKLY_HTML)
     print(" ->", WEEKLY_DOCX)
-    print(" ->", WEEKLY_TEMPLATE_DOCX)
     print(" ->", TEMPLATE_MD)
     print(" ->", TEMPLATE_DOCX)
     
@@ -695,7 +705,6 @@ def main() -> None:
     shutil.copy2(WEEKLY_MD, archive_dir / WEEKLY_MD.name)
     shutil.copy2(WEEKLY_HTML, archive_dir / WEEKLY_HTML.name)
     shutil.copy2(WEEKLY_DOCX, archive_dir / WEEKLY_DOCX.name)
-    shutil.copy2(WEEKLY_TEMPLATE_DOCX, archive_dir / WEEKLY_TEMPLATE_DOCX.name)
     
     print(f"\n[归档成功] 已自动备份此次报告至: archives/{timestamp}/")
     print("==================================================")

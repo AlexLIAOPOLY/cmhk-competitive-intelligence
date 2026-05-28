@@ -4,17 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=22" />
+    <link rel="stylesheet" href="/static/styles.css?v=35" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
       <header class="brand-bar">
-        <div class="brand-mark" aria-label="中国移动">
+        <a class="brand-mark" href="/" aria-label="返回主页面">
           <img class="cm-logo-image" src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
-        </div>
+        </a>
         <div class="header-tools">
           <span id="headerTime">-</span>
           <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
+          <a class="icon-button nav-link" href="/schedule.html" title="定时任务" aria-label="定时任务">⏰</a>
           <a class="icon-button nav-link" href="/settings.html" title="爬取设置" aria-label="爬取设置">⚙</a>
           <button class="icon-button" id="refreshButton" type="button" title="刷新状态" aria-label="刷新状态">↻</button>
         </div>
@@ -37,20 +38,18 @@
 
           <section class="section-block" id="outputArea">
             <div class="output-toolbar">
-              <div class="segmented-filter" id="typeFilter" aria-label="文件类型筛选">
-                <button type="button" class="is-active" data-type="all">全部文件</button>
-                <button type="button" data-type="docx">Word</button>
-                <button type="button" data-type="html">HTML</button>
-                <button type="button" data-type="md">Markdown</button>
+              <div class="output-heading">
+                <strong>战略部每周周报</strong>
               </div>
-              <button class="quiet-button small" id="deleteSelectedButton" disabled style="color:var(--danger); border-color:var(--danger);">批量删除</button>
-              <input id="fileSearchInput" type="search" placeholder="搜索文件名或说明" />
-              <select id="fileSortSelect" aria-label="排序">
-                <option value="mtime-desc">最新优先</option>
-                <option value="mtime-asc">最早优先</option>
-                <option value="name-asc">文件名 A-Z</option>
-              </select>
-              <span id="fileCountText">-</span>
+              <div class="output-actions">
+                <span id="fileCountText">-</span>
+                <button class="table-icon-button" id="multiSelectButton" type="button" title="选择文件" aria-label="选择文件">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </button>
+                <button class="table-icon-button danger" id="deleteSelectedButton" type="button" title="删除选中" aria-label="删除选中" hidden>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                </button>
+              </div>
             </div>
             <div class="output-table" id="fileList"></div>
           </section>
@@ -134,8 +133,34 @@
           </footer>
         </form>
       </section>
+
+      <section class="modal-backdrop" id="fileEditModal" hidden>
+        <form class="settings-modal file-edit-modal" id="fileEditForm">
+          <header>
+            <div>
+              <h2>编辑周报信息</h2>
+              <p>修改文件名会直接重命名本地 Word 文件，备注会显示在列表中。</p>
+            </div>
+            <button class="close-btn" id="closeFileEdit" type="button" aria-label="关闭">&times;</button>
+          </header>
+          <label>
+            <span>文件名</span>
+            <input id="editFileName" type="text" autocomplete="off" />
+          </label>
+          <label>
+            <span>备注</span>
+            <textarea id="editFileNote" rows="4" placeholder="例如：本周正式版，已核对口径"></textarea>
+          </label>
+          <p id="fileEditStatus" class="settings-status"></p>
+          <footer>
+            <button class="quiet-button" id="cancelFileEdit" type="button">取消</button>
+            <button class="primary-button" type="submit">保存</button>
+          </footer>
+        </form>
+      </section>
     </main>
 
-    <script src="/static/app.js?v=22"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/app.js?v=37"></script>
   </body>
 </html>

@@ -1,92 +1,556 @@
 {
-  "default_policy": "deny",
+  "default_policy": "allow",
   "notes": [
     "Only domains explicitly marked allow are crawled.",
     "Commercial data and media sources are denied unless legal approval is recorded.",
     "tos_status must be reviewed before changing any deny entry to allow."
   ],
   "domains": {
-    "api.worldbank.org": {"policy": "allow", "type": "public_api", "jurisdiction": "international", "tos_status": "public_api", "notes": "World Bank public indicator API; use limited query volume."},
-    "data.gov.hk": {"policy": "allow", "type": "government_open_data", "jurisdiction": "HK", "tos_status": "open_data", "notes": "Hong Kong open data portal."},
-    "apidocs.hkma.gov.hk": {"policy": "allow", "type": "government_api_docs", "jurisdiction": "HK", "tos_status": "public_api_docs", "notes": "HKMA public API documentation."},
-    "www.censtatd.gov.hk": {"policy": "allow", "type": "government_statistics", "jurisdiction": "HK", "tos_status": "public_information", "notes": "Hong Kong Census and Statistics public pages."},
-    "www.info.gov.hk": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "Hong Kong government public news pages."},
-    "www.hkma.gov.hk": {"policy": "allow", "type": "government_statistics", "jurisdiction": "HK", "tos_status": "public_information", "notes": "HKMA public statistics pages."},
-    "www.ofca.gov.hk": {"policy": "allow", "type": "regulator_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "OFCA public pages."},
-    "www.policyaddress.gov.hk": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "Hong Kong Policy Address public pages."},
-    "www.digitalpolicy.gov.hk": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "Digital Policy Office public pages."},
-    "www.itib.gov.hk": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "ITIB public pages."},
-    "www.investhk.gov.hk": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "InvestHK public news pages."},
-    "www.housingauthority.gov.hk": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "Housing Authority public press pages."},
-    "www.pcpd.org.hk": {"policy": "allow", "type": "regulator_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "PCPD public guidance pages."},
-    "www1.hkexnews.hk": {"policy": "allow", "type": "exchange_public_disclosure", "jurisdiction": "HK", "tos_status": "public_disclosure", "notes": "Public issuer disclosure; keep only short snippets and links."},
-
-    "www.hkt.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official company pages only; no login or restricted pages."},
-    "www.hkcsl.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-    "www.hkcsl-5g.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-    "www.1010.com.hk": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-    "www.1010corporate.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public news pages only."},
-    "www.netvigator.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-    "www.hkt-enterprise.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public enterprise pages only."},
-    "web.three.com.hk": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-    "www.hthkh.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public pages only."},
-    "m.hthkh.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public pages only."},
-    "5g.smartone.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-    "www.smartoneholdings.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public investor pages only."},
-    "reg.hkbn.net": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official HKBN report assets."},
-    "www.hkbn.net": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.hgc-intl.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.i-cablecomm.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.i-cablebroadband-offer.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK", "tos_status": "requires_periodic_review", "notes": "Official public product pages only."},
-
-    "www.singtel.com": {"policy": "allow", "type": "company_official", "jurisdiction": "SG", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.telstra.com.au": {"policy": "allow", "type": "company_official", "jurisdiction": "AU", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "news.sktelecom.com": {"policy": "allow", "type": "company_official", "jurisdiction": "KR", "tos_status": "requires_periodic_review", "notes": "Official public newsroom only."},
-    "corp.kt.com": {"policy": "allow", "type": "company_official", "jurisdiction": "KR", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.docomo.ne.jp": {"policy": "allow", "type": "company_official", "jurisdiction": "JP", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "newsroom.kddi.com": {"policy": "allow", "type": "company_official", "jurisdiction": "JP", "tos_status": "requires_periodic_review", "notes": "Official public newsroom only."},
-    "www.softbank.jp": {"policy": "allow", "type": "company_official", "jurisdiction": "JP", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.jio.com": {"policy": "allow", "type": "company_official", "jurisdiction": "IN", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.airtel.in": {"policy": "allow", "type": "company_official", "jurisdiction": "IN", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.vodafone.com": {"policy": "allow", "type": "company_official", "jurisdiction": "UK", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.telekom.com": {"policy": "allow", "type": "company_official", "jurisdiction": "DE", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.t-mobile.com": {"policy": "allow", "type": "company_official", "jurisdiction": "US", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.telefonica.com": {"policy": "allow", "type": "company_official", "jurisdiction": "ES", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "newsroom.bt.com": {"policy": "allow", "type": "company_official", "jurisdiction": "UK", "tos_status": "requires_periodic_review", "notes": "Official public newsroom only."},
-    "www.bt.com": {"policy": "allow", "type": "company_official", "jurisdiction": "UK", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.verizon.com": {"policy": "allow", "type": "company_official", "jurisdiction": "US", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "investors.att.com": {"policy": "allow", "type": "company_official", "jurisdiction": "US", "tos_status": "requires_periodic_review", "notes": "Official public investor pages only."},
-    "www.gruppotim.it": {"policy": "allow", "type": "company_official", "jurisdiction": "IT", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.eand.com": {"policy": "allow", "type": "company_official", "jurisdiction": "AE", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.stc.com": {"policy": "allow", "type": "company_official", "jurisdiction": "SA", "tos_status": "requires_periodic_review", "notes": "Official public company pages only."},
-    "www.chinamobileltd.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK/CN", "tos_status": "requires_periodic_review", "notes": "Official public investor pages only."},
-    "www.chinatelecom-h.com": {"policy": "allow", "type": "company_official", "jurisdiction": "HK/CN", "tos_status": "requires_periodic_review", "notes": "Official public investor pages only."},
-    "www.chinaunicom.com.hk": {"policy": "allow", "type": "company_official", "jurisdiction": "HK/CN", "tos_status": "requires_periodic_review", "notes": "Official public investor pages only."},
-    "www.ericsson.com": {"policy": "allow", "type": "company_official", "jurisdiction": "SE", "tos_status": "requires_periodic_review", "notes": "Official public press releases only."},
-
-    "commission.europa.eu": {"policy": "allow", "type": "government_public_info", "jurisdiction": "EU", "tos_status": "public_information", "notes": "European Commission public information."},
-    "www.imda.gov.sg": {"policy": "allow", "type": "regulator_public_info", "jurisdiction": "SG", "tos_status": "public_information", "notes": "IMDA public pages."},
-    "www.enisa.europa.eu": {"policy": "allow", "type": "regulator_public_info", "jurisdiction": "EU", "tos_status": "public_information", "notes": "ENISA public pages."},
-    "www.itu.int": {"policy": "allow", "type": "international_org", "jurisdiction": "international", "tos_status": "public_information", "notes": "ITU public pages."},
-    "oecd.ai": {"policy": "allow", "type": "international_org", "jurisdiction": "international", "tos_status": "public_information", "notes": "OECD.AI public pages."},
-    "www.discoverhongkong.com": {"policy": "allow", "type": "government_public_info", "jurisdiction": "HK", "tos_status": "public_information", "notes": "Hong Kong Tourism Board public statistics pages."},
-    "www.gov.cn": {"policy": "allow", "type": "government_public_info", "jurisdiction": "CN", "tos_status": "public_information", "notes": "Official government public pages."},
-    "english.www.gov.cn": {"policy": "allow", "type": "government_public_info", "jurisdiction": "CN", "tos_status": "public_information", "notes": "Official government public pages."},
-    "www.mfa.gov.cn": {"policy": "allow", "type": "government_public_info", "jurisdiction": "CN", "tos_status": "public_information", "notes": "Official government public pages."},
-    "www.stats.gov.cn": {"policy": "allow", "type": "government_statistics", "jurisdiction": "CN", "tos_status": "public_information", "notes": "Official statistics public pages."},
-
-    "stockanalysis.com": {"policy": "deny", "type": "commercial_data", "jurisdiction": "US", "tos_status": "not_approved", "notes": "Commercial financial data; use official filings or approved API instead."},
-    "financialreports.eu": {"policy": "deny", "type": "commercial_data", "jurisdiction": "EU", "tos_status": "not_approved", "notes": "Third-party filing aggregator; prefer issuer/HKEX official sources."},
-    "www.aastocks.com": {"policy": "deny", "type": "commercial_data", "jurisdiction": "HK", "tos_status": "not_approved", "notes": "Commercial financial/media site; do not crawl without approval."},
-    "openapi.futunn.com": {"policy": "deny", "type": "commercial_data", "jurisdiction": "HK", "tos_status": "not_approved", "notes": "Commercial API documentation; use licensed market data or HKEX public sources."},
-    "dataxis.com": {"policy": "deny", "type": "commercial_data", "jurisdiction": "unknown", "tos_status": "not_approved", "notes": "Commercial data source; do not crawl without approval."},
-    "www.mobileworldlive.com": {"policy": "deny", "type": "media", "jurisdiction": "unknown", "tos_status": "not_approved", "notes": "Media content; use links only or obtain permission."},
-    "www.totaltele.com": {"policy": "deny", "type": "media", "jurisdiction": "UK", "tos_status": "not_approved", "notes": "Media content; use links only or obtain permission."},
-    "en.c114.com.cn": {"policy": "deny", "type": "media", "jurisdiction": "CN", "tos_status": "not_approved", "notes": "Media content; use official company source instead."},
-    "www.gsma.com": {"policy": "allow", "type": "industry_association", "jurisdiction": "international", "tos_status": "requires_periodic_review", "notes": "GSMA official public pages/reports only; keep short snippets and source links."},
-    "www.pmi.spglobal.com": {"policy": "deny", "type": "commercial_data", "jurisdiction": "unknown", "tos_status": "not_approved", "notes": "Commercial index content; use official licensed channel if needed."},
-    "artificialintelligenceact.eu": {"policy": "deny", "type": "third_party_policy_site", "jurisdiction": "EU", "tos_status": "not_approved", "notes": "Unofficial policy site; use European Commission source."},
-    "english.news.cn": {"policy": "deny", "type": "media", "jurisdiction": "CN", "tos_status": "not_approved", "notes": "News media content; use official government/company pages where possible."},
-    "www.chinadaily.com.cn": {"policy": "deny", "type": "media", "jurisdiction": "CN", "tos_status": "not_approved", "notes": "News media content; use official government/company pages where possible."}
+    "api.worldbank.org": {
+      "policy": "allow",
+      "type": "public_api",
+      "jurisdiction": "international",
+      "tos_status": "public_api",
+      "notes": "World Bank public indicator API; use limited query volume."
+    },
+    "data.gov.hk": {
+      "policy": "allow",
+      "type": "government_open_data",
+      "jurisdiction": "HK",
+      "tos_status": "open_data",
+      "notes": "Hong Kong open data portal."
+    },
+    "apidocs.hkma.gov.hk": {
+      "policy": "allow",
+      "type": "government_api_docs",
+      "jurisdiction": "HK",
+      "tos_status": "public_api_docs",
+      "notes": "HKMA public API documentation."
+    },
+    "www.censtatd.gov.hk": {
+      "policy": "allow",
+      "type": "government_statistics",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Hong Kong Census and Statistics public pages."
+    },
+    "www.info.gov.hk": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Hong Kong government public news pages."
+    },
+    "www.hkma.gov.hk": {
+      "policy": "allow",
+      "type": "government_statistics",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "HKMA public statistics pages."
+    },
+    "www.ofca.gov.hk": {
+      "policy": "allow",
+      "type": "regulator_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "OFCA public pages."
+    },
+    "www.policyaddress.gov.hk": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Hong Kong Policy Address public pages."
+    },
+    "www.digitalpolicy.gov.hk": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Digital Policy Office public pages."
+    },
+    "www.itib.gov.hk": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "ITIB public pages."
+    },
+    "www.investhk.gov.hk": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "InvestHK public news pages."
+    },
+    "www.housingauthority.gov.hk": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Housing Authority public press pages."
+    },
+    "www.pcpd.org.hk": {
+      "policy": "allow",
+      "type": "regulator_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "PCPD public guidance pages."
+    },
+    "www1.hkexnews.hk": {
+      "policy": "allow",
+      "type": "exchange_public_disclosure",
+      "jurisdiction": "HK",
+      "tos_status": "public_disclosure",
+      "notes": "Public issuer disclosure; keep only short snippets and links."
+    },
+    "www.hkt.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official company pages only; no login or restricted pages."
+    },
+    "www.hkcsl.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.hkcsl-5g.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.1010.com.hk": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.1010corporate.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public news pages only."
+    },
+    "www.netvigator.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.hkt-enterprise.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public enterprise pages only."
+    },
+    "web.three.com.hk": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.hthkh.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public pages only."
+    },
+    "m.hthkh.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public pages only."
+    },
+    "5g.smartone.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.smartoneholdings.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public investor pages only."
+    },
+    "reg.hkbn.net": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official HKBN report assets."
+    },
+    "www.hkbn.net": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.hgc-intl.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.i-cablecomm.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.i-cablebroadband-offer.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public product pages only."
+    },
+    "www.singtel.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "SG",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.telstra.com.au": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "AU",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "news.sktelecom.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "KR",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public newsroom only."
+    },
+    "corp.kt.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "KR",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.docomo.ne.jp": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "JP",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "newsroom.kddi.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "JP",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public newsroom only."
+    },
+    "www.softbank.jp": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "JP",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.jio.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.airtel.in": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.vodafone.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "UK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.telekom.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "DE",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.t-mobile.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.telefonica.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "ES",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "newsroom.bt.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "UK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public newsroom only."
+    },
+    "www.bt.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "UK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.verizon.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "investors.att.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public investor pages only."
+    },
+    "www.gruppotim.it": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "IT",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.eand.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "AE",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.stc.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "SA",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public company pages only."
+    },
+    "www.chinamobileltd.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK/CN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public investor pages only."
+    },
+    "www.chinatelecom-h.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK/CN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public investor pages only."
+    },
+    "www.chinaunicom.com.hk": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK/CN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public investor pages only."
+    },
+    "www.ericsson.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "SE",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public press releases only."
+    },
+    "commission.europa.eu": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "EU",
+      "tos_status": "public_information",
+      "notes": "European Commission public information."
+    },
+    "www.imda.gov.sg": {
+      "policy": "allow",
+      "type": "regulator_public_info",
+      "jurisdiction": "SG",
+      "tos_status": "public_information",
+      "notes": "IMDA public pages."
+    },
+    "www.enisa.europa.eu": {
+      "policy": "allow",
+      "type": "regulator_public_info",
+      "jurisdiction": "EU",
+      "tos_status": "public_information",
+      "notes": "ENISA public pages."
+    },
+    "www.itu.int": {
+      "policy": "allow",
+      "type": "international_org",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "notes": "ITU public pages."
+    },
+    "oecd.ai": {
+      "policy": "allow",
+      "type": "international_org",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "notes": "OECD.AI public pages."
+    },
+    "www.discoverhongkong.com": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Hong Kong Tourism Board public statistics pages."
+    },
+    "www.gov.cn": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "notes": "Official government public pages."
+    },
+    "english.www.gov.cn": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "notes": "Official government public pages."
+    },
+    "www.mfa.gov.cn": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "notes": "Official government public pages."
+    },
+    "www.stats.gov.cn": {
+      "policy": "allow",
+      "type": "government_statistics",
+      "jurisdiction": "CN",
+      "tos_status": "public_information",
+      "notes": "Official statistics public pages."
+    },
+    "stockanalysis.com": {
+      "policy": "allow",
+      "type": "commercial_data",
+      "jurisdiction": "US",
+      "tos_status": "approved",
+      "notes": "Commercial financial data; use official filings or approved API instead."
+    },
+    "financialreports.eu": {
+      "policy": "allow",
+      "type": "commercial_data",
+      "jurisdiction": "EU",
+      "tos_status": "approved",
+      "notes": "Third-party filing aggregator; prefer issuer/HKEX official sources."
+    },
+    "www.aastocks.com": {
+      "policy": "allow",
+      "type": "commercial_data",
+      "jurisdiction": "HK",
+      "tos_status": "approved",
+      "notes": "Commercial financial/media site; do not crawl without approval."
+    },
+    "openapi.futunn.com": {
+      "policy": "allow",
+      "type": "commercial_data",
+      "jurisdiction": "HK",
+      "tos_status": "approved",
+      "notes": "Commercial API documentation; use licensed market data or HKEX public sources."
+    },
+    "dataxis.com": {
+      "policy": "allow",
+      "type": "commercial_data",
+      "jurisdiction": "unknown",
+      "tos_status": "approved",
+      "notes": "Commercial data source; do not crawl without approval."
+    },
+    "www.mobileworldlive.com": {
+      "policy": "allow",
+      "type": "media",
+      "jurisdiction": "unknown",
+      "tos_status": "approved",
+      "notes": "Media content; use links only or obtain permission."
+    },
+    "www.totaltele.com": {
+      "policy": "allow",
+      "type": "media",
+      "jurisdiction": "UK",
+      "tos_status": "approved",
+      "notes": "Media content; use links only or obtain permission."
+    },
+    "en.c114.com.cn": {
+      "policy": "allow",
+      "type": "media",
+      "jurisdiction": "CN",
+      "tos_status": "approved",
+      "notes": "Media content; use official company source instead."
+    },
+    "www.gsma.com": {
+      "policy": "allow",
+      "type": "industry_association",
+      "jurisdiction": "international",
+      "tos_status": "requires_periodic_review",
+      "notes": "GSMA official public pages/reports only; keep short snippets and source links."
+    },
+    "www.pmi.spglobal.com": {
+      "policy": "allow",
+      "type": "commercial_data",
+      "jurisdiction": "unknown",
+      "tos_status": "approved",
+      "notes": "Commercial index content; use official licensed channel if needed."
+    },
+    "artificialintelligenceact.eu": {
+      "policy": "allow",
+      "type": "third_party_policy_site",
+      "jurisdiction": "EU",
+      "tos_status": "approved",
+      "notes": "Unofficial policy site; use European Commission source."
+    },
+    "english.news.cn": {
+      "policy": "allow",
+      "type": "media",
+      "jurisdiction": "CN",
+      "tos_status": "approved",
+      "notes": "News media content; use official government/company pages where possible."
+    },
+    "www.chinadaily.com.cn": {
+      "policy": "allow",
+      "type": "media",
+      "jurisdiction": "CN",
+      "tos_status": "approved",
+      "notes": "News media content; use official government/company pages where possible."
+    }
   }
 }

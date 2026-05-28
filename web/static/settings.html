@@ -9,12 +9,13 @@
   <body>
     <main class="app-shell settings-shell">
       <header class="brand-bar">
-        <div class="brand-mark" aria-label="中国移动">
+        <a class="brand-mark" href="/" aria-label="返回主页面">
           <img class="cm-logo-image" src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
           <span>战略部公开信息监测</span>
-        </div>
+        </a>
         <div class="header-tools">
           <span id="headerTime">-</span>
+          <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
           <a class="quiet-button nav-link" href="/">返回首页</a>
         </div>
       </header>
@@ -25,11 +26,6 @@
           <h1>控制公司与具体数据内容</h1>
           <p>这里的设置会写入本地配置文件，爬虫和周报生成都会按同一范围执行。</p>
         </div>
-        <div class="settings-actions">
-          <button class="quiet-button" id="resetButton" type="button">恢复全量</button>
-          <button class="quiet-button" id="crawlButton" type="button">按设置爬取</button>
-          <button class="primary-button" id="saveButton" type="button">保存设置</button>
-        </div>
       </section>
 
       <section class="settings-toolbar">
@@ -39,15 +35,20 @@
 
       <section class="settings-list" id="settingsList" aria-label="爬取设置列表"></section>
 
-      <section class="section-block settings-log-block">
-        <div class="section-heading compact">
-          <span class="section-index">日志</span>
-          <div>
-            <h2>执行记录</h2>
-            <p>保存设置、触发爬取或接口异常会显示在这里。</p>
-          </div>
+      <section class="modal-backdrop" id="logModal" hidden>
+        <div class="log-modal">
+          <header>
+            <div>
+              <h2>日志记录</h2>
+              <p>与首页、定时任务页共享同一份本地操作日志。</p>
+            </div>
+            <div class="modal-actions">
+              <button class="quiet-button small" id="clearLogButton" type="button">清空</button>
+              <button class="close-btn" id="closeLogButton" type="button" aria-label="关闭">&times;</button>
+            </div>
+          </header>
+          <pre id="logBox">等待操作。</pre>
         </div>
-        <pre id="logBox">等待操作。</pre>
       </section>
     </main>
 

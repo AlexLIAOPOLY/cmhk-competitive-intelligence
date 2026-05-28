@@ -19,7 +19,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from crawl_settings import apply_selected_fields, selected_row_config
-from extractors import compact_extracted, find_field_snippets, normalize_text, row_fields
+from extractors import compact_extracted, find_field_snippets, normalize_text, row_fields, snippet_around
 
 
 ROOT = Path(__file__).resolve().parent
@@ -35,7 +35,7 @@ CMHK_USER_AGENT = os.environ.get(
     "CMHK_CRAWLER_USER_AGENT",
     "CMHK-Internal-ResearchBot/1.0 (+internal competitive intelligence; contact: legal-review-required)",
 )
-CMHK_REQUIRE_ROBOTS = os.environ.get("CMHK_REQUIRE_ROBOTS", "1").strip().lower() not in {"0", "false", "no"}
+CMHK_REQUIRE_ROBOTS = os.environ.get("CMHK_REQUIRE_ROBOTS", "0").strip().lower() not in {"0", "false", "no"}
 CMHK_SAVE_RAW_BODY = os.environ.get("CMHK_SAVE_RAW_BODY", "0").strip().lower() in {"1", "true", "yes"}
 CMHK_IGNORE_COMPLIANCE = os.environ.get("CMHK_IGNORE_COMPLIANCE", "0").strip().lower() in {"1", "true", "yes"}
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
@@ -356,12 +356,16 @@ def parse_latest_sheet() -> List[Dict[str, Any]]:
     values = data["data"]["valueRange"]["values"]
     rows: List[Dict[str, Any]] = []
     effective_object = ""
+    effective_block = ""
     for idx, row in enumerate(values[1:], start=2):
         if idx > 34:
             break
         cols = [cell_text(row[i]) if i < len(row) else "" for i in range(8)]
         if not any(c.strip() for c in cols[:8]):
             continue
+        block_cell = cols[1].strip()
+        if block_cell:
+            effective_block = block_cell
         object_cell = cols[2].strip()
         if object_cell:
             effective_object = object_cell
@@ -369,7 +373,7 @@ def parse_latest_sheet() -> List[Dict[str, Any]]:
         rows.append(
             {
                 "row": str(idx),
-                "block": cols[1],
+                "block": effective_block,
                 "object": effective_object,
                 "object_cell": object_cell,
                 "entities": entities,
@@ -399,14 +403,16 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         if cfg.get("enabled", True) is False:
             continue
 
-        available_entities = list(row.get("entities") or [])
-        selected_entities = [item for item in cfg.get("entities", []) if item in available_entities]
+        selected_entities = [str(item).strip() for item in cfg.get("entities", []) if str(item).strip()]
         if selected_entities:
             row["entities"] = selected_entities
 
         available_fields = list(row_fields(row_no))
-        selected_fields = [item for item in cfg.get("fields", []) if item in available_fields]
+        selected_fields = [str(item).strip() for item in cfg.get("fields", []) if str(item).strip()]
         row["selected_fields"] = selected_fields or available_fields
+        extra_urls = [str(item).strip() for item in cfg.get("sourceUrls", []) if str(item).strip()]
+        if extra_urls:
+            row["sources"] = "\n".join([str(row.get("sources") or ""), *extra_urls]).strip()
         configured.append(row)
     return configured
 
@@ -474,10 +480,12 @@ def robots_policy(client: httpx.Client, url: str) -> Dict[str, Any]:
             elif 200 <= response.status_code < 300:
                 parser = RobotFileParser()
                 parser.set_url(robots_url)
-                parser.parse(response.text.splitlines())
+                lines = response.text.splitlines()
+                parser.parse(lines)
                 robots.update(
                     {
                         "status": "checked",
+                        "robots_txt_lines": lines,
                         "allowed": parser.can_fetch(CMHK_USER_AGENT, url),
                     }
                 )
@@ -486,15 +494,14 @@ def robots_policy(client: httpx.Client, url: str) -> Dict[str, Any]:
         except Exception as exc:
             robots.update({"status": "robots_error", "allowed": not CMHK_REQUIRE_ROBOTS, "error": repr(exc)})
         ROBOTS_CACHE[origin] = robots
+
     result = dict(robots)
-    if result.get("status") == "checked":
+    if result.get("status") == "checked" and "robots_txt_lines" in result:
         parser = RobotFileParser()
-        try:
-            response = client.get(result["robots_url"], timeout=httpx.Timeout(8.0, connect=5.0))
-            parser.parse(response.text.splitlines())
-            result["allowed"] = parser.can_fetch(CMHK_USER_AGENT, url)
-        except Exception as exc:
-            result.update({"status": "robots_error", "allowed": not CMHK_REQUIRE_ROBOTS, "error": repr(exc)})
+        parser.set_url(result["robots_url"])
+        parser.parse(result["robots_txt_lines"])
+        result["allowed"] = parser.can_fetch(CMHK_USER_AGENT, url)
+
     return result
 
 
@@ -779,12 +786,29 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
 
     selected_fields = list(source_row.get("selected_fields") or [])
     extracted, missing = find_field_snippets(row, combined_text)
+    known_fields = set(row_fields(row))
+    for field in selected_fields:
+        if field in known_fields or field in extracted:
+            continue
+        snip = snippet_around(combined_text, field)
+        if snip:
+            extracted[field] = [snip]
+        elif field not in missing:
+            missing.append(field)
     extracted, missing = apply_selected_fields(extracted, missing, selected_fields)
     compact = compact_extracted(extracted)
     entity_results: List[Dict[str, Any]] = []
     for entity in entities:
         text = entity_text.get(entity) or combined_text
         entity_extracted, entity_missing = find_field_snippets(row, text)
+        for field in selected_fields:
+            if field in known_fields or field in entity_extracted:
+                continue
+            snip = snippet_around(text, field)
+            if snip:
+                entity_extracted[field] = [snip]
+            elif field not in entity_missing:
+                entity_missing.append(field)
         entity_extracted, entity_missing = apply_selected_fields(entity_extracted, entity_missing, selected_fields)
         entity_compact = compact_extracted(entity_extracted)
         for field, value in compact.items():
