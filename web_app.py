@@ -465,7 +465,7 @@ def check_local_action(message: str) -> dict | None:
     if "模板" in text or "格式" in text:
         return {
             "content": (
-                "当前生成流程会直接读取 /Users/liaowang/Downloads/模板.docx，"
+                "当前生成流程会优先读取本地上传的模板，若无则使用库里的默认模板 weekly_report_template.docx，"
                 "保留封面、目录位置、页眉页脚和图片资源，只替换目录与正文段落文字。"
             ),
         }

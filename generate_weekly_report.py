@@ -41,7 +41,7 @@ def dated_weekly_docx_path(now: datetime | None = None) -> Path:
 WEEKLY_DOCX = dated_weekly_docx_path()
 TEMPLATE_MD = ROOT / "weekly_report_template.md"
 TEMPLATE_DOCX = ROOT / "weekly_report_template.docx"
-LOCAL_WORD_TEMPLATE = Path("/Users/liaowang/Downloads/DOES_NOT_EXIST.docx")
+LOCAL_WORD_TEMPLATE = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_WORD_TEMPLATE = ROOT / "weekly_report_template.docx"
 SOURCE_WORD_TEMPLATE = LOCAL_WORD_TEMPLATE if LOCAL_WORD_TEMPLATE.exists() else REPO_WORD_TEMPLATE
 

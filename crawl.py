@@ -40,7 +40,8 @@ CMHK_SAVE_RAW_BODY = os.environ.get("CMHK_SAVE_RAW_BODY", "0").strip().lower() i
 CMHK_IGNORE_COMPLIANCE = os.environ.get("CMHK_IGNORE_COMPLIANCE", "0").strip().lower() in {"1", "true", "yes"}
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 MAIN_SHEET_ID = "9c638d"
-LARK_CLI = "/opt/homebrew/bin/lark-cli"
+import shutil
+LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
 SOURCE_REGISTRY_CACHE: Dict[str, Any] | None = None
 ROBOTS_CACHE: Dict[str, Dict[str, Any]] = {}
 
@@ -566,8 +567,10 @@ def html_to_text(raw: bytes, content_type: str) -> Tuple[str, str]:
             pdf_path = tmp_root / ("tmp_" + hashlib.sha1(raw[:4096]).hexdigest() + ".pdf")
             txt_path = tmp_root / (pdf_path.stem + ".txt")
             pdf_path.write_bytes(raw)
+            import shutil
+            pdftotext_path = shutil.which("pdftotext") or "/opt/homebrew/bin/pdftotext"
             subprocess.run(
-                ["/opt/homebrew/bin/pdftotext", "-layout", "-l", "120", str(pdf_path), str(txt_path)],
+                [pdftotext_path, "-layout", "-l", "120", str(pdf_path), str(txt_path)],
                 timeout=45,
                 check=False,
                 stdout=subprocess.DEVNULL,

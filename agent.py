@@ -52,7 +52,8 @@ def feishu_cli(command_args: str) -> str:
     当你需要与飞书表格进行同步、写入数据，或者查询飞书记录时，请使用此工具。
     由于安全限制，你只需提供 'lark-cli' 后面的参数，例如: 'sheets +read --range 9c638d!A1:B2'
     """
-    LARK_CLI = "/opt/homebrew/bin/lark-cli"
+    import shutil
+    LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
     
     # Simple shell-like splitting for arguments
     import shlex
