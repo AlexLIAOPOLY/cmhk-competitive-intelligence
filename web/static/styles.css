@@ -2269,6 +2269,18 @@ pre {
   fill: currentColor;
 }
 
+.audio-btn svg[hidden] {
+  display: none !important;
+}
+
+.audio-btn.text-btn {
+  font-size: 13px;
+  font-weight: 600;
+  width: 36px;
+  border-radius: 6px;
+  padding: 4px;
+}
+
 #audioPlayPauseBtn {
   background: var(--blue);
   color: white;

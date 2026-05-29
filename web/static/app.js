@@ -9,6 +9,7 @@ const state = {
   selectedFiles: new Set(),
   currentAudio: null,
   currentAudioButton: null,
+  isScrubbing: false,
 };
 
 const els = {
@@ -617,6 +618,10 @@ function playAudio(url, button = null, fileName = "音频摘要") {
   
   // Initialize new audio
   state.currentAudio = new Audio(url);
+  const audioSpeedBtn = document.getElementById("audioSpeedBtn");
+  if (audioSpeedBtn) {
+    state.currentAudio.playbackRate = parseFloat(audioSpeedBtn.textContent) || 1.0;
+  }
   state.currentAudioButton = button;
   els.audioFileName.textContent = fileName || "音频摘要";
   
@@ -631,7 +636,9 @@ function playAudio(url, button = null, fileName = "音频摘要") {
   
   state.currentAudio.addEventListener("timeupdate", () => {
     els.audioCurrentTime.textContent = formatTime(state.currentAudio.currentTime);
-    els.audioProgressBar.value = state.currentAudio.currentTime || 0;
+    if (!state.isScrubbing) {
+      els.audioProgressBar.value = state.currentAudio.currentTime || 0;
+    }
   });
   
   state.currentAudio.addEventListener("play", updateAudioPlayerUI);
@@ -661,10 +668,34 @@ if (els.audioPlayPauseBtn) {
 }
 
 if (els.audioProgressBar) {
+  els.audioProgressBar.addEventListener("mousedown", () => state.isScrubbing = true);
+  els.audioProgressBar.addEventListener("touchstart", () => state.isScrubbing = true);
+  
   els.audioProgressBar.addEventListener("input", (e) => {
+    els.audioCurrentTime.textContent = formatTime(e.target.value);
+  });
+  
+  els.audioProgressBar.addEventListener("change", (e) => {
+    state.isScrubbing = false;
     if (state.currentAudio) {
       state.currentAudio.currentTime = e.target.value;
-      els.audioCurrentTime.textContent = formatTime(e.target.value);
+    }
+  });
+  
+  els.audioProgressBar.addEventListener("mouseup", () => state.isScrubbing = false);
+  els.audioProgressBar.addEventListener("touchend", () => state.isScrubbing = false);
+}
+
+const audioSpeedBtn = document.getElementById("audioSpeedBtn");
+if (audioSpeedBtn) {
+  const speeds = [1.0, 1.25, 1.5, 2.0];
+  let currentSpeedIdx = 0;
+  audioSpeedBtn.addEventListener("click", () => {
+    currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
+    const newSpeed = speeds[currentSpeedIdx];
+    audioSpeedBtn.textContent = newSpeed.toFixed(1) + "x";
+    if (state.currentAudio) {
+      state.currentAudio.playbackRate = newSpeed;
     }
   });
 }
