@@ -778,6 +778,7 @@ select {
   color: #fff;
   background: linear-gradient(135deg, var(--blue), #45b8f5);
   box-shadow: 0 0 0 4px rgba(0, 153, 216, 0.12);
+  animation: pulseIcon 1.5s infinite;
 }
 
 .row-icon-button.generate-audio-button.is-loading svg {
