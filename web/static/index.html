@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=35" />
+    <link rel="stylesheet" href="/static/styles.css?v=38" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -34,6 +34,49 @@
             </div>
             <button class="quiet-button" id="crawlButtonSecondary" type="button">重新爬取</button>
             <button class="primary-button" id="generateButtonSecondary" type="button">生成周报</button>
+          </section>
+
+          <section class="insight-board" aria-label="多模态情报看板">
+            <div class="insight-head">
+              <div>
+                <strong>多模态情报看板</strong>
+                <span>文本、来源、音频和周报产出状态的可视化总览</span>
+              </div>
+              <em id="insightSignal">等待数据</em>
+            </div>
+            <div class="insight-grid">
+              <article class="insight-panel quality-panel">
+                <div class="panel-title">
+                  <span>采集质量</span>
+                  <strong id="qualityScore">--%</strong>
+                </div>
+                <div class="quality-ring" id="qualityRing" style="--score:0">
+                  <span id="qualityCenter">--</span>
+                </div>
+                <div class="quality-legend" id="qualityLegend"></div>
+              </article>
+              <article class="insight-panel">
+                <div class="panel-title">
+                  <span>情报板块</span>
+                  <strong id="blockTotal">--</strong>
+                </div>
+                <div class="bar-stack" id="blockChart"></div>
+              </article>
+              <article class="insight-panel">
+                <div class="panel-title">
+                  <span>来源画像</span>
+                  <strong id="sourceTotal">--</strong>
+                </div>
+                <div class="source-map" id="sourceChart"></div>
+              </article>
+              <article class="insight-panel timeline-panel">
+                <div class="panel-title">
+                  <span>周报产出</span>
+                  <strong id="timelineTotal">--</strong>
+                </div>
+                <div class="report-timeline" id="reportTimeline"></div>
+              </article>
+            </div>
           </section>
 
           <section class="section-block" id="outputArea">
@@ -161,6 +204,6 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=37"></script>
+    <script src="/static/app.js?v=40"></script>
   </body>
 </html>

@@ -316,6 +316,15 @@ def build_status() -> dict:
     outputs = [file_info(path) for path in current_report_files()]
     ok_count = 0
     partial_count = 0
+    failed_count = 0
+    block_counts: dict[str, int] = {}
+    source_type_counts: dict[str, int] = {}
+    jurisdiction_counts: dict[str, int] = {}
+    method_counts: dict[str, int] = {}
+    entity_counts: dict[str, int] = {}
+    field_total = 0
+    missing_total = 0
+    raw_total = 0
     for path in result_files:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -325,6 +334,40 @@ def build_status() -> dict:
             ok_count += 1
         elif data.get("status") == "partial":
             partial_count += 1
+        else:
+            failed_count += 1
+        block = str(data.get("need") or data.get("block") or "未分类")
+        if "香港" in block:
+            block = "香港本地"
+        elif any(token in block for token in ["国际", "全球", "欧盟", "国家"]):
+            block = "国际监管"
+        elif any(token in block for token in ["收入", "ARPU", "EBITDA", "利润", "客户"]):
+            block = "经营指标"
+        elif any(token in block for token in ["套餐", "资费", "产品", "服务"]):
+            block = "产品资费"
+        else:
+            block = "运营动态"
+        block_counts[block] = block_counts.get(block, 0) + 1
+        selected_fields = data.get("selected_fields") or []
+        missing_fields = data.get("missing_fields") or []
+        if isinstance(selected_fields, list):
+            field_total += len(selected_fields)
+        if isinstance(missing_fields, list):
+            missing_total += len(missing_fields)
+        for entity in data.get("entities") or []:
+            name = str(entity).strip()
+            if name:
+                entity_counts[name] = entity_counts.get(name, 0) + 1
+        for record in data.get("raw_records") or []:
+            if not isinstance(record, dict):
+                continue
+            raw_total += 1
+            source_type = str(record.get("source_type") or "unknown")
+            source_type_counts[source_type] = source_type_counts.get(source_type, 0) + 1
+            jurisdiction = str(record.get("jurisdiction") or "unknown")
+            jurisdiction_counts[jurisdiction] = jurisdiction_counts.get(jurisdiction, 0) + 1
+            method = str(record.get("method") or "unknown")
+            method_counts[method] = method_counts.get(method, 0) + 1
     latest = max((item["mtime"] for item in outputs), default=None)
     settings = build_settings_payload()
     
@@ -343,6 +386,50 @@ def build_status() -> dict:
             "count": len(result_files),
             "ok": ok_count,
             "partial": partial_count,
+        },
+        "visuals": {
+            "quality": {
+                "ok": ok_count,
+                "partial": partial_count,
+                "failed": failed_count,
+                "fieldTotal": field_total,
+                "missingFields": missing_total,
+                "rawSources": raw_total,
+            },
+            "blocks": sorted(
+                [{"label": key, "value": value} for key, value in block_counts.items()],
+                key=lambda item: item["value"],
+                reverse=True,
+            ),
+            "sourceTypes": sorted(
+                [{"label": key, "value": value} for key, value in source_type_counts.items()],
+                key=lambda item: item["value"],
+                reverse=True,
+            )[:6],
+            "jurisdictions": sorted(
+                [{"label": key, "value": value} for key, value in jurisdiction_counts.items()],
+                key=lambda item: item["value"],
+                reverse=True,
+            )[:6],
+            "methods": sorted(
+                [{"label": key, "value": value} for key, value in method_counts.items()],
+                key=lambda item: item["value"],
+                reverse=True,
+            )[:6],
+            "entities": sorted(
+                [{"label": key, "value": value} for key, value in entity_counts.items()],
+                key=lambda item: item["value"],
+                reverse=True,
+            )[:8],
+            "outputs": [
+                {
+                    "name": item["name"],
+                    "mtime": item["mtime"],
+                    "mtimeText": item["mtimeText"],
+                    "audio": bool(item.get("audio", {}).get("exists")),
+                }
+                for item in outputs[:8]
+            ],
         },
         "outputs": outputs,
         "settings": settings["summary"],

@@ -56,6 +56,17 @@ const els = {
   chatInput: document.querySelector("#chatInput"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
+  insightSignal: document.querySelector("#insightSignal"),
+  qualityScore: document.querySelector("#qualityScore"),
+  qualityRing: document.querySelector("#qualityRing"),
+  qualityCenter: document.querySelector("#qualityCenter"),
+  qualityLegend: document.querySelector("#qualityLegend"),
+  blockTotal: document.querySelector("#blockTotal"),
+  blockChart: document.querySelector("#blockChart"),
+  sourceTotal: document.querySelector("#sourceTotal"),
+  sourceChart: document.querySelector("#sourceChart"),
+  timelineTotal: document.querySelector("#timelineTotal"),
+  reportTimeline: document.querySelector("#reportTimeline"),
 };
 
 function formatBytes(size) {
@@ -121,6 +132,123 @@ function fileDescription(file) {
 
 function filteredOutputs() {
   return [...state.outputs].sort((a, b) => b.mtime - a.mtime);
+}
+
+function labelSourceType(value) {
+  const labels = {
+    company_official: "企业官网",
+    regulator_official: "监管机构",
+    media: "媒体资讯",
+    public_database: "公开数据库",
+    stock_exchange: "交易所",
+    unknown: "未分类",
+  };
+  return labels[value] || value.replaceAll("_", " ");
+}
+
+function sumValues(items = []) {
+  return items.reduce((total, item) => total + Number(item.value || 0), 0);
+}
+
+function renderMiniBars(container, items, options = {}) {
+  if (!container) return;
+  const list = Array.isArray(items) ? items.filter((item) => item.value > 0) : [];
+  if (!list.length) {
+    container.innerHTML = `<div class="chart-empty">暂无可视化数据</div>`;
+    return;
+  }
+  const total = sumValues(list);
+  const max = Math.max(...list.map((item) => item.value), 1);
+  container.innerHTML = list.slice(0, options.limit || 5).map((item, index) => {
+    const width = Math.max(8, Math.round((item.value / max) * 100));
+    const share = total ? Math.round((item.value / total) * 100) : 0;
+    const label = options.formatLabel ? options.formatLabel(item.label) : item.label;
+    return `
+      <div class="mini-bar" style="--bar:${width};--i:${index}">
+        <div class="mini-bar-top">
+          <span>${escapeHtml(label)}</span>
+          <strong>${item.value}<small>${share}%</small></strong>
+        </div>
+        <div class="mini-bar-track"><i></i></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderSourceMap(visuals) {
+  if (!els.sourceChart) return;
+  const sourceTypes = visuals.sourceTypes || [];
+  const jurisdictions = visuals.jurisdictions || [];
+  const methods = visuals.methods || [];
+  const total = sumValues(sourceTypes);
+  els.sourceTotal.textContent = total ? `${total} 条` : "--";
+  const chips = [
+    ...sourceTypes.slice(0, 3).map((item) => ({ ...item, label: labelSourceType(item.label), type: "来源" })),
+    ...jurisdictions.slice(0, 3).map((item) => ({ ...item, type: "地域" })),
+    ...methods.slice(0, 2).map((item) => ({ ...item, type: "方式" })),
+  ];
+  if (!chips.length) {
+    els.sourceChart.innerHTML = `<div class="chart-empty">暂无来源画像</div>`;
+    return;
+  }
+  const max = Math.max(...chips.map((item) => item.value), 1);
+  els.sourceChart.innerHTML = chips.map((item, index) => {
+    const size = Math.max(46, Math.min(96, 42 + (item.value / max) * 46));
+    return `
+      <div class="source-bubble" style="--size:${size}px;--i:${index}">
+        <span>${escapeHtml(item.type)}</span>
+        <strong>${escapeHtml(item.label)}</strong>
+        <em>${item.value}</em>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderReportTimeline(items = []) {
+  if (!els.reportTimeline) return;
+  const reports = items.slice(0, 6);
+  els.timelineTotal.textContent = reports.length ? `${reports.length} 份` : "--";
+  if (!reports.length) {
+    els.reportTimeline.innerHTML = `<div class="chart-empty">暂无周报输出</div>`;
+    return;
+  }
+  els.reportTimeline.innerHTML = reports.map((item, index) => `
+    <div class="timeline-item ${item.audio ? "has-audio" : ""}" style="--i:${index}">
+      <span></span>
+      <div>
+        <strong>${escapeHtml(item.name)}</strong>
+        <em>${escapeHtml(item.mtimeText || "")}${item.audio ? " · 音频就绪" : " · 待生成音频"}</em>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderInsights(status) {
+  const visuals = status.visuals || {};
+  const quality = visuals.quality || {};
+  const totalRows = Number(status.results?.count || 0);
+  const ok = Number(quality.ok || 0);
+  const partial = Number(quality.partial || 0);
+  const failed = Number(quality.failed || 0);
+  const score = totalRows ? Math.round(((ok + partial * 0.55) / totalRows) * 100) : 0;
+  if (els.qualityRing) els.qualityRing.style.setProperty("--score", score);
+  if (els.qualityScore) els.qualityScore.textContent = totalRows ? `${score}%` : "--%";
+  if (els.qualityCenter) els.qualityCenter.textContent = totalRows ? `${ok}/${totalRows}` : "--";
+  if (els.qualityLegend) {
+    els.qualityLegend.innerHTML = `
+      <span><i class="ok"></i>完整 ${ok}</span>
+      <span><i class="partial"></i>部分 ${partial}</span>
+      <span><i class="failed"></i>异常 ${failed}</span>
+    `;
+  }
+  if (els.insightSignal) {
+    const audioReady = (visuals.outputs || []).filter((item) => item.audio).length;
+    els.insightSignal.textContent = `来源 ${quality.rawSources || 0} · 缺字段 ${quality.missingFields || 0} · 音频 ${audioReady}`;
+  }
+  if (els.blockTotal) els.blockTotal.textContent = `${sumValues(visuals.blocks || []) || 0} 行`;
+  renderMiniBars(els.blockChart, visuals.blocks || [], { limit: 5 });
+  renderSourceMap(visuals);
+  renderReportTimeline(visuals.outputs || []);
 }
 
 function renderFileList() {
@@ -222,6 +350,7 @@ function renderStatus(status) {
   if (status.ai && els.aiConfigStatus) {
     els.aiConfigStatus.textContent = `${status.ai.provider} / ${status.ai.model} / ${status.ai.base_url} / ${status.ai.has_api_key ? "API Key 已保存" : "未保存 API Key"}`;
   }
+  renderInsights(status);
   state.outputs = status.outputs || [];
   const existing = new Set(state.outputs.map((item) => item.path_str));
   for (const path of state.selectedFiles) {
@@ -676,6 +805,49 @@ function resizeChatInput() {
   els.chatInput.style.height = `${Math.min(120, Math.max(42, els.chatInput.scrollHeight))}px`;
 }
 
+function generateFallbackSuggestions(userMessage) {
+  const msg = userMessage || "";
+  const suggestions = [];
+
+  // Context-aware suggestions based on keywords in the user's message
+  if (/HKT|csl|1O1O|和电/i.test(msg)) {
+    suggestions.push("帮我对比 HKT 和 3HK 的最新财报数据");
+    suggestions.push("HKT 最近有什么 5G 相关动态？");
+    suggestions.push("触发爬虫更新 HKT 的最新数据");
+  } else if (/3HK|Hutchison|和记/i.test(msg)) {
+    suggestions.push("3HK 最近的用户增长情况如何？");
+    suggestions.push("对比 3HK 和 SmarTone 的套餐价格");
+    suggestions.push("搜索 3HK 最新的企业合作动态");
+  } else if (/SmarTone|数码通/i.test(msg)) {
+    suggestions.push("SmarTone 最新的 5G 覆盖情况如何？");
+    suggestions.push("对比 SmarTone 和竞争对手的 ARPU");
+    suggestions.push("搜索 SmarTone 最近的战略合作");
+  } else if (/HKBN|香港宽频/i.test(msg)) {
+    suggestions.push("HKBN 的企业 ICT 业务发展如何？");
+    suggestions.push("HKBN 最新的宽带套餐有哪些变化？");
+    suggestions.push("搜索 HKBN 最近的并购动态");
+  } else if (/周报|报告|总结/i.test(msg)) {
+    suggestions.push("帮我分析本周最重要的 3 个竞争情报");
+    suggestions.push("对比最近两周的竞对动态变化");
+    suggestions.push("触发全量爬虫更新所有数据源");
+  } else if (/爬虫|爬取|抓取/i.test(msg)) {
+    suggestions.push("查看最近一次爬虫的执行日志");
+    suggestions.push("哪些数据源爬取失败了？");
+    suggestions.push("帮我重新生成本周周报");
+  } else if (/飞书|主表|表格/i.test(msg)) {
+    suggestions.push("帮我读取主表前10行的数据");
+    suggestions.push("主表中哪些行的数据需要更新？");
+    suggestions.push("搜索本地最新的爬取结果");
+  } else {
+    // Generic fallback
+    suggestions.push("帮我总结一下本周竞对的关键动态");
+    suggestions.push("搜索最近关于 5G 和 AI 的行业趋势");
+    suggestions.push("查看所有竞对的最新财报数据对比");
+  }
+
+  return suggestions.slice(0, 3);
+}
+
 async function sendChat(message) {
   addMessage("user", message);
   setChatBusy(true);
@@ -792,6 +964,12 @@ async function sendChat(message) {
       if (suggestionsHTML) {
         const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
         b.insertAdjacentHTML("beforeend", suggestionsHTML);
+      } else {
+        // Fallback: AI didn't output suggestions, generate defaults based on the user message
+        const fallback = generateFallbackSuggestions(message);
+        const fallbackHTML = `<div class="suggestion-chips">` + fallback.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
+        const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
+        b.insertAdjacentHTML("beforeend", fallbackHTML);
       }
     }
     await fetchStatus();
