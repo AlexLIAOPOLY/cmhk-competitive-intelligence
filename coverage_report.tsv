@@ -1,13 +1,17 @@
 row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 2	ok	HKT,csl,1O1O	"【HKT】
+- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/
+- https://www.hkt.com/en/about-hkt/investor-relations/financial-results/
 - https://www.hkcsl.com/en/csl-local-prepaid-sim-card
-- https://stockanalysis.com/quote/hkg/6823/financials/
-- https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/
+- https://www.1010.com.hk/
+- https://stockanalysis.com/quote/hkg/6823/revenue/
 【csl】
 - https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/
 - https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/
 【1O1O】
 - https://www.hkcsl.com/en/csl-local-prepaid-sim-card
+- https://www.1010.com.hk/
 - https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/"	运营收入/总收益,服务收入,EBITDA,净利润,客户数/用户数,5G用户数,ARPU,资本开支,宽频线数/家宽用户数		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_2.json
 3	ok	HKT,csl,1O1O	"【HKT】
 - https://www.hkcsl-5g.com/en/5g-tariff-plan/

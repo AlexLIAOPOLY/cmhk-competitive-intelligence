@@ -131,7 +131,7 @@ def get_agent():
         model=model_name,
         api_key=api_key,
         api_base=base_url,
-        max_retries=0,
+        max_retries=3,
     )
     
     tools = [search_local_reports, trigger_crawl, feishu_cli, trigger_report_generation, read_webpage, get_system_status]
