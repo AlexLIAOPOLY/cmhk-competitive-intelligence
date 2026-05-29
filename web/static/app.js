@@ -160,9 +160,12 @@ function initOrUpdateChart(id, config) {
   const canvas = document.getElementById(id);
   if (!canvas) return;
   if (chartInstances[id]) {
-    chartInstances[id].destroy();
+    chartInstances[id].data = config.data;
+    chartInstances[id].options = config.options;
+    chartInstances[id].update('none'); // Update without animation
+  } else {
+    chartInstances[id] = new Chart(canvas, config);
   }
-  chartInstances[id] = new Chart(canvas, config);
 }
 
 function renderInsights(status) {
@@ -218,20 +221,23 @@ function renderInsights(status) {
         data: blockData,
         backgroundColor: '#3b82f6',
         borderRadius: 4,
-        barThickness: 12
+        barThickness: 10
       }]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: { right: 35 } // Leave space for external labels
+      },
       plugins: {
         legend: { display: false },
         datalabels: {
-          color: '#ffffff',
+          color: '#666666',
           anchor: 'end',
-          align: 'left',
-          font: { weight: 'bold', size: 12 },
+          align: 'right',
+          font: { weight: 'bold', size: 11 },
           display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
         }
       },
@@ -256,36 +262,44 @@ function renderInsights(status) {
   ];
   
   initOrUpdateChart('sourceCanvas', {
-    type: 'polarArea',
+    type: 'bar',
     data: {
       labels: chips.map(c => c.label),
       datasets: [{
         data: chips.map(c => c.value),
         backgroundColor: [
-          'rgba(59, 130, 246, 0.6)',
-          'rgba(16, 185, 129, 0.6)',
-          'rgba(245, 158, 11, 0.6)',
-          'rgba(239, 68, 68, 0.6)',
-          'rgba(139, 92, 246, 0.6)',
-          'rgba(14, 165, 233, 0.6)',
-          'rgba(236, 72, 153, 0.6)'
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
+          'rgba(14, 165, 233, 0.8)',
+          'rgba(236, 72, 153, 0.8)'
         ],
-        borderWidth: 1
+        borderRadius: 4,
+        barThickness: 8
       }]
     },
     options: {
+      indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: { right: 35 } // Leave space for external labels
+      },
       plugins: {
-        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
+        legend: { display: false },
         datalabels: {
-          color: '#ffffff',
+          color: '#666666',
+          anchor: 'end',
+          align: 'right',
           font: { weight: 'bold', size: 11 },
           display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
         }
       },
       scales: {
-        r: { ticks: { display: false } }
+        x: { display: false },
+        y: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10 } } }
       }
     }
   });
