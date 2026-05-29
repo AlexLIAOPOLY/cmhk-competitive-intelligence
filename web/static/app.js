@@ -149,6 +149,11 @@ function sumValues(items = []) {
   return items.reduce((total, item) => total + Number(item.value || 0), 0);
 }
 
+// Register datalabels globally
+if (typeof ChartDataLabels !== 'undefined') {
+  Chart.register(ChartDataLabels);
+}
+
 let chartInstances = {};
 
 function initOrUpdateChart(id, config) {
@@ -187,7 +192,12 @@ function renderInsights(status) {
       maintainAspectRatio: false,
       cutout: '70%',
       plugins: {
-        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
+        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } },
+        datalabels: {
+          color: '#ffffff',
+          font: { weight: 'bold', size: 12 },
+          display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+        }
       }
     }
   });
@@ -216,7 +226,14 @@ function renderInsights(status) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false }
+        legend: { display: false },
+        datalabels: {
+          color: '#ffffff',
+          anchor: 'end',
+          align: 'left',
+          font: { weight: 'bold', size: 12 },
+          display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+        }
       },
       scales: {
         x: { display: false },
@@ -260,7 +277,12 @@ function renderInsights(status) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } }
+        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
+        datalabels: {
+          color: '#ffffff',
+          font: { weight: 'bold', size: 11 },
+          display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+        }
       },
       scales: {
         r: { ticks: { display: false } }
@@ -1142,3 +1164,4 @@ setInterval(setClock, 30000);
 fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);
 });
+setInterval(() => fetchStatus().catch(console.error), 10000);
