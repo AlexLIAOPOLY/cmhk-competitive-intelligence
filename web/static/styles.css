@@ -310,14 +310,14 @@ select {
 .file-header,
 .file-row {
   display: grid;
-  grid-template-columns: minmax(240px, 1.4fr) minmax(220px, 1fr) 170px 150px;
+  grid-template-columns: minmax(240px, 1.4fr) minmax(220px, 1fr) 170px 190px;
   gap: 18px;
   align-items: center;
 }
 
 .file-header.with-select,
 .file-row.with-select {
-  grid-template-columns: 34px minmax(240px, 1.4fr) minmax(220px, 1fr) 170px 150px;
+  grid-template-columns: 34px minmax(240px, 1.4fr) minmax(220px, 1fr) 170px 190px;
 }
 
 .file-row.with-select {
@@ -429,6 +429,7 @@ select {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  align-items: center;
 }
 
 .select-cell {
@@ -464,9 +465,29 @@ select {
 
 .table-icon-button:hover,
 .table-icon-button.is-active,
-.row-icon-button:hover {
+.row-icon-button:hover,
+.row-icon-button.is-playing {
   background: var(--blue-soft);
   color: var(--blue);
+}
+
+.row-icon-button.audio-play-button {
+  color: #0877c9;
+  background: rgba(0, 119, 200, 0.08);
+}
+
+.row-icon-button.audio-play-button.is-playing {
+  color: #fff;
+  background: linear-gradient(135deg, var(--blue), #45b8f5);
+  box-shadow: 0 0 0 5px rgba(0, 153, 216, 0.13);
+}
+
+.row-icon-button.generate-audio-button.is-loading svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .table-icon-button:disabled,

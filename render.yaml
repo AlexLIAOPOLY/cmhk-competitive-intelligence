@@ -7,7 +7,17 @@ services:
     startCommand: python web_app.py
     envVars:
       - key: PYTHON_VERSION
-        value: 3.13.3
+        value: 3.12.8
+      - key: TTS_BACKEND
+        value: moss
+      - key: TTS_AUTO_DOWNLOAD
+        value: "1"
+      - key: MOSS_TTS_VOICE
+        value: Junhao
+      - key: MOSS_TTS_MAX_NEW_FRAMES
+        value: "260"
+      - key: MOSS_TTS_THREADS
+        value: "4"
       - key: AI_PROVIDER
         value: deepseek
       - key: AI_BASE_URL

@@ -5,6 +5,8 @@ const state = {
   editingFile: null,
   multiSelect: false,
   selectedFiles: new Set(),
+  currentAudio: null,
+  currentAudioButton: null,
 };
 
 const els = {
@@ -102,6 +104,8 @@ function iconSvg(name) {
   const icons = {
     edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>',
     trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+    volume: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/>',
+    waveform: '<path d="M2 12h2"/><path d="M6 8v8"/><path d="M10 4v16"/><path d="M14 9v6"/><path d="M18 7v10"/><path d="M22 12h-2"/>',
   };
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ""}</svg>`;
 }
@@ -163,6 +167,9 @@ function renderFileList() {
     const type = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
+    const audioAction = file.audio && file.audio.exists
+      ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+      : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
     html += `
       <div class="file-row ${type.className} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
@@ -170,6 +177,7 @@ function renderFileList() {
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
+          ${audioAction}
           <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
           <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
           <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
@@ -183,6 +191,12 @@ function renderFileList() {
   });
   els.fileList.querySelectorAll(".delete-file-button").forEach((button) => {
     button.addEventListener("click", () => deleteFiles([button.dataset.path]));
+  });
+  els.fileList.querySelectorAll(".generate-audio-button").forEach((button) => {
+    button.addEventListener("click", () => generateAudio(button.dataset.path, button));
+  });
+  els.fileList.querySelectorAll(".audio-play-button").forEach((button) => {
+    button.addEventListener("click", () => playAudio(button.dataset.audio, button));
   });
   els.fileList.querySelectorAll(".file-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
@@ -343,6 +357,57 @@ async function deleteFiles(paths) {
   renderStatus(data.status);
 }
 
+async function generateAudio(pathStr, button = null) {
+  if (!pathStr) return;
+  if (button) {
+    button.disabled = true;
+    button.classList.add("is-loading");
+  }
+  appendLog(`\n[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始生成音频摘要...\n`);
+  try {
+    const response = await fetch("/api/audio/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: pathStr, force: true }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.result?.error || data.error || "音频生成失败");
+    renderStatus(data.status);
+    appendLog(`音频摘要已生成：${data.result.audio?.name || ""}（${data.result.backend || "unknown"}）\n`);
+  } catch (error) {
+    appendLog(`音频生成失败：${error.message}\n`);
+    alert(error.message);
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.classList.remove("is-loading");
+    }
+  }
+}
+
+function playAudio(url, button = null) {
+  if (!url) return;
+  if (state.currentAudio && state.currentAudio.src.includes(url) && !state.currentAudio.paused) {
+    state.currentAudio.pause();
+    if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
+    return;
+  }
+  if (state.currentAudio) {
+    state.currentAudio.pause();
+    if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
+  }
+  state.currentAudio = new Audio(url);
+  state.currentAudioButton = button;
+  if (button) button.classList.add("is-playing");
+  state.currentAudio.addEventListener("ended", () => {
+    if (button) button.classList.remove("is-playing");
+  });
+  state.currentAudio.play().catch((error) => {
+    if (button) button.classList.remove("is-playing");
+    appendLog(`音频播放失败：${error.message}\n`);
+  });
+}
+
 async function runCrawl(source = "按钮") {
   setBusy(true, "正在重新爬取");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`);
@@ -441,6 +506,7 @@ async function generateReport(source = "按钮") {
     appendLog([
       `\n[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 生成完成：${data.ok ? "成功" : "失败"}`,
       `耗时：${data.durationMs} ms`,
+      data.audio ? `音频摘要：${data.audio.ok ? `已生成（${data.audio.backend || "cached"}）` : `失败：${data.audio.error || "未知错误"}`}` : "",
       data.stdout ? `输出文件：\n${data.stdout}` : "",
       data.stderr ? `错误信息：\n${data.stderr}` : "",
     ]
@@ -796,7 +862,7 @@ els.clearChatButton.addEventListener("click", () => {
     <div class="message assistant">
       <span class="avatar">AI</span>
       <div class="message-body">
-        <div class="message-text">您好，我会先检索本地周报和爬取结果，再调用 LLM 总结内容、分析风险并给出建议。</div>
+        <div class="message-text">您好！我是一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>2. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>3. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
       </div>
     </div>
   `;

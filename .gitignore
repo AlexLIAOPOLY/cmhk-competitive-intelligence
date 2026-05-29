@@ -23,3 +23,6 @@ create_log_sheet_response.json
 write_payload.json
 agent_report.*
 weekly_report_render/
+audio/
+models/tts/
+.venv_tts/

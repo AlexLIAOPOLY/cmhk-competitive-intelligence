@@ -17,6 +17,13 @@ from crawl_settings import SETTINGS_PATH, load_settings, save_settings
 from extractors import row_fields
 from rag_llm import ask_llm_with_rag, stream_llm_with_rag
 from agent import stream_agent
+from tts_service import (
+    AUDIO_DIR,
+    audio_info_for_report,
+    delete_audio_for_report,
+    rename_audio_for_report,
+    synthesize_report_audio,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -230,6 +237,7 @@ def file_info(path: Path, url: str = None) -> dict:
         "url": url or f"/outputs/{quote(path.name)}",
         "path_str": rel_path,
         "note": metadata.get("note", "") if isinstance(metadata, dict) else "",
+        "audio": audio_info_for_report(path),
     }
 
 
@@ -273,6 +281,7 @@ def update_report_file(payload: dict) -> dict:
     old_rel = str(target.relative_to(ROOT))
     if new_target != target:
         target.rename(new_target)
+        rename_audio_for_report(target, new_target)
         existing = metadata.pop(old_rel, {})
     else:
         existing = metadata.get(old_rel, {})
@@ -295,6 +304,7 @@ def delete_report_files(paths: list[str]) -> dict:
             continue
         rel_path = str(target.relative_to(ROOT))
         target.unlink()
+        delete_audio_for_report(target)
         metadata.pop(rel_path, None)
         deleted += 1
     save_report_metadata(metadata)
@@ -370,12 +380,21 @@ def run_report_generation() -> dict:
         timeout=120,
     )
     status = build_status()
+    audio_result = None
+    if proc.returncode == 0 and status.get("outputs"):
+        try:
+            latest_path = ROOT / status["outputs"][0]["path_str"]
+            audio_result = synthesize_report_audio(latest_path, force=True)
+            status = build_status()
+        except Exception as exc:
+            audio_result = {"ok": False, "error": str(exc)}
     return {
         "ok": proc.returncode == 0,
         "returnCode": proc.returncode,
         "durationMs": round((time.time() - started) * 1000),
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),
+        "audio": audio_result,
         "status": status,
     }
 
@@ -501,6 +520,12 @@ class AppHandler(BaseHTTPRequestHandler):
             if is_report_path(target):
                 self.serve_head(target, download=True)
                 return
+        if parsed.path.startswith("/audio/"):
+            name = Path(unquote(parsed.path.removeprefix("/audio/"))).name
+            target = AUDIO_DIR / name
+            if target.exists() and target.suffix.lower() in {".wav", ".mp3"}:
+                self.serve_head(target)
+                return
         if parsed.path.startswith("/references/"):
             target = reference_path(unquote(parsed.path.removeprefix("/references/")))
             if target and target.exists():
@@ -557,6 +582,14 @@ class AppHandler(BaseHTTPRequestHandler):
                 json_response(self, {"ok": False, "error": "file not allowed"}, 404)
                 return
             self.serve_file(target, download=True)
+            return
+        if path.startswith("/audio/"):
+            name = Path(unquote(path.removeprefix("/audio/"))).name
+            target = AUDIO_DIR / name
+            if not target.exists() or target.suffix.lower() not in {".wav", ".mp3"} or target.parent != AUDIO_DIR:
+                json_response(self, {"ok": False, "error": "audio not found"}, 404)
+                return
+            self.serve_file(target)
             return
         if path.startswith("/references/"):
             target = reference_path(unquote(path.removeprefix("/references/")))
@@ -647,6 +680,17 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/generate":
             json_response(self, run_report_generation())
+            return
+        if parsed.path == "/api/audio/generate":
+            try:
+                body = read_request_json(self)
+                target = report_target_from_rel(str(body.get("path") or ""))
+                if not target:
+                    raise ValueError("文件不存在或不允许生成音频")
+                result = synthesize_report_audio(target, force=bool(body.get("force", False)))
+                json_response(self, {"ok": bool(result.get("ok")), "result": result, "status": build_status()}, 200 if result.get("ok") else 500)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
         if parsed.path == "/api/report-file":
             try:
@@ -803,8 +847,9 @@ class AppHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     port = int(os.environ.get("PORT", "8765"))
-    server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
-    print(f"Weekly report UI: http://0.0.0.0:{port}")
+    host = os.environ.get("HOST", "0.0.0.0")
+    server = ThreadingHTTPServer((host, port), AppHandler)
+    print(f"Weekly report UI: http://{host}:{port}")
     server.serve_forever()
 
 

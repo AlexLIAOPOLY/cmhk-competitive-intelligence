@@ -65,7 +65,7 @@
           <div class="chat-header">
             <div>
               <h2>AI 助手</h2>
-              <p>LLM + RAG：基于周报、爬取结果和审计文件回答。</p>
+              <p>智能 Agent：支持多轮对话、RAG 检索、触发定向爬虫，以及飞书表格协同。</p>
             </div>
             <button class="quiet-button small" id="aiSettingsButton" type="button">设置</button>
             <button class="quiet-button small" id="clearChatButton" type="button">清空</button>
@@ -74,7 +74,7 @@
           <div class="messages" id="messages">
             <div class="message assistant">
               <span class="avatar">AI</span>
-              <div class="message-body">您好，我会先检索本地周报和爬取结果，再调用 LLM 总结内容、分析风险并给出建议。</div>
+              <div class="message-body">您好！我是一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>2. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>3. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
             </div>
           </div>
           <form class="chat-form" id="chatForm">
