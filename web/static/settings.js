@@ -309,6 +309,7 @@ async function saveRow(rowNo) {
     appendLog(`${timePrefix()} 第 ${rowNo} 行保存失败：${error.message}`);
   } finally {
     settingsState.busyRows.delete(String(rowNo));
+    if (els.logButton) els.logButton.classList.remove("log-glowing");
     render();
   }
 }

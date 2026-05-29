@@ -88,22 +88,35 @@ function setClock() {
   els.headerTime.textContent = `${now.toLocaleString("zh-CN", { hour12: false })} · Asia/Hong_Kong`;
 }
 
-function setBusy(value, label = "运行中") {
+function setBusy(value, label = "运行中", action = "all") {
   state.busy = value;
+  
   els.generateButtons.forEach((button) => {
     button.disabled = value;
-    button.textContent = value ? "生成中..." : "生成周报";
+    if (value) {
+      button.textContent = (action === "all" || action === "generate") ? "生成中..." : "生成周报";
+    } else {
+      button.textContent = "生成周报";
+    }
   });
+  
   els.crawlButtons.forEach((button) => {
     button.disabled = value;
-    button.textContent = value ? "爬取中..." : "重新爬取";
+    if (value) {
+      button.textContent = (action === "all" || action === "crawl") ? "爬取中..." : "重新爬取";
+    } else {
+      button.textContent = "重新爬取";
+    }
   });
+
   els.refreshButton.disabled = value;
   if (els.aiSettingsButton) els.aiSettingsButton.disabled = value;
   els.runState.textContent = value ? label : "准备就绪";
   
   if (value && els.logModal.hidden) {
     els.logButton.classList.add("log-glowing");
+  } else if (!value) {
+    els.logButton.classList.remove("log-glowing");
   }
 }
 
@@ -726,7 +739,7 @@ if (els.audioCloseBtn) {
 }
 
 async function runCrawl(source = "按钮") {
-  setBusy(true, "正在重新爬取");
+  setBusy(true, "正在重新爬取", "crawl");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`);
   try {
     const res = await fetch("/api/crawl-stream?v=12", { method: "POST" });
@@ -814,7 +827,7 @@ async function runCrawl(source = "按钮") {
 }
 
 async function generateReport(source = "按钮") {
-  setBusy(true, "正在生成");
+  setBusy(true, "正在生成", "generate");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成周报，请稍候...\n`);
   try {
     const res = await fetch("/api/generate-stream", { method: "POST" });

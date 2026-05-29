@@ -287,6 +287,8 @@ function renderList() {
         setLog(`单行运行失败: ${err.message}`);
         runBtn.disabled = false;
         runBtn.innerHTML = "▶ 运行该行";
+      } finally {
+        if (els.logButton) els.logButton.classList.remove("log-glowing");
       }
     });
     
@@ -319,6 +321,8 @@ function renderList() {
         setLog(`Row ${row.row} 保存失败: ${err.message}`);
         saveRowBtn.disabled = false;
         saveRowBtn.innerHTML = "💾 保存该行排期";
+      } finally {
+        if (els.logButton) els.logButton.classList.remove("log-glowing");
       }
     });
 
