@@ -1,9 +1,9 @@
 # CMHK Public Crawl Audit
 
-- Generated at: 2026-05-28T15:26:46.043985
+- Generated at: 2026-05-29T15:03:59.370442
 - Rows crawled: 33
-- OK rows: 28
-- Partial rows: 4
+- OK rows: 27
+- Partial rows: 5
 - Failed/no extraction rows: 1
 - URLs fetched after compliance checks: 158
 - URLs skipped by compliance policy: 11

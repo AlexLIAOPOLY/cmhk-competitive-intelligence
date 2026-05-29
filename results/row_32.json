@@ -1,7 +1,7 @@
 {
   "row": 32,
   "need": "收购、融资、合资、股权交易等",
-  "status": "ok",
+  "status": "partial",
   "object": "行业资讯",
   "entities": [
     "行业资讯"
@@ -28,14 +28,15 @@
   "extracted": {
     "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
     "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
-    "合资": "k Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersecurity coalition. ",
-    "股权交易": "dified on 27.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
+    "股权交易": "dified on 28.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
   },
-  "missing_fields": [],
+  "missing_fields": [
+    "合资"
+  ],
   "entity_results": [
     {
       "entity": "行业资讯",
-      "status": "ok",
+      "status": "partial",
       "source_urls": [
         "https://www.investhk.gov.hk/en/news/",
         "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
@@ -45,10 +46,11 @@
       "extracted": {
         "收购": "E, Nasdaq: VZ) (\"Verizon\") and Frontier Communications Parent, Inc. (Nasdaq: FYBR) (\"Frontier\") today announced they have received all regulatory approvals and expect to close the acquisition on January 20, 2026. The pen",
         "融资": "ong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profi",
-        "合资": "k Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersecurity coalition. ",
-        "股权交易": "dified on 27.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
+        "股权交易": "dified on 28.05.2026 SOURCE: https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibilit"
       },
-      "missing_fields": [],
+      "missing_fields": [
+        "合资"
+      ],
       "raw_records": [
         {
           "row": 32,
@@ -57,11 +59,11 @@
           "status": 200,
           "content_type": "text/html",
           "title": "News | InvestHK",
-          "bytes": 128425,
-          "elapsed_seconds": 0.273,
+          "bytes": 128472,
+          "elapsed_seconds": 0.249,
           "method": "httpx",
-          "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News InvestHK Go Global Press Rel",
-          "content_hash": "3e0ffeb8211b2d269cfc983481f86e9d571c87b66d7df1c64b5ef49fc755f756",
+          "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release InvestHK Go Gl",
+          "content_hash": "7cac624221d2552ee01837ae9eefdfef2710ed1022950df9540a88a6c7cc588d",
           "error": "",
           "source_policy": "allow",
           "source_type": "government_public_info",
@@ -82,7 +84,7 @@
           "content_type": "text/html",
           "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
           "bytes": 399203,
-          "elapsed_seconds": 1.515,
+          "elapsed_seconds": 1.552,
           "method": "httpx",
           "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
           "content_hash": "1113f5336000b68a261dc31c06dcc957b51c6545e2f71494a9df0f440ce6f3d0",
@@ -105,11 +107,11 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Total Telecom - News, analysis and events for global telecoms",
-          "bytes": 651189,
-          "elapsed_seconds": 0.149,
+          "bytes": 651179,
+          "elapsed_seconds": 0.18,
           "method": "httpx",
-          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page UK’s fibre fiesta sees CityFibre’s Project Gigabit contracts ‘re-scoped’ Posted by Harry Baldock | May 26, 2026 The Persian Gulf topped our 2026 cable risk index. Here’s what it means for operators and what they can do about i",
-          "content_hash": "f05fae2695de79ebcb7cae713eeb8497a4eb15eef15870f762b03733b9fc53dc",
+          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page BT outlines mobile video pilots with Meta Posted by Harry Baldock | May 28, 2026 UK’s fibre fiesta sees CityFibre’s Project Gigabit contracts ‘re-scoped’ Posted by Harry Baldock | May 26, 2026 The Persian Gulf topped our 2026 ",
+          "content_hash": "68fa739897dc7b9028be43878cbeb07a5ecb54bd8495a5b115fdb4ee0ba2dc00",
           "error": "",
           "source_policy": "allow",
           "source_type": "media",
@@ -129,11 +131,11 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Mobile World Live - News & Insights for the Global Mobile...",
-          "bytes": 242014,
-          "elapsed_seconds": 0.128,
+          "bytes": 243740,
+          "elapsed_seconds": 0.193,
           "method": "httpx",
-          "text_sample": "Mobile World Live - News & Insights for the Global Mobile... Skip to content 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs ES FR 中文 ES FR 中文 Topics 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More... View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs Subscribe Homepage Featured Posts Network Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersec",
-          "content_hash": "3db8ced25a6da68d5d7b3bcba1be39d1826c934d8c73180ea91c8c709b7e3527",
+          "text_sample": "Mobile World Live - News & Insights for the Global Mobile... Skip to content 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs ES FR 中文 ES FR 中文 Topics 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More... View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs Subscribe Homepage Featured Posts BT UK dampens Bharti BT stake prospects Financial Times reported UK authorities would oppose any move by Bharti Enterprises to increase its current shareholding of almost 25% in BT Group on technology sovereig",
+          "content_hash": "954c9c32a6e95402c117ef9ab797cd6ab87b418cbe03c1c51563c32159b26bdb",
           "error": "",
           "source_policy": "allow",
           "source_type": "media",
@@ -149,7 +151,9 @@
       ]
     }
   ],
-  "entity_missing": [],
+  "entity_missing": [
+    "行业资讯:合资"
+  ],
   "raw_records": [
     {
       "row": 32,
@@ -158,11 +162,11 @@
       "status": 200,
       "content_type": "text/html",
       "title": "News | InvestHK",
-      "bytes": 128425,
-      "elapsed_seconds": 0.273,
+      "bytes": 128472,
+      "elapsed_seconds": 0.249,
       "method": "httpx",
-      "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News InvestHK Go Global Press Rel",
-      "content_hash": "3e0ffeb8211b2d269cfc983481f86e9d571c87b66d7df1c64b5ef49fc755f756",
+      "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release InvestHK Go Gl",
+      "content_hash": "7cac624221d2552ee01837ae9eefdfef2710ed1022950df9540a88a6c7cc588d",
       "error": "",
       "source_policy": "allow",
       "source_type": "government_public_info",
@@ -183,7 +187,7 @@
       "content_type": "text/html",
       "title": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon",
       "bytes": 399203,
-      "elapsed_seconds": 1.515,
+      "elapsed_seconds": 1.552,
       "method": "httpx",
       "text_sample": "Verizon and Frontier Receive All Required Regulatory Approvals to Complete Transaction | About Verizon Accessibility Resource Center Skip to main content About Us Careers Support About Us About Us About Us About Us Overview Who We Are Who We Are Overview Our Culture History and Timeline Headquarters & Contact Info Verizon Fact Sheet Leadership What We Do What We Do Overview Innovation Labs Broadband & Fiber Internet of Things Managed Security Verizon Ventures How We Lead How We Lead Overview Code of Conduct Management Governance Open Internet Policies Retiree Information State Government Affairs Close News News News News News News Networks & Platforms Products & Plans Responsible Business Financial Public Safety Noticias News Alerts Signup Press Releases Press Releases Press Releases Media Contacts B-roll and images RSS Feeds Emergency resource center Verizon Fact Sheet Close Responsibil",
       "content_hash": "1113f5336000b68a261dc31c06dcc957b51c6545e2f71494a9df0f440ce6f3d0",
@@ -207,10 +211,10 @@
       "content_type": "text/html",
       "title": "Access Denied",
       "bytes": 450,
-      "elapsed_seconds": 0.155,
+      "elapsed_seconds": 0.169,
       "method": "httpx",
-      "text_sample": "Access Denied Access Denied You don't have permission to access \"http://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition\" on this server. Reference #18.6d2fc017.[REDACTED_PHONE_OR_ID].1a887fb9 https://errors.edgesuite.net/18.6d2fc017.[REDACTED_PHONE_OR_ID].1a887fb9",
-      "content_hash": "7db1fd25319b61775483d8393e7bb58f73c66e90a50ea297e17f3893e7f96df2",
+      "text_sample": "Access Denied Access Denied You don't have permission to access \"http://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition\" on this server. Reference #18.563d3117.[REDACTED_PHONE_OR_ID].54d0fa7e https://errors.edgesuite.net/18.563d3117.[REDACTED_PHONE_OR_ID].54d0fa7e",
+      "content_hash": "21b2e6be24d9a3b2eb7230f9e9c47e505c5687656c4b6dc646395cc7183679fb",
       "error": "",
       "source_policy": "allow",
       "source_type": "company_official",
@@ -228,11 +232,11 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Total Telecom - News, analysis and events for global telecoms",
-      "bytes": 651189,
-      "elapsed_seconds": 0.149,
+      "bytes": 651179,
+      "elapsed_seconds": 0.18,
       "method": "httpx",
-      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page UK’s fibre fiesta sees CityFibre’s Project Gigabit contracts ‘re-scoped’ Posted by Harry Baldock | May 26, 2026 The Persian Gulf topped our 2026 cable risk index. Here’s what it means for operators and what they can do about i",
-      "content_hash": "f05fae2695de79ebcb7cae713eeb8497a4eb15eef15870f762b03733b9fc53dc",
+      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page BT outlines mobile video pilots with Meta Posted by Harry Baldock | May 28, 2026 UK’s fibre fiesta sees CityFibre’s Project Gigabit contracts ‘re-scoped’ Posted by Harry Baldock | May 26, 2026 The Persian Gulf topped our 2026 ",
+      "content_hash": "68fa739897dc7b9028be43878cbeb07a5ecb54bd8495a5b115fdb4ee0ba2dc00",
       "error": "",
       "source_policy": "allow",
       "source_type": "media",
@@ -252,11 +256,11 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Mobile World Live - News & Insights for the Global Mobile...",
-      "bytes": 242014,
-      "elapsed_seconds": 0.128,
+      "bytes": 243740,
+      "elapsed_seconds": 0.193,
       "method": "httpx",
-      "text_sample": "Mobile World Live - News & Insights for the Global Mobile... Skip to content 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs ES FR 中文 ES FR 中文 Topics 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More... View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs Subscribe Homepage Featured Posts Network Tech Podcast Podcast: SpaceX IPO; Huawei hits Paris; T-Mobile’s AI-RAN rundown Kavit, Justin and Mike chew over the big news, including a mixed month for Elon Musk, US satellite JV plans and a cybersec",
-      "content_hash": "3db8ced25a6da68d5d7b3bcba1be39d1826c934d8c73180ea91c8c709b7e3527",
+      "text_sample": "Mobile World Live - News & Insights for the Global Mobile... Skip to content 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs ES FR 中文 ES FR 中文 Topics 5G+ RAN Vendors Operators Big Tech Devices AI & Cloud Network Tech Digital Industries More... View all categories Events Unwrapped: Digital Industries Unwrapped: The 5G Evolution MWC26 Barcelona MWC26 Barcelona Preview Month MWC25 Doha Webinars & Topic Panels Podcast Topic Hubs Subscribe Homepage Featured Posts BT UK dampens Bharti BT stake prospects Financial Times reported UK authorities would oppose any move by Bharti Enterprises to increase its current shareholding of almost 25% in BT Group on technology sovereig",
+      "content_hash": "954c9c32a6e95402c117ef9ab797cd6ab87b418cbe03c1c51563c32159b26bdb",
       "error": "",
       "source_policy": "allow",
       "source_type": "media",
@@ -270,6 +274,6 @@
       ]
     }
   ],
-  "fetched_at": "2026-05-28T07:26:36.841203+00:00",
-  "fetched_at_hkt": "2026-05-28T15:26:36.841221+08:00"
+  "fetched_at": "2026-05-29T07:03:50.030043+00:00",
+  "fetched_at_hkt": "2026-05-29T15:03:50.030060+08:00"
 }

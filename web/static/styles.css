@@ -205,7 +205,7 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 32px 32px 28px;
+  padding: 24px 28px 22px;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 244, 255, 0.5) 100%),
     url("/static/assets/mobile-intelligence-bg.png") center / cover no-repeat;
@@ -214,7 +214,7 @@ select {
 
 .page-titlebar h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.3px;
@@ -225,7 +225,7 @@ select {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 14px 24px;
+  padding: 11px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--panel-soft);
 }
@@ -249,7 +249,7 @@ select {
 
 /* ===== Multimodal Insight Board ===== */
 .insight-board {
-  padding: 18px 24px 22px;
+  padding: 10px 16px 12px;
   border-bottom: 1px solid rgba(226, 234, 241, 0.64);
   background:
     radial-gradient(circle at 16% 20%, rgba(47, 172, 227, 0.18), transparent 32%),
@@ -261,7 +261,7 @@ select {
   align-items: flex-end;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .insight-head div {
@@ -270,7 +270,7 @@ select {
 }
 
 .insight-head strong {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--text);
 }
@@ -294,21 +294,28 @@ select {
 
 .insight-grid {
   display: grid;
-  grid-template-columns: 0.85fr 1.15fr 1.1fr 1.15fr;
-  gap: 12px;
+  grid-template-columns: 0.8fr 1.1fr 1.35fr;
+  gap: 10px;
 }
 
 .insight-panel {
   position: relative;
-  min-height: 190px;
-  padding: 16px;
-  border: 1px solid rgba(194, 218, 237, 0.68);
-  border-radius: 14px;
+  min-height: 124px;
+  padding: 10px;
+  border: 1px solid rgba(194, 218, 237, 0.62);
+  border-radius: 12px;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58)),
     rgba(255, 255, 255, 0.56);
   box-shadow: 0 10px 30px rgba(33, 93, 139, 0.08);
   overflow: hidden;
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-fast);
+}
+
+.insight-panel:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 119, 200, 0.26);
+  box-shadow: 0 14px 34px rgba(33, 93, 139, 0.12);
 }
 
 .insight-panel::after {
@@ -329,7 +336,7 @@ select {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .panel-title span {
@@ -352,9 +359,9 @@ select {
 
 .quality-ring {
   --score: 0;
-  width: 116px;
-  height: 116px;
-  margin: 0 auto 12px;
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 6px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -366,7 +373,7 @@ select {
 
 .quality-ring span {
   color: var(--text);
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 900;
   letter-spacing: -0.4px;
 }
@@ -377,9 +384,8 @@ select {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px 12px;
-  color: var(--text-secondary);
-  font-size: 12px;
+  gap: 5px 8px;
+  font-size: 11px;
 }
 
 .quality-legend span {
@@ -403,14 +409,26 @@ select {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 11px;
+  gap: 7px;
 }
 
 .mini-bar {
   display: grid;
   gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
   animation: chartRise 520ms ease both;
   animation-delay: calc(var(--i) * 45ms);
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.mini-bar:hover,
+.mini-bar.is-active {
+  transform: translateX(3px);
 }
 
 .mini-bar-top {
@@ -418,7 +436,7 @@ select {
   justify-content: space-between;
   gap: 10px;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .mini-bar-top span {
@@ -440,7 +458,7 @@ select {
 }
 
 .mini-bar-track {
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   background: rgba(201, 222, 238, 0.62);
   overflow: hidden;
@@ -456,108 +474,72 @@ select {
 }
 
 .source-map {
-  min-height: 136px;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  align-items: center;
-  gap: 9px;
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
 }
 
-.source-bubble {
-  width: var(--size);
-  height: var(--size);
-  min-width: 54px;
+.source-pill {
+  position: relative;
+  min-width: 0;
+  min-height: 32px;
   display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 1px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
   border: 1px solid rgba(0, 119, 200, 0.16);
-  border-radius: 50%;
+  border-radius: 9px;
   background:
-    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.18) 38%),
-    linear-gradient(145deg, rgba(0, 119, 200, 0.14), rgba(36, 183, 236, 0.18));
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(232, 244, 255, 0.48));
   color: var(--blue-dark);
-  box-shadow: 0 8px 22px rgba(0, 119, 200, 0.11);
+  box-shadow: 0 6px 18px rgba(0, 119, 200, 0.08);
+  cursor: pointer;
   animation: chartRise 520ms ease both;
   animation-delay: calc(var(--i) * 55ms);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  overflow: hidden;
 }
 
-.source-bubble span {
+.source-pill:hover,
+.source-pill.is-active {
+  transform: translateY(-2px);
+  border-color: rgba(0, 119, 200, 0.32);
+  box-shadow: 0 12px 28px rgba(0, 119, 200, 0.16);
+}
+
+.source-pill span {
+  min-width: 34px;
   color: var(--muted);
   font-size: 10px;
   font-weight: 800;
 }
 
-.source-bubble strong {
-  max-width: 80%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.source-bubble em {
-  color: var(--text);
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 900;
-}
-
-.report-timeline {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 10px;
-  max-height: 142px;
-  overflow: auto;
-  padding-right: 4px;
-}
-
-.timeline-item {
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  gap: 8px;
-  align-items: start;
-  animation: chartRise 520ms ease both;
-  animation-delay: calc(var(--i) * 45ms);
-}
-
-.timeline-item > span {
-  position: relative;
-  width: 10px;
-  height: 10px;
-  margin-top: 4px;
-  border-radius: 50%;
-  background: var(--orange);
-  box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.13);
-}
-
-.timeline-item.has-audio > span {
-  background: var(--green);
-  box-shadow: 0 0 0 4px rgba(18, 163, 108, 0.13);
-}
-
-.timeline-item strong,
-.timeline-item em {
-  display: block;
+.source-pill strong {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: left;
 }
 
-.timeline-item strong {
+.source-pill em {
   color: var(--text);
-  font-size: 12.5px;
-  font-weight: 800;
-}
-
-.timeline-item em {
-  color: var(--muted);
   font-size: 11px;
   font-style: normal;
+  font-weight: 900;
+}
+
+.source-pill i {
+  position: absolute;
+  inset: auto 0 0 0;
+  width: calc(var(--bar) * 1%);
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue-dark), #24b7ec);
+  border-radius: 0 999px 999px 0;
 }
 
 .chart-empty {
@@ -595,7 +577,7 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: 18px 24px;
+  padding: 14px 20px;
   border-bottom: 1px solid rgba(226, 234, 241, 0.5);
 }
 

@@ -15,7 +15,6 @@
     "隐私法规"
   ],
   "source_urls": [
-    "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
     "https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en",
     "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"
   ],
@@ -29,51 +28,50 @@
     "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"
   ],
   "extracted": {
-    "EU Data Act": "f Use Reach © 2026, Government of Singapore Last updated 22 JAN 2026 SOURCE: https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en Data Act enters into force: what it mean",
+    "EU Data Act": "SOURCE: https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en Data Act enters into force: what it means for you - European Commission Skip to main content en Select your l",
     "GDPR/DSA": "ht in the EU. This right is enshrined in Article 8 of the EU Charter of Fundamental Rights . EU data protection legislation is comprised of the General Data Protection Regulation (GDPR), the Law Enforcement Directive (LE",
-    "新加坡AI治理": "SOURCE: https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai Singapore Launches New Model AI Governance Framework for Agentic AI | ",
-    "隐私法规": "des them to... View all programmes Stay tuned for our newsletter Subscribe now Back to top To offer you a better experience, this site uses cookies. Read more about cookies in our Privacy Statement. Close Infocomm Media "
+    "隐私法规": "opics Funding and tenders Jobs Press corner Events Follow us Mastodon LinkedIn Bluesky Facebook Youtube Other networks Report an IT vulnerability Languages on our websites Cookies Privacy policy Legal notice Accessibilit"
   },
   "missing_fields": [
-    "EU AI Act"
+    "EU AI Act",
+    "新加坡AI治理"
   ],
   "entity_results": [
     {
       "entity": "重点国家",
       "status": "partial",
       "source_urls": [
-        "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
         "https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en",
         "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"
       ],
       "extracted": {
-        "EU Data Act": "f Use Reach © 2026, Government of Singapore Last updated 22 JAN 2026 SOURCE: https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en Data Act enters into force: what it mean",
+        "EU Data Act": "SOURCE: https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en Data Act enters into force: what it means for you - European Commission Skip to main content en Select your l",
         "GDPR/DSA": "ht in the EU. This right is enshrined in Article 8 of the EU Charter of Fundamental Rights . EU data protection legislation is comprised of the General Data Protection Regulation (GDPR), the Law Enforcement Directive (LE",
-        "新加坡AI治理": "SOURCE: https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai Singapore Launches New Model AI Governance Framework for Agentic AI | ",
-        "隐私法规": "des them to... View all programmes Stay tuned for our newsletter Subscribe now Back to top To offer you a better experience, this site uses cookies. Read more about cookies in our Privacy Statement. Close Infocomm Media "
+        "隐私法规": "opics Funding and tenders Jobs Press corner Events Follow us Mastodon LinkedIn Bluesky Facebook Youtube Other networks Report an IT vulnerability Languages on our websites Cookies Privacy policy Legal notice Accessibilit"
       },
       "missing_fields": [
-        "EU AI Act"
+        "EU AI Act",
+        "新加坡AI治理"
       ],
       "raw_records": [
         {
           "row": 27,
           "url": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
           "final_url": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "Singapore Launches New Model AI Governance Framework for Agentic AI | IMDA",
-          "bytes": 112602,
-          "elapsed_seconds": 0.752,
+          "status": 403,
+          "content_type": "text/html",
+          "title": "Something's wrong",
+          "bytes": 72586,
+          "elapsed_seconds": 1.006,
           "method": "httpx",
-          "text_sample": "Singapore Launches New Model AI Governance Framework for Agentic AI | IMDA Skip to main content Businesses Select a profile Businesses Students & Professionals Public & Seniors Cancel search Clear search Search Popular searches Sorry, we couldn't find any matches for 'innnnn' Try the following: Double check your spelling for typos Search again using more general terms Try popular keywords Explore by category About IMDA Next level Back About IMDA Learn how we as the Infocomm Media Development Authority (IMDA) drive Singapore’s digital transformation by building a vibrant digital economy and an inclusive digital society. Who We Are Our Identity, Leadership and Accolades Research & Statistics Singapore’s Digital Economy and Society, in numbers Business Innovation Discover innovation opportunities and the different programmes we offer Emerging Technologies & Research Enabling businesses and ",
-          "content_hash": "0de9354960992adb7eab347b364155669f5da47ef0b74d4933f52be32897d690",
+          "text_sample": "Something's wrong Whoops, we've hit an unexpected error. Not quite sure what happened here, while you're waiting: • Try refreshing your browser, it often does the trick! • Feel free to take a quick break and come back shortly. If it persists, email us at [REDACTED_EMAIL] .",
+          "content_hash": "6e8d3402c7ea03513669637164e1d7dbf6923829e76ebbe5aa4639d92d211fdf",
           "error": "",
           "source_policy": "allow",
           "source_type": "regulator_public_info",
           "jurisdiction": "SG",
           "tos_status": "public_information",
-          "robots_status": "checked",
+          "robots_status": "robots_unavailable",
           "robots_allowed": true,
           "skip_reason": "",
           "entity_hits": []
@@ -85,11 +83,11 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Data Act enters into force: what it means for you - European Commission",
-          "bytes": 153737,
-          "elapsed_seconds": 1.46,
+          "bytes": 154155,
+          "elapsed_seconds": 1.736,
           "method": "httpx",
           "text_sample": "Data Act enters into force: what it means for you - European Commission Skip to main content en Select your language Close bg български es español cs čeština da dansk de Deutsch et eesti el ελληνικά en English fr français ga Gaeilge hr hrvatski it italiano lv latviešu lt lietuvių hu magyar mt Malti nl Nederlands pl polski pt português ro română sk slovenčina sl slovenščina fi suomi sv svenska Search Search European Commission Menu Back Home About us About us Learn more about the role of the European Commission, its leadership and corporate policies Organisation President Commissioners Departments and executive agencies Staff See all Role In strategy and policy In law In budget and funding In international relations See all Service standards and principles Transparency Ethics and Good Administration Modernising the European Commission The Commission’s use of languages Digitalising the Com",
-          "content_hash": "b78200931e1c0a78ff4724bc298224fa4a1d7a143d7bd1505a87cf604ee1acab",
+          "content_hash": "3c94299f4159065eaba26744a49a52a562737947288dd0009bfb3d048e9a8a65",
           "error": "",
           "source_policy": "allow",
           "source_type": "government_public_info",
@@ -106,38 +104,37 @@
       "entity": "地区AI与数据监管",
       "status": "partial",
       "source_urls": [
-        "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
         "https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en",
         "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"
       ],
       "extracted": {
-        "EU Data Act": "f Use Reach © 2026, Government of Singapore Last updated 22 JAN 2026 SOURCE: https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en Data Act enters into force: what it mean",
+        "EU Data Act": "SOURCE: https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en Data Act enters into force: what it means for you - European Commission Skip to main content en Select your l",
         "GDPR/DSA": "ht in the EU. This right is enshrined in Article 8 of the EU Charter of Fundamental Rights . EU data protection legislation is comprised of the General Data Protection Regulation (GDPR), the Law Enforcement Directive (LE",
-        "新加坡AI治理": "SOURCE: https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai Singapore Launches New Model AI Governance Framework for Agentic AI | ",
-        "隐私法规": "des them to... View all programmes Stay tuned for our newsletter Subscribe now Back to top To offer you a better experience, this site uses cookies. Read more about cookies in our Privacy Statement. Close Infocomm Media "
+        "隐私法规": "opics Funding and tenders Jobs Press corner Events Follow us Mastodon LinkedIn Bluesky Facebook Youtube Other networks Report an IT vulnerability Languages on our websites Cookies Privacy policy Legal notice Accessibilit"
       },
       "missing_fields": [
-        "EU AI Act"
+        "EU AI Act",
+        "新加坡AI治理"
       ],
       "raw_records": [
         {
           "row": 27,
           "url": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
           "final_url": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "Singapore Launches New Model AI Governance Framework for Agentic AI | IMDA",
-          "bytes": 112602,
-          "elapsed_seconds": 0.752,
+          "status": 403,
+          "content_type": "text/html",
+          "title": "Something's wrong",
+          "bytes": 72586,
+          "elapsed_seconds": 1.006,
           "method": "httpx",
-          "text_sample": "Singapore Launches New Model AI Governance Framework for Agentic AI | IMDA Skip to main content Businesses Select a profile Businesses Students & Professionals Public & Seniors Cancel search Clear search Search Popular searches Sorry, we couldn't find any matches for 'innnnn' Try the following: Double check your spelling for typos Search again using more general terms Try popular keywords Explore by category About IMDA Next level Back About IMDA Learn how we as the Infocomm Media Development Authority (IMDA) drive Singapore’s digital transformation by building a vibrant digital economy and an inclusive digital society. Who We Are Our Identity, Leadership and Accolades Research & Statistics Singapore’s Digital Economy and Society, in numbers Business Innovation Discover innovation opportunities and the different programmes we offer Emerging Technologies & Research Enabling businesses and ",
-          "content_hash": "0de9354960992adb7eab347b364155669f5da47ef0b74d4933f52be32897d690",
+          "text_sample": "Something's wrong Whoops, we've hit an unexpected error. Not quite sure what happened here, while you're waiting: • Try refreshing your browser, it often does the trick! • Feel free to take a quick break and come back shortly. If it persists, email us at [REDACTED_EMAIL] .",
+          "content_hash": "6e8d3402c7ea03513669637164e1d7dbf6923829e76ebbe5aa4639d92d211fdf",
           "error": "",
           "source_policy": "allow",
           "source_type": "regulator_public_info",
           "jurisdiction": "SG",
           "tos_status": "public_information",
-          "robots_status": "checked",
+          "robots_status": "robots_unavailable",
           "robots_allowed": true,
           "skip_reason": "",
           "entity_hits": []
@@ -149,11 +146,11 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Data Act enters into force: what it means for you - European Commission",
-          "bytes": 153737,
-          "elapsed_seconds": 1.46,
+          "bytes": 154155,
+          "elapsed_seconds": 1.736,
           "method": "httpx",
           "text_sample": "Data Act enters into force: what it means for you - European Commission Skip to main content en Select your language Close bg български es español cs čeština da dansk de Deutsch et eesti el ελληνικά en English fr français ga Gaeilge hr hrvatski it italiano lv latviešu lt lietuvių hu magyar mt Malti nl Nederlands pl polski pt português ro română sk slovenčina sl slovenščina fi suomi sv svenska Search Search European Commission Menu Back Home About us About us Learn more about the role of the European Commission, its leadership and corporate policies Organisation President Commissioners Departments and executive agencies Staff See all Role In strategy and policy In law In budget and funding In international relations See all Service standards and principles Transparency Ethics and Good Administration Modernising the European Commission The Commission’s use of languages Digitalising the Com",
-          "content_hash": "b78200931e1c0a78ff4724bc298224fa4a1d7a143d7bd1505a87cf604ee1acab",
+          "content_hash": "3c94299f4159065eaba26744a49a52a562737947288dd0009bfb3d048e9a8a65",
           "error": "",
           "source_policy": "allow",
           "source_type": "government_public_info",
@@ -168,8 +165,8 @@
     }
   ],
   "entity_missing": [
-    "重点国家:EU AI Act",
-    "地区AI与数据监管:EU AI Act"
+    "重点国家:EU AI Act,新加坡AI治理",
+    "地区AI与数据监管:EU AI Act,新加坡AI治理"
   ],
   "raw_records": [
     {
@@ -220,20 +217,20 @@
       "row": 27,
       "url": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
       "final_url": "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "Singapore Launches New Model AI Governance Framework for Agentic AI | IMDA",
-      "bytes": 112602,
-      "elapsed_seconds": 0.752,
+      "status": 403,
+      "content_type": "text/html",
+      "title": "Something's wrong",
+      "bytes": 72586,
+      "elapsed_seconds": 1.006,
       "method": "httpx",
-      "text_sample": "Singapore Launches New Model AI Governance Framework for Agentic AI | IMDA Skip to main content Businesses Select a profile Businesses Students & Professionals Public & Seniors Cancel search Clear search Search Popular searches Sorry, we couldn't find any matches for 'innnnn' Try the following: Double check your spelling for typos Search again using more general terms Try popular keywords Explore by category About IMDA Next level Back About IMDA Learn how we as the Infocomm Media Development Authority (IMDA) drive Singapore’s digital transformation by building a vibrant digital economy and an inclusive digital society. Who We Are Our Identity, Leadership and Accolades Research & Statistics Singapore’s Digital Economy and Society, in numbers Business Innovation Discover innovation opportunities and the different programmes we offer Emerging Technologies & Research Enabling businesses and ",
-      "content_hash": "0de9354960992adb7eab347b364155669f5da47ef0b74d4933f52be32897d690",
+      "text_sample": "Something's wrong Whoops, we've hit an unexpected error. Not quite sure what happened here, while you're waiting: • Try refreshing your browser, it often does the trick! • Feel free to take a quick break and come back shortly. If it persists, email us at [REDACTED_EMAIL] .",
+      "content_hash": "6e8d3402c7ea03513669637164e1d7dbf6923829e76ebbe5aa4639d92d211fdf",
       "error": "",
       "source_policy": "allow",
       "source_type": "regulator_public_info",
       "jurisdiction": "SG",
       "tos_status": "public_information",
-      "robots_status": "checked",
+      "robots_status": "robots_unavailable",
       "robots_allowed": true,
       "skip_reason": "",
       "entity_hits": []
@@ -267,11 +264,11 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Data Act enters into force: what it means for you - European Commission",
-      "bytes": 153737,
-      "elapsed_seconds": 1.46,
+      "bytes": 154155,
+      "elapsed_seconds": 1.736,
       "method": "httpx",
       "text_sample": "Data Act enters into force: what it means for you - European Commission Skip to main content en Select your language Close bg български es español cs čeština da dansk de Deutsch et eesti el ελληνικά en English fr français ga Gaeilge hr hrvatski it italiano lv latviešu lt lietuvių hu magyar mt Malti nl Nederlands pl polski pt português ro română sk slovenčina sl slovenščina fi suomi sv svenska Search Search European Commission Menu Back Home About us About us Learn more about the role of the European Commission, its leadership and corporate policies Organisation President Commissioners Departments and executive agencies Staff See all Role In strategy and policy In law In budget and funding In international relations See all Service standards and principles Transparency Ethics and Good Administration Modernising the European Commission The Commission’s use of languages Digitalising the Com",
-      "content_hash": "b78200931e1c0a78ff4724bc298224fa4a1d7a143d7bd1505a87cf604ee1acab",
+      "content_hash": "3c94299f4159065eaba26744a49a52a562737947288dd0009bfb3d048e9a8a65",
       "error": "",
       "source_policy": "allow",
       "source_type": "government_public_info",
@@ -311,11 +308,11 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Legal framework of EU data protection - European Commission",
-      "bytes": 157084,
-      "elapsed_seconds": 0.896,
+      "bytes": 157498,
+      "elapsed_seconds": 0.689,
       "method": "httpx",
       "text_sample": "Legal framework of EU data protection - European Commission Skip to main content en Select your language Close bg български es español cs čeština da dansk de Deutsch et eesti el ελληνικά en English fr français ga Gaeilge hr hrvatski it italiano lv latviešu lt lietuvių hu magyar mt Malti nl Nederlands pl polski pt português ro română sk slovenčina sl slovenščina fi suomi sv svenska Search Search European Commission Menu Back Home About us About us Learn more about the role of the European Commission, its leadership and corporate policies Organisation President Commissioners Departments and executive agencies Staff See all Role In strategy and policy In law In budget and funding In international relations See all Service standards and principles Transparency Ethics and Good Administration Modernising the European Commission The Commission’s use of languages Digitalising the Commission See ",
-      "content_hash": "ca818cd4459adb62a6e1c8b1e7457435bd436111c8fafcb897911be3997abba0",
+      "content_hash": "e556fd02a844cd76d7bca76e68e013b9ff645a3c506891df2758db9f2cd6c734",
       "error": "",
       "source_policy": "allow",
       "source_type": "government_public_info",
@@ -327,6 +324,6 @@
       "entity_hits": []
     }
   ],
-  "fetched_at": "2026-05-28T07:26:13.840464+00:00",
-  "fetched_at_hkt": "2026-05-28T15:26:13.840479+08:00"
+  "fetched_at": "2026-05-29T07:03:32.114334+00:00",
+  "fetched_at_hkt": "2026-05-29T15:03:32.114343+08:00"
 }

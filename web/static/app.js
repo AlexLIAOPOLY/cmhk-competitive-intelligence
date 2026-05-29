@@ -2,6 +2,8 @@ const state = {
   busy: false,
   chatBusy: false,
   outputs: [],
+  status: null,
+  activeInsight: "all",
   editingFile: null,
   multiSelect: false,
   selectedFiles: new Set(),
@@ -65,8 +67,6 @@ const els = {
   blockChart: document.querySelector("#blockChart"),
   sourceTotal: document.querySelector("#sourceTotal"),
   sourceChart: document.querySelector("#sourceChart"),
-  timelineTotal: document.querySelector("#timelineTotal"),
-  reportTimeline: document.querySelector("#reportTimeline"),
 };
 
 function formatBytes(size) {
@@ -164,15 +164,22 @@ function renderMiniBars(container, items, options = {}) {
     const share = total ? Math.round((item.value / total) * 100) : 0;
     const label = options.formatLabel ? options.formatLabel(item.label) : item.label;
     return `
-      <div class="mini-bar" style="--bar:${width};--i:${index}">
+      <button type="button" class="mini-bar" data-filter="${escapeHtml(item.label)}" style="--bar:${width};--i:${index}">
         <div class="mini-bar-top">
           <span>${escapeHtml(label)}</span>
           <strong>${item.value}<small>${share}%</small></strong>
         </div>
         <div class="mini-bar-track"><i></i></div>
-      </div>
+      </button>
     `;
   }).join("");
+  container.querySelectorAll(".mini-bar").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeInsight = button.dataset.filter || "all";
+      container.querySelectorAll(".mini-bar").forEach((item) => item.classList.toggle("is-active", item === button));
+      appendLog(`\n[看板筛选] 当前关注：${button.dataset.filter || "全部"}\n`);
+    });
+  });
 }
 
 function renderSourceMap(visuals) {
@@ -193,34 +200,22 @@ function renderSourceMap(visuals) {
   }
   const max = Math.max(...chips.map((item) => item.value), 1);
   els.sourceChart.innerHTML = chips.map((item, index) => {
-    const size = Math.max(46, Math.min(96, 42 + (item.value / max) * 46));
+    const width = Math.max(12, Math.round((item.value / max) * 100));
     return `
-      <div class="source-bubble" style="--size:${size}px;--i:${index}">
+      <button type="button" class="source-pill" data-label="${escapeHtml(item.label)}" style="--bar:${width};--i:${index}">
         <span>${escapeHtml(item.type)}</span>
         <strong>${escapeHtml(item.label)}</strong>
         <em>${item.value}</em>
-      </div>
+        <i></i>
+      </button>
     `;
   }).join("");
-}
-
-function renderReportTimeline(items = []) {
-  if (!els.reportTimeline) return;
-  const reports = items.slice(0, 6);
-  els.timelineTotal.textContent = reports.length ? `${reports.length} 份` : "--";
-  if (!reports.length) {
-    els.reportTimeline.innerHTML = `<div class="chart-empty">暂无周报输出</div>`;
-    return;
-  }
-  els.reportTimeline.innerHTML = reports.map((item, index) => `
-    <div class="timeline-item ${item.audio ? "has-audio" : ""}" style="--i:${index}">
-      <span></span>
-      <div>
-        <strong>${escapeHtml(item.name)}</strong>
-        <em>${escapeHtml(item.mtimeText || "")}${item.audio ? " · 音频就绪" : " · 待生成音频"}</em>
-      </div>
-    </div>
-  `).join("");
+  els.sourceChart.querySelectorAll(".source-pill").forEach((button) => {
+    button.addEventListener("click", () => {
+      els.sourceChart.querySelectorAll(".source-pill").forEach((item) => item.classList.toggle("is-active", item === button));
+      appendLog(`\n[来源画像] ${button.dataset.label || "来源"}\n`);
+    });
+  });
 }
 
 function renderInsights(status) {
@@ -248,7 +243,6 @@ function renderInsights(status) {
   if (els.blockTotal) els.blockTotal.textContent = `${sumValues(visuals.blocks || []) || 0} 行`;
   renderMiniBars(els.blockChart, visuals.blocks || [], { limit: 5 });
   renderSourceMap(visuals);
-  renderReportTimeline(visuals.outputs || []);
 }
 
 function renderFileList() {
@@ -346,6 +340,7 @@ function renderFileList() {
 }
 
 function renderStatus(status) {
+  state.status = status;
   els.statusSummary.textContent = `数据 ${status.results.count} 个 · 范围 ${status.settings.enabledRows}/${status.settings.totalRows} 行 · 输出 ${status.latestOutputText}`;
   if (status.ai && els.aiConfigStatus) {
     els.aiConfigStatus.textContent = `${status.ai.provider} / ${status.ai.model} / ${status.ai.base_url} / ${status.ai.has_api_key ? "API Key 已保存" : "未保存 API Key"}`;

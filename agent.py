@@ -72,6 +72,51 @@ def feishu_cli(command_args: str) -> str:
     except Exception as e:
         return f"执行出错: {str(e)}"
 
+@tool
+def trigger_report_generation() -> str:
+    """触发本地周报生成任务。
+    当你被要求“生成周报”、“汇总报告”时，使用此工具。它会调用底层的周报生成脚本并生成 docx 文件。
+    """
+    try:
+        proc = subprocess.run([sys.executable, str(ROOT / "generate_weekly_report.py")], capture_output=True, text=True, timeout=120)
+        if proc.returncode == 0:
+            return f"周报生成成功！\nStdout: {proc.stdout[-500:]}"
+        else:
+            return f"周报生成失败:\nStderr: {proc.stderr}"
+    except Exception as e:
+        return f"执行周报生成异常: {str(e)}"
+
+@tool
+def read_webpage(url: str) -> str:
+    """访问并读取指定 URL 的纯文本内容。
+    当用户提供一个网页链接，并要求你阅读、总结或提取其中的信息时，使用此工具。
+    """
+    import urllib.request
+    from bs4 import BeautifulSoup
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=15) as response:
+            html = response.read()
+        soup = BeautifulSoup(html, 'html.parser')
+        for script in soup(["script", "style"]):
+            script.extract()
+        text = soup.get_text(separator=' ', strip=True)
+        return text[:10000]
+    except Exception as e:
+        return f"读取网页 {url} 失败: {str(e)}"
+
+@tool
+def get_system_status() -> str:
+    """获取系统运行状态和爬虫统计数据（包括最近爬取的成功数、失败数等）。
+    当你需要了解系统的健康状况或数据收集的全景概览时，使用此工具。
+    """
+    import web_app
+    try:
+        status = web_app.build_status()
+        return f"系统状态快照：\n{json.dumps(status, ensure_ascii=False, indent=2)}"
+    except Exception as e:
+        return f"获取系统状态失败: {str(e)}"
+
 def get_agent():
     config = load_ai_config()
     api_key = config.get("api_key", "") or os.environ.get("OPENAI_API_KEY", "")
@@ -89,7 +134,7 @@ def get_agent():
         max_retries=0,
     )
     
-    tools = [search_local_reports, trigger_crawl, feishu_cli]
+    tools = [search_local_reports, trigger_crawl, feishu_cli, trigger_report_generation, read_webpage, get_system_status]
     
     system_message = (
         "你是中国移动战略部公开信息监测系统的智能 RAG 和运维助手。\n"

@@ -62,7 +62,8 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 - https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/
 - https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"	5G套餐,家宽,企业方案,漫游,促销折扣		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_9.json
 10	ok	SmarTone	"【SmarTone】
-- https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1"	战略合作,中标,5G-A,家宽布局,区域动作		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_10.json
+- https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/all/1
+- https://www.mobileworldlive.com/operators/smartone-turns-to-ericsson-for-5g-a-gear/"	战略合作,中标,5G-A,家宽布局,区域动作		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_10.json
 11	ok	HKBN	"【HKBN】
 - https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"	总收入,板块收入分拆,EBITDA,净利润,融资成本,资本开支,商誉,资产负债率,用户数,商业楼宇覆盖率		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_11.json
 12	ok	HKBN	"【HKBN】
@@ -201,19 +202,17 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 - https://www.digitalpolicy.gov.hk/en/
 - https://www.pcpd.org.hk/english/artificial_intelligence/index.html"	OFCA政策,频谱/牌照,服务质量,网络安全,PCPD/AI指引,数据跨境		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_26.json
 27	partial	重点国家,地区AI与数据监管	"【重点国家】
-- https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai
 - https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
 - https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en
 【地区AI与数据监管】
-- https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai
 - https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
-- https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"	EU Data Act,GDPR/DSA,新加坡AI治理,隐私法规	EU AI Act,重点国家:EU AI Act,地区AI与数据监管:EU AI Act	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
+- https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"	EU Data Act,GDPR/DSA,隐私法规	EU AI Act,新加坡AI治理,重点国家:EU AI Act,新加坡AI治理,地区AI与数据监管:EU AI Act,新加坡AI治理	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
 28	ok	通信监管机构	"【通信监管机构】
 - https://www.ofca.gov.hk/en/home/index.html
 - https://www.enisa.europa.eu/news
-- https://www.imda.gov.sg/regulations-and-licensing-listing/spectrum-management
 - https://www.ofca.gov.hk/en/site_map/index.html
-- https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html"	频谱拍卖,5G/6G规划,网络共享,覆盖义务,网络安全,卫星通信,携号转网/漫游		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_28.json
+- https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html
+- https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html"	频谱拍卖,5G/6G规划,网络共享,覆盖义务,网络安全,卫星通信,携号转网/漫游		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_28.json
 29	ok	国际组织,行业权威机构	"【国际组织】
 - https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5
 - https://www.itu.int/
@@ -245,13 +244,14 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 31	ok	行业资讯	"【行业资讯】
 - https://www.gsma.com/newsroom/press-releases/
 - https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/
+- https://www.gsma.com/solutions-and-impact/technologies/networks/
 - https://www.mobileworldlive.com/
 - https://www.totaltele.com/"	技术动态,市场趋势,企业重大合作,前沿产品		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_31.json
-32	ok	行业资讯	"【行业资讯】
+32	partial	行业资讯	"【行业资讯】
 - https://www.investhk.gov.hk/en/news/
 - https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval
 - https://www.totaltele.com/
-- https://www.mobileworldlive.com/"	收购,融资,合资,股权交易		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_32.json
+- https://www.mobileworldlive.com/"	收购,融资,股权交易	合资,行业资讯:合资	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_32.json
 33	ok	政治新闻	"【政治新闻】
 - https://www.mfa.gov.cn/eng/
 - https://english.www.gov.cn/
