@@ -368,20 +368,58 @@ def parse_latest_sheet() -> List[Dict[str, Any]]:
     data = json.loads(SPREADSHEET_JSON.read_text(encoding="utf-8"))
     values = data["data"]["valueRange"]["values"]
     rows: List[Dict[str, Any]] = []
+    
+    if not values:
+        return rows
+        
+    headers = [cell_text(h).strip() for h in values[0]]
+    
+    col_idx = {
+        "block": 1,
+        "object": 2,
+        "package": 3,
+        "need": 4,
+        "sources": 5,
+        "channel": 6,
+        "frequency": 7,
+    }
+    
+    def find_idx(names: List[str], default: int) -> int:
+        for name in names:
+            try:
+                return headers.index(name)
+            except ValueError:
+                pass
+        return default
+        
+    col_idx["block"] = find_idx(["数据板块"], 1)
+    col_idx["object"] = find_idx(["对象/内部大类"], 2)
+    col_idx["package"] = find_idx(["指标包/数据类"], 3)
+    col_idx["need"] = find_idx(["具体需要收集的数据"], 4)
+    col_idx["sources"] = find_idx(["可能来源/系统", "可能来源"], 5)
+    col_idx["channel"] = find_idx(["信息获取渠道", "渠道"], 6)
+    col_idx["frequency"] = find_idx(["更新频率", "更新频次"], 7)
+
     effective_object = ""
     effective_block = ""
     for idx, row in enumerate(values[1:], start=2):
         if idx > 34:
             break
-        cols = [cell_text(row[i]) if i < len(row) else "" for i in range(8)]
-        if not any(c.strip() for c in cols[:8]):
+        row_cells = [cell_text(c) for c in row]
+        max_idx = max(col_idx.values())
+        while len(row_cells) < max_idx + 1:
+            row_cells.append("")
+            
+        if not any(c.strip() for c in row_cells[:max_idx + 1]):
             continue
-        block_cell = cols[1].strip()
+            
+        block_cell = row_cells[col_idx["block"]].strip()
         if block_cell:
             effective_block = block_cell
-        object_cell = cols[2].strip()
+        object_cell = row_cells[col_idx["object"]].strip()
         if object_cell:
             effective_object = object_cell
+            
         entities = row_entities(idx, effective_object)
         rows.append(
             {
@@ -390,11 +428,11 @@ def parse_latest_sheet() -> List[Dict[str, Any]]:
                 "object": effective_object,
                 "object_cell": object_cell,
                 "entities": entities,
-                "package": cols[3],
-                "need": cols[4],
-                "sources": cols[5],
-                "channel": cols[6],
-                "frequency": cols[7],
+                "package": row_cells[col_idx["package"]],
+                "need": row_cells[col_idx["need"]],
+                "sources": row_cells[col_idx["sources"]],
+                "channel": row_cells[col_idx["channel"]],
+                "frequency": row_cells[col_idx["frequency"]],
             }
         )
     return rows

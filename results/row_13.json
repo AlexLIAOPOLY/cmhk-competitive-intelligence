@@ -40,7 +40,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "Announcements & Circulars | HKBN",
           "bytes": 882395,
-          "elapsed_seconds": 0.468,
+          "elapsed_seconds": 0.552,
           "method": "httpx",
           "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
           "content_hash": "a2927d0edae3e2ce24eb2919696836b3f9b1bfac865a4361fcd3c343e2f6e2ac",
@@ -93,7 +93,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "Announcements & Circulars | HKBN",
       "bytes": 882395,
-      "elapsed_seconds": 0.468,
+      "elapsed_seconds": 0.552,
       "method": "httpx",
       "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
       "content_hash": "a2927d0edae3e2ce24eb2919696836b3f9b1bfac865a4361fcd3c343e2f6e2ac",
@@ -110,6 +110,6 @@
       ]
     }
   ],
-  "fetched_at": "2026-05-29T07:14:32.131188+00:00",
-  "fetched_at_hkt": "2026-05-29T15:14:32.131202+08:00"
+  "fetched_at": "2026-05-29T08:10:52.885019+00:00",
+  "fetched_at_hkt": "2026-05-29T16:10:52.885029+08:00"
 }
