@@ -43,24 +43,27 @@
                   <span>采集质量</span>
                   <strong id="qualityScore">--%</strong>
                 </div>
-                <div class="quality-ring" id="qualityRing" style="--score:0">
-                  <span id="qualityCenter">--</span>
+                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                  <canvas id="qualityCanvas"></canvas>
                 </div>
-                <div class="quality-legend" id="qualityLegend"></div>
               </article>
               <article class="insight-panel">
                 <div class="panel-title">
                   <span>情报板块</span>
                   <strong id="blockTotal">--</strong>
                 </div>
-                <div class="bar-stack" id="blockChart"></div>
+                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                  <canvas id="blockCanvas"></canvas>
+                </div>
               </article>
               <article class="insight-panel">
                 <div class="panel-title">
                   <span>来源画像</span>
                   <strong id="sourceTotal">--</strong>
                 </div>
-                <div class="source-map" id="sourceChart"></div>
+                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                  <canvas id="sourceCanvas"></canvas>
+                </div>
               </article>
             </div>
           </section>
@@ -189,6 +192,7 @@
       </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js?v=43"></script>
   </body>

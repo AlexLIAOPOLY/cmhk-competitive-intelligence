@@ -149,72 +149,15 @@ function sumValues(items = []) {
   return items.reduce((total, item) => total + Number(item.value || 0), 0);
 }
 
-function renderMiniBars(container, items, options = {}) {
-  if (!container) return;
-  const list = Array.isArray(items) ? items.filter((item) => item.value > 0) : [];
-  if (!list.length) {
-    container.innerHTML = `<div class="chart-empty">暂无可视化数据</div>`;
-    return;
-  }
-  const total = sumValues(list);
-  const max = Math.max(...list.map((item) => item.value), 1);
-  container.innerHTML = list.slice(0, options.limit || 5).map((item, index) => {
-    const width = Math.max(8, Math.round((item.value / max) * 100));
-    const share = total ? Math.round((item.value / total) * 100) : 0;
-    const label = options.formatLabel ? options.formatLabel(item.label) : item.label;
-    return `
-      <button type="button" class="mini-bar" data-filter="${escapeHtml(item.label)}" style="--bar:${width};--i:${index}">
-        <div class="mini-bar-top">
-          <span>${escapeHtml(label)}</span>
-          <strong>${item.value}<small>${share}%</small></strong>
-        </div>
-        <div class="mini-bar-track"><i></i></div>
-      </button>
-    `;
-  }).join("");
-  container.querySelectorAll(".mini-bar").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.activeInsight = button.dataset.filter || "all";
-      container.querySelectorAll(".mini-bar").forEach((item) => item.classList.toggle("is-active", item === button));
-      appendLog(`\n[看板筛选] 当前关注：${button.dataset.filter || "全部"}\n`);
-    });
-  });
-}
+let chartInstances = {};
 
-function renderSourceMap(visuals) {
-  if (!els.sourceChart) return;
-  const sourceTypes = visuals.sourceTypes || [];
-  const jurisdictions = visuals.jurisdictions || [];
-  const methods = visuals.methods || [];
-  const total = sumValues(sourceTypes);
-  els.sourceTotal.textContent = total ? `${total} 条` : "--";
-  const chips = [
-    ...sourceTypes.slice(0, 3).map((item) => ({ ...item, label: labelSourceType(item.label), type: "来源" })),
-    ...jurisdictions.slice(0, 3).map((item) => ({ ...item, type: "地域" })),
-    ...methods.slice(0, 2).map((item) => ({ ...item, type: "方式" })),
-  ];
-  if (!chips.length) {
-    els.sourceChart.innerHTML = `<div class="chart-empty">暂无来源画像</div>`;
-    return;
+function initOrUpdateChart(id, config) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  if (chartInstances[id]) {
+    chartInstances[id].destroy();
   }
-  const max = Math.max(...chips.map((item) => item.value), 1);
-  els.sourceChart.innerHTML = chips.map((item, index) => {
-    const width = Math.max(12, Math.round((item.value / max) * 100));
-    return `
-      <button type="button" class="source-pill" data-label="${escapeHtml(item.label)}" style="--bar:${width};--i:${index}">
-        <span>${escapeHtml(item.type)}</span>
-        <strong>${escapeHtml(item.label)}</strong>
-        <em>${item.value}</em>
-        <i></i>
-      </button>
-    `;
-  }).join("");
-  els.sourceChart.querySelectorAll(".source-pill").forEach((button) => {
-    button.addEventListener("click", () => {
-      els.sourceChart.querySelectorAll(".source-pill").forEach((item) => item.classList.toggle("is-active", item === button));
-      appendLog(`\n[来源画像] ${button.dataset.label || "来源"}\n`);
-    });
-  });
+  chartInstances[id] = new Chart(canvas, config);
 }
 
 function renderInsights(status) {
@@ -225,19 +168,105 @@ function renderInsights(status) {
   const partial = Number(quality.partial || 0);
   const failed = Number(quality.failed || 0);
   const score = totalRows ? Math.round(((ok + partial * 0.55) / totalRows) * 100) : 0;
-  if (els.qualityRing) els.qualityRing.style.setProperty("--score", score);
+  
   if (els.qualityScore) els.qualityScore.textContent = totalRows ? `${score}%` : "--%";
-  if (els.qualityCenter) els.qualityCenter.textContent = totalRows ? `${ok}/${totalRows}` : "--";
-  if (els.qualityLegend) {
-    els.qualityLegend.innerHTML = `
-      <span><i class="ok"></i>完整 ${ok}</span>
-      <span><i class="partial"></i>部分 ${partial}</span>
-      <span><i class="failed"></i>异常 ${failed}</span>
-    `;
-  }
-  if (els.blockTotal) els.blockTotal.textContent = `${sumValues(visuals.blocks || []) || 0} 行`;
-  renderMiniBars(els.blockChart, visuals.blocks || [], { limit: 5 });
-  renderSourceMap(visuals);
+
+  // 1. Doughnut Chart for Quality
+  initOrUpdateChart('qualityCanvas', {
+    type: 'doughnut',
+    data: {
+      labels: ['完整 (Ok)', '部分 (Partial)', '异常 (Failed)'],
+      datasets: [{
+        data: [ok, partial, failed],
+        backgroundColor: ['#12a36c', '#f59e0b', '#ef4444'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // 2. Horizontal Bar Chart for Blocks
+  const blocks = visuals.blocks || [];
+  if (els.blockTotal) els.blockTotal.textContent = `${sumValues(blocks)} 行`;
+  
+  const blockLabels = blocks.map(b => b.label);
+  const blockData = blocks.map(b => b.value);
+  
+  initOrUpdateChart('blockCanvas', {
+    type: 'bar',
+    data: {
+      labels: blockLabels,
+      datasets: [{
+        label: '数量',
+        data: blockData,
+        backgroundColor: '#3b82f6',
+        borderRadius: 4,
+        barThickness: 12
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { display: false },
+        y: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // 3. Polar Area Chart for Sources
+  const sourceTypes = visuals.sourceTypes || [];
+  const jurisdictions = visuals.jurisdictions || [];
+  const methods = visuals.methods || [];
+  const totalSources = sumValues(sourceTypes);
+  if (els.sourceTotal) els.sourceTotal.textContent = totalSources ? `${totalSources} 条` : "--";
+
+  const chips = [
+    ...sourceTypes.slice(0, 3).map((item) => ({ ...item, label: labelSourceType(item.label) })),
+    ...jurisdictions.slice(0, 3),
+    ...methods.slice(0, 2)
+  ];
+  
+  initOrUpdateChart('sourceCanvas', {
+    type: 'polarArea',
+    data: {
+      labels: chips.map(c => c.label),
+      datasets: [{
+        data: chips.map(c => c.value),
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.6)',
+          'rgba(16, 185, 129, 0.6)',
+          'rgba(245, 158, 11, 0.6)',
+          'rgba(239, 68, 68, 0.6)',
+          'rgba(139, 92, 246, 0.6)',
+          'rgba(14, 165, 233, 0.6)',
+          'rgba(236, 72, 153, 0.6)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } }
+      },
+      scales: {
+        r: { ticks: { display: false } }
+      }
+    }
+  });
 }
 
 function renderFileList() {
