@@ -596,7 +596,7 @@ select {
 .output-table {
   margin: 0;
   overflow-y: auto;
-  max-height: calc(100vh - 418px);
+  max-height: 380px;
   min-height: 190px;
   background: var(--panel);
 }
