@@ -1865,3 +1865,32 @@ pre {
   font-size: 13px;
   text-align: center;
 }
+
+.suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.suggestion-chip {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--blue-dark);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.suggestion-chip:hover {
+  background: var(--blue-soft);
+  border-color: var(--blue);
+  color: var(--blue);
+  transform: translateY(-1px);
+}

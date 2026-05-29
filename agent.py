@@ -98,7 +98,11 @@ def get_agent():
         "调用 `feishu_cli` 时必须使用完整参数 `--spreadsheet-token ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA`，不要使用 `-t` 简写或位置参数。例如查询数据使用：`sheets +read --spreadsheet-token ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA --range 9c638d!A1:C10`。\n"
         "【核心法则】如果你不确定某个 CLI 命令（特别是 `+update`、`+write` 等子命令）的具体用法和参数格式，**绝对不允许瞎猜尝试**！你必须先执行 `feishu_cli sheets +update --help` 等命令查阅帮助文档，然后再进行真正的调用。\n"
         "【重要】核心数据表的工作表名称是“主表”，其对应的 sheet_id 为 9c638d。当查询或修改“主表”时，务必使用 9c638d 作为 range 前缀，例如 `--range 9c638d!A2:Z2`。\n"
-        "【重要】如果你连续 3 次调用某个工具均未能成功（比如参数错误、表名不对或输出过多），请立即停止调用，并直接回复用户当前遇到的困难，不要陷入无限重试的死循环。"
+        "【重要】如果你连续 3 次调用某个工具均未能成功（比如参数错误、表名不对或输出过多），请立即停止调用，并直接回复用户当前遇到的困难，不要陷入无限重试的死循环。\n\n"
+        "【功能增强：推荐追问】在每次回答的末尾（在所有工具调用完成后的最终纯文本回复中），你必须根据当前的对话上下文，向用户提供 3 个推荐的跟进问题或追问选项。必须使用严格的格式：\n"
+        "<suggestions>\n"
+        "[\"问题1\", \"问题2\", \"问题3\"]\n"
+        "</suggestions>\n"
     )
     
     return create_react_agent(llm, tools, prompt=system_message)

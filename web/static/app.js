@@ -712,11 +712,30 @@ async function sendChat(message) {
           appendRagSources(assistantNode, event.sources, event.links);
         } else if (event.type === "delta") {
           answer += event.text;
-          setMessageContent(assistantNode, answer, true);
+          let displayAnswer = answer;
+          const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/);
+          let suggestionsHTML = "";
+          if (sugMatch) {
+            try {
+              const arr = JSON.parse(sugMatch[1].trim());
+              displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/, "").trim();
+              if (arr && arr.length > 0) {
+                suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
+              }
+            } catch (e) {}
+          }
+          displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*$/, ""); // hide incomplete tags
+          
+          setMessageContent(assistantNode, displayAnswer, true);
+          if (suggestionsHTML) {
+            const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
+            b.insertAdjacentHTML("beforeend", suggestionsHTML);
+          }
           els.messages.scrollTop = els.messages.scrollHeight;
         } else if (event.type === "error") {
           answer += `\n\n**错误：** ${event.text}`;
-          setMessageContent(assistantNode, answer, true);
+          let displayAnswer = answer.replace(/<suggestions>[\s\S]*$/, "");
+          setMessageContent(assistantNode, displayAnswer, true);
         } else if (event.type === "tool_start") {
           answer += `\n\n> ⏳ **正在运行工具**: \`${event.name}\`\n> 参数: \`${event.input}\`\n\n`;
           setMessageContent(assistantNode, answer, true);
@@ -747,6 +766,26 @@ async function sendChat(message) {
       if (isDone) break;
     }
     if (!answer.trim()) setMessageContent(assistantNode, "操作完成。", true);
+    else {
+      let finalAnswer = answer;
+      const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/);
+      let suggestionsHTML = "";
+      if (sugMatch) {
+        try {
+          const arr = JSON.parse(sugMatch[1].trim());
+          finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/, "").trim();
+          if (arr && arr.length > 0) {
+            suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
+          }
+        } catch (e) {}
+      }
+      finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*$/, "");
+      setMessageContent(assistantNode, finalAnswer, true);
+      if (suggestionsHTML) {
+        const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
+        b.insertAdjacentHTML("beforeend", suggestionsHTML);
+      }
+    }
     await fetchStatus();
   } catch (error) {
     addMessage("assistant", `处理失败：${error.message}`);
@@ -848,6 +887,13 @@ els.chatFab.addEventListener("click", () => {
   els.chatModal.hidden = false;
   setTimeout(() => els.chatInput.focus(), 0);
 });
+
+window.clickSuggestion = function(text) {
+  if (state.chatBusy) return;
+  els.chatInput.value = text;
+  resizeChatInput();
+  els.chatForm.requestSubmit();
+};
 
 els.closeChatButton.addEventListener("click", () => {
   els.chatModal.hidden = true;
