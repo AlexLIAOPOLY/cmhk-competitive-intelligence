@@ -713,18 +713,22 @@ async function sendChat(message) {
         } else if (event.type === "delta") {
           answer += event.text;
           let displayAnswer = answer;
-          const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/);
+          const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
           let suggestionsHTML = "";
           if (sugMatch) {
             try {
-              const arr = JSON.parse(sugMatch[1].trim());
-              displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/, "").trim();
+              let jsonStr = sugMatch[1].trim();
+              jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
+              const arr = JSON.parse(jsonStr);
+              displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
               if (arr && arr.length > 0) {
                 suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
               }
-            } catch (e) {}
+            } catch (e) {
+               console.error("Suggestion parse error:", e, sugMatch[1]);
+            }
           }
-          displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*$/, ""); // hide incomplete tags
+          displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*$/i, ""); // hide incomplete tags
           
           setMessageContent(assistantNode, displayAnswer, true);
           if (suggestionsHTML) {
@@ -768,18 +772,22 @@ async function sendChat(message) {
     if (!answer.trim()) setMessageContent(assistantNode, "操作完成。", true);
     else {
       let finalAnswer = answer;
-      const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/);
+      const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
       let suggestionsHTML = "";
       if (sugMatch) {
         try {
-          const arr = JSON.parse(sugMatch[1].trim());
-          finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/, "").trim();
+          let jsonStr = sugMatch[1].trim();
+          jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
+          const arr = JSON.parse(jsonStr);
+          finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
           if (arr && arr.length > 0) {
             suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
           }
-        } catch (e) {}
+        } catch (e) {
+            console.error("Suggestion parse error final:", e, sugMatch[1]);
+        }
       }
-      finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*$/, "");
+      finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*$/i, "");
       setMessageContent(assistantNode, finalAnswer, true);
       if (suggestionsHTML) {
         const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
