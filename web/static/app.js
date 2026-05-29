@@ -61,6 +61,13 @@ const els = {
   qualityScore: document.querySelector("#qualityScore"),
   qualityRing: document.querySelector("#qualityRing"),
   qualityCenter: document.querySelector("#qualityCenter"),
+  audioPlayer: document.getElementById("globalAudioPlayer"),
+  audioPlayPauseBtn: document.getElementById("audioPlayPauseBtn"),
+  audioCurrentTime: document.getElementById("audioCurrentTime"),
+  audioDuration: document.getElementById("audioDuration"),
+  audioProgressBar: document.getElementById("audioProgressBar"),
+  audioCloseBtn: document.getElementById("audioCloseBtn"),
+  audioFileName: document.getElementById("audioFileName"),
   qualityLegend: document.querySelector("#qualityLegend"),
   blockTotal: document.querySelector("#blockTotal"),
   blockChart: document.querySelector("#blockChart"),
@@ -261,45 +268,48 @@ function renderInsights(status) {
     ...methods.slice(0, 2)
   ];
   
-  // Clean up old canvas if it exists
-  if (chartInstances['sourceCanvas']) {
-    chartInstances['sourceCanvas'].destroy();
-    delete chartInstances['sourceCanvas'];
-  }
-  
-  const sourceCloud = document.getElementById('sourceCloud');
-  if (sourceCloud && chips.length > 0) {
-    const validChips = chips.filter(c => c.value > 0);
-    const maxVal = Math.max(...validChips.map(c => c.value), 1);
-    const minVal = Math.min(...validChips.map(c => c.value), 0);
-    
-    // Modern colors for tags
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9', '#ec4899'];
-    
-    sourceCloud.innerHTML = validChips.map((c, i) => {
-      // Scale font size based on square root to balance visual area
-      const scale = maxVal > minVal ? (Math.sqrt(c.value) - Math.sqrt(minVal)) / (Math.sqrt(maxVal) - Math.sqrt(minVal)) : 0.5;
-      const fontSize = 11 + (18 * scale);
-      const color = colors[i % colors.length];
-      
-      return `<span style="
-        font-size: ${fontSize.toFixed(1)}px;
-        color: ${color};
-        font-weight: 600;
-        line-height: 1;
-        padding: 4px 8px;
-        background: ${color}15;
-        border-radius: 4px;
-        white-space: nowrap;
-        transition: transform 0.2s;
-        cursor: default;
-      " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-        ${escapeHtml(c.label)} <small style="font-size: 0.7em; opacity: 0.8;">${c.value}</small>
-      </span>`;
-    }).join("");
-  } else if (sourceCloud) {
-    sourceCloud.innerHTML = '<div class="chart-empty">暂无画像数据</div>';
-  }
+  initOrUpdateChart('sourceCanvas', {
+    type: 'bar',
+    data: {
+      labels: chips.map(c => c.label),
+      datasets: [{
+        data: chips.map(c => c.value),
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
+          'rgba(14, 165, 233, 0.8)',
+          'rgba(236, 72, 153, 0.8)'
+        ],
+        borderRadius: 4,
+        barThickness: 8
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: { right: 35 } // Leave space for external labels
+      },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          color: '#666666',
+          anchor: 'end',
+          align: 'right',
+          font: { weight: 'bold', size: 11 },
+          display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+        }
+      },
+      scales: {
+        x: { display: false },
+        y: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
 }
 
 function renderFileList() {
@@ -346,37 +356,37 @@ function renderFileList() {
     const type = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
-    const audioAction = file.audio && file.audio.exists
-      ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
-      : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
-    html += `
-      <div class="file-row ${type.className} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
-        ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell" title="${file.name}">${type.icon} ${file.name}</span>
-        <span>${fileDescription(file)}</span>
-        <span class="time-cell">${file.mtimeText}</span>
-        <span class="action-cell">
-          ${audioAction}
-          <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
-          <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
-          <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
-        </span>
-      </div>
-    `;
-  });
-  els.fileList.innerHTML = html;
-  els.fileList.querySelectorAll(".edit-file-button").forEach((button) => {
-    button.addEventListener("click", () => openFileEditor(button.dataset.path));
-  });
-  els.fileList.querySelectorAll(".delete-file-button").forEach((button) => {
-    button.addEventListener("click", () => deleteFiles([button.dataset.path]));
-  });
-  els.fileList.querySelectorAll(".generate-audio-button").forEach((button) => {
-    button.addEventListener("click", () => generateAudio(button.dataset.path, button));
-  });
-  els.fileList.querySelectorAll(".audio-play-button").forEach((button) => {
-    button.addEventListener("click", () => playAudio(button.dataset.audio, button));
-  });
+      const audioAction = file.audio && file.audio.exists
+        ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+        : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
+      html += `
+        <div class="file-row ${type.className} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
+          ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
+          <span class="file-name-cell" title="${file.name}">${type.icon} ${file.name}</span>
+          <span>${fileDescription(file)}</span>
+          <span class="time-cell">${file.mtimeText}</span>
+          <span class="action-cell">
+            ${audioAction}
+            <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
+            <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
+            <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
+          </span>
+        </div>
+      `;
+    });
+    els.fileList.innerHTML = html;
+    els.fileList.querySelectorAll(".edit-file-button").forEach((button) => {
+      button.addEventListener("click", () => openFileEditor(button.dataset.path));
+    });
+    els.fileList.querySelectorAll(".delete-file-button").forEach((button) => {
+      button.addEventListener("click", () => deleteFiles([button.dataset.path]));
+    });
+    els.fileList.querySelectorAll(".generate-audio-button").forEach((button) => {
+      button.addEventListener("click", () => generateAudio(button.dataset.path, button));
+    });
+    els.fileList.querySelectorAll(".audio-play-button").forEach((button) => {
+      button.addEventListener("click", () => playAudio(button.dataset.audio, button, button.dataset.name));
+    });
   els.fileList.querySelectorAll(".file-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) state.selectedFiles.add(checkbox.dataset.path);
@@ -566,26 +576,106 @@ async function generateAudio(pathStr, button = null) {
   }
 }
 
-function playAudio(url, button = null) {
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "00:00";
+  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const s = Math.floor(seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function updateAudioPlayerUI() {
+  if (!state.currentAudio) return;
+  const isPlaying = !state.currentAudio.paused;
+  els.audioPlayPauseBtn.querySelector(".icon-play").hidden = isPlaying;
+  els.audioPlayPauseBtn.querySelector(".icon-pause").hidden = !isPlaying;
+  
+  if (state.currentAudioButton) {
+    state.currentAudioButton.classList.toggle("is-playing", isPlaying);
+  }
+}
+
+function playAudio(url, button = null, fileName = "音频摘要") {
   if (!url) return;
-  if (state.currentAudio && state.currentAudio.src.includes(url) && !state.currentAudio.paused) {
-    state.currentAudio.pause();
-    if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
+  
+  // Toggle pause if clicking the same active audio
+  if (state.currentAudio && state.currentAudio.src.includes(url)) {
+    if (!state.currentAudio.paused) {
+      state.currentAudio.pause();
+    } else {
+      state.currentAudio.play();
+    }
+    updateAudioPlayerUI();
     return;
   }
+  
+  // Stop previous audio
   if (state.currentAudio) {
     state.currentAudio.pause();
     if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
+    state.currentAudio.src = "";
   }
+  
+  // Initialize new audio
   state.currentAudio = new Audio(url);
   state.currentAudioButton = button;
-  if (button) button.classList.add("is-playing");
-  state.currentAudio.addEventListener("ended", () => {
-    if (button) button.classList.remove("is-playing");
+  els.audioFileName.textContent = fileName || "音频摘要";
+  
+  // Show global player
+  els.audioPlayer.hidden = false;
+  
+  // Bind events
+  state.currentAudio.addEventListener("loadedmetadata", () => {
+    els.audioDuration.textContent = formatTime(state.currentAudio.duration);
+    els.audioProgressBar.max = state.currentAudio.duration;
   });
+  
+  state.currentAudio.addEventListener("timeupdate", () => {
+    els.audioCurrentTime.textContent = formatTime(state.currentAudio.currentTime);
+    els.audioProgressBar.value = state.currentAudio.currentTime || 0;
+  });
+  
+  state.currentAudio.addEventListener("play", updateAudioPlayerUI);
+  state.currentAudio.addEventListener("pause", updateAudioPlayerUI);
+  state.currentAudio.addEventListener("ended", () => {
+    updateAudioPlayerUI();
+    els.audioProgressBar.value = 0;
+    els.audioCurrentTime.textContent = "00:00";
+  });
+  
   state.currentAudio.play().catch((error) => {
-    if (button) button.classList.remove("is-playing");
+    updateAudioPlayerUI();
     appendLog(`音频播放失败：${error.message}\n`);
+  });
+}
+
+// Global Audio Player Events
+if (els.audioPlayPauseBtn) {
+  els.audioPlayPauseBtn.addEventListener("click", () => {
+    if (!state.currentAudio) return;
+    if (state.currentAudio.paused) {
+      state.currentAudio.play();
+    } else {
+      state.currentAudio.pause();
+    }
+  });
+}
+
+if (els.audioProgressBar) {
+  els.audioProgressBar.addEventListener("input", (e) => {
+    if (state.currentAudio) {
+      state.currentAudio.currentTime = e.target.value;
+      els.audioCurrentTime.textContent = formatTime(e.target.value);
+    }
+  });
+}
+
+if (els.audioCloseBtn) {
+  els.audioCloseBtn.addEventListener("click", () => {
+    if (state.currentAudio) {
+      state.currentAudio.pause();
+      if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
+    }
+    els.audioPlayer.hidden = true;
   });
 }
 

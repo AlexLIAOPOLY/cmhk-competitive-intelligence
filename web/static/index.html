@@ -61,7 +61,9 @@
                   <span>来源画像</span>
                   <strong id="sourceTotal">--</strong>
                 </div>
-                <div class="tag-cloud" id="sourceCloud" style="height: 140px; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 10px; overflow: hidden; padding: 10px; box-sizing: border-box;"></div>
+                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                  <canvas id="sourceCanvas"></canvas>
+                </div>
               </article>
             </div>
           </section>
@@ -190,7 +192,25 @@
       </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div id="globalAudioPlayer" class="audio-player-global" hidden>
+      <div class="audio-player-content">
+        <div class="audio-info">
+          <strong id="audioFileName">音频摘要</strong>
+        </div>
+        <div class="audio-controls">
+          <button type="button" class="audio-btn" id="audioPlayPauseBtn" aria-label="播放/暂停">
+            <svg viewBox="0 0 24 24" class="icon-play"><path d="M5 3l14 9-14 9V3z"/></svg>
+            <svg viewBox="0 0 24 24" class="icon-pause" hidden><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <span class="audio-time" id="audioCurrentTime">00:00</span>
+          <input type="range" class="audio-progress" id="audioProgressBar" value="0" min="0" max="100" step="0.1" aria-label="播放进度" />
+          <span class="audio-time" id="audioDuration">00:00</span>
+        </div>
+        <button type="button" class="audio-btn audio-close-btn" id="audioCloseBtn" aria-label="关闭播放器">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js?v=43"></script>
