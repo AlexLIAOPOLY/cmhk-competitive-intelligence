@@ -2293,6 +2293,40 @@ pre {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
+}
+
+.subtitle-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  position: absolute;
+  left: 20px;
+}
+
+.subtitle-toggle-btn:hover {
+  background: var(--gray-100);
+  color: var(--text-dark);
+}
+
+.subtitle-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  fill: none;
+  transition: transform 0.3s;
+}
+
+.subtitle-toggle-btn.is-expanded svg {
+  transform: rotate(180deg);
 }
 
 #audioFileName {

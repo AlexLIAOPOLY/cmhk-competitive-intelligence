@@ -69,6 +69,7 @@ const els = {
   audioProgressBar: document.getElementById("audioProgressBar"),
   audioCloseBtn: document.getElementById("audioCloseBtn"),
   audioFileName: document.getElementById("audioFileName"),
+  subtitleToggleBtn: document.getElementById("subtitleToggleBtn"),
   qualityLegend: document.querySelector("#qualityLegend"),
   blockTotal: document.querySelector("#blockTotal"),
   blockChart: document.querySelector("#blockChart"),
@@ -716,10 +717,15 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
       subtitleDiv.dataset.sentences = "";
       subtitleDiv.dataset.activeIndex = "";
       subtitleDiv.hidden = false;
+      subtitleDiv.style.display = "none"; // Hide by default until user clicks expand
+      els.subtitleToggleBtn.hidden = false;
+      els.subtitleToggleBtn.classList.remove("is-expanded");
       updateSubtitles();
     } else {
       subtitleDiv.dataset.fullText = "";
       subtitleDiv.hidden = true;
+      subtitleDiv.style.display = "none";
+      els.subtitleToggleBtn.hidden = true;
     }
   }
   
@@ -747,6 +753,16 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     els.audioProgressBar.value = 0;
     els.audioCurrentTime.textContent = "00:00";
   });
+  
+  if (els.subtitleToggleBtn) {
+    els.subtitleToggleBtn.onclick = () => {
+      const subtitleDiv = document.getElementById("audioSubtitle");
+      if (!subtitleDiv) return;
+      const isExpanded = els.subtitleToggleBtn.classList.toggle("is-expanded");
+      subtitleDiv.style.display = isExpanded ? "block" : "none";
+      if (isExpanded) updateSubtitles();
+    };
+  }
   
   state.currentAudio.play().catch((error) => {
     updateAudioPlayerUI();

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=46" />
+    <link rel="stylesheet" href="/static/styles.css?v=47" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -196,6 +196,9 @@
       <div id="audioSubtitle" class="audio-subtitle" hidden></div>
       <div class="audio-player-content">
         <div class="audio-info">
+          <button type="button" class="subtitle-toggle-btn" id="subtitleToggleBtn" aria-label="展开/收起字幕" hidden>
+            <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+          </button>
           <strong id="audioFileName">音频摘要</strong>
           <div class="soundwave" id="audioSoundwave" hidden>
             <span></span><span></span><span></span><span></span>
@@ -218,6 +221,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=46"></script>
+    <script src="/static/app.js?v=47"></script>
   </body>
 </html>
