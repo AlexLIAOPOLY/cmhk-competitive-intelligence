@@ -804,8 +804,8 @@ select {
 }
 
 .floating-chat {
-  width: min(640px, calc(100vw - 48px));
-  height: min(720px, calc(100vh - 80px));
+  width: min(860px, calc(100vw - 48px));
+  height: min(860px, calc(100vh - 80px));
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
