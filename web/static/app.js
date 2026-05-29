@@ -375,7 +375,7 @@ function renderFileList() {
     const safePath = escapeHtml(file.path_str);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
       const audioAction = file.audio && file.audio.exists
-        ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+        ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.summary || '')}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
         : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
       html += `
         <div class="file-row ${type.className} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
@@ -403,7 +403,7 @@ function renderFileList() {
       button.addEventListener("click", () => generateAudio(button.dataset.path, button));
     });
     els.fileList.querySelectorAll(".audio-play-button").forEach((button) => {
-      button.addEventListener("click", () => playAudio(button.dataset.audio, button, button.dataset.name));
+      button.addEventListener("click", () => playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary));
     });
   els.fileList.querySelectorAll(".file-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
@@ -620,7 +620,7 @@ function updateAudioPlayerUI() {
   }
 }
 
-function playAudio(url, button = null, fileName = "音频摘要") {
+function playAudio(url, button = null, fileName = "音频摘要", summary = "") {
   if (!url) return;
   
   // Toggle pause if clicking the same active audio
@@ -649,6 +649,15 @@ function playAudio(url, button = null, fileName = "音频摘要") {
   }
   state.currentAudioButton = button;
   els.audioFileName.textContent = fileName || "音频摘要";
+  const subtitleDiv = document.getElementById("audioSubtitle");
+  if (subtitleDiv) {
+    if (summary) {
+      subtitleDiv.textContent = summary;
+      subtitleDiv.hidden = false;
+    } else {
+      subtitleDiv.hidden = true;
+    }
+  }
   
   // Show global player
   els.audioPlayer.hidden = false;
