@@ -113,9 +113,9 @@ function setBusy(value, label = "运行中", action = "all") {
   if (els.aiSettingsButton) els.aiSettingsButton.disabled = value;
   els.runState.textContent = value ? label : "准备就绪";
   
-  if (value && els.logModal.hidden) {
+  if (value) {
     els.logButton.classList.add("log-glowing");
-  } else if (!value) {
+  } else {
     els.logButton.classList.remove("log-glowing");
   }
 }
@@ -620,6 +620,60 @@ function updateAudioPlayerUI() {
   }
 }
 
+function updateSubtitles() {
+  const subtitleDiv = document.getElementById("audioSubtitle");
+  if (!subtitleDiv || !state.currentAudio || !state.currentAudio.duration || !subtitleDiv.dataset.fullText) return;
+  
+  const progress = state.currentAudio.currentTime / state.currentAudio.duration;
+  if (isNaN(progress)) return;
+  
+  let sentences;
+  if (!subtitleDiv.dataset.sentences) {
+    const text = subtitleDiv.dataset.fullText;
+    sentences = text.match(/[^。！？\n]+[。！？\n]*/g) || [text];
+    subtitleDiv.dataset.sentences = JSON.stringify(sentences);
+  } else {
+    sentences = JSON.parse(subtitleDiv.dataset.sentences);
+  }
+  
+  const totalChars = subtitleDiv.dataset.fullText.length;
+  const currentChars = progress * totalChars;
+  
+  let charSum = 0;
+  let activeIndex = 0;
+  for (let i = 0; i < sentences.length; i++) {
+    charSum += sentences[i].length;
+    if (currentChars <= charSum) {
+      activeIndex = i;
+      break;
+    }
+  }
+  
+  if (subtitleDiv.dataset.activeIndex === String(activeIndex)) return;
+  subtitleDiv.dataset.activeIndex = activeIndex;
+  
+  let html = "";
+  sentences.forEach((s, i) => {
+    if (i < activeIndex) {
+      html += `<div style="color: rgba(255,255,255,0.4); font-size: 13px; transition: all 0.3s; margin-bottom: 8px;">${escapeHtml(s)}</div>`;
+    } else if (i === activeIndex) {
+      html += `<div style="color: #fff; font-size: 15px; font-weight: bold; transition: all 0.3s; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${escapeHtml(s)}</div>`;
+    } else {
+      html += `<div style="color: rgba(255,255,255,0.15); font-size: 13px; transition: all 0.3s; margin-bottom: 8px;">${escapeHtml(s)}</div>`;
+    }
+  });
+  
+  // Add padding elements so the active text stays near the center
+  subtitleDiv.innerHTML = `<div style="height: 30px;"></div>` + html + `<div style="height: 30px;"></div>`;
+  
+  // smooth scrolling
+  const activeEl = subtitleDiv.children[activeIndex + 1]; // +1 because of the top padding div
+  if (activeEl) {
+    const scrollTarget = activeEl.offsetTop - subtitleDiv.clientHeight / 2 + activeEl.clientHeight / 2;
+    subtitleDiv.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+  }
+}
+
 function playAudio(url, button = null, fileName = "音频摘要", summary = "") {
   if (!url) return;
   
@@ -639,6 +693,12 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     state.currentAudio.pause();
     if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
     state.currentAudio.src = "";
+    const subtitleDiv = document.getElementById("audioSubtitle");
+    if (subtitleDiv) {
+      subtitleDiv.dataset.fullText = "";
+      subtitleDiv.dataset.sentences = "";
+      subtitleDiv.dataset.activeIndex = "";
+    }
   }
   
   // Initialize new audio
@@ -652,9 +712,13 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
   const subtitleDiv = document.getElementById("audioSubtitle");
   if (subtitleDiv) {
     if (summary) {
-      subtitleDiv.textContent = summary;
+      subtitleDiv.dataset.fullText = summary;
+      subtitleDiv.dataset.sentences = "";
+      subtitleDiv.dataset.activeIndex = "";
       subtitleDiv.hidden = false;
+      updateSubtitles();
     } else {
+      subtitleDiv.dataset.fullText = "";
       subtitleDiv.hidden = true;
     }
   }
@@ -673,6 +737,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     if (!state.isScrubbing) {
       els.audioProgressBar.value = state.currentAudio.currentTime || 0;
     }
+    updateSubtitles();
   });
   
   state.currentAudio.addEventListener("play", updateAudioPlayerUI);
@@ -1287,7 +1352,7 @@ els.clearLogButton.addEventListener("click", () => {
 });
 
 els.logButton.addEventListener("click", () => {
-  els.logButton.classList.remove("log-glowing");
+
   els.logModal.hidden = false;
   setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 10);
 });
