@@ -587,8 +587,16 @@ function formatTime(seconds) {
 function updateAudioPlayerUI() {
   if (!state.currentAudio) return;
   const isPlaying = !state.currentAudio.paused;
-  els.audioPlayPauseBtn.querySelector(".icon-play").hidden = isPlaying;
-  els.audioPlayPauseBtn.querySelector(".icon-pause").hidden = !isPlaying;
+  
+  const playIcon = els.audioPlayPauseBtn.querySelector(".icon-play");
+  const pauseIcon = els.audioPlayPauseBtn.querySelector(".icon-pause");
+  if (playIcon) playIcon.style.display = isPlaying ? "none" : "block";
+  if (pauseIcon) pauseIcon.style.display = isPlaying ? "block" : "none";
+  
+  const soundwave = document.getElementById("audioSoundwave");
+  if (soundwave) {
+    soundwave.hidden = !isPlaying;
+  }
   
   if (state.currentAudioButton) {
     state.currentAudioButton.classList.toggle("is-playing", isPlaying);
@@ -672,14 +680,15 @@ if (els.audioProgressBar) {
   els.audioProgressBar.addEventListener("touchstart", () => state.isScrubbing = true);
   
   els.audioProgressBar.addEventListener("input", (e) => {
+    state.isScrubbing = true;
     els.audioCurrentTime.textContent = formatTime(e.target.value);
+    if (state.currentAudio) {
+      state.currentAudio.currentTime = e.target.value;
+    }
   });
   
   els.audioProgressBar.addEventListener("change", (e) => {
     state.isScrubbing = false;
-    if (state.currentAudio) {
-      state.currentAudio.currentTime = e.target.value;
-    }
   });
   
   els.audioProgressBar.addEventListener("mouseup", () => state.isScrubbing = false);
