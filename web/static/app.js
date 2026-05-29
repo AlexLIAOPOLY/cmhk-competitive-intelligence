@@ -261,48 +261,45 @@ function renderInsights(status) {
     ...methods.slice(0, 2)
   ];
   
-  initOrUpdateChart('sourceCanvas', {
-    type: 'bar',
-    data: {
-      labels: chips.map(c => c.label),
-      datasets: [{
-        data: chips.map(c => c.value),
-        backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(16, 185, 129, 0.8)',
-          'rgba(245, 158, 11, 0.8)',
-          'rgba(239, 68, 68, 0.8)',
-          'rgba(139, 92, 246, 0.8)',
-          'rgba(14, 165, 233, 0.8)',
-          'rgba(236, 72, 153, 0.8)'
-        ],
-        borderRadius: 4,
-        barThickness: 8
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: { right: 35 } // Leave space for external labels
-      },
-      plugins: {
-        legend: { display: false },
-        datalabels: {
-          color: '#666666',
-          anchor: 'end',
-          align: 'right',
-          font: { weight: 'bold', size: 11 },
-          display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
-        }
-      },
-      scales: {
-        x: { display: false },
-        y: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10 } } }
-      }
-    }
-  });
+  // Clean up old canvas if it exists
+  if (chartInstances['sourceCanvas']) {
+    chartInstances['sourceCanvas'].destroy();
+    delete chartInstances['sourceCanvas'];
+  }
+  
+  const sourceCloud = document.getElementById('sourceCloud');
+  if (sourceCloud && chips.length > 0) {
+    const validChips = chips.filter(c => c.value > 0);
+    const maxVal = Math.max(...validChips.map(c => c.value), 1);
+    const minVal = Math.min(...validChips.map(c => c.value), 0);
+    
+    // Modern colors for tags
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9', '#ec4899'];
+    
+    sourceCloud.innerHTML = validChips.map((c, i) => {
+      // Scale font size based on square root to balance visual area
+      const scale = maxVal > minVal ? (Math.sqrt(c.value) - Math.sqrt(minVal)) / (Math.sqrt(maxVal) - Math.sqrt(minVal)) : 0.5;
+      const fontSize = 11 + (18 * scale);
+      const color = colors[i % colors.length];
+      
+      return `<span style="
+        font-size: ${fontSize.toFixed(1)}px;
+        color: ${color};
+        font-weight: 600;
+        line-height: 1;
+        padding: 4px 8px;
+        background: ${color}15;
+        border-radius: 4px;
+        white-space: nowrap;
+        transition: transform 0.2s;
+        cursor: default;
+      " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        ${escapeHtml(c.label)} <small style="font-size: 0.7em; opacity: 0.8;">${c.value}</small>
+      </span>`;
+    }).join("");
+  } else if (sourceCloud) {
+    sourceCloud.innerHTML = '<div class="chart-empty">暂无画像数据</div>';
+  }
 }
 
 function renderFileList() {
