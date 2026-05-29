@@ -21,6 +21,18 @@ from bs4 import BeautifulSoup
 from crawl_settings import apply_selected_fields, selected_row_config
 from extractors import compact_extracted, find_field_snippets, normalize_text, row_fields, snippet_around
 
+import socket
+for _port in (7897, 7890, 10809):
+    try:
+        with socket.create_connection(("127.0.0.1", _port), timeout=0.1):
+            _proxy = f"http://127.0.0.1:{_port}"
+            os.environ["HTTP_PROXY"] = _proxy
+            os.environ["HTTPS_PROXY"] = _proxy
+            os.environ["http_proxy"] = _proxy
+            os.environ["https_proxy"] = _proxy
+            break
+    except Exception:
+        pass
 
 ROOT = Path(__file__).resolve().parent
 RAW_DIR = ROOT / "raw"
