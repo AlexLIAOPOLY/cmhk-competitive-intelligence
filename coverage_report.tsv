@@ -124,21 +124,17 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 20	partial	Vodafone,Deutsche Telekom,Orange,Telefonica,BT/EE,TIM,Verizon,AT&T,T-Mobile US	"【Vodafone】
 - https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
 - https://www.gruppotim.it/en/press-archive.html
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.telekom.com/en/media/media-information
 - https://www.verizon.com/5g/home/
-- https://www.telefonica.com/en/communication-room/press-room/
-- https://www.bt.com/about/bt/our-company/group-businesses/networks
 【Deutsche Telekom】
-- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
-- https://www.gruppotim.it/en/press-archive.html
-- https://www.verizon.com/5g/home/
-- https://www.telefonica.com/en/communication-room/press-room/
-- https://www.bt.com/about/bt/our-company/group-businesses/networks
+- https://www.telekom.com/en/media/media-information
 【Orange】
 - https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
 - https://www.gruppotim.it/en/press-archive.html
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.telekom.com/en/media/media-information
 - https://www.verizon.com/5g/home/
-- https://www.telefonica.com/en/communication-room/press-room/
-- https://www.bt.com/about/bt/our-company/group-businesses/networks
 【Telefonica】
 - https://www.telefonica.com/en/communication-room/press-room/
 【BT/EE】
@@ -147,22 +143,20 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 【TIM】
 - https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
 - https://www.gruppotim.it/en/press-archive.html
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.telekom.com/en/media/media-information
 - https://www.verizon.com/5g/home/
-- https://www.bt.com/about/bt/our-company/group-businesses/networks
 【Verizon】
+- https://www.verizon.com/business/solutions/network-apis/
 - https://www.verizon.com/5g/home/
 【AT&T】
 - https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
 - https://www.gruppotim.it/en/press-archive.html
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.telekom.com/en/media/media-information
 - https://www.verizon.com/5g/home/
-- https://www.telefonica.com/en/communication-room/press-room/
-- https://www.bt.com/about/bt/our-company/group-businesses/networks
 【T-Mobile US】
-- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
-- https://www.gruppotim.it/en/press-archive.html
-- https://www.verizon.com/5g/home/
-- https://www.telefonica.com/en/communication-room/press-room/
-- https://www.bt.com/about/bt/our-company/group-businesses/networks"	网络API,Open RAN,边缘计算,FWA,AI网络,Telefonica,BT/EE,TIM,Verizon	Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,Vodafone:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,Deutsche Telekom:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,Orange:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,Telefonica:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,BT/EE:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,TIM:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,Verizon:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,AT&T:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US,T-Mobile US:Vodafone,Deutsche Telekom,Orange,AT&T,T-Mobile US	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_20.json
+- https://www.telekom.com/en/media/media-information"	网络API,Open RAN,边缘计算,FWA,AI网络,Deutsche Telekom,Telefonica,BT/EE,TIM,Verizon,T-Mobile US	Vodafone,Orange,AT&T,Vodafone:Vodafone,Orange,AT&T,Deutsche Telekom:Vodafone,Orange,AT&T,Orange:Vodafone,Orange,AT&T,Telefonica:Vodafone,Orange,AT&T,BT/EE:Vodafone,Orange,AT&T,TIM:Vodafone,Orange,AT&T,Verizon:Vodafone,Orange,AT&T,AT&T:Vodafone,Orange,AT&T,T-Mobile US:Vodafone,Orange,AT&T	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_20.json
 21	ok	e&,stc,中国移动,中国电信,中国联通	"【e&】
 - https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html
 - https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html
@@ -208,10 +202,8 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 - https://www.pcpd.org.hk/english/artificial_intelligence/index.html"	OFCA政策,频谱/牌照,服务质量,网络安全,PCPD/AI指引,数据跨境		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_26.json
 27	partial	重点国家,地区AI与数据监管	"【重点国家】
 - https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
-- https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en
 【地区AI与数据监管】
-- https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
-- https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"	EU Data Act,GDPR/DSA,隐私法规	EU AI Act,新加坡AI治理,重点国家:EU AI Act,新加坡AI治理,地区AI与数据监管:EU AI Act,新加坡AI治理	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
+- https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en"	EU Data Act,隐私法规	EU AI Act,GDPR/DSA,新加坡AI治理,重点国家:EU AI Act,GDPR/DSA,新加坡AI治理,地区AI与数据监管:EU AI Act,GDPR/DSA,新加坡AI治理	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
 28	ok	通信监管机构	"【通信监管机构】
 - https://www.ofca.gov.hk/en/home/index.html
 - https://www.enisa.europa.eu/news

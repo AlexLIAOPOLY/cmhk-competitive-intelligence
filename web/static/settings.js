@@ -287,6 +287,7 @@ async function saveRow(rowNo) {
   if (!row) return;
   settingsState.busyRows.add(String(rowNo));
   render();
+  if (els.logModal.hidden && els.logButton) els.logButton.classList.add("log-glowing");
   try {
     const response = await fetch("/api/settings/row", {
       method: "POST",
@@ -367,6 +368,7 @@ els.filterInput.addEventListener("input", () => {
 });
 
 els.logButton.addEventListener("click", () => {
+  els.logButton.classList.remove("log-glowing");
   hydrateLogs();
   els.logModal.hidden = false;
   setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 0);

@@ -101,6 +101,10 @@ function setBusy(value, label = "运行中") {
   els.refreshButton.disabled = value;
   if (els.aiSettingsButton) els.aiSettingsButton.disabled = value;
   els.runState.textContent = value ? label : "准备就绪";
+  
+  if (value && els.logModal.hidden) {
+    els.logButton.classList.add("log-glowing");
+  }
 }
 
 function setChatBusy(value) {
@@ -692,7 +696,9 @@ if (els.audioProgressBar) {
   });
   
   els.audioProgressBar.addEventListener("mouseup", () => state.isScrubbing = false);
-  els.audioProgressBar.addEventListener("touchend", () => state.isScrubbing = false);
+  els.audioProgressBar.addEventListener("touchend", () => {
+    state.isScrubbing = false;
+  });
 }
 
 const audioSpeedBtn = document.getElementById("audioSpeedBtn");
@@ -811,18 +817,38 @@ async function generateReport(source = "按钮") {
   setBusy(true, "正在生成");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成周报，请稍候...\n`);
   try {
-    const response = await fetch("/api/generate", { method: "POST" });
-    const data = await response.json();
-    renderStatus(data.status);
-    appendLog([
-      `\n[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 生成完成：${data.ok ? "成功" : "失败"}`,
-      `耗时：${data.durationMs} ms`,
-      data.audio ? `音频摘要：${data.audio.ok ? `已生成（${data.audio.backend || "cached"}）` : `失败：${data.audio.error || "未知错误"}`}` : "",
-      data.stdout ? `输出文件：\n${data.stdout}` : "",
-      data.stderr ? `错误信息：\n${data.stderr}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n"));
+    const res = await fetch("/api/generate-stream", { method: "POST" });
+    if (!res.ok) throw new Error("网络请求失败");
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
+      for (const part of parts) {
+        const line = part.split("\n").find((item) => item.startsWith("data:"));
+        if (!line) continue;
+        const event = JSON.parse(line.replace(/^data:\s*/, ""));
+        
+        if (event.type === "log") {
+          if (event.text) {
+            appendLog(event.text + "\n");
+          }
+        } else if (event.type === "done") {
+          appendLog(`\n[生成结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
+          if (event.audio && !event.audio.ok) {
+             appendLog(`语音摘要失败：${event.audio.error}\n`);
+          }
+          renderStatus(event.status);
+          setBusy(false);
+          return;
+        }
+      }
+    }
   } catch (error) {
     appendLog(`\n生成失败：${error.message}`);
   } finally {
@@ -1239,6 +1265,7 @@ els.clearLogButton.addEventListener("click", () => {
 });
 
 els.logButton.addEventListener("click", () => {
+  els.logButton.classList.remove("log-glowing");
   els.logModal.hidden = false;
   setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 10);
 });

@@ -57,6 +57,8 @@
       </div>
       <script>
         function openLogModal() {
+          const logBtn = document.querySelector("button[onclick='openLogModal()']");
+          if (logBtn) logBtn.classList.remove("log-glowing");
           document.getElementById('logModal').style.display = 'flex';
         }
         function closeLogModal() {

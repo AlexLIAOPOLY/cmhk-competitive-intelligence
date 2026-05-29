@@ -765,6 +765,59 @@ class AppHandler(BaseHTTPRequestHandler):
             self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
             self.wfile.flush()
             return
+        if parsed.path == "/api/generate-stream":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+            self.send_header("Cache-Control", "no-cache")
+            self.end_headers()
+            
+            started = time.time()
+            proc = subprocess.Popen(
+                [sys.executable, str(ROOT / "generate_weekly_report.py")],
+                cwd=str(ROOT),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+            )
+            for line in proc.stdout:
+                payload = json.dumps({"type": "log", "text": line.strip()}, ensure_ascii=False)
+                self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+                self.wfile.flush()
+            
+            proc.wait()
+            
+            status = build_status()
+            audio_result = None
+            if proc.returncode == 0 and status.get("outputs"):
+                try:
+                    latest_path = ROOT / status["outputs"][0]["path_str"]
+                    payload = json.dumps({"type": "log", "text": "报告生成完成。开始生成语音摘要..."}, ensure_ascii=False)
+                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+
+                    audio_result = synthesize_report_audio(latest_path, force=True)
+                    status = build_status()
+                    payload = json.dumps({"type": "log", "text": "✅ 语音摘要生成完成。"}, ensure_ascii=False)
+                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+                except Exception as exc:
+                    audio_result = {"ok": False, "error": str(exc)}
+                    payload = json.dumps({"type": "log", "text": f"❌ 语音摘要生成失败: {exc}"}, ensure_ascii=False)
+                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+                    self.wfile.flush()
+                    
+            duration_ms = round((time.time() - started) * 1000)
+            payload = json.dumps({
+                "type": "done",
+                "ok": proc.returncode == 0,
+                "durationMs": duration_ms,
+                "audio": audio_result,
+                "status": status
+            }, ensure_ascii=False)
+            self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
+            self.wfile.flush()
+            return
         if parsed.path == "/api/generate":
             json_response(self, run_report_generation())
             return

@@ -5,7 +5,8 @@ const els = {
   settingsSummary: document.getElementById("settingsSummary"),
   saveButton: document.getElementById("saveButton"), // keep or remove, but if they don't exist it might be null
   logBox: document.getElementById("logBox"),
-  logBox: document.getElementById("logBox"),
+  logButton: document.querySelector("button[onclick='openLogModal()']"),
+  logModal: document.getElementById("logModal"),
 };
 
 let rawRows = [];
@@ -269,6 +270,7 @@ function renderList() {
       try {
         runBtn.disabled = true;
         runBtn.innerHTML = "运行中...";
+        if (els.logModal.style.display === "none" && els.logButton) els.logButton.classList.add("log-glowing");
         setLog(`正在运行单行爬虫 (Row ${row.row})... 这可能需要十几秒。`);
         
         const res = await fetch("/api/crawl-row", {
@@ -300,6 +302,7 @@ function renderList() {
       try {
         saveRowBtn.disabled = true;
         saveRowBtn.innerHTML = "保存中...";
+        if (els.logModal.style.display === "none" && els.logButton) els.logButton.classList.add("log-glowing");
         const res = await fetch("/api/schedule", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
