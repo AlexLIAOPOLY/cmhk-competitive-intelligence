@@ -1117,7 +1117,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
             )
 
     (ROOT / "write_payload.json").write_text(
-        json.dumps({"F2:F34": f_values, "I2:K34": ij_values}, ensure_ascii=False, indent=2),
+        json.dumps({"sources_payload": f_values, "results_payload": ij_values, "F2:F34": f_values, "I2:K34": ij_values}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
     with (ROOT / "coverage_report.tsv").open("w", encoding="utf-8", newline="") as fh:
