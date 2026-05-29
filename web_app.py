@@ -811,10 +811,21 @@ class AppHandler(BaseHTTPRequestHandler):
                 rows = payload.get("rows", [])
                 freq_map = {str(r["row"]): r.get("frequency", "") for r in rows}
                 values = [[freq_map.get(str(idx), "")] for idx in range(2, 35)]
+                
+                import daily_crawl_and_write
+                headers = daily_crawl_and_write.current_headers()
+                freq_col = "H"
+                for name in ["每隔多长时间收集一轮", "收集频率", "排期频率"]:
+                    try:
+                        freq_col = daily_crawl_and_write.col_to_a1(headers.index(name) + 1)
+                        break
+                    except ValueError:
+                        pass
+
                 cmd = [
                     crawl.LARK_CLI, "sheets", "+write",
                     "--spreadsheet-token", crawl.SPREADSHEET_TOKEN,
-                    "--range", f"{crawl.MAIN_SHEET_ID}!H2:H34",
+                    "--range", f"{crawl.MAIN_SHEET_ID}!{freq_col}2:{freq_col}34",
                     "--values", json.dumps(values, ensure_ascii=False)
                 ]
                 proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -846,8 +857,12 @@ class AppHandler(BaseHTTPRequestHandler):
                         return
                     try:
                         payload_data = json.loads((ROOT / "write_payload.json").read_text(encoding="utf-8"))
-                        row_idx = int(row_id) - 2
-                        i_cell = payload_data.get("I2:K34", [])[row_idx][0]
+                        ij_payload = payload_data.get("results_payload") or payload_data.get("I2:K34", [])
+                        if len(ij_payload) == 1:
+                            i_cell = ij_payload[0][0]
+                        else:
+                            row_idx = int(row_id) - 2
+                            i_cell = ij_payload[row_idx][0]
                         result_text = i_cell
                     except Exception as e:
                         result_text = f"读取爬虫结果失败: {e}"
