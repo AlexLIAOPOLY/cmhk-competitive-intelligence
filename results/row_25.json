@@ -42,7 +42,7 @@
           "content_type": "text/html",
           "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
           "bytes": 119864,
-          "elapsed_seconds": 0.577,
+          "elapsed_seconds": 0.68,
           "method": "httpx",
           "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
           "content_hash": "43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749",
@@ -66,7 +66,7 @@
           "content_type": "text/html",
           "title": "HKSAR Government Press Releases",
           "bytes": 14190,
-          "elapsed_seconds": 0.208,
+          "elapsed_seconds": 0.062,
           "method": "httpx",
           "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Appointments to Airport Authority Hong Kong Appointments to Committee on the Promotion of Racial Harmony announced CE to lead delegation to Kazakhstan and Uzbekistan Temporary closure of Kennedy Town Swimming Pool Property and signboard owners fined over $260,000 in total for not complying with removal orders Appointments to Commission on Children announced Appointments to industry advisory committees to advise Insurance Authority announced Employer sanctioned for violating requirements of local recruitment under Enhanced Supplementary Labour Scheme Primary One Central Allocation results to be posted to parents on June 3 and 4 Stamp Duty (Amendment) (No. 2) Bill 2026 gazetted Lifesaving services at gazetted beaches during swimming season Appointments to Committee on Professional Development of T",
           "content_hash": "bef789e4712bd50d3d2ecf8b1db46e7962194aa4e50fd950c4e281cd5f7fc434",
@@ -95,7 +95,7 @@
       "content_type": "text/html",
       "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
       "bytes": 119864,
-      "elapsed_seconds": 0.577,
+      "elapsed_seconds": 0.68,
       "method": "httpx",
       "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
       "content_hash": "43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749",
@@ -119,7 +119,7 @@
       "content_type": "text/html",
       "title": "HKSAR Government Press Releases",
       "bytes": 14190,
-      "elapsed_seconds": 0.208,
+      "elapsed_seconds": 0.062,
       "method": "httpx",
       "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Appointments to Airport Authority Hong Kong Appointments to Committee on the Promotion of Racial Harmony announced CE to lead delegation to Kazakhstan and Uzbekistan Temporary closure of Kennedy Town Swimming Pool Property and signboard owners fined over $260,000 in total for not complying with removal orders Appointments to Commission on Children announced Appointments to industry advisory committees to advise Insurance Authority announced Employer sanctioned for violating requirements of local recruitment under Enhanced Supplementary Labour Scheme Primary One Central Allocation results to be posted to parents on June 3 and 4 Stamp Duty (Amendment) (No. 2) Bill 2026 gazetted Lifesaving services at gazetted beaches during swimming season Appointments to Committee on Professional Development of T",
       "content_hash": "bef789e4712bd50d3d2ecf8b1db46e7962194aa4e50fd950c4e281cd5f7fc434",
@@ -136,6 +136,6 @@
       ]
     }
   ],
-  "fetched_at": "2026-05-29T07:03:24.368641+00:00",
-  "fetched_at_hkt": "2026-05-29T15:03:24.368650+08:00"
+  "fetched_at": "2026-05-29T07:15:50.633781+00:00",
+  "fetched_at_hkt": "2026-05-29T15:15:50.633791+08:00"
 }

@@ -58,7 +58,6 @@ const els = {
   chatInput: document.querySelector("#chatInput"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
-  insightSignal: document.querySelector("#insightSignal"),
   qualityScore: document.querySelector("#qualityScore"),
   qualityRing: document.querySelector("#qualityRing"),
   qualityCenter: document.querySelector("#qualityCenter"),
@@ -235,10 +234,6 @@ function renderInsights(status) {
       <span><i class="partial"></i>部分 ${partial}</span>
       <span><i class="failed"></i>异常 ${failed}</span>
     `;
-  }
-  if (els.insightSignal) {
-    const audioReady = (visuals.outputs || []).filter((item) => item.audio).length;
-    els.insightSignal.textContent = `来源 ${quality.rawSources || 0} · 缺字段 ${quality.missingFields || 0} · 音频 ${audioReady}`;
   }
   if (els.blockTotal) els.blockTotal.textContent = `${sumValues(visuals.blocks || []) || 0} 行`;
   renderMiniBars(els.blockChart, visuals.blocks || [], { limit: 5 });
