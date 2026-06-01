@@ -1431,111 +1431,7 @@ if (els.closeDashboardBtn) els.closeDashboardBtn.addEventListener("click", () =>
 if (els.dashboardModal) els.dashboardModal.addEventListener("click", (e) => { if (e.target === els.dashboardModal) els.dashboardModal.hidden = true; });
 
 // Dashboard Logic
-async function fetchDashboardStats() {
-  const response = await fetch("/api/dashboard");
-  const data = await response.json();
-  if (!data.ok) throw new Error(data.error || "获取看板数据失败");
-  return data.stats;
-}
-
-function renderDashboardTable(stats) {
-  const container = document.getElementById("dashboardCardGrid");
-  if (!container) return;
-  container.className = "dashboard-table-container"; // override grid layout
-  container.innerHTML = "";
-
-  if (!stats || !stats.companies || stats.companies.length === 0) {
-    container.innerHTML = "<p style='text-align:center;color:#888;padding:40px 0;'>暂无提取的数据，请先运行爬取。</p>";
-    return;
-  }
-
-  // Collect all unique field names across all companies (preserving order)
-  const fieldSet = new Set();
-  stats.companies.forEach(c => {
-    Object.keys(c.data || {}).forEach(k => fieldSet.add(k));
-  });
-  const fields = [...fieldSet];
-
-  // Build table
-  const wrapper = document.createElement("div");
-  wrapper.className = "dashboard-table-wrap";
-
-  const table = document.createElement("table");
-  table.className = "dashboard-table";
-
-  // thead
-  const thead = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  ["公司", ...fields, "置信度"].forEach(label => {
-    const th = document.createElement("th");
-    th.textContent = label;
-    headRow.appendChild(th);
-  });
-  thead.appendChild(headRow);
-  table.appendChild(thead);
-
-  // tbody
-  const tbody = document.createElement("tbody");
-  stats.companies.forEach(company => {
-    const tr = document.createElement("tr");
-
-    // Company name cell
-    const tdName = document.createElement("td");
-    tdName.className = "dt-company";
-    tdName.textContent = company.name;
-    tr.appendChild(tdName);
-
-    // Data field cells
-    fields.forEach(field => {
-      const td = document.createElement("td");
-      const rawData = (company.data || {})[field];
-      
-      let val = "";
-      let sourceUrl = "";
-      
-      if (typeof rawData === "object" && rawData !== null) {
-        val = rawData.value || "";
-        sourceUrl = rawData.source || "";
-      } else {
-        val = rawData || "";
-      }
-      
-      const contentSpan = document.createElement("span");
-      contentSpan.textContent = val;
-      td.appendChild(contentSpan);
-      
-      if (sourceUrl && sourceUrl.startsWith("http")) {
-        const link = document.createElement("a");
-        link.href = sourceUrl;
-        link.target = "_blank";
-        link.className = "source-link";
-        link.title = "查看数据来源";
-        link.innerHTML = ` <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
-        td.appendChild(link);
-      }
-      
-      if (!val) td.className = "dt-empty";
-      tr.appendChild(td);
-    });
-
-    // Confidence cell
-    const tdConf = document.createElement("td");
-    tdConf.className = "dt-confidence";
-    const conf = company.confidence_score || 0;
-    let dot = "🔴";
-    if (conf >= 0.8) dot = "🟢";
-    else if (conf >= 0.4) dot = "🟡";
-    tdConf.innerHTML = `${dot} ${(conf * 100).toFixed(0)}%`;
-    if (company.verification_reason) tdConf.title = company.verification_reason;
-    tr.appendChild(tdConf);
-
-    tbody.appendChild(tr);
-  });
-  table.appendChild(tbody);
-  wrapper.appendChild(table);
-  container.appendChild(wrapper);
-}
-
+// Dashboard Logic
 async function openDashboard() {
   if (els.dashboardModal) els.dashboardModal.hidden = false;
   const container = document.getElementById("dashboardCardGrid");
@@ -1544,13 +1440,19 @@ async function openDashboard() {
     container.innerHTML = `
       <div class="dashboard-loading">
         <div class="spinner"></div>
-        <p>AI 模型正在深度提取与整理数据中，请稍候...</p>
+        <p>正在生成飞书表格中...</p>
       </div>
     `;
   }
   try {
-    const stats = await fetchDashboardStats();
-    renderDashboardTable(stats);
+    const response = await fetch("/api/dashboard");
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "获取看板数据失败");
+    
+    if (els.dashboardModal) els.dashboardModal.hidden = true;
+    if (data.url) {
+      window.open(data.url, "_blank");
+    }
   } catch (err) {
     console.error(err);
     if (container) {

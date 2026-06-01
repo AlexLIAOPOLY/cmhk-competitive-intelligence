@@ -513,7 +513,7 @@ def run_carrier_performance_generation() -> dict:
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),
         "audio": audio_result,
-        "status": build_status(),
+        "status": status,
     }
 
 
@@ -846,30 +846,89 @@ class AppHandler(BaseHTTPRequestHandler):
                     # Fallback: use raw data
                     cleaned = {comp: info["fields"] for comp, info in companies_with_data.items()}
 
-                # Build response
-                stats = {"companies": []}
-                for comp, info in companies_with_data.items():
-                    avg_conf = sum(info["confidences"]) / len(info["confidences"]) if info["confidences"] else 0
-                    company_data = cleaned.get(comp, info["fields"])
-                    # Remove empty values
-                    company_data = {k: v for k, v in company_data.items() if v}
-                    if not company_data:
-                        continue
-                    stats["companies"].append({
-                        "name": comp,
-                        "data": company_data,
-                        "confidence_score": avg_conf,
-                        "verification_reason": " | ".join(info["reasons"][:2])
-                    })
-                stats["companies"].sort(key=lambda x: x["name"])
-
-                # Save cache
+                # Save cache (still useful to cache the DeepSeek part so we don't re-run it)
                 try:
-                    cache_path.write_text(json.dumps({"hash": current_hash, "stats": stats}, ensure_ascii=False, indent=2), encoding="utf-8")
+                    cache_path.write_text(json.dumps({"hash": current_hash, "stats": cleaned}, ensure_ascii=False, indent=2), encoding="utf-8")
                 except Exception:
                     pass
 
-                json_response(self, {"ok": True, "stats": stats})
+                # Build headers and data payload for Feishu
+                # 1. Collect all unique fields
+                field_set = set()
+                for comp, fields in cleaned.items():
+                    for k in fields.keys():
+                        field_set.add(k)
+                field_list = sorted(list(field_set))
+                
+                headers = ["公司"] + field_list + ["置信度", "校验原因"]
+                
+                data_payload = []
+                for comp, info in companies_with_data.items():
+                    avg_conf = sum(info["confidences"]) / len(info["confidences"]) if info["confidences"] else 0
+                    reason_str = " | ".join(info["reasons"][:2])
+                    comp_data = cleaned.get(comp, {})
+                    
+                    row = [comp]
+                    for f in field_list:
+                        val_obj = comp_data.get(f, {})
+                        if isinstance(val_obj, dict):
+                            val = val_obj.get("value", "")
+                            src = val_obj.get("source", "")
+                            if src:
+                                val = f"{val}\n(来源: {src})"
+                            row.append(val)
+                        else:
+                            row.append(str(val_obj))
+                    row.append(str(avg_conf))
+                    row.append(reason_str)
+                    data_payload.append(row)
+                
+                # Feishu CLI integration
+                import subprocess
+                import datetime
+                FEISHU_SPREADSHEET_TOKEN = "VLzwsCBZzhMPbztyrLMcAy7Fn4e"
+                
+                # 1. Create a new sheet with timestamp
+                sheet_title = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                cmd_create = ["lark-cli", "sheets", "+create-sheet", "--spreadsheet-token", FEISHU_SPREADSHEET_TOKEN, "--title", sheet_title]
+                res_create = subprocess.run(cmd_create, capture_output=True, text=True)
+                
+                if res_create.returncode != 0:
+                    json_response(self, {"ok": False, "error": f"Failed to create Feishu sheet: {res_create.stderr}"}, 500)
+                    return
+                    
+                create_out = json.loads(res_create.stdout)
+                sheet_id = create_out.get("data", {}).get("sheet_id")
+                
+                # Calculate exact range (e.g. A1:Z10)
+                def get_col_letter(n):
+                    res = ""
+                    n += 1
+                    while n > 0:
+                        n, rem = divmod(n - 1, 26)
+                        res = chr(65 + rem) + res
+                    return res
+                
+                matrix = [headers] + data_payload
+                range_str = f"A1:{get_col_letter(len(headers)-1)}{len(matrix)}"
+                
+                # 2. Write data to the new sheet
+                cmd_write = [
+                    "lark-cli", "sheets", "+write", 
+                    "--spreadsheet-token", FEISHU_SPREADSHEET_TOKEN, 
+                    "--sheet-id", sheet_id, 
+                    "--range", range_str,
+                    "--values", json.dumps(matrix, ensure_ascii=False)
+                ]
+                res_write = subprocess.run(cmd_write, capture_output=True, text=True)
+                
+                if res_write.returncode != 0:
+                    json_response(self, {"ok": False, "error": f"Failed to write to Feishu sheet: {res_write.stderr}"}, 500)
+                    return
+                
+                # Return the URL to the frontend
+                spreadsheet_url = f"https://cmhk-try.feishu.cn/sheets/{FEISHU_SPREADSHEET_TOKEN}?sheet={sheet_id}"
+                json_response(self, {"ok": True, "url": spreadsheet_url})
             except Exception as exc:
                 import traceback
                 traceback.print_exc()
