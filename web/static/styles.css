@@ -1413,8 +1413,9 @@ pre {
 
 .dashboard-modal-content {
   max-width: 95vw;
-  width: 95%;
+  width: 95vw !important;
   padding-bottom: 24px;
+  overflow: visible;
 }
 
 .dashboard-grid {
