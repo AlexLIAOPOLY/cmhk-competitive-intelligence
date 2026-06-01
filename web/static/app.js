@@ -1449,14 +1449,20 @@ async function openDashboard() {
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "获取看板数据失败");
     
-    if (els.dashboardModal) els.dashboardModal.hidden = true;
     if (data.url) {
-      window.open(data.url, "_blank");
+      if (container) {
+        container.innerHTML = `
+          <div class="dashboard-loading" style="text-align: center; padding: 40px;">
+            <p style="color: #10b981; font-weight: bold; font-size: 16px; margin-bottom: 16px;">✅ 飞书表格子表已成功生成！</p>
+            <a href="${data.url}" target="_blank" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">点击跳转到飞书查看</a>
+          </div>
+        `;
+      }
     }
   } catch (err) {
     console.error(err);
     if (container) {
-      container.innerHTML = "<p style='text-align:center;color:#ef4444;padding:40px 0;'>加载看板数据失败</p>";
+      container.innerHTML = "<p style='text-align:center;color:#ef4444;padding:40px 0;'>生成飞书表格失败</p>";
     } else {
       alert("加载看板数据失败");
     }

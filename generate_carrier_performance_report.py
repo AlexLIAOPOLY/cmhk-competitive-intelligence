@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -120,6 +121,121 @@ def build_dynamic_table(corpus: dict[str, list[str]]) -> list[list[str]]:
     return baseline
 
 
+def result_topic(result: dict) -> str:
+    return clean_text(result.get("need") or result.get("block") or result.get("object") or "未分类", 90)
+
+
+def result_entities(result: dict) -> str:
+    entities = [clean_text(item, 24) for item in result.get("entities") or [] if clean_text(item)]
+    return "、".join(entities[:4]) or "未标注主体"
+
+
+def result_evidence(result: dict) -> str:
+    extracted = result.get("extracted") or {}
+    for key, value in extracted.items():
+        text = clean_text(value, 180)
+        if text:
+            return f"{clean_text(key, 24)}：{text}"
+    for record in result.get("raw_records") or []:
+        if not isinstance(record, dict):
+            continue
+        title = clean_text(record.get("title"), 90)
+        source_type = clean_text(record.get("source_type"), 36)
+        if title:
+            return f"{source_type or '公开来源'}：{title}"
+    return "当前行未抽取到可直接引用的正文片段，需后续复核原始链接。"
+
+
+def collect_monitoring_sections(results: list[dict]) -> list[dict]:
+    ok_count = sum(1 for item in results if item.get("status") == "ok")
+    partial_count = sum(1 for item in results if item.get("status") == "partial")
+    failed_count = len(results) - ok_count - partial_count
+    entity_counter: Counter[str] = Counter()
+    topic_counter: Counter[str] = Counter()
+    missing_total = 0
+    for item in results:
+        for entity in item.get("entities") or []:
+            if clean_text(entity):
+                entity_counter[clean_text(entity, 32)] += 1
+        for token in re.split(r"[、,，/ ]+", result_topic(item)):
+            token = clean_text(token, 24)
+            if token:
+                topic_counter[token] += 1
+        missing = item.get("missing_fields") or []
+        if isinstance(missing, list):
+            missing_total += len(missing)
+
+    top_entities = "、".join(name for name, _ in entity_counter.most_common(8)) or "未形成主体统计"
+    top_topics = "、".join(name for name, _ in topic_counter.most_common(8)) or "未形成主题统计"
+
+    local_keywords = ["HKBN", "SmarTone", "HGC", "iCable", "i-CABLE", "HKT", "csl", "1O1O", "香港"]
+    metric_keywords = ["收入", "EBITDA", "净利润", "资本开支", "ARPU", "用户", "宽频", "5G"]
+    strategy_keywords = ["AI", "人工智能", "算力", "云", "安全", "数据中心", "合作", "中标", "跨境"]
+
+    def pick_rows(keywords: list[str], limit: int = 4) -> list[dict]:
+        picked: list[dict] = []
+        for item in results:
+            text = clean_text(
+                " ".join(
+                    [
+                        result_topic(item),
+                        result_entities(item),
+                        " ".join(str(key) for key in (item.get("extracted") or {}).keys()),
+                    ]
+                )
+            )
+            if any(keyword.lower() in text.lower() for keyword in keywords):
+                picked.append(item)
+            if len(picked) >= limit:
+                break
+        return picked
+
+    def row_items(rows: list[dict], fallback: str) -> list[str]:
+        if not rows:
+            return [fallback]
+        items = []
+        for item in rows:
+            row_no = clean_text(item.get("row"), 12)
+            entities = result_entities(item)
+            topic = result_topic(item)
+            evidence = result_evidence(item)
+            status = clean_text(item.get("status"), 18)
+            items.append(f"第{row_no}行（{entities}，{status}）：{topic}。{evidence}")
+        return items
+
+    quality_items = [
+        f"本轮共载入{len(results)}行公开信息监测结果，其中完整成功{ok_count}行、部分成功{partial_count}行、异常或无抽取{failed_count}行。",
+        f"主体覆盖：{top_entities}。",
+        f"高频主题：{top_topics}。",
+        f"字段完整性：当前仍有{missing_total}个字段需要补充或人工复核，后续应优先补齐经营指标、资本开支、用户数和派息等可量化字段。",
+    ]
+
+    return [
+        {"title": "一、本轮监测总体判断", "items": quality_items},
+        {
+            "title": "二、香港本地运营商动态",
+            "items": row_items(
+                pick_rows(local_keywords),
+                "本轮结果未命中明确的香港本地运营商片段，建议检查飞书配置中的主体与来源链接。",
+            ),
+        },
+        {
+            "title": "三、经营指标与资本开支线索",
+            "items": row_items(
+                pick_rows(metric_keywords),
+                "本轮结果未命中可量化经营指标，建议补充年报、业绩公告或投资者材料链接。",
+            ),
+        },
+        {
+            "title": "四、AI、算力及政企能力变化",
+            "items": row_items(
+                pick_rows(strategy_keywords),
+                "本轮结果未命中AI、算力或政企能力相关片段，建议扩大关键词和官网新闻源范围。",
+            ),
+        },
+    ]
+
+
 def company_evidence(company: str, texts: list[str]) -> list[str]:
     snippets = []
     def has_keyword(sentence: str) -> bool:
@@ -159,9 +275,8 @@ def table_lookup(table: list[list[str]], company: str, metric: str) -> str:
     return "待补充"
 
 
-def build_dynamic_sections(corpus: dict[str, list[str]]) -> list[dict]:
-    sections = []
-    date_note = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y年%-m月%-d日")
+def build_company_baseline_notes(corpus: dict[str, list[str]]) -> list[str]:
+    notes = []
     table = build_dynamic_table(corpus)
     for company in COMPANIES:
         snippets = company_evidence(company, corpus.get(company, []))
@@ -175,17 +290,26 @@ def build_dynamic_sections(corpus: dict[str, list[str]]) -> list[dict]:
         mobile_users = table_lookup(table, company, "移动用户数（亿户）")
         fiveg_users = table_lookup(table, company, "5G网络用户数（亿户）")
         fiveg_penetration = table_lookup(table, company, "5G网络渗透率")
-        items = [
-            f"核心业绩：营业收入为{revenue}，主营业务收入为{service_revenue}，EBITDA为{ebitda}，归母净利润为{profit}，净利率为{net_margin}。",
-            f"资本开支：2025年资本开支为{capex}，2026年计划为{capex_plan}；后续需持续关注投资结构是否继续向算力、AI和网络能力升级倾斜。",
-            f"用户与网络：移动用户数为{mobile_users}，5G网络用户数为{fiveg_users}，5G网络渗透率为{fiveg_penetration}。",
-        ]
+        note = (
+            f"{company}：营业收入{revenue}，主营业务收入{service_revenue}，EBITDA{ebitda}，"
+            f"归母净利润{profit}，净利率{net_margin}；资本开支{capex}，2026年计划{capex_plan}；"
+            f"移动用户{mobile_users}，5G用户{fiveg_users}，5G渗透率{fiveg_penetration}。"
+        )
         if snippets:
-            items.append(f"本轮监测补充：{snippets[0]}")
-        else:
-            items.append(f"本轮监测补充：截至{date_note}，当前爬取结果中未取得新的可复核补充片段，需补充该公司的财报公告、业绩演示材料或交易所披露链接。")
-        items.append("后续关注：建议按同一口径持续跟踪派息政策、资本开支变化、AI/算力投入、5G用户渗透和资本市场反馈，避免仅看单一收入指标。")
-        sections.append({"title": f"{company}关键摘要", "items": items})
+            note += f" 本轮补充片段：{snippets[0]}"
+        notes.append(note)
+    return notes
+
+
+def build_dynamic_sections(results: list[dict], corpus: dict[str, list[str]]) -> list[dict]:
+    sections = collect_monitoring_sections(results)
+    sections.append(
+        {
+            "title": "五、运营商业绩基线对照",
+            "items": build_company_baseline_notes(corpus)
+            + ["后续建议：在下一轮爬取中补充各公司财报公告、业绩演示材料、交易所披露与券商观点链接，形成可追溯的指标更新链路。"],
+        }
+    )
     return sections
 
 
@@ -194,16 +318,16 @@ def build_dynamic_model() -> dict:
     corpus = company_corpus(results)
     now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
     return {
-        "title": "各家运营商关键业绩摘要",
+        "title": "运营商业绩与竞对动态摘要",
         "subtitle": "战略部（智库）对标分析简报",
         "intro": (
             f"截至{now.year}年{now.month}月{now.day}日，本报告基于系统最新公开信息监测结果自动生成。"
-            "报告沿用参考模板版式，以结构化业绩基线数据为表格基础，并结合本轮爬取结果补充AI、算力、5G和资本开支相关动态；"
-            "未在当前监测结果中取得新证据的部分会明确提示后续补充方向。"
+            f"本轮共读取{len(results)}行爬取结果，正文优先引用本轮监测中的主体、字段和公开来源线索；"
+            "表格保留运营商业绩模板的结构化基线，用于和后续新披露数据持续对照。"
         ),
-        "table_caption": "表：各家运营商关键业绩数据汇总（结构化基线）",
+        "table_caption": "表：运营商业绩基线数据汇总（用于后续滚动对照）",
         "table": build_dynamic_table(corpus),
-        "sections": build_dynamic_sections(corpus),
+        "sections": build_dynamic_sections(results, corpus),
     }
 
 
