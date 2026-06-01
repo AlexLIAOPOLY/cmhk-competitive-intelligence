@@ -889,12 +889,16 @@ class AppHandler(BaseHTTPRequestHandler):
                 FEISHU_SPREADSHEET_TOKEN = "VLzwsCBZzhMPbztyrLMcAy7Fn4e"
                 
                 # 1. Create a new sheet with timestamp
-                sheet_title = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                sheet_title = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+                import os
+                env = os.environ.copy()
+                env["LARK_CLI_NO_PROXY"] = "1"
+                
                 cmd_create = ["lark-cli", "sheets", "+create-sheet", "--spreadsheet-token", FEISHU_SPREADSHEET_TOKEN, "--title", sheet_title]
-                res_create = subprocess.run(cmd_create, capture_output=True, text=True)
+                res_create = subprocess.run(cmd_create, capture_output=True, text=True, env=env)
                 
                 if res_create.returncode != 0:
-                    json_response(self, {"ok": False, "error": f"Failed to create Feishu sheet: {res_create.stderr}"}, 500)
+                    json_response(self, {"ok": False, "error": f"Failed to create Feishu sheet: {res_create.stderr} {res_create.stdout}"}, 500)
                     return
                     
                 create_out = json.loads(res_create.stdout)
@@ -920,10 +924,10 @@ class AppHandler(BaseHTTPRequestHandler):
                     "--range", range_str,
                     "--values", json.dumps(matrix, ensure_ascii=False)
                 ]
-                res_write = subprocess.run(cmd_write, capture_output=True, text=True)
+                res_write = subprocess.run(cmd_write, capture_output=True, text=True, env=env)
                 
                 if res_write.returncode != 0:
-                    json_response(self, {"ok": False, "error": f"Failed to write to Feishu sheet: {res_write.stderr}"}, 500)
+                    json_response(self, {"ok": False, "error": f"Failed to write to Feishu sheet: {res_write.stderr} {res_write.stdout}"}, 500)
                     return
                 
                 # Return the URL to the frontend
