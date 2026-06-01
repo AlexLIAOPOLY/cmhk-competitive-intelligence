@@ -673,60 +673,137 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/dashboard":
             try:
-                companies_data = {}
-                
+                # Check cache first
+                cache_path = ROOT / "results" / "_dashboard_cache.json"
                 results_dir = ROOT / "results"
-                if results_dir.exists():
-                    for f in results_dir.glob("row_*.json"):
-                        try:
-                            data = json.loads(f.read_text(encoding="utf-8"))
-                            for entity_result in data.get("entity_results", []):
-                                entity = entity_result.get("entity")
-                                if not entity: continue
-                                if entity_result.get("status") == "no_extraction":
-                                    continue
-                                    
-                                if entity not in companies_data:
-                                    companies_data[entity] = {
-                                        "name": entity,
-                                        "data": {},
-                                        "confidences": [],
-                                        "reasons": []
-                                    }
-                                
-                                extracted = entity_result.get("extracted", {})
-                                for k, v in extracted.items():
-                                    if v and isinstance(v, str):
-                                        if k not in companies_data[entity]["data"]:
-                                            companies_data[entity]["data"][k] = v
-                                        else:
-                                            if v not in companies_data[entity]["data"][k]:
-                                                companies_data[entity]["data"][k] += f" | {v}"
-                                                
-                                conf = entity_result.get("confidence_score", 0.0)
-                                companies_data[entity]["confidences"].append(conf)
-                                
-                                reason = entity_result.get("verification_reason", "")
-                                if reason:
-                                    companies_data[entity]["reasons"].append(reason)
-                        except Exception:
-                            pass
-                
+                # Build a hash of all row files to detect changes
+                import hashlib
+                row_files = sorted(results_dir.glob("row_*.json")) if results_dir.exists() else []
+                hash_input = ""
+                for rf in row_files:
+                    hash_input += rf.name + str(rf.stat().st_mtime)
+                current_hash = hashlib.md5(hash_input.encode()).hexdigest()
+
+                if cache_path.exists():
+                    try:
+                        cached = json.loads(cache_path.read_text(encoding="utf-8"))
+                        if cached.get("hash") == current_hash:
+                            json_response(self, {"ok": True, "stats": cached["stats"]})
+                            return
+                    except Exception:
+                        pass
+
+                # Collect raw data per company
+                companies_raw = {}
+                for f in row_files:
+                    try:
+                        data = json.loads(f.read_text(encoding="utf-8"))
+                        for entity_result in data.get("entity_results", []):
+                            entity = entity_result.get("entity")
+                            if not entity:
+                                continue
+                            if entity_result.get("status") == "no_extraction":
+                                continue
+                            if entity not in companies_raw:
+                                companies_raw[entity] = {"fields": {}, "confidences": [], "reasons": []}
+                            extracted = entity_result.get("extracted", {})
+                            for k, v in extracted.items():
+                                if v and isinstance(v, str):
+                                    if k not in companies_raw[entity]["fields"]:
+                                        companies_raw[entity]["fields"][k] = v
+                                    else:
+                                        companies_raw[entity]["fields"][k] += " | " + v
+                            conf = entity_result.get("confidence_score", 0.0)
+                            companies_raw[entity]["confidences"].append(conf)
+                            reason = entity_result.get("verification_reason", "")
+                            if reason:
+                                companies_raw[entity]["reasons"].append(reason)
+                    except Exception:
+                        pass
+
+                # Filter companies that have data
+                companies_with_data = {k: v for k, v in companies_raw.items() if v["fields"]}
+                if not companies_with_data:
+                    json_response(self, {"ok": True, "stats": {"companies": []}})
+                    return
+
+                # Call DeepSeek to clean up the data
+                from verification import get_verification_llm
+                from langchain_core.messages import SystemMessage, HumanMessage
+                llm = get_verification_llm()
+
+                # Build the prompt with all companies' raw data
+                raw_dump = {}
+                for comp, info in companies_with_data.items():
+                    truncated_fields = {}
+                    for k, v in info["fields"].items():
+                        truncated_fields[k] = v[:2000]
+                    raw_dump[comp] = truncated_fields
+
+                prompt = f"""你是一个数据提取专家。下面是从多个网页爬取并初步提取的各企业原始文本片段。
+请你从这些文本中提取出**纯数据值**，填入一个结构化的JSON。
+
+规则：
+1. 每个字段只填写具体的数据数字/值，例如 "HK$36,553 million"、"1.75M"、"14.5%"
+2. 如果原文中找不到该字段对应的具体数值，填 ""（空字符串）
+3. 不要填写描述性文字、URL、网页导航文本
+4. 如果有多个时期的数据，优先填写最新的
+5. 保持字段名不变
+
+原始数据：
+{json.dumps(raw_dump, ensure_ascii=False, indent=1)}
+
+请输出纯JSON，格式为：
+{{
+  "公司名1": {{"字段1": "数据值", "字段2": "数据值"}},
+  "公司名2": {{"字段1": "数据值", "字段2": "数据值"}}
+}}
+
+只输出JSON，不要markdown标记。"""
+
+                try:
+                    resp = llm.invoke([
+                        SystemMessage(content="You are a JSON-only response bot. Only output valid JSON without any markdown."),
+                        HumanMessage(content=prompt)
+                    ])
+                    content = resp.content.strip()
+                    if content.startswith("```json"):
+                        content = content[7:-3].strip()
+                    elif content.startswith("```"):
+                        content = content[3:-3].strip()
+                    cleaned = json.loads(content)
+                except Exception as e:
+                    print(f"Dashboard LLM cleanup failed: {e}")
+                    # Fallback: use raw data
+                    cleaned = {comp: info["fields"] for comp, info in companies_with_data.items()}
+
+                # Build response
                 stats = {"companies": []}
-                for comp, info in companies_data.items():
-                    if not info["data"]:
-                        continue
+                for comp, info in companies_with_data.items():
                     avg_conf = sum(info["confidences"]) / len(info["confidences"]) if info["confidences"] else 0
+                    company_data = cleaned.get(comp, info["fields"])
+                    # Remove empty values
+                    company_data = {k: v for k, v in company_data.items() if v}
+                    if not company_data:
+                        continue
                     stats["companies"].append({
                         "name": comp,
-                        "data": info["data"],
+                        "data": company_data,
                         "confidence_score": avg_conf,
-                        "verification_reason": " | ".join(info["reasons"])
+                        "verification_reason": " | ".join(info["reasons"][:2])
                     })
-                
                 stats["companies"].sort(key=lambda x: x["name"])
+
+                # Save cache
+                try:
+                    cache_path.write_text(json.dumps({"hash": current_hash, "stats": stats}, ensure_ascii=False, indent=2), encoding="utf-8")
+                except Exception:
+                    pass
+
                 json_response(self, {"ok": True, "stats": stats})
             except Exception as exc:
+                import traceback
+                traceback.print_exc()
                 json_response(self, {"ok": False, "error": str(exc)}, 500)
             return
         if path == "/api/schedule":
