@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>战略内参周报生成</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>战略内参周报生成</h1>
+          <p>套用已上传 Word 模板，生成最终周报输出。</p>
+        </div>
+        <button class="ghost-button" id="refreshButton" type="button">刷新状态</button>
+      </header>
+
+      <section class="workspace">
+        <section class="main-panel" aria-label="周报生成流程">
+          <div class="status-grid">
+            <article class="metric">
+              <span>模板状态</span>
+              <strong id="templateStatus">检查中</strong>
+              <small id="templatePath">-</small>
+            </article>
+            <article class="metric">
+              <span>抓取结果</span>
+              <strong id="resultCount">-</strong>
+              <small id="resultDetail">-</small>
+            </article>
+            <article class="metric">
+              <span>最近输出</span>
+              <strong id="latestOutput">-</strong>
+              <small>Word / HTML / Markdown</small>
+            </article>
+          </div>
+
+          <div class="action-row">
+            <button class="primary-button" id="generateButton" type="button">生成周报</button>
+            <span id="runState" role="status">准备就绪</span>
+          </div>
+
+          <section class="output-section">
+            <div class="section-title">
+              <h2>输出文件</h2>
+              <p>生成后从这里打开或下载。</p>
+            </div>
+            <div class="file-list" id="fileList"></div>
+          </section>
+
+          <section class="log-section">
+            <div class="section-title">
+              <h2>运行日志</h2>
+              <p>只显示本次网页触发的结果。</p>
+            </div>
+            <pre id="logBox">等待操作。</pre>
+          </section>
+        </section>
+
+        <aside class="chat-panel" aria-label="AI 对话">
+          <div class="chat-header">
+            <h2>AI 助手</h2>
+            <p>可以问状态、模板，或让它生成周报。</p>
+          </div>
+          <div class="messages" id="messages">
+            <div class="message assistant">我可以帮你检查状态、确认模板套用方式，或者触发生成周报。</div>
+          </div>
+          <form class="chat-form" id="chatForm">
+            <input id="chatInput" type="text" autocomplete="off" placeholder="例如：帮我重新生成周报" />
+            <button type="submit">发送</button>
+          </form>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

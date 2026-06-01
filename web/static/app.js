@@ -1392,63 +1392,87 @@ async function fetchDashboardStats() {
   return data.stats;
 }
 
-function renderDashboardCards(stats) {
-  const grid = document.getElementById("dashboardCardGrid");
-  if (!grid) return;
-  grid.innerHTML = "";
-  
+function renderDashboardTable(stats) {
+  const container = document.getElementById("dashboardCardGrid");
+  if (!container) return;
+  container.innerHTML = "";
+
   if (!stats || !stats.companies || stats.companies.length === 0) {
-    grid.innerHTML = "<p style='grid-column: 1 / -1; text-align: center; color: #666;'>暂无提取的数据</p>";
+    container.innerHTML = "<p style='text-align:center;color:#888;padding:40px 0;'>暂无提取的数据，请先运行爬取。</p>";
     return;
   }
-  
-  stats.companies.forEach(company => {
-    const card = document.createElement("article");
-    card.className = "company-card";
-    
-    const conf = company.confidence_score;
-    let badgeClass = "badge-low";
-    let badgeText = "🔴 低可信";
-    if (conf >= 0.8) {
-      badgeClass = "badge-high";
-      badgeText = "🟢 高可信";
-    } else if (conf >= 0.4) {
-      badgeClass = "badge-medium";
-      badgeText = "🟡 存疑";
-    }
-    
-    // Header
-    const header = document.createElement("header");
-    header.innerHTML = `
-      <h3>${company.name}</h3>
-      <span class="confidence-badge ${badgeClass}" title="${company.verification_reason || '无AI验证原因'}">${badgeText} (${conf.toFixed(2)})</span>
-    `;
-    card.appendChild(header);
-    
-    // Metrics
-    const metricsContainer = document.createElement("div");
-    metricsContainer.className = "card-metrics";
-    
-    for (const [key, val] of Object.entries(company.data)) {
-      const row = document.createElement("div");
-      row.className = "metric-row";
-      row.innerHTML = `
-        <span class="metric-label">${key}</span>
-        <span class="metric-value">${val}</span>
-      `;
-      metricsContainer.appendChild(row);
-    }
-    
-    card.appendChild(metricsContainer);
-    grid.appendChild(card);
+
+  // Collect all unique field names across all companies (preserving order)
+  const fieldSet = new Set();
+  stats.companies.forEach(c => {
+    Object.keys(c.data || {}).forEach(k => fieldSet.add(k));
   });
+  const fields = [...fieldSet];
+
+  // Build table
+  const wrapper = document.createElement("div");
+  wrapper.className = "dashboard-table-wrap";
+
+  const table = document.createElement("table");
+  table.className = "dashboard-table";
+
+  // thead
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  ["公司", ...fields, "置信度"].forEach(label => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  // tbody
+  const tbody = document.createElement("tbody");
+  stats.companies.forEach(company => {
+    const tr = document.createElement("tr");
+
+    // Company name cell
+    const tdName = document.createElement("td");
+    tdName.className = "dt-company";
+    tdName.textContent = company.name;
+    tr.appendChild(tdName);
+
+    // Data field cells
+    fields.forEach(field => {
+      const td = document.createElement("td");
+      const raw = (company.data || {})[field] || "";
+      // Truncate long raw text to 120 chars
+      const display = raw.length > 120 ? raw.slice(0, 120) + "…" : raw;
+      td.textContent = display;
+      if (raw) td.title = raw; // full text on hover
+      if (!raw) td.className = "dt-empty";
+      tr.appendChild(td);
+    });
+
+    // Confidence cell
+    const tdConf = document.createElement("td");
+    tdConf.className = "dt-confidence";
+    const conf = company.confidence_score || 0;
+    let dot = "🔴";
+    if (conf >= 0.8) dot = "🟢";
+    else if (conf >= 0.4) dot = "🟡";
+    tdConf.innerHTML = `${dot} ${(conf * 100).toFixed(0)}%`;
+    if (company.verification_reason) tdConf.title = company.verification_reason;
+    tr.appendChild(tdConf);
+
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrapper.appendChild(table);
+  container.appendChild(wrapper);
 }
 
 async function openDashboard() {
   if (els.dashboardModal) els.dashboardModal.hidden = false;
   try {
     const stats = await fetchDashboardStats();
-    renderDashboardCards(stats);
+    renderDashboardTable(stats);
   } catch (err) {
     console.error(err);
     alert("加载看板数据失败");

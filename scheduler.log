@@ -1,0 +1,338 @@
+2026-05-28 09:43:05 - INFO - Starting background scheduler... Polling every 60 seconds.
+2026-05-28 10:30:06 - INFO - Time to run Row 10. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-28 10:30:05.017708+08:00
+2026-05-28 10:30:06 - INFO - Triggering background crawl for Row 10...
+2026-05-28 10:30:15 - INFO - Row 10 crawled successfully.
+2026-05-28 11:10:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:11:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:12:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:13:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:14:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:15:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:16:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:17:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:18:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:19:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:20:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:21:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:22:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:23:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:24:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:25:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:26:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:27:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:28:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:29:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:30:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:31:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:32:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:33:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:34:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:35:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:36:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:37:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:38:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:39:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:40:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:41:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:42:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:43:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:44:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:45:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:46:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:47:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:48:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:49:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:50:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:51:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:52:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:53:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:54:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:55:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:56:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:57:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:58:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 11:59:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:00:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:01:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:02:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:03:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:04:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:05:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:06:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:07:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:08:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:09:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:10:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:11:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:12:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:13:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:14:06 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:15:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:16:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:17:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:18:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:19:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:20:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:21:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:22:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:23:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:24:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:25:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:26:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:27:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:28:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:29:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:30:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:31:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:32:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:33:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:34:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:35:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:36:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:37:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:38:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:39:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:40:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:41:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:42:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:43:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:44:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:45:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:46:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:47:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:48:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:49:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:50:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:51:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:52:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:53:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:54:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:55:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:56:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:57:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:58:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 12:59:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:00:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:01:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:02:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:03:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:04:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:05:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:06:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:07:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:08:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:09:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:10:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:11:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:12:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:13:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:14:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:15:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:16:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:17:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:18:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:19:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:20:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:21:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:22:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:23:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:24:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:25:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:26:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:27:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:28:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:29:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:30:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:31:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:32:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:33:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:34:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:35:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:36:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:37:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:38:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:39:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:40:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:41:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:42:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:43:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:44:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:45:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:46:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:47:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:48:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:49:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:50:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:51:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:52:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:53:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:54:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:55:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:56:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:57:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:58:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 13:59:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:00:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:01:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:02:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:03:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:04:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:05:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:06:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:07:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-28 14:08:07 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 11:02:34 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 11:27:35 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 11:28:35 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 11:29:35 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 11:30:35 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 11:31:35 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 14:46:39 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 14:51:39 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 14:59:39 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-29 17:15:41 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>
+2026-05-30 17:44:09 - INFO - Time to run Row 3. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-30 17:43:24.744243+08:00
+2026-05-30 17:44:09 - INFO - Triggering background crawl for Row 3...
+2026-05-30 17:44:45 - INFO - Row 3 crawled successfully.
+2026-05-30 17:45:09 - INFO - Time to run Row 4. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:44:32.660106+08:00
+2026-05-30 17:45:09 - INFO - Triggering background crawl for Row 4...
+2026-05-30 17:45:09 - INFO - Time to run Row 6. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-30 17:44:46.051875+08:00
+2026-05-30 17:45:09 - INFO - Triggering background crawl for Row 6...
+2026-05-30 17:45:09 - INFO - Time to run Row 7. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:44:47.252668+08:00
+2026-05-30 17:45:09 - INFO - Triggering background crawl for Row 7...
+2026-05-30 17:45:09 - INFO - Time to run Row 9. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-30 17:44:57.697220+08:00
+2026-05-30 17:45:09 - INFO - Triggering background crawl for Row 9...
+2026-05-30 17:45:09 - INFO - Time to run Row 10. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:45:02.258867+08:00
+2026-05-30 17:45:09 - INFO - Triggering background crawl for Row 10...
+2026-05-30 17:45:12 - ERROR - Row 7 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:45:16 - INFO - Row 6 crawled successfully.
+2026-05-30 17:45:17 - ERROR - Row 10 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:45:21 - INFO - Row 9 crawled successfully.
+2026-05-30 17:46:09 - INFO - Time to run Row 12. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:45:10.302706+08:00
+2026-05-30 17:46:09 - INFO - Triggering background crawl for Row 12...
+2026-05-30 17:46:09 - INFO - Time to run Row 14. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-30 17:45:11.443154+08:00
+2026-05-30 17:46:09 - INFO - Triggering background crawl for Row 14...
+2026-05-30 17:46:09 - INFO - Time to run Row 16. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:45:15.088994+08:00
+2026-05-30 17:46:09 - INFO - Triggering background crawl for Row 16...
+2026-05-30 17:46:09 - INFO - Time to run Row 18. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-30 17:45:23.890367+08:00
+2026-05-30 17:46:09 - INFO - Triggering background crawl for Row 18...
+2026-05-30 17:46:09 - INFO - Time to run Row 19. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:45:33.922601+08:00
+2026-05-30 17:46:09 - INFO - Triggering background crawl for Row 19...
+2026-05-30 17:46:09 - INFO - Time to run Row 20. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:45:50.686996+08:00
+2026-05-30 17:46:09 - INFO - Triggering background crawl for Row 20...
+2026-05-30 17:46:15 - ERROR - Row 18 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:46:16 - INFO - Row 14 crawled successfully.
+2026-05-30 17:46:17 - INFO - Row 16 crawled successfully.
+2026-05-30 17:46:20 - INFO - Row 12 crawled successfully.
+2026-05-30 17:46:26 - INFO - Row 19 crawled successfully.
+2026-05-30 17:46:27 - ERROR - Row 20 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:46:30 - INFO - Row 4 crawled successfully.
+2026-05-30 17:47:09 - INFO - Time to run Row 22. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-30 17:46:20.577493+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 22...
+2026-05-30 17:47:09 - INFO - Time to run Row 23. Freq: 月度/季度；官方发布日自动刷新, Next expected: 2026-05-30 17:46:25.136305+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 23...
+2026-05-30 17:47:09 - INFO - Time to run Row 24. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:46:26.905073+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 24...
+2026-05-30 17:47:09 - INFO - Time to run Row 26. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-30 17:46:32.611433+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 26...
+2026-05-30 17:47:09 - INFO - Time to run Row 27. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-30 17:46:37.014916+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 27...
+2026-05-30 17:47:09 - INFO - Time to run Row 28. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-30 17:46:40.531513+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 28...
+2026-05-30 17:47:09 - INFO - Time to run Row 29. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-30 17:46:48.697933+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 29...
+2026-05-30 17:47:09 - INFO - Time to run Row 30. Freq: 月度/季度；官方发布日自动刷新, Next expected: 2026-05-30 17:46:52.846727+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 30...
+2026-05-30 17:47:09 - INFO - Time to run Row 31. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:46:55.898659+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 31...
+2026-05-30 17:47:09 - INFO - Time to run Row 32. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:46:58.540442+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 32...
+2026-05-30 17:47:09 - INFO - Time to run Row 33. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-30 17:46:59.776879+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 33...
+2026-05-30 17:47:09 - INFO - Time to run Row 34. Freq: 月度/季度；官方发布日自动刷新, Next expected: 2026-05-30 17:47:07.956015+08:00
+2026-05-30 17:47:09 - INFO - Triggering background crawl for Row 34...
+2026-05-30 17:47:13 - ERROR - Row 22 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:14 - ERROR - Row 27 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:14 - ERROR - Row 33 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:14 - ERROR - Row 24 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:15 - ERROR - Row 26 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:16 - ERROR - Row 28 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:17 - ERROR - Row 32 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:18 - ERROR - Row 34 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-30 17:47:21 - INFO - Row 30 crawled successfully.
+2026-05-30 17:47:21 - INFO - Row 31 crawled successfully.
+2026-05-30 17:47:25 - INFO - Row 29 crawled successfully.
+2026-05-30 17:47:54 - INFO - Row 23 crawled successfully.
+2026-05-31 17:44:46 - INFO - Time to run Row 3. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-31 17:44:37.904573+08:00
+2026-05-31 17:44:46 - INFO - Triggering background crawl for Row 3...
+2026-05-31 17:44:59 - INFO - Row 3 crawled successfully.
+2026-05-31 17:45:46 - INFO - Time to run Row 6. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-31 17:45:11.518361+08:00
+2026-05-31 17:45:46 - INFO - Triggering background crawl for Row 6...
+2026-05-31 17:45:46 - INFO - Time to run Row 7. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:45:11.651552+08:00
+2026-05-31 17:45:46 - INFO - Triggering background crawl for Row 7...
+2026-05-31 17:45:46 - INFO - Time to run Row 9. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-31 17:45:16.353200+08:00
+2026-05-31 17:45:46 - INFO - Triggering background crawl for Row 9...
+2026-05-31 17:45:46 - INFO - Time to run Row 10. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:45:14.134961+08:00
+2026-05-31 17:45:46 - INFO - Triggering background crawl for Row 10...
+2026-05-31 17:45:48 - ERROR - Row 7 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:45:52 - INFO - Row 6 crawled successfully.
+2026-05-31 17:45:53 - ERROR - Row 10 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:45:58 - INFO - Row 9 crawled successfully.
+2026-05-31 17:46:46 - INFO - Time to run Row 4. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:46:26.220495+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 4...
+2026-05-31 17:46:46 - INFO - Time to run Row 12. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:46:15.896975+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 12...
+2026-05-31 17:46:46 - INFO - Time to run Row 14. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-31 17:46:11.686024+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 14...
+2026-05-31 17:46:46 - INFO - Time to run Row 16. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:46:12.860882+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 16...
+2026-05-31 17:46:46 - INFO - Time to run Row 18. Freq: 每周；促销/资费变动期每日检查, Next expected: 2026-05-31 17:46:12.102135+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 18...
+2026-05-31 17:46:46 - INFO - Time to run Row 19. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:46:21.872532+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 19...
+2026-05-31 17:46:46 - INFO - Time to run Row 20. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:46:26.402570+08:00
+2026-05-31 17:46:46 - INFO - Triggering background crawl for Row 20...
+2026-05-31 17:46:51 - ERROR - Row 14 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:46:52 - ERROR - Row 16 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:46:53 - ERROR - Row 18 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:46:57 - INFO - Row 12 crawled successfully.
+2026-05-31 17:46:59 - INFO - Row 19 crawled successfully.
+2026-05-31 17:47:09 - INFO - Row 20 crawled successfully.
+2026-05-31 17:47:46 - INFO - Time to run Row 22. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-31 17:47:12.551155+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 22...
+2026-05-31 17:47:46 - INFO - Time to run Row 24. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:47:12.190136+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 24...
+2026-05-31 17:47:46 - INFO - Time to run Row 26. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-31 17:47:15.112340+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 26...
+2026-05-31 17:47:46 - INFO - Time to run Row 27. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-31 17:47:13.417758+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 27...
+2026-05-31 17:47:46 - INFO - Time to run Row 28. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-31 17:47:13.057299+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 28...
+2026-05-31 17:47:46 - INFO - Time to run Row 29. Freq: 每日扫描监管/政策更新；每周汇总复核, Next expected: 2026-05-31 17:47:20.448185+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 29...
+2026-05-31 17:47:46 - INFO - Time to run Row 30. Freq: 月度/季度；官方发布日自动刷新, Next expected: 2026-05-31 17:47:16.062326+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 30...
+2026-05-31 17:47:46 - INFO - Time to run Row 31. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:47:16.868618+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 31...
+2026-05-31 17:47:46 - INFO - Time to run Row 32. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:47:16.426246+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 32...
+2026-05-31 17:47:46 - INFO - Time to run Row 33. Freq: 每日扫描官方新闻/公告；每周汇总复核, Next expected: 2026-05-31 17:47:13.791070+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 33...
+2026-05-31 17:47:46 - INFO - Time to run Row 34. Freq: 月度/季度；官方发布日自动刷新, Next expected: 2026-05-31 17:47:15.035342+08:00
+2026-05-31 17:47:46 - INFO - Triggering background crawl for Row 34...
+2026-05-31 17:47:50 - ERROR - Row 22 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:50 - ERROR - Row 27 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:50 - ERROR - Row 28 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:51 - ERROR - Row 24 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:51 - ERROR - Row 30 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:53 - ERROR - Row 31 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:54 - ERROR - Row 34 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:54 - ERROR - Row 33 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:54 - ERROR - Row 26 exception during crawl: HTTP Error 500: Internal Server Error
+2026-05-31 17:47:57 - INFO - Row 32 crawled successfully.
+2026-05-31 17:47:58 - INFO - Row 29 crawled successfully.
+2026-05-31 17:48:07 - INFO - Row 4 crawled successfully.
+2026-05-31 17:48:46 - INFO - Time to run Row 23. Freq: 月度/季度；官方发布日自动刷新, Next expected: 2026-05-31 17:47:49.569837+08:00
+2026-05-31 17:48:46 - INFO - Triggering background crawl for Row 23...
+2026-05-31 17:48:55 - INFO - Row 23 crawled successfully.
+2026-06-01 08:59:09 - ERROR - Error in scheduler cycle: <urlopen error [Errno 61] Connection refused>

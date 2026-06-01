@@ -1412,90 +1412,104 @@ pre {
 }
 
 .dashboard-modal-content {
-  max-width: 900px;
-  width: 90%;
+  max-width: 95vw;
+  width: 95%;
   padding-bottom: 24px;
 }
 
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 20px;
-  padding: 20px 24px;
+  padding: 0 20px 20px;
 }
 
-.dashboard-grid .company-card {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.dashboard-table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 119, 200, 0.12);
 }
 
-.dashboard-grid .company-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+.dashboard-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
-.company-card header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(0, 119, 200, 0.1);
+.dashboard-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
-.company-card h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--blue-dark);
-}
-
-.confidence-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 99px;
-  font-size: 0.8rem;
+.dashboard-table th {
+  background: var(--blue-dark, #003366);
+  color: #fff;
+  padding: 10px 14px;
+  text-align: left;
   font-weight: 600;
-  cursor: help;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.1);
 }
 
-.badge-high { background: rgba(52, 199, 89, 0.15); color: #248a3d; }
-.badge-medium { background: rgba(255, 149, 0, 0.15); color: #cc7700; }
-.badge-low { background: rgba(255, 59, 48, 0.15); color: #c41c13; }
-
-.card-metrics {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+.dashboard-table td {
+  padding: 8px 14px;
+  border-bottom: 1px solid #e8ecf0;
+  border-right: 1px solid #f0f2f5;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
 }
 
-.metric-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.dashboard-table tbody tr:nth-child(even) {
+  background: rgba(0, 119, 200, 0.03);
 }
 
-.metric-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #666;
-  letter-spacing: 0.05em;
+.dashboard-table tbody tr:hover {
+  background: rgba(0, 119, 200, 0.08);
+}
+
+.dt-company {
+  font-weight: 700;
+  color: var(--blue-dark, #003366);
+  white-space: nowrap;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #fff;
+  border-right: 2px solid rgba(0, 119, 200, 0.15) !important;
+}
+
+.dashboard-table tbody tr:nth-child(even) .dt-company {
+  background: #f7fafd;
+}
+
+.dashboard-table tbody tr:hover .dt-company {
+  background: rgba(0, 119, 200, 0.08);
+}
+
+.dashboard-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  border-right: 2px solid rgba(255,255,255,0.25) !important;
+}
+
+.dt-empty {
+  color: #ccc;
+}
+
+.dt-empty::before {
+  content: "—";
+}
+
+.dt-confidence {
+  white-space: nowrap;
   font-weight: 600;
-}
-
-.metric-value {
-  font-size: 1rem;
-  color: #222;
-  word-break: break-word;
+  text-align: center;
 }
 
 .settings-modal {
