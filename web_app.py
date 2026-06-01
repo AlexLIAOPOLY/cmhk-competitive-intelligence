@@ -472,7 +472,7 @@ def run_report_generation() -> dict:
     audio_result = None
     if proc.returncode == 0 and status.get("outputs"):
         try:
-            latest_path = ROOT / status["outputs"][0]["path_str"]
+            latest_path = latest_output_path(status, "weekly")
             audio_result = synthesize_report_audio(latest_path, force=True)
             status = build_status()
         except Exception as exc:
@@ -497,14 +497,82 @@ def run_carrier_performance_generation() -> dict:
         capture_output=True,
         timeout=120,
     )
+    status = build_status()
+    audio_result = None
+    if proc.returncode == 0 and status.get("outputs"):
+        try:
+            latest_path = latest_output_path(status, "carrier-performance")
+            audio_result = synthesize_report_audio(latest_path, force=True)
+            status = build_status()
+        except Exception as exc:
+            audio_result = {"ok": False, "error": str(exc)}
     return {
         "ok": proc.returncode == 0,
         "returnCode": proc.returncode,
         "durationMs": round((time.time() - started) * 1000),
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),
+        "audio": audio_result,
         "status": build_status(),
     }
+
+
+def latest_output_path(status: dict, report_type: str) -> Path:
+    output = next((item for item in status.get("outputs", []) if item.get("reportType") == report_type), None)
+    if not output:
+        raise FileNotFoundError(f"未找到最新输出：{report_type}")
+    return ROOT / output["path_str"]
+
+
+def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+    body = json.dumps(payload, ensure_ascii=False)
+    handler.wfile.write(f"data: {body}\n\n".encode("utf-8"))
+    handler.wfile.flush()
+
+
+def stream_report_generation(handler: BaseHTTPRequestHandler, script_name: str, report_type: str) -> None:
+    handler.send_response(200)
+    handler.send_header("Content-Type", "text/event-stream; charset=utf-8")
+    handler.send_header("Cache-Control", "no-cache")
+    handler.end_headers()
+
+    started = time.time()
+    proc = subprocess.Popen(
+        [sys.executable, str(ROOT / script_name)],
+        cwd=str(ROOT),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+    if proc.stdout:
+        for line in proc.stdout:
+            write_sse(handler, {"type": "log", "text": line.strip()})
+    proc.wait()
+
+    status = build_status()
+    audio_result = None
+    if proc.returncode == 0 and status.get("outputs"):
+        try:
+            latest_path = latest_output_path(status, report_type)
+            write_sse(handler, {"type": "log", "text": "报告生成完成。开始生成语音摘要..."})
+            audio_result = synthesize_report_audio(latest_path, force=True)
+            status = build_status()
+            write_sse(handler, {"type": "log", "text": "✅ 语音摘要生成完成。"})
+        except Exception as exc:
+            audio_result = {"ok": False, "error": str(exc)}
+            write_sse(handler, {"type": "log", "text": f"❌ 语音摘要生成失败: {exc}"})
+
+    write_sse(
+        handler,
+        {
+            "type": "done",
+            "ok": proc.returncode == 0,
+            "durationMs": round((time.time() - started) * 1000),
+            "audio": audio_result,
+            "status": status,
+        },
+    )
 
 
 def report_overview() -> str:
@@ -929,57 +997,10 @@ class AppHandler(BaseHTTPRequestHandler):
             self.wfile.flush()
             return
         if parsed.path == "/api/generate-stream":
-            self.send_response(200)
-            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
-            self.send_header("Cache-Control", "no-cache")
-            self.end_headers()
-            
-            started = time.time()
-            proc = subprocess.Popen(
-                [sys.executable, str(ROOT / "generate_weekly_report.py")],
-                cwd=str(ROOT),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1,
-            )
-            for line in proc.stdout:
-                payload = json.dumps({"type": "log", "text": line.strip()}, ensure_ascii=False)
-                self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                self.wfile.flush()
-            
-            proc.wait()
-            
-            status = build_status()
-            audio_result = None
-            if proc.returncode == 0 and status.get("outputs"):
-                try:
-                    latest_path = ROOT / status["outputs"][0]["path_str"]
-                    payload = json.dumps({"type": "log", "text": "报告生成完成。开始生成语音摘要..."}, ensure_ascii=False)
-                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-
-                    audio_result = synthesize_report_audio(latest_path, force=True)
-                    status = build_status()
-                    payload = json.dumps({"type": "log", "text": "✅ 语音摘要生成完成。"}, ensure_ascii=False)
-                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-                except Exception as exc:
-                    audio_result = {"ok": False, "error": str(exc)}
-                    payload = json.dumps({"type": "log", "text": f"❌ 语音摘要生成失败: {exc}"}, ensure_ascii=False)
-                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-                    
-            duration_ms = round((time.time() - started) * 1000)
-            payload = json.dumps({
-                "type": "done",
-                "ok": proc.returncode == 0,
-                "durationMs": duration_ms,
-                "audio": audio_result,
-                "status": status
-            }, ensure_ascii=False)
-            self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-            self.wfile.flush()
+            stream_report_generation(self, "generate_weekly_report.py", "weekly")
+            return
+        if parsed.path == "/api/generate-carrier-performance-stream":
+            stream_report_generation(self, "generate_carrier_performance_report.py", "carrier-performance")
             return
         if parsed.path == "/api/generate":
             json_response(self, run_report_generation())

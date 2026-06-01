@@ -972,12 +972,32 @@ async function generateCarrierPerformanceReport(source = "按钮") {
   setBusy(true, "正在生成", "performance");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成运营商业绩摘要，请稍候...\n`);
   try {
-    const response = await fetch("/api/generate-carrier-performance", { method: "POST" });
-    const data = await response.json();
-    if (!response.ok || !data.ok) throw new Error(data.stderr || data.error || "生成失败");
-    if (data.stdout) appendLog(data.stdout + "\n");
-    appendLog(`\n[生成结束] 运营商业绩摘要已生成\n总耗时：${data.durationMs} ms\n`);
-    renderStatus(data.status);
+    const response = await fetch("/api/generate-carrier-performance-stream", { method: "POST" });
+    if (!response.ok) throw new Error("网络请求失败");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop() || "";
+      for (const part of parts) {
+        const line = part.split("\n").find((item) => item.startsWith("data:"));
+        if (!line) continue;
+        const event = JSON.parse(line.replace(/^data:\s*/, ""));
+        if (event.type === "log") {
+          if (event.text) appendLog(event.text + "\n");
+        } else if (event.type === "done") {
+          appendLog(`\n[生成结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
+          if (event.audio && !event.audio.ok) appendLog(`语音摘要失败：${event.audio.error}\n`);
+          renderStatus(event.status);
+          return;
+        }
+      }
+    }
   } catch (error) {
     appendLog(`\n生成失败：${error.message}`);
   } finally {
@@ -1518,12 +1538,26 @@ function renderDashboardTable(stats) {
 
 async function openDashboard() {
   if (els.dashboardModal) els.dashboardModal.hidden = false;
+  const container = document.getElementById("dashboardCardGrid");
+  if (container) {
+    container.className = "dashboard-table-container";
+    container.innerHTML = `
+      <div class="dashboard-loading">
+        <div class="spinner"></div>
+        <p>AI 模型正在深度提取与整理数据中，请稍候...</p>
+      </div>
+    `;
+  }
   try {
     const stats = await fetchDashboardStats();
     renderDashboardTable(stats);
   } catch (err) {
     console.error(err);
-    alert("加载看板数据失败");
+    if (container) {
+      container.innerHTML = "<p style='text-align:center;color:#ef4444;padding:40px 0;'>加载看板数据失败</p>";
+    } else {
+      alert("加载看板数据失败");
+    }
   }
 }
 
