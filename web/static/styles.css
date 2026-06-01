@@ -1457,11 +1457,10 @@ pre {
   padding: 8px 14px;
   border-bottom: 1px solid #e8ecf0;
   border-right: 1px solid #f0f2f5;
-  max-width: 320px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 180px;
   color: #333;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .dashboard-table tbody tr:nth-child(even) {

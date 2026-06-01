@@ -38,6 +38,7 @@ EXCLUDED_REPORT_NAMES = {
     "weekly_report.docx",
     "weekly_report_from_word_template.docx",
     "weekly_report_template.docx",
+    "carrier_performance_template.docx",
     "模板.docx",
 }
 REFERENCE_FILES = {"final_audit.md", "coverage_report.tsv", "run_log.tsv"}
@@ -237,6 +238,7 @@ def file_info(path: Path, url: str = None) -> dict:
         "url": url or f"/outputs/{quote(path.name)}",
         "path_str": rel_path,
         "note": metadata.get("note", "") if isinstance(metadata, dict) else "",
+        "reportType": "carrier-performance" if "运营商业绩摘要" in path.name else "weekly",
         "audio": audio_info_for_report(path),
     }
 
@@ -483,6 +485,25 @@ def run_report_generation() -> dict:
         "stderr": proc.stderr.strip(),
         "audio": audio_result,
         "status": status,
+    }
+
+
+def run_carrier_performance_generation() -> dict:
+    started = time.time()
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "generate_carrier_performance_report.py")],
+        cwd=str(ROOT),
+        text=True,
+        capture_output=True,
+        timeout=120,
+    )
+    return {
+        "ok": proc.returncode == 0,
+        "returnCode": proc.returncode,
+        "durationMs": round((time.time() - started) * 1000),
+        "stdout": proc.stdout.strip(),
+        "stderr": proc.stderr.strip(),
+        "status": build_status(),
     }
 
 
@@ -884,6 +905,9 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/generate":
             json_response(self, run_report_generation())
+            return
+        if parsed.path == "/api/generate-carrier-performance":
+            json_response(self, run_carrier_performance_generation())
             return
         if parsed.path == "/api/audio/generate":
             try:

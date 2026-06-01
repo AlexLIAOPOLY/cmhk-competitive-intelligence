@@ -31,6 +31,7 @@ const els = {
     document.querySelector("#generateButton"),
     document.querySelector("#generateButtonSecondary"),
   ].filter(Boolean),
+  generatePerformanceButton: document.querySelector("#generatePerformanceButton"),
   crawlButtons: [
     document.querySelector("#crawlButton"),
     document.querySelector("#crawlButtonSecondary"),
@@ -103,6 +104,10 @@ function setBusy(value, label = "运行中", action = "all") {
       button.textContent = "生成周报";
     }
   });
+  if (els.generatePerformanceButton) {
+    els.generatePerformanceButton.disabled = value;
+    els.generatePerformanceButton.textContent = value && action === "performance" ? "生成中..." : "生成业绩摘要";
+  }
   
   els.crawlButtons.forEach((button) => {
     button.disabled = value;
@@ -150,7 +155,8 @@ function iconSvg(name) {
 }
 
 function fileDescription(file) {
-  let desc = file.note ? escapeHtml(file.note) : "正式 Word 周报";
+  const defaultDescription = file.reportType === "carrier-performance" ? "运营商业绩对标摘要" : "正式 Word 周报";
+  let desc = file.note ? escapeHtml(file.note) : defaultDescription;
   
   if (file.is_archive) {
     desc = `<span class="archive-label">历史归档 ${file.archive_batch}</span> ` + desc;
@@ -962,6 +968,23 @@ async function generateReport(source = "按钮") {
   }
 }
 
+async function generateCarrierPerformanceReport(source = "按钮") {
+  setBusy(true, "正在生成", "performance");
+  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成运营商业绩摘要，请稍候...\n`);
+  try {
+    const response = await fetch("/api/generate-carrier-performance", { method: "POST" });
+    const data = await response.json();
+    if (!response.ok || !data.ok) throw new Error(data.stderr || data.error || "生成失败");
+    if (data.stdout) appendLog(data.stdout + "\n");
+    appendLog(`\n[生成结束] 运营商业绩摘要已生成\n总耗时：${data.durationMs} ms\n`);
+    renderStatus(data.status);
+  } catch (error) {
+    appendLog(`\n生成失败：${error.message}`);
+  } finally {
+    setBusy(false);
+  }
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -1298,6 +1321,9 @@ async function sendChat(message) {
 els.generateButtons.forEach((button) => {
   button.addEventListener("click", () => generateReport("页面按钮"));
 });
+if (els.generatePerformanceButton) {
+  els.generatePerformanceButton.addEventListener("click", () => generateCarrierPerformanceReport("页面按钮"));
+}
 
 els.crawlButtons.forEach((button) => {
   button.addEventListener("click", () => runCrawl("页面按钮"));
@@ -1442,10 +1468,7 @@ function renderDashboardTable(stats) {
     fields.forEach(field => {
       const td = document.createElement("td");
       const raw = (company.data || {})[field] || "";
-      // Truncate long raw text to 120 chars
-      const display = raw.length > 120 ? raw.slice(0, 120) + "…" : raw;
-      td.textContent = display;
-      if (raw) td.title = raw; // full text on hover
+      td.textContent = raw;
       if (!raw) td.className = "dt-empty";
       tr.appendChild(td);
     });
