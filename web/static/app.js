@@ -1421,6 +1421,7 @@ async function fetchDashboardStats() {
 function renderDashboardTable(stats) {
   const container = document.getElementById("dashboardCardGrid");
   if (!container) return;
+  container.className = "dashboard-table-container"; // override grid layout
   container.innerHTML = "";
 
   if (!stats || !stats.companies || stats.companies.length === 0) {
@@ -1467,9 +1468,33 @@ function renderDashboardTable(stats) {
     // Data field cells
     fields.forEach(field => {
       const td = document.createElement("td");
-      const raw = (company.data || {})[field] || "";
-      td.textContent = raw;
-      if (!raw) td.className = "dt-empty";
+      const rawData = (company.data || {})[field];
+      
+      let val = "";
+      let sourceUrl = "";
+      
+      if (typeof rawData === "object" && rawData !== null) {
+        val = rawData.value || "";
+        sourceUrl = rawData.source || "";
+      } else {
+        val = rawData || "";
+      }
+      
+      const contentSpan = document.createElement("span");
+      contentSpan.textContent = val;
+      td.appendChild(contentSpan);
+      
+      if (sourceUrl && sourceUrl.startsWith("http")) {
+        const link = document.createElement("a");
+        link.href = sourceUrl;
+        link.target = "_blank";
+        link.className = "source-link";
+        link.title = "查看数据来源";
+        link.innerHTML = ` <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>`;
+        td.appendChild(link);
+      }
+      
+      if (!val) td.className = "dt-empty";
       tr.appendChild(td);
     });
 
