@@ -652,12 +652,7 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/dashboard":
             try:
-                stats = {
-                    "companies": [],
-                    "sources": []
-                }
-                company_counts = {}
-                company_confidences = {}
+                companies_data = {}
                 
                 results_dir = ROOT / "results"
                 if results_dir.exists():
@@ -669,23 +664,46 @@ class AppHandler(BaseHTTPRequestHandler):
                                 if not entity: continue
                                 if entity_result.get("status") == "no_extraction":
                                     continue
-                                company_counts[entity] = company_counts.get(entity, 0) + 1
+                                    
+                                if entity not in companies_data:
+                                    companies_data[entity] = {
+                                        "name": entity,
+                                        "data": {},
+                                        "confidences": [],
+                                        "reasons": []
+                                    }
+                                
+                                extracted = entity_result.get("extracted", {})
+                                for k, v in extracted.items():
+                                    if v and isinstance(v, str):
+                                        if k not in companies_data[entity]["data"]:
+                                            companies_data[entity]["data"][k] = v
+                                        else:
+                                            if v not in companies_data[entity]["data"][k]:
+                                                companies_data[entity]["data"][k] += f" | {v}"
+                                                
                                 conf = entity_result.get("confidence_score", 0.0)
-                                if entity not in company_confidences:
-                                    company_confidences[entity] = []
-                                company_confidences[entity].append(conf)
+                                companies_data[entity]["confidences"].append(conf)
+                                
+                                reason = entity_result.get("verification_reason", "")
+                                if reason:
+                                    companies_data[entity]["reasons"].append(reason)
                         except Exception:
                             pass
                 
-                for comp, count in company_counts.items():
-                    avg_conf = sum(company_confidences[comp]) / len(company_confidences[comp]) if company_confidences[comp] else 0
+                stats = {"companies": []}
+                for comp, info in companies_data.items():
+                    if not info["data"]:
+                        continue
+                    avg_conf = sum(info["confidences"]) / len(info["confidences"]) if info["confidences"] else 0
                     stats["companies"].append({
                         "name": comp,
-                        "count": count,
-                        "avg_confidence": avg_conf
+                        "data": info["data"],
+                        "confidence_score": avg_conf,
+                        "verification_reason": " | ".join(info["reasons"])
                     })
                 
-                stats["companies"].sort(key=lambda x: x["count"], reverse=True)
+                stats["companies"].sort(key=lambda x: x["name"])
                 json_response(self, {"ok": True, "stats": stats})
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 500)

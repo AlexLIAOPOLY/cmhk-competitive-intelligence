@@ -1424,18 +1424,78 @@ pre {
   padding: 20px 24px;
 }
 
-.dashboard-grid .insight-panel {
-  min-height: 300px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.6);
+.dashboard-grid .company-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dashboard-grid canvas {
-  width: 100% !important;
-  height: 100% !important;
+.dashboard-grid .company-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.company-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 119, 200, 0.1);
+}
+
+.company-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--blue-dark);
+}
+
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: help;
+}
+
+.badge-high { background: rgba(52, 199, 89, 0.15); color: #248a3d; }
+.badge-medium { background: rgba(255, 149, 0, 0.15); color: #cc7700; }
+.badge-low { background: rgba(255, 59, 48, 0.15); color: #c41c13; }
+
+.card-metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.metric-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #666;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 1rem;
+  color: #222;
+  word-break: break-word;
 }
 
 .settings-modal {

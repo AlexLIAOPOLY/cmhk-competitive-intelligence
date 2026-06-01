@@ -1,12 +1,12 @@
 # CMHK Public Crawl Audit
 
-- Generated at: 2026-05-31T17:48:51.883274
-- Rows crawled: 33
-- OK rows: 27
-- Partial rows: 5
-- Failed/no extraction rows: 1
-- URLs fetched after compliance checks: 158
-- URLs skipped by compliance policy: 11
+- Generated at: 2026-06-01T09:00:29.518072
+- Rows crawled: 1
+- OK rows: 1
+- Partial rows: 0
+- Failed/no extraction rows: 0
+- URLs fetched after compliance checks: 7
+- URLs skipped by compliance policy: 0
 - Source registry: source_registry.json
 - Raw body persistence: disabled
 

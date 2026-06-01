@@ -1,22 +1,29 @@
 [
   {
-    "row": "23",
-    "block": "香港本地重点资讯",
-    "object": "经济资讯（和30行可能存在重合，请Alex考虑是否合并）",
-    "object_cell": "经济资讯（和30行可能存在重合，请Alex考虑是否合并）",
+    "row": "2",
+    "block": "香港本地竞对",
+    "object": "HKT / csl / 1O1O",
+    "object_cell": "HKT / csl / 1O1O",
     "entities": [
-      "经济资讯（和30行可能存在重合，请Alex考虑是否合并）"
+      "HKT",
+      "csl",
+      "1O1O"
     ],
-    "package": "经济指标及政策",
-    "need": "宏观数据（人口、零售额、PMI、失业率）",
-    "sources": "【经济资讯（和30行可能存在重合，请Alex考虑是否合并）】\n- https://www.censtatd.gov.hk/en/scode200.html\n  备注: 官方统计页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n- https://www.censtatd.gov.hk/en/scode460.html\n  备注: 官方统计页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- https://data.gov.hk/en-data/dataset/hk-censtatd-commonidds-common-idds\n  备注: 政府开放数据页; robots: 上轮robots_error; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】",
-    "channel": "验证-only爬虫：官方HTML/JSON API优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按字段词典抽取证据，保存状态码、标题、正文片段、hash。",
-    "frequency": "月度/季度；官方发布日自动刷新",
+    "package": "财报经营指标",
+    "need": "运营收入（年报中常用：总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、宽频线数/家宽用户数、ARPU、资本开支",
+    "sources": "【HKT】\n- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- https://www.hkt.com/en/about-hkt/investor-relations/financial-results/\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- https://www.hkcsl.com/en/csl-local-prepaid-sim-card\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【csl】\n- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- https://www.hkcsl.com/en/csl-local-prepaid-sim-card\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】\n\n【1O1O】\n- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/\n  备注: 官方IR; robots: 上轮robots_error, 暂不自动爬; 采集: 仅人工参考/待robots或授权确认 【robots未确认/暂不自动爬】\n- https://www.hkcsl.com/en/csl-local-prepaid-sim-card\n  备注: 官方产品页; robots: 上轮checked allow; 采集: httpx+BeautifulSoup, 短片段, 不保存raw 【robots可爬】",
+    "channel": "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
+    "frequency": "半年度/年度；每周检查新公告",
     "selected_fields": [
-      "人口",
-      "零售额",
-      "PMI",
-      "失业率"
+      "运营收入/总收益",
+      "服务收入",
+      "EBITDA",
+      "净利润",
+      "客户数/用户数",
+      "5G用户数",
+      "资本开支",
+      "宽频线数/家宽用户数",
+      "ARPU"
     ]
   }
 ]

@@ -1392,56 +1392,55 @@ async function fetchDashboardStats() {
   return data.stats;
 }
 
-function renderDashboardCharts(stats) {
-  const companies = stats.companies.slice(0, 10); // Top 10
+function renderDashboardCards(stats) {
+  const grid = document.getElementById("dashboardCardGrid");
+  if (!grid) return;
+  grid.innerHTML = "";
   
-  initOrUpdateChart('companyDistributionChart', {
-    type: 'bar',
-    data: {
-      labels: companies.map(c => c.name),
-      datasets: [{
-        label: '情报数量',
-        data: companies.map(c => c.count),
-        backgroundColor: 'rgba(0, 119, 200, 0.8)',
-        borderColor: '#0077c8',
-        borderWidth: 1,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        title: { display: true, text: '各企业情报数据分布', color: '#333', font: { size: 14 } },
-        legend: { display: false }
-      }
+  if (!stats || !stats.companies || stats.companies.length === 0) {
+    grid.innerHTML = "<p style='grid-column: 1 / -1; text-align: center; color: #666;'>暂无提取的数据</p>";
+    return;
+  }
+  
+  stats.companies.forEach(company => {
+    const card = document.createElement("article");
+    card.className = "company-card";
+    
+    const conf = company.confidence_score;
+    let badgeClass = "badge-low";
+    let badgeText = "🔴 低可信";
+    if (conf >= 0.8) {
+      badgeClass = "badge-high";
+      badgeText = "🟢 高可信";
+    } else if (conf >= 0.4) {
+      badgeClass = "badge-medium";
+      badgeText = "🟡 存疑";
     }
-  });
-
-  initOrUpdateChart('confidenceTrendChart', {
-    type: 'bar', // Or line
-    data: {
-      labels: companies.map(c => c.name),
-      datasets: [{
-        label: '平均置信度',
-        data: companies.map(c => c.avg_confidence),
-        backgroundColor: 'rgba(52, 199, 89, 0.8)',
-        borderColor: '#34c759',
-        borderWidth: 1,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { min: 0, max: 1.0 }
-      },
-      plugins: {
-        title: { display: true, text: '数据可信度 (AI 验证)', color: '#333', font: { size: 14 } },
-        legend: { display: false }
-      }
+    
+    // Header
+    const header = document.createElement("header");
+    header.innerHTML = `
+      <h3>${company.name}</h3>
+      <span class="confidence-badge ${badgeClass}" title="${company.verification_reason || '无AI验证原因'}">${badgeText} (${conf.toFixed(2)})</span>
+    `;
+    card.appendChild(header);
+    
+    // Metrics
+    const metricsContainer = document.createElement("div");
+    metricsContainer.className = "card-metrics";
+    
+    for (const [key, val] of Object.entries(company.data)) {
+      const row = document.createElement("div");
+      row.className = "metric-row";
+      row.innerHTML = `
+        <span class="metric-label">${key}</span>
+        <span class="metric-value">${val}</span>
+      `;
+      metricsContainer.appendChild(row);
     }
+    
+    card.appendChild(metricsContainer);
+    grid.appendChild(card);
   });
 }
 
@@ -1449,7 +1448,7 @@ async function openDashboard() {
   if (els.dashboardModal) els.dashboardModal.hidden = false;
   try {
     const stats = await fetchDashboardStats();
-    renderDashboardCharts(stats);
+    renderDashboardCards(stats);
   } catch (err) {
     console.error(err);
     alert("加载看板数据失败");
