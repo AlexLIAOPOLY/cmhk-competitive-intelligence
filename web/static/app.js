@@ -39,6 +39,9 @@ const els = {
   logButton: document.querySelector("#logButton"),
   logModal: document.querySelector("#logModal"),
   closeLogButton: document.querySelector("#closeLogButton"),
+  dashboardBtn: document.querySelector("#dashboardBtn"),
+  dashboardModal: document.querySelector("#dashboardModal"),
+  closeDashboardBtn: document.querySelector("#closeDashboardBtn"),
   aiSettingsButton: document.querySelector("#aiSettingsButton"),
   aiSettingsModal: document.querySelector("#aiSettingsModal"),
   aiSettingsForm: document.querySelector("#aiSettingsForm"),
@@ -1373,14 +1376,87 @@ els.logButton.addEventListener("click", () => {
   setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 10);
 });
 
-els.closeLogButton.addEventListener("click", () => {
-  els.logModal.hidden = true;
-});
+if (els.closeLogButton) els.closeLogButton.addEventListener("click", () => { els.logModal.hidden = true; });
+if (els.logModal) els.logModal.addEventListener("click", (e) => { if (e.target === els.logModal) els.logModal.hidden = true; });
 
-els.logModal.addEventListener("click", (event) => {
-  if (event.target === els.logModal) els.logModal.hidden = true;
-});
+// Dashboard Modal
+if (els.dashboardBtn) els.dashboardBtn.addEventListener("click", openDashboard);
+if (els.closeDashboardBtn) els.closeDashboardBtn.addEventListener("click", () => { els.dashboardModal.hidden = true; });
+if (els.dashboardModal) els.dashboardModal.addEventListener("click", (e) => { if (e.target === els.dashboardModal) els.dashboardModal.hidden = true; });
 
+// Dashboard Logic
+async function fetchDashboardStats() {
+  const response = await fetch("/api/dashboard");
+  const data = await response.json();
+  if (!data.ok) throw new Error(data.error || "获取看板数据失败");
+  return data.stats;
+}
+
+function renderDashboardCharts(stats) {
+  const companies = stats.companies.slice(0, 10); // Top 10
+  
+  initOrUpdateChart('companyDistributionChart', {
+    type: 'bar',
+    data: {
+      labels: companies.map(c => c.name),
+      datasets: [{
+        label: '情报数量',
+        data: companies.map(c => c.count),
+        backgroundColor: 'rgba(0, 119, 200, 0.8)',
+        borderColor: '#0077c8',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: { display: true, text: '各企业情报数据分布', color: '#333', font: { size: 14 } },
+        legend: { display: false }
+      }
+    }
+  });
+
+  initOrUpdateChart('confidenceTrendChart', {
+    type: 'bar', // Or line
+    data: {
+      labels: companies.map(c => c.name),
+      datasets: [{
+        label: '平均置信度',
+        data: companies.map(c => c.avg_confidence),
+        backgroundColor: 'rgba(52, 199, 89, 0.8)',
+        borderColor: '#34c759',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { min: 0, max: 1.0 }
+      },
+      plugins: {
+        title: { display: true, text: '数据可信度 (AI 验证)', color: '#333', font: { size: 14 } },
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+async function openDashboard() {
+  if (els.dashboardModal) els.dashboardModal.hidden = false;
+  try {
+    const stats = await fetchDashboardStats();
+    renderDashboardCharts(stats);
+  } catch (err) {
+    console.error(err);
+    alert("加载看板数据失败");
+  }
+}
+
+// Global UI handling
 els.chatFab.addEventListener("click", () => {
   els.chatModal.hidden = false;
   setTimeout(() => els.chatInput.focus(), 0);

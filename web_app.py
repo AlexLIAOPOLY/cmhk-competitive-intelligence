@@ -590,6 +590,12 @@ def check_local_action(message: str) -> dict | None:
 class AppHandler(BaseHTTPRequestHandler):
     server_version = "WeeklyReportUI/1.0"
 
+    @staticmethod
+    def download_disposition(path: Path) -> str:
+        encoded_name = quote(path.name, safe="")
+        fallback_name = f"weekly-report{path.suffix.lower() or '.docx'}"
+        return f"attachment; filename=\"{fallback_name}\"; filename*=UTF-8''{encoded_name}"
+
     def do_HEAD(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path == "/":
@@ -643,6 +649,46 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/settings":
             json_response(self, {"ok": True, "settings": build_settings_payload()})
+            return
+        if path == "/api/dashboard":
+            try:
+                stats = {
+                    "companies": [],
+                    "sources": []
+                }
+                company_counts = {}
+                company_confidences = {}
+                
+                results_dir = ROOT / "results"
+                if results_dir.exists():
+                    for f in results_dir.glob("row_*.json"):
+                        try:
+                            data = json.loads(f.read_text(encoding="utf-8"))
+                            for entity_result in data.get("entity_results", []):
+                                entity = entity_result.get("entity")
+                                if not entity: continue
+                                if entity_result.get("status") == "no_extraction":
+                                    continue
+                                company_counts[entity] = company_counts.get(entity, 0) + 1
+                                conf = entity_result.get("confidence_score", 0.0)
+                                if entity not in company_confidences:
+                                    company_confidences[entity] = []
+                                company_confidences[entity].append(conf)
+                        except Exception:
+                            pass
+                
+                for comp, count in company_counts.items():
+                    avg_conf = sum(company_confidences[comp]) / len(company_confidences[comp]) if company_confidences[comp] else 0
+                    stats["companies"].append({
+                        "name": comp,
+                        "count": count,
+                        "avg_confidence": avg_conf
+                    })
+                
+                stats["companies"].sort(key=lambda x: x["count"], reverse=True)
+                json_response(self, {"ok": True, "stats": stats})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 500)
             return
         if path == "/api/schedule":
             try:
@@ -982,7 +1028,7 @@ class AppHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
         if download:
-            self.send_header("Content-Disposition", f'attachment; filename="{path.name}"')
+            self.send_header("Content-Disposition", self.download_disposition(path))
         self.end_headers()
         self.wfile.write(body)
 
@@ -996,7 +1042,7 @@ class AppHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(path.stat().st_size))
         if download:
-            self.send_header("Content-Disposition", f'attachment; filename="{path.name}"')
+            self.send_header("Content-Disposition", self.download_disposition(path))
         self.end_headers()
 
 

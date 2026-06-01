@@ -202,8 +202,10 @@ row	status	entities	source_urls	extracted_fields	missing_fields	result_file
 - https://www.pcpd.org.hk/english/artificial_intelligence/index.html"	OFCA政策,频谱/牌照,服务质量,网络安全,PCPD/AI指引,数据跨境		/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_26.json
 27	partial	重点国家,地区AI与数据监管	"【重点国家】
 - https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
+- https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en
 【地区AI与数据监管】
-- https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en"	EU Data Act,隐私法规	EU AI Act,GDPR/DSA,新加坡AI治理,重点国家:EU AI Act,GDPR/DSA,新加坡AI治理,地区AI与数据监管:EU AI Act,GDPR/DSA,新加坡AI治理	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
+- https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en
+- https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en"	EU Data Act,GDPR/DSA,隐私法规	EU AI Act,新加坡AI治理,重点国家:EU AI Act,新加坡AI治理,地区AI与数据监管:EU AI Act,新加坡AI治理	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json
 28	ok	通信监管机构	"【通信监管机构】
 - https://www.ofca.gov.hk/en/home/index.html
 - https://www.enisa.europa.eu/news

@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from verification import verify_extraction
 from urllib.robotparser import RobotFileParser
 
 import httpx
@@ -815,27 +817,34 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_text: Dict[str, str] = {entity: "" for entity in entities}
     entity_urls: Dict[str, List[str]] = {entity: [] for entity in entities}
     entity_records: Dict[str, List[Dict[str, Any]]] = {entity: [] for entity in entities}
-    for url in urls:
-        if time.monotonic() > deadline:
-            break
-        print(f"  -> 正在抓取: {url}", flush=True)
-        result = fetch_url(client, url)
-        record = raw_record(row, result)
-        if is_successful_fetch(result):
-            successful_urls.append(url)
-            print(f"    [成功] 状态码: {result.get('status')} | 耗时: {result.get('elapsed_seconds')}s | 大小: {result.get('bytes')} B", flush=True)
-            combined_text += "\n\nSOURCE: " + url + "\n" + result["text"]
-            hits = matched_entities(row, entities, result)
-            record["entity_hits"] = hits
-            for entity in hits:
-                if url not in entity_urls[entity]:
-                    entity_urls[entity].append(url)
-                entity_records[entity].append(record)
-                entity_text[entity] += "\n\nSOURCE: " + url + "\n" + result["text"]
-        else:
-            print(f"    [失败] 状态码: {result.get('status')} | 错误: {result.get('error')} | 耗时: {result.get('elapsed_seconds')}s", flush=True)
-            record["entity_hits"] = []
-        fetched.append(record)
+    
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_url = {executor.submit(fetch_url, client, url): url for url in urls}
+        for future in as_completed(future_to_url):
+            if time.monotonic() > deadline:
+                break
+            url = future_to_url[future]
+            print(f"  -> 抓取完成: {url}", flush=True)
+            try:
+                result = future.result()
+                record = raw_record(row, result)
+                if is_successful_fetch(result):
+                    successful_urls.append(url)
+                    print(f"    [成功] 状态码: {result.get('status')} | 耗时: {result.get('elapsed_seconds')}s | 大小: {result.get('bytes')} B", flush=True)
+                    combined_text += "\n\nSOURCE: " + url + "\n" + result["text"]
+                    hits = matched_entities(row, entities, result)
+                    record["entity_hits"] = hits
+                    for entity in hits:
+                        if url not in entity_urls[entity]:
+                            entity_urls[entity].append(url)
+                        entity_records[entity].append(record)
+                        entity_text[entity] += "\n\nSOURCE: " + url + "\n" + result["text"]
+                else:
+                    print(f"    [失败] 状态码: {result.get('status')} | 错误: {result.get('error')} | 耗时: {result.get('elapsed_seconds')}s", flush=True)
+                    record["entity_hits"] = []
+                fetched.append(record)
+            except Exception as e:
+                print(f"    [异常] {url}: {e}", flush=True)
 
     selected_fields = list(source_row.get("selected_fields") or [])
     extracted, missing = find_field_snippets(row, combined_text)
@@ -867,6 +876,12 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
         for field, value in compact.items():
             entity_compact.setdefault(field, value)
         entity_missing = [field for field in missing if field not in entity_compact]
+        
+        # Verify extraction with LLM if there is any extraction
+        verification_result = {"confidence_score": 0.0, "verification_reason": "No extraction."}
+        if entity_compact:
+            verification_result = verify_extraction(text, entity_compact)
+            
         entity_results.append(
             {
                 "entity": entity,
@@ -875,6 +890,8 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                 "extracted": entity_compact,
                 "missing_fields": entity_missing,
                 "raw_records": entity_records.get(entity) or [rec for rec in fetched if rec.get("text_sample")][:2],
+                "confidence_score": verification_result["confidence_score"],
+                "verification_reason": verification_result["verification_reason"]
             }
         )
     status = "ok" if compact else "no_extraction"

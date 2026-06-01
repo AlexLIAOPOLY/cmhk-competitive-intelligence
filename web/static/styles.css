@@ -1411,6 +1411,33 @@ pre {
   border-radius: 0;
 }
 
+.dashboard-modal-content {
+  max-width: 900px;
+  width: 90%;
+  padding-bottom: 24px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+  padding: 20px 24px;
+}
+
+.dashboard-grid .insight-panel {
+  min-height: 300px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-grid canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .settings-modal {
   width: min(560px, 100%);
   display: grid;

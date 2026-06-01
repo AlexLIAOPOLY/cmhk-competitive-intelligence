@@ -1,6 +1,6 @@
 # CMHK Public Crawl Audit
 
-- Generated at: 2026-05-29T17:01:08.118028
+- Generated at: 2026-05-31T17:48:51.883274
 - Rows crawled: 33
 - OK rows: 27
 - Partial rows: 5
