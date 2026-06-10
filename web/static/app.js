@@ -316,17 +316,20 @@ function renderInsights(status) {
 
   const rejection = visuals.rejection || {};
   const rejectReasons = rejection.reasons || [];
-  const rejected = Number(rejection.rejected || 0);
+  const rejected = Number(rejection.qualityRejected ?? rejection.rejected ?? 0);
+  const evidenceGaps = Number(rejection.evidenceGaps || 0);
+  const review = Number(rejection.review || 0);
   const accepted = Number(rejection.accepted || 0);
-  const gateTotal = accepted + rejected;
-  const passRate = gateTotal ? Math.round((accepted / gateTotal) * 100) : 0;
+  const gateTotal = Number(rejection.qualityTotal || accepted + rejected + review);
+  const allCandidates = Number(rejection.total || gateTotal + evidenceGaps);
+  const publishRate = allCandidates ? Math.round((accepted / allCandidates) * 100) : 0;
   const rejectRate = Number(rejection.rejectRate || 0);
 
   // 2. Quality gate: connects crawler output to the Agent curation result.
   if (els.blockTotal) {
-    els.blockTotal.textContent = gateTotal ? `通过 ${passRate}%` : "--";
-    els.blockTotal.title = gateTotal
-      ? `候选事实 ${gateTotal} 条：通过 ${accepted} 条，拦截 ${rejected} 条`
+    els.blockTotal.textContent = allCandidates ? `发布 ${publishRate}%` : "--";
+    els.blockTotal.title = allCandidates
+      ? `全部候选 ${allCandidates} 条：发布 ${accepted} 条，证据缺口 ${evidenceGaps} 条，质量拒绝 ${rejected} 条，待复核 ${review} 条`
       : "暂无质量门禁数据";
   }
   
@@ -344,10 +347,26 @@ function renderInsights(status) {
           barThickness: 28
         },
         {
-          label: '质量拦截',
+          label: '证据缺口',
+          data: [evidenceGaps],
+          backgroundColor: 'rgba(148, 163, 184, 0.9)',
+          hoverBackgroundColor: 'rgba(100, 116, 139, 1)',
+          borderRadius: 7,
+          barThickness: 28
+        },
+        {
+          label: '质量拒绝',
           data: [rejected],
           backgroundColor: 'rgba(239, 68, 68, 0.88)',
           hoverBackgroundColor: 'rgba(220, 38, 38, 1)',
+          borderRadius: 7,
+          barThickness: 28
+        },
+        {
+          label: '待复核',
+          data: [review],
+          backgroundColor: 'rgba(245, 158, 11, 0.9)',
+          hoverBackgroundColor: 'rgba(217, 119, 6, 1)',
           borderRadius: 7,
           barThickness: 28
         }
@@ -362,7 +381,7 @@ function renderInsights(status) {
       },
       plugins: {
         legend: {
-          display: gateTotal > 0,
+          display: allCandidates > 0,
           position: 'bottom',
           labels: {
             usePointStyle: true,
@@ -388,21 +407,24 @@ function renderInsights(status) {
         }
       },
       scales: {
-        x: { display: false, stacked: true, max: gateTotal || 1 },
+        x: { display: false, stacked: true, max: allCandidates || 1 },
         y: { display: false, stacked: true }
       }
     }
   });
 
-  // 3. Rejection analysis: explains the rejected portion of the quality gate.
+  // 3. Unpublished analysis: distinguish missing evidence from actual quality rejection.
   if (els.sourceTotal) {
-    els.sourceTotal.textContent = rejected || accepted ? `拦截 ${rejectRate}%` : "--";
-    els.sourceTotal.title = rejected || accepted
-      ? `通过 ${accepted} 条，拦截 ${rejected} 条`
+    els.sourceTotal.textContent = allCandidates ? `缺口 ${evidenceGaps} · 拦截 ${rejected}` : "--";
+    els.sourceTotal.title = allCandidates
+      ? `共 ${allCandidates} 条：发布 ${accepted} 条，证据缺口 ${evidenceGaps} 条，质量拦截 ${rejected} 条`
       : "暂无清洗拦截数据";
   }
 
-  const chips = rejectReasons.slice(0, 6).map((item) => ({
+  const chips = [
+    ...(evidenceGaps ? [{ label: "证据未覆盖，需补爬", value: evidenceGaps, kind: "gap" }] : []),
+    ...rejectReasons.slice(0, evidenceGaps ? 5 : 6),
+  ].map((item) => ({
     ...item,
     label: String(item.label || "").replace("未通过指标格式与单位门禁", "格式/单位未过")
       .replace("数值或事实依据不足", "依据不足")
@@ -463,7 +485,7 @@ function renderInsights(status) {
           displayColors: false,
           callbacks: {
             title: (items) => items?.[0]?.label || "",
-            label: (item) => `拦截 ${item.formattedValue} 条；本轮通过 ${accepted} 条`
+            label: (item) => `${item.label}：${item.formattedValue} 条；本轮发布 ${accepted} 条`
           }
         }
       },
@@ -613,12 +635,110 @@ function compactJson(value) {
 
 function tracePhaseLabel(phase) {
   const labels = {
-    observe: "观察",
-    answer: "回答",
-    tool_call: "工具调用",
-    tool_result: "工具结果",
+    observe: "正在分析",
+    answer: "本步结论",
+    tool_call: "调用工具",
+    tool_result: "工具返回",
   };
   return labels[phase] || phase || "事件";
+}
+
+const TRACE_STEPS = {
+  "证据接收": 1,
+  "来源分类": 2,
+  "事实抽取": 3,
+  "主体校验": 4,
+  "质量审计": 5,
+  "冲突仲裁": 6,
+  "缺口规划": 7,
+  "定向补爬": 7,
+  "发布": 8,
+};
+
+function traceFriendlyTool(tool) {
+  const text = String(tool || "");
+  if (!text) return "";
+  if (text.includes("DeepSeek")) return "DeepSeek 事实清洗模型";
+  if (text.includes("fallback_clean_batch")) return "本地严格校验器";
+  if (text.includes("atomic_write")) return "事实发布与审计文件写入";
+  if (text.includes("run_data_curation")) return "LangGraph 多 Agent 工作流";
+  if (text.includes("daily_crawl_and_write")) return "飞书日志同步器";
+  if (text.includes("subprocess")) return "定向补爬器";
+  return text;
+}
+
+function traceFriendlyMessage(trace, phase) {
+  const node = trace.node || "Agent";
+  const messages = {
+    "证据接收": "读取本轮爬取证据，并检查是否有可复用的历史高质量结果。",
+    "来源分类": "按官网、政府、交易所、公共来源和商业数据源评估证据可信度。",
+    "事实抽取": "从原始网页片段中提取公司、指标、数值、单位和依据。",
+    "主体校验": "确认每条事实确实属于对应公司和指标，避免串行、串公司。",
+    "质量审计": "检查数值、单位、来源、置信度和网页噪声，决定发布、拦截或补爬。",
+    "冲突仲裁": "比较同一公司同一指标的多个结果，保留证据更强的版本。",
+    "缺口规划": "把没有足够证据的指标整理为补爬任务。",
+    "定向补爬": "只重抓缺少关键事实的行，并重新进入整理流程。",
+    "发布": "写入可供页面、周报和业绩摘要使用的已验证事实。",
+  };
+  if (phase === "observe" && messages[node]) return messages[node];
+  return trace.message || messages[node] || "";
+}
+
+function traceKeyMetrics(trace) {
+  const data = trace.result && typeof trace.result === "object"
+    ? trace.result
+    : trace.output && typeof trace.output === "object"
+      ? trace.output
+      : {};
+  const fields = [
+    ["tasks", "证据"],
+    ["task_count", "本批"],
+    ["cached", "缓存"],
+    ["cache_reused", "复用"],
+    ["pending", "待处理"],
+    ["returned", "返回"],
+    ["candidates", "候选事实"],
+    ["accepted", "可发布"],
+    ["review", "待复核"],
+    ["rejected", "未发布"],
+    ["unpublished", "未发布"],
+    ["evidence_gaps", "证据缺口"],
+    ["quality_rejected", "质量拒绝"],
+    ["pre_rejected", "归属异常"],
+    ["gaps", "证据缺口"],
+    ["conflicts", "冲突"],
+    ["preserved_previous_facts", "保留历史事实"],
+    ["durationMs", "耗时"],
+  ];
+  return fields
+    .filter(([key]) => data[key] !== undefined && data[key] !== null)
+    .map(([key, label]) => {
+      const value = key === "durationMs" ? `${(Number(data[key]) / 1000).toFixed(1)} 秒` : data[key];
+      return { label, value };
+    });
+}
+
+function renderAgentRunSummary(summary) {
+  if (!els.logBox || !summary || !summary.run_id) return;
+  const panel = document.createElement("section");
+  panel.className = "agent-run-summary";
+  const total = Number(summary.tasks || 0);
+  const accepted = Number(summary.accepted || 0);
+  const rejected = Number(summary.rejected || 0);
+  const gaps = Number(summary.gaps || 0);
+  panel.innerHTML = `
+    <div>
+      <strong>最近一次 Agent 整理结果</strong>
+      <span>${escapeHtml(String(summary.completed_at || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, ""))}</span>
+    </div>
+    <ul>
+      <li><b>${total}</b><span>原始证据</span></li>
+      <li><b>${accepted}</b><span>可发布事实</span></li>
+      <li><b>${gaps}</b><span>待补爬缺口</span></li>
+      <li><b>${rejected}</b><span>未发布总数</span></li>
+    </ul>
+  `;
+  els.logBox.appendChild(panel);
 }
 
 function renderAgentTrace(trace, options = {}) {
@@ -629,19 +749,31 @@ function renderAgentTrace(trace, options = {}) {
   const title = document.createElement("div");
   title.className = "agent-trace-title";
   const node = escapeHtml(trace.node || "Agent");
+  const step = TRACE_STEPS[trace.node];
+  const stepText = step ? `第 ${step}/8 步` : "工作流";
   const label = escapeHtml(tracePhaseLabel(phase));
   const time = escapeHtml((trace.ts || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, ""));
-  title.innerHTML = `<span class="agent-trace-badge">${label}</span><strong>${node}</strong><time>${time}</time>`;
+  title.innerHTML = `<span class="agent-trace-step">${stepText}</span><strong>${node}</strong><span class="agent-trace-badge">${label}</span><time>${time}</time>`;
   card.appendChild(title);
 
   const message = document.createElement("p");
   message.className = "agent-trace-message";
-  message.textContent = trace.message || "";
+  message.textContent = traceFriendlyMessage(trace, phase);
   card.appendChild(message);
+
+  const metrics = traceKeyMetrics(trace);
+  if (metrics.length) {
+    const metricBox = document.createElement("div");
+    metricBox.className = "agent-trace-metrics";
+    metricBox.innerHTML = metrics.map((item) =>
+      `<span><b>${escapeHtml(String(item.value))}</b>${escapeHtml(item.label)}</span>`
+    ).join("");
+    card.appendChild(metricBox);
+  }
 
   const details = [
     ["输入", trace.input],
-    ["工具", trace.tool],
+    ["工具", traceFriendlyTool(trace.tool)],
     ["结果", trace.result],
     ["输出", trace.output],
   ].filter(([, value]) => value !== undefined && value !== null && value !== "");
@@ -650,9 +782,8 @@ function renderAgentTrace(trace, options = {}) {
     box.className = "agent-trace-details";
     details.forEach(([name, value]) => {
       const item = document.createElement("details");
-      item.open = phase === "tool_result" && name === "结果";
       const summary = document.createElement("summary");
-      summary.textContent = name;
+      summary.textContent = name === "工具" ? "使用的工具" : `查看${name}技术详情`;
       const pre = document.createElement("pre");
       pre.textContent = compactJson(value);
       item.append(summary, pre);
@@ -680,7 +811,7 @@ async function loadLatestAgentTrace() {
     const data = await response.json();
     if (!data.ok || !Array.isArray(data.trace) || !data.trace.length) return;
     state.agentTraceLoaded = true;
-    appendLog(`\n\n[最近一次 Agent 轨迹] ${data.trace.length} 条\n`);
+    renderAgentRunSummary(data.summary);
     data.trace.forEach((trace) => renderAgentTrace(trace, { skipScroll: true }));
     els.logBox.scrollTop = els.logBox.scrollHeight;
   } catch (error) {

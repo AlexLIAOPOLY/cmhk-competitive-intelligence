@@ -365,15 +365,50 @@ def _synthesize_with_moss(text: str, output_path: Path) -> str | None:
     return f"moss-tts-nano:{voice}:seed-{seed}:chunks-{len(frame_counts)}"
 
 
+def _percentage_number_to_chinese(value: str) -> str:
+    sign = ""
+    number = value.replace(",", "")
+    if number.startswith(("+", "-")):
+        sign = "正" if number[0] == "+" else "负"
+        number = number[1:]
+    integer_text, dot, decimal_text = number.partition(".")
+    integer = int(integer_text or "0")
+    digits = "零一二三四五六七八九"
+    if integer == 0:
+        integer_spoken = "零"
+    elif integer < 10000:
+        units = ("", "十", "百", "千")
+        parts: list[str] = []
+        zero_pending = False
+        for position in range(len(str(integer)) - 1, -1, -1):
+            divisor = 10**position
+            digit = integer // divisor % 10
+            if digit == 0:
+                if parts and integer % divisor:
+                    zero_pending = True
+                continue
+            if zero_pending:
+                parts.append("零")
+                zero_pending = False
+            if not (digit == 1 and position == 1 and not parts):
+                parts.append(digits[digit])
+            parts.append(units[position])
+        integer_spoken = "".join(parts)
+    else:
+        integer_spoken = "".join(digits[int(char)] for char in str(integer))
+    if dot:
+        return f"{sign}{integer_spoken}点{''.join(digits[int(char)] for char in decimal_text)}"
+    return f"{sign}{integer_spoken}"
+
+
 def prepare_tts_text(value: str) -> str:
     text = value.replace("：", "，").replace("；", "。")
     text = text.replace("、", "，")
     # Keep the percentage operator in front of the complete number. Leaving
     # "%" after a decimal such as "8点3%" can be spoken as "八点百分之三".
     text = re.sub(
-        r"(?<![\d.])([+-]?\d+(?:\.\d+)?)\s*[%％]",
-        lambda match: "百分之"
-        + match.group(1).replace("+", "正").replace("-", "负").replace(".", "点"),
+        r"(?<![\d.])([+-]?\d[\d,]*(?:\.\d+)?)\s*[%％]",
+        lambda match: "百分之" + _percentage_number_to_chinese(match.group(1)),
         text,
     )
     text = re.sub(r"(?<=\d)\.(?=\d)", "点", text)

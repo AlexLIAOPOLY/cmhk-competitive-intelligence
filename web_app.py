@@ -212,8 +212,10 @@ def load_curation_status() -> dict:
 def build_curation_rejection_visuals() -> dict:
     status = load_curation_status()
     accepted = int(status.get("accepted") or 0)
-    rejected = int(status.get("rejected") or 0)
-    total = accepted + rejected
+    reported_rejected = int(status.get("rejected") or 0)
+    quality_rejected = 0
+    evidence_gaps = 0
+    review = int(status.get("review") or 0)
     reasons: dict[str, int] = {}
     if CURATION_CANDIDATE_FACTS_PATH.exists():
         try:
@@ -223,12 +225,20 @@ def build_curation_rejection_visuals() -> dict:
                 item = json.loads(line)
                 if item.get("decision") != "rejected":
                     continue
+                if item.get("status") != "ok":
+                    evidence_gaps += 1
+                    continue
+                quality_rejected += 1
                 for reason in item.get("reasons") or []:
                     reason_text = str(reason or "").strip()
                     if reason_text:
                         reasons[reason_text] = reasons.get(reason_text, 0) + 1
         except Exception:
             reasons = {}
+    if quality_rejected + evidence_gaps == 0 and reported_rejected:
+        quality_rejected = reported_rejected
+    quality_total = accepted + quality_rejected + review
+    total = accepted + reported_rejected + review
     top_reasons = sorted(
         [{"label": key, "value": value} for key, value in reasons.items()],
         key=lambda item: item["value"],
@@ -236,9 +246,15 @@ def build_curation_rejection_visuals() -> dict:
     )[:6]
     return {
         "accepted": accepted,
-        "rejected": rejected,
+        "rejected": quality_rejected,
+        "qualityRejected": quality_rejected,
+        "evidenceGaps": evidence_gaps,
+        "reportedRejected": reported_rejected,
+        "review": review,
         "total": total,
-        "rejectRate": round((rejected / total) * 100) if total else 0,
+        "qualityTotal": quality_total,
+        "rejectRate": round((quality_rejected / quality_total) * 100) if quality_total else 0,
+        "passRate": round((accepted / quality_total) * 100) if quality_total else 0,
         "reasons": top_reasons,
         "runId": status.get("run_id", ""),
         "completedAt": status.get("completed_at", ""),
@@ -630,16 +646,17 @@ def run_crawl() -> dict:
 
 def run_company_metrics_refresh() -> dict:
     started = time.time()
-    # Keep the web-triggered full crawl deterministic: publish one complete
-    # curation pass and persist gap tasks, but do not recursively recrawl inside
-    # the same HTTP request. Targeted recrawl can still be run from the CLI with
-    # --recrawl-gaps after reviewing the generated gaps.
+    # A full web crawl must act on high-priority evidence gaps, not merely record
+    # them. Keep the retry bounded to one round and six rows.
     proc = subprocess.run(
         [
             sys.executable,
             str(ROOT / "run_data_curation.py"),
+            "--recrawl-gaps",
+            "--max-recrawl-rows",
+            "6",
             "--max-recrawl-rounds",
-            "0",
+            "1",
         ],
         cwd=str(ROOT),
         text=True,
@@ -666,8 +683,11 @@ def stream_company_metrics_refresh(
         sys.executable,
         "-u",
         str(ROOT / "run_data_curation.py"),
+        "--recrawl-gaps",
+        "--max-recrawl-rows",
+        "6",
         "--max-recrawl-rounds",
-        "0",
+        "1",
         *(extra_args or []),
     ]
     env = os.environ.copy()
@@ -693,6 +713,7 @@ def stream_company_metrics_refresh(
                         "质量审计",
                         "冲突仲裁",
                         "缺口规划",
+                        "定向补爬（最多 6 行、1 轮）",
                         "发布",
                     ],
                 },
@@ -1169,7 +1190,14 @@ class AppHandler(BaseHTTPRequestHandler):
                 limit = max(1, min(1000, int(query.get("limit", ["300"])[0])))
             except Exception:
                 limit = 300
-            json_response(self, {"ok": True, "trace": load_agent_trace(limit=limit)})
+            json_response(
+                self,
+                {
+                    "ok": True,
+                    "trace": load_agent_trace(limit=limit),
+                    "summary": load_curation_status(),
+                },
+            )
             return
         if path == "/api/dashboard":
             try:
@@ -1637,7 +1665,16 @@ class AppHandler(BaseHTTPRequestHandler):
                         },
                     )
                     if not trace_sync["ok"]:
-                        proc.returncode = proc.returncode or trace_sync["returnCode"]
+                        write_sse(
+                            self,
+                            {
+                                "type": "log",
+                                "text": (
+                                    "⚠️ 爬取、主表同步和 Agent 整理均已完成；"
+                                    "仅飞书审计日志追加失败，可稍后重试，不影响本轮数据结果。"
+                                ),
+                            },
+                        )
                 elif metrics_refresh["ok"]:
                     write_sse(
                         self,
