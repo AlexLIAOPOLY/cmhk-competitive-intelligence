@@ -368,6 +368,14 @@ def _synthesize_with_moss(text: str, output_path: Path) -> str | None:
 def prepare_tts_text(value: str) -> str:
     text = value.replace("：", "，").replace("；", "。")
     text = text.replace("、", "，")
+    # Keep the percentage operator in front of the complete number. Leaving
+    # "%" after a decimal such as "8点3%" can be spoken as "八点百分之三".
+    text = re.sub(
+        r"(?<![\d.])([+-]?\d+(?:\.\d+)?)\s*[%％]",
+        lambda match: "百分之"
+        + match.group(1).replace("+", "正").replace("-", "负").replace(".", "点"),
+        text,
+    )
     text = re.sub(r"(?<=\d)\.(?=\d)", "点", text)
     text = re.sub(r"(?<=\d),(?=\d{3}(?:\D|$))", "", text)
     text = re.sub(r"\s+", " ", text)
