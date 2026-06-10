@@ -37,6 +37,9 @@ DEFAULT_BROWSER_ONNX_CODEC_REPO_URL = f"https://huggingface.co/{DEFAULT_BROWSER_
 DEFAULT_BROWSER_ONNX_OUTPUT_PATH = DEFAULT_OUTPUT_DIR / "infer_onnx_output.wav"
 DEFAULT_VOICE_CLONE_INTER_CHUNK_PAUSE_SHORT_SECONDS = 0.40
 DEFAULT_VOICE_CLONE_INTER_CHUNK_PAUSE_LONG_SECONDS = 0.24
+DEFAULT_VOICE_CLONE_CJK_INTER_CHUNK_PAUSE_SECONDS = 0.14
+DEFAULT_VOICE_CLONE_EDGE_FADE_SECONDS = 0.025
+DEFAULT_VOICE_CLONE_TRAILING_SILENCE_SECONDS = 0.07
 SENTENCE_END_PUNCTUATION = set(".!?。！？；;")
 CLAUSE_SPLIT_PUNCTUATION = set(",，、；;：:")
 CLOSING_PUNCTUATION = set("\"'”’)]}）】》」』")
@@ -263,6 +266,69 @@ def _concat_waveforms(waveforms: list[np.ndarray]) -> np.ndarray:
     return np.concatenate(non_empty, axis=0)
 
 
+def _active_rms(waveform: np.ndarray) -> float:
+    audio = np.asarray(waveform, dtype=np.float32)
+    if audio.ndim == 1:
+        audio = audio.reshape(-1, 1)
+    mono = np.max(np.abs(audio), axis=1)
+    active = audio[mono >= 0.008]
+    samples = active if active.size else audio
+    return float(np.sqrt(np.mean(np.square(samples), dtype=np.float64))) if samples.size else 0.0
+
+
+def _trim_and_fade_chunk(
+    waveform: np.ndarray,
+    sample_rate: int,
+    trailing_silence_seconds: float = DEFAULT_VOICE_CLONE_TRAILING_SILENCE_SECONDS,
+    fade_seconds: float = DEFAULT_VOICE_CLONE_EDGE_FADE_SECONDS,
+) -> np.ndarray:
+    audio = np.asarray(waveform, dtype=np.float32)
+    if audio.ndim == 1:
+        audio = audio.reshape(-1, 1)
+    if audio.size == 0:
+        return audio
+
+    mono = np.max(np.abs(audio), axis=1)
+    window = max(1, int(round(sample_rate * 0.01)))
+    envelope = np.convolve(mono, np.ones(window, dtype=np.float32) / window, mode="same")
+    threshold = max(0.003, float(np.percentile(envelope, 70)) * 0.12)
+    active_indices = np.flatnonzero(envelope > threshold)
+    if active_indices.size:
+        keep_tail = int(round(sample_rate * trailing_silence_seconds))
+        end = min(len(audio), int(active_indices[-1]) + keep_tail + 1)
+        audio = audio[:end].copy()
+    else:
+        audio = audio.copy()
+
+    fade_samples = min(int(round(sample_rate * fade_seconds)), len(audio) // 2)
+    if fade_samples > 1:
+        fade_in = np.sin(np.linspace(0.0, np.pi / 2.0, fade_samples, dtype=np.float32))
+        fade_out = np.cos(np.linspace(0.0, np.pi / 2.0, fade_samples, dtype=np.float32))
+        audio[:fade_samples] *= fade_in[:, None]
+        audio[-fade_samples:] *= fade_out[:, None]
+    return audio
+
+
+def _match_chunk_loudness(waveforms: list[np.ndarray]) -> list[np.ndarray]:
+    if not waveforms:
+        return []
+    rms_values = np.asarray([_active_rms(waveform) for waveform in waveforms], dtype=np.float64)
+    valid = rms_values[rms_values > 1e-6]
+    if not valid.size:
+        return waveforms
+    target_rms = float(np.median(valid))
+    matched: list[np.ndarray] = []
+    for waveform, rms in zip(waveforms, rms_values, strict=True):
+        gain = 1.0 if rms <= 1e-6 else float(np.clip(target_rms / rms, 0.82, 1.18))
+        audio = np.asarray(waveform, dtype=np.float32) * gain
+        # The codec occasionally emits isolated peaks above full scale. A
+        # shared soft limiter avoids clipping without changing speaker color
+        # abruptly from one chunk to the next.
+        audio = np.tanh(audio * 1.15) / np.tanh(1.15) * 0.96
+        matched.append(audio.astype(np.float32, copy=False))
+    return matched
+
+
 def _write_waveform_to_wav(path: str | Path, waveform: np.ndarray, sample_rate: int) -> Path:
     output_path = Path(path).expanduser().resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -435,6 +501,9 @@ class OnnxTtsRuntime(OrtCpuRuntime):
         return chunks if len(chunks) > 1 else [normalized_text]
 
     def estimate_voice_clone_inter_chunk_pause_seconds(self, text_chunk: str) -> float:
+        normalized_text = str(text_chunk or "").strip()
+        if _contains_cjk(normalized_text):
+            return DEFAULT_VOICE_CLONE_CJK_INTER_CHUNK_PAUSE_SECONDS
         word_count = len([item for item in str(text_chunk or "").strip().split() if item])
         return (
             DEFAULT_VOICE_CLONE_INTER_CHUNK_PAUSE_SHORT_SECONDS
@@ -625,7 +694,7 @@ class OnnxTtsRuntime(OrtCpuRuntime):
         prepared_text = str(prepared_texts["text"])
         prompt_audio_codes = self.resolve_prompt_audio_codes(voice=voice, prompt_audio_path=prompt_audio_path)
         text_chunks = self.split_voice_clone_text(prepared_text, max_tokens=int(voice_clone_max_text_tokens))
-        all_waveforms: list[np.ndarray] = []
+        generated_waveforms: list[np.ndarray] = []
         all_generated_frames: list[list[int]] = []
         sample_rate = int(self.codec_meta["codec_config"]["sample_rate"])
         channels = int(self.codec_meta["codec_config"]["channels"])
@@ -641,8 +710,18 @@ class OnnxTtsRuntime(OrtCpuRuntime):
                 streaming=bool(streaming),
             )
             chunk_results.append(chunk_result)
-            all_waveforms.append(np.asarray(chunk_result["waveform"], dtype=np.float32))
+            generated_waveforms.append(
+                _trim_and_fade_chunk(
+                    np.asarray(chunk_result["waveform"], dtype=np.float32),
+                    sample_rate,
+                )
+            )
             all_generated_frames.extend(chunk_result["generated_frames"])
+
+        generated_waveforms = _match_chunk_loudness(generated_waveforms)
+        all_waveforms: list[np.ndarray] = []
+        for chunk_index, (chunk_text, waveform) in enumerate(zip(text_chunks, generated_waveforms, strict=True)):
+            all_waveforms.append(waveform)
             if chunk_index < len(text_chunks) - 1:
                 pause_seconds = self.estimate_voice_clone_inter_chunk_pause_seconds(chunk_text)
                 pause_samples = max(0, int(round(sample_rate * pause_seconds)))

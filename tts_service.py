@@ -315,8 +315,8 @@ def _synthesize_with_moss(text: str, output_path: Path) -> str | None:
                     return "moss-tts-nano"
         return None
 
-    max_new_frames = int(os.environ.get("MOSS_TTS_MAX_NEW_FRAMES", "420"))
-    max_text_tokens = int(os.environ.get("MOSS_TTS_MAX_TEXT_TOKENS", "60"))
+    max_new_frames = int(os.environ.get("MOSS_TTS_MAX_NEW_FRAMES", "640"))
+    max_text_tokens = int(os.environ.get("MOSS_TTS_MAX_TEXT_TOKENS", "90"))
     seed = int(os.environ.get("MOSS_TTS_SEED", "20260529"))
     runtime = OnnxTtsRuntime(
         model_dir=str(base),
