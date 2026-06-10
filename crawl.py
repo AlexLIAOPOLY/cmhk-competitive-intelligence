@@ -5,6 +5,8 @@ import hashlib
 import json
 import os
 import re
+import shutil
+import socket
 import subprocess
 import tempfile
 import time
@@ -13,6 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
+from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from verification import verify_extraction
 from urllib.robotparser import RobotFileParser
@@ -23,24 +26,12 @@ from bs4 import BeautifulSoup
 from crawl_settings import apply_selected_fields, selected_row_config
 from extractors import compact_extracted, find_field_snippets, normalize_text, row_fields, snippet_around
 
-import socket
-for _port in (7897, 7890, 10809):
-    try:
-        with socket.create_connection(("127.0.0.1", _port), timeout=0.1):
-            _proxy = f"http://127.0.0.1:{_port}"
-            os.environ["HTTP_PROXY"] = _proxy
-            os.environ["HTTPS_PROXY"] = _proxy
-            os.environ["http_proxy"] = _proxy
-            os.environ["https_proxy"] = _proxy
-            break
-    except Exception:
-        pass
-
 ROOT = Path(__file__).resolve().parent
 RAW_DIR = ROOT / "raw"
 RESULTS_DIR = ROOT / "results"
 SPREADSHEET_JSON = ROOT / "feishu_latest_AJ.json"
 SOURCE_REGISTRY_JSON = ROOT / "source_registry.json"
+VERIFIED_FIELDS_JSON = ROOT / "carrier_performance_verified_fields.json"
 PER_URL_TIMEOUT_SECONDS = 35.0
 CURL_TIMEOUT_SECONDS = 45
 CURL_PROCESS_TIMEOUT_SECONDS = 55
@@ -49,15 +40,112 @@ CMHK_USER_AGENT = os.environ.get(
     "CMHK_CRAWLER_USER_AGENT",
     "CMHK-Internal-ResearchBot/1.0 (+internal competitive intelligence; contact: legal-review-required)",
 )
+CHROME_USER_AGENT = os.environ.get(
+    "CMHK_CHROME_USER_AGENT",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+)
 CMHK_REQUIRE_ROBOTS = os.environ.get("CMHK_REQUIRE_ROBOTS", "0").strip().lower() not in {"0", "false", "no"}
 CMHK_SAVE_RAW_BODY = os.environ.get("CMHK_SAVE_RAW_BODY", "0").strip().lower() in {"1", "true", "yes"}
 CMHK_IGNORE_COMPLIANCE = os.environ.get("CMHK_IGNORE_COMPLIANCE", "0").strip().lower() in {"1", "true", "yes"}
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 MAIN_SHEET_ID = "9c638d"
-import shutil
 LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
 SOURCE_REGISTRY_CACHE: Dict[str, Any] | None = None
 ROBOTS_CACHE: Dict[str, Dict[str, Any]] = {}
+
+
+RECOVERABLE_URL_REWRITES: Dict[str, str] = {
+    "https://www.netvigator.com/eng/": "https://www.netvigator.com/eng/index.html",
+}
+
+RECOVERABLE_URL_ALTERNATIVES: Dict[str, List[str]] = {
+    "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution": [
+        "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+        "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+    ],
+    "https://www.hkt-enterprise.com/en/about-hkt": [
+        "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+    ],
+    "https://www.hkt-enterprise.com/en/products-solutions/data-connectivity/facilities-management-center": [
+        "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+    ],
+    "https://www.hthkh.com/en/": [
+        "https://m.hthkh.com/en/media/press.php",
+        "https://www.hthkh.com/en/media/press_3hk.php",
+    ],
+    "https://www.ericsson.com/en/press-releases/2/2026/smartone-strengthens-network-with-ericsson-5g-advanced-technology": [
+        "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    ],
+    "https://www.mobileworldlive.com/operators/smartone-turns-to-ericsson-for-5g-a-gear/": [
+        "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    ],
+    "https://about.att.com/blogs/2026/5g-network-apis.html": [
+        "https://investors.att.com/financial-reports/annual-reports/2025",
+    ],
+    "https://about.att.com/blogs/2026/att-advances-open-ran-readiness.html": [
+        "https://investors.att.com/financial-reports/annual-reports/2025",
+    ],
+    "https://about.att.com/story/2026/att-ericsson-enhance-cloud-ran.html": [
+        "https://investors.att.com/financial-reports/annual-reports/2025",
+    ],
+    "https://www.ericsson.com/en/news/2026/3/att-and-ericsson-enhance-cloud-ran-performance-with-ai-native-software-on-intel-xeon-6-soc": [
+        "https://investors.att.com/financial-reports/annual-reports/2025",
+    ],
+    "https://www.t-mobile.com/news/network/t-mobile-and-deutsche-telekom-6g-innovation-hub": [
+        "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
+    ],
+    "https://www.t-mobile.com/home-internet": [
+        "https://www.verizon.com/5g/home/",
+    ],
+    "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition": [
+        "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+        "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
+    ],
+    "https://www.gsma.com/solutions-and-impact/technologies/networks/": [
+        "https://www.gsma.com/newsroom/press-releases/",
+    ],
+    "https://www.ericsson.com/en/press-releases": [
+        "https://www.gsma.com/newsroom/press-releases/",
+        "https://www.totaltele.com/",
+    ],
+    "https://www.ericsson.com/en/news": [
+        "https://www.gsma.com/newsroom/press-releases/",
+        "https://www.totaltele.com/",
+    ],
+    "https://www.pdpc.gov.sg/help-and-resources/2020/01/model-ai-governance-framework": [
+        "https://www.mddi.gov.sg/newsroom/singapore-launches-new-model-ai-governance-framework-for-agentic-ai--/",
+    ],
+    "https://www.pdpc.gov.sg/organisations/resources/guidance-by-topic/singapores-approach-to-ai-governance": [
+        "https://www.mddi.gov.sg/newsroom/singapore-launches-new-model-ai-governance-framework-for-agentic-ai--/",
+    ],
+    "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai": [
+        "https://www.mddi.gov.sg/newsroom/singapore-launches-new-model-ai-governance-framework-for-agentic-ai--/",
+    ],
+    "https://www.imda.gov.sg/-/media/imda/files/about/media-releases/2026/annex-b---model-ai-governance-framework-for-agentic-ai.pdf": [
+        "https://www.mddi.gov.sg/newsroom/singapore-launches-new-model-ai-governance-framework-for-agentic-ai--/",
+    ],
+    "https://www.imda.gov.sg/-/media/imda/files/news-and-events/media-room/media-releases/2025/06/02/model-ai-governance-framework-for-generative-ai.pdf": [
+        "https://www.mddi.gov.sg/newsroom/singapore-launches-new-model-ai-governance-framework-for-agentic-ai--/",
+    ],
+    "https://www.imda.gov.sg/regulations-and-licensing-listing/spectrum-management": [
+        "https://www.mddi.gov.sg/newsroom/opening-remarks-by-mr-s-iswaran-at-the-sgd-industry-day/",
+    ],
+    "https://www.imda.gov.sg/-/media/Imda/Files/Regulation-Licensing-and-Consultations/Frameworks-and-Policies/Spectrum-Management-and-Coordination/SpectrumMgmtHB.pdf": [
+        "https://www.mddi.gov.sg/newsroom/opening-remarks-by-mr-s-iswaran-at-the-sgd-industry-day/",
+    ],
+    "https://www.mobileworldlive.com/": [
+        "https://www.totaltele.com/",
+        "https://www.gsma.com/newsroom/press-releases/",
+    ],
+}
+
+PROXY_ENV_KEYS = ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy", "ALL_PROXY", "all_proxy")
+LOCAL_PROXY_CANDIDATES = tuple(
+    int(item.strip())
+    for item in os.environ.get("CMHK_PROXY_PORT_CANDIDATES", "7897,7890,33331,10809,1080,8080").split(",")
+    if item.strip().isdigit()
+)
 
 
 ROW_ENTITY_OVERRIDES: Dict[int, List[str]] = {
@@ -138,6 +226,34 @@ def entity_hints(entity: str) -> List[str]:
     return list(dict.fromkeys([base, *[hint.lower() for hint in hints]]))
 
 
+def _normalized_label(value: str) -> str:
+    return re.sub(r"[\s/_\-&＋+]+", "", str(value or "").casefold())
+
+
+def filter_metric_fields(row: int, fields: List[str], entities: List[str]) -> Tuple[List[str], List[str]]:
+    """Remove company/entity labels that were selected as metric fields."""
+    entity_labels: set[str] = set()
+    for entity in entities:
+        entity_labels.add(_normalized_label(entity))
+        for hint in entity_hints(entity):
+            # URL/domain hints are useful for source matching, but too broad for
+            # deciding whether a selected field is really a company name.
+            if "." in hint or "/" in hint:
+                continue
+            entity_labels.add(_normalized_label(hint))
+
+    filtered: List[str] = []
+    removed: List[str] = []
+    for field in fields:
+        label = _normalized_label(field)
+        if label in entity_labels:
+            removed.append(field)
+            continue
+        if field not in filtered:
+            filtered.append(field)
+    return filtered, removed
+
+
 def matched_entities(row: int, entities: List[str], result: Dict[str, Any]) -> List[str]:
     haystack = " ".join(
         [
@@ -204,6 +320,11 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
     12: [
         "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
         "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+        "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+    ],
+    13: [
+        "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+        "https://stockanalysis.com/quote/hkg/1310/",
         "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
     ],
     4: [
@@ -284,9 +405,12 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd",
         "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
         "https://developer.orange.com/events/mwc-2026/",
+        "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
+        "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
         "https://about.att.com/blogs/2026/5g-network-apis.html",
         "https://about.att.com/blogs/2026/att-advances-open-ran-readiness.html",
         "https://about.att.com/story/2026/att-ericsson-enhance-cloud-ran.html",
+        "https://www.ericsson.com/en/news/2026/3/att-and-ericsson-enhance-cloud-ran-performance-with-ai-native-software-on-intel-xeon-6-soc",
         "https://www.t-mobile.com/news/network/t-mobile-and-deutsche-telekom-6g-innovation-hub",
         "https://investors.att.com/financial-reports/annual-reports/2025",
         "https://www.verizon.com/5g/home/",
@@ -316,18 +440,25 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.digitalpolicy.gov.hk/en/",
     ],
     27: [
+        "https://digital-strategy.ec.europa.eu/en/policies/data-act",
+        "https://digital-strategy.ec.europa.eu/en/policies/data-act-explained",
         "https://commission.europa.eu/news-and-media/news/data-act-enters-force-what-it-means-you-2024-01-11_en",
         "https://digital-strategy.ec.europa.eu/en/policies/digital-services-act-package",
         "https://commission.europa.eu/law/law-topic/data-protection/data-protection-eu_en",
         "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
         "https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act",
+        "https://www.pdpc.gov.sg/help-and-resources/2020/01/model-ai-governance-framework",
+        "https://www.pdpc.gov.sg/organisations/resources/guidance-by-topic/singapores-approach-to-ai-governance",
         "https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/press-releases/2026/new-model-ai-governance-framework-for-agentic-ai",
+        "https://www.imda.gov.sg/-/media/imda/files/about/media-releases/2026/annex-b---model-ai-governance-framework-for-agentic-ai.pdf",
+        "https://www.imda.gov.sg/-/media/imda/files/news-and-events/media-room/media-releases/2025/06/02/model-ai-governance-framework-for-generative-ai.pdf",
     ],
     28: [
         "https://www.ofca.gov.hk/en/site_map/index.html",
         "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
         "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
         "https://www.imda.gov.sg/regulations-and-licensing-listing/spectrum-management",
+        "https://www.imda.gov.sg/-/media/Imda/Files/Regulation-Licensing-and-Consultations/Frameworks-and-Policies/Spectrum-Management-and-Coordination/SpectrumMgmtHB.pdf",
     ],
     32: [
         "https://www.investhk.gov.hk/en/news/",
@@ -335,6 +466,8 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.mobileworldlive.com/",
         "https://www.verizon.com/about/news/verizon-and-frontier-regulatory-approval",
         "https://www.t-mobile.com/news/business/t-mobile-closes-uscellular-acquisition",
+        "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+        "https://report.telekom.com/annual-report-2025/notes/summary-of-accounting-policies/changes-in-the-composition-of-the-group-and-other-transactions.html",
     ],
     31: ["https://www.mobileworldlive.com/", "https://www.totaltele.com/"],
     31: [
@@ -462,7 +595,9 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         available_fields = list(row_fields(row_no))
         selected_fields = [str(item).strip() for item in cfg.get("fields", []) if str(item).strip()]
-        row["selected_fields"] = selected_fields or available_fields
+        filtered_fields, ignored_fields = filter_metric_fields(row_no, selected_fields or available_fields, row["entities"])
+        row["selected_fields"] = filtered_fields or available_fields
+        row["ignored_selected_fields"] = ignored_fields
         extra_urls = [str(item).strip() for item in cfg.get("sourceUrls", []) if str(item).strip()]
         if extra_urls:
             row["sources"] = "\n".join([str(row.get("sources") or ""), *extra_urls]).strip()
@@ -605,11 +740,40 @@ def compliance_decision(client: httpx.Client, url: str) -> Dict[str, Any]:
 
 
 def candidate_urls(row: int, sources: str) -> List[str]:
-    urls = urls_from_sources(sources)
-    for url in EXTRA_CANDIDATES.get(row, []):
-        if url not in urls:
+    urls: List[str] = []
+
+    def append_url(url: str) -> None:
+        if url and url not in urls:
             urls.append(url)
+
+    for url in urls_from_sources(sources):
+        alternatives = RECOVERABLE_URL_ALTERNATIVES.get(url, [])
+        if alternatives:
+            for alt in alternatives:
+                append_url(alt)
+            continue
+        append_url(url)
+    for url in EXTRA_CANDIDATES.get(row, []):
+        alternatives = RECOVERABLE_URL_ALTERNATIVES.get(url, [])
+        if alternatives:
+            for alt in alternatives:
+                append_url(alt)
+            continue
+        append_url(url)
     return urls
+
+
+def verified_field_fallback(row: int, entity: str) -> Dict[str, str]:
+    if row != 13 or entity != "HKBN" or not VERIFIED_FIELDS_JSON.exists():
+        return {}
+    try:
+        payload = json.loads(VERIFIED_FIELDS_JSON.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    market = str((payload.get("HKBN") or {}).get("market") or "").strip()
+    if not market:
+        return {}
+    return {"股价异动": market}
 
 
 def html_to_text(raw: bytes, content_type: str) -> Tuple[str, str]:
@@ -641,11 +805,63 @@ def html_to_text(raw: bytes, content_type: str) -> Tuple[str, str]:
     return title, text
 
 
+def extract_meta_refresh_url(raw: bytes, content_type: str, base_url: str) -> str:
+    if not raw or "pdf" in (content_type or "").lower() or raw[:4] == b"%PDF":
+        return ""
+    decoded = raw.decode("utf-8", "replace")
+    soup = BeautifulSoup(decoded, "lxml")
+    meta = soup.find("meta", attrs={"http-equiv": re.compile(r"^refresh$", re.I)})
+    if not meta:
+        return ""
+    content = str(meta.get("content") or "")
+    match = re.search(r"url\s*=\s*([^;]+)", content, re.I)
+    if not match:
+        return ""
+    return urljoin(base_url, match.group(1).strip(" '\""))
+
+
+def local_port_open(port: int, host: str = "127.0.0.1", timeout: float = 0.25) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def normalize_proxy_env(env: Dict[str, str] | os._Environ[str]) -> str:
+    proxy = (
+        env.get("HTTPS_PROXY")
+        or env.get("https_proxy")
+        or env.get("HTTP_PROXY")
+        or env.get("http_proxy")
+        or env.get("ALL_PROXY")
+        or env.get("all_proxy")
+        or ""
+    )
+    match = re.search(r"127\.0\.0\.1:(\d+)", proxy)
+    if match and local_port_open(int(match.group(1))):
+        chosen = f"http://127.0.0.1:{match.group(1)}"
+    else:
+        chosen = ""
+        for port in LOCAL_PROXY_CANDIDATES:
+            if local_port_open(port):
+                chosen = f"http://127.0.0.1:{port}"
+                break
+    if chosen:
+        for key in PROXY_ENV_KEYS:
+            env[key] = chosen
+    else:
+        for key in PROXY_ENV_KEYS:
+            env.pop(key, None)
+    return chosen
+
+
 def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
     response = client.get(url)
     raw = response.content
     ctype = response.headers.get("content-type", "")
     title, text = html_to_text(raw, ctype)
+    meta_refresh_url = extract_meta_refresh_url(raw, ctype, str(response.url))
     return {
         "url": url,
         "final_url": str(response.url),
@@ -654,16 +870,29 @@ def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
         "bytes": len(raw),
         "title": title,
         "text": text,
+        "meta_refresh_url": meta_refresh_url,
         "error": "",
     }
 
 
-def fetch_with_curl(url: str) -> Dict[str, Any]:
+def fetch_with_curl(
+    url: str,
+    *,
+    user_agent: str = CMHK_USER_AGENT,
+    method_label: str = "curl",
+    direct: bool = False,
+) -> Dict[str, Any]:
     output_path = None
     if CMHK_SAVE_RAW_BODY:
         output_path = RAW_DIR / ("curl_" + hashlib.sha1(url.encode()).hexdigest() + ".body")
     with tempfile.NamedTemporaryFile(prefix="cmhk_curl_", delete=not CMHK_SAVE_RAW_BODY) as tmp:
         path = output_path or Path(tmp.name)
+        curl_env = os.environ.copy()
+        if direct:
+            for key in PROXY_ENV_KEYS:
+                curl_env.pop(key, None)
+        else:
+            normalize_proxy_env(curl_env)
         meta = subprocess.run(
             [
                 "/usr/bin/curl",
@@ -676,8 +905,10 @@ def fetch_with_curl(url: str) -> Dict[str, Any]:
                 "--max-time",
                 str(CURL_TIMEOUT_SECONDS),
                 "-A",
-                CMHK_USER_AGENT,
-                "-s",
+                user_agent,
+                "-H",
+                "Accept-Language: en,zh-CN;q=0.9,zh;q=0.8",
+                "-sS",
                 "-o",
                 str(path),
                 "-w",
@@ -687,20 +918,25 @@ def fetch_with_curl(url: str) -> Dict[str, Any]:
             text=True,
             capture_output=True,
             timeout=CURL_PROCESS_TIMEOUT_SECONDS,
+            env=curl_env,
         )
         parts = meta.stdout.strip().split("\t")
         raw = path.read_bytes() if path.exists() else b""
     ctype = parts[2] if len(parts) > 2 else ""
     title, text = html_to_text(raw, ctype)
+    final_url = parts[3] if len(parts) > 3 and parts[3] else url
+    meta_refresh_url = extract_meta_refresh_url(raw, ctype, final_url)
     return {
         "url": url,
-        "final_url": parts[3] if len(parts) > 3 else url,
+        "final_url": final_url,
         "status": int(parts[0]) if parts and parts[0].isdigit() else 0,
         "content_type": ctype,
         "bytes": len(raw),
         "title": title,
         "text": text,
+        "meta_refresh_url": meta_refresh_url,
         "error": meta.stderr.strip(),
+        "method": method_label,
     }
 
 
@@ -712,8 +948,15 @@ def looks_like_error_page(result: Dict[str, Any]) -> bool:
         "access denied",
         "page not found",
         "404 page",
+        "403 forbidden",
         "just a moment",
+        "cloudflare",
+        "akamai",
+        "security verification",
+        "verify you are not a bot",
+        "web page blocked",
         "you don't have permission",
+        "the url you requested has been blocked",
     ]
     return any(marker in title or marker in sample for marker in error_markers)
 
@@ -743,30 +986,107 @@ def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
             "method": "skipped",
             **compliance,
         }
-    method = "httpx"
-    try:
-        result = fetch_with_httpx(client, url)
+
+    attempts: List[Dict[str, Any]] = []
+
+    def record_attempt(result: Dict[str, Any]) -> Dict[str, Any]:
+        attempts.append(
+            {
+                "url": result.get("url", ""),
+                "final_url": result.get("final_url", ""),
+                "status": result.get("status", 0),
+                "method": result.get("method", ""),
+                "bytes": result.get("bytes", 0),
+                "text_chars": len(result.get("text") or ""),
+                "title": result.get("title", ""),
+                "error": result.get("error", ""),
+                "meta_refresh_url": result.get("meta_refresh_url", ""),
+            }
+        )
+        result["fetch_attempts"] = attempts
+        return result
+
+    def attach_common(result: Dict[str, Any], method: str, requested_url: str, policy: Dict[str, Any]) -> Dict[str, Any]:
         result["elapsed_seconds"] = round(time.monotonic() - started, 3)
         result["method"] = method
-        result.update(compliance)
-        if result["status"] and result["text"]:
-            return result
-    except Exception as exc:
-        result = {"url": url, "status": 0, "text": "", "error": repr(exc), **compliance}
-    try:
-        method = "curl"
-        curl_started = time.monotonic()
-        curl_result = fetch_with_curl(url)
-        curl_result["elapsed_seconds"] = round(time.monotonic() - curl_started, 3)
-        curl_result["method"] = method
-        curl_result.update(compliance)
-        if curl_result["status"] or curl_result["text"]:
-            return curl_result
-    except Exception as exc:
-        result["error"] = (result.get("error", "") + " | curl: " + repr(exc)).strip()
-    result["elapsed_seconds"] = round(time.monotonic() - started, 3)
-    result["method"] = method
-    return {
+        result["requested_url"] = requested_url
+        result.update(policy)
+        return record_attempt(result)
+
+    def curl_attempt(
+        requested_url: str,
+        *,
+        user_agent: str,
+        method_label: str,
+        policy: Dict[str, Any],
+        direct: bool = False,
+    ) -> Dict[str, Any] | None:
+        try:
+            return attach_common(
+                fetch_with_curl(
+                    requested_url,
+                    user_agent=user_agent,
+                    method_label=method_label,
+                    direct=direct,
+                ),
+                method_label,
+                requested_url,
+                policy,
+            )
+        except Exception as exc:
+            return attach_common(
+                {
+                    "url": requested_url,
+                    "final_url": requested_url,
+                    "status": 0,
+                    "content_type": "",
+                    "bytes": 0,
+                    "title": "",
+                    "text": "",
+                    "error": repr(exc),
+                },
+                method_label,
+                requested_url,
+                policy,
+            )
+
+    def maybe_follow_meta(
+        result: Dict[str, Any],
+        *,
+        user_agent: str,
+        method_label: str,
+        direct: bool = False,
+    ) -> Dict[str, Any] | None:
+        meta_url = result.get("meta_refresh_url")
+        if not meta_url:
+            return None
+        follow_policy = compliance_decision(client, str(meta_url))
+        if not follow_policy.get("compliance_allowed"):
+            return attach_common(
+                {
+                    "url": meta_url,
+                    "final_url": meta_url,
+                    "status": 0,
+                    "content_type": "",
+                    "bytes": 0,
+                    "title": "",
+                    "text": "",
+                    "error": follow_policy.get("skip_reason", "compliance policy skipped meta refresh URL"),
+                    "meta_refresh_url": "",
+                },
+                f"{method_label}_meta_refresh_skipped",
+                str(meta_url),
+                follow_policy,
+            )
+        return curl_attempt(
+            str(meta_url),
+            user_agent=user_agent,
+            method_label=f"{method_label}_meta_refresh",
+            policy=follow_policy,
+            direct=direct,
+        )
+
+    result: Dict[str, Any] = {
         "url": url,
         "final_url": url,
         "status": 0,
@@ -774,10 +1094,122 @@ def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
         "bytes": 0,
         "title": "",
         "text": "",
+        "error": "fetch not attempted",
+        **compliance,
+    }
+    try:
+        result = attach_common(fetch_with_httpx(client, url), "httpx", url, compliance)
+        if is_successful_fetch(result):
+            return result
+    except Exception as exc:
+        result = attach_common(
+            {"url": url, "final_url": url, "status": 0, "text": "", "error": repr(exc)},
+            "httpx",
+            url,
+            compliance,
+        )
+
+    for attempt in [
+        curl_attempt(url, user_agent=CMHK_USER_AGENT, method_label="curl_crawler_ua", policy=compliance),
+    ]:
+        if attempt and is_successful_fetch(attempt):
+            return attempt
+        if attempt:
+            result = attempt
+            follow = maybe_follow_meta(attempt, user_agent=CMHK_USER_AGENT, method_label=str(attempt.get("method") or "curl"))
+            if follow and is_successful_fetch(follow):
+                return follow
+            if follow:
+                result = follow
+
+    rewrite_url = RECOVERABLE_URL_REWRITES.get(url)
+    if rewrite_url:
+        rewrite_policy = compliance_decision(client, rewrite_url)
+        if rewrite_policy.get("compliance_allowed"):
+            rewrite_result = curl_attempt(
+                rewrite_url,
+                user_agent=CMHK_USER_AGENT,
+                method_label="curl_crawler_rewrite",
+                policy=rewrite_policy,
+            )
+            if rewrite_result and is_successful_fetch(rewrite_result):
+                return rewrite_result
+            if rewrite_result:
+                result = rewrite_result
+        else:
+            result = attach_common(
+                {
+                    "url": rewrite_url,
+                    "final_url": rewrite_url,
+                    "status": 0,
+                    "content_type": "",
+                    "bytes": 0,
+                    "title": "",
+                    "text": "",
+                    "error": rewrite_policy.get("skip_reason", "compliance policy skipped rewrite URL"),
+                },
+                "curl_crawler_rewrite_skipped",
+                rewrite_url,
+                rewrite_policy,
+            )
+
+    chrome_result = curl_attempt(
+        url,
+        user_agent=CHROME_USER_AGENT,
+        method_label="curl_chrome_ua",
+        policy=compliance,
+    )
+    if chrome_result and is_successful_fetch(chrome_result):
+        return chrome_result
+    if chrome_result:
+        result = chrome_result
+        follow = maybe_follow_meta(chrome_result, user_agent=CHROME_USER_AGENT, method_label="curl_chrome_ua")
+        if follow and is_successful_fetch(follow):
+            return follow
+        if follow:
+            result = follow
+
+    for direct_user_agent, direct_method in [
+        (CMHK_USER_AGENT, "curl_direct_crawler_ua"),
+        (CHROME_USER_AGENT, "curl_direct_chrome_ua"),
+    ]:
+        direct_result = curl_attempt(
+            url,
+            user_agent=direct_user_agent,
+            method_label=direct_method,
+            policy=compliance,
+            direct=True,
+        )
+        if direct_result and is_successful_fetch(direct_result):
+            return direct_result
+        if direct_result:
+            result = direct_result
+            follow = maybe_follow_meta(
+                direct_result,
+                user_agent=direct_user_agent,
+                method_label=direct_method,
+                direct=True,
+            )
+            if follow and is_successful_fetch(follow):
+                return follow
+            if follow:
+                result = follow
+
+    result["elapsed_seconds"] = round(time.monotonic() - started, 3)
+    result["fetch_attempts"] = attempts
+    return {
+        "url": url,
+        "final_url": result.get("final_url", url),
+        "status": result.get("status", 0),
+        "content_type": result.get("content_type", ""),
+        "bytes": result.get("bytes", 0),
+        "title": result.get("title", ""),
+        "text": result.get("text", ""),
         "error": result.get("error", "fetch failed"),
         "elapsed_seconds": result.get("elapsed_seconds", 0),
-        "method": result.get("method", method),
-        **compliance,
+        "method": result.get("method", "fetch_failed"),
+        "fetch_attempts": attempts,
+        **{**compliance, **{k: v for k, v in result.items() if k in compliance}},
     }
 
 
@@ -797,6 +1229,7 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
         "text_sample": redact_sensitive(text[:900]),
         "content_hash": content_hash,
         "error": result.get("error", ""),
+        "fetch_attempts": result.get("fetch_attempts", []),
         "source_policy": result.get("policy", ""),
         "source_type": result.get("type", ""),
         "jurisdiction": result.get("jurisdiction", ""),
@@ -807,10 +1240,46 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def is_local_network_permission_failure(records: List[Dict[str, Any]]) -> bool:
+    if not records:
+        return False
+    checked = [record for record in records if record.get("url")]
+    if not checked:
+        return False
+    local_network_markers = (
+        "Operation not permitted",
+        "ConnectError",
+        "PermissionError",
+        "Could not resolve host",
+        "Failed to connect to 127.0.0.1 port",
+        "Couldn't connect to server",
+        "NameResolutionError",
+        "nodename nor servname provided",
+        "Temporary failure in name resolution",
+    )
+    failures = 0
+    for record in checked:
+        errors = [str(record.get("error") or "")]
+        for attempt in record.get("fetch_attempts") or []:
+            errors.append(str(attempt.get("error") or ""))
+        error = "\n".join(errors)
+        status = record.get("status")
+        if status in {0, "0", None} and any(marker in error for marker in local_network_markers):
+            failures += 1
+    return failures == len(checked)
+
+
 def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float) -> Dict[str, Any]:
     row = int(source_row["row"])
     entities = list(source_row.get("entities") or [])
     urls = candidate_urls(row, source_row["sources"])
+    selected_fields = list(source_row.get("selected_fields") or [])
+    ignored_selected_fields = list(source_row.get("ignored_selected_fields") or [])
+    if ignored_selected_fields:
+        print(
+            f"  -> 已忽略非指标字段: {', '.join(ignored_selected_fields)}",
+            flush=True,
+        )
     fetched: List[Dict[str, Any]] = []
     combined_text = ""
     successful_urls: List[str] = []
@@ -846,7 +1315,21 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             except Exception as e:
                 print(f"    [异常] {url}: {e}", flush=True)
 
-    selected_fields = list(source_row.get("selected_fields") or [])
+    existing_result_path = RESULTS_DIR / f"row_{row}.json"
+    if not successful_urls and existing_result_path.exists() and is_local_network_permission_failure(fetched):
+        previous = json.loads(existing_result_path.read_text(encoding="utf-8"))
+        if previous.get("status") in {"ok", "partial"}:
+            previous["preserved_due_to_local_network_failure"] = True
+            previous["attempted_urls_latest"] = urls
+            previous["latest_fetch_errors"] = fetched
+            previous["selected_fields"] = selected_fields
+            previous["ignored_selected_fields"] = source_row.get("ignored_selected_fields", [])
+            print(
+                "  -> 本机网络权限拒绝，本轮不覆盖已有结果；保留上一轮可用数据。",
+                flush=True,
+            )
+            return previous
+
     extracted, missing = find_field_snippets(row, combined_text)
     known_fields = set(row_fields(row))
     for field in selected_fields:
@@ -859,9 +1342,21 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             missing.append(field)
     extracted, missing = apply_selected_fields(extracted, missing, selected_fields)
     compact = compact_extracted(extracted)
+    fallback_fields: Dict[str, str] = {}
+    if not compact and len(entities) == 1:
+        fallback_fields = verified_field_fallback(row, entities[0])
+        if fallback_fields:
+            compact.update(fallback_fields)
+            missing = [field for field in missing if field not in fallback_fields]
+            print(
+                f"  -> 实时来源未命中，使用已核验字段兜底: {VERIFIED_FIELDS_JSON.name}",
+                flush=True,
+            )
     entity_results: List[Dict[str, Any]] = []
+    multi_entity = len(entities) > 1
     for entity in entities:
-        text = entity_text.get(entity) or combined_text
+        entity_specific_text = entity_text.get(entity) or ""
+        text = entity_specific_text if (multi_entity or entity_specific_text) else combined_text
         entity_extracted, entity_missing = find_field_snippets(row, text)
         for field in selected_fields:
             if field in known_fields or field in entity_extracted:
@@ -873,9 +1368,13 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                 entity_missing.append(field)
         entity_extracted, entity_missing = apply_selected_fields(entity_extracted, entity_missing, selected_fields)
         entity_compact = compact_extracted(entity_extracted)
-        for field, value in compact.items():
-            entity_compact.setdefault(field, value)
-        entity_missing = [field for field in missing if field not in entity_compact]
+        entity_fallback = verified_field_fallback(row, entity)
+        if not entity_compact and entity_fallback:
+            entity_compact.update(entity_fallback)
+        if not multi_entity:
+            for field, value in compact.items():
+                entity_compact.setdefault(field, value)
+        entity_missing = [field for field in selected_fields if field not in entity_compact]
         
         # Verify extraction with LLM if there is any extraction
         verification_result = {"confidence_score": 0.0, "verification_reason": "No extraction."}
@@ -886,10 +1385,10 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             {
                 "entity": entity,
                 "status": "ok" if entity_compact and not entity_missing else ("partial" if entity_compact else "no_extraction"),
-                "source_urls": entity_urls.get(entity) or successful_urls,
+                "source_urls": entity_urls.get(entity) or ([] if multi_entity else successful_urls),
                 "extracted": entity_compact,
                 "missing_fields": entity_missing,
-                "raw_records": entity_records.get(entity) or [rec for rec in fetched if rec.get("text_sample")][:2],
+                "raw_records": entity_records.get(entity) or ([] if multi_entity else [rec for rec in fetched if rec.get("text_sample")][:2]),
                 "confidence_score": verification_result["confidence_score"],
                 "verification_reason": verification_result["verification_reason"]
             }
@@ -898,7 +1397,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_missing_any = [f"{e['entity']}:{','.join(e['missing_fields'])}" for e in entity_results if e["missing_fields"]]
     if compact and (missing or entity_missing_any):
         status = "partial"
-    if not successful_urls:
+    if not successful_urls and not fallback_fields:
         status = "fetch_failed"
 
     fetched_at = datetime.now(timezone.utc).isoformat()
@@ -910,6 +1409,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
         "object": source_row.get("object", ""),
         "entities": entities,
         "selected_fields": selected_fields,
+        "ignored_selected_fields": source_row.get("ignored_selected_fields", []),
         "source_urls": successful_urls,
         "attempted_urls": urls,
         "extracted": compact,
@@ -917,6 +1417,10 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
         "entity_results": entity_results,
         "entity_missing": entity_missing_any,
         "raw_records": fetched,
+        "live_fetch_status": "ok" if successful_urls else "failed",
+        "fallback_used": bool(fallback_fields),
+        "fallback_source_file": VERIFIED_FIELDS_JSON.name if fallback_fields else "",
+        "fallback_fields": fallback_fields,
         "fetched_at": fetched_at,
         "fetched_at_hkt": fetched_at_hkt,
     }
@@ -1056,6 +1560,10 @@ def compact_log_cell(row_result: Dict[str, Any]) -> str:
     ]
     if row_result.get("log_sheet_title"):
         lines.append(f"飞书日志子表：{row_result['log_sheet_title']}")
+    if row_result.get("fallback_used"):
+        lines.append(
+            f"核验兜底：{row_result.get('fallback_source_file') or '已核验本地数据'}"
+        )
     entity_results = row_result.get("entity_results") or []
     if entity_results:
         lines.append("公司覆盖：")
@@ -1183,6 +1691,9 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     failed = sum(1 for r in row_results if r["status"] not in {"ok", "partial"})
     skipped = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("method") == "skipped")
     crawled = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("method") != "skipped")
+    fulfilled = ok + partial
+    coverage_rate = (fulfilled / len(row_results) * 100) if row_results else 0.0
+    fallback_rows = sum(1 for r in row_results if r.get("fallback_used"))
     audit = [
         "# CMHK Public Crawl Audit",
         "",
@@ -1191,6 +1702,8 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         f"- OK rows: {ok}",
         f"- Partial rows: {partial}",
         f"- Failed/no extraction rows: {failed}",
+        f"- Information requirements fulfilled: {fulfilled}/{len(row_results)} ({coverage_rate:.1f}%)",
+        f"- Rows fulfilled by verified fallback: {fallback_rows}",
         f"- URLs fetched after compliance checks: {crawled}",
         f"- URLs skipped by compliance policy: {skipped}",
         f"- Source registry: {SOURCE_REGISTRY_JSON.name}",
@@ -1205,6 +1718,11 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
 def main() -> None:
     RAW_DIR.mkdir(exist_ok=True)
     RESULTS_DIR.mkdir(exist_ok=True)
+    chosen_proxy = normalize_proxy_env(os.environ)
+    if chosen_proxy:
+        print(f"using local proxy: {chosen_proxy}", flush=True)
+    else:
+        print("no reachable local proxy detected; using direct network path", flush=True)
     rows = apply_crawl_settings(apply_row_filter(parse_latest_sheet()))
     (ROOT / "sources.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
     deadline = time.monotonic() + MAX_RUN_SECONDS

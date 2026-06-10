@@ -10,15 +10,25 @@ const state = {
   currentAudio: null,
   currentAudioButton: null,
   isScrubbing: false,
+  agentTraceLoaded: false,
 };
 
 const els = {
   headerTime: document.querySelector("#headerTime"),
   statusSummary: document.querySelector("#statusSummary"),
   fileList: document.getElementById("fileList"),
+  weeklyFileList: document.getElementById("weeklyFileList"),
+  performanceFileList: document.getElementById("performanceFileList"),
   fileCountText: document.querySelector("#fileCountText"),
+  weeklyFileCountText: document.querySelector("#weeklyFileCountText"),
+  performanceFileCountText: document.querySelector("#performanceFileCountText"),
   multiSelectButton: document.querySelector("#multiSelectButton"),
+  multiSelectTriggers: document.querySelectorAll(".multi-select-trigger"),
   deleteSelectedButton: document.querySelector("#deleteSelectedButton"),
+  deleteSelectedTriggers: document.querySelectorAll(".delete-selected-trigger"),
+  outputTabs: document.querySelectorAll(".output-tab"),
+  weeklyOutputBlock: document.querySelector("#weeklyOutputBlock"),
+  performanceOutputBlock: document.querySelector("#performanceOutputBlock"),
   fileEditModal: document.querySelector("#fileEditModal"),
   fileEditForm: document.querySelector("#fileEditForm"),
   closeFileEdit: document.querySelector("#closeFileEdit"),
@@ -32,6 +42,7 @@ const els = {
     document.querySelector("#generateButtonSecondary"),
   ].filter(Boolean),
   generatePerformanceButton: document.querySelector("#generatePerformanceButton"),
+  generateButtonSecondary: document.querySelector("#generateButtonSecondary"),
   crawlButtons: [
     document.querySelector("#crawlButton"),
     document.querySelector("#crawlButtonSecondary"),
@@ -104,6 +115,10 @@ function setBusy(value, label = "运行中", action = "all") {
       button.textContent = "生成周报";
     }
   });
+  if (els.generateButtonSecondary) {
+    els.generateButtonSecondary.disabled = value;
+    els.generateButtonSecondary.textContent = value && action === "report" ? "生成中..." : "生成周报";
+  }
   if (els.generatePerformanceButton) {
     els.generatePerformanceButton.disabled = value;
     els.generatePerformanceButton.textContent = value && action === "performance" ? "生成中..." : "生成业绩摘要";
@@ -168,6 +183,13 @@ function filteredOutputs() {
   return [...state.outputs].sort((a, b) => b.mtime - a.mtime);
 }
 
+function outputsByType(type) {
+  return filteredOutputs().filter((file) => {
+    const isPerformance = file.reportType === "carrier-performance";
+    return type === "performance" ? isPerformance : !isPerformance;
+  });
+}
+
 function labelSourceType(value) {
   const labels = {
     company_official: "企业官网",
@@ -175,6 +197,17 @@ function labelSourceType(value) {
     media: "媒体资讯",
     public_database: "公开数据库",
     stock_exchange: "交易所",
+    commercial_data: "商业数据",
+    exchange_public_disclosure: "交易所公开披露",
+    government_api_docs: "政府 API 文档",
+    government_open_data: "政府开放数据",
+    government_public_info: "政府公开信息",
+    government_statistics: "政府统计数据",
+    industry_association: "行业协会",
+    international_org: "国际组织",
+    public_api: "公开 API",
+    regulator_public_info: "监管机构公开信息",
+    unregistered: "未注册来源",
     unknown: "未分类",
   };
   return labels[value] || value.replaceAll("_", " ");
@@ -191,110 +224,194 @@ if (typeof ChartDataLabels !== 'undefined') {
 
 let chartInstances = {};
 
+function withoutChartAnimation(options = {}) {
+  return {
+    ...options,
+    animation: false,
+    animations: false,
+    transitions: {
+      ...options.transitions,
+      active: { animation: { duration: 0 } },
+      resize: { animation: { duration: 0 } },
+      show: { animations: {} },
+      hide: { animations: {} },
+    },
+  };
+}
+
 function initOrUpdateChart(id, config) {
   const canvas = document.getElementById(id);
   if (!canvas) return;
-  if (chartInstances[id]) {
-    chartInstances[id].data = config.data;
-    chartInstances[id].options = config.options;
-    chartInstances[id].update('none'); // Update without animation
-  } else {
-    chartInstances[id] = new Chart(canvas, config);
+  const existingChart = chartInstances[id];
+  if (existingChart && existingChart.config.type === config.type) {
+    existingChart.data = config.data;
+    existingChart.options = withoutChartAnimation(config.options);
+    existingChart.update("none");
+    return;
   }
+  if (existingChart) existingChart.destroy();
+  chartInstances[id] = new Chart(canvas, config);
 }
 
 function renderInsights(status) {
   const visuals = status.visuals || {};
-  const quality = visuals.quality || {};
-  const totalRows = Number(status.results?.count || 0);
-  const ok = Number(quality.ok || 0);
-  const partial = Number(quality.partial || 0);
-  const failed = Number(quality.failed || 0);
-  const score = totalRows ? Math.round(((ok + partial * 0.55) / totalRows) * 100) : 0;
+  const crawl = visuals.crawl || {};
+  const totalUrls = Number(crawl.total || 0);
+  const successUrls = Number(crawl.success || 0);
+  const failedUrls = Number(crawl.failed || 0);
+  const successRate = Number(crawl.successRate || 0);
   
-  if (els.qualityScore) els.qualityScore.textContent = totalRows ? `${score}%` : "--%";
+  if (els.qualityScore) {
+    els.qualityScore.textContent = totalUrls ? `成功 ${successRate}%` : "--";
+    els.qualityScore.title = totalUrls
+      ? `本轮共抓取 ${totalUrls} 个 URL：成功 ${successUrls} 个，失败 ${failedUrls} 个`
+      : "暂无本轮 URL 抓取结果";
+  }
 
-  // 1. Doughnut Chart for Quality
+  // 1. The first chart reflects the latest URL-level crawl, not retained row data.
   initOrUpdateChart('qualityCanvas', {
     type: 'doughnut',
     data: {
-      labels: ['完整 (Ok)', '部分 (Partial)', '异常 (Failed)'],
+      labels: ['抓取成功', '抓取失败'],
       datasets: [{
-        data: [ok, partial, failed],
-        backgroundColor: ['#12a36c', '#f59e0b', '#ef4444'],
-        borderWidth: 0
+        data: [successUrls, failedUrls],
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.95)', // emerald
+          'rgba(239, 68, 68, 0.95)'   // red
+        ],
+        hoverBackgroundColor: [
+          'rgba(52, 211, 153, 1)',
+          'rgba(248, 113, 113, 1)'
+        ],
+        borderWidth: 3,
+        borderColor: '#ffffff',
+        hoverBorderWidth: 0,
+        borderRadius: 8,
+        hoverOffset: 6
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '70%',
+      cutout: '75%',
       plugins: {
-        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } },
+        legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, font: { size: 11, family: 'Inter, sans-serif' } } },
         datalabels: {
           color: '#ffffff',
-          font: { weight: 'bold', size: 12 },
+          font: { weight: '600', size: 13, family: 'Inter, sans-serif' },
           display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.85)',
+          titleFont: { size: 13, family: 'Inter, sans-serif' },
+          bodyFont: { size: 12, family: 'Inter, sans-serif' },
+          padding: 12,
+          cornerRadius: 8,
+          displayColors: false
         }
-      }
+      },
+      animation: { animateScale: true, animateRotate: true }
     }
   });
 
-  // 2. Horizontal Bar Chart for Blocks
-  const blocks = visuals.blocks || [];
-  if (els.blockTotal) els.blockTotal.textContent = `${sumValues(blocks)} 行`;
-  
-  const blockLabels = blocks.map(b => b.label);
-  const blockData = blocks.map(b => b.value);
+  const rejection = visuals.rejection || {};
+  const rejectReasons = rejection.reasons || [];
+  const rejected = Number(rejection.rejected || 0);
+  const accepted = Number(rejection.accepted || 0);
+  const gateTotal = accepted + rejected;
+  const passRate = gateTotal ? Math.round((accepted / gateTotal) * 100) : 0;
+  const rejectRate = Number(rejection.rejectRate || 0);
+
+  // 2. Quality gate: connects crawler output to the Agent curation result.
+  if (els.blockTotal) {
+    els.blockTotal.textContent = gateTotal ? `通过 ${passRate}%` : "--";
+    els.blockTotal.title = gateTotal
+      ? `候选事实 ${gateTotal} 条：通过 ${accepted} 条，拦截 ${rejected} 条`
+      : "暂无质量门禁数据";
+  }
   
   initOrUpdateChart('blockCanvas', {
     type: 'bar',
     data: {
-      labels: blockLabels,
-      datasets: [{
-        label: '数量',
-        data: blockData,
-        backgroundColor: '#3b82f6',
-        borderRadius: 4,
-        barThickness: 10
-      }]
+      labels: ['候选事实'],
+      datasets: [
+        {
+          label: '通过发布',
+          data: [accepted],
+          backgroundColor: 'rgba(16, 185, 129, 0.92)',
+          hoverBackgroundColor: 'rgba(5, 150, 105, 1)',
+          borderRadius: 7,
+          barThickness: 28
+        },
+        {
+          label: '质量拦截',
+          data: [rejected],
+          backgroundColor: 'rgba(239, 68, 68, 0.88)',
+          hoverBackgroundColor: 'rgba(220, 38, 38, 1)',
+          borderRadius: 7,
+          barThickness: 28
+        }
+      ]
     },
     options: {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-        padding: { right: 35 } // Leave space for external labels
+        padding: { left: 8, right: 8, top: 10, bottom: 2 }
       },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: gateTotal > 0,
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            boxWidth: 8,
+            padding: 14,
+            font: { size: 11, family: 'Inter, sans-serif' }
+          }
+        },
         datalabels: {
-          color: '#666666',
-          anchor: 'end',
-          align: 'right',
-          font: { weight: 'bold', size: 11 },
-          display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+          color: '#ffffff',
+          anchor: 'center',
+          align: 'center',
+          font: { weight: '700', size: 11, family: 'Inter, sans-serif' },
+          formatter: (value, context) => value > 0 ? `${context.dataset.label} ${value}` : "",
+          display: (context) => Number(context.dataset.data[context.dataIndex]) > 0
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.85)',
+          cornerRadius: 8,
+          callbacks: {
+            label: (item) => `${item.dataset.label}：${item.formattedValue} 条`
+          }
         }
       },
       scales: {
-        x: { display: false },
-        y: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11 } } }
+        x: { display: false, stacked: true, max: gateTotal || 1 },
+        y: { display: false, stacked: true }
       }
     }
   });
 
-  // 3. Polar Area Chart for Sources
-  const sourceTypes = visuals.sourceTypes || [];
-  const jurisdictions = visuals.jurisdictions || [];
-  const methods = visuals.methods || [];
-  const totalSources = sumValues(sourceTypes);
-  if (els.sourceTotal) els.sourceTotal.textContent = totalSources ? `${totalSources} 条` : "--";
+  // 3. Rejection analysis: explains the rejected portion of the quality gate.
+  if (els.sourceTotal) {
+    els.sourceTotal.textContent = rejected || accepted ? `拦截 ${rejectRate}%` : "--";
+    els.sourceTotal.title = rejected || accepted
+      ? `通过 ${accepted} 条，拦截 ${rejected} 条`
+      : "暂无清洗拦截数据";
+  }
 
-  const chips = [
-    ...sourceTypes.slice(0, 3).map((item) => ({ ...item, label: labelSourceType(item.label) })),
-    ...jurisdictions.slice(0, 3),
-    ...methods.slice(0, 2)
-  ];
+  const chips = rejectReasons.slice(0, 6).map((item) => ({
+    ...item,
+    label: String(item.label || "").replace("未通过指标格式与单位门禁", "格式/单位未过")
+      .replace("数值或事实依据不足", "依据不足")
+      .replace("置信度低于80%", "置信度低")
+      .replace("模型未确认主体归属", "主体未确认")
+      .replace("来源域名或证据文本不支持该主体", "来源不匹配")
+      .replace("指标名疑似串入公司名称", "指标名异常")
+      .replace("抽取结果不可用", "抽取不可用")
+  }));
   
   initOrUpdateChart('sourceCanvas', {
     type: 'bar',
@@ -303,16 +420,25 @@ function renderInsights(status) {
       datasets: [{
         data: chips.map(c => c.value),
         backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(16, 185, 129, 0.8)',
-          'rgba(245, 158, 11, 0.8)',
-          'rgba(239, 68, 68, 0.8)',
-          'rgba(139, 92, 246, 0.8)',
-          'rgba(14, 165, 233, 0.8)',
-          'rgba(236, 72, 153, 0.8)'
+          'rgba(59, 130, 246, 0.85)',
+          'rgba(16, 185, 129, 0.85)',
+          'rgba(245, 158, 11, 0.85)',
+          'rgba(239, 68, 68, 0.85)',
+          'rgba(139, 92, 246, 0.85)',
+          'rgba(14, 165, 233, 0.85)',
+          'rgba(236, 72, 153, 0.85)'
         ],
-        borderRadius: 4,
-        barThickness: 8
+        hoverBackgroundColor: [
+          'rgba(96, 165, 250, 1)',
+          'rgba(52, 211, 153, 1)',
+          'rgba(251, 191, 36, 1)',
+          'rgba(248, 113, 113, 1)',
+          'rgba(167, 139, 250, 1)',
+          'rgba(56, 189, 248, 1)',
+          'rgba(244, 114, 182, 1)'
+        ],
+        borderRadius: 6,
+        barThickness: 10
       }]
     },
     options: {
@@ -320,109 +446,107 @@ function renderInsights(status) {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-        padding: { right: 35 } // Leave space for external labels
+        padding: { right: 40 }
       },
       plugins: {
         legend: { display: false },
         datalabels: {
-          color: '#666666',
+          color: '#475569',
           anchor: 'end',
           align: 'right',
-          font: { weight: 'bold', size: 11 },
+          font: { weight: '600', size: 12, family: 'Inter, sans-serif' },
           display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(17, 24, 39, 0.85)',
+          cornerRadius: 8,
+          displayColors: false,
+          callbacks: {
+            title: (items) => items?.[0]?.label || "",
+            label: (item) => `拦截 ${item.formattedValue} 条；本轮通过 ${accepted} 条`
+          }
         }
       },
       scales: {
         x: { display: false },
-        y: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 10 } } }
+        y: { 
+          grid: { display: false }, 
+          border: { display: false }, 
+          ticks: { font: { size: 11, family: 'Inter, sans-serif' }, color: '#475569' } 
+        }
       }
     }
   });
 }
 
-function renderFileList() {
-  const files = filteredOutputs();
-  const selectedCount = state.selectedFiles.size;
-  els.fileCountText.textContent = state.multiSelect ? `选择模式 · 已选 ${selectedCount} / ${files.length}` : `${files.length} 个文件`;
-  if (els.multiSelectButton) {
-    els.multiSelectButton.classList.toggle("is-active", state.multiSelect);
-  }
-  if (els.deleteSelectedButton) {
-    els.deleteSelectedButton.hidden = !state.multiSelect;
-    els.deleteSelectedButton.disabled = selectedCount === 0;
-  }
+function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
+  if (!target) return;
   const selectColumn = state.multiSelect ? "<span></span>" : "";
-  if (!state.outputs.length) {
-    els.fileList.innerHTML = `
-      <div class="file-header">
-        ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
-      </div>
-      <div class="file-row">
-        ${selectColumn}<strong>暂无周报</strong><span>请先生成 Word 周报</span><span>-</span><span>-</span>
-      </div>
-    `;
-    return;
-  }
+  const tableTone = type === "performance" ? "performance-tone" : "weekly-tone";
   if (!files.length) {
-    els.fileList.innerHTML = `
-      <div class="file-header">
+    target.innerHTML = `
+      <div class="file-header ${state.multiSelect ? "with-select" : ""} ${tableTone}">
         ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
       </div>
-      <div class="file-row">
-        ${selectColumn}<strong>无周报文件</strong><span>请重新生成</span><span>-</span><span>-</span>
+      <div class="file-row ${state.multiSelect ? "with-select" : ""} empty-row ${tableTone}">
+        ${selectColumn}<strong>${emptyTitle}</strong><span>${emptyHint}</span><span>-</span><span>-</span>
       </div>
     `;
     return;
   }
 
   let html = `
-    <div class="file-header ${state.multiSelect ? "with-select" : ""}">
+    <div class="file-header ${state.multiSelect ? "with-select" : ""} ${tableTone}">
       ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
     </div>
   `;
   files.forEach((file) => {
-    const type = fileType(file.name);
+    const typeInfo = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
-      const audioAction = file.audio && file.audio.exists
-        ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.summary || '')}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
-        : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
-      html += `
-        <div class="file-row ${type.className} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
-          ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-          <span class="file-name-cell" title="${file.name}">${type.icon} ${file.name}</span>
-          <span>${fileDescription(file)}</span>
-          <span class="time-cell">${file.mtimeText}</span>
-          <span class="action-cell">
-            ${audioAction}
-            <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
-            <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
-            <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
-          </span>
-        </div>
-      `;
-    });
-    els.fileList.innerHTML = html;
-    els.fileList.querySelectorAll(".edit-file-button").forEach((button) => {
-      button.addEventListener("click", () => openFileEditor(button.dataset.path));
-    });
-    els.fileList.querySelectorAll(".delete-file-button").forEach((button) => {
-      button.addEventListener("click", () => deleteFiles([button.dataset.path]));
-    });
-    els.fileList.querySelectorAll(".generate-audio-button").forEach((button) => {
-      button.addEventListener("click", () => generateAudio(button.dataset.path, button));
-    });
-    els.fileList.querySelectorAll(".audio-play-button").forEach((button) => {
-      button.addEventListener("click", () => playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary));
-    });
-  els.fileList.querySelectorAll(".file-checkbox").forEach((checkbox) => {
+    const audioAction = file.audio && file.audio.exists
+      ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.summary || '')}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+      : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
+    html += `
+      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
+        ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
+        <span class="file-name-cell" title="${file.name}">${typeInfo.icon} ${file.name}</span>
+        <span>${fileDescription(file)}</span>
+        <span class="time-cell">${file.mtimeText}</span>
+        <span class="action-cell">
+          ${audioAction}
+          <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
+          <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
+          <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
+        </span>
+      </div>
+    `;
+  });
+  target.innerHTML = html;
+}
+
+function bindOutputTableEvents(target) {
+  if (!target) return;
+  target.querySelectorAll(".edit-file-button").forEach((button) => {
+    button.addEventListener("click", () => openFileEditor(button.dataset.path));
+  });
+  target.querySelectorAll(".delete-file-button").forEach((button) => {
+    button.addEventListener("click", () => deleteFiles([button.dataset.path]));
+  });
+  target.querySelectorAll(".generate-audio-button").forEach((button) => {
+    button.addEventListener("click", () => generateAudio(button.dataset.path, button));
+  });
+  target.querySelectorAll(".audio-play-button").forEach((button) => {
+    button.addEventListener("click", () => playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary));
+  });
+  target.querySelectorAll(".file-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
       if (checkbox.checked) state.selectedFiles.add(checkbox.dataset.path);
       else state.selectedFiles.delete(checkbox.dataset.path);
       renderFileList();
     });
   });
-  els.fileList.querySelectorAll(".file-row.with-select").forEach((row) => {
+  target.querySelectorAll(".file-row.with-select").forEach((row) => {
     row.addEventListener("click", (event) => {
       if (event.target.closest("button, a, input")) return;
       const path = row.dataset.path;
@@ -432,6 +556,29 @@ function renderFileList() {
       renderFileList();
     });
   });
+}
+
+function renderFileList() {
+  const weeklyFiles = outputsByType("weekly");
+  const performanceFiles = outputsByType("performance");
+  const files = [...weeklyFiles, ...performanceFiles];
+  const selectedCount = state.selectedFiles.size;
+
+  if (els.fileCountText) els.fileCountText.textContent = state.multiSelect ? `选择模式 · 已选 ${selectedCount} / ${files.length}` : `${files.length} 个文件`;
+  if (els.weeklyFileCountText) els.weeklyFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${weeklyFiles.length}` : `${weeklyFiles.length} 个文件`;
+  if (els.performanceFileCountText) els.performanceFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${performanceFiles.length}` : `${performanceFiles.length} 个文件`;
+  els.multiSelectTriggers.forEach((button) => {
+    button.classList.toggle("is-active", state.multiSelect);
+  });
+  els.deleteSelectedTriggers.forEach((button) => {
+    button.hidden = !state.multiSelect;
+    button.disabled = selectedCount === 0;
+  });
+
+  renderOutputTable(els.weeklyFileList || els.fileList, weeklyFiles, "暂无周报", "请先生成 Word 周报", "weekly");
+  renderOutputTable(els.performanceFileList, performanceFiles, "暂无业绩摘要", "请先生成业绩摘要", "performance");
+  bindOutputTableEvents(els.weeklyFileList || els.fileList);
+  bindOutputTableEvents(els.performanceFileList);
 }
 
 function renderStatus(status) {
@@ -455,11 +602,90 @@ function appendLog(text) {
   localStorage.setItem("appLogs", els.logBox.textContent);
 }
 
+function compactJson(value) {
+  if (value === undefined || value === null || value === "") return "";
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch (error) {
+    return String(value);
+  }
+}
+
+function tracePhaseLabel(phase) {
+  const labels = {
+    observe: "观察",
+    answer: "回答",
+    tool_call: "工具调用",
+    tool_result: "工具结果",
+  };
+  return labels[phase] || phase || "事件";
+}
+
+function renderAgentTrace(trace, options = {}) {
+  if (!els.logBox || !trace) return;
+  const card = document.createElement("section");
+  const phase = trace.phase || trace.event_type || "agent";
+  card.className = `agent-trace-card phase-${phase}`;
+  const title = document.createElement("div");
+  title.className = "agent-trace-title";
+  const node = escapeHtml(trace.node || "Agent");
+  const label = escapeHtml(tracePhaseLabel(phase));
+  const time = escapeHtml((trace.ts || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, ""));
+  title.innerHTML = `<span class="agent-trace-badge">${label}</span><strong>${node}</strong><time>${time}</time>`;
+  card.appendChild(title);
+
+  const message = document.createElement("p");
+  message.className = "agent-trace-message";
+  message.textContent = trace.message || "";
+  card.appendChild(message);
+
+  const details = [
+    ["输入", trace.input],
+    ["工具", trace.tool],
+    ["结果", trace.result],
+    ["输出", trace.output],
+  ].filter(([, value]) => value !== undefined && value !== null && value !== "");
+  if (details.length) {
+    const box = document.createElement("div");
+    box.className = "agent-trace-details";
+    details.forEach(([name, value]) => {
+      const item = document.createElement("details");
+      item.open = phase === "tool_result" && name === "结果";
+      const summary = document.createElement("summary");
+      summary.textContent = name;
+      const pre = document.createElement("pre");
+      pre.textContent = compactJson(value);
+      item.append(summary, pre);
+      box.appendChild(item);
+    });
+    card.appendChild(box);
+  }
+  els.logBox.appendChild(card);
+  if (!options.skipScroll) els.logBox.scrollTop = els.logBox.scrollHeight;
+  localStorage.setItem("appLogs", els.logBox.textContent);
+}
+
 function setLog(text) {
   els.logBox.innerHTML = "";
   els.logBox.appendChild(document.createTextNode(text));
   els.logBox.scrollTop = els.logBox.scrollHeight;
   localStorage.setItem("appLogs", text);
+}
+
+async function loadLatestAgentTrace() {
+  if (!els.logBox) return;
+  if (state.agentTraceLoaded) return;
+  try {
+    const response = await fetch("/api/agent-trace?limit=250");
+    const data = await response.json();
+    if (!data.ok || !Array.isArray(data.trace) || !data.trace.length) return;
+    state.agentTraceLoaded = true;
+    appendLog(`\n\n[最近一次 Agent 轨迹] ${data.trace.length} 条\n`);
+    data.trace.forEach((trace) => renderAgentTrace(trace, { skipScroll: true }));
+    els.logBox.scrollTop = els.logBox.scrollHeight;
+  } catch (error) {
+    appendLog(`\nAgent 轨迹加载失败：${error.message}\n`);
+  }
 }
 
 // Load logs on startup
@@ -862,6 +1088,8 @@ async function runCrawl(source = "按钮") {
           if (event.text) {
             appendLog(event.text + "\n");
           }
+        } else if (event.type === "agent_trace") {
+          renderAgentTrace(event.trace);
         } else if (event.type === "crawl_summary") {
           const successCount = event.success ? event.success.length : 0;
           const failedCount = event.failed ? event.failed.length : 0;
@@ -914,6 +1142,7 @@ async function runCrawl(source = "按钮") {
         } else if (event.type === "done") {
           appendLog(`\n[爬取结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           renderStatus(event.status);
+          await fetchStatus();
           setBusy(false);
           return;
         }
@@ -950,6 +1179,8 @@ async function generateReport(source = "按钮") {
           if (event.text) {
             appendLog(event.text + "\n");
           }
+        } else if (event.type === "agent_trace") {
+          renderAgentTrace(event.trace);
         } else if (event.type === "done") {
           appendLog(`\n[生成结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           if (event.audio && !event.audio.ok) {
@@ -970,9 +1201,9 @@ async function generateReport(source = "按钮") {
 
 async function generateCarrierPerformanceReport(source = "按钮") {
   setBusy(true, "正在生成", "performance");
-  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成运营商业绩摘要，请稍候...\n`);
+  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成业绩摘要，请稍候...\n`);
   try {
-    const response = await fetch("/api/generate-carrier-performance-stream", { method: "POST" });
+    const response = await fetch(`/api/generate-carrier-performance-stream`, { method: "POST" });
     if (!response.ok) throw new Error("网络请求失败");
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -990,6 +1221,8 @@ async function generateCarrierPerformanceReport(source = "按钮") {
         const event = JSON.parse(line.replace(/^data:\s*/, ""));
         if (event.type === "log") {
           if (event.text) appendLog(event.text + "\n");
+        } else if (event.type === "agent_trace") {
+          renderAgentTrace(event.trace);
         } else if (event.type === "done") {
           appendLog(`\n[生成结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           if (event.audio && !event.audio.ok) appendLog(`语音摘要失败：${event.audio.error}\n`);
@@ -1341,6 +1574,7 @@ async function sendChat(message) {
 els.generateButtons.forEach((button) => {
   button.addEventListener("click", () => generateReport("页面按钮"));
 });
+
 if (els.generatePerformanceButton) {
   els.generatePerformanceButton.addEventListener("click", () => generateCarrierPerformanceReport("页面按钮"));
 }
@@ -1394,14 +1628,36 @@ els.fileEditModal.addEventListener("click", (event) => {
   if (event.target === els.fileEditModal) closeFileEditor();
 });
 
-els.multiSelectButton.addEventListener("click", () => {
-  state.multiSelect = !state.multiSelect;
-  if (!state.multiSelect) state.selectedFiles.clear();
-  renderFileList();
+els.multiSelectTriggers.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.multiSelect = !state.multiSelect;
+    if (!state.multiSelect) state.selectedFiles.clear();
+    renderFileList();
+  });
 });
 
-els.deleteSelectedButton.addEventListener("click", () => {
-  deleteFiles(Array.from(state.selectedFiles));
+els.deleteSelectedTriggers.forEach((button) => {
+  button.addEventListener("click", () => {
+    deleteFiles(Array.from(state.selectedFiles));
+  });
+});
+
+els.outputTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    const reportType = button.dataset.scrollReport;
+    
+    els.outputTabs.forEach((item) => {
+      item.classList.toggle("is-active", item.dataset.scrollReport === reportType);
+    });
+    
+    if (reportType === "performance") {
+      els.weeklyOutputBlock.hidden = true;
+      els.performanceOutputBlock.hidden = false;
+    } else {
+      els.weeklyOutputBlock.hidden = false;
+      els.performanceOutputBlock.hidden = true;
+    }
+  });
 });
 
 els.testAiConfig.addEventListener("click", () => {
@@ -1413,12 +1669,13 @@ els.testAiConfig.addEventListener("click", () => {
 });
 
 els.clearLogButton.addEventListener("click", () => {
+  state.agentTraceLoaded = false;
   setLog("执行日志已清空。");
 });
 
 els.logButton.addEventListener("click", () => {
-
   els.logModal.hidden = false;
+  loadLatestAgentTrace();
   setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 10);
 });
 

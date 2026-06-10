@@ -97,6 +97,13 @@
       "tos_status": "public_information",
       "notes": "PCPD public guidance pages."
     },
+    "www.mddi.gov.sg": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "SG",
+      "tos_status": "public_information",
+      "notes": "Singapore Ministry of Digital Development and Information public newsroom pages."
+    },
     "www1.hkexnews.hk": {
       "policy": "allow",
       "type": "exchange_public_disclosure",
@@ -286,6 +293,20 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public company pages only."
     },
+    "assets.airtel.in": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official Airtel static investor assets and PDFs only."
+    },
+    "developer.orange.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "FR",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official Orange developer public pages only."
+    },
     "www.vodafone.com": {
       "policy": "allow",
       "type": "company_official",
@@ -299,6 +320,13 @@
       "jurisdiction": "DE",
       "tos_status": "requires_periodic_review",
       "notes": "Official public company pages only."
+    },
+    "report.telekom.com": {
+      "policy": "allow",
+      "type": "exchange_public_filing",
+      "jurisdiction": "DE",
+      "tos_status": "public_disclosure",
+      "notes": "Official Deutsche Telekom annual report pages only."
     },
     "www.t-mobile.com": {
       "policy": "allow",
@@ -341,6 +369,13 @@
       "jurisdiction": "US",
       "tos_status": "requires_periodic_review",
       "notes": "Official public investor pages only."
+    },
+    "about.att.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official AT&T public newsroom pages only."
     },
     "www.gruppotim.it": {
       "policy": "allow",
@@ -398,12 +433,26 @@
       "tos_status": "public_information",
       "notes": "European Commission public information."
     },
+    "digital-strategy.ec.europa.eu": {
+      "policy": "allow",
+      "type": "government_public_info",
+      "jurisdiction": "EU",
+      "tos_status": "public_information",
+      "notes": "European Commission digital strategy public information."
+    },
     "www.imda.gov.sg": {
       "policy": "allow",
       "type": "regulator_public_info",
       "jurisdiction": "SG",
       "tos_status": "public_information",
       "notes": "IMDA public pages."
+    },
+    "www.pdpc.gov.sg": {
+      "policy": "allow",
+      "type": "regulator_public_info",
+      "jurisdiction": "SG",
+      "tos_status": "public_information",
+      "notes": "PDPC public guidance pages."
     },
     "www.enisa.europa.eu": {
       "policy": "allow",

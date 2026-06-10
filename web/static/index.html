@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=56" />
+    <link rel="stylesheet" href="/static/styles.css?v=67" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -14,6 +14,7 @@
         </a>
         <div class="header-tools">
           <span id="headerTime">-</span>
+          <a class="icon-button nav-link" href="/company-data.html" title="公司指标表" aria-label="公司指标表">▦</a>
           <button class="icon-button" id="dashboardBtn" type="button" title="全局看板" aria-label="全局看板">📊</button>
           <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
           <a class="icon-button nav-link" href="/schedule.html" title="定时任务" aria-label="定时任务">⏰</a>
@@ -34,24 +35,31 @@
               <span id="statusSummary">数据源 - · 范围 - · 最近输出 -</span>
             </div>
             <button class="quiet-button" id="crawlButtonSecondary" type="button">重新爬取</button>
+
             <button class="quiet-button" id="generatePerformanceButton" type="button">生成业绩摘要</button>
             <button class="primary-button" id="generateButtonSecondary" type="button">生成周报</button>
           </section>
 
           <section class="insight-board" aria-label="多模态情报看板">
             <div class="insight-grid">
-              <article class="insight-panel quality-panel">
+              <article class="insight-panel quality-panel pipeline-panel">
                 <div class="panel-title">
-                  <span>采集质量</span>
+                  <div>
+                    <span><b>01</b> 链接抓取</span>
+                    <small>本轮 URL 实际抓取结果</small>
+                  </div>
                   <strong id="qualityScore">--%</strong>
                 </div>
                 <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
                   <canvas id="qualityCanvas"></canvas>
                 </div>
               </article>
-              <article class="insight-panel">
+              <article class="insight-panel pipeline-panel">
                 <div class="panel-title">
-                  <span>情报板块</span>
+                  <div>
+                    <span><b>02</b> 事实质量门禁</span>
+                    <small>抓取成功后，候选事实发布审核</small>
+                  </div>
                   <strong id="blockTotal">--</strong>
                 </div>
                 <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
@@ -60,7 +68,10 @@
               </article>
               <article class="insight-panel">
                 <div class="panel-title">
-                  <span>来源画像</span>
+                  <div>
+                    <span><b>03</b> 事实拦截原因</span>
+                    <small>与 URL 抓取失败分开统计</small>
+                  </div>
                   <strong id="sourceTotal">--</strong>
                 </div>
                 <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
@@ -70,22 +81,50 @@
             </div>
           </section>
 
-          <section class="section-block" id="outputArea">
-            <div class="output-toolbar">
-              <div class="output-heading">
-                <strong>战略部每周周报</strong>
+          <section class="reports-layout" id="outputArea">
+            <section class="section-block output-card weekly-output-card" id="weeklyOutputBlock" aria-label="战略部每周周报">
+              <div class="output-toolbar">
+                <div class="output-heading">
+                  <strong>战略部每周周报</strong>
+                  <div class="output-tabs" aria-label="输出分类">
+                    <button class="output-tab is-active" type="button" data-scroll-report="weekly">周报</button>
+                    <button class="output-tab" type="button" data-scroll-report="performance">业绩摘要</button>
+                  </div>
+                </div>
+                <div class="output-actions">
+                  <span id="weeklyFileCountText">-</span>
+                  <button class="table-icon-button multi-select-trigger" id="multiSelectButton" type="button" title="选择文件" aria-label="选择文件">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  </button>
+                  <button class="table-icon-button danger delete-selected-trigger" id="deleteSelectedButton" type="button" title="删除选中" aria-label="删除选中" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                  </button>
+                </div>
               </div>
-              <div class="output-actions">
-                <span id="fileCountText">-</span>
-                <button class="table-icon-button" id="multiSelectButton" type="button" title="选择文件" aria-label="选择文件">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                </button>
-                <button class="table-icon-button danger" id="deleteSelectedButton" type="button" title="删除选中" aria-label="删除选中" hidden>
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                </button>
+              <div class="output-table weekly-table" id="weeklyFileList"></div>
+            </section>
+
+            <section class="section-block output-card performance-output-card" id="performanceOutputBlock" aria-label="运营商业绩摘要" hidden>
+              <div class="output-toolbar">
+                <div class="output-heading">
+                  <strong>运营商业绩摘要</strong>
+                  <div class="output-tabs" aria-label="输出分类">
+                    <button class="output-tab" type="button" data-scroll-report="weekly">周报</button>
+                    <button class="output-tab is-active" type="button" data-scroll-report="performance">业绩摘要</button>
+                  </div>
+                </div>
+                <div class="output-actions">
+                  <span id="performanceFileCountText">-</span>
+                  <button class="table-icon-button multi-select-trigger" type="button" title="选择文件" aria-label="选择文件">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  </button>
+                  <button class="table-icon-button danger delete-selected-trigger" type="button" title="删除选中" aria-label="删除选中" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div class="output-table" id="fileList"></div>
+              <div class="output-table performance-table" id="performanceFileList"></div>
+            </section>
           </section>
         </section>
       </section>
@@ -127,7 +166,7 @@
               <button class="close-btn" id="closeLogButton" type="button" aria-label="关闭">&times;</button>
             </div>
           </header>
-          <pre id="logBox">等待操作。</pre>
+          <div id="logBox" class="log-box">等待操作。</div>
         </div>
       </section>
 
@@ -240,6 +279,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=57"></script>
+    <script src="/static/app.js?v=67"></script>
   </body>
 </html>
