@@ -1112,16 +1112,6 @@ def remove_paragraph(paragraph) -> None:
         parent.remove(paragraph._element)
 
 
-def make_toc_first_page(doc: Document, toc_paragraph) -> None:
-    paragraphs = doc.paragraphs
-    toc_index = next(
-        index for index, paragraph in enumerate(paragraphs) if paragraph._p is toc_paragraph._p
-    )
-    for paragraph in reversed(paragraphs[:toc_index]):
-        remove_paragraph(paragraph)
-    toc_paragraph.paragraph_format.page_break_before = False
-
-
 def render_into_source_template(model: dict) -> Document:
     if not SOURCE_WORD_TEMPLATE.exists():
         raise FileNotFoundError(f"Word template not found: {SOURCE_WORD_TEMPLATE}")
@@ -1184,7 +1174,6 @@ def render_into_source_template(model: dict) -> Document:
     # spacing and pagination properties and can create completely blank pages.
     for paragraph in list(body_slots):
         remove_paragraph(paragraph)
-    make_toc_first_page(doc, toc_paragraph)
     return doc
 
 
@@ -1209,14 +1198,14 @@ def main() -> None:
     AGENT_MD_ALIAS.write_text(markdown, encoding="utf-8")
     AGENT_HTML_ALIAS.write_text(html_text, encoding="utf-8")
     weekly_to_docx(model, WEEKLY_DOCX)
-    weekly_to_docx(build_template_model(), TEMPLATE_DOCX)
+    # SOURCE_WORD_TEMPLATE is an input asset. Never overwrite the repository
+    # fallback template while generating a report.
     
     print("\n[生成成功] 最终输出文件：")
     print(" ->", WEEKLY_MD)
     print(" ->", WEEKLY_HTML)
     print(" ->", WEEKLY_DOCX)
     print(" ->", TEMPLATE_MD)
-    print(" ->", TEMPLATE_DOCX)
     
     # Archiving logic
     import shutil
