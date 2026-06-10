@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import json
 from urllib.request import urlretrieve
 from pathlib import Path
 from urllib.parse import quote
@@ -25,6 +26,7 @@ SHERPA_MELO_INT8_URL = "https://huggingface.co/csukuangfj/vits-melo-tts-zh_en/re
 MOSS_TTS_REPO_ID = "OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX"
 MOSS_CODEC_REPO_ID = "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX"
 MOSS_VENDOR_DIR = ROOT / "vendor" / "moss_tts_nano"
+TTS_VENV_PYTHON = ROOT / ".venv_tts" / "bin" / "python"
 
 
 def safe_audio_stem(report_path: Path) -> str:
@@ -281,12 +283,45 @@ def _synthesize_with_moss(text: str, output_path: Path) -> str | None:
     try:
         from onnx_tts_runtime import OnnxTtsRuntime
     except Exception:
+        current_python = Path(sys.executable).absolute()
+        venv_python = TTS_VENV_PYTHON.absolute() if TTS_VENV_PYTHON.exists() else None
+        if (
+            os.environ.get("MOSS_TTS_DELEGATED") != "1"
+            and venv_python
+            and current_python != venv_python
+        ):
+            env = os.environ.copy()
+            env["MOSS_TTS_DELEGATED"] = "1"
+            code = (
+                "import json,sys;"
+                "from pathlib import Path;"
+                "from tts_service import _synthesize_with_moss;"
+                "used=_synthesize_with_moss(sys.argv[1],Path(sys.argv[2]));"
+                "print(json.dumps({'backend':used},ensure_ascii=False))"
+            )
+            proc = subprocess.run(
+                [str(venv_python), "-c", code, text, str(output_path)],
+                cwd=str(ROOT),
+                env=env,
+                text=True,
+                capture_output=True,
+                timeout=600,
+            )
+            if proc.returncode == 0 and output_path.exists():
+                try:
+                    payload = json.loads(proc.stdout.strip().splitlines()[-1])
+                    return str(payload.get("backend") or "moss-tts-nano")
+                except Exception:
+                    return "moss-tts-nano"
         return None
 
+    max_new_frames = int(os.environ.get("MOSS_TTS_MAX_NEW_FRAMES", "420"))
+    max_text_tokens = int(os.environ.get("MOSS_TTS_MAX_TEXT_TOKENS", "60"))
+    seed = int(os.environ.get("MOSS_TTS_SEED", "20260529"))
     runtime = OnnxTtsRuntime(
         model_dir=str(base),
         thread_count=int(os.environ.get("MOSS_TTS_THREADS", "4")),
-        max_new_frames=int(os.environ.get("MOSS_TTS_MAX_NEW_FRAMES", "260")),
+        max_new_frames=max_new_frames,
         do_sample=os.environ.get("MOSS_TTS_DO_SAMPLE", "1").strip().lower() not in {"0", "false", "no"},
         sample_mode=os.environ.get("MOSS_TTS_SAMPLE_MODE", "fixed"),
         execution_provider=os.environ.get("MOSS_TTS_EXECUTION_PROVIDER", "cpu"),
@@ -301,26 +336,40 @@ def _synthesize_with_moss(text: str, output_path: Path) -> str | None:
     generation_defaults["audio_repetition_penalty"] = float(os.environ.get("MOSS_TTS_AUDIO_REPETITION_PENALTY", "1.2"))
 
     voice = os.environ.get("MOSS_TTS_VOICE", "Junhao")
-    runtime.synthesize(
+    result = runtime.synthesize(
         text=text,
         voice=voice,
         prompt_audio_path=os.environ.get("MOSS_TTS_PROMPT_AUDIO_PATH") or None,
         output_audio_path=str(output_path),
         sample_mode=os.environ.get("MOSS_TTS_SAMPLE_MODE", "fixed"),
         do_sample=os.environ.get("MOSS_TTS_DO_SAMPLE", "1").strip().lower() not in {"0", "false", "no"},
-        streaming=os.environ.get("MOSS_TTS_STREAMING", "1").strip().lower() not in {"0", "false", "no"},
-        max_new_frames=int(os.environ.get("MOSS_TTS_MAX_NEW_FRAMES", "260")),
-        voice_clone_max_text_tokens=int(os.environ.get("MOSS_TTS_MAX_TEXT_TOKENS", "75")),
+        streaming=os.environ.get("MOSS_TTS_STREAMING", "0").strip().lower() not in {"0", "false", "no"},
+        max_new_frames=max_new_frames,
+        voice_clone_max_text_tokens=max_text_tokens,
         enable_wetext=False,
         enable_normalize_tts_text=True,
-        seed=int(os.environ["MOSS_TTS_SEED"]) if os.environ.get("MOSS_TTS_SEED") else None,
+        seed=seed,
     )
-    return f"moss-tts-nano:{voice}"
+    chunk_results = result.get("chunk_results") or []
+    frame_counts = [len(chunk.get("generated_frames") or []) for chunk in chunk_results]
+    if not frame_counts:
+        raise RuntimeError("MOSS-TTS 未生成任何有效音频分段")
+    truncated = [
+        index + 1
+        for index, frame_count in enumerate(frame_counts)
+        if frame_count >= max_new_frames - 1
+    ]
+    if truncated:
+        output_path.unlink(missing_ok=True)
+        raise RuntimeError(f"MOSS-TTS 分段疑似被截断：{truncated}")
+    return f"moss-tts-nano:{voice}:seed-{seed}:chunks-{len(frame_counts)}"
 
 
 def prepare_tts_text(value: str) -> str:
     text = value.replace("：", "，").replace("；", "。")
     text = text.replace("、", "，")
+    text = re.sub(r"(?<=\d)\.(?=\d)", "点", text)
+    text = re.sub(r"(?<=\d),(?=\d{3}(?:\D|$))", "", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 

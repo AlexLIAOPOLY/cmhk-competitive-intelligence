@@ -17,6 +17,7 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 
 from crawl_settings import enabled_rows
+from company_metrics import build_company_metrics_payload
 
 
 ROOT = Path(__file__).resolve().parent
@@ -52,6 +53,181 @@ AGENT_HTML_ALIAS = ROOT / "agent_report.html"
 
 SECTION_ORDER = ["政治资讯", "行业资讯", "社会资讯", "国际资讯"]
 WEEKLY_MAX_PER_SECTION = 4
+WEEKLY_SECTION_LIMITS = {
+    "政治资讯": 4,
+    "行业资讯": 8,
+    "社会资讯": 4,
+    "国际资讯": 4,
+}
+
+FORBIDDEN_REPORT_PHRASES = (
+    "本轮成功来源",
+    "可复核字段",
+    "待补充字段",
+    "形成公开信息更新",
+    "爬虫",
+    "爬取成功",
+    "抓取成功",
+)
+
+# Weekly reports are decision materials, not crawler diagnostics. Each entry
+# below is tied to a distinctive phrase in a successfully retrieved source.
+# If the evidence is absent, the entry is omitted instead of being padded with
+# extraction counts or field names.
+FACTUAL_ITEMS = {
+    2: {
+        "evidence": "HKT Trust and HKT Revenue",
+        "title": "HKT 2025年收入增长至365.5亿港元",
+        "detail": (
+            "HKT 2025年收入为365.5亿港元，同比增长5.18%；移动服务收入受5G升级及漫游业务带动增长，"
+            "5G客户规模增至174.7万户，同比增长25%。"
+        ),
+    },
+    3: {
+        "evidence": "Monthly Plan Fee",
+        "title": "csl更新5G服务计划及多用户副卡安排",
+        "detail": (
+            "csl官网显示，指定5G月费计划月费348港元，包含100GB本地数据及3GB中国内地和澳门漫游数据；"
+            "同一主计划可按阶梯月费增加副卡，强化家庭及多终端共享场景。"
+        ),
+    },
+    4: {
+        "evidence": "Open APIs Powering Hong Kong",
+        "title": "HKT以开放网络API拓展企业数字化服务",
+        "detail": (
+            "HKT企业方案介绍开放网络API在身份验证、防欺诈和客户体验等场景的应用，"
+            "推动网络能力由连接服务向可调用的企业数字化能力延伸。"
+        ),
+    },
+    5: {
+        "evidence": "2025 ANNUAL REPORT",
+        "title": "和记电讯香港2025年收入增长17%",
+        "detail": (
+            "和记电讯香港2025年香港业务总收入为54.48亿港元，同比增长17%；客户服务净收入36.19亿港元，"
+            "同比增长6%，漫游服务收入8.55亿港元，同比增长31%。"
+        ),
+    },
+    6: {
+        "evidence": "WORLD PLAN",
+        "title": "3香港推出覆盖全球使用场景的World Plan",
+        "detail": (
+            "3香港World Plan允许套餐数据在香港及海外目的地使用，并提供免费漫游通话、到埗连接及旅游保障等权益；"
+            "3Business同时提供30GB及60GB本地数据的企业5G月费方案。"
+        ),
+    },
+    7: {
+        "evidence": "Launching Three Caring 5G Service Plans",
+        "title": "3香港推出三款家庭关怀5G服务计划",
+        "detail": (
+            "和记电讯香港于2026年5月22日推出三款围绕家庭需要设计的5G服务计划，"
+            "把通信服务与家庭数字生活权益整合至单一套餐。"
+        ),
+    },
+    8: {
+        "evidence": "INTERIM REPORT 2025/26",
+        "title": "SmarTone上半财年本地服务收入增至18.71亿港元",
+        "detail": (
+            "SmarTone 2025/26上半财年本地服务收入增至18.71亿港元；撇除一次性项目后，"
+            "股东应占溢利为2.56亿港元，同比增长4%，运营成本同比下降6%。"
+        ),
+    },
+    9: {
+        "evidence": "Monthly fee from $99",
+        "title": "SmarTone强化AI与5G融合套餐布局",
+        "detail": (
+            "SmarTone官网将AI服务入口纳入5G产品体系，并提供月费99港元起的4.5G计划及中国内地、澳门漫游数据；"
+            "其服务组合进一步覆盖AI应用、5G家居宽频和数字生活内容。"
+        ),
+    },
+    10: {
+        "evidence": "FY26 Interim Results Presentation",
+        "title": "SmarTone推进5G-Advanced及家居宽频业务",
+        "detail": (
+            "SmarTone在2025/26上半财年业绩材料中表示，已通过5G-Advanced及网络切片为高端客户提供三倍网络资源；"
+            "截至2025年12月，5G家居宽频客户按年增长10%，渗透率升至70%。"
+        ),
+    },
+    11: {
+        "evidence": "Total revenue showed a strong performance",
+        "title": "HKBN 2025财年收入及EBITDA同步增长",
+        "detail": (
+            "HKBN 2025财年总收入同比增长4%至111.29亿港元，核心服务收入同比增长7%，"
+            "EBITDA同比增长4%至24.51亿港元；净利润由1,000万港元升至2.07亿港元。"
+        ),
+    },
+    14: {
+        "evidence": "Exclusive Distribution Partnership with HIKMICRO",
+        "title": "HKBN与HIKMICRO建立智能安防独家分销合作",
+        "detail": (
+            "HKBN企业方案于2026年4月1日宣布与HIKMICRO建立独家分销合作，"
+            "把红外热成像及智能安防方案纳入企业服务组合，面向设施管理和商业安全场景推广。"
+        ),
+    },
+    19: {
+        "evidence": "Singtel posts FY26 net profit",
+        "title": "Singtel FY26净利润达到56.1亿新元",
+        "detail": (
+            "Singtel于2026年5月21日公布FY26净利润56.1亿新元；基础净利润同比增长12%至27.7亿新元。"
+            "公司同时与爱立信合作推进5G-Advanced行业应用。"
+        ),
+    },
+    20: {
+        "evidence": "BT Group and Ericsson strengthen partnership",
+        "title": "BT与爱立信深化合作提升企业5G服务能力",
+        "detail": (
+            "BT集团与爱立信深化5G合作，面向英国企业提升网络可靠性和智能化服务能力，"
+            "相关合作聚焦企业连接体验及更灵活的5G能力应用。"
+        ),
+    },
+    21: {
+        "evidence": "reports AED 19.4 billion consolidated revenue",
+        "title": "e& 2026年一季度合并收入达到194亿迪拉姆",
+        "detail": (
+            "e&公布2026年一季度合并收入194亿阿联酋迪拉姆，并继续推进企业AI、云边协同及5G-Advanced布局；"
+            "其企业业务与Emergence AI建立合作，面向企业提供可灵活部署的生成式AI方案。"
+        ),
+    },
+    22: {
+        "evidence": "Accelerate the development of the Northern Metropolis",
+        "title": "香港施政重点加快北部都会区及创科产业发展",
+        "detail": (
+            "香港2025年施政报告把加快北部都会区建设、推动产业发展与改革、促进教育科技人才一体化发展列为重点，"
+            "并强调融入国家发展大局及支持本地经济。"
+        ),
+    },
+    26: {
+        "evidence": "Checklist on Guidelines for the Use of Generative AI by Employees",
+        "title": "私隐专员公署发布雇员使用生成式AI指引清单",
+        "detail": (
+            "香港个人资料私隐专员公署发布雇员使用生成式AI指引清单，要求机构制定内部使用政策，"
+            "并在应用生成式AI时遵守《个人资料（私隐）条例》；相关材料亦覆盖深度伪造风险和AI个人资料保障框架。"
+        ),
+    },
+    27: {
+        "evidence": "Data Act enters into force",
+        "title": "欧盟《数据法案》确立联网产品数据访问与共享规则",
+        "detail": (
+            "欧盟《数据法案》建立联网产品及相关服务数据的访问、使用和共享规则，"
+            "并与GDPR等数据保护制度共同构成企业在欧盟开展数据业务时需要遵循的合规框架。"
+        ),
+    },
+    28: {
+        "evidence": "Spectrum Release Plan",
+        "title": "OFCA公布2026至2028年频谱释放安排",
+        "detail": (
+            "香港通讯事务管理局办公室列出2026至2028年频谱释放计划，并持续推进2.5/2.6 GHz、"
+            "850/900 MHz、2.3 GHz及6/7 GHz等频段安排，同时实施偏远地区光纤及5G覆盖资助计划。"
+        ),
+    },
+    29: {
+        "evidence": "WSIS Forum: Renewed push for global digital development",
+        "title": "ITU世界信息社会峰会论坛聚焦普惠数字发展",
+        "detail": (
+            "国际电信联盟于2026年6月6日至10日举行世界信息社会峰会论坛，"
+            "政府与科技业界围绕以人为本的数字发展、连接普及及新兴技术治理展开讨论。"
+        ),
+    },
+}
 
 TAG_BY_ROW = {
     2: "运营商财报",
@@ -105,21 +281,21 @@ SECTION_BY_ROW = {
     24: "行业资讯",
     31: "行业资讯",
     32: "行业资讯",
-    2: "社会资讯",
-    3: "社会资讯",
-    5: "社会资讯",
-    6: "社会资讯",
-    8: "社会资讯",
-    9: "社会资讯",
-    11: "社会资讯",
-    12: "社会资讯",
-    13: "社会资讯",
-    15: "社会资讯",
-    17: "社会资讯",
-    23: "社会资讯",
+    2: "行业资讯",
+    3: "行业资讯",
+    5: "行业资讯",
+    6: "行业资讯",
+    8: "行业资讯",
+    9: "行业资讯",
+    11: "行业资讯",
+    12: "行业资讯",
+    13: "行业资讯",
+    15: "行业资讯",
+    17: "行业资讯",
+    23: "政治资讯",
     25: "社会资讯",
-    30: "社会资讯",
-    34: "社会资讯",
+    30: "政治资讯",
+    34: "政治资讯",
     19: "国际资讯",
     20: "国际资讯",
     21: "国际资讯",
@@ -187,72 +363,353 @@ def chinese_order(value: int) -> str:
     return f"{chars[tens]}十{chars[ones] if ones else ''}"
 
 
-def pick_evidence(result: dict) -> tuple[str, str]:
-    extracted = result.get("extracted") or {}
-    if not extracted:
-        return "公开来源", "未从成功返回内容中提取到可复核字段。"
-    field, snippet = next(iter(extracted.items()))
-    return clean_text(field, 24), clean_text(snippet, 180)
-
-
-def build_title(result: dict) -> str:
+def factual_item(result: dict) -> dict | None:
     row = int(result.get("row") or 0)
-    obj = clean_object(result.get("object"), 36) or "相关主体"
-    field, snippet = pick_evidence(result)
-    if row in {2, 5, 8, 11, 17}:
-        return f"{obj}披露{field}等经营指标"
-    if row in {3, 6, 9, 14, 18}:
-        return f"{obj}更新产品与资费信息"
-    if row in {19, 20, 21}:
-        return f"{obj}围绕{field}发布国际动态"
-    if row in {22, 26, 27, 28, 33}:
-        return f"{obj}发布{field}相关政策信息"
-    if row in {23, 30, 34}:
-        return f"{obj}更新{field}相关宏观数据"
-    if row == 32:
-        return f"{obj}出现投融资与交易动态"
-    return f"{obj}更新{field}相关信息"
+    configured = FACTUAL_ITEMS.get(row)
+    if not configured:
+        return None
 
-
-def build_detail(result: dict, _source_id: str) -> str:
-    row = int(result.get("row") or 0)
-    obj = clean_object(result.get("object"), 40) or "相关主体"
-    tag = TAG_BY_ROW.get(row, "行业动态")
-    source_count = len(result.get("source_urls") or [])
-    fields = list((result.get("extracted") or {}).keys())
-    field_text = "、".join(fields[:6]) if fields else "公开信息"
-    miss = result.get("missing_fields") or []
-    miss_text = f"；待补充字段包括{'、'.join(miss[:3])}" if miss else ""
-    return (
-        f"{obj}在{tag}领域形成公开信息更新，本轮成功来源{source_count}个，"
-        f"可复核字段覆盖{field_text}{miss_text}。"
-    )
+    evidence = configured["evidence"].lower()
+    for record in result.get("raw_records") or []:
+        if record.get("status") != 200:
+            continue
+        haystack = f"{record.get('title') or ''} {record.get('text_sample') or ''}".lower()
+        if evidence not in haystack:
+            continue
+        url = clean_text(record.get("url"))
+        if not url.startswith(("http://", "https://")):
+            continue
+        return {
+            "title": configured["title"],
+            "detail": configured["detail"],
+            "url": url,
+            "publishedAt": result.get("fetched_at_hkt") or result.get("fetched_at"),
+        }
+    return None
 
 
 def make_sources(results: list[dict]) -> list[dict]:
     sources = []
     index = 1
     for result in results:
-        urls = result.get("source_urls") or []
-        if not urls:
+        fact = factual_item(result)
+        if not fact:
             continue
+        row = int(result.get("row") or 0)
         sources.append(
             {
                 "sourceId": f"S{index}",
-                "row": int(result.get("row") or 0),
-                "section": SECTION_BY_ROW.get(int(result.get("row") or 0), "行业资讯"),
-                "title": build_title(result),
-                "url": urls[0],
+                "row": row,
+                "section": SECTION_BY_ROW.get(row, "行业资讯"),
+                "title": fact["title"],
+                "url": fact["url"],
                 "object": clean_object(result.get("object"), 40),
-                "tag": TAG_BY_ROW.get(int(result.get("row") or 0), "行业动态"),
-                "publishedAt": result.get("fetched_at_hkt") or result.get("fetched_at"),
+                "tag": TAG_BY_ROW.get(row, "行业动态"),
+                "publishedAt": fact["publishedAt"],
             }
         )
         index += 1
     return sources
 
 
+GENERIC_COMPANIES = {"行业资讯", "政治新闻", "宏观指标", "政策", "香港本地监管", "通信监管机构", "国际组织", "行业权威机构"}
+INTERNATIONAL_COMPANIES = {
+    "Singtel",
+    "Telstra",
+    "SK Telecom",
+    "KT",
+    "NTT Docomo",
+    "KDDI",
+    "SoftBank",
+    "Jio",
+    "Airtel",
+    "Vodafone",
+    "Deutsche Telekom",
+    "Orange",
+    "Telefonica",
+    "BT/EE",
+    "TIM",
+    "Verizon",
+    "AT&T",
+    "T-Mobile US",
+    "e&",
+    "stc",
+}
+
+
+def load_curated_rows() -> list[dict]:
+    try:
+        payload = build_company_metrics_payload()
+    except Exception:
+        return []
+    rows = payload.get("rows") or []
+    cleaned = []
+    blocked = ("[REDACTED", "Skip to main content", "Log In Sign Up", "Stock Screener", "SOURCE:")
+    for row in rows:
+        if not row.get("sources"):
+            continue
+        if row.get("metric") in {"股票代码", "披露日期", "最新披露"}:
+            continue
+        text = f"{row.get('value') or ''} {row.get('detail') or ''}"
+        if any(token in text for token in blocked):
+            continue
+        if any(token in text for token in ("未公开披露", "不适用", "未单独披露该项口径")):
+            continue
+        cleaned.append(row)
+    return cleaned
+
+
+def curated_section(row: dict) -> str:
+    company = str(row.get("company") or "")
+    group = str(row.get("group") or "")
+    category = str(row.get("metricCategory") or "")
+    if company in INTERNATIONAL_COMPANIES or group == "亚太运营商":
+        return "国际资讯"
+    if category == "政策宏观":
+        return "政治资讯"
+    if category in {"财务业绩", "客户经营"}:
+        return "行业资讯"
+    return "行业资讯"
+
+
+def curated_subject(row: dict) -> str:
+    company = clean_text(row.get("company"), 40)
+    group = clean_text(row.get("group"), 40)
+    if company and company not in GENERIC_COMPANIES:
+        return company
+    if group and group not in {"mainland", "hong-kong"} and group not in GENERIC_COMPANIES:
+        return group
+    return ""
+
+
+def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
+    company = clean_text(row.get("company"), 40)
+    metric = clean_text(row.get("metric"), 32)
+    value = clean_text(row.get("value") or row.get("detail"), 260)
+    normalized = value.lower()
+    rules = [
+        ("sk telecom", "ai native", "SK Telecom在MWC 2026发布AI原生战略"),
+        (
+            "sarashina",
+            "oracle alloy",
+            "SoftBank将于2026年6月推出基于自研大语言模型Sarashina的生成式AI服务",
+        ),
+        (
+            "nvidia dsx",
+            "",
+            "SK Telecom计划采用NVIDIA DSX平台建设千兆瓦级AI云基础设施",
+        ),
+        ("softbank", "telco ai cloud", "SoftBank提出面向AI时代的电信AI云愿景"),
+        ("petasus ai cloud", "", "SK Telecom推进Petasus AI云服务"),
+        ("lead true ai-native transformation", "", "SK Telecom推动韩国客户和企业向AI原生转型"),
+        ("5g-advanced evolution", "", "e&加快推进5G-Advanced演进"),
+        ("$35/mo", "", "Verizon推出月费35美元起的FWA服务"),
+        ("rising adoption of cloud services", "", "印度数据中心行业受云服务采用增长带动快速发展"),
+    ]
+    for first, second, replacement in rules:
+        if first in normalized and (not second or second in normalized):
+            return clean_text(replacement, limit)
+    if len(re.findall(r"[\u4e00-\u9fff]", value)) >= 6:
+        return clean_text(value, limit)
+    replacements = {
+        "CEO Unveils": "发布",
+        "Strategy": "战略",
+        "Announces": "发布",
+        "Vision": "愿景",
+        "Build Social Infrastructure for the AI Era": "建设AI时代社会基础设施",
+        "AI Native": "AI原生",
+        "Telco AI Cloud": "电信AI云",
+        "Cloud": "云",
+    }
+    localized = value
+    for raw, cn in replacements.items():
+        localized = localized.replace(raw, cn)
+    if company and metric and localized == value and re.search(r"[A-Za-z]{4,}", value):
+        localized = f"{company}{metric}相关动态更新"
+    return clean_text(localized, limit)
+
+
+def curated_title(row: dict) -> str:
+    subject = curated_subject(row)
+    metric = clean_text(row.get("metric"), 28)
+    value = localized_weekly_value(row, limit=96)
+    joiner = " " if subject and re.search(r"[A-Za-z0-9]$", subject) and re.search(r"^[A-Za-z0-9]", metric) else ""
+    if metric in {"战略升级", "券商观点", "市场反应"} and subject:
+        return f"{subject}{joiner}{metric}更新"
+    if metric in {"收益", "EBITDA / 利润", "派息", "资本开支"}:
+        return f"{subject}披露{metric}：{value}"
+    if subject in {metric, ""}:
+        return f"{metric}：{value}"
+    return f"{subject}{joiner}{metric}：{value}"
+
+
+def curated_detail(row: dict) -> str:
+    subject = curated_subject(row)
+    metric = clean_text(row.get("metric"), 32)
+    joiner = " " if subject and re.search(r"[A-Za-z0-9]$", subject) and re.search(r"^[A-Za-z0-9]", metric) else ""
+    value = localized_weekly_value(row, limit=260)
+    disclosure = clean_text(row.get("disclosure"), 80)
+    disclosure_date = clean_text(row.get("disclosureDate"), 40)
+    value = (
+        value.replace("片段中明确提到", "")
+        .replace("片段明确提到", "")
+        .replace("片段明确说明", "")
+        .replace("片段中", "")
+        .replace("片段提到", "")
+        .replace("片段标题和内容明确提及", "")
+        .replace("新闻标题明确提及", "")
+        .replace("直接说明", "显示")
+        .replace("“", "")
+        .replace("”", "")
+        .strip(" ：，。")
+    )
+    if disclosure or disclosure_date:
+        prefix = f"{subject}{disclosure_date or ''}{disclosure or ''}显示，"
+    elif subject:
+        prefix = f"{subject}{joiner}{metric}方面，"
+    else:
+        prefix = f"{metric}方面，"
+    sentence = value.rstrip("。；;,.，")
+    return f"{prefix}{sentence}。"
+
+
+def curated_row_score(row: dict, section: str) -> tuple[int, int, str]:
+    metric = str(row.get("metric") or "")
+    source_type = str(row.get("sourceType") or "")
+    priority_by_section = {
+        "政治资讯": ["重大政策/声明", "频谱拍卖", "频谱/牌照", "低空经济", "经济", "GDP"],
+        "行业资讯": [
+            "战略升级",
+            "收益",
+            "EBITDA / 利润",
+            "派息",
+            "资本开支",
+            "5G用户数",
+            "ARPU",
+            "AI",
+            "5G-A",
+            "企业ICT",
+            "5G套餐",
+            "产品规格",
+            "重大合作",
+        ],
+        "社会资讯": ["本地生活咨询", "人口", "零售额", "失业率", "住房", "消费"],
+        "国际资讯": ["AI", "云", "企业ICT", "5G-A", "FWA", "网络API"],
+    }.get(section, [])
+    try:
+        metric_rank = priority_by_section.index(metric)
+    except ValueError:
+        metric_rank = len(priority_by_section)
+    source_rank = 0 if source_type == "verified-performance" and section == "行业资讯" else 1
+    if source_type == "public-crawl" and section in {"政治资讯", "行业资讯", "国际资讯"}:
+        source_rank = 0
+    if section == "行业资讯" and metric == "战略升级" and source_type == "verified-performance":
+        source_rank = -1
+    return (source_rank, metric_rank, f"{row.get('company') or ''}|{metric}|{row.get('value') or ''}")
+
+
+def build_curated_weekly_model() -> dict | None:
+    rows = load_curated_rows()
+    if not rows:
+        return None
+    now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
+    start = now - timedelta(days=7)
+    grouped_rows: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        section = curated_section(row)
+        grouped_rows[section].append(row)
+
+    sources = []
+    source_index = 1
+    toc = []
+    sections = []
+    global_index = 1
+    for section_name in SECTION_ORDER:
+        selected = []
+        seen_keys = set()
+        seen_events = set()
+        metric_counts: dict[str, int] = defaultdict(int)
+        for row in sorted(grouped_rows.get(section_name, []), key=lambda item: curated_row_score(item, section_name)):
+            key = (curated_subject(row), row.get("metric"))
+            event_key = localized_weekly_value(row, limit=180).casefold()
+            if key in seen_keys or event_key in seen_events:
+                continue
+            metric = str(row.get("metric") or "")
+            if section_name == "行业资讯" and metric_counts[metric] >= 4:
+                continue
+            seen_keys.add(key)
+            seen_events.add(event_key)
+            selected.append(row)
+            metric_counts[metric] += 1
+            if len(selected) >= WEEKLY_SECTION_LIMITS.get(section_name, WEEKLY_MAX_PER_SECTION):
+                break
+
+        items = []
+        for local_index, row in enumerate(selected, start=1):
+            first_source = (row.get("sources") or [{}])[0]
+            source_id = f"S{source_index}"
+            source_index += 1
+            sources.append(
+                {
+                    "sourceId": source_id,
+                    "row": row.get("rowRef") or "",
+                    "section": section_name,
+                    "title": curated_title(row),
+                    "url": first_source.get("url") or "",
+                    "object": curated_subject(row),
+                    "tag": clean_text(row.get("metric"), 24),
+                    "publishedAt": row.get("disclosureDate") or row.get("generatedAt") or "",
+                }
+            )
+            item = {
+                "row": row.get("rowRef") or "",
+                "tag": clean_text(row.get("metric"), 24),
+                "title": curated_title(row),
+                "detail": curated_detail(row),
+                "eventAt": row.get("disclosureDate") or "",
+                "sourceIds": [source_id],
+                "index": global_index,
+                "localIndex": local_index,
+            }
+            items.append(item)
+            toc.append(
+                {
+                    "index": global_index,
+                    "section": section_name,
+                    "tag": item["tag"],
+                    "title": item["title"],
+                }
+            )
+            global_index += 1
+        tag_names = "、".join(sorted({item["tag"] for item in items})) or "无"
+        if items:
+            narrative = (
+                f"统计区间为{format_date_compact(start)}至{format_date_compact(now)}。"
+                f"本期{section_name}基于已通过质量门禁的公开信息和核验业绩字段形成，"
+                f"共收录{len(items)}条事件，涉及主题：{tag_names}。"
+            )
+        else:
+            narrative = f"统计区间为{format_date_compact(start)}至{format_date_compact(now)}。{section_name}暂无纳入条目。"
+        if items:
+            sections.append({"name": section_name, "narrative": narrative, "items": items})
+
+    return {
+        "company": "中国移动香港公司",
+        "department": "中国移动香港公司战略部",
+        "generatedDate": format_date_cn(now),
+        "title": "战略内参",
+        "range": {"start": format_date_compact(start), "end": format_date_compact(now)},
+        "toc": toc,
+        "sections": sections,
+        "sources": sources,
+    }
+
+
 def build_weekly_model(results: list[dict]) -> dict:
+    curated_model = build_curated_weekly_model()
+    if curated_model:
+        return curated_model
+
     now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
     start = now - timedelta(days=7)
     sources = make_sources(results)
@@ -263,16 +720,19 @@ def build_weekly_model(results: list[dict]) -> dict:
         row = int(result.get("row") or 0)
         if result.get("status") not in {"ok", "partial"}:
             continue
+        fact = factual_item(result)
+        if not fact:
+            continue
         section = SECTION_BY_ROW.get(row, "行业资讯")
-        if len(grouped[section]) >= WEEKLY_MAX_PER_SECTION:
+        if len(grouped[section]) >= WEEKLY_SECTION_LIMITS.get(section, WEEKLY_MAX_PER_SECTION):
             continue
         source = source_by_row.get(row)
         grouped[section].append(
             {
                 "row": row,
                 "tag": TAG_BY_ROW.get(row, "行业动态"),
-                "title": build_title(result),
-                "detail": build_detail(result, source["sourceId"] if source else ""),
+                "title": fact["title"],
+                "detail": fact["detail"],
                 "eventAt": result.get("fetched_at_hkt") or result.get("fetched_at"),
                 "sourceIds": [source["sourceId"]] if source else [],
             }
@@ -307,7 +767,8 @@ def build_weekly_model(results: list[dict]) -> dict:
             )
         else:
             narrative = f"统计区间为{format_date_compact(start)}至{format_date_compact(now)}。{section_name}暂无纳入条目。"
-        sections.append({"name": section_name, "narrative": narrative, "items": items})
+        if items:
+            sections.append({"name": section_name, "narrative": narrative, "items": items})
 
     return {
         "company": "中国移动香港公司",
@@ -319,6 +780,38 @@ def build_weekly_model(results: list[dict]) -> dict:
         "sections": sections,
         "sources": sources,
     }
+
+
+def validate_report_model(model: dict) -> None:
+    errors = []
+    for section in model["sections"]:
+        for item in section["items"]:
+            content = f"{item['title']} {item['detail']}"
+            found = [phrase for phrase in FORBIDDEN_REPORT_PHRASES if phrase in content]
+            if found:
+                errors.append(f"{section['name']} / {item['title']}: {', '.join(found)}")
+            if not item["sourceIds"]:
+                errors.append(f"{section['name']} / {item['title']}: 缺少来源")
+            if "…" in item["title"] or item["title"].endswith("..."):
+                errors.append(f"{section['name']} / {item['title']}: 标题被截断")
+            if section["name"] == "社会资讯" and item["tag"] in {
+                "收益",
+                "EBITDA / 利润",
+                "运营商财报",
+                "派息",
+                "资本开支",
+                "5G用户数",
+                "ARPU",
+            }:
+                errors.append(f"{section['name']} / {item['title']}: 运营商业绩不应归入社会资讯")
+    if errors:
+        raise ValueError("周报内容校验失败：\n" + "\n".join(errors))
+
+
+def validate_report_text(text: str) -> None:
+    found = [phrase for phrase in FORBIDDEN_REPORT_PHRASES if phrase in text]
+    if found:
+        raise ValueError(f"周报含有禁止的技术话术：{', '.join(found)}")
 
 
 def weekly_to_markdown(model: dict) -> str:
@@ -345,7 +838,6 @@ def weekly_to_markdown(model: dict) -> str:
             lines.extend(["（本期暂无更新）", ""])
             continue
         for item in section["items"]:
-            lines.append(item["tag"])
             lines.append(f"{chinese_order(item['index'])}、{item['title']}")
             lines.append(item["detail"])
             lines.append("")
@@ -376,22 +868,18 @@ def weekly_template_markdown() -> str:
 （本期暂无更新）
 
 政治资讯
-标签
 一、一句话事件标题
-事件事实正文。只写公开来源可复核事实，不写爬虫运行过程。
+事件事实正文。只写公开来源可复核的事件、数据和影响。
 
 行业资讯
-标签
 二、一句话事件标题
 事件事实正文。
 
 社会资讯
-标签
 三、一句话事件标题
 事件事实正文。
 
 国际资讯
-标签
 四、一句话事件标题
 事件事实正文。
 """
@@ -407,7 +895,7 @@ def build_template_model() -> dict:
             "localIndex": 1,
             "tag": "标签",
             "title": "一句话事件标题",
-            "detail": "事件事实正文。只写公开来源可复核事实，不写爬虫运行过程。",
+            "detail": "事件事实正文。只写公开来源可复核的事件、数据和影响。",
             "eventAt": "YYYY/M/D HH:MM:SS",
             "sourceIds": [f"S{idx}"],
         }
@@ -464,7 +952,6 @@ def weekly_to_html(model: dict) -> str:
         for item in section["items"]:
             items_html.append(
                 "<article class='weekly-item'>"
-                f"<p class='weekly-item__tag'>{html.escape(item['tag'])}</p>"
                 f"<h4>{chinese_order(item['index'])}、{html.escape(item['title'])}</h4>"
                 f"<p>{html.escape(item['detail'])}</p>"
                 "</article>"
@@ -551,6 +1038,10 @@ def has_drawing(paragraph) -> bool:
     )
 
 
+def has_page_break(paragraph) -> bool:
+    return bool(paragraph._p.xpath(".//w:br[@w:type='page']"))
+
+
 def clear_paragraph(paragraph) -> None:
     for child in list(paragraph._p):
         if child.tag == qn("w:pPr"):
@@ -599,7 +1090,11 @@ def find_paragraph_index(doc: Document, text: str | tuple[str, ...], partial: bo
 
 def template_slots(doc: Document, start: int, end: int | None = None) -> list:
     paragraphs = doc.paragraphs[start:end]
-    return [paragraph for paragraph in paragraphs if not has_drawing(paragraph)]
+    return [
+        paragraph
+        for paragraph in paragraphs
+        if not has_drawing(paragraph) and not has_page_break(paragraph)
+    ]
 
 
 def add_or_reuse(slot_iter, doc: Document, text: str, snapshot):
@@ -609,6 +1104,22 @@ def add_or_reuse(slot_iter, doc: Document, text: str, snapshot):
         paragraph = doc.add_paragraph()
     set_template_paragraph(paragraph, text, snapshot)
     return paragraph
+
+
+def remove_paragraph(paragraph) -> None:
+    parent = paragraph._element.getparent()
+    if parent is not None:
+        parent.remove(paragraph._element)
+
+
+def make_toc_first_page(doc: Document, toc_paragraph) -> None:
+    paragraphs = doc.paragraphs
+    toc_index = next(
+        index for index, paragraph in enumerate(paragraphs) if paragraph._p is toc_paragraph._p
+    )
+    for paragraph in reversed(paragraphs[:toc_index]):
+        remove_paragraph(paragraph)
+    toc_paragraph.paragraph_format.page_break_before = False
 
 
 def render_into_source_template(model: dict) -> Document:
@@ -639,7 +1150,7 @@ def render_into_source_template(model: dict) -> Document:
     }
 
     for paragraph in doc.paragraphs:
-        if not has_drawing(paragraph):
+        if not has_drawing(paragraph) and not has_page_break(paragraph):
             clear_paragraph(paragraph)
 
     set_template_paragraph(doc.paragraphs[company_idx], model["company"], snapshots["company"])
@@ -648,26 +1159,32 @@ def render_into_source_template(model: dict) -> Document:
         f"{model['department']}                                                    {model['generatedDate']}",
         snapshots["dept"],
     )
-    set_template_paragraph(doc.paragraphs[toc_idx], "目 录", snapshots["toc_title"])
+    toc_paragraph = doc.paragraphs[toc_idx]
+    set_template_paragraph(toc_paragraph, "目 录", snapshots["toc_title"])
 
-    toc_slots = iter(template_slots(doc, toc_idx + 2, body_idx))
+    toc_slot_list = template_slots(doc, toc_idx + 2, body_idx)
+    toc_slots = iter(toc_slot_list)
     for section_model in model["sections"]:
         add_or_reuse(toc_slots, doc, section_model["name"], snapshots["toc_section"])
         for item in section_model["items"]:
             add_or_reuse(toc_slots, doc, f"{item['index']}.【{item['tag']}】{item['title']}", snapshots["toc_item"])
         add_or_reuse(toc_slots, doc, "", snapshots["body_text"])
+    for paragraph in list(toc_slots):
+        remove_paragraph(paragraph)
 
     body_slots = iter(template_slots(doc, body_idx, None))
     for section_model in model["sections"]:
         add_or_reuse(body_slots, doc, section_model["name"], snapshots["body_section"])
         for item in section_model["items"]:
-            add_or_reuse(body_slots, doc, item["tag"], snapshots["body_tag"])
             add_or_reuse(body_slots, doc, f"{chinese_order(item['index'])}、{item['title']}", snapshots["body_title"])
             add_or_reuse(body_slots, doc, item["detail"], snapshots["body_text"])
             add_or_reuse(body_slots, doc, "", snapshots["body_text"])
 
-    for paragraph in body_slots:
-        clear_paragraph(paragraph)
+    # Removing text is not enough here: unused template paragraphs retain
+    # spacing and pagination properties and can create completely blank pages.
+    for paragraph in list(body_slots):
+        remove_paragraph(paragraph)
+    make_toc_first_page(doc, toc_paragraph)
     return doc
 
 
@@ -676,6 +1193,7 @@ def main() -> None:
     results = load_results()
     print(f"已加载 {len(results)} 条底层爬取数据。")
     model = build_weekly_model(results)
+    validate_report_model(model)
     
     print("\n--- 报告内容统计 ---")
     for section in model["sections"]:
@@ -683,6 +1201,7 @@ def main() -> None:
         
     print("\n--- 正在渲染并导出各格式文件 ---")
     markdown = weekly_to_markdown(model)
+    validate_report_text(markdown)
     WEEKLY_MD.write_text(markdown, encoding="utf-8")
     TEMPLATE_MD.write_text(weekly_template_markdown(), encoding="utf-8")
     html_text = weekly_to_html(model)

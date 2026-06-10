@@ -631,6 +631,10 @@ class OnnxTtsRuntime(OrtCpuRuntime):
         channels = int(self.codec_meta["codec_config"]["channels"])
         chunk_results: list[dict[str, Any]] = []
         for chunk_index, chunk_text in enumerate(text_chunks):
+            if seed is not None:
+                # Reusing the same built-in voice prompt and RNG seed for each
+                # chunk keeps timbre stable across a multi-chunk narration.
+                self.rng = np.random.default_rng(int(seed))
             chunk_result = self.synthesize_single_chunk(
                 text=chunk_text,
                 prompt_audio_codes=prompt_audio_codes,
