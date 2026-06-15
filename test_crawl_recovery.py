@@ -16,6 +16,58 @@ class CrawlRecoveryTests(unittest.TestCase):
         ]
         self.assertFalse(blocked.intersection(candidates))
 
+    def test_global_operator_sources_are_isolated_by_entity(self):
+        targets = crawl.candidate_targets(
+            21,
+            "【中国移动】\n- https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+            crawl.ROW_ENTITY_OVERRIDES[21],
+        )
+        owners_by_url = {url: owners for url, owners in targets}
+        mobile_report = (
+            "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+        )
+        self.assertEqual(owners_by_url[mobile_report], ["中国移动"])
+        self.assertEqual(
+            owners_by_url[
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+            ],
+            ["中国联通"],
+        )
+
+    def test_entity_candidate_dedup_preserves_all_expected_owners(self):
+        targets = crawl.candidate_targets(
+            20,
+            "",
+            crawl.ROW_ENTITY_OVERRIDES[20],
+        )
+        owners_by_url = {url: owners for url, owners in targets}
+        shared_api_source = (
+            "https://www.ericsson.com/en/press-releases/2024/9/"
+            "global-telecom-leaders-join-forces-to-redefine-the-industry-with-network-apis"
+        )
+        self.assertEqual(
+            owners_by_url[shared_api_source],
+            ["AT&T", "T-Mobile US"],
+        )
+
+    def test_tmobile_sources_exclude_deutsche_telekom_group_pages(self):
+        targets = crawl.candidate_targets(
+            20,
+            "",
+            crawl.ROW_ENTITY_OVERRIDES[20],
+        )
+        owners_by_url = {url: owners for url, owners in targets}
+        us_report = (
+            "https://report.telekom.com/annual-report-2025/management-report/"
+            "development-of-business-in-the-operating-segments/united-states.html"
+        )
+        self.assertEqual(owners_by_url[us_report], ["T-Mobile US"])
+        self.assertNotIn(
+            "https://report.telekom.com/annual-report-2025/management-report/"
+            "group-strategy/investments.html",
+            owners_by_url,
+        )
+
     def test_hkbn_market_fallback_is_available(self):
         fallback = crawl.verified_field_fallback(13, "HKBN")
         self.assertIn("股价异动", fallback)

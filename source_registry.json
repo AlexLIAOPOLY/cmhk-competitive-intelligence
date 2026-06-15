@@ -13,6 +13,34 @@
       "tos_status": "public_api",
       "notes": "World Bank public indicator API; use limited query volume."
     },
+    "www.sec.gov": {
+      "policy": "allow",
+      "type": "exchange_public_disclosure",
+      "jurisdiction": "US",
+      "tos_status": "public_disclosure",
+      "notes": "SEC EDGAR public company filings; use identified filing pages at low request volume."
+    },
+    "www.ril.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "notes": "Reliance Industries official investor presentations used for Jio disclosures."
+    },
+    "www.hkexnews.hk": {
+      "policy": "allow",
+      "type": "exchange_public_disclosure",
+      "jurisdiction": "HK",
+      "tos_status": "public_disclosure",
+      "notes": "HKEXnews public listed-company disclosures."
+    },
+    "dataclouds.cninfo.com.cn": {
+      "policy": "allow",
+      "type": "exchange_public_disclosure",
+      "jurisdiction": "CN",
+      "tos_status": "public_disclosure",
+      "notes": "CNINFO public listed-company disclosure files."
+    },
     "data.gov.hk": {
       "policy": "allow",
       "type": "government_open_data",

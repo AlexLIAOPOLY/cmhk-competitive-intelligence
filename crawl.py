@@ -484,6 +484,92 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
     ],
 }
 
+ENTITY_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
+    19: {
+        "Singtel": [
+            "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+            "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
+        ],
+        "Telstra": ["https://www.telstra.com.au/aboutus/media"],
+        "SK Telecom": [
+            "https://news.sktelecom.com/en/2787",
+            "https://news.sktelecom.com/en/category/press-center/press-release",
+        ],
+        "KT": [
+            "https://corp.kt.com/eng/html/investors/main.html",
+            "https://corp.kt.com/eng/html/investors/financial/business.html",
+            "https://www.sec.gov/Archives/edgar/data/892450/000162828026028096/kt-20251231.htm",
+        ],
+        "NTT Docomo": [
+            "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+            "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0303_00.html",
+        ],
+        "KDDI": ["https://newsroom.kddi.com/english/news/detail/kddi_nr-560_3842.html"],
+        "SoftBank": [
+            "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
+            "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260416_02/",
+        ],
+        "Jio": [
+            "https://www.jio.com/business/5g/",
+            "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
+        ],
+        "Airtel": [
+            "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+            "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
+            "https://www.airtel.in/press-release",
+        ],
+    },
+    20: {
+        "Vodafone": [
+            "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
+            "https://www.vodafone.com/news/technology/vodafone-advances-future-ready-radio-access-network",
+            "https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd",
+        ],
+        "Deutsche Telekom": [
+            "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
+            "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+        ],
+        "Orange": [
+            "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+            "https://developer.orange.com/events/mwc-2026/",
+        ],
+        "Telefonica": ["https://www.telefonica.com/en/communication-room/press-room/"],
+        "BT/EE": [
+            "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+            "https://www.bt.com/about/bt/our-company/group-businesses/networks",
+        ],
+        "TIM": ["https://www.gruppotim.it/en/press-archive.html"],
+        "Verizon": [
+            "https://www.verizon.com/business/solutions/network-apis/",
+            "https://www.verizon.com/5g/home/",
+        ],
+        "AT&T": [
+            "https://www.ericsson.com/en/press-releases/2024/9/global-telecom-leaders-join-forces-to-redefine-the-industry-with-network-apis",
+            "https://www.ericsson.com/en/press-releases/2023/12/att-to-accelerate-open-and-interoperable-radio-access-networks-ran-in-the-united-states-through-new-collaboration-with-ericsson",
+        ],
+        "T-Mobile US": [
+            "https://www.ericsson.com/en/press-releases/2024/9/global-telecom-leaders-join-forces-to-redefine-the-industry-with-network-apis",
+            "https://www.ericsson.com/en/press-releases/6/2026/t-mobile-ericsson-ai-ran",
+            "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
+        ],
+    },
+    21: {
+        "e&": [
+            "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+            "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
+            "https://www.eand.com/en/news/28-04-26-eand-financial-results-q1-2026.html",
+            "https://www.eand.com/en/news/16-mar-26-eand-khalifa-uni-launch-white-paper.html",
+        ],
+        "stc": ["https://www.stc.com/en/investors.html"],
+        "中国移动": [
+            "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
+            "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF",
+        ],
+        "中国电信": ["https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf"],
+        "中国联通": ["https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"],
+    },
+}
+
 
 def cell_text(value: Any) -> str:
     if isinstance(value, list):
@@ -767,12 +853,35 @@ def compliance_decision(client: httpx.Client, url: str) -> Dict[str, Any]:
     }
 
 
-def candidate_urls(row: int, sources: str) -> List[str]:
-    urls: List[str] = []
+def candidate_targets(
+    row: int,
+    sources: str,
+    entities: List[str] | None = None,
+) -> List[Tuple[str, List[str]]]:
+    targets: List[Tuple[str, List[str]]] = []
+    target_index: Dict[str, int] = {}
 
-    def append_url(url: str) -> None:
-        if url and url not in urls:
-            urls.append(url)
+    def append_url(url: str, expected_entities: List[str] | None = None) -> None:
+        if not url:
+            return
+        expected = list(dict.fromkeys(expected_entities or []))
+        if url in target_index:
+            index = target_index[url]
+            old_url, old_expected = targets[index]
+            targets[index] = (old_url, list(dict.fromkeys([*old_expected, *expected])))
+            return
+        target_index[url] = len(targets)
+        targets.append((url, expected))
+
+    entity_candidates = ENTITY_CANDIDATES.get(row)
+    if entity_candidates:
+        allowed_entities = set(entities or entity_candidates)
+        for entity, urls in entity_candidates.items():
+            if entity not in allowed_entities:
+                continue
+            for url in urls:
+                append_url(url, [entity])
+        return targets
 
     for url in urls_from_sources(sources):
         alternatives = RECOVERABLE_URL_ALTERNATIVES.get(url, [])
@@ -788,7 +897,11 @@ def candidate_urls(row: int, sources: str) -> List[str]:
                 append_url(alt)
             continue
         append_url(url)
-    return urls
+    return targets
+
+
+def candidate_urls(row: int, sources: str) -> List[str]:
+    return [url for url, _expected_entities in candidate_targets(row, sources)]
 
 
 def verified_field_fallback(row: int, entity: str) -> Dict[str, str]:
@@ -1459,7 +1572,8 @@ def merge_targeted_row_result(
 def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float) -> Dict[str, Any]:
     row = int(source_row["row"])
     entities = list(source_row.get("entities") or [])
-    urls = candidate_urls(row, source_row["sources"])
+    targets = candidate_targets(row, source_row["sources"], entities)
+    urls = [url for url, _expected_entities in targets]
     selected_fields = list(source_row.get("selected_fields") or [])
     ignored_selected_fields = list(source_row.get("ignored_selected_fields") or [])
     if ignored_selected_fields:
@@ -1475,11 +1589,14 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_records: Dict[str, List[Dict[str, Any]]] = {entity: [] for entity in entities}
     
     with ThreadPoolExecutor(max_workers=5) as executor:
-        future_to_url = {executor.submit(fetch_url, client, url): url for url in urls}
-        for future in as_completed(future_to_url):
+        future_to_target = {
+            executor.submit(fetch_url, client, url): (url, expected_entities)
+            for url, expected_entities in targets
+        }
+        for future in as_completed(future_to_target):
             if time.monotonic() > deadline:
                 break
-            url = future_to_url[future]
+            url, expected_entities = future_to_target[future]
             print(f"  -> 抓取完成: {url}", flush=True)
             try:
                 result = future.result()
@@ -1488,7 +1605,11 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                     successful_urls.append(url)
                     print(f"    [成功] 状态码: {result.get('status')} | 耗时: {result.get('elapsed_seconds')}s | 大小: {result.get('bytes')} B", flush=True)
                     combined_text += "\n\nSOURCE: " + url + "\n" + result["text"]
-                    hits = matched_entities(row, entities, result)
+                    hits = (
+                        [entity for entity in expected_entities if entity in entities]
+                        if expected_entities
+                        else matched_entities(row, entities, result)
+                    )
                     record["entity_hits"] = hits
                     for entity in hits:
                         if url not in entity_urls[entity]:

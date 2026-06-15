@@ -227,6 +227,8 @@ def _accepted_cache_items(items: dict[str, dict[str, Any]]) -> dict[str, dict[st
             continue
         if str(item.get("metric") or "") in KNOWN_COMPANY_NAMES:
             continue
+        if not _cache_item_metric_semantically_valid(item):
+            continue
         if _is_truncated_qualitative_fragment(str(item.get("metric") or ""), str(item.get("value") or "")):
             continue
         key = _semantic_key_for_item(item)
@@ -238,6 +240,16 @@ def _accepted_cache_items(items: dict[str, dict[str, Any]]) -> dict[str, dict[st
         if current is None or item_score >= current_score:
             output[key] = item
     return output
+
+
+def _cache_item_metric_semantically_valid(item: dict[str, Any]) -> bool:
+    metric = str(item.get("metric") or "")
+    evidence = f"{item.get('value', '')}\n{item.get('basis', '')}"
+    if metric == "5G-A":
+        return bool(re.search(r"\b5G[\s-]?(?:A|Advanced)\b|\b5\.5G\b", evidence, re.IGNORECASE))
+    if metric == "Open RAN":
+        return bool(re.search(r"\bOpen[\s-]?RAN\b|\bO-RAN\b", evidence, re.IGNORECASE))
+    return True
 
 
 def _is_truncated_qualitative_fragment(metric: str, value: str) -> bool:
@@ -431,17 +443,38 @@ def classify_sources(state: CurationState) -> dict[str, Any]:
 
 
 def _candidate_from_cache(task: EvidenceTask, item: dict[str, Any]) -> CandidateFact:
+    status = item.get("status") if item.get("status") in {"ok", "unavailable"} else "unavailable"
+    entity_supported = bool(item.get("entity_supported"))
+    metric_supported = bool(item.get("metric_supported"))
+    value_supported = bool(item.get("value_supported"))
+    value = clean_text(item.get("value"), 220)
+    basis = clean_text(item.get("basis"), 600)
+    note = clean_text(item.get("note"), 160)
+    semantic_patterns = {
+        "5G-A": (r"\b5G[\s-]?(?:A|Advanced)\b|\b5\.5G\b", "5G-A、5G Advanced或5.5G"),
+        "Open RAN": (r"\bOpen[\s-]?RAN\b|\bO-RAN\b", "Open RAN或O-RAN"),
+    }
+    if task.metric in semantic_patterns:
+        evidence = f"{task.raw_text}\n{value}\n{basis}"
+        pattern, expected = semantic_patterns[task.metric]
+        if not re.search(pattern, evidence, re.IGNORECASE):
+            status = "unavailable"
+            metric_supported = False
+            value_supported = False
+            value = "未提取到有效数据"
+            basis = f"证据未明确出现{expected}，不能支持{task.metric}指标。"
+            note = f"确定性语义门禁拒绝将其他技术概念误归类为{task.metric}。"
     return CandidateFact(
         id=task.id,
         company=task.company,
         metric=task.metric,
-        value=clean_text(item.get("value"), 220),
-        basis=clean_text(item.get("basis"), 600),
-        note=clean_text(item.get("note"), 160),
-        status=item.get("status") if item.get("status") in {"ok", "unavailable"} else "unavailable",
-        entity_supported=bool(item.get("entity_supported")),
-        metric_supported=bool(item.get("metric_supported")),
-        value_supported=bool(item.get("value_supported")),
+        value=value,
+        basis=basis,
+        note=note,
+        status=status,
+        entity_supported=entity_supported,
+        metric_supported=metric_supported,
+        value_supported=value_supported,
         confidence=float(item.get("confidence") or 0.0),
         source_score=task.source_score,
         source_tier=task.source_tier,
@@ -459,17 +492,17 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
     cached_count = 0
     deterministic_count = 0
     for task in tasks:
+        deterministic = deterministic_extract_task(task.model_dump())
+        if deterministic:
+            candidates.append(_candidate_from_cache(task, deterministic))
+            deterministic_count += 1
+            continue
         cached = existing.get(task.id)
         if isinstance(cached, dict):
             candidates.append(_candidate_from_cache(task, cached))
             cached_count += 1
         else:
-            deterministic = deterministic_extract_task(task.model_dump())
-            if deterministic:
-                candidates.append(_candidate_from_cache(task, deterministic))
-                deterministic_count += 1
-            else:
-                pending.append(task)
+            pending.append(task)
 
     online_used = False
     online_batches = 0
@@ -582,26 +615,7 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
             if not isinstance(item, dict) or item.get("id") not in pending_map:
                 continue
             task = pending_map[item["id"]]
-            candidates.append(
-                CandidateFact(
-                    id=task.id,
-                    company=task.company,
-                    metric=task.metric,
-                    value=clean_text(item.get("value"), 220),
-                    basis=clean_text(item.get("basis"), 600),
-                    note=clean_text(item.get("note"), 160),
-                    status=item.get("status") if item.get("status") in {"ok", "unavailable"} else "unavailable",
-                    entity_supported=bool(item.get("entity_supported")),
-                    metric_supported=bool(item.get("metric_supported")),
-                    value_supported=bool(item.get("value_supported")),
-                    confidence=float(item.get("confidence") or 0.0),
-                    source_score=task.source_score,
-                    source_tier=task.source_tier,
-                    row_ref=task.row_ref,
-                    sources=task.sources,
-                    evidence_hash=task.evidence_hash,
-                )
-            )
+            candidates.append(_candidate_from_cache(task, item))
     return {
         "candidates": [item.model_dump() for item in candidates],
         "summary": {

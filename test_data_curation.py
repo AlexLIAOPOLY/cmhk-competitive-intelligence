@@ -1,15 +1,23 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
-from company_metrics import _apply_brand_market_reaction_not_applicable, _cache_item_brand_consistent
+from company_metrics import (
+    _apply_ai_cache,
+    _apply_brand_market_reaction_not_applicable,
+    _cache_item_brand_consistent,
+)
 from data_curation.workflow import (
     _accepted_cache_items,
+    _cache_item_metric_semantically_valid,
+    _candidate_from_cache,
     _source_rank,
     audit_quality,
     plan_gaps,
     validate_entities,
 )
+from data_curation.schemas import EvidenceTask
 
 
 def candidate(**overrides):
@@ -38,6 +46,149 @@ def candidate(**overrides):
 
 
 class DataCurationTests(unittest.TestCase):
+    def test_plain_5g_cannot_be_published_as_5g_advanced(self) -> None:
+        task = EvidenceTask(
+            id="jio-5ga",
+            company="Jio",
+            metric="5G-A",
+            current_value="",
+            raw_text="Jio Hyperlite offers 5G-as-a-Service and is compliant with 3GPP.",
+            sources=["https://www.jio.com/business/5g/"],
+            row_ref="row_19",
+            source_score=0.72,
+            source_tier="public",
+            evidence_hash="hash",
+        )
+        candidate_fact = _candidate_from_cache(
+            task,
+            {
+                "status": "ok",
+                "value": "Jio Hyperlite 5G Stack",
+                "basis": "The source describes a 5G stack.",
+                "entity_supported": True,
+                "metric_supported": True,
+                "value_supported": True,
+                "confidence": 0.9,
+            },
+        )
+        self.assertEqual(candidate_fact.status, "unavailable")
+        self.assertFalse(candidate_fact.metric_supported)
+
+    def test_network_api_cannot_be_published_as_open_ran(self) -> None:
+        task = EvidenceTask(
+            id="dt-open-ran",
+            company="Deutsche Telekom",
+            metric="Open RAN",
+            current_value="",
+            raw_text="Network APIs and T-DevEdge platform launched.",
+            sources=["https://www.telekom.com/network-apis"],
+            row_ref="row_20",
+            source_score=1.0,
+            source_tier="official",
+            evidence_hash="hash",
+        )
+        candidate_fact = _candidate_from_cache(
+            task,
+            {
+                "status": "ok",
+                "value": "Network APIs launched",
+                "basis": "The source describes network APIs.",
+                "entity_supported": True,
+                "metric_supported": True,
+                "value_supported": True,
+                "confidence": 0.9,
+            },
+        )
+        self.assertEqual(candidate_fact.status, "unavailable")
+        self.assertFalse(candidate_fact.metric_supported)
+
+    def test_cache_protection_rejects_semantically_wrong_5g_advanced(self) -> None:
+        self.assertFalse(
+            _cache_item_metric_semantically_valid(
+                {
+                    "metric": "5G-A",
+                    "value": "Jio Hyperlite 5G Stack",
+                    "basis": "The source describes 5G-as-a-Service.",
+                }
+            )
+        )
+
+    def test_deterministic_extractor_overrides_stale_unavailable_cache(self) -> None:
+        from data_curation.workflow import extract_facts
+
+        task = {
+            "id": "cm-dict",
+            "company": "中国移动",
+            "metric": "DICT",
+            "current_value": "",
+            "raw_text": (
+                "AI services include data algorithms, embodied intelligence, "
+                "digital intelligence culture, digital intelligence e-commerce "
+                "and industry digital intelligence services."
+            ),
+            "sources": ["https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"],
+            "row_ref": "row_21",
+            "evidence_hash": "test-hash",
+            "source_score": 1.0,
+            "source_tier": "official",
+        }
+        state = {
+            "tasks": [task],
+            "existing_items": {
+                "cm-dict": {
+                    "status": "unavailable",
+                    "value": "未提取到有效数据",
+                    "confidence": 0.1,
+                }
+            },
+            "online_ai": False,
+            "batch_size": 25,
+        }
+        result = extract_facts(state)
+        self.assertEqual(result["candidates"][0]["status"], "ok")
+        self.assertIn("行业数智服务", result["candidates"][0]["value"])
+
+    def test_ai_cache_falls_back_to_preserved_accepted_semantic_item(self):
+        rows = [
+            {
+                "id": "current-id",
+                "company": "HKT",
+                "metric": "资费",
+                "rowRef": "row_3",
+                "sourceType": "public-crawl",
+                "value": "网页残片",
+                "detail": "",
+            }
+        ]
+        cache = {
+            "schemaVersion": 3,
+            "items": {
+                "current-id": {
+                    "company": "HKT",
+                    "metric": "资费",
+                    "row_ref": "row_3",
+                    "status": "unavailable",
+                    "value": "未提取到有效数据",
+                },
+                "preserved-id": {
+                    "company": "HKT",
+                    "metric": "资费",
+                    "row_ref": "row_3",
+                    "status": "ok",
+                    "value": "1000M家宽月费108港元",
+                    "basis": "HKT官方套餐页",
+                    "entity_supported": True,
+                    "metric_supported": True,
+                    "value_supported": True,
+                    "confidence": 0.96,
+                },
+            },
+        }
+        with patch("company_metrics._read_json", return_value=cache):
+            cleaned = _apply_ai_cache(rows)
+        self.assertEqual(cleaned[0]["aiStatus"], "ok")
+        self.assertEqual(cleaned[0]["value"], "1000M家宽月费108港元")
+
     def test_brand_market_reaction_is_deterministically_not_applicable(self):
         row = {"company": "3HK", "metric": "市场反应", "value": "错误的股息片段"}
         self.assertTrue(_apply_brand_market_reaction_not_applicable(row))

@@ -10,6 +10,7 @@ from normalize_company_metrics_ai import (
     _evidence_relevance,
     _evidence_mentions_company,
     _focused_evidence,
+    _official_domain_owners,
     _record_allowed_for_company,
     build_tasks,
     deterministic_extract_task,
@@ -128,6 +129,72 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertIn("1G至10G", product["value"])
         self.assertIn("Google Workspace with Gemini", services["value"])
 
+    def test_hkt_home_plan_and_tariff_require_official_price_details(self) -> None:
+        home_plan = deterministic_extract_task(
+            {
+                "id": "hkt-home-plan",
+                "company": "HKT",
+                "metric": "家宽套餐",
+                "raw_text": "NETVIGATOR Home Broadband. Choose from 1G to 10G to suit your needs.",
+            }
+        )
+        tariff = deterministic_extract_task(
+            {
+                "id": "hkt-tariff",
+                "company": "HKT",
+                "metric": "资费",
+                "raw_text": (
+                    "1000M Fibre-to-the-Home Free Home Wi-Fi Service From HK$ 108 "
+                    "/month 36-month commitment. 5G Home Internet From HK$ 168 "
+                    "/month 36-month commitment."
+                ),
+            }
+        )
+        self.assertIn("1G至10G", home_plan["value"])
+        self.assertIn("108港元", tariff["value"])
+        self.assertIn("168港元", tariff["value"])
+        self.assertIn("36个月", tariff["value"])
+
+    def test_hkt_tariff_supports_official_chinese_page(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "hkt-tariff-zh",
+                "company": "HKT",
+                "metric": "资费",
+                "raw_text": (
+                    "1000M 光纖入屋寬頻 送家居Wi-Fi服務 低至 HK$ 108 /月 "
+                    "36 個月承諾期。5G 私家寬頻服務 低至 HK$ 168 /月 "
+                    "36 個月承諾期。"
+                ),
+            }
+        )
+        self.assertIn("108港元", result["value"])
+        self.assertIn("168港元", result["value"])
+
+    def test_hkt_official_page_supports_product_contract_and_promotion(self) -> None:
+        raw_text = (
+            "網上行寬頻新標準，提供1G 至10G的選擇。10,000M 光纖入屋寬頻。"
+            "1000M 光纖入屋寬頻 低至 HK$ 108 /月 36 個月承諾期。"
+            "2500M 超級寬頻 升級低至 HK$ 58 /月 36 個月承諾期。"
+            "5G 私家寬頻服務 低至 HK$ 168 /月 36 個月承諾期。"
+        )
+        product = deterministic_extract_task(
+            {"id": "hkt-product-zh", "company": "HKT", "metric": "产品规格", "raw_text": raw_text}
+        )
+        five_g = deterministic_extract_task(
+            {"id": "hkt-5g-plan", "company": "HKT", "metric": "5G套餐", "raw_text": raw_text}
+        )
+        contract = deterministic_extract_task(
+            {"id": "hkt-contract", "company": "HKT", "metric": "合约期", "raw_text": raw_text}
+        )
+        promotion = deterministic_extract_task(
+            {"id": "hkt-promotion", "company": "HKT", "metric": "促销折扣", "raw_text": raw_text}
+        )
+        self.assertIn("1G至10G", product["value"])
+        self.assertIn("168港元", five_g["value"])
+        self.assertIn("36个月", contract["value"])
+        self.assertIn("58港元", promotion["value"])
+
     def test_csl_tariff_and_roaming_extractors_require_official_details(self) -> None:
         tariff = deterministic_extract_task(
             {
@@ -156,6 +223,26 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertIn("csl", tariff["value"])
         self.assertIn("Golden Roaming", roaming["value"])
 
+    def test_csl_plan_contract_and_promotion_exact_extractors(self) -> None:
+        raw_text = (
+            "Monthly Plan Fee $348 Local data usage 100GB. "
+            "Monthly Plan Fee $398 Local data usage 150GB. "
+            "The offer is only valid for customers who sign a commitment period "
+            "of 24 or 36 months. Enjoy welcome offers worth over $2,000!"
+        )
+        plan = deterministic_extract_task(
+            {"id": "csl-plan", "company": "csl", "metric": "5G套餐", "raw_text": raw_text}
+        )
+        contract = deterministic_extract_task(
+            {"id": "csl-contract", "company": "csl", "metric": "合约期", "raw_text": raw_text}
+        )
+        promotion = deterministic_extract_task(
+            {"id": "csl-promotion", "company": "csl", "metric": "促销折扣", "raw_text": raw_text}
+        )
+        self.assertIn("348港元100GB", plan["value"])
+        self.assertIn("24个月或36个月", contract["value"])
+        self.assertIn("2,000港元", promotion["value"])
+
     def test_1010_enterprise_5g_and_open_api_extractors(self) -> None:
         five_g = deterministic_extract_task(
             {
@@ -183,6 +270,36 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertIn("Open API", cooperation["value"])
         self.assertIn("1O1O", cooperation["value"])
 
+    def test_1010_open_api_is_a_supported_product_spec(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "1010-open-api-product",
+                "company": "1O1O",
+                "metric": "产品规格",
+                "raw_text": (
+                    "HKT Enterprise Solutions now provides Open API services on the "
+                    "1O1O 5G mobile network and helps enterprises modernise "
+                    "mobile-number verification."
+                ),
+            }
+        )
+        self.assertIn("1O1O 5G", result["value"])
+        self.assertIn("号码验证", result["value"])
+
+    def test_1010_5g_plan_variants_are_structured(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "1010-plan",
+                "company": "1O1O",
+                "metric": "5G套餐",
+                "raw_text": (
+                    "Global 5G Prestige Service Asia Pacific 5G Prestige Service "
+                    "China-HK-Macau 5G Prestige Service"
+                ),
+            }
+        )
+        self.assertIn("全球、亚太及中港澳", result["value"])
+
     def test_3hk_promotion_exact_extractor(self) -> None:
         result = deterministic_extract_task(
             {
@@ -209,6 +326,77 @@ class DataCurationWorkflowTests(unittest.TestCase):
         )
         self.assertEqual(result["value"], "5G渗透率约40%（公司未披露绝对用户数）")
 
+    def test_smartone_home_broadband_exact_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "smartone-home",
+                "company": "SmarTone",
+                "metric": "家宽",
+                "raw_text": (
+                    "SmarTone Home 5G Broadband Online Exclusive Free Upgrade to "
+                    "Wi-Fi 7 12-month Flexible Short Contract"
+                ),
+            }
+        )
+        self.assertIn("Wi-Fi 7", result["value"])
+        self.assertIn("12个月", result["value"])
+
+    def test_mainland_dict_extractors_use_audited_annual_report_figures(self) -> None:
+        telecom = deterministic_extract_task(
+            {
+                "id": "telecom-dict",
+                "company": "中国电信",
+                "metric": "DICT",
+                "raw_text": (
+                    "Industrial Digitalisation service revenues "
+                    "147,307 146,588 0.5%"
+                ),
+            }
+        )
+        unicom = deterministic_extract_task(
+            {
+                "id": "unicom-dict",
+                "company": "中国联通",
+                "metric": "DICT",
+                "raw_text": (
+                    "Revenue contribution from strategic emerging industries reached "
+                    "over 86%. The computing power business revenue ratio reached over "
+                    "15%. AI revenue grew by over 140% year-on-year."
+                ),
+            }
+        )
+        self.assertIn("1473.07亿元", telecom["value"])
+        self.assertIn("0.5%", telecom["value"])
+        self.assertIn("超过86%", unicom["value"])
+        self.assertIn("超过140%", unicom["value"])
+
+    def test_official_policy_title_extractors_are_not_navigation_fragments(self) -> None:
+        coverage = deterministic_extract_task(
+            {
+                "id": "ofca-coverage",
+                "company": "通信监管机构",
+                "metric": "覆盖义务",
+                "raw_text": (
+                    "Subsidy Scheme to Extend Fibre-based Networks to Villages in "
+                    "Remote Areas. Subsidy Scheme to Extend 5G Coverage in Rural and "
+                    "Remote Areas."
+                ),
+            }
+        )
+        policy = deterministic_extract_task(
+            {
+                "id": "gov-policy",
+                "company": "政治新闻",
+                "metric": "重大政策/声明",
+                "raw_text": (
+                    "Announcement on the Implementation of Electronic Border "
+                    "Management Area Permit Policy"
+                ),
+            }
+        )
+        self.assertIn("5G覆盖资助计划", coverage["value"])
+        self.assertIn("通行证电子化政策", policy["value"])
+
     def test_kt_enterprise_ict_product_list_extractor(self) -> None:
         result = deterministic_extract_task(
             {
@@ -220,6 +408,102 @@ class DataCurationWorkflowTests(unittest.TestCase):
         )
         self.assertIn("Enterprise LTE Service", result["value"])
         self.assertIn("ucloud biz", result["value"])
+
+    def test_kt_form_20f_enterprise_ict_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "kt-ict-20f",
+                "company": "KT",
+                "metric": "企业ICT",
+                "raw_text": (
+                    "We offer a wide range of KT AX platform services for our "
+                    "corporate customers that provide customized and integrated "
+                    "digital transformation services. Information Data Center "
+                    "and Cloud Services. We operate Internet data centers and "
+                    "cloud services, including servers, storage and leased lines."
+                ),
+            }
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("数字化转型", result["value"])
+
+    def test_jio_capex_direction_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "jio-capex",
+                "company": "Jio",
+                "metric": "Capex方向",
+                "raw_text": (
+                    "Jio - Expanding 5G and broadband adoption across mobility, "
+                    "homes and enterprises. AirFiber subscribers crossed 5.6mn. "
+                    "Deployment of Private 5G for secure enterprise connectivity."
+                ),
+            }
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("AirFiber", result["value"])
+
+    def test_china_mobile_dict_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "cm-dict",
+                "company": "中国移动",
+                "metric": "DICT",
+                "raw_text": (
+                    "AI services include data algorithms, embodied intelligence, "
+                    "digital intelligence culture, digital intelligence e-commerce "
+                    "and industry digital intelligence services."
+                ),
+            }
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("行业数智服务", result["value"])
+
+    def test_tmobile_parent_report_fwa_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "tmobile-fwa",
+                "company": "T-Mobile US",
+                "metric": "FWA",
+                "raw_text": (
+                    "T-Mobile US is leveraging its leading position in respect "
+                    "of mid-band mobile spectrum to offer customers fixed "
+                    "wireless broadband access via FWA."
+                ),
+            }
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("固定无线宽带", result["value"])
+
+    def test_tmobile_5g_broadband_net_additions_support_fwa(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "tmobile-fwa-customers",
+                "company": "T-Mobile US",
+                "metric": "FWA",
+                "raw_text": (
+                    "5G broadband (formerly High Speed Internet) net customer "
+                    "additions included in postpaid other net customer additions "
+                    "were 1.7 million and 1.5 million in 2025 and 2024, respectively."
+                ),
+            }
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("1.7百万", result["value"])
+
+    def test_parent_annual_report_can_support_tmobile(self) -> None:
+        owners = _official_domain_owners(
+            "https://report.telekom.com/annual-report-2025/management-report/"
+            "development-of-business-in-the-operating-segments/united-states.html"
+        )
+        self.assertEqual(owners, {"T-Mobile US"})
+
+    def test_deutsche_telekom_group_report_does_not_support_tmobile(self) -> None:
+        owners = _official_domain_owners(
+            "https://report.telekom.com/annual-report-2025/management-report/"
+            "group-strategy/investments.html"
+        )
+        self.assertEqual(owners, {"Deutsche Telekom"})
 
     def test_hutchison_customer_exact_extractor(self) -> None:
         result = deterministic_extract_task(
@@ -248,6 +532,66 @@ class DataCurationWorkflowTests(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertEqual(result["value"], "5G渗透率62%")
+
+    def test_hutchison_arpu_table_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "hutch-arpu",
+                "company": "Hutchison",
+                "metric": "ARPU",
+                "raw_text": (
+                    "Postpaid gross ARPU (HK$) 187 190 –2% "
+                    "Postpaid net ARPU (HK$) 176 175 +1%"
+                ),
+            }
+        )
+        self.assertIsNotNone(result)
+        self.assertIn("毛ARPU每月187港元", result["value"])
+        self.assertIn("净ARPU每月176港元", result["value"])
+
+    def test_hutchison_official_brand_privilege_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "hutch-promotion",
+                "company": "Hutchison",
+                "metric": "促销折扣",
+                "raw_text": (
+                    "Experience '3 for You' Brand Value with Backup Phone Service "
+                    "and 100+ Global Privileges"
+                ),
+            }
+        )
+        self.assertIsNotNone(result)
+        self.assertIn("100多项全球礼遇", result["value"])
+
+    def test_hkbn_governance_exact_extractors(self) -> None:
+        raw_text = (
+            "the Board has resolved to declare a final dividend of 18.9 cents per share. "
+            "Subject to the approval by the Shareholders at the 2025 annual general meeting "
+            "of the Company, the proposed final dividend is expected to be paid in cash on "
+            "or around Tuesday, 6 January 2026. "
+            "from 7 May 2025 the China Mobile Group became connected persons. "
+            "An announcement was made by the Company on 30 October 2025 in respect "
+            "of the Partially-exempt CCTs. "
+            "all applicable ratios were less than 5%"
+        )
+        board = deterministic_extract_task(
+            {"id": "hkbn-board", "company": "HKBN", "metric": "董事会", "raw_text": raw_text}
+        )
+        agm = deterministic_extract_task(
+            {"id": "hkbn-agm", "company": "HKBN", "metric": "股东大会", "raw_text": raw_text}
+        )
+        connected = deterministic_extract_task(
+            {
+                "id": "hkbn-cct",
+                "company": "HKBN",
+                "metric": "持续性关联交易",
+                "raw_text": raw_text,
+            }
+        )
+        self.assertIn("18.9港仙", board["value"])
+        self.assertIn("2026年1月6日", agm["value"])
+        self.assertIn("低于5%", connected["value"])
 
     def test_brand_market_reaction_is_explicitly_not_applicable(self) -> None:
         result = deterministic_extract_task(
