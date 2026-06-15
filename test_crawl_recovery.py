@@ -1,11 +1,111 @@
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 import crawl
 
 
 class CrawlRecoveryTests(unittest.TestCase):
+    def test_dns_failure_detection_includes_nested_attempts(self):
+        result = {
+            "status": 0,
+            "error": "",
+            "fetch_attempts": [
+                {"error": "curl: (6) Could not resolve host: example.com"}
+            ],
+        }
+        self.assertTrue(crawl.is_dns_failure(result))
+        self.assertFalse(crawl.is_dns_failure({"status": 403, "error": "Forbidden"}))
+
+    def test_fetch_url_stops_duplicate_user_agent_retries_after_dns_failure(self):
+        dns_result = {
+            "url": "https://example.com/data",
+            "final_url": "https://example.com/data",
+            "status": 0,
+            "content_type": "",
+            "bytes": 0,
+            "title": "",
+            "text": "",
+            "error": "curl: (6) Could not resolve host: example.com",
+        }
+        with (
+            mock.patch.object(
+                crawl,
+                "compliance_decision",
+                return_value={
+                    "compliance_allowed": True,
+                    "policy": "allow",
+                    "type": "test",
+                    "jurisdiction": "test",
+                    "tos_status": "test",
+                    "robots_status": "checked",
+                    "robots_allowed": True,
+                },
+            ),
+            mock.patch.object(
+                crawl,
+                "fetch_with_httpx",
+                side_effect=RuntimeError("temporary DNS failure"),
+            ),
+            mock.patch.object(
+                crawl,
+                "fetch_with_curl",
+                return_value=dns_result,
+            ) as curl_fetch,
+        ):
+            result = crawl.fetch_url(mock.Mock(), "https://example.com/data")
+        self.assertTrue(crawl.is_dns_failure(result))
+        self.assertEqual(curl_fetch.call_count, 2)
+        self.assertEqual(
+            [call.kwargs["method_label"] for call in curl_fetch.call_args_list],
+            ["curl_crawler_ua", "curl_direct_crawler_ua"],
+        )
+
+    def test_previous_url_evidence_restores_only_exact_successful_url(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            results_dir = root / "results"
+            evidence_dir = root / "evidence_cache"
+            results_dir.mkdir()
+            evidence_dir.mkdir()
+            evidence_file = evidence_dir / "known.txt"
+            evidence_file.write_text("有效公开证据" * 40, encoding="utf-8")
+            (results_dir / "row_23.json").write_text(
+                json.dumps(
+                    {
+                        "raw_records": [
+                            {
+                                "url": "https://example.com/metric",
+                                "final_url": "https://example.com/metric",
+                                "status": 200,
+                                "evidence_path": "evidence_cache/known.txt",
+                                "title": "Known metric",
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with (
+                mock.patch.object(crawl, "ROOT", root),
+                mock.patch.object(crawl, "RESULTS_DIR", results_dir),
+            ):
+                restored = crawl.previous_url_evidence(
+                    23, "https://example.com/metric"
+                )
+                missing = crawl.previous_url_evidence(
+                    23, "https://example.com/other"
+                )
+        self.assertIsNotNone(restored)
+        self.assertEqual(restored["method"], "previous_evidence_dns_fallback")
+        self.assertEqual(restored["live_fetch_status"], "failed")
+        self.assertTrue(restored["evidence_fallback_used"])
+        self.assertIsNone(missing)
+
     def test_known_blocked_urls_are_replaced(self):
         rows = crawl.apply_crawl_settings(crawl.apply_row_filter(crawl.parse_latest_sheet()))
         blocked = set(crawl.RECOVERABLE_URL_ALTERNATIVES)
@@ -15,6 +115,16 @@ class CrawlRecoveryTests(unittest.TestCase):
             for url in crawl.candidate_urls(int(row["row"]), row["sources"])
         ]
         self.assertFalse(blocked.intersection(candidates))
+
+    def test_retired_censtatd_retail_url_uses_current_official_pages(self):
+        targets = crawl.candidate_targets(
+            23,
+            "https://www.censtatd.gov.hk/en/scode460.html",
+        )
+        urls = [url for url, _owners in targets]
+        self.assertNotIn("https://www.censtatd.gov.hk/en/scode460.html", urls)
+        self.assertIn("https://www.censtatd.gov.hk/en/scode530.html", urls)
+        self.assertIn("https://www.censtatd.gov.hk/en/page_213.html", urls)
 
     def test_global_operator_sources_are_isolated_by_entity(self):
         targets = crawl.candidate_targets(

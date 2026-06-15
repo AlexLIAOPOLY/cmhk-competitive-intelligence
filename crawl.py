@@ -60,6 +60,10 @@ RECOVERABLE_URL_REWRITES: Dict[str, str] = {
 }
 
 RECOVERABLE_URL_ALTERNATIVES: Dict[str, List[str]] = {
+    "https://www.censtatd.gov.hk/en/scode460.html": [
+        "https://www.censtatd.gov.hk/en/scode530.html",
+        "https://www.censtatd.gov.hk/en/page_213.html",
+    ],
     "https://www.hkt-enterprise.com/en/news-events/news/hkt-launches-ai-superhighway-solution": [
         "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
         "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
@@ -1110,6 +1114,25 @@ def is_successful_fetch(result: Dict[str, Any]) -> bool:
     return 200 <= status < 400 or status == 0
 
 
+def is_dns_failure(result: Dict[str, Any] | None) -> bool:
+    if not result:
+        return False
+    errors = [str(result.get("error") or "")]
+    for attempt in result.get("fetch_attempts") or []:
+        errors.append(str(attempt.get("error") or ""))
+    combined = "\n".join(errors).lower()
+    return any(
+        marker in combined
+        for marker in (
+            "could not resolve host",
+            "name or service not known",
+            "nameresolutionerror",
+            "nodename nor servname provided",
+            "temporary failure in name resolution",
+        )
+    )
+
+
 def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
     started = time.monotonic()
     compliance = compliance_decision(client, url)
@@ -1263,6 +1286,7 @@ def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
             if follow:
                 result = follow
 
+    proxy_dns_failed = is_dns_failure(result)
     rewrite_url = RECOVERABLE_URL_REWRITES.get(url)
     if rewrite_url:
         rewrite_policy = compliance_decision(client, rewrite_url)
@@ -1294,21 +1318,23 @@ def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
                 rewrite_policy,
             )
 
-    chrome_result = curl_attempt(
-        url,
-        user_agent=CHROME_USER_AGENT,
-        method_label="curl_chrome_ua",
-        policy=compliance,
-    )
-    if chrome_result and is_successful_fetch(chrome_result):
-        return chrome_result
-    if chrome_result:
-        result = chrome_result
-        follow = maybe_follow_meta(chrome_result, user_agent=CHROME_USER_AGENT, method_label="curl_chrome_ua")
-        if follow and is_successful_fetch(follow):
-            return follow
-        if follow:
-            result = follow
+    # A different User-Agent cannot repair DNS on the same network path.
+    if not proxy_dns_failed:
+        chrome_result = curl_attempt(
+            url,
+            user_agent=CHROME_USER_AGENT,
+            method_label="curl_chrome_ua",
+            policy=compliance,
+        )
+        if chrome_result and is_successful_fetch(chrome_result):
+            return chrome_result
+        if chrome_result:
+            result = chrome_result
+            follow = maybe_follow_meta(chrome_result, user_agent=CHROME_USER_AGENT, method_label="curl_chrome_ua")
+            if follow and is_successful_fetch(follow):
+                return follow
+            if follow:
+                result = follow
 
     for direct_user_agent, direct_method in [
         (CMHK_USER_AGENT, "curl_direct_crawler_ua"),
@@ -1325,6 +1351,8 @@ def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
             return direct_result
         if direct_result:
             result = direct_result
+            if is_dns_failure(direct_result):
+                break
             follow = maybe_follow_meta(
                 direct_result,
                 user_agent=direct_user_agent,
@@ -1390,7 +1418,52 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
         "robots_status": result.get("robots_status", ""),
         "robots_allowed": result.get("robots_allowed", False),
         "skip_reason": result.get("skip_reason", ""),
+        "live_fetch_status": result.get("live_fetch_status", ""),
+        "evidence_fallback_used": bool(result.get("evidence_fallback_used")),
+        "fallback_reason": result.get("fallback_reason", ""),
     }
+
+
+def previous_url_evidence(row: int, url: str) -> Dict[str, Any] | None:
+    result_path = RESULTS_DIR / f"row_{row}.json"
+    if not result_path.exists():
+        return None
+    try:
+        previous = json.loads(result_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    for record in previous.get("raw_records") or []:
+        record_urls = {
+            str(record.get("url") or ""),
+            str(record.get("final_url") or ""),
+        }
+        if url not in record_urls or not (200 <= int(record.get("status") or 0) < 400):
+            continue
+        evidence_path = str(record.get("evidence_path") or "")
+        if not evidence_path:
+            continue
+        evidence_file = ROOT / evidence_path
+        try:
+            text = evidence_file.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if len(text) < 100:
+            continue
+        restored = dict(record)
+        restored.update(
+            {
+                "url": url,
+                "text": text,
+                "error": "",
+                "elapsed_seconds": 0,
+                "method": "previous_evidence_dns_fallback",
+                "live_fetch_status": "failed",
+                "evidence_fallback_used": True,
+                "fallback_reason": "dns_resolution_failed",
+            }
+        )
+        return restored
+    return None
 
 
 def is_local_network_permission_failure(records: List[Dict[str, Any]]) -> bool:
@@ -1617,8 +1690,33 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                         entity_records[entity].append(record)
                         entity_text[entity] += "\n\nSOURCE: " + url + "\n" + result["text"]
                 else:
-                    print(f"    [失败] 状态码: {result.get('status')} | 错误: {result.get('error')} | 耗时: {result.get('elapsed_seconds')}s", flush=True)
-                    record["entity_hits"] = []
+                    fallback = previous_url_evidence(row, url) if is_dns_failure(result) else None
+                    if fallback:
+                        record = raw_record(row, fallback)
+                        successful_urls.append(url)
+                        combined_text += "\n\nSOURCE: " + url + "\n" + fallback["text"]
+                        hits = (
+                            [entity for entity in expected_entities if entity in entities]
+                            if expected_entities
+                            else matched_entities(row, entities, fallback)
+                        )
+                        record["entity_hits"] = hits
+                        for entity in hits:
+                            if url not in entity_urls[entity]:
+                                entity_urls[entity].append(url)
+                            entity_records[entity].append(record)
+                            entity_text[entity] += "\n\nSOURCE: " + url + "\n" + fallback["text"]
+                        print(
+                            f"    [第{row}行 DNS失败，保留历史证据] {url}",
+                            flush=True,
+                        )
+                    else:
+                        print(
+                            f"    [第{row}行失败] 状态码: {result.get('status')} | "
+                            f"错误: {result.get('error')} | 耗时: {result.get('elapsed_seconds')}s",
+                            flush=True,
+                        )
+                        record["entity_hits"] = []
                 fetched.append(record)
             except Exception as e:
                 print(f"    [异常] {url}: {e}", flush=True)
