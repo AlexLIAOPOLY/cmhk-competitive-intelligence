@@ -1,6 +1,6 @@
 {
   "row": 5,
-  "need": "运营收入（总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、ARPU、资本开支",
+  "need": "运营收入（总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、ARPU、资本开支、派息、资本开支、战略升级、券商观点、市场反应",
   "status": "ok",
   "object": "3HK / Hutchison",
   "entities": [
@@ -15,11 +15,16 @@
     "客户数/用户数",
     "5G用户数",
     "ARPU",
-    "资本开支"
+    "资本开支",
+    "派息",
+    "战略升级",
+    "券商观点",
+    "市场反应"
   ],
+  "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.hthkh.com/en/ir/reports.php",
     "https://m.hthkh.com/en/ir/presentations.php",
+    "https://www.hthkh.com/en/ir/reports.php",
     "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
   ],
   "attempted_urls": [
@@ -35,7 +40,11 @@
     "客户数/用户数": "nt, the Group is progressing towards 5.5G. In 2025, HTHKH introduced the “3 for You” brand value, reaffirming our commitment to going beyond conventional telecoms services to meet customers’ diverse everyday needs and st",
     "5G用户数": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
     "ARPU": "3% points Postpaid customers’ contribution to net customer service revenue (%) 76% 82% –6% points Monthly churn rate of postpaid customers (%) 0.9% 1.0% +0.1% point Postpaid gross ARPU (HK$) 187 190 –2% Postpaid net ARPU",
-    "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o"
+    "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o",
+    "派息": "attributable to shareholders (25) 6 –517% Earnings per share from Hong Kong operations (in HK cents) 0.37 0.64 –42% (Loss)/earnings per share (in HK cents) (0.52) 0.12 –517% Final dividend per share (in HK cents) 5.21 5.",
+    "战略升级": "02 Aug 2010 2010 Interim Results Presentation 08 Mar 2010 2009 Annual Results Presentation 12 Aug 2009 2009 Interim Results Presentation Home About Us Overview Vision and Mission Strategy Board of Directors Senior Manage",
+    "券商观点": "onded to requests for Chief Financial Officer and information and queries from the investment community including shareholders, Investor Relations Department) potential investors, analysts and the media through regular b",
+    "市场反应": "HK cents per share for 2025 (2024 final dividend: 5.21 HK cents per share), in line with 2024, payable on Friday, 29 May 2026, to shareholders (except for the holders of treasury shares) whose names appear on the Registe"
   },
   "missing_fields": [],
   "entity_results": [
@@ -54,7 +63,11 @@
         "客户数/用户数": "nt, the Group is progressing towards 5.5G. In 2025, HTHKH introduced the “3 for You” brand value, reaffirming our commitment to going beyond conventional telecoms services to meet customers’ diverse everyday needs and st",
         "5G用户数": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
         "ARPU": "3% points Postpaid customers’ contribution to net customer service revenue (%) 76% 82% –6% points Monthly churn rate of postpaid customers (%) 0.9% 1.0% +0.1% point Postpaid gross ARPU (HK$) 187 190 –2% Postpaid net ARPU",
-        "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o"
+        "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o",
+        "派息": "attributable to shareholders (25) 6 –517% Earnings per share from Hong Kong operations (in HK cents) 0.37 0.64 –42% (Loss)/earnings per share (in HK cents) (0.52) 0.12 –517% Final dividend per share (in HK cents) 5.21 5.",
+        "战略升级": "rts.php Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Manag",
+        "券商观点": "onded to requests for Chief Financial Officer and information and queries from the investment community including shareholders, Investor Relations Department) potential investors, analysts and the media through regular b",
+        "市场反应": "HK cents per share for 2025 (2024 final dividend: 5.21 HK cents per share), in line with 2024, payable on Friday, 29 May 2026, to shareholders (except for the holders of treasury shares) whose names appear on the Registe"
       },
       "missing_fields": [],
       "raw_records": [
@@ -65,12 +78,26 @@
           "status": 200,
           "content_type": "text/html",
           "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
-          "bytes": 38857,
-          "elapsed_seconds": 1.021,
+          "bytes": 38720,
+          "elapsed_seconds": 1.485,
           "method": "httpx",
           "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
-          "content_hash": "f6bb516105a812081e67b76d1422a2ba11987c43981efd4f515f01f2f2054fab",
+          "evidence_path": "evidence_cache/36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8.txt",
+          "content_hash": "36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8",
           "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hthkh.com/en/ir/reports.php",
+              "final_url": "https://www.hthkh.com/en/ir/reports.php",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 38720,
+              "text_chars": 4801,
+              "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
           "source_policy": "allow",
           "source_type": "company_official",
           "jurisdiction": "HK",
@@ -91,11 +118,25 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 12551396,
-          "elapsed_seconds": 10.298,
+          "elapsed_seconds": 1.987,
           "method": "httpx",
           "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
+          "evidence_path": "evidence_cache/ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b.txt",
           "content_hash": "ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b",
           "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+              "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 12551396,
+              "text_chars": 324649,
+              "title": "PDF extracted by pdftotext",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
           "source_policy": "allow",
           "source_type": "exchange_public_disclosure",
           "jurisdiction": "HK",
@@ -108,14 +149,16 @@
             "Hutchison"
           ]
         }
-      ]
+      ],
+      "confidence_score": 0.45,
+      "verification_reason": "The 'Extracted Data' contains fragmented and corrupted text snippets from the 2025 Annual Report financial highlights but fails to isolate clean field values. Most values are embedded in concatenated strings that include row labels, years, and changes, making it unreliable for accurate data extraction. The source text does not provide the standalone data required for each field."
     },
     {
       "entity": "Hutchison",
       "status": "ok",
       "source_urls": [
-        "https://www.hthkh.com/en/ir/reports.php",
         "https://m.hthkh.com/en/ir/presentations.php",
+        "https://www.hthkh.com/en/ir/reports.php",
         "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"
       ],
       "extracted": {
@@ -126,10 +169,52 @@
         "客户数/用户数": "nt, the Group is progressing towards 5.5G. In 2025, HTHKH introduced the “3 for You” brand value, reaffirming our commitment to going beyond conventional telecoms services to meet customers’ diverse everyday needs and st",
         "5G用户数": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
         "ARPU": "3% points Postpaid customers’ contribution to net customer service revenue (%) 76% 82% –6% points Monthly churn rate of postpaid customers (%) 0.9% 1.0% +0.1% point Postpaid gross ARPU (HK$) 187 190 –2% Postpaid net ARPU",
-        "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o"
+        "资本开支": "4.92% in 2024 to an average of 4.30% in 2025. Hong Kong operations maintained a healthy financial position with cash and bank balances of HK$3,747 million as of 31 December 2025. Capital expenditure Capital expenditure o",
+        "派息": "attributable to shareholders (25) 6 –517% Earnings per share from Hong Kong operations (in HK cents) 0.37 0.64 –42% (Loss)/earnings per share (in HK cents) (0.52) 0.12 –517% Final dividend per share (in HK cents) 5.21 5.",
+        "战略升级": "02 Aug 2010 2010 Interim Results Presentation 08 Mar 2010 2009 Annual Results Presentation 12 Aug 2009 2009 Interim Results Presentation Home About Us Overview Vision and Mission Strategy Board of Directors Senior Manage",
+        "券商观点": "onded to requests for Chief Financial Officer and information and queries from the investment community including shareholders, Investor Relations Department) potential investors, analysts and the media through regular b",
+        "市场反应": "HK cents per share for 2025 (2024 final dividend: 5.21 HK cents per share), in line with 2024, payable on Friday, 29 May 2026, to shareholders (except for the holders of treasury shares) whose names appear on the Registe"
       },
       "missing_fields": [],
       "raw_records": [
+        {
+          "row": 5,
+          "url": "https://m.hthkh.com/en/ir/presentations.php",
+          "final_url": "https://m.hthkh.com/en/ir/presentations.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "bytes": 24996,
+          "elapsed_seconds": 0.949,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar 2026 2025 Annual Results Presentation 08 Aug 2025 2025 Interim Results Presentation 14 Mar 2025 2024 Annual Results Presentation 30 Jul 2024 2024 Interim Results Presentation 05 Mar 2024 2023 Annual Results Presentation 28 Jul 2023 2023 Interim Results Presentation 28 Feb 2023 2022 Annual Results Presentation 29 Jul 2022 2022 Interim Results Presentation 25 Feb 2022 2021 Annual Results Presentation 27 Jul 2021 2021 Interim Results Presentation 26 Feb 2021 2020 Annual Results Presentation 28 Jul 2020 2020 Interim Results Presentation 28 Feb 2020 2019 Annual Results Presentation 30 Jul 2019 2019 Interim Results Presentation 28 Feb 2019 2018 Annual Results Presentation 25 Jul 2018 2018 Interim Results Presentation 26 Feb 2018 2017 Annual Results Presentation 01 Aug 2017 Transcript : Ver",
+          "evidence_path": "evidence_cache/fb1f36a00f3aad856cae54350d0ab74d9ba5ae31da0a2381d497b6557d4ad06b.txt",
+          "content_hash": "fb1f36a00f3aad856cae54350d0ab74d9ba5ae31da0a2381d497b6557d4ad06b",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://m.hthkh.com/en/ir/presentations.php",
+              "final_url": "https://m.hthkh.com/en/ir/presentations.php",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 24996,
+              "text_chars": 2431,
+              "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "entity_hits": [
+            "Hutchison"
+          ]
+        },
         {
           "row": 5,
           "url": "https://www.hthkh.com/en/ir/reports.php",
@@ -137,12 +222,26 @@
           "status": 200,
           "content_type": "text/html",
           "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
-          "bytes": 38857,
-          "elapsed_seconds": 1.021,
+          "bytes": 38720,
+          "elapsed_seconds": 1.485,
           "method": "httpx",
           "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
-          "content_hash": "f6bb516105a812081e67b76d1422a2ba11987c43981efd4f515f01f2f2054fab",
+          "evidence_path": "evidence_cache/36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8.txt",
+          "content_hash": "36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8",
           "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hthkh.com/en/ir/reports.php",
+              "final_url": "https://www.hthkh.com/en/ir/reports.php",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 38720,
+              "text_chars": 4801,
+              "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
           "source_policy": "allow",
           "source_type": "company_official",
           "jurisdiction": "HK",
@@ -157,41 +256,31 @@
         },
         {
           "row": 5,
-          "url": "https://m.hthkh.com/en/ir/presentations.php",
-          "final_url": "https://m.hthkh.com/en/ir/presentations.php",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
-          "bytes": 24989,
-          "elapsed_seconds": 0.548,
-          "method": "httpx",
-          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 08 Aug [REDACTED_PHONE_OR_ID] Interim Results Presentation 14 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 05 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 29 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 25 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 27 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 25 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 01 Aug 2017 Transcript : Ver",
-          "content_hash": "1ab5de7214d2f5596e955a5a793484ec147061f615f44fd7851856f2a9063a61",
-          "error": "",
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "not_found_allow",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "Hutchison"
-          ]
-        },
-        {
-          "row": 5,
           "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
           "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
           "status": 200,
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 12551396,
-          "elapsed_seconds": 10.298,
+          "elapsed_seconds": 1.987,
           "method": "httpx",
           "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
+          "evidence_path": "evidence_cache/ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b.txt",
           "content_hash": "ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b",
           "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+              "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 12551396,
+              "text_chars": 324649,
+              "title": "PDF extracted by pdftotext",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
           "source_policy": "allow",
           "source_type": "exchange_public_disclosure",
           "jurisdiction": "HK",
@@ -204,11 +293,51 @@
             "Hutchison"
           ]
         }
-      ]
+      ],
+      "confidence_score": 0.2,
+      "verification_reason": "The extracted data contains many garbled fragments and incomplete values (e.g., ongoing sentences 'effect from 8 December 2025...', 'nge Hong Kong operations...', '215) is a leading...') that do not correspond to any structured financial figures in the provided source text. The source text is an index of presentations and reports, not the actual financial statements, so the numerical values like '5,448', '3,619', etc., cannot be verified. The extracted fields like '5G用户数', 'ARPU', '资本开支', '派息' are not found in the source text at all. Overall, the extraction is unreliable."
     }
   ],
   "entity_missing": [],
   "raw_records": [
+    {
+      "row": 5,
+      "url": "https://m.hthkh.com/en/ir/presentations.php",
+      "final_url": "https://m.hthkh.com/en/ir/presentations.php",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+      "bytes": 24996,
+      "elapsed_seconds": 0.949,
+      "method": "httpx",
+      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar 2026 2025 Annual Results Presentation 08 Aug 2025 2025 Interim Results Presentation 14 Mar 2025 2024 Annual Results Presentation 30 Jul 2024 2024 Interim Results Presentation 05 Mar 2024 2023 Annual Results Presentation 28 Jul 2023 2023 Interim Results Presentation 28 Feb 2023 2022 Annual Results Presentation 29 Jul 2022 2022 Interim Results Presentation 25 Feb 2022 2021 Annual Results Presentation 27 Jul 2021 2021 Interim Results Presentation 26 Feb 2021 2020 Annual Results Presentation 28 Jul 2020 2020 Interim Results Presentation 28 Feb 2020 2019 Annual Results Presentation 30 Jul 2019 2019 Interim Results Presentation 28 Feb 2019 2018 Annual Results Presentation 25 Jul 2018 2018 Interim Results Presentation 26 Feb 2018 2017 Annual Results Presentation 01 Aug 2017 Transcript : Ver",
+      "evidence_path": "evidence_cache/fb1f36a00f3aad856cae54350d0ab74d9ba5ae31da0a2381d497b6557d4ad06b.txt",
+      "content_hash": "fb1f36a00f3aad856cae54350d0ab74d9ba5ae31da0a2381d497b6557d4ad06b",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://m.hthkh.com/en/ir/presentations.php",
+          "final_url": "https://m.hthkh.com/en/ir/presentations.php",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 24996,
+          "text_chars": 2431,
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "entity_hits": [
+        "Hutchison"
+      ]
+    },
     {
       "row": 5,
       "url": "https://www.hthkh.com/en/ir/reports.php",
@@ -216,12 +345,26 @@
       "status": 200,
       "content_type": "text/html",
       "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
-      "bytes": 38857,
-      "elapsed_seconds": 1.021,
+      "bytes": 38720,
+      "elapsed_seconds": 1.485,
       "method": "httpx",
       "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
-      "content_hash": "f6bb516105a812081e67b76d1422a2ba11987c43981efd4f515f01f2f2054fab",
+      "evidence_path": "evidence_cache/36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8.txt",
+      "content_hash": "36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8",
       "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.hthkh.com/en/ir/reports.php",
+          "final_url": "https://www.hthkh.com/en/ir/reports.php",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 38720,
+          "text_chars": 4801,
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
       "source_policy": "allow",
       "source_type": "company_official",
       "jurisdiction": "HK",
@@ -236,41 +379,31 @@
     },
     {
       "row": 5,
-      "url": "https://m.hthkh.com/en/ir/presentations.php",
-      "final_url": "https://m.hthkh.com/en/ir/presentations.php",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
-      "bytes": 24989,
-      "elapsed_seconds": 0.548,
-      "method": "httpx",
-      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 08 Aug [REDACTED_PHONE_OR_ID] Interim Results Presentation 14 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 05 Mar [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 29 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 25 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 27 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 28 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 30 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 28 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 25 Jul [REDACTED_PHONE_OR_ID] Interim Results Presentation 26 Feb [REDACTED_PHONE_OR_ID] Annual Results Presentation 01 Aug 2017 Transcript : Ver",
-      "content_hash": "1ab5de7214d2f5596e955a5a793484ec147061f615f44fd7851856f2a9063a61",
-      "error": "",
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "HK",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "not_found_allow",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "Hutchison"
-      ]
-    },
-    {
-      "row": 5,
       "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
       "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
       "status": 200,
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 12551396,
-      "elapsed_seconds": 10.298,
+      "elapsed_seconds": 1.987,
       "method": "httpx",
       "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
+      "evidence_path": "evidence_cache/ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b.txt",
       "content_hash": "ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b",
       "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+          "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 12551396,
+          "text_chars": 324649,
+          "title": "PDF extracted by pdftotext",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
       "source_policy": "allow",
       "source_type": "exchange_public_disclosure",
       "jurisdiction": "HK",
@@ -284,6 +417,10 @@
       ]
     }
   ],
-  "fetched_at": "2026-05-29T09:44:44.607881+00:00",
-  "fetched_at_hkt": "2026-05-29T17:44:44.607895+08:00"
+  "live_fetch_status": "ok",
+  "fallback_used": false,
+  "fallback_source_file": "",
+  "fallback_fields": {},
+  "fetched_at": "2026-06-11T10:01:22.400999+00:00",
+  "fetched_at_hkt": "2026-06-11T18:01:22.401042+08:00"
 }

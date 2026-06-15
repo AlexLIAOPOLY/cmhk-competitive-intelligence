@@ -1,0 +1,47 @@
+row	status	entities	source_urls	extracted_fields	missing_fields	result_file
+20	partial	Vodafone,Deutsche Telekom,Orange,Telefonica,BT/EE,TIM,Verizon,AT&T,T-Mobile US	"【Vodafone】
+- https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+- https://www.vodafone.com/news/technology/vodafone-advances-future-ready-radio-access-network
+【Deutsche Telekom】
+- https://www.telekom.com/en/media/media-information
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+- https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882
+- https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626
+【Orange】
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+- https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/
+- https://developer.orange.com/events/mwc-2026/
+【Telefonica】
+- https://www.telefonica.com/en/communication-room/press-room/
+- https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum
+【BT/EE】
+- https://www.bt.com/about/bt/our-company/group-businesses/networks
+- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
+【TIM】
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.bt.com/about/bt/our-company/group-businesses/networks
+- https://www.telekom.com/en/media/media-information
+- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/
+- https://www.gruppotim.it/en/press-archive.html
+【Verizon】
+- https://www.verizon.com/business/solutions/network-apis/
+- https://www.verizon.com/5g/home/
+【AT&T】
+- https://investors.att.com/financial-reports/annual-reports/2025
+【T-Mobile US】
+- https://www.telekom.com/en/media/media-information
+- https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882
+- https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626"	网络API,Open RAN,边缘计算,FWA,AI网络	Vodafone:FWA,Deutsche Telekom:FWA,Orange:FWA,Telefonica:FWA,BT/EE:FWA,Verizon:边缘计算,AT&T:网络API,边缘计算,FWA,T-Mobile US:FWA	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_20.json
+27	partial	重点国家,地区AI与数据监管	"【重点国家】
+- https://digital-strategy.ec.europa.eu/en/policies/data-act
+- https://digital-strategy.ec.europa.eu/en/policies/digital-services-act-package
+- https://digital-strategy.ec.europa.eu/en/policies/data-act-explained
+- https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act
+- https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
+【地区AI与数据监管】
+- https://digital-strategy.ec.europa.eu/en/policies/data-act
+- https://digital-strategy.ec.europa.eu/en/policies/digital-services-act-package
+- https://digital-strategy.ec.europa.eu/en/policies/data-act-explained
+- https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act
+- https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"	EU AI Act,EU Data Act,GDPR/DSA,隐私法规	新加坡AI治理,重点国家:EU AI Act,EU Data Act,GDPR/DSA,新加坡AI治理,隐私法规,地区AI与数据监管:EU AI Act,EU Data Act,GDPR/DSA,新加坡AI治理,隐私法规	/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/results/row_27.json

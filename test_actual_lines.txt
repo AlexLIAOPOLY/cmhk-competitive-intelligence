@@ -1,0 +1,5 @@
+data: {"type": "log", "text": "-> /Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/weekly_report.md"}
+data: {"type": "log", "text": "-> /Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/weekly_report.html"}
+data: {"type": "log", "text": "-> /Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/6月8日周报 (3).docx"}
+data: {"type": "log", "text": "-> /Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/weekly_report_template.md"}
+data: {"type": "log", "text": "-> /Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/weekly_report_template.docx"}

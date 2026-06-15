@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import unittest
 
-from data_curation.workflow import _accepted_cache_items, _source_rank, audit_quality, plan_gaps
+from company_metrics import _apply_brand_market_reaction_not_applicable, _cache_item_brand_consistent
+from data_curation.workflow import (
+    _accepted_cache_items,
+    _source_rank,
+    audit_quality,
+    plan_gaps,
+    validate_entities,
+)
 
 
 def candidate(**overrides):
@@ -31,6 +38,34 @@ def candidate(**overrides):
 
 
 class DataCurationTests(unittest.TestCase):
+    def test_brand_market_reaction_is_deterministically_not_applicable(self):
+        row = {"company": "3HK", "metric": "市场反应", "value": "错误的股息片段"}
+        self.assertTrue(_apply_brand_market_reaction_not_applicable(row))
+        self.assertEqual(row["value"], "不适用（品牌非独立上市主体）")
+        self.assertEqual(row["aiStatus"], "ok")
+
+    def test_brand_cache_rejects_other_brand_qualitative_fact(self):
+        self.assertFalse(
+            _cache_item_brand_consistent(
+                {
+                    "company": "csl",
+                    "metric": "产品规格",
+                    "value": "HKT Enterprise Solutions推出Open API服务",
+                    "basis": "服务运行在1O1O 5G网络上。",
+                }
+            )
+        )
+        self.assertTrue(
+            _cache_item_brand_consistent(
+                {
+                    "company": "1O1O",
+                    "metric": "企业专线",
+                    "value": "HKT Enterprise Solutions提供Open API服务",
+                    "basis": "服务明确运行在1O1O 5G网络上。",
+                }
+            )
+        )
+
     def test_official_source_has_highest_rank(self):
         self.assertEqual(_source_rank(["https://www.hkt.com/results"]), (1.0, "official"))
         self.assertEqual(_source_rank(["https://stockanalysis.com/quote/hkg/6823"]), (0.62, "commercial"))
@@ -96,6 +131,52 @@ class DataCurationTests(unittest.TestCase):
         self.assertEqual(fact["value"], "不适用（非上市主体）")
         self.assertEqual(fact["decision"], "accepted")
 
+    def test_non_listed_brand_market_reaction_is_publishable(self):
+        result = audit_quality(
+            {
+                "candidates": [
+                    candidate(
+                        company="csl",
+                        metric="市场反应",
+                        value="未提取到有效数据",
+                        basis="csl为HKT旗下品牌，不是独立上市主体。",
+                        status="unavailable",
+                        entity_supported=False,
+                        metric_supported=False,
+                        value_supported=False,
+                        confidence=0.1,
+                    )
+                ]
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["value"], "不适用（品牌非独立上市主体）")
+        self.assertEqual(fact["decision"], "accepted")
+
+    def test_offline_entity_evidence_overrides_missing_model_checkbox(self):
+        fact = candidate(
+            company="HKT",
+            entity_supported=False,
+            metric_supported=True,
+            value_supported=True,
+        )
+        result = validate_entities(
+            {
+                "tasks": [
+                    {
+                        "id": fact["id"],
+                        "company": "HKT",
+                        "metric": fact["metric"],
+                        "raw_text": "HKT total revenue was HK$36,553 million.",
+                        "sources": ["https://www.hkt.com/results"],
+                    }
+                ],
+                "candidates": [fact],
+            }
+        )
+        self.assertTrue(result["candidates"][0]["entity_supported"])
+        self.assertNotEqual(result["candidates"][0]["decision"], "rejected")
+
     def test_audit_reentry_clears_stale_audit_reasons(self):
         result = audit_quality(
             {
@@ -134,6 +215,60 @@ class DataCurationTests(unittest.TestCase):
         fact = result["candidates"][0]
         self.assertEqual(fact["status"], "unavailable")
         self.assertEqual(fact["decision"], "rejected")
+
+    def test_negative_numeric_sentence_is_not_recovered_as_fact(self):
+        result = audit_quality(
+            {
+                "candidates": [
+                    candidate(
+                        metric="5G用户数",
+                        value="未提取到有效数据",
+                        basis="片段未提供5G用户数具体数字，仅有5G栏目名称。",
+                        status="unavailable",
+                        metric_supported=False,
+                        value_supported=False,
+                        confidence=0.1,
+                    )
+                ]
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["status"], "unavailable")
+        self.assertEqual(fact["decision"], "rejected")
+
+    def test_home_broadband_package_price_passes_gate(self):
+        result = audit_quality(
+            {
+                "candidates": [
+                    candidate(
+                        metric="家宽套餐",
+                        value="1000M光纤入屋宽带低至HK$108/月",
+                        basis="官网列示1000M光纤入屋宽带低至HK$108/月。",
+                    )
+                ]
+            }
+        )
+        self.assertEqual(result["candidates"][0]["decision"], "accepted")
+
+    def test_metric_semantic_failure_cannot_enter_review(self):
+        result = audit_quality(
+            {
+                "candidates": [
+                    candidate(
+                        metric="促销折扣",
+                        value="片段未提供具体促销活动。",
+                        basis="片段只包含一般品牌介绍。",
+                        status="ok",
+                        metric_supported=False,
+                        value_supported=True,
+                        confidence=0.9,
+                    )
+                ]
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "rejected")
+        self.assertIn("指标语义未通过", fact["reasons"])
 
     def test_navigation_text_is_rejected(self):
         result = audit_quality(

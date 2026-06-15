@@ -127,6 +127,12 @@ def get_agent():
     if "reasoner" in model_name:
         model_name = "deepseek-chat"
         
+    from network_utils import _available_proxy_urls
+    proxies = _available_proxy_urls()
+    if proxies and not os.environ.get("HTTP_PROXY"):
+        os.environ["HTTP_PROXY"] = proxies[0]
+        os.environ["HTTPS_PROXY"] = proxies[0]
+        
     llm = ChatDeepSeek(
         model=model_name,
         api_key=api_key,
@@ -188,7 +194,7 @@ def stream_agent(message: str) -> Generator[dict[str, Any], None, None]:
                 if len(content) > 1500:
                     content = content[:1500] + "\n\n... (输出过长已截断)"
                 
-                yield {"type": "delta", "text": f"**参数**: `{args_str}`\n\n**结果**:\n<pre><code>{content}</code></pre>\n\n</div></details>\n\n"}
+                yield {"type": "delta", "text": f"**参数**: `{args_str}`\n\n**结果**:\n<div style='white-space: pre-wrap; line-height: 1.6; color: #212529; font-family: inherit; margin-top: 8px;'>{content}</div>\n\n</div></details>\n\n"}
                     
         yield {"type": "done"}
     except Exception as e:

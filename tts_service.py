@@ -13,6 +13,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from docx import Document
+from network_utils import urlopen_with_local_proxy_fallback
 
 
 ROOT = Path(__file__).resolve().parent
@@ -174,7 +175,7 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=90) as resp:
+        with urlopen_with_local_proxy_fallback(req, timeout=90) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
             if provider == "openai":
                 return payload.get("output", {}).get("text", "")
@@ -189,18 +190,21 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
 
 def build_audio_summary(report_path: Path, max_chars: int = 1500) -> str:
     text = _source_text(report_path)
-    
+
     llm_summary = _generate_audio_summary_with_llm(text)
     if llm_summary:
         summary = normalize_for_speech(llm_summary)
         summary = re.sub(r"^(音频|语音)?摘要?已生成[，。,. ]*", "", summary)
         summary = re.sub(r"^本期战略竞对检测周报已生成[，。,. ]*", "", summary)
-        if len(summary) > max_chars:
+        if len(summary) < 220 or "相关动态更新" in summary:
+            summary = ""
+        elif len(summary) > max_chars:
             summary = summary[: max_chars - 1].rstrip("，。；,. ") + "。"
         elif summary and not summary.endswith(("。", "！", "？")):
             summary += "。"
-        return summary
-    
+        if summary:
+            return summary
+
     lines = [re.sub(r"\s+", " ", line).strip() for line in text.splitlines()]
     lines = [line for line in lines if line]
     if not lines:
@@ -219,25 +223,53 @@ def build_audio_summary(report_path: Path, max_chars: int = 1500) -> str:
             continue
         useful.append(line.strip(" #-\t"))
 
-    title_items = [line for line in useful if re.match(r"^\d+\.【[^】]+】", line)]
-    highlights = title_items[:4] or useful[:5]
+    section_names = {"政治资讯", "行业资讯", "社会资讯", "国际资讯"}
+    body_items: dict[str, list[tuple[str, str]]] = {name: [] for name in section_names}
+    current_section = ""
+    current_title = ""
+    for line in lines:
+        if line in section_names:
+            current_section = line
+            current_title = ""
+            continue
+        if re.match(r"^[一二三四五六七八九十百]+、", line):
+            current_title = re.sub(r"^[一二三四五六七八九十百]+、", "", line).strip()
+            continue
+        if current_section and current_title:
+            detail = line.strip()
+            if detail and detail != current_title and "相关动态更新" not in detail:
+                body_items[current_section].append((current_title, detail))
+                current_title = ""
 
-    summary_parts: list[str] = []
-    if highlights:
-        cleaned = []
-        for item in highlights:
-            title = re.sub(r"^\d+\.【[^】]+】", "", item)
-            title = normalize_for_speech(title)
-            if title:
-                cleaned.append(title)
-        if cleaned:
-            summary_parts.append("本期重点关注：" + "；".join(cleaned[:4]) + "。")
-    summary_parts.append("建议先看政策监管变化，再看友商经营指标、产品资费调整和国际运营商动态。")
+    limits = {"政治资讯": 4, "行业资讯": 4, "社会资讯": 2, "国际资讯": 2}
+    summary_parts = ["本期周报重点如下。"]
+    for section_name in ("政治资讯", "行业资讯", "社会资讯", "国际资讯"):
+        items = body_items[section_name][: limits[section_name]]
+        if not items:
+            continue
+        cleaned_items = []
+        for title, detail in items:
+            spoken = normalize_for_speech(title)
+            if spoken.endswith("更新") or len(spoken) < 18:
+                first_sentence = re.split(r"(?<=[。！？；])", normalize_for_speech(detail), maxsplit=1)[0]
+                if first_sentence:
+                    spoken = f"{spoken}，{first_sentence.rstrip('。；')}"
+            if len(spoken) > 120:
+                clauses = re.split(r"(?<=[，。；])", spoken)
+                complete = ""
+                for clause in clauses:
+                    if len(complete) + len(clause) > 120:
+                        break
+                    complete += clause
+                spoken = complete.rstrip("，。；,. ") or spoken[:119].rstrip("，。；,. ")
+            cleaned_items.append(spoken.rstrip("。"))
+        summary_parts.append(f"{section_name}方面，" + "；".join(cleaned_items) + "。")
+    summary_parts.append("综合来看，应重点跟进政策监管变化、香港友商经营表现以及国际运营商的人工智能和网络投资进展。")
 
     summary = normalize_for_speech("".join(summary_parts))
     summary = re.sub(r"^(音频|语音)?摘要?已生成[，。,. ]*", "", summary)
     summary = re.sub(r"^本期战略竞对检测周报已生成[，。,. ]*", "", summary)
-    fallback_max_chars = 360
+    fallback_max_chars = min(max_chars, 720)
     if len(summary) > fallback_max_chars:
         summary = summary[: fallback_max_chars - 1].rstrip("，。；,. ") + "。"
     elif summary and not summary.endswith(("。", "！", "？")):
@@ -373,48 +405,130 @@ def _percentage_number_to_chinese(value: str) -> str:
         number = number[1:]
     integer_text, dot, decimal_text = number.partition(".")
     integer = int(integer_text or "0")
+    integer_spoken = _integer_to_chinese(integer)
     digits = "零一二三四五六七八九"
-    if integer == 0:
-        integer_spoken = "零"
-    elif integer < 10000:
-        units = ("", "十", "百", "千")
-        parts: list[str] = []
-        zero_pending = False
-        for position in range(len(str(integer)) - 1, -1, -1):
-            divisor = 10**position
-            digit = integer // divisor % 10
-            if digit == 0:
-                if parts and integer % divisor:
-                    zero_pending = True
-                continue
-            if zero_pending:
-                parts.append("零")
-                zero_pending = False
-            if not (digit == 1 and position == 1 and not parts):
-                parts.append(digits[digit])
-            parts.append(units[position])
-        integer_spoken = "".join(parts)
-    else:
-        integer_spoken = "".join(digits[int(char)] for char in str(integer))
     if dot:
         return f"{sign}{integer_spoken}点{''.join(digits[int(char)] for char in decimal_text)}"
     return f"{sign}{integer_spoken}"
 
 
+def _integer_to_chinese(n: int) -> str:
+    """Convert an integer to its spoken Chinese form."""
+    if n == 0:
+        return "零"
+    digits = "零一二三四五六七八九"
+    
+    def _section(num: int) -> str:
+        if num == 0:
+            return ""
+        units = ["", "十", "百", "千"]
+        parts: list[str] = []
+        zero_pending = False
+        for pos in range(len(str(num)) - 1, -1, -1):
+            divisor = 10 ** pos
+            digit = num // divisor % 10
+            if digit == 0:
+                if parts and num % divisor:
+                    zero_pending = True
+                continue
+            if zero_pending:
+                parts.append("零")
+                zero_pending = False
+            if digit == 2 and pos == 3 and not parts:
+                parts.append("两")
+            elif digit == 1 and pos == 1 and not parts:
+                pass
+            else:
+                parts.append(digits[digit])
+            parts.append(units[pos])
+        return "".join(parts)
+
+    if n < 10_000:
+        return _section(n)
+    if n < 100_000_000:
+        wan = n // 10_000
+        rest = n % 10_000
+        wan_str = "两" if wan == 2 else _section(wan)
+        result = wan_str + "万"
+        if rest == 0:
+            return result
+        if rest < 1000:
+            result += "零"
+        result += _section(rest)
+        return result
+    yi = n // 100_000_000
+    rest = n % 100_000_000
+    yi_str = "两" if yi == 2 else _section(yi)
+    result = yi_str + "亿"
+    if rest == 0:
+        return result
+    wan = rest // 10_000
+    remainder = rest % 10_000
+    if wan:
+        if rest < 10_000_000:
+            result += "零"
+        wan_str = "两" if wan == 2 else _section(wan)
+        result += wan_str + "万"
+    if remainder:
+        if rest % 10_000 < 1000:
+            result += "零"
+        result += _section(remainder)
+    return result
+
+
 def prepare_tts_text(value: str) -> str:
-    text = value.replace("：", "，").replace("；", "。")
-    text = text.replace("、", "，")
-    # Keep the percentage operator in front of the complete number. Leaving
-    # "%" after a decimal such as "8点3%" can be spoken as "八点百分之三".
+    # Remove markdown bold/heading/code symbols
+    text = re.sub(r"[*#`]+", "", value)
+    text = text.replace("：", "，").replace("；", "。").replace("、", "，")
+    
+    # 1. Convert time format (e.g. 17:30 -> 十七时三十分)
+    text = re.sub(
+        r"(\d{1,2}):(\d{2})", 
+        lambda m: f"{_integer_to_chinese(int(m.group(1)))}时{_integer_to_chinese(int(m.group(2)))}分", 
+        text
+    )
+    
+    # 2. Keep the percentage operator in front of the complete number. 
+    # Leaving "%" after a decimal such as "8点3%" can be spoken as "八点百分之三".
     text = re.sub(
         r"(?<![\d.])([+-]?\d[\d,]*(?:\.\d+)?)\s*[%％]",
         lambda match: "百分之" + _percentage_number_to_chinese(match.group(1)),
         text,
     )
+    
+    # 3. Convert years (e.g. 2024年 -> 二零二四年)
+    def _year_replacer(match: re.Match) -> str:
+        digits_map = "零一二三四五六七八九"
+        return "".join(digits_map[int(d)] for d in match.group(1)) + "年"
+    text = re.sub(r"(\d{4})年", _year_replacer, text)
+    
+    # 4. Convert general standalone numbers (e.g. "166" -> "一百六十六", "3.5" -> "三点五")
+    # Only convert pure integer/float tokens not already part of an English word/ID.
+    def _num_replacer(match: re.Match) -> str:
+        num_str = match.group(1).replace(",", "")
+        sign = ""
+        if num_str.startswith(("+", "-")):
+            sign = "正" if num_str[0] == "+" else "负"
+            num_str = num_str[1:]
+        
+        if "." in num_str:
+            integer_part, _, decimal_part = num_str.partition(".")
+            int_spoken = _integer_to_chinese(int(integer_part)) if integer_part else "零"
+            digits_map = "零一二三四五六七八九"
+            dec_spoken = "".join(digits_map[int(d)] for d in decimal_part)
+            return f"{sign}{int_spoken}点{dec_spoken}"
+        else:
+            return f"{sign}{_integer_to_chinese(int(num_str))}"
+
+    text = re.sub(r"(?<![a-zA-Z0-9.\-_])([+-]?\d[\d,]*(?:\.\d+)?)(?![a-zA-Z0-9.\-_])", _num_replacer, text)
+    
+    # 5. Fallback for any missed decimals or commas
     text = re.sub(r"(?<=\d)\.(?=\d)", "点", text)
     text = re.sub(r"(?<=\d),(?=\d{3}(?:\D|$))", "", text)
+    
     text = re.sub(r"\s+", " ", text)
     return text.strip()
+
 
 
 def _ensure_kokoro_files() -> tuple[Path, Path] | None:

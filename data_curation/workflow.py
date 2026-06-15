@@ -14,10 +14,14 @@ from pathlib import Path
 from typing import Annotated, Any, TypedDict
 from urllib.parse import urlparse
 
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.tools import tool
+from langchain_deepseek import ChatDeepSeek
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy
 
+from ai_config import load_ai_config
 from company_metrics import (
     AI_CACHE_PATH,
     AI_CACHE_SCHEMA_VERSION,
@@ -31,6 +35,7 @@ from normalize_company_metrics_ai import (
     build_tasks,
     call_deepseek,
     clean_text,
+    deterministic_extract_task,
     entity_supported_offline,
     fallback_clean_batch,
     load_cache,
@@ -75,6 +80,8 @@ COMMERCIAL_HOST_TERMS = (
 CORE_COMPANY_ROWS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
 PRIMARY_PERFORMANCE_ROWS = {2, 5, 8, 11, 15, 17}
 AUDIT_REASON_TEXTS = {
+    "主体归属未通过",
+    "指标语义未通过",
     "抽取结果不可用",
     "数值或事实依据不足",
     "未通过指标格式与单位门禁",
@@ -104,6 +111,8 @@ class CurationState(TypedDict, total=False):
     candidates: list[dict[str, Any]]
     gaps: list[dict[str, Any]]
     recrawl_tasks: list[dict[str, Any]]
+    supervisor_decision: str
+    supervisor_reason: str
     best_candidates: list[dict[str, Any]]
     best_accepted_count: int
     summary: dict[str, Any]
@@ -138,6 +147,9 @@ def _trace(
     output: Any | None = None,
     tool: str = "",
     result: Any | None = None,
+    status: str = "",
+    decision: str = "",
+    duration_ms: int | None = None,
 ) -> dict[str, Any]:
     event = {
         "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -147,6 +159,12 @@ def _trace(
         "event_type": event_type,
         "message": clean_text(message, 500),
     }
+    if status:
+        event["status"] = status
+    if decision:
+        event["decision"] = clean_text(decision, 500)
+    if duration_ms is not None:
+        event["duration_ms"] = duration_ms
     if input is not None:
         event["input"] = _compact(input)
     if output is not None:
@@ -235,6 +253,7 @@ def _is_truncated_qualitative_fragment(metric: str, value: str) -> bool:
 def _cache_item_from_fact(fact: CandidateFact) -> dict[str, Any]:
     return {
         "schemaVersion": AI_CACHE_SCHEMA_VERSION,
+        "evidence_hash": fact.evidence_hash,
         "company": fact.company,
         "metric": fact.metric,
         "status": "ok" if fact.decision == "accepted" else "unavailable",
@@ -279,6 +298,30 @@ def _normalized_unit_from_context(text: str) -> str:
 def _recover_fact_value(fact: CandidateFact) -> str:
     current = clean_text(fact.value, 220)
     context = clean_text(f"{fact.basis}；{fact.note}", 900)
+    # Prefer a positive, metric-specific value found in the basis. Models
+    # sometimes first reject a distractor and then state the correct value in
+    # the same sentence ("并非净利润；净利润为...").
+    numeric_metric = bool(
+        re.search(
+            r"派息|股息|分派|资本开支|收入|收益|EBITDA|利润|用户|客户|ARPU|"
+            r"宽频|家宽|套餐|资费|频谱|GDP|CPI|人口|投资",
+            fact.metric,
+            re.IGNORECASE,
+        )
+    )
+    explicit_positive_value = bool(
+        re.search(
+            r"(?:为|达|达到|录得|增至|降至|was|were|at|reached|amounted to|reported)"
+            r"[^。；]{0,24}(?:HK\$|US\$|RMB|人民币|港元|\$)?\s*[-+]?\d",
+            context,
+            re.IGNORECASE,
+        )
+    )
+    if numeric_metric and explicit_positive_value:
+        for source_text in (fact.basis, fact.note):
+            recovered = _direct_value(fact.metric, source_text)
+            if recovered and _passes_metric_gate(fact.metric, recovered):
+                return clean_text(recovered, 220)
     if re.search(
         r"未提供|未给出|未提及|未包含|未披露|无(?:具体|相关|可用)?"
         r"(?:数据|数字|金额|内容|信息|指标|事实|描述)|仅列出|仅提及|无法确认|未能确认",
@@ -305,6 +348,15 @@ def _recover_fact_value(fact: CandidateFact) -> str:
 
 def _recover_explicit_not_applicable(fact: CandidateFact) -> bool:
     context = f"{fact.value} {fact.basis} {fact.note}"
+    if fact.metric == "市场反应" and fact.company in {"csl", "1O1O", "3HK"}:
+        fact.value = "不适用（品牌非独立上市主体）"
+        fact.status = "ok"
+        fact.entity_supported = True
+        fact.metric_supported = True
+        fact.value_supported = True
+        fact.confidence = max(fact.confidence, 0.95)
+        fact.note = clean_text(f"{fact.note}；依据品牌上市口径确认不适用", 160).strip("；")
+        return True
     if not re.search(r"非上市|not listed|private company", context, re.IGNORECASE):
         return False
     if re.search(r"派息|股息|分派|券商观点|市场反应", fact.metric, re.IGNORECASE):
@@ -324,12 +376,15 @@ def ingest_evidence(state: CurationState) -> dict[str, Any]:
     cache = load_cache()
     items = cache.get("items", {}) if cache.get("schemaVersion") == AI_CACHE_SCHEMA_VERSION else {}
     current_ids = {task["id"] for task in tasks}
+    current_hashes = {task["id"]: task.get("evidence_hash", "") for task in tasks}
     existing = {
         row_id: item
         for row_id, item in items.items()
         if (
             row_id in current_ids
             and item.get("schemaVersion") == AI_CACHE_SCHEMA_VERSION
+            and item.get("evidence_hash")
+            and item.get("evidence_hash") == current_hashes.get(row_id)
             and item.get("decision") in {"accepted", "review"}
             and "AI不可用" not in str(item.get("note") or "")
         )
@@ -392,6 +447,7 @@ def _candidate_from_cache(task: EvidenceTask, item: dict[str, Any]) -> Candidate
         source_tier=task.source_tier,
         row_ref=task.row_ref,
         sources=task.sources,
+        evidence_hash=task.evidence_hash,
     )
 
 
@@ -400,14 +456,24 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
     existing = state.get("existing_items", {})
     candidates: list[CandidateFact] = []
     pending: list[EvidenceTask] = []
+    cached_count = 0
+    deterministic_count = 0
     for task in tasks:
         cached = existing.get(task.id)
         if isinstance(cached, dict):
             candidates.append(_candidate_from_cache(task, cached))
+            cached_count += 1
         else:
-            pending.append(task)
+            deterministic = deterministic_extract_task(task.model_dump())
+            if deterministic:
+                candidates.append(_candidate_from_cache(task, deterministic))
+                deterministic_count += 1
+            else:
+                pending.append(task)
 
     online_used = False
+    online_batches = 0
+    fallback_batches = 0
     trace_events: list[dict[str, Any]] = [
         _trace(
             state,
@@ -417,6 +483,7 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
             input={
                 "tasks": len(tasks),
                 "cached": len(candidates),
+                "deterministic": deterministic_count,
                 "pending": len(pending),
                 "online_ai": state.get("online_ai", True),
                 "batch_size": state.get("batch_size"),
@@ -449,8 +516,10 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                 )
             )
             try:
+                started = time.monotonic()
                 cleaned = call_deepseek(payload)
                 online_used = True
+                online_batches += 1
                 trace_events.append(
                     _trace(
                         state,
@@ -464,9 +533,12 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                             "returned": len(cleaned),
                             "sample": cleaned[:3],
                         },
+                        status="success",
+                        duration_ms=round((time.monotonic() - started) * 1000),
                     )
                 )
             except Exception as exc:
+                fallback_batches += 1
                 _event("事实抽取", f"在线模型不可用，本批转入严格离线门禁：{clean_text(exc, 180)}")
                 trace_events.append(
                     _trace(
@@ -477,10 +549,12 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                         event_type="tool_result",
                         tool="DeepSeek chat/completions",
                         result={"batch": batch_label, "error": clean_text(exc, 400)},
+                        status="failed",
                     )
                 )
                 cleaned = fallback_clean_batch(payload)
         else:
+            fallback_batches += 1
             trace_events.append(
                 _trace(
                     state,
@@ -525,15 +599,20 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                     source_tier=task.source_tier,
                     row_ref=task.row_ref,
                     sources=task.sources,
+                    evidence_hash=task.evidence_hash,
                 )
             )
     return {
         "candidates": [item.model_dump() for item in candidates],
-        "summary": {"onlineAiUsed": online_used},
+        "summary": {
+            "onlineAiUsed": online_used,
+            "onlineBatches": online_batches,
+            "fallbackBatches": fallback_batches,
+        },
         "node_events": [
             _event(
                 "事实抽取",
-                f"形成 {len(candidates)} 条候选事实；新增抽取 {len(pending)} 条，缓存复用 {len(candidates) - len(pending)} 条。",
+                f"形成 {len(candidates)} 条候选事实；待抽取 {len(pending)} 条，缓存复用 {cached_count} 条。",
             )
         ],
         "agent_trace": [
@@ -542,12 +621,15 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                 state,
                 "事实抽取",
                 "answer",
-                f"形成 {len(candidates)} 条候选事实；新增抽取 {len(pending)} 条，缓存复用 {len(candidates) - len(pending)} 条。",
+                f"形成 {len(candidates)} 条候选事实；待抽取 {len(pending)} 条，缓存复用 {cached_count} 条。",
                 output={
                     "candidates": len(candidates),
                     "newly_extracted": len(pending),
-                    "cache_reused": len(candidates) - len(pending),
+                    "cache_reused": cached_count,
+                    "deterministic_extracted": deterministic_count,
                     "online_ai_used": online_used,
+                    "online_batches": online_batches,
+                    "fallback_batches": fallback_batches,
                 },
             ),
         ],
@@ -561,9 +643,10 @@ def validate_entities(state: CurationState) -> dict[str, Any]:
     for raw in state.get("candidates", []):
         fact = CandidateFact.model_validate(raw)
         task = tasks.get(fact.id, {})
-        if not fact.entity_supported and entity_supported_offline(task):
-            fact.reasons.append("模型未确认主体归属")
-        if not entity_supported_offline(task):
+        offline_supported = entity_supported_offline(task)
+        if offline_supported:
+            fact.entity_supported = True
+        else:
             fact.entity_supported = False
             fact.reasons.append("来源域名或证据文本不支持该主体")
         if fact.metric in KNOWN_COMPANY_NAMES:
@@ -616,6 +699,10 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
                 fact.value_supported = True
                 fact.note = clean_text(f"{fact.note}；从依据文本补全数值或单位", 160).strip("；")
         combined = f"{fact.value} {fact.basis}"
+        if not fact.entity_supported:
+            fact.reasons.append("主体归属未通过")
+        if not fact.metric_supported:
+            fact.reasons.append("指标语义未通过")
         if fact.status != "ok":
             fact.reasons.append("抽取结果不可用")
         if not fact.value_supported:
@@ -757,7 +844,7 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
     for fact in candidates:
         groups.setdefault((fact.company, fact.metric, fact.row_ref), []).append(fact)
     gaps: list[GapRecord] = []
-    row_stats: dict[str, dict[str, int]] = {}
+    row_stats: dict[str, dict[str, Any]] = {}
     for (company, metric, row_ref), facts in groups.items():
         if any(fact.decision == "accepted" for fact in facts):
             continue
@@ -775,8 +862,15 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
                 candidate_ids=[fact.id for fact in facts],
             )
         )
-        stats = row_stats.setdefault(row_ref, {"gaps": 0, "failed": 0})
+        stats = row_stats.setdefault(
+            row_ref,
+            {"gaps": 0, "failed": 0, "companies": [], "metrics": []},
+        )
         stats["gaps"] += 1
+        if company not in stats["companies"]:
+            stats["companies"].append(company)
+        if metric not in stats["metrics"]:
+            stats["metrics"].append(metric)
         if _result_status(row_ref) in {"partial", "failed", "error"}:
             stats["failed"] = 1
 
@@ -807,6 +901,8 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
                     + ("，原爬取状态非完整成功" if stats["failed"] else "，现有证据未通过质量门禁"),
                     priority=100 if stats["failed"] else min(90, 50 + stats["gaps"]),
                     attempts=int(state.get("recrawl_round") or 0),
+                    companies=stats["companies"],
+                    metrics=stats["metrics"],
                 )
             )
             if len(recrawl_tasks) >= int(state.get("max_recrawl_rows") or 3):
@@ -832,6 +928,226 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
                     "recrawl_tasks": [item.model_dump() for item in recrawl_tasks],
                     "best_accepted_count": best_count,
                 },
+            ),
+        ],
+    }
+
+
+def _build_supervisor_model() -> ChatDeepSeek:
+    config = load_ai_config(include_key=True)
+    api_key = str(config.get("api_key") or "").strip()
+    if not api_key:
+        raise RuntimeError("未配置 DeepSeek API Key")
+    return ChatDeepSeek(
+        model=str(config.get("model") or "deepseek-chat"),
+        api_key=api_key,
+        base_url=str(config.get("base_url") or "https://api.deepseek.com").rstrip("/"),
+        temperature=0,
+        timeout=120,
+        max_retries=1,
+    )
+
+
+def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
+    planned = [RecrawlTask.model_validate(item) for item in state.get("recrawl_tasks", [])]
+    gaps = [GapRecord.model_validate(item) for item in state.get("gaps", [])]
+    trace_events: list[dict[str, Any]] = [
+        _trace(
+            state,
+            "编排决策",
+            "observe",
+            "Supervisor 收到质量门禁产生的证据缺口和候选补爬任务。",
+            input={
+                "gaps": len(gaps),
+                "candidate_recrawl_rows": [item.row_number for item in planned],
+                "recrawl_round": state.get("recrawl_round", 0),
+                "max_recrawl_rounds": state.get("max_recrawl_rounds", 1),
+            },
+        )
+    ]
+    if not planned:
+        reason = "没有满足补爬条件的候选行，进入发布。"
+        return {
+            "supervisor_decision": "publish",
+            "supervisor_reason": reason,
+            "recrawl_tasks": [],
+            "node_events": [_event("编排决策", reason)],
+            "agent_trace": [
+                *trace_events,
+                _trace(state, "编排决策", "decision", reason, decision="publish", status="success"),
+            ],
+        }
+
+    allowed = {item.row_number: item for item in planned}
+    gap_by_row: dict[int, list[GapRecord]] = {}
+    for gap in gaps:
+        match = re.fullmatch(r"row_(\d+)", gap.row_ref or "")
+        if match:
+            gap_by_row.setdefault(int(match.group(1)), []).append(gap)
+    decision: dict[str, Any] = {}
+
+    @tool
+    def inspect_evidence_gaps(row_numbers: list[int]) -> dict[str, Any]:
+        """读取候选行的缺口、抓取状态和缺失指标，供 Supervisor 决策。"""
+        rows = []
+        for row_number in row_numbers:
+            if row_number not in allowed:
+                continue
+            row_gaps = gap_by_row.get(row_number, [])
+            rows.append(
+                {
+                    "row": row_number,
+                    "crawl_status": _result_status(f"row_{row_number}") or "unknown",
+                    "gap_count": len(row_gaps),
+                    "metrics": [gap.metric for gap in row_gaps[:12]],
+                    "companies": list(dict.fromkeys(gap.company for gap in row_gaps))[:12],
+                    "reasons": list(dict.fromkeys(gap.reason for gap in row_gaps))[:6],
+                    "deterministic_priority": allowed[row_number].priority,
+                }
+            )
+        return {"rows": rows, "max_rows": int(state.get("max_recrawl_rows") or 3)}
+
+    @tool
+    def schedule_targeted_recrawl(row_numbers: list[int], rationale: str) -> dict[str, Any]:
+        """从允许的候选行中选择补爬行，不能绕过确定性质量门禁。"""
+        max_rows = int(state.get("max_recrawl_rows") or 3)
+        selected = list(dict.fromkeys(row for row in row_numbers if row in allowed))[:max_rows]
+        decision.update({"action": "recrawl", "rows": selected, "reason": clean_text(rationale, 500)})
+        return {
+            "accepted": bool(selected),
+            "selected_rows": selected,
+            "rejected_rows": [row for row in row_numbers if row not in allowed],
+            "reason": decision.get("reason", ""),
+        }
+
+    @tool
+    def publish_without_recrawl(reason: str) -> dict[str, Any]:
+        """放弃本轮补爬并进入发布，适用于重复抓取无法解决的质量问题。"""
+        decision.update({"action": "publish", "rows": [], "reason": clean_text(reason, 500)})
+        return {"accepted": True, "action": "publish", "reason": decision["reason"]}
+
+    tools = [inspect_evidence_gaps, schedule_targeted_recrawl, publish_without_recrawl]
+    tool_map = {item.name: item for item in tools}
+    if state.get("online_ai", True):
+        try:
+            model = _build_supervisor_model().bind_tools(tools)
+            messages: list[Any] = [
+                SystemMessage(
+                    content=(
+                        "你是公开信息数据治理 Supervisor。你不能直接修改事实、质量分数或发布阈值。"
+                        "必须先调用 inspect_evidence_gaps 查看候选行，再调用 schedule_targeted_recrawl "
+                        "或 publish_without_recrawl 作出唯一决策。补爬只用于抓取失败、证据缺失或关键指标"
+                        "缺口；格式问题、主体错误和低质量商业来源不应靠重复补爬解决。"
+                        "自然语言说明使用简洁中文段落，不要输出 Markdown 标题或表格，控制在 200 字以内。"
+                    )
+                ),
+                HumanMessage(
+                    content=(
+                        f"当前有 {len(gaps)} 个证据缺口；规则引擎给出候选行 {sorted(allowed)}。"
+                        f"最多补爬 {int(state.get('max_recrawl_rows') or 3)} 行。"
+                    )
+                ),
+            ]
+            for _ in range(4):
+                started = time.monotonic()
+                response = model.invoke(messages)
+                messages.append(response)
+                trace_events.append(
+                    _trace(
+                        state,
+                        "编排决策",
+                        "thinking",
+                        clean_text(response.content or "Supervisor 正在选择工具。", 500),
+                        output={"tool_calls": response.tool_calls},
+                        duration_ms=round((time.monotonic() - started) * 1000),
+                    )
+                )
+                if not response.tool_calls:
+                    break
+                for call in response.tool_calls:
+                    name = str(call.get("name") or "")
+                    args = call.get("args") or {}
+                    trace_events.append(
+                        _trace(
+                            state,
+                            "编排决策",
+                            "tool_call",
+                            f"Supervisor 调用工具：{name}。",
+                            event_type="tool_call",
+                            tool=name,
+                            input=args,
+                        )
+                    )
+                    selected_tool = tool_map.get(name)
+                    result = (
+                        selected_tool.invoke(args)
+                        if selected_tool is not None
+                        else {"ok": False, "error": f"未知工具：{name}"}
+                    )
+                    trace_events.append(
+                        _trace(
+                            state,
+                            "编排决策",
+                            "tool_result",
+                            f"工具 {name} 已返回。",
+                            event_type="tool_result",
+                            tool=name,
+                            result=result,
+                            status="success" if result.get("ok", True) is not False else "failed",
+                        )
+                    )
+                    messages.append(
+                        ToolMessage(
+                            content=json.dumps(result, ensure_ascii=False),
+                            tool_call_id=str(call.get("id") or name),
+                        )
+                    )
+                if decision:
+                    break
+        except Exception as exc:
+            trace_events.append(
+                _trace(
+                    state,
+                    "编排决策",
+                    "tool_result",
+                    "Supervisor 模型不可用，使用规则引擎的安全调度结果。",
+                    event_type="tool_result",
+                    tool="DeepSeek tool-calling supervisor",
+                    result={"error": clean_text(exc, 500)},
+                    status="fallback",
+                )
+            )
+
+    if not decision:
+        selected = [item.row_number for item in planned][: int(state.get("max_recrawl_rows") or 3)]
+        decision = {
+            "action": "recrawl" if selected else "publish",
+            "rows": selected,
+            "reason": "模型未形成有效工具决策，采用规则引擎优先级。",
+        }
+    selected_tasks = [allowed[row].model_dump() for row in decision.get("rows", []) if row in allowed]
+    action = "recrawl" if selected_tasks and decision.get("action") == "recrawl" else "publish"
+    reason = str(decision.get("reason") or "")
+    message = (
+        f"Supervisor 决定补爬 {', '.join(str(item['row_number']) for item in selected_tasks)}；{reason}"
+        if action == "recrawl"
+        else f"Supervisor 决定直接发布；{reason}"
+    )
+    return {
+        "supervisor_decision": action,
+        "supervisor_reason": reason,
+        "recrawl_tasks": selected_tasks,
+        "node_events": [_event("编排决策", message)],
+        "agent_trace": [
+            *trace_events,
+            _trace(
+                state,
+                "编排决策",
+                "decision",
+                message,
+                output={"action": action, "rows": [item["row_number"] for item in selected_tasks]},
+                decision=action,
+                status="success",
             ),
         ],
     }
@@ -868,6 +1184,16 @@ def recrawl_gaps(state: CurationState) -> dict[str, Any]:
     backup_dir = _backup_global_artifacts(state["run_id"])
     env = os.environ.copy()
     env["CMHK_ROWS"] = ",".join(str(row) for row in row_numbers)
+    env["CMHK_GAP_TARGETS"] = json.dumps(
+        {
+            str(task.row_number): {
+                "companies": task.companies,
+                "metrics": task.metrics,
+            }
+            for task in tasks
+        },
+        ensure_ascii=False,
+    )
     env["CMHK_CRAWL_MAX_SECONDS"] = str(min(int(env.get("CMHK_CRAWL_MAX_SECONDS", "900")), 600))
     command = [sys.executable, str(ROOT / "crawl.py")]
     trace_events = [
@@ -881,7 +1207,11 @@ def recrawl_gaps(state: CurationState) -> dict[str, Any]:
             input={
                 "command": command,
                 "cwd": str(ROOT),
-                "env": {"CMHK_ROWS": env["CMHK_ROWS"], "CMHK_CRAWL_MAX_SECONDS": env["CMHK_CRAWL_MAX_SECONDS"]},
+                "env": {
+                    "CMHK_ROWS": env["CMHK_ROWS"],
+                    "CMHK_GAP_TARGETS": json.loads(env["CMHK_GAP_TARGETS"]),
+                    "CMHK_CRAWL_MAX_SECONDS": env["CMHK_CRAWL_MAX_SECONDS"],
+                },
                 "timeout": 720,
             },
         )
@@ -975,6 +1305,10 @@ def publish_results(state: CurationState) -> dict[str, Any]:
     )
     summary.extra["evidence_gaps"] = evidence_gaps
     summary.extra["quality_rejected"] = quality_rejected
+    summary.extra["supervisor_decision"] = state.get("supervisor_decision", "")
+    summary.extra["supervisor_reason"] = state.get("supervisor_reason", "")
+    summary.extra["online_batches"] = int((state.get("summary") or {}).get("onlineBatches") or 0)
+    summary.extra["fallback_batches"] = int((state.get("summary") or {}).get("fallbackBatches") or 0)
     if not state.get("dry_run"):
         cache_backup_path = None
         previous_cache: dict[str, Any] = {}
@@ -998,10 +1332,19 @@ def publish_results(state: CurationState) -> dict[str, Any]:
         previous_accepted = _accepted_cache_items(previous_items if isinstance(previous_items, dict) else {})
         current_accepted = _accepted_cache_items(cache_items)
         current_semantic_keys = {_semantic_key_for_item(item) for item in cache_items.values()}
+        current_hashes_by_key = {
+            _semantic_key_for_item(item): str(item.get("evidence_hash") or "")
+            for item in cache_items.values()
+        }
         preserved = 0
         protected_keys: set[str] = set()
         for key, previous_item in previous_accepted.items():
             if key not in current_semantic_keys:
+                continue
+            if (
+                not previous_item.get("evidence_hash")
+                or previous_item.get("evidence_hash") != current_hashes_by_key.get(key)
+            ):
                 continue
             current_item = current_accepted.get(key)
             current_score = float(current_item.get("quality_score") or 0.0) if current_item else -1.0
@@ -1114,8 +1457,8 @@ def publish_results(state: CurationState) -> dict[str, Any]:
     }
 
 
-def route_after_gap_plan(state: CurationState) -> str:
-    return "recrawl" if state.get("recrawl_tasks") else "publish"
+def route_after_supervisor(state: CurationState) -> str:
+    return "recrawl" if state.get("supervisor_decision") == "recrawl" else "publish"
 
 
 def build_graph():
@@ -1128,8 +1471,10 @@ def build_graph():
     builder.add_node("audit", audit_quality, retry_policy=retry)
     builder.add_node("resolve", resolve_conflicts, retry_policy=retry)
     builder.add_node("plan_gaps", plan_gaps, retry_policy=retry)
-    builder.add_node("recrawl", recrawl_gaps, retry_policy=retry)
-    builder.add_node("publish", publish_results, retry_policy=retry)
+    builder.add_node("supervisor", supervise_gap_actions, retry_policy=retry)
+    # These nodes have external side effects and must not be retried implicitly.
+    builder.add_node("recrawl", recrawl_gaps)
+    builder.add_node("publish", publish_results)
     builder.add_edge(START, "ingest")
     builder.add_edge("ingest", "classify")
     builder.add_edge("classify", "extract")
@@ -1137,7 +1482,12 @@ def build_graph():
     builder.add_edge("validate", "audit")
     builder.add_edge("audit", "resolve")
     builder.add_edge("resolve", "plan_gaps")
-    builder.add_conditional_edges("plan_gaps", route_after_gap_plan, {"recrawl": "recrawl", "publish": "publish"})
+    builder.add_edge("plan_gaps", "supervisor")
+    builder.add_conditional_edges(
+        "supervisor",
+        route_after_supervisor,
+        {"recrawl": "recrawl", "publish": "publish"},
+    )
     builder.add_edge("recrawl", "ingest")
     builder.add_edge("publish", END)
     checkpointer = MemorySaver()

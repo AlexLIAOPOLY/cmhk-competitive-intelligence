@@ -68,6 +68,7 @@ FORBIDDEN_REPORT_PHRASES = (
     "爬虫",
     "爬取成功",
     "抓取成功",
+    "相关动态更新",
 )
 
 # Weekly reports are decision materials, not crawler diagnostics. Each entry
@@ -465,6 +466,8 @@ def curated_section(row: dict) -> str:
     category = str(row.get("metricCategory") or "")
     if company in INTERNATIONAL_COMPANIES or group == "亚太运营商":
         return "国际资讯"
+    if company in {"通信监管机构", "香港本地监管", "政策", "政治新闻"}:
+        return "政治资讯"
     if category == "政策宏观":
         return "政治资讯"
     if category in {"财务业绩", "客户经营"}:
@@ -486,8 +489,35 @@ def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
     company = clean_text(row.get("company"), 40)
     metric = clean_text(row.get("metric"), 32)
     value = clean_text(row.get("value") or row.get("detail"), 260)
+    detail = clean_text(row.get("detail"), 360)
     normalized = value.lower()
+    normalized_context = f"{company} {metric} {value}".lower()
     rules = [
+        (
+            "166 foreign-invested enterprises approved",
+            "",
+            "工信部已批准166家外资企业开展增值电信业务经营试点",
+        ),
+        (
+            "promote the development of a low-altitude economy ecosystem",
+            "",
+            "香港施政报告提出促进低空经济生态系统发展",
+        ),
+        (
+            "licensing regimes for digital asset dealing and custodian services",
+            "",
+            "香港将制定数字资产交易及托管服务发牌制度的立法建议",
+        ),
+        (
+            "subsidy scheme to extend fibre-based networks",
+            "extend 5g coverage",
+            "香港推进偏远乡村光纤网络及农村和偏远地区5G覆盖资助计划",
+        ),
+        (
+            "satellite television services",
+            "",
+            "通讯事务管理局持续公布卫星电视服务监管信息",
+        ),
         ("sk telecom", "ai native", "SK Telecom在MWC 2026发布AI原生战略"),
         (
             "sarashina",
@@ -507,10 +537,17 @@ def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
         ("rising adoption of cloud services", "", "印度数据中心行业受云服务采用增长带动快速发展"),
     ]
     for first, second, replacement in rules:
-        if first in normalized and (not second or second in normalized):
+        if first in normalized_context and (not second or second in normalized_context):
             return clean_text(replacement, limit)
     if len(re.findall(r"[\u4e00-\u9fff]", value)) >= 6:
         return clean_text(value, limit)
+    detail_chinese = re.sub(
+        r"^(片段中明确提到|片段明确提到|片段明确说明|片段提到|新闻标题明确提及)[：:'“” ]*",
+        "",
+        detail,
+    ).strip("'“”")
+    if len(re.findall(r"[\u4e00-\u9fff]", detail_chinese)) >= 8:
+        return clean_text(detail_chinese, limit)
     replacements = {
         "CEO Unveils": "发布",
         "Strategy": "战略",
@@ -525,7 +562,7 @@ def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
     for raw, cn in replacements.items():
         localized = localized.replace(raw, cn)
     if company and metric and localized == value and re.search(r"[A-Za-z]{4,}", value):
-        localized = f"{company}{metric}相关动态更新"
+        localized = f"{company}{metric}公开信息已更新"
     return clean_text(localized, limit)
 
 
@@ -577,7 +614,17 @@ def curated_row_score(row: dict, section: str) -> tuple[int, int, str]:
     metric = str(row.get("metric") or "")
     source_type = str(row.get("sourceType") or "")
     priority_by_section = {
-        "政治资讯": ["重大政策/声明", "频谱拍卖", "频谱/牌照", "低空经济", "经济", "GDP"],
+        "政治资讯": [
+            "重大政策/声明",
+            "频谱拍卖",
+            "频谱/牌照",
+            "低空经济",
+            "Web3",
+            "覆盖义务",
+            "卫星通信",
+            "经济",
+            "GDP",
+        ],
         "行业资讯": [
             "战略升级",
             "收益",
@@ -1126,6 +1173,7 @@ def render_into_source_template(model: dict) -> Document:
         for index in range(body_idx + 1, len(doc.paragraphs))
         if doc.paragraphs[index].text.strip() == "政治资讯"
     )
+    body_anchor_element = doc.paragraphs[body_idx]._p
 
     snapshots = {
         "company": paragraph_format_snapshot(doc.paragraphs[company_idx]),
@@ -1155,13 +1203,39 @@ def render_into_source_template(model: dict) -> Document:
     toc_slot_list = template_slots(doc, toc_idx + 2, body_idx)
     toc_slots = iter(toc_slot_list)
     for section_model in model["sections"]:
-        add_or_reuse(toc_slots, doc, section_model["name"], snapshots["toc_section"])
+        section_paragraph = add_or_reuse(toc_slots, doc, section_model["name"], snapshots["toc_section"])
+        section_paragraph.paragraph_format.space_before = Pt(6)
+        section_paragraph.paragraph_format.space_after = Pt(2)
+        section_paragraph.paragraph_format.line_spacing = 1.0
         for item in section_model["items"]:
-            add_or_reuse(toc_slots, doc, f"{item['index']}.【{item['tag']}】{item['title']}", snapshots["toc_item"])
-        add_or_reuse(toc_slots, doc, "", snapshots["body_text"])
+            item_paragraph = add_or_reuse(
+                toc_slots,
+                doc,
+                f"{item['index']}.【{item['tag']}】{item['title']}",
+                snapshots["toc_item"],
+            )
+            item_paragraph.paragraph_format.space_before = Pt(0)
+            item_paragraph.paragraph_format.space_after = Pt(1)
+            item_paragraph.paragraph_format.line_spacing = 1.05
+        spacer = add_or_reuse(toc_slots, doc, "", snapshots["body_text"])
+        spacer.paragraph_format.space_before = Pt(0)
+        spacer.paragraph_format.space_after = Pt(0)
+        spacer.paragraph_format.line_spacing = 1.0
     for paragraph in list(toc_slots):
         remove_paragraph(paragraph)
 
+    # The source template contains a fixed red separator inside the original
+    # short table of contents. It overlaps text once the TOC grows, so remove
+    # drawings only from the TOC range while preserving the cover artwork.
+    for paragraph in list(doc.paragraphs[toc_idx + 1 : body_idx]):
+        if has_drawing(paragraph):
+            remove_paragraph(paragraph)
+
+    body_idx = next(
+        index
+        for index in range(toc_idx + 1, len(doc.paragraphs))
+        if doc.paragraphs[index]._p is body_anchor_element
+    )
     body_slots = iter(template_slots(doc, body_idx, None))
     for section_model in model["sections"]:
         add_or_reuse(body_slots, doc, section_model["name"], snapshots["body_section"])
@@ -1174,6 +1248,8 @@ def render_into_source_template(model: dict) -> Document:
     # spacing and pagination properties and can create completely blank pages.
     for paragraph in list(body_slots):
         remove_paragraph(paragraph)
+    while doc.paragraphs and not doc.paragraphs[-1].text.strip() and not has_drawing(doc.paragraphs[-1]):
+        remove_paragraph(doc.paragraphs[-1])
     return doc
 
 

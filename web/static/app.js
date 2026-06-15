@@ -165,6 +165,7 @@ function iconSvg(name) {
     trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
     volume: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/>',
     waveform: '<path d="M2 12h2"/><path d="M6 8v8"/><path d="M10 4v16"/><path d="M14 9v6"/><path d="M18 7v10"/><path d="M22 12h-2"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
   };
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ""}</svg>`;
 }
@@ -532,14 +533,13 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell" title="${file.name}">${typeInfo.icon} ${file.name}</span>
+        <span class="file-name-cell file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${typeInfo.icon} ${file.name}</span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
           ${audioAction}
-          <button type="button" class="row-icon-button edit-file-button" data-path="${safePath}" title="编辑" aria-label="编辑">${iconSvg("edit")}</button>
           <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
-          <a href="${file.url}" download class="quiet-button small" style="text-decoration:none;">下载</a>
+          <a href="${file.url}" download class="row-icon-button download-icon-button" title="下载" aria-label="下载" style="text-decoration:none;display:inline-grid;place-items:center;">${iconSvg("download")}</a>
         </span>
       </div>
     `;
@@ -549,8 +549,8 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
 
 function bindOutputTableEvents(target) {
   if (!target) return;
-  target.querySelectorAll(".edit-file-button").forEach((button) => {
-    button.addEventListener("click", () => openFileEditor(button.dataset.path));
+  target.querySelectorAll(".file-name-editable").forEach((cell) => {
+    cell.addEventListener("click", () => openFileEditor(cell.dataset.path));
   });
   target.querySelectorAll(".delete-file-button").forEach((button) => {
     button.addEventListener("click", () => deleteFiles([button.dataset.path]));
@@ -636,6 +636,8 @@ function compactJson(value) {
 function tracePhaseLabel(phase) {
   const labels = {
     observe: "正在分析",
+    thinking: "Agent 判断",
+    decision: "执行决定",
     answer: "本步结论",
     tool_call: "调用工具",
     tool_result: "工具返回",
@@ -651,14 +653,18 @@ const TRACE_STEPS = {
   "质量审计": 5,
   "冲突仲裁": 6,
   "缺口规划": 7,
-  "定向补爬": 7,
-  "发布": 8,
+  "编排决策": 8,
+  "定向补爬": 8,
+  "发布": 9,
 };
 
 function traceFriendlyTool(tool) {
   const text = String(tool || "");
   if (!text) return "";
   if (text.includes("DeepSeek")) return "DeepSeek 事实清洗模型";
+  if (text.includes("inspect_evidence_gaps")) return "证据缺口检查器";
+  if (text.includes("schedule_targeted_recrawl")) return "定向补爬调度器";
+  if (text.includes("publish_without_recrawl")) return "直接发布决策器";
   if (text.includes("fallback_clean_batch")) return "本地严格校验器";
   if (text.includes("atomic_write")) return "事实发布与审计文件写入";
   if (text.includes("run_data_curation")) return "LangGraph 多 Agent 工作流";
@@ -677,19 +683,32 @@ function traceFriendlyMessage(trace, phase) {
     "质量审计": "检查数值、单位、来源、置信度和网页噪声，决定发布、拦截或补爬。",
     "冲突仲裁": "比较同一公司同一指标的多个结果，保留证据更强的版本。",
     "缺口规划": "把没有足够证据的指标整理为补爬任务。",
+    "编排决策": "Supervisor 正在读取缺口证据，并通过工具决定补爬还是发布。",
     "定向补爬": "只重抓缺少关键事实的行，并重新进入整理流程。",
     "发布": "写入可供页面、周报和业绩摘要使用的已验证事实。",
   };
   if (phase === "observe" && messages[node]) return messages[node];
-  return trace.message || messages[node] || "";
+  return humanizeAgentText(trace.message || messages[node] || "");
+}
+
+function humanizeAgentText(value) {
+  return String(value || "")
+    .replace(/#{1,6}\s*/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/`/g, "")
+    .replace(/\|\s*:?-{3,}:?\s*/g, "")
+    .replace(/\s*\|\s*/g, " · ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function traceKeyMetrics(trace) {
-  const data = trace.result && typeof trace.result === "object"
+  const payload = trace.result && typeof trace.result === "object"
     ? trace.result
     : trace.output && typeof trace.output === "object"
       ? trace.output
       : {};
+  const data = { ...payload, duration_ms: trace.duration_ms ?? payload.duration_ms };
   const fields = [
     ["tasks", "证据"],
     ["task_count", "本批"],
@@ -707,13 +726,18 @@ function traceKeyMetrics(trace) {
     ["pre_rejected", "归属异常"],
     ["gaps", "证据缺口"],
     ["conflicts", "冲突"],
+    ["online_batches", "在线模型批次"],
+    ["fallback_batches", "本地降级批次"],
     ["preserved_previous_facts", "保留历史事实"],
     ["durationMs", "耗时"],
+    ["duration_ms", "耗时"],
   ];
   return fields
     .filter(([key]) => data[key] !== undefined && data[key] !== null)
     .map(([key, label]) => {
-      const value = key === "durationMs" ? `${(Number(data[key]) / 1000).toFixed(1)} 秒` : data[key];
+      const value = ["durationMs", "duration_ms"].includes(key)
+        ? `${(Number(data[key]) / 1000).toFixed(1)} 秒`
+        : data[key];
       return { label, value };
     });
 }
@@ -750,7 +774,7 @@ function renderAgentTrace(trace, options = {}) {
   title.className = "agent-trace-title";
   const node = escapeHtml(trace.node || "Agent");
   const step = TRACE_STEPS[trace.node];
-  const stepText = step ? `第 ${step}/8 步` : "工作流";
+  const stepText = step ? `第 ${step}/9 步` : "工作流";
   const label = escapeHtml(tracePhaseLabel(phase));
   const time = escapeHtml((trace.ts || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, ""));
   title.innerHTML = `<span class="agent-trace-step">${stepText}</span><strong>${node}</strong><span class="agent-trace-badge">${label}</span><time>${time}</time>`;
@@ -760,6 +784,14 @@ function renderAgentTrace(trace, options = {}) {
   message.className = "agent-trace-message";
   message.textContent = traceFriendlyMessage(trace, phase);
   card.appendChild(message);
+
+  if (trace.decision) {
+    const decision = document.createElement("div");
+    decision.className = "agent-trace-decision";
+    const decisionText = trace.decision === "recrawl" ? "定向补爬" : "进入发布";
+    decision.innerHTML = `<span>执行决定</span><strong>${escapeHtml(decisionText)}</strong>`;
+    card.appendChild(decision);
+  }
 
   const metrics = traceKeyMetrics(trace);
   if (metrics.length) {
@@ -796,11 +828,19 @@ function renderAgentTrace(trace, options = {}) {
   localStorage.setItem("appLogs", els.logBox.textContent);
 }
 
-function setLog(text) {
-  els.logBox.innerHTML = "";
+function setLog(text, appendWithDivider = false) {
+  const currentText = els.logBox.textContent.trim();
+  if (appendWithDivider && els.logBox.innerHTML.trim() !== "" && currentText !== "等待操作。" && currentText !== "执行日志已清空。") {
+    const divider = document.createElement("div");
+    divider.className = "log-divider";
+    divider.innerHTML = "<span>新任务启动</span>";
+    els.logBox.appendChild(divider);
+  } else {
+    els.logBox.innerHTML = "";
+  }
   els.logBox.appendChild(document.createTextNode(text));
   els.logBox.scrollTop = els.logBox.scrollHeight;
-  localStorage.setItem("appLogs", text);
+  localStorage.setItem("appLogs", els.logBox.textContent);
 }
 
 async function loadLatestAgentTrace() {
@@ -811,6 +851,10 @@ async function loadLatestAgentTrace() {
     const data = await response.json();
     if (!data.ok || !Array.isArray(data.trace) || !data.trace.length) return;
     state.agentTraceLoaded = true;
+    // The structured trace is the source of truth. Do not mix it with stale
+    // plain-text logs left by a previous browser session.
+    els.logBox.innerHTML = "";
+    localStorage.removeItem("appLogs");
     renderAgentRunSummary(data.summary);
     data.trace.forEach((trace) => renderAgentTrace(trace, { skipScroll: true }));
     els.logBox.scrollTop = els.logBox.scrollHeight;
@@ -819,12 +863,9 @@ async function loadLatestAgentTrace() {
   }
 }
 
-// Load logs on startup
-const savedLogs = localStorage.getItem("appLogs");
-if (savedLogs) {
-  els.logBox.textContent = savedLogs;
-  setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 100);
-}
+// Old versions persisted the entire log as unstructured text. Keeping that
+// cache would duplicate and degrade the current human-readable Agent trace.
+localStorage.removeItem("appLogs");
 
 function fillAiConfig(config) {
   els.aiProvider.value = config.provider || "deepseek";
@@ -972,10 +1013,10 @@ function updateAudioPlayerUI() {
   if (!state.currentAudio) return;
   const isPlaying = !state.currentAudio.paused;
   
-  const playIcon = els.audioPlayPauseBtn.querySelector(".icon-play");
-  const pauseIcon = els.audioPlayPauseBtn.querySelector(".icon-pause");
-  if (playIcon) playIcon.style.display = isPlaying ? "none" : "block";
-  if (pauseIcon) pauseIcon.style.display = isPlaying ? "block" : "none";
+  // Toggle play/pause icons via class instead of style.display to avoid conflicts
+  if (els.audioPlayPauseBtn) {
+    els.audioPlayPauseBtn.classList.toggle("is-playing", isPlaying);
+  }
   
   const soundwave = document.getElementById("audioSoundwave");
   if (soundwave) {
@@ -985,6 +1026,16 @@ function updateAudioPlayerUI() {
   if (state.currentAudioButton) {
     state.currentAudioButton.classList.toggle("is-playing", isPlaying);
   }
+}
+
+function updateProgressFill() {
+  if (!els.audioProgressBar) return;
+  const bar = els.audioProgressBar;
+  const min = parseFloat(bar.min) || 0;
+  const max = parseFloat(bar.max) || 100;
+  const val = parseFloat(bar.value) || 0;
+  const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
+  bar.style.background = `linear-gradient(to right, var(--blue) ${pct}%, #dde3ea ${pct}%)`;
 }
 
 function updateSubtitles() {
@@ -1102,12 +1153,15 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
   state.currentAudio.addEventListener("loadedmetadata", () => {
     els.audioDuration.textContent = formatTime(state.currentAudio.duration);
     els.audioProgressBar.max = state.currentAudio.duration;
+    els.audioProgressBar.value = 0;
+    updateProgressFill();
   });
   
   state.currentAudio.addEventListener("timeupdate", () => {
     els.audioCurrentTime.textContent = formatTime(state.currentAudio.currentTime);
     if (!state.isScrubbing) {
       els.audioProgressBar.value = state.currentAudio.currentTime || 0;
+      updateProgressFill();
     }
     updateSubtitles();
   });
@@ -1155,6 +1209,7 @@ if (els.audioProgressBar) {
   els.audioProgressBar.addEventListener("input", (e) => {
     state.isScrubbing = true;
     els.audioCurrentTime.textContent = formatTime(e.target.value);
+    updateProgressFill();
     if (state.currentAudio) {
       state.currentAudio.currentTime = e.target.value;
     }
@@ -1195,8 +1250,9 @@ if (els.audioCloseBtn) {
 }
 
 async function runCrawl(source = "按钮") {
+  if (els.logModal) els.logModal.hidden = false;
   setBusy(true, "正在重新爬取", "crawl");
-  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`);
+  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`, true);
   try {
     const res = await fetch("/api/crawl-stream?v=12", { method: "POST" });
     if (!res.ok) throw new Error("网络请求失败");
@@ -1286,8 +1342,9 @@ async function runCrawl(source = "按钮") {
 }
 
 async function generateReport(source = "按钮") {
+  if (els.logModal) els.logModal.hidden = false;
   setBusy(true, "正在生成", "generate");
-  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成周报，请稍候...\n`);
+  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成周报，请稍候...\n`, true);
   try {
     const res = await fetch("/api/generate-stream", { method: "POST" });
     if (!res.ok) throw new Error("网络请求失败");
@@ -1331,8 +1388,9 @@ async function generateReport(source = "按钮") {
 }
 
 async function generateCarrierPerformanceReport(source = "按钮") {
+  if (els.logModal) els.logModal.hidden = false;
   setBusy(true, "正在生成", "performance");
-  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成业绩摘要，请稍候...\n`);
+  setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] ${source}触发生成业绩摘要，请稍候...\n`, true);
   try {
     const response = await fetch(`/api/generate-carrier-performance-stream`, { method: "POST" });
     if (!response.ok) throw new Error("网络请求失败");

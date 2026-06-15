@@ -8,7 +8,6 @@ ai_config.json
 raw/
 archives/
 last_daily_command.log
-daily_crawl_and_write.py
 daily_validation*.json
 feishu_readback.json
 log_sheet_id.txt
@@ -26,3 +25,4 @@ weekly_report_render/
 audio/
 models/tts/
 .venv_tts/
+evidence_cache/

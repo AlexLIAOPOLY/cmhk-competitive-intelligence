@@ -14,6 +14,10 @@ def _common_financial_fields() -> Dict[str, List[str]]:
         "5G用户数": ["5G customers", "5G subscribers", "5G customer base", "5G plan users", "5G用户", "5G客戶", "5G"],
         "ARPU": ["ARPU"],
         "资本开支": ["capital expenditure", "capex", "capital expenditures", "资本开支", "資本開支"],
+        "派息": ["dividend", "派息", "股息", "分派"],
+        "战略升级": ["strategy", "strategic", "upgrade", "战略", "策略", "转型", "轉型"],
+        "券商观点": ["analyst", "broker", "rating", "target price", "券商", "大行", "评级", "目标价", "目標價"],
+        "市场反应": ["market reaction", "stock price", "shares", "股价", "股價", "市盈率", "PE"],
     }
 
 
@@ -85,6 +89,10 @@ FIELD_PATTERNS: Dict[int, Dict[str, List[str]]] = {
         "资产负债率": ["debt", "gearing", "leverage"],
         "用户数": ["subscribers", "customers", "subscriptions"],
         "商业楼宇覆盖率": ["commercial buildings", "coverage"],
+        "派息": ["dividend", "派息", "股息", "分派"],
+        "战略升级": ["strategy", "strategic", "upgrade", "战略", "策略", "转型", "轉型"],
+        "券商观点": ["analyst", "broker", "rating", "target price", "券商", "大行", "评级", "目标价", "目標價"],
+        "市场反应": ["market reaction", "stock price", "shares", "股价", "股價", "市盈率", "PE"],
     },
     12: {
         "业绩报告公告": ["annual results", "interim results", "results"],
@@ -111,6 +119,11 @@ FIELD_PATTERNS: Dict[int, Dict[str, List[str]]] = {
         "跨境链路": ["cross-border", "connectivity"],
         "数据中心": ["data centre", "data center", "data centre regions"],
         "云网产品": ["cloud", "network"],
+        "派息": ["dividend", "派息", "股息", "分派"],
+        "资本开支": ["capital expenditure", "capex", "capital expenditures", "资本开支", "資本開支"],
+        "战略升级": ["strategy", "strategic", "upgrade", "战略", "策略", "转型", "轉型"],
+        "券商观点": ["analyst", "broker", "rating", "target price", "券商", "大行", "评级", "目标价", "目標價"],
+        "市场反应": ["market reaction", "stock price", "shares", "股价", "股價", "市盈率", "PE"],
     },
     16: {
         "海缆/跨境链路": ["subsea", "cross-border", "connectivity"],
@@ -281,6 +294,10 @@ def find_field_snippets(row: int, text: str) -> Tuple[Dict[str, List[str]], List
     extracted: Dict[str, List[str]] = {}
     missing: List[str] = []
     for field, patterns in spec.items():
+        if row in (15, 16) and field in ("派息", "券商观点", "市场反应"):
+            extracted[field] = ["不适用（HGC为非上市主体）"]
+            continue
+            
         snippets: List[str] = []
         for pattern in patterns:
             snip = snippet_around(text, pattern)

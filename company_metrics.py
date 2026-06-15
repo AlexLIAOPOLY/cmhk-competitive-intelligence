@@ -12,7 +12,7 @@ RESULTS_DIR = ROOT / "results"
 FEISHU_CACHE_PATH = ROOT / "carrier_performance_feishu.json"
 PERFORMANCE_SOURCES_PATH = ROOT / "carrier_performance_sources.json"
 AI_CACHE_PATH = ROOT / "company_metrics_ai_cache.json"
-AI_CACHE_SCHEMA_VERSION = 2
+AI_CACHE_SCHEMA_VERSION = 3
 
 CORE_METRICS = ["派息", "资本开支", "战略升级", "券商观点", "市场反应"]
 DISCLOSURE_FIELDS = ["最新披露", "披露日期", "股票代码"]
@@ -305,7 +305,11 @@ def _apply_ai_cache(rows: list[dict]) -> list[dict]:
         return rows
     semantic_items: dict[tuple[str, str, str], dict] = {}
     for item in items.values():
-        if not isinstance(item, dict) or item.get("status") != "ok":
+        if (
+            not isinstance(item, dict)
+            or item.get("status") != "ok"
+            or not _cache_item_brand_consistent(item)
+        ):
             continue
         key = (
             str(item.get("company") or ""),
@@ -315,6 +319,8 @@ def _apply_ai_cache(rows: list[dict]) -> list[dict]:
         if all(key):
             semantic_items.setdefault(key, item)
     for row in rows:
+        if _apply_brand_market_reaction_not_applicable(row):
+            continue
         item = items.get(row.get("id"))
         if not isinstance(item, dict):
             item = semantic_items.get(
@@ -325,6 +331,8 @@ def _apply_ai_cache(rows: list[dict]) -> list[dict]:
                 )
             )
         if not isinstance(item, dict):
+            continue
+        if not _cache_item_brand_consistent(item):
             continue
         cleaned_value = _clean_text(item.get("value"), 220)
         if not cleaned_value:
@@ -353,6 +361,31 @@ def _apply_ai_cache(rows: list[dict]) -> list[dict]:
     return rows
 
 
+def _apply_brand_market_reaction_not_applicable(row: dict) -> bool:
+    if row.get("company") not in {"csl", "1O1O", "3HK"} or row.get("metric") != "市场反应":
+        return False
+    row["value"] = "不适用（品牌非独立上市主体）"
+    row["detail"] = "该品牌没有独立上市证券，不能单独计算业绩发布前后的股票市场反应。"
+    row["aiCleaned"] = True
+    row["aiStatus"] = "ok"
+    row["aiNote"] = "依据品牌上市口径确认不适用"
+    row["aiConfidence"] = 0.95
+    row["entitySupported"] = True
+    row["metricSupported"] = True
+    row["valueSupported"] = True
+    return True
+
+
+def _cache_item_brand_consistent(item: dict) -> bool:
+    company = str(item.get("company") or "")
+    if company not in {"csl", "1O1O"}:
+        return True
+    evidence = f"{item.get('value', '')} {item.get('basis', '')}"
+    if company == "csl":
+        return "csl" in evidence.lower()
+    return "1o1o" in evidence.lower()
+
+
 def _passes_metric_gate(metric: str, value: str) -> bool:
     metric_text = str(metric or "")
     value_text = str(value or "")
@@ -360,6 +393,8 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         return False
     if any(term.lower() in value_text.lower() for term in DIRTY_SOURCE_LABEL_TERMS):
         return False
+    if re.search(r"不适用（?(?:非上市主体|品牌非独立上市主体)）?", value_text):
+        return bool(re.search(r"派息|股息|分派|券商观点|市场反应", metric_text, re.IGNORECASE))
     if re.search(r"市场反应", metric_text, re.IGNORECASE):
         return bool(
             re.search(
@@ -427,6 +462,8 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
                     re.IGNORECASE,
                 )
             )
+        if re.search(r"套餐|资费", metric_text, re.IGNORECASE):
+            return bool(re.search(r"\d", value_text))
         if re.search(r"用户|客户|宽频|家宽", metric_text, re.IGNORECASE):
             return bool(re.search(r"户|人|用户|客户|million|\bM\b|万|亿|%", value_text, re.IGNORECASE))
         return True

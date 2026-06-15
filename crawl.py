@@ -582,6 +582,12 @@ def apply_row_filter(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    try:
+        gap_targets = json.loads(os.environ.get("CMHK_GAP_TARGETS", "") or "{}")
+    except json.JSONDecodeError:
+        gap_targets = {}
+    if not isinstance(gap_targets, dict):
+        gap_targets = {}
     configured: List[Dict[str, Any]] = []
     for row in rows:
         row_no = int(row["row"])
@@ -590,14 +596,34 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             continue
 
         selected_entities = [str(item).strip() for item in cfg.get("entities", []) if str(item).strip()]
+        target = gap_targets.get(str(row_no)) or {}
+        target_entities = [
+            str(item).strip()
+            for item in target.get("companies", [])
+            if str(item).strip()
+        ] if isinstance(target, dict) else []
+        if target_entities:
+            selected_entities = target_entities
         if selected_entities:
             row["entities"] = selected_entities
 
         available_fields = list(row_fields(row_no))
         selected_fields = [str(item).strip() for item in cfg.get("fields", []) if str(item).strip()]
+        target_fields = [
+            str(item).strip()
+            for item in target.get("metrics", [])
+            if str(item).strip()
+        ] if isinstance(target, dict) else []
+        if target_fields:
+            selected_fields = target_fields
         filtered_fields, ignored_fields = filter_metric_fields(row_no, selected_fields or available_fields, row["entities"])
         row["selected_fields"] = filtered_fields or available_fields
         row["ignored_selected_fields"] = ignored_fields
+        if target_fields or target_entities:
+            row["gap_target"] = {
+                "companies": target_entities,
+                "metrics": target_fields,
+            }
         extra_urls = [str(item).strip() for item in cfg.get("sourceUrls", []) if str(item).strip()]
         if extra_urls:
             row["sources"] = "\n".join([str(row.get("sources") or ""), *extra_urls]).strip()
@@ -618,7 +644,9 @@ def urls_from_sources(source_text: str) -> List[str]:
 SENSITIVE_PATTERNS = [
     (re.compile(r"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b"), "[REDACTED_EMAIL]"),
     (re.compile(r"(?i)\b(?:bearer|token|api[_-]?key|authorization|cookie|session)\s*[:=]\s*[^\s,;]+"), "[REDACTED_SECRET]"),
-    (re.compile(r"\b(?:\+?\d[\d -]{7,}\d)\b"), "[REDACTED_PHONE_OR_ID]"),
+    # Require phone-style separators or a leading plus sign. Plain long
+    # numbers are frequently public GDP, revenue, population, or user values.
+    (re.compile(r"(?<!\w)(?:\+\d{7,15}|\+?\d{2,4}(?:[ -]\d{2,4}){2,5})(?!\w)"), "[REDACTED_PHONE_OR_ID]"),
 ]
 
 
@@ -1216,6 +1244,17 @@ def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
 def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
     text = result.get("text", "")
     content_hash = hashlib.sha256(text.encode("utf-8", "ignore")).hexdigest()
+    evidence_path = ""
+    if text:
+        evidence_dir = ROOT / "evidence_cache"
+        evidence_dir.mkdir(parents=True, exist_ok=True)
+        evidence_file = evidence_dir / f"{content_hash}.txt"
+        if not evidence_file.exists():
+            # This cache contains public-source evidence and is local-only.
+            # Keeping the fetched numeric text intact is required for factual
+            # extraction; secrets are never supplied by these public pages.
+            evidence_file.write_text(text, encoding="utf-8")
+        evidence_path = str(evidence_file.relative_to(ROOT))
     return {
         "row": row,
         "url": result.get("url"),
@@ -1227,6 +1266,7 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
         "elapsed_seconds": result.get("elapsed_seconds"),
         "method": result.get("method"),
         "text_sample": redact_sensitive(text[:900]),
+        "evidence_path": evidence_path,
         "content_hash": content_hash,
         "error": result.get("error", ""),
         "fetch_attempts": result.get("fetch_attempts", []),
@@ -1267,6 +1307,153 @@ def is_local_network_permission_failure(records: List[Dict[str, Any]]) -> bool:
         if status in {0, "0", None} and any(marker in error for marker in local_network_markers):
             failures += 1
     return failures == len(checked)
+
+
+def merge_targeted_row_result(
+    previous: Dict[str, Any],
+    current: Dict[str, Any],
+    target: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Merge a targeted recrawl without deleting untouched row evidence."""
+    target_companies = {
+        str(item).strip() for item in target.get("companies", []) if str(item).strip()
+    }
+    target_metrics = {
+        str(item).strip() for item in target.get("metrics", []) if str(item).strip()
+    }
+    if not target_companies and not target_metrics:
+        return current
+
+    merged = dict(previous)
+    merged.update(
+        {
+            key: current.get(key)
+            for key in (
+                "need",
+                "object",
+                "fetched_at",
+                "fetched_at_hkt",
+                "live_fetch_status",
+                "fallback_used",
+                "fallback_source_file",
+                "fallback_fields",
+            )
+            if key in current
+        }
+    )
+    merged["targeted_recrawl"] = {
+        "companies": sorted(target_companies),
+        "metrics": sorted(target_metrics),
+    }
+
+    def unique_strings(*values: Any) -> List[str]:
+        output: List[str] = []
+        for value in values:
+            for item in value or []:
+                text = str(item).strip()
+                if text and text not in output:
+                    output.append(text)
+        return output
+
+    def record_key(record: Dict[str, Any]) -> tuple[str, str]:
+        return (
+            str(record.get("final_url") or record.get("url") or ""),
+            str(record.get("content_hash") or ""),
+        )
+
+    merged["entities"] = unique_strings(previous.get("entities"), current.get("entities"))
+    merged["selected_fields"] = unique_strings(
+        previous.get("selected_fields"), current.get("selected_fields")
+    )
+    merged["ignored_selected_fields"] = unique_strings(
+        previous.get("ignored_selected_fields"), current.get("ignored_selected_fields")
+    )
+    merged["source_urls"] = unique_strings(previous.get("source_urls"), current.get("source_urls"))
+    merged["attempted_urls"] = unique_strings(
+        previous.get("attempted_urls"), current.get("attempted_urls")
+    )
+
+    raw_records: Dict[tuple[str, str], Dict[str, Any]] = {}
+    for record in previous.get("raw_records") or []:
+        raw_records[record_key(record)] = record
+    for record in current.get("raw_records") or []:
+        raw_records[record_key(record)] = record
+    merged["raw_records"] = list(raw_records.values())
+
+    merged_extracted = dict(previous.get("extracted") or {})
+    for metric, value in (current.get("extracted") or {}).items():
+        if not target_metrics or metric in target_metrics:
+            merged_extracted[metric] = value
+    merged["extracted"] = merged_extracted
+
+    previous_entities = {
+        str(item.get("entity") or ""): item
+        for item in previous.get("entity_results") or []
+        if str(item.get("entity") or "")
+    }
+    current_entities = {
+        str(item.get("entity") or ""): item
+        for item in current.get("entity_results") or []
+        if str(item.get("entity") or "")
+    }
+    entity_results: List[Dict[str, Any]] = []
+    for entity in merged["entities"]:
+        old = dict(previous_entities.get(entity) or {"entity": entity})
+        new = dict(current_entities.get(entity) or {})
+        if new and (not target_companies or entity in target_companies):
+            combined = dict(old)
+            combined.update(
+                {
+                    key: new.get(key)
+                    for key in ("confidence_score", "verification_reason")
+                    if key in new
+                }
+            )
+            combined["source_urls"] = unique_strings(
+                old.get("source_urls"), new.get("source_urls")
+            )
+            records: Dict[tuple[str, str], Dict[str, Any]] = {}
+            for record in old.get("raw_records") or []:
+                records[record_key(record)] = record
+            for record in new.get("raw_records") or []:
+                records[record_key(record)] = record
+            combined["raw_records"] = list(records.values())
+            extracted = dict(old.get("extracted") or {})
+            for metric, value in (new.get("extracted") or {}).items():
+                if not target_metrics or metric in target_metrics:
+                    extracted[metric] = value
+            combined["extracted"] = extracted
+            combined["missing_fields"] = [
+                field for field in merged["selected_fields"] if field not in extracted
+            ]
+            combined["status"] = (
+                "ok"
+                if extracted and not combined["missing_fields"]
+                else ("partial" if extracted else "no_extraction")
+            )
+            entity_results.append(combined)
+        else:
+            entity_results.append(old)
+    merged["entity_results"] = entity_results
+    merged["missing_fields"] = [
+        field for field in merged["selected_fields"] if field not in merged_extracted
+    ]
+    merged["entity_missing"] = [
+        f"{item['entity']}:{','.join(item.get('missing_fields') or [])}"
+        for item in entity_results
+        if item.get("missing_fields")
+    ]
+    if merged_extracted:
+        merged["status"] = (
+            "partial"
+            if merged["missing_fields"] or merged["entity_missing"]
+            else "ok"
+        )
+    elif merged["source_urls"]:
+        merged["status"] = "no_extraction"
+    else:
+        merged["status"] = "fetch_failed"
+    return merged
 
 
 def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float) -> Dict[str, Any]:
@@ -1424,6 +1611,14 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
         "fetched_at": fetched_at,
         "fetched_at_hkt": fetched_at_hkt,
     }
+    gap_target = source_row.get("gap_target") or {}
+    if gap_target and existing_result_path.exists():
+        try:
+            previous = json.loads(existing_result_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            previous = {}
+        if previous:
+            row_result = merge_targeted_row_result(previous, row_result, gap_target)
     (RESULTS_DIR / f"row_{row}.json").write_text(
         json.dumps(row_result, ensure_ascii=False, indent=2), encoding="utf-8"
     )

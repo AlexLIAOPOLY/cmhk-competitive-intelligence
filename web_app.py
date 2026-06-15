@@ -713,6 +713,7 @@ def stream_company_metrics_refresh(
                         "质量审计",
                         "冲突仲裁",
                         "缺口规划",
+                        "Supervisor 工具决策",
                         "定向补爬（最多 6 行、1 轮）",
                         "发布",
                     ],
@@ -948,7 +949,7 @@ def stream_report_generation(
 
     started = time.time()
     proc = subprocess.Popen(
-        [sys.executable, str(ROOT / script_name), *(script_args or [])],
+        [sys.executable, "-u", str(ROOT / script_name), *(script_args or [])],
         cwd=str(ROOT),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1502,7 +1503,7 @@ class AppHandler(BaseHTTPRequestHandler):
             
             started = time.time()
             proc = subprocess.Popen(
-                [sys.executable, str(ROOT / "crawl.py")],
+                [sys.executable, "-u", str(ROOT / "crawl.py")],
                 cwd=str(ROOT),
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,

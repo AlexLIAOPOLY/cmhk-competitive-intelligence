@@ -1,6 +1,6 @@
 {
   "row": 11,
-  "need": "总收入、各板块收入分拆（企业方案及相关产品、住宅方案、手机及其他产品）、EBITDA、净利润、融资成本、资本开支、商誉、资产负债率（可能需要加工）、用户数（企业宽频用户数、住宅宽频用户数、流动通讯用户数）、商业楼宇覆盖率",
+  "need": "总收入、各板块收入分拆（企业方案及相关产品、住宅方案、手机及其他产品）、EBITDA、净利润、融资成本、资本开支、商誉、资产负债率（可能需要加工）、用户数（企业宽频用户数、住宅宽频用户数、流动通讯用户数）、商业楼宇覆盖率、派息、资本开支、战略升级、券商观点、市场反应",
   "status": "ok",
   "object": "HKBN",
   "entities": [
@@ -16,8 +16,13 @@
     "商誉",
     "资产负债率",
     "用户数",
-    "商业楼宇覆盖率"
+    "商业楼宇覆盖率",
+    "派息",
+    "战略升级",
+    "券商观点",
+    "市场反应"
   ],
+  "ignored_selected_fields": [],
   "source_urls": [
     "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
     "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"
@@ -36,7 +41,11 @@
     "商誉": "ion of EBITDA & Adjusted Free Cash Flow 1,2,3 Profit for the year 206,864 10,277 >100% Amortisation of customer acquisition and retention costs 286,773 274,222 +5% Amortisation of intangible assets 351,337 366,258 -4% De",
     "资产负债率": "solutions and strengthened network advantages; • Strengthened Financial Position: Focusing on profitability improvement, optimising key financial metrics, while practising prudent debt management and interest expense con",
     "用户数": "received. (4) ARPU means average revenue per user per month. Calculated by dividing the revenue generated in the relevant period from services subscribed by residential broadband subscribers, which include broadband serv",
-    "商业楼宇覆盖率": "nese texts conflict, the English text shall prevail. 2025 at a Glance Financial Performance Customers Revenue Network covers nearly $11.1B 2.6 million homes EBITDA growth 8,220 4% commercial buildings and facilities (inc"
+    "商业楼宇覆盖率": "nese texts conflict, the English text shall prevail. 2025 at a Glance Financial Performance Customers Revenue Network covers nearly $11.1B 2.6 million homes EBITDA growth 8,220 4% commercial buildings and facilities (inc",
+    "派息": "newsroom/press-releases/20251031_FY25_Annual_Results Press Releases | HKBN Press release HKBN Announces FY2025 Annual Results Net Profit Soars with Strong EBITDA Growth, Sustained Dividend Distribution (Hong Kong – 31 Oc",
+    "战略升级": "lications such as generative AI, cloud computing, and ultra-high-definition video, further strengthening its competitive edge. Residential Solutions: Deepening the “Infinite-Play” Strategy, Enhancing User Value The Resid",
+    "券商观点": "ture-ready capabilities in computing power, AI, information security and privacy protection. Our new strategic direction will significantly enhance our service capabilities, accelerating both business transformation and ",
+    "市场反应": "Capital Details of the movements in share capital of the Company during the year ended 31 August 2025 are set out in note 28 to the “Notes to the Financial Statements”. No Company shares were issued during the year ended"
   },
   "missing_fields": [],
   "entity_results": [
@@ -57,7 +66,11 @@
         "商誉": "ion of EBITDA & Adjusted Free Cash Flow 1,2,3 Profit for the year 206,864 10,277 >100% Amortisation of customer acquisition and retention costs 286,773 274,222 +5% Amortisation of intangible assets 351,337 366,258 -4% De",
         "资产负债率": "solutions and strengthened network advantages; • Strengthened Financial Position: Focusing on profitability improvement, optimising key financial metrics, while practising prudent debt management and interest expense con",
         "用户数": "received. (4) ARPU means average revenue per user per month. Calculated by dividing the revenue generated in the relevant period from services subscribed by residential broadband subscribers, which include broadband serv",
-        "商业楼宇覆盖率": "nese texts conflict, the English text shall prevail. 2025 at a Glance Financial Performance Customers Revenue Network covers nearly $11.1B 2.6 million homes EBITDA growth 8,220 4% commercial buildings and facilities (inc"
+        "商业楼宇覆盖率": "nese texts conflict, the English text shall prevail. 2025 at a Glance Financial Performance Customers Revenue Network covers nearly $11.1B 2.6 million homes EBITDA growth 8,220 4% commercial buildings and facilities (inc",
+        "派息": "newsroom/press-releases/20251031_FY25_Annual_Results Press Releases | HKBN Press release HKBN Announces FY2025 Annual Results Net Profit Soars with Strong EBITDA Growth, Sustained Dividend Distribution (Hong Kong – 31 Oc",
+        "战略升级": "lications such as generative AI, cloud computing, and ultra-high-definition video, further strengthening its competitive edge. Residential Solutions: Deepening the “Infinite-Play” Strategy, Enhancing User Value The Resid",
+        "券商观点": "ture-ready capabilities in computing power, AI, information security and privacy protection. Our new strategic direction will significantly enhance our service capabilities, accelerating both business transformation and ",
+        "市场反应": "Capital Details of the movements in share capital of the Company during the year ended 31 August 2025 are set out in note 28 to the “Notes to the Financial Statements”. No Company shares were issued during the year ended"
       },
       "missing_fields": [],
       "raw_records": [
@@ -68,12 +81,26 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "Press Releases | HKBN",
-          "bytes": 81199,
-          "elapsed_seconds": 0.587,
+          "bytes": 81229,
+          "elapsed_seconds": 0.827,
           "method": "httpx",
           "text_sample": "Press Releases | HKBN Press release HKBN Announces FY2025 Annual Results Net Profit Soars with Strong EBITDA Growth, Sustained Dividend Distribution (Hong Kong – 31 October 2025) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational performance and financial results for the year ended 31 August 2025 (“FY25”). Amid a challenging macroeconomic environment, the Group achieved robust growth in its core businesses and continued to create value through diversification, driven by exceptional operational efficiency and strategic execution. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, with a 4% year-on-year growth to $11,129 million. A notable highlight was a 7% increase in core service revenue, after excluding mobile device and other product sales. EBITDA increased by 4% to $2,451 million, due to strong operational performance and strate",
+          "evidence_path": "evidence_cache/a3fe46e602fe23baaf516a67b9b1ab6a58daeaf7d086c1ac928c62a5b68e48d7.txt",
           "content_hash": "a3fe46e602fe23baaf516a67b9b1ab6a58daeaf7d086c1ac928c62a5b68e48d7",
           "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "final_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 81229,
+              "text_chars": 4074,
+              "title": "Press Releases | HKBN",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
           "source_policy": "allow",
           "source_type": "company_official",
           "jurisdiction": "HK",
@@ -93,11 +120,25 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 11010020,
-          "elapsed_seconds": 3.638,
+          "elapsed_seconds": 5.039,
           "method": "httpx",
           "text_sample": "ANNUAL REPORT 2025 EMPOWERING LIVES RESHAPING BUSINESSES INSPIRING INNOVATIONS EMPOWERING LIVES RESHAPING BUSINESSES INSPIRING INNOVATIONS This year, HKBN’s efforts were defined by focused execution. We directed our energies toward creating lasting value for people, enterprises, and the communities we serve. We empowered by using technology to create smarter, more connected lifestyles. We reshaped by challenging the status quo — helping enterprises operate with greater intelligence and ambition. We inspired by building for tomorrow — laying a cutting-edge foundation to power the next era of innovations. Together, we are building a future where people and enterprises are equipped to lead in the AI-driven digital era. CONTENTS 2 2025 at a Glance 62 ESG | Talent Empowerment 76 ESG | Technology for Good Our Company 85 ESG | Transforming Business 4 About HKBN Group 6 Shareholder Letter Our Go",
+          "evidence_path": "evidence_cache/ad397c030e1a7607ea65f3b1e5282506faff1c341c1893bc22af4830c1737010.txt",
           "content_hash": "ad397c030e1a7607ea65f3b1e5282506faff1c341c1893bc22af4830c1737010",
           "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+              "final_url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 11010020,
+              "text_chars": 260856,
+              "title": "PDF extracted by pdftotext",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
           "source_policy": "allow",
           "source_type": "company_official",
           "jurisdiction": "HK",
@@ -109,7 +150,9 @@
             "HKBN"
           ]
         }
-      ]
+      ],
+      "confidence_score": 0.85,
+      "verification_reason": "The extracted data generally aligns with the source text, including specific values like total revenue ($11,129 million), EBITDA ($2,451 million), net profit ($207 million), dividend, and strategic themes. However, some fields are incomplete or contain extraneous text (e.g., '企业解决方案: 强烈需求' in '板块收入分拆', truncated data in several fields), and a few items like '券商观点' and '市场反应' are not directly referenced in the source, lowering the score."
     }
   ],
   "entity_missing": [],
@@ -121,12 +164,26 @@
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "Press Releases | HKBN",
-      "bytes": 81199,
-      "elapsed_seconds": 0.587,
+      "bytes": 81229,
+      "elapsed_seconds": 0.827,
       "method": "httpx",
       "text_sample": "Press Releases | HKBN Press release HKBN Announces FY2025 Annual Results Net Profit Soars with Strong EBITDA Growth, Sustained Dividend Distribution (Hong Kong – 31 October 2025) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational performance and financial results for the year ended 31 August 2025 (“FY25”). Amid a challenging macroeconomic environment, the Group achieved robust growth in its core businesses and continued to create value through diversification, driven by exceptional operational efficiency and strategic execution. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, with a 4% year-on-year growth to $11,129 million. A notable highlight was a 7% increase in core service revenue, after excluding mobile device and other product sales. EBITDA increased by 4% to $2,451 million, due to strong operational performance and strate",
+      "evidence_path": "evidence_cache/a3fe46e602fe23baaf516a67b9b1ab6a58daeaf7d086c1ac928c62a5b68e48d7.txt",
       "content_hash": "a3fe46e602fe23baaf516a67b9b1ab6a58daeaf7d086c1ac928c62a5b68e48d7",
       "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+          "final_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 81229,
+          "text_chars": 4074,
+          "title": "Press Releases | HKBN",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
       "source_policy": "allow",
       "source_type": "company_official",
       "jurisdiction": "HK",
@@ -146,11 +203,25 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 11010020,
-      "elapsed_seconds": 3.638,
+      "elapsed_seconds": 5.039,
       "method": "httpx",
       "text_sample": "ANNUAL REPORT 2025 EMPOWERING LIVES RESHAPING BUSINESSES INSPIRING INNOVATIONS EMPOWERING LIVES RESHAPING BUSINESSES INSPIRING INNOVATIONS This year, HKBN’s efforts were defined by focused execution. We directed our energies toward creating lasting value for people, enterprises, and the communities we serve. We empowered by using technology to create smarter, more connected lifestyles. We reshaped by challenging the status quo — helping enterprises operate with greater intelligence and ambition. We inspired by building for tomorrow — laying a cutting-edge foundation to power the next era of innovations. Together, we are building a future where people and enterprises are equipped to lead in the AI-driven digital era. CONTENTS 2 2025 at a Glance 62 ESG | Talent Empowerment 76 ESG | Technology for Good Our Company 85 ESG | Transforming Business 4 About HKBN Group 6 Shareholder Letter Our Go",
+      "evidence_path": "evidence_cache/ad397c030e1a7607ea65f3b1e5282506faff1c341c1893bc22af4830c1737010.txt",
       "content_hash": "ad397c030e1a7607ea65f3b1e5282506faff1c341c1893bc22af4830c1737010",
       "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+          "final_url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 11010020,
+          "text_chars": 260856,
+          "title": "PDF extracted by pdftotext",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
       "source_policy": "allow",
       "source_type": "company_official",
       "jurisdiction": "HK",
@@ -163,6 +234,10 @@
       ]
     }
   ],
-  "fetched_at": "2026-05-29T09:45:06.521156+00:00",
-  "fetched_at_hkt": "2026-05-29T17:45:06.521170+08:00"
+  "live_fetch_status": "ok",
+  "fallback_used": false,
+  "fallback_source_file": "",
+  "fallback_fields": {},
+  "fetched_at": "2026-06-11T10:02:01.326090+00:00",
+  "fetched_at_hkt": "2026-06-11T18:02:01.326112+08:00"
 }

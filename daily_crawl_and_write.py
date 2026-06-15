@@ -382,6 +382,8 @@ def load_agent_trace_rows(run_id: str = "") -> tuple[str, list[list[str]]]:
 
     phase_labels = {
         "observe": "观察/读取",
+        "thinking": "Agent判断",
+        "decision": "执行决定",
         "answer": "处理结果",
         "tool_call": "工具调用",
         "tool_result": "工具结果",
@@ -403,6 +405,14 @@ def load_agent_trace_rows(run_id: str = "") -> tuple[str, list[list[str]]]:
             status = "调用"
         elif phase == "observe":
             status = "处理中"
+        elif phase == "thinking":
+            status = "判断中"
+        elif phase == "decision":
+            status = "已决定"
+            output = {
+                "decision": event.get("decision"),
+                "output": event.get("output"),
+            }
         rows.append(
             [
                 compact_json_cell(event.get("ts")),
