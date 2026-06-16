@@ -14,10 +14,10 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.censtatd.gov.hk/en/scode200.html",
-    "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
     "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-    "https://www.stats.gov.cn/english/"
+    "https://www.censtatd.gov.hk/en/scode200.html",
+    "https://www.stats.gov.cn/english/",
+    "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html"
   ],
   "attempted_urls": [
     "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
@@ -26,10 +26,10 @@
     "https://www.stats.gov.cn/english/"
   ],
   "extracted": {
-    "GDP": "lease click \"I accept.\" You can manage your settings anytime. I accept Manage my cookies Cookie Setting Save settings SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"pa",
-    "进出口": "Statistics Follow Us Now! Subscribe to our newsletter to receive exclusive updates and offers in your inbox! Subscribe Connect With Us Relevant Websites Discover Hong Kong Travel Trade Meetings & Exhibitions Brand Hong K",
-    "失业率": "SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Arti",
-    "旅游业数据": "n Concepts and Methods section Statistical Classifications Statistical Classifications section Glossary Glossary section SOURCE: https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html Tourism Statisti"
+    "GDP": "SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"2026-04-08\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.C",
+    "进出口": "on the Implementation of NQAF and GSBPM International Workshop on the Monitoring of the Sustainable Development Goals International Workshop on the Integrated Use of International Trade Statistics and Economic Statistics",
+    "失业率": "ryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
+    "旅游业数据": "tistical Offices Websites Topics FAQs | About NBS | Contact Us | Terms of Service National Bureau of Statistics of China SOURCE: https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html Tourism Statisti"
   },
   "missing_fields": [],
   "entity_results": [
@@ -37,106 +37,19 @@
       "entity": "宏观指标",
       "status": "ok",
       "source_urls": [
-        "https://www.censtatd.gov.hk/en/scode200.html",
-        "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
         "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-        "https://www.stats.gov.cn/english/"
+        "https://www.censtatd.gov.hk/en/scode200.html",
+        "https://www.stats.gov.cn/english/",
+        "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html"
       ],
       "extracted": {
-        "GDP": "lease click \"I accept.\" You can manage your settings anytime. I accept Manage my cookies Cookie Setting Save settings SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"pa",
-        "进出口": "Statistics Follow Us Now! Subscribe to our newsletter to receive exclusive updates and offers in your inbox! Subscribe Connect With Us Relevant Websites Discover Hong Kong Travel Trade Meetings & Exhibitions Brand Hong K",
-        "失业率": "SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Arti",
-        "旅游业数据": "n Concepts and Methods section Statistical Classifications Statistical Classifications section Glossary Glossary section SOURCE: https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html Tourism Statisti"
+        "GDP": "SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"2026-04-08\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.C",
+        "进出口": "on the Implementation of NQAF and GSBPM International Workshop on the Monitoring of the Sustainable Development Goals International Workshop on the Integrated Use of International Trade Statistics and Economic Statistics",
+        "失业率": "ryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
+        "旅游业数据": "tistical Offices Websites Topics FAQs | About NBS | Contact Us | Terms of Service National Bureau of Statistics of China SOURCE: https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html Tourism Statisti"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 34,
-          "url": "https://www.censtatd.gov.hk/en/scode200.html",
-          "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Labour Force, Employment and Unemployment",
-          "bytes": 26041,
-          "elapsed_seconds": 0.641,
-          "method": "httpx",
-          "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
-          "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
-          "content_hash": "6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.censtatd.gov.hk/en/scode200.html",
-              "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 26041,
-              "text_chars": 1069,
-              "title": "Labour Force, Employment and Unemployment",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_statistics",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "宏观指标"
-          ]
-        },
-        {
-          "row": 34,
-          "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-          "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-          "status": 200,
-          "content_type": "text/html;charset=utf-8",
-          "title": "Tourism Statistics | Hong Kong Tourism Board",
-          "bytes": 201968,
-          "elapsed_seconds": 1.322,
-          "method": "curl_crawler_ua",
-          "text_sample": "Tourism Statistics | Hong Kong Tourism Board Search Language - English DiscoverHongKong Back to Menu My Account My Wallet Log out View now Site preferences Go to the site of your registered location to view more offers? Yes Yes Stay here Back to Menu English 简体中文 繁體中文 Language - English About Us Newsroom DiscoverHongKong Back to Menu Corporate Information > Awards and Achievements > Structure and Management > Procurement > Annual Reports > Event Sponsorship Opportunities > Join Us > Racial Equality > Community Engagement > Press Releases > Tourism Statistics > Media Contacts > Image and Video Gallery > Tourism Statistics Visitor Arrivals to Hong Kong in 2026: April March February January For data of 2025 or before, please visit our PartnerNet . Newsroom Tourism Statistics Follow Us Now! Subscribe to our newsletter to receive exclusive updates and offers in your inbox! Subscribe Connect W",
-          "evidence_path": "evidence_cache/a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416.txt",
-          "content_hash": "a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-              "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-              "status": 403,
-              "method": "httpx",
-              "bytes": 5879,
-              "text_chars": 16,
-              "title": "Just a moment...",
-              "error": "",
-              "meta_refresh_url": ""
-            },
-            {
-              "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-              "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-              "status": 200,
-              "method": "curl_crawler_ua",
-              "bytes": 201968,
-              "text_chars": 1464,
-              "title": "Tourism Statistics | Hong Kong Tourism Board",
-              "error": "",
-              "meta_refresh_url": "https://www.discoverhongkong.com/r/noscript.html"
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "宏观指标"
-          ]
-        },
         {
           "row": 34,
           "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
@@ -145,7 +58,7 @@
           "content_type": "application/json;charset=utf-8",
           "title": "",
           "bytes": 1179,
-          "elapsed_seconds": 2.324,
+          "elapsed_seconds": 0.566,
           "method": "httpx",
           "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":406863396487.342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":381043026173.935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
           "evidence_path": "evidence_cache/27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd.txt",
@@ -171,6 +84,50 @@
           "robots_status": "not_found_allow",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "宏观指标"
+          ]
+        },
+        {
+          "row": 34,
+          "url": "https://www.censtatd.gov.hk/en/scode200.html",
+          "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Labour Force, Employment and Unemployment",
+          "bytes": 26041,
+          "elapsed_seconds": 0.677,
+          "method": "httpx",
+          "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
+          "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
+          "content_hash": "6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.censtatd.gov.hk/en/scode200.html",
+              "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 26041,
+              "text_chars": 1069,
+              "title": "Labour Force, Employment and Unemployment",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_statistics",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "宏观指标"
           ]
@@ -182,12 +139,12 @@
           "status": 200,
           "content_type": "text/html",
           "title": "National Bureau of Statistics of China",
-          "bytes": 24998,
-          "elapsed_seconds": 5.081,
+          "bytes": 25079,
+          "elapsed_seconds": 0.812,
           "method": "httpx",
-          "text_sample": "National Bureau of Statistics of China Chinese(GB) RSS Organizational Chart Data Communiqués Legal Framework Classifications & Methods Latest Releases International Cooperation Understanding Statistics Agency Communiqué of the 1% National Population Sample Survey in 2025 Statistical data Statistical Database Monthly Data Quarterly Data Annual Data Yearbook Census Data Latest Release More [REDACTED_PHONE_OR_ID] Market Prices of Important Means of Production in Circulation, June 1-10, ... [REDACTED_PHONE_OR_ID] Consumer Price Index in May [REDACTED_PHONE_OR_ID] Industrial Producer Price Indexes in May [REDACTED_PHONE_OR_ID] Market Prices of Important Means of Production in Circulation, May 21-31, ... International Cooperation International Training More More Kang Yi Meets with Director-General of Eurostat and Signs the Administrative Arrangement on Statistical Cooperation On the morning of September 26th, Mr. Kang Yi, commissi",
-          "evidence_path": "evidence_cache/9eeb44bfc963eabf5272c1c008d5e1952aac735b4158f10e6d6c09a33703bc41.txt",
-          "content_hash": "9eeb44bfc963eabf5272c1c008d5e1952aac735b4158f10e6d6c09a33703bc41",
+          "text_sample": "National Bureau of Statistics of China Chinese(GB) RSS Organizational Chart Data Communiqués Legal Framework Classifications & Methods Latest Releases International Cooperation Understanding Statistics Agency National Economy Showed Steady Momentum with Innovation-led and High-quality Development in May Statistical data Statistical Database Monthly Data Quarterly Data Annual Data Yearbook Census Data Latest Release More [REDACTED_PHONE_OR_ID] National Economy Showed Steady Momentum with Innovation-led and High-quali... [REDACTED_PHONE_OR_ID] Market Prices of Important Means of Production in Circulation, June 1-10, ... [REDACTED_PHONE_OR_ID] Consumer Price Index in May [REDACTED_PHONE_OR_ID] Industrial Producer Price Indexes in May 2026 International Cooperation International Training More More Kang Yi Meets with Director-General of Eurostat and Signs the Administrative Arrangement on Statistical Cooperation On the morning of Sept",
+          "evidence_path": "evidence_cache/4c9a10095527a142d29b75e3190c1935e698b28a376d16c53f1da98b29992b6b.txt",
+          "content_hash": "4c9a10095527a142d29b75e3190c1935e698b28a376d16c53f1da98b29992b6b",
           "error": "",
           "fetch_attempts": [
             {
@@ -195,8 +152,8 @@
               "final_url": "https://www.stats.gov.cn/english/",
               "status": 200,
               "method": "httpx",
-              "bytes": 24998,
-              "text_chars": 3170,
+              "bytes": 25079,
+              "text_chars": 3203,
               "title": "National Bureau of Statistics of China",
               "error": "",
               "meta_refresh_url": ""
@@ -209,104 +166,72 @@
           "robots_status": "not_found_allow",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "宏观指标"
+          ]
+        },
+        {
+          "row": 34,
+          "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+          "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "title": "Tourism Statistics | Hong Kong Tourism Board",
+          "bytes": 201970,
+          "elapsed_seconds": 1.976,
+          "method": "curl_crawler_ua",
+          "text_sample": "Tourism Statistics | Hong Kong Tourism Board Search Language - English DiscoverHongKong Back to Menu My Account My Wallet Log out View now Site preferences Go to the site of your registered location to view more offers? Yes Yes Stay here Back to Menu English 简体中文 繁體中文 Language - English About Us Newsroom DiscoverHongKong Back to Menu Corporate Information > Awards and Achievements > Structure and Management > Procurement > Annual Reports > Event Sponsorship Opportunities > Join Us > Racial Equality > Community Engagement > Press Releases > Tourism Statistics > Media Contacts > Image and Video Gallery > Tourism Statistics Visitor Arrivals to Hong Kong in 2026: April March February January For data of 2025 or before, please visit our PartnerNet . Newsroom Tourism Statistics Follow Us Now! Subscribe to our newsletter to receive exclusive updates and offers in your inbox! Subscribe Connect W",
+          "evidence_path": "evidence_cache/a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416.txt",
+          "content_hash": "a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "status": 403,
+              "method": "httpx",
+              "bytes": 5879,
+              "text_chars": 16,
+              "title": "Just a moment...",
+              "error": "",
+              "meta_refresh_url": ""
+            },
+            {
+              "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+              "status": 200,
+              "method": "curl_crawler_ua",
+              "bytes": 201970,
+              "text_chars": 1464,
+              "title": "Tourism Statistics | Hong Kong Tourism Board",
+              "error": "",
+              "meta_refresh_url": "https://www.discoverhongkong.com/r/noscript.html"
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "宏观指标"
           ]
         }
       ],
-      "confidence_score": 0.3,
-      "verification_reason": "The extracted data contains fragments of the source text but is mostly incomplete or erroneous: GDP field has an incomplete URL and garbage text; 进出口 contains irrelevant cookie/newsletter text; 失业率 is missing; 旅游业数据 includes only a tagline. The source text includes actual GDP values, unemployment, and tourism statistics, but the extraction fails to capture them correctly."
+      "confidence_score": 0.0,
+      "verification_reason": "The extracted data is severely truncated and misaligned: GDP field contains only a partial JSON snippet from World Bank API, '进出口' field has irrelevant workshop titles, '失业率' field mixes code and text, and '旅游业数据' field includes a fragment from stats.gov.cn. None of these fields correctly capture the intended indicators from the source texts."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 34,
-      "url": "https://www.censtatd.gov.hk/en/scode200.html",
-      "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Labour Force, Employment and Unemployment",
-      "bytes": 26041,
-      "elapsed_seconds": 0.641,
-      "method": "httpx",
-      "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
-      "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
-      "content_hash": "6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.censtatd.gov.hk/en/scode200.html",
-          "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 26041,
-          "text_chars": 1069,
-          "title": "Labour Force, Employment and Unemployment",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_statistics",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "宏观指标"
-      ]
-    },
-    {
-      "row": 34,
-      "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-      "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-      "status": 200,
-      "content_type": "text/html;charset=utf-8",
-      "title": "Tourism Statistics | Hong Kong Tourism Board",
-      "bytes": 201968,
-      "elapsed_seconds": 1.322,
-      "method": "curl_crawler_ua",
-      "text_sample": "Tourism Statistics | Hong Kong Tourism Board Search Language - English DiscoverHongKong Back to Menu My Account My Wallet Log out View now Site preferences Go to the site of your registered location to view more offers? Yes Yes Stay here Back to Menu English 简体中文 繁體中文 Language - English About Us Newsroom DiscoverHongKong Back to Menu Corporate Information > Awards and Achievements > Structure and Management > Procurement > Annual Reports > Event Sponsorship Opportunities > Join Us > Racial Equality > Community Engagement > Press Releases > Tourism Statistics > Media Contacts > Image and Video Gallery > Tourism Statistics Visitor Arrivals to Hong Kong in 2026: April March February January For data of 2025 or before, please visit our PartnerNet . Newsroom Tourism Statistics Follow Us Now! Subscribe to our newsletter to receive exclusive updates and offers in your inbox! Subscribe Connect W",
-      "evidence_path": "evidence_cache/a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416.txt",
-      "content_hash": "a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-          "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-          "status": 403,
-          "method": "httpx",
-          "bytes": 5879,
-          "text_chars": 16,
-          "title": "Just a moment...",
-          "error": "",
-          "meta_refresh_url": ""
-        },
-        {
-          "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-          "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
-          "status": 200,
-          "method": "curl_crawler_ua",
-          "bytes": 201968,
-          "text_chars": 1464,
-          "title": "Tourism Statistics | Hong Kong Tourism Board",
-          "error": "",
-          "meta_refresh_url": "https://www.discoverhongkong.com/r/noscript.html"
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "宏观指标"
-      ]
-    },
     {
       "row": 34,
       "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
@@ -315,7 +240,7 @@
       "content_type": "application/json;charset=utf-8",
       "title": "",
       "bytes": 1179,
-      "elapsed_seconds": 2.324,
+      "elapsed_seconds": 0.566,
       "method": "httpx",
       "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":406863396487.342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":381043026173.935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
       "evidence_path": "evidence_cache/27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd.txt",
@@ -341,6 +266,50 @@
       "robots_status": "not_found_allow",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "宏观指标"
+      ]
+    },
+    {
+      "row": 34,
+      "url": "https://www.censtatd.gov.hk/en/scode200.html",
+      "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Labour Force, Employment and Unemployment",
+      "bytes": 26041,
+      "elapsed_seconds": 0.677,
+      "method": "httpx",
+      "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
+      "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
+      "content_hash": "6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.censtatd.gov.hk/en/scode200.html",
+          "final_url": "https://www.censtatd.gov.hk/en/scode200.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 26041,
+          "text_chars": 1069,
+          "title": "Labour Force, Employment and Unemployment",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_statistics",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "宏观指标"
       ]
@@ -352,12 +321,12 @@
       "status": 200,
       "content_type": "text/html",
       "title": "National Bureau of Statistics of China",
-      "bytes": 24998,
-      "elapsed_seconds": 5.081,
+      "bytes": 25079,
+      "elapsed_seconds": 0.812,
       "method": "httpx",
-      "text_sample": "National Bureau of Statistics of China Chinese(GB) RSS Organizational Chart Data Communiqués Legal Framework Classifications & Methods Latest Releases International Cooperation Understanding Statistics Agency Communiqué of the 1% National Population Sample Survey in 2025 Statistical data Statistical Database Monthly Data Quarterly Data Annual Data Yearbook Census Data Latest Release More [REDACTED_PHONE_OR_ID] Market Prices of Important Means of Production in Circulation, June 1-10, ... [REDACTED_PHONE_OR_ID] Consumer Price Index in May [REDACTED_PHONE_OR_ID] Industrial Producer Price Indexes in May [REDACTED_PHONE_OR_ID] Market Prices of Important Means of Production in Circulation, May 21-31, ... International Cooperation International Training More More Kang Yi Meets with Director-General of Eurostat and Signs the Administrative Arrangement on Statistical Cooperation On the morning of September 26th, Mr. Kang Yi, commissi",
-      "evidence_path": "evidence_cache/9eeb44bfc963eabf5272c1c008d5e1952aac735b4158f10e6d6c09a33703bc41.txt",
-      "content_hash": "9eeb44bfc963eabf5272c1c008d5e1952aac735b4158f10e6d6c09a33703bc41",
+      "text_sample": "National Bureau of Statistics of China Chinese(GB) RSS Organizational Chart Data Communiqués Legal Framework Classifications & Methods Latest Releases International Cooperation Understanding Statistics Agency National Economy Showed Steady Momentum with Innovation-led and High-quality Development in May Statistical data Statistical Database Monthly Data Quarterly Data Annual Data Yearbook Census Data Latest Release More [REDACTED_PHONE_OR_ID] National Economy Showed Steady Momentum with Innovation-led and High-quali... [REDACTED_PHONE_OR_ID] Market Prices of Important Means of Production in Circulation, June 1-10, ... [REDACTED_PHONE_OR_ID] Consumer Price Index in May [REDACTED_PHONE_OR_ID] Industrial Producer Price Indexes in May 2026 International Cooperation International Training More More Kang Yi Meets with Director-General of Eurostat and Signs the Administrative Arrangement on Statistical Cooperation On the morning of Sept",
+      "evidence_path": "evidence_cache/4c9a10095527a142d29b75e3190c1935e698b28a376d16c53f1da98b29992b6b.txt",
+      "content_hash": "4c9a10095527a142d29b75e3190c1935e698b28a376d16c53f1da98b29992b6b",
       "error": "",
       "fetch_attempts": [
         {
@@ -365,8 +334,8 @@
           "final_url": "https://www.stats.gov.cn/english/",
           "status": 200,
           "method": "httpx",
-          "bytes": 24998,
-          "text_chars": 3170,
+          "bytes": 25079,
+          "text_chars": 3203,
           "title": "National Bureau of Statistics of China",
           "error": "",
           "meta_refresh_url": ""
@@ -379,15 +348,72 @@
       "robots_status": "not_found_allow",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "宏观指标"
+      ]
+    },
+    {
+      "row": 34,
+      "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+      "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "title": "Tourism Statistics | Hong Kong Tourism Board",
+      "bytes": 201970,
+      "elapsed_seconds": 1.976,
+      "method": "curl_crawler_ua",
+      "text_sample": "Tourism Statistics | Hong Kong Tourism Board Search Language - English DiscoverHongKong Back to Menu My Account My Wallet Log out View now Site preferences Go to the site of your registered location to view more offers? Yes Yes Stay here Back to Menu English 简体中文 繁體中文 Language - English About Us Newsroom DiscoverHongKong Back to Menu Corporate Information > Awards and Achievements > Structure and Management > Procurement > Annual Reports > Event Sponsorship Opportunities > Join Us > Racial Equality > Community Engagement > Press Releases > Tourism Statistics > Media Contacts > Image and Video Gallery > Tourism Statistics Visitor Arrivals to Hong Kong in 2026: April March February January For data of 2025 or before, please visit our PartnerNet . Newsroom Tourism Statistics Follow Us Now! Subscribe to our newsletter to receive exclusive updates and offers in your inbox! Subscribe Connect W",
+      "evidence_path": "evidence_cache/a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416.txt",
+      "content_hash": "a0e8dc986eda8a9268c6d9f352a0d021ccdf2b755dafee0b193d73fdd2f75416",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+          "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+          "status": 403,
+          "method": "httpx",
+          "bytes": 5879,
+          "text_chars": 16,
+          "title": "Just a moment...",
+          "error": "",
+          "meta_refresh_url": ""
+        },
+        {
+          "url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+          "final_url": "https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html",
+          "status": 200,
+          "method": "curl_crawler_ua",
+          "bytes": 201970,
+          "text_chars": 1464,
+          "title": "Tourism Statistics | Hong Kong Tourism Board",
+          "error": "",
+          "meta_refresh_url": "https://www.discoverhongkong.com/r/noscript.html"
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "宏观指标"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 4,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-14T10:07:36.182814+00:00",
-  "fetched_at_hkt": "2026-06-14T18:07:36.182967+08:00"
+  "fetched_at": "2026-06-16T03:06:44.065710+00:00",
+  "fetched_at_hkt": "2026-06-16T11:06:44.065746+08:00"
 }

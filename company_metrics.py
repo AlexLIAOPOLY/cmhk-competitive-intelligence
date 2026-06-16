@@ -12,6 +12,7 @@ RESULTS_DIR = ROOT / "results"
 FEISHU_CACHE_PATH = ROOT / "carrier_performance_feishu.json"
 PERFORMANCE_SOURCES_PATH = ROOT / "carrier_performance_sources.json"
 AI_CACHE_PATH = ROOT / "company_metrics_ai_cache.json"
+VERIFIED_FACTS_PATH = ROOT / "curation_data" / "verified_facts.jsonl"
 AI_CACHE_SCHEMA_VERSION = 3
 
 CORE_METRICS = ["派息", "资本开支", "战略升级", "券商观点", "市场反应"]
@@ -25,7 +26,7 @@ MAINLAND_SUMMARY_ROWS = {
 }
 QUALITATIVE_METRIC_RE = re.compile(
     r"战略|观点|反应|合作|中标|人事|AI|云|ICT|API|Open RAN|网络|规划|政策|"
-    r"安全|跨境|低空|Web3|动态|收购|交易|地缘|经济|声明|IoT|融合|区域|公告|股东大会|"
+    r"安全|跨境|低空|Web3|动态|收购|交易|地缘|经济|声明|IoT|融合|区域|公告|董事会|股东大会|关联交易|"
     r"Capex方向|资本开支方向|投资方向",
     re.IGNORECASE,
 )
@@ -70,6 +71,17 @@ KNOWN_COMPANY_NAMES = {
     "Vodafone", "Deutsche Telekom", "Orange", "Telefonica", "BT/EE", "TIM", "Verizon", "AT&T",
     "T-Mobile US", "e&", "stc", "中国移动", "中国电信", "中国联通", "中国铁塔",
 }
+DISPLAY_COMPANY_ALIASES = {
+    "3HK": "3HK / Hutchison",
+    "iCable": "i-CABLE",
+}
+NON_COMPANY_SUBJECTS = {
+    "行业资讯",
+    "政治新闻",
+    "政治资讯",
+    "经济资讯",
+    "社会资讯",
+}
 VALUE_UNIT_RE = re.compile(
     r"(?:HK\$|US\$|RMB|人民币|港币|港元|\$)?\s*[-+]?\d[\d,]*(?:\.\d+)?\s*"
     r"(?:亿港元|亿人民币|亿美元|亿元|万港元|百万港元|亿|港元|港仙|元|美元|%|个百分点|pp|pps|"
@@ -109,6 +121,76 @@ def _clean_text(value: object, limit: int = 600) -> str:
     if len(text) > limit:
         return text[:limit].rstrip() + "..."
     return text
+
+
+def _normalize_company_name(value: object) -> str:
+    company = _clean_text(value, 80)
+    return DISPLAY_COMPANY_ALIASES.get(company, company)
+
+
+def _is_publishable_company(company: str) -> bool:
+    if not company:
+        return False
+    if company in NON_COMPANY_SUBJECTS:
+        return False
+    if re.search(r"(?:资讯|新闻)$", company):
+        return False
+    return True
+
+
+def _normalize_row_company(row: dict) -> dict | None:
+    original_company = str(row.get("company") or "").strip()
+    normalized_company = _normalize_company_name(original_company)
+    if not _is_publishable_company(normalized_company):
+        return None
+    if original_company == "3HK" and row.get("metric") == "市场反应":
+        return None
+    row["company"] = normalized_company
+    return row
+
+
+def _fact_publish_signature(company: str, metric: str, value: object) -> tuple[str, str, str]:
+    return (
+        _normalize_company_name(company),
+        _clean_text(metric, 120),
+        re.sub(r"\s+", "", _normalize_verified_value(value)).casefold(),
+    )
+
+
+def _normalize_verified_value(value: object) -> str:
+    text = _clean_text(value, 600)
+    text = re.sub(
+        r"CAPEX \(excluding telecommunications licences\) \(433；资本开支\.\.\.稳定在HK\$433 million",
+        "资本开支4.33亿港元",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+    def million_hkd(match: re.Match[str]) -> str:
+        amount = float(match.group(1).replace(",", "")) / 100
+        return f"{amount:.2f}亿港元"
+
+    def hk_cents(match: re.Match[str]) -> str:
+        amount = float(match.group(1)) / 100
+        return f"{amount:.4f}".rstrip("0").rstrip(".") + "港元/股"
+
+    text = re.sub(r"HK\$\s*([\d,]+(?:\.\d+)?)\s*million", million_hkd, text, flags=re.IGNORECASE)
+    text = re.sub(r"(\d+(?:\.\d+)?)\s*HK\s*cents?(?:\s*per share)?", hk_cents, text, flags=re.IGNORECASE)
+    text = re.sub(r"(\d+(?:\.\d+)?)\s*港仙(?:/股)?", hk_cents, text)
+    return text
+
+
+def _verified_fact_publish_issue(fact: dict) -> str:
+    company = str(fact.get("company") or "")
+    metric = str(fact.get("metric") or "")
+    value = str(fact.get("value") or "")
+    if "无资费信息" in value or "无家宽套餐信息" in value:
+        return "来源未提供该项数据"
+    if company == "iCable" and metric == "派息" and "FY2024" in value:
+        return "披露期早于当前FY2025业绩口径"
+    if re.search(r"公开信息已更新|未提取到有效数据", value):
+        return "缺少可直接发布的事实值"
+    return ""
 
 
 def _value_has_unit(token: str) -> bool:
@@ -322,7 +404,11 @@ def _apply_ai_cache(rows: list[dict]) -> list[dict]:
         if _apply_brand_market_reaction_not_applicable(row):
             continue
         item = items.get(row.get("id"))
-        if not isinstance(item, dict):
+        if (
+            not isinstance(item, dict)
+            or item.get("status") != "ok"
+            or not _cache_item_brand_consistent(item)
+        ):
             item = semantic_items.get(
                 (
                     str(row.get("company") or ""),
@@ -398,7 +484,8 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
     if re.search(r"市场反应", metric_text, re.IGNORECASE):
         return bool(
             re.search(
-                r"股价|收盘|上涨|下跌|升|跌|市场关注|市场担忧|市场反应|交易日|目标价|评级",
+                r"股价|收盘|上涨|下跌|升|跌|市场关注|市场担忧|市场反应|交易日|目标价|评级|"
+                r"\d+(?:\.\d+)?\s*港元\s*→\s*\d+(?:\.\d+)?\s*港元",
                 value_text,
                 re.IGNORECASE,
             )
@@ -667,17 +754,85 @@ def _crawl_rows() -> list[dict]:
     return output
 
 
+def _verified_fact_rows() -> list[dict]:
+    if not VERIFIED_FACTS_PATH.exists():
+        return []
+
+    result_context: dict[str, dict] = {}
+    for path in RESULTS_DIR.glob("row_*.json"):
+        data = _read_json(path, {})
+        if isinstance(data, dict):
+            result_context[path.stem] = data
+
+    output: list[dict] = []
+    for line in VERIFIED_FACTS_PATH.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            fact = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if fact.get("status") != "ok" or fact.get("decision") != "accepted":
+            continue
+        if not all(
+            [
+                fact.get("entity_supported"),
+                fact.get("metric_supported"),
+                fact.get("value_supported"),
+            ]
+        ):
+            continue
+        if _verified_fact_publish_issue(fact):
+            continue
+
+        row_ref = str(fact.get("row_ref") or "")
+        context = result_context.get(row_ref, {})
+        sources = [
+            {"label": _source_label(str(url)), "url": str(url)}
+            for url in fact.get("sources") or []
+            if str(url).startswith(("http://", "https://"))
+        ]
+        row = _make_row(
+            company=str(fact.get("company") or "").strip(),
+            metric=str(fact.get("metric") or "").strip(),
+            value=_normalize_verified_value(fact.get("value")),
+            group=str(context.get("object") or "").strip(),
+            source_type="public-crawl",
+            sources=sources,
+            confidence=fact.get("confidence"),
+            row_ref=row_ref,
+        )
+        row["id"] = str(fact.get("id") or row["id"])
+        row["value"] = _normalize_verified_value(fact.get("value"))
+        row["detail"] = _normalize_verified_value(fact.get("basis") or fact.get("value"))
+        row["aiCleaned"] = True
+        row["aiStatus"] = "ok"
+        row["aiNote"] = _clean_text(fact.get("note") or "", 120)
+        row["aiConfidence"] = fact.get("confidence")
+        row["entitySupported"] = True
+        row["metricSupported"] = True
+        row["valueSupported"] = True
+        row["qualityScore"] = fact.get("quality_score")
+        row["sourceTier"] = fact.get("source_tier")
+        output.append(row)
+    return output
+
+
 def build_company_metrics_payload(apply_ai_cache: bool = True) -> dict:
     rows = _performance_rows()
-    rows.extend(_crawl_rows())
+    verified_fact_rows = _verified_fact_rows() if apply_ai_cache else []
+    rows.extend(verified_fact_rows or _crawl_rows())
     candidate_count = len(rows)
-    if apply_ai_cache:
+    rows = [row for row in (_normalize_row_company(row) for row in rows) if row is not None]
+    if apply_ai_cache and not verified_fact_rows:
         rows = _apply_ai_cache(rows)
         rows = [
             row
             for row in rows
             if not (row.get("sourceType") == "public-crawl" and row.get("aiStatus") == "unavailable")
         ]
+
+    if apply_ai_cache:
         for row in rows:
             row["qualityIssues"] = _row_quality_issues(row)
         rows = [row for row in rows if not row["qualityIssues"]]
@@ -706,10 +861,27 @@ def build_company_metrics_payload(apply_ai_cache: bool = True) -> dict:
                 not in suspicious_duplicates
             )
         ]
+
+        unique_rows: list[dict] = []
+        seen_facts: set[tuple[str, str, str, str]] = set()
+        for row in rows:
+            fingerprint = (
+                str(row.get("company") or ""),
+                str(row.get("metric") or ""),
+                re.sub(r"\s+", "", str(row.get("value") or "")).casefold(),
+                str(row.get("sourceType") or ""),
+            )
+            if fingerprint in seen_facts:
+                continue
+            seen_facts.add(fingerprint)
+            unique_rows.append(row)
+        rows = unique_rows
     else:
         for row in rows:
             row["qualityIssues"] = []
     for row in rows:
+        row["value"] = _normalize_verified_value(row.get("value"))
+        row["detail"] = _normalize_verified_value(row.get("detail"))
         row["qualityStatus"] = "verified" if row.get("sourceType") == "verified-performance" else "ai-verified"
         row["valueType"] = "text" if QUALITATIVE_METRIC_RE.search(row.get("metric", "")) else "numeric"
         row["metricCategory"] = _metric_category(row.get("metric", ""))
@@ -733,6 +905,47 @@ def build_company_metrics_payload(apply_ai_cache: bool = True) -> dict:
         )
 
     ai_cache = _read_json(AI_CACHE_PATH, {})
+    accepted_fact_items: list[dict] = []
+    if VERIFIED_FACTS_PATH.exists():
+        for line in VERIFIED_FACTS_PATH.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                fact = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if fact.get("status") == "ok" and fact.get("decision") == "accepted":
+                accepted_fact_items.append(fact)
+    accepted_ai_facts = len(accepted_fact_items)
+    published_public_rows = [row for row in rows if row.get("sourceType") == "public-crawl"]
+    published_signatures = {
+        _fact_publish_signature(row.get("company", ""), row.get("metric", ""), row.get("value", ""))
+        for row in published_public_rows
+    }
+    accepted_publishable_signatures: set[tuple[str, str, str]] = set()
+    excluded_out_of_scope = 0
+    excluded_non_facts = 0
+    deduplicated_ai_facts = 0
+    for fact in accepted_fact_items:
+        if not all([fact.get("entity_supported"), fact.get("metric_supported"), fact.get("value_supported")]):
+            excluded_non_facts += 1
+            continue
+        company = _normalize_company_name(fact.get("company"))
+        if not _is_publishable_company(company):
+            excluded_out_of_scope += 1
+            continue
+        if _verified_fact_publish_issue(fact):
+            excluded_non_facts += 1
+            continue
+        if str(fact.get("company") or "").strip() == "3HK" and fact.get("metric") == "市场反应":
+            deduplicated_ai_facts += 1
+            continue
+        signature = _fact_publish_signature(company, fact.get("metric", ""), fact.get("value", ""))
+        if signature in accepted_publishable_signatures:
+            deduplicated_ai_facts += 1
+            continue
+        accepted_publishable_signatures.add(signature)
+    suppressed_publishable = len(accepted_publishable_signatures - published_signatures)
     return {
         "generatedAt": _clean_text(
             ai_cache.get("updatedAt")
@@ -743,10 +956,16 @@ def build_company_metrics_payload(apply_ai_cache: bool = True) -> dict:
             "metrics": len(metrics),
             "records": len(rows),
             "verifiedRecords": sum(1 for row in rows if row.get("sourceType") == "verified-performance"),
-            "crawlRecords": sum(1 for row in rows if row.get("sourceType") == "public-crawl"),
+            "crawlRecords": len(published_public_rows),
+            "acceptedAiFacts": accepted_ai_facts,
+            "publishableAiFacts": len(accepted_publishable_signatures),
+            "publishedAiFacts": len(published_public_rows),
             "aiCleanedRecords": sum(1 for row in rows if row.get("aiCleaned")),
             "qualityPassedRecords": len(rows),
-            "suppressedRecords": candidate_count - len(rows),
+            "suppressedRecords": suppressed_publishable,
+            "excludedOutOfScopeFacts": excluded_out_of_scope,
+            "excludedNonFacts": excluded_non_facts,
+            "deduplicatedAiFacts": deduplicated_ai_facts,
         },
         "companies": companies,
         "metrics": metrics,

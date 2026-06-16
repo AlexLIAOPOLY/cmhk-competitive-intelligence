@@ -7,19 +7,39 @@
     "HGC"
   ],
   "selected_fields": [
-    "家宽用户数"
+    "家宽用户数",
+    "网络覆盖",
+    "企业通信",
+    "跨境链路",
+    "数据中心",
+    "云网产品",
+    "派息",
+    "资本开支",
+    "战略升级",
+    "券商观点",
+    "市场反应"
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.hgc-intl.com/",
-    "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+    "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
+    "https://www.hgc-intl.com/"
   ],
   "attempted_urls": [
     "https://www.hgc-intl.com/",
     "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
   ],
   "extracted": {
-    "家宽用户数": "Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre"
+    "家宽用户数": "Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre",
+    "网络覆盖": "ch Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital ",
+    "企业通信": "SOURCE: https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/ HGC sets out for full|scale transformation | HGC International Business By continuing to use this site, you agree to its use of cookies",
+    "跨境链路": "ty & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD",
+    "数据中心": "Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Conta",
+    "云网产品": "N 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions ",
+    "派息": "不适用（HGC为非上市主体）",
+    "战略升级": "two years until the end of 2016. Kwok continues: “The second item is to streamline our business. On the financial side we have defined our investment philosophy.” That includes a strategy that is “critical to our long-te",
+    "券商观点": "不适用（HGC为非上市主体）",
+    "市场反应": "不适用（HGC为非上市主体）",
+    "资本开支": "HGC 为非上市主体，未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。"
   },
   "missing_fields": [],
   "entity_results": [
@@ -27,52 +47,24 @@
       "entity": "HGC",
       "status": "ok",
       "source_urls": [
-        "https://www.hgc-intl.com/",
-        "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/"
+        "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
+        "https://www.hgc-intl.com/"
       ],
       "extracted": {
-        "家宽用户数": "Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre"
+        "家宽用户数": "Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre",
+        "网络覆盖": "ch Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital ",
+        "企业通信": "SOURCE: https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/ HGC sets out for full|scale transformation | HGC International Business By continuing to use this site, you agree to its use of cookies",
+        "跨境链路": "ty & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD",
+        "数据中心": "Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Conta",
+        "云网产品": "N 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions ",
+        "派息": "不适用（HGC为非上市主体）",
+        "战略升级": "two years until the end of 2016. Kwok continues: “The second item is to streamline our business. On the financial side we have defined our investment philosophy.” That includes a strategy that is “critical to our long-te",
+        "券商观点": "不适用（HGC为非上市主体）",
+        "市场反应": "不适用（HGC为非上市主体）",
+        "资本开支": "HGC 为非上市主体，未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 15,
-          "url": "https://www.hgc-intl.com/",
-          "final_url": "https://www.hgc-intl.com/",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "HGC International Business | Global Telecom and ICT Solution Provider",
-          "bytes": 219004,
-          "elapsed_seconds": 4.19,
-          "method": "httpx",
-          "text_sample": "HGC International Business | Global Telecom and ICT Solution Provider By continuing to use this site, you agree to its use of cookies. Find out more about cookies here . Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD-WAN Service GEPL Service IPLC Service VPLS Service VPN Service Premium Internet Access Solutions A2P Messaging, Digital & Voice Services Award",
-          "evidence_path": "evidence_cache/53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db.txt",
-          "content_hash": "53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.hgc-intl.com/",
-              "final_url": "https://www.hgc-intl.com/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 219004,
-              "text_chars": 10139,
-              "title": "HGC International Business | Global Telecom and ICT Solution Provider",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "HGC"
-          ]
-        },
         {
           "row": 15,
           "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
@@ -81,7 +73,7 @@
           "content_type": "text/html; charset=UTF-8",
           "title": "HGC sets out for full|scale transformation | HGC International Business",
           "bytes": 182740,
-          "elapsed_seconds": 6.148,
+          "elapsed_seconds": 4.423,
           "method": "httpx",
           "text_sample": "HGC sets out for full|scale transformation | HGC International Business By continuing to use this site, you agree to its use of cookies. Find out more about cookies here . Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD-WAN Service GEPL Service IPLC Service VPLS Service VPN Service Premium Internet Access Solutions A2P Messaging, Digital & Voice Services Awa",
           "evidence_path": "evidence_cache/c2ce5ddc4625bdced759989fcee3c3bbd14f96f0fabdbd792b6e109fd039960d.txt",
@@ -107,55 +99,61 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HGC"
+          ]
+        },
+        {
+          "row": 15,
+          "url": "https://www.hgc-intl.com/",
+          "final_url": "https://www.hgc-intl.com/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "HGC International Business | Global Telecom and ICT Solution Provider",
+          "bytes": 218999,
+          "elapsed_seconds": 5.25,
+          "method": "httpx",
+          "text_sample": "HGC International Business | Global Telecom and ICT Solution Provider By continuing to use this site, you agree to its use of cookies. Find out more about cookies here . Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD-WAN Service GEPL Service IPLC Service VPLS Service VPN Service Premium Internet Access Solutions A2P Messaging, Digital & Voice Services Award",
+          "evidence_path": "evidence_cache/53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db.txt",
+          "content_hash": "53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hgc-intl.com/",
+              "final_url": "https://www.hgc-intl.com/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 218999,
+              "text_chars": 10139,
+              "title": "HGC International Business | Global Telecom and ICT Solution Provider",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "HGC"
           ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains a non-numeric value for '家宽用户数' (HGC consumer broadband users), which appears to be a navigation bar text from the webpage, not a quantitative data point. The source text mentions 'Consumer Broadband' but provides no numeric data for household broadband users."
+      "confidence_score": 0.2,
+      "verification_reason": "Extracted Data contains many irrelevant fragments from website navigation and few meaningful matches to the Source Text. Only '不适用' entries and some generic terms like 'network services' align; most values are mismatched or out of context."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 15,
-      "url": "https://www.hgc-intl.com/",
-      "final_url": "https://www.hgc-intl.com/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "HGC International Business | Global Telecom and ICT Solution Provider",
-      "bytes": 219004,
-      "elapsed_seconds": 4.19,
-      "method": "httpx",
-      "text_sample": "HGC International Business | Global Telecom and ICT Solution Provider By continuing to use this site, you agree to its use of cookies. Find out more about cookies here . Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD-WAN Service GEPL Service IPLC Service VPLS Service VPN Service Premium Internet Access Solutions A2P Messaging, Digital & Voice Services Award",
-      "evidence_path": "evidence_cache/53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db.txt",
-      "content_hash": "53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.hgc-intl.com/",
-          "final_url": "https://www.hgc-intl.com/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 219004,
-          "text_chars": 10139,
-          "title": "HGC International Business | Global Telecom and ICT Solution Provider",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "HK",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "HGC"
-      ]
-    },
     {
       "row": 15,
       "url": "https://www.hgc-intl.com/insight/hgc-sets-out-for-full-scale-transformation/",
@@ -164,7 +162,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "HGC sets out for full|scale transformation | HGC International Business",
       "bytes": 182740,
-      "elapsed_seconds": 6.148,
+      "elapsed_seconds": 4.423,
       "method": "httpx",
       "text_sample": "HGC sets out for full|scale transformation | HGC International Business By continuing to use this site, you agree to its use of cookies. Find out more about cookies here . Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD-WAN Service GEPL Service IPLC Service VPLS Service VPN Service Premium Internet Access Solutions A2P Messaging, Digital & Voice Services Awa",
       "evidence_path": "evidence_cache/c2ce5ddc4625bdced759989fcee3c3bbd14f96f0fabdbd792b6e109fd039960d.txt",
@@ -190,15 +188,61 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "HGC"
+      ]
+    },
+    {
+      "row": 15,
+      "url": "https://www.hgc-intl.com/",
+      "final_url": "https://www.hgc-intl.com/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "HGC International Business | Global Telecom and ICT Solution Provider",
+      "bytes": 218999,
+      "elapsed_seconds": 5.25,
+      "method": "httpx",
+      "text_sample": "HGC International Business | Global Telecom and ICT Solution Provider By continuing to use this site, you agree to its use of cookies. Find out more about cookies here . Accept Cookies Open Menu Open Utilities Menu Contact Us Solutions Global Reach Insight Insight Media Centre Newsletters Partner Program Webinar International Business HGC Consumer Broadband Hong Kong Business Data Centre Macroview EN 繁 简 Search Contact Us Network Services A2P Messaging, Digital & Voice Services Internet Services Hosting & Colocation Services Mobility & Integrated Solutions OTT Edge Solutions Cloud Solutions Cybersecurity Solutions Data Center Interconnect Cloud Communications Solutions Network Services SDX™ New Hub of Asian Connectivity GMS Data Network Service SD-WAN Service GEPL Service IPLC Service VPLS Service VPN Service Premium Internet Access Solutions A2P Messaging, Digital & Voice Services Award",
+      "evidence_path": "evidence_cache/53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db.txt",
+      "content_hash": "53e16892479cbd27789c640287ae62779559bfbef2e5326c6cdfea24cd4000db",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.hgc-intl.com/",
+          "final_url": "https://www.hgc-intl.com/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 218999,
+          "text_chars": 10139,
+          "title": "HGC International Business | Global Telecom and ICT Solution Provider",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "HGC"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 2,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-11T10:08:31.985417+00:00",
-  "fetched_at_hkt": "2026-06-11T18:08:31.985770+08:00"
+  "fetched_at": "2026-06-16T03:02:16.327322+00:00",
+  "fetched_at_hkt": "2026-06-16T11:02:16.327342+08:00"
 }

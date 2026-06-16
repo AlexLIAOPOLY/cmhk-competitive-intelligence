@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>公司指标数据表 | 战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=66" />
+    <link rel="stylesheet" href="/static/styles.css?v=67" />
   </head>
   <body class="dashboard-page company-data-page">
     <main class="app-shell">
@@ -40,9 +40,9 @@
             <option value="">全部指标</option>
           </select>
           <select id="sourceTypeFilter" aria-label="按数据类型筛选">
-            <option value="">全部数据</option>
-            <option value="verified-performance" selected>核验业绩字段</option>
-            <option value="public-crawl">公开监测结果</option>
+            <option value="" selected>全部 AI 核验数据</option>
+            <option value="verified-performance">业绩基准字段</option>
+            <option value="public-crawl">AI 筛查公开信息</option>
           </select>
           <select id="groupFilter" aria-label="按范围筛选">
             <option value="">全部范围</option>
@@ -71,7 +71,7 @@
 
         <section class="company-matrix-card" id="companyMatrixCard" aria-label="公司指标单屏总览">
           <div class="company-table-toolbar">
-            <strong>公司指标对比总览</strong>
+            <strong>主体指标与确认事实总览</strong>
             <div style="display: flex; align-items: center; gap: 12px;">
               <button class="company-view-button" id="transposeButton" type="button" title="行列转换" style="height: 30px; min-width: auto; padding: 0 10px; border: 1px solid rgba(118, 170, 210, 0.48);">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h5v5M4 20h5v-5M15 4l-5 5M4 20l5-5"/></svg>
@@ -130,6 +130,6 @@
       </div>
     </section>
 
-    <script src="/static/company-data.js?v=10"></script>
+    <script src="/static/company-data.js?v=13"></script>
   </body>
 </html>

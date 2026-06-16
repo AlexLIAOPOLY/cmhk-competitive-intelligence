@@ -6,6 +6,7 @@ from unittest.mock import patch
 from company_metrics import (
     _apply_ai_cache,
     _apply_brand_market_reaction_not_applicable,
+    build_company_metrics_payload,
     _cache_item_brand_consistent,
 )
 from data_curation.workflow import (
@@ -194,6 +195,14 @@ class DataCurationTests(unittest.TestCase):
         self.assertTrue(_apply_brand_market_reaction_not_applicable(row))
         self.assertEqual(row["value"], "不适用（品牌非独立上市主体）")
         self.assertEqual(row["aiStatus"], "ok")
+
+    def test_company_metrics_dashboard_excludes_non_company_subjects(self):
+        payload = build_company_metrics_payload()
+        companies = set(payload["companies"])
+        self.assertFalse({"行业资讯", "政治新闻", "政治资讯", "经济资讯", "社会资讯", "3HK"} & companies)
+        self.assertIn("3HK / Hutchison", companies)
+        self.assertEqual(payload["summary"]["publishableAiFacts"], payload["summary"]["publishedAiFacts"])
+        self.assertEqual(payload["summary"]["suppressedRecords"], 0)
 
     def test_brand_cache_rejects_other_brand_qualitative_fact(self):
         self.assertFalse(

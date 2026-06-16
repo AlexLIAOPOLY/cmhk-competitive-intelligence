@@ -1,7 +1,7 @@
 {
   "row": 33,
   "need": "地缘政治与经济、重大政策/声明等",
-  "status": "partial",
+  "status": "ok",
   "object": "政治新闻",
   "entities": [
     "政治新闻"
@@ -23,28 +23,26 @@
     "https://www.mfa.gov.cn/eng/"
   ],
   "extracted": {
-    "地缘政治": "al Envoy Zhai Jun of the Chinese Government on the Middle East Issue Meets with Norwegian Ambassador to China Vebjoern Dysvik June 05, 2026 The Department of Treaty and Law of the Foreign Ministry and the Legal Departmen",
+    "地缘政治": "l Development Initiative (GDI) MFA News Assistant Foreign Minister Liu Bin Attends “Central Asia — the Core of the SCO” International Conference and Holds Consultations with Tajik Foreign Ministry June 13, 2026 Assistant",
+    "经济": "lateral trade Chinese vice premier meets U.S. Representative Lou Correa Chinese vice premier stresses development of salt lake industrial bases, natural disaster response National Economy Showed Steady Momentum with Inno",
     "重大政策/声明": "MINISTRIES INDIVIDUALS A Guide to Working and Living in China as Business Expatriates (2025 Edition) Announcement on the Implementation of Electronic Border Management Area Permit Policy Interpretation of the Online Acco"
   },
-  "missing_fields": [
-    "经济"
-  ],
+  "missing_fields": [],
   "entity_results": [
     {
       "entity": "政治新闻",
-      "status": "partial",
+      "status": "ok",
       "source_urls": [
         "https://www.gov.cn/",
         "https://english.www.gov.cn/",
         "https://www.mfa.gov.cn/eng/"
       ],
       "extracted": {
-        "地缘政治": "al Envoy Zhai Jun of the Chinese Government on the Middle East Issue Meets with Norwegian Ambassador to China Vebjoern Dysvik June 05, 2026 The Department of Treaty and Law of the Foreign Ministry and the Legal Departmen",
+        "地缘政治": "l Development Initiative (GDI) MFA News Assistant Foreign Minister Liu Bin Attends “Central Asia — the Core of the SCO” International Conference and Holds Consultations with Tajik Foreign Ministry June 13, 2026 Assistant",
+        "经济": "lateral trade Chinese vice premier meets U.S. Representative Lou Correa Chinese vice premier stresses development of salt lake industrial bases, natural disaster response National Economy Showed Steady Momentum with Inno",
         "重大政策/声明": "MINISTRIES INDIVIDUALS A Guide to Working and Living in China as Business Expatriates (2025 Edition) Announcement on the Implementation of Electronic Border Management Area Permit Policy Interpretation of the Online Acco"
       },
-      "missing_fields": [
-        "经济"
-      ],
+      "missing_fields": [],
       "raw_records": [
         {
           "row": 33,
@@ -54,11 +52,11 @@
           "content_type": "text/html",
           "title": "中国政府网_中央人民政府门户网站",
           "bytes": 67444,
-          "elapsed_seconds": 0.106,
+          "elapsed_seconds": 0.314,
           "method": "httpx",
-          "text_sample": "中国政府网_中央人民政府门户网站 首页 | 简 | 繁 | EN | 登录 个人中心 退出 | 邮箱 | 无障碍 EN https://www.gov.cn/ 习近平文化思想指引我国文化遗产保护传承工作高质量发展 文脉长存 瑰宝长青——在习近平文化思想引领下文化和自然遗产保护传承利用工作开创新局面 习近平文化思想指引我国文化遗产保护传承工作高质量发展 文脉长存 瑰宝长青——在习近平文化思想引领下文化和自然遗产保护传承利用工作开创新局面 更多 >> 更多>> 习近平出席金正恩举行的欢送仪式 习近平同金正恩举行会谈 2026年1至5月全国铁路发送旅客超19亿人次 要闻 李强主持召开国务院常务会议 研究2025年度中央预算执行和其他财政收支审计查出问题整改工作等 张国清在青海调研 谌贻琴出席国际劳工大会并会见瑞士联邦主席帕姆兰 以失能老人照护为重点的基本养老服务体系不断完善 我国世界自然遗产保护状况持续提升 去年全国活跃数据总量同比增28.46% 最新政策 国务院关于印发《现代化应急体系建设“十五五”规划》的通知 国办关于加强监管防范风险促进私募投资基金高质量发展的指导意见 国务院关于印发《加快农业农村现代化“十五五”规划》的通知 国务院关于对外投资的规定 国务院关于同意在粤港澳大湾区内地九市暂时调整实施有关行政法规规定的批复 国务院政策文件库 政府信息公开 | 惠企助企政策集纳查询 政策解读 国常会解读 | 国务院常务会议审议通过《教育发展“十五五”规划》 国常会解读 | 国务院部署美丽中国建设工作 国务院政策例行吹风会：四部门解读《城市更新“十五五”规划》 国务院组织机构 国旗 国歌 国徽 | 国情 国务院公报 | 国家行政法规库 | 国家规章库 企业购置不动产转移登记“高效办成一件事”部署开展 人形机器人与具身智能实景实训专项行动启动 5月份我国消费市场运行总体平稳 政务联播 教育部部署高校毕业生就业“百日冲刺”行动 住房城乡建设部：“十五五”我国将建设改造城市地下管网约77万公里 三峡水运新通道破土动工 建言征集 | 回应关切 网民希望支持更多中小企业参加广交会，商务",
-          "evidence_path": "evidence_cache/290ae9fe537b453edfdc5aa4c3c9acf109513b25fb2a8a8995b221445e0f7880.txt",
-          "content_hash": "290ae9fe537b453edfdc5aa4c3c9acf109513b25fb2a8a8995b221445e0f7880",
+          "text_sample": "中国政府网_中央人民政府门户网站 首页 | 简 | 繁 | EN | 登录 个人中心 退出 | 邮箱 | 无障碍 EN https://www.gov.cn/ 习近平同缅甸总统敏昂莱举行会谈 6月16日，国家主席习近平在北京同来华进行国事访问的缅甸总统敏昂莱举行会谈 习近平为缅甸总统敏昂莱举行欢迎仪式 习近平同缅甸总统敏昂莱举行会谈 6月16日，国家主席习近平在北京同来华进行国事访问的缅甸总统敏昂莱举行会谈 习近平为缅甸总统敏昂莱举行欢迎仪式 更多 >> 更多>> 习近平：一体推进教育科技人才发展 习近平同金正恩举行会谈 2026年全国城市联合招聘春招提供岗位超1268万个 要闻 李强主持国务院第二十次专题学习 李强同越南总理黎明兴通电话 何立峰会见美国联邦众议员科雷亚 张国清在青海调研 国家统计局：5月份国民经济运行总体平稳、向新向优 重点行业节能降碳改造攻坚三年行动开展 最新政策 国务院关于印发《现代化应急体系建设“十五五”规划》的通知 国办关于加强监管防范风险促进私募投资基金高质量发展的指导意见 国务院关于印发《加快农业农村现代化“十五五”规划》的通知 国务院关于对外投资的规定 国务院关于同意在粤港澳大湾区内地九市暂时调整实施有关行政法规规定的批复 国务院政策文件库 政府信息公开 | 惠企助企政策集纳查询 政策解读 国常会解读 | 国务院常务会议审议通过《教育发展“十五五”规划》 国常会解读 | 国务院部署美丽中国建设工作 国务院政策例行吹风会：四部门解读《城市更新“十五五”规划》 国务院组织机构 国旗 国歌 国徽 | 国情 国务院公报 | 国家行政法规库 | 国家规章库 企业购置不动产转移登记“高效办成一件事”部署开展 人形机器人与具身智能实景实训专项行动启动 5月份我国消费市场运行总体平稳 政务联播 教育部部署高校毕业生就业“百日冲刺”行动 住房城乡建设部：“十五五”我国将建设改造城市地下管网约77万公里 三峡水运新通道破土动工 建言征集 | 回应关切 网民希望支持更多中小企业参加广交会，商务部对外贸易司回应了 网民希望方便老人订火车票、老人儿童优先检票，国铁",
+          "evidence_path": "evidence_cache/1876daa27eaf95470b5e57fb8896d6c874e2868a7fb010d8d5c8bb55193b9481.txt",
+          "content_hash": "1876daa27eaf95470b5e57fb8896d6c874e2868a7fb010d8d5c8bb55193b9481",
           "error": "",
           "fetch_attempts": [
             {
@@ -67,7 +65,7 @@
               "status": 200,
               "method": "httpx",
               "bytes": 67444,
-              "text_chars": 2652,
+              "text_chars": 2576,
               "title": "中国政府网_中央人民政府门户网站",
               "error": "",
               "meta_refresh_url": ""
@@ -80,6 +78,9 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "政治新闻"
           ]
@@ -91,12 +92,12 @@
           "status": 200,
           "content_type": "text/html;charset=UTF-8",
           "title": "The State Council of the People's Republic of China",
-          "bytes": 58828,
-          "elapsed_seconds": 0.354,
+          "bytes": 58920,
+          "elapsed_seconds": 0.397,
           "method": "httpx",
-          "text_sample": "The State Council of the People's Republic of China App HOME NEWS INSTITUTIONS POLICIES ARCHIVE 中文 Preserving the past, bridging civilizations: Xi's cultural heritage bond More>> Xi says he reaches important consensus with Kim on developing China-DPRK relations in new era Xi calls on China, DPRK to consolidate trust, boost practical cooperation 166 foreign-invested enterprises approved for value-added telecom services NEWS Chinese premier chairs State Council executive meeting China will continue to share development opportunities with other countries: vice premier Chinese state councilor attends International Labour Conference China's world natural heritage sites see sustained conservation improvement China railway passenger trips hit record 1.9 bln in January-May POLICIES China issues plan to advance emergency response system modernization during 2026-2030 China issues guidelines to bo",
-          "evidence_path": "evidence_cache/f55c08cd7cee4f4f247a02e6d436a3de88cd5f78b6217fb7ebb17ef653dbc25a.txt",
-          "content_hash": "f55c08cd7cee4f4f247a02e6d436a3de88cd5f78b6217fb7ebb17ef653dbc25a",
+          "text_sample": "The State Council of the People's Republic of China App HOME NEWS INSTITUTIONS POLICIES ARCHIVE 中文 Xi's article on boosting education, sci-tech, talent building to be published More>> Xi's article on boosting education, sci-tech, talent building to be published Xi calls on China, DPRK to consolidate trust, boost practical cooperation 166 foreign-invested enterprises approved for value-added telecom services NEWS Chinese premier calls for strengthening implementation of functional zoning strategy Chinese premier says China ready to work with Vietnam to expand bilateral trade Chinese vice premier meets U.S. Representative Lou Correa Chinese vice premier stresses development of salt lake industrial bases, natural disaster response National Economy Showed Steady Momentum with Innovation-led and High-quality Development in May POLICIES China issues plan to advance emergency response system mo",
+          "evidence_path": "evidence_cache/f8a2500a322e67c93f4c9e0cc50f0221bf57215eb3702b3e24d56b4149adeace.txt",
+          "content_hash": "f8a2500a322e67c93f4c9e0cc50f0221bf57215eb3702b3e24d56b4149adeace",
           "error": "",
           "fetch_attempts": [
             {
@@ -104,8 +105,8 @@
               "final_url": "https://english.www.gov.cn/",
               "status": 200,
               "method": "httpx",
-              "bytes": 58828,
-              "text_chars": 4560,
+              "bytes": 58920,
+              "text_chars": 4676,
               "title": "The State Council of the People's Republic of China",
               "error": "",
               "meta_refresh_url": ""
@@ -118,6 +119,9 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "政治新闻"
           ]
@@ -129,12 +133,12 @@
           "status": 200,
           "content_type": "text/html",
           "title": "Ministry of Foreign Affairs of the People's Republic of China",
-          "bytes": 46216,
-          "elapsed_seconds": 3.515,
+          "bytes": 46246,
+          "elapsed_seconds": 0.69,
           "method": "httpx",
           "text_sample": "Ministry of Foreign Affairs of the People's Republic of China IPC Visas English EN 简体中文 Français Русский Español عربي Ministry of Foreign Affairs People’s Republic of China The Ministry Main Responsibilities The Minister Principal Officials Departments Related Agencies News Top Stories Speeches Diplomatic Schedule New Ambassadors MFA News Spokesperson’s Remarks News from Overseas Missions Resources Communiqués Foreign Policies In Focus Diplomatic History Diplomatic Figures Protocol Affairs Overseas Missions Chinese Embassies Chinese Consulates General Chinese Missions to International Organizations and Representative Offices Abroad Countries and Regions Asia Africa Europe North America South America Oceania ABOUT CHINA HOME THE MINISTRY Main Responsibilities The Minister Principal Officials Departments Related Agencies NEWS Top Stories Speeches Diplomatic Schedule New Ambassadors MFA New",
-          "evidence_path": "evidence_cache/4ec670b069917045dc25bcbdaa386369d950b56b5aa0a5f94b46abaf29fe0550.txt",
-          "content_hash": "4ec670b069917045dc25bcbdaa386369d950b56b5aa0a5f94b46abaf29fe0550",
+          "evidence_path": "evidence_cache/91d603224e58b47b05a27cdcedf0d45cfb8976fb0bc9a1cc9f25467b0a9ff3fe.txt",
+          "content_hash": "91d603224e58b47b05a27cdcedf0d45cfb8976fb0bc9a1cc9f25467b0a9ff3fe",
           "error": "",
           "fetch_attempts": [
             {
@@ -142,8 +146,8 @@
               "final_url": "https://www.mfa.gov.cn/eng/",
               "status": 200,
               "method": "httpx",
-              "bytes": 46216,
-              "text_chars": 7422,
+              "bytes": 46246,
+              "text_chars": 7463,
               "title": "Ministry of Foreign Affairs of the People's Republic of China",
               "error": "",
               "meta_refresh_url": ""
@@ -156,18 +160,19 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "政治新闻"
           ]
         }
       ],
-      "confidence_score": 0.1,
-      "verification_reason": "The extracted data contains fabricated and irrelevant content. '地缘政治' field has a sentence mixing 'Zhai Jun' and 'Norwegian Ambassador' with incorrect date (June 05, 2026) and unrelated text from 'Department of Treaty and Law'. The '重大政策/声明' field includes only a partial list item from the English site's 'INDIVIDUALS' section, which is not a major policy or statement. The source text (Chinese and English gov.cn pages) does not contain these specific texts."
+      "confidence_score": 0.0,
+      "verification_reason": "The Extracted Data contains arbitrary, non-existent or fabricated information (e.g., 'l Development Initiative (GDI) MFA News Assistant Foreign Minister Liu Bin Attends...', 'lateral trade Chinese vice premier meets...', 'MINISTRIES INDIVIDUALS A Guide to Working...') that does not appear verbatim or in any coherent form in the provided Source Texts. The Source Texts show Chinese government news and policy content but none of the extracted phrases match. Therefore, the extraction is completely inaccurate."
     }
   ],
-  "entity_missing": [
-    "政治新闻:经济"
-  ],
+  "entity_missing": [],
   "raw_records": [
     {
       "row": 33,
@@ -177,11 +182,11 @@
       "content_type": "text/html",
       "title": "中国政府网_中央人民政府门户网站",
       "bytes": 67444,
-      "elapsed_seconds": 0.106,
+      "elapsed_seconds": 0.314,
       "method": "httpx",
-      "text_sample": "中国政府网_中央人民政府门户网站 首页 | 简 | 繁 | EN | 登录 个人中心 退出 | 邮箱 | 无障碍 EN https://www.gov.cn/ 习近平文化思想指引我国文化遗产保护传承工作高质量发展 文脉长存 瑰宝长青——在习近平文化思想引领下文化和自然遗产保护传承利用工作开创新局面 习近平文化思想指引我国文化遗产保护传承工作高质量发展 文脉长存 瑰宝长青——在习近平文化思想引领下文化和自然遗产保护传承利用工作开创新局面 更多 >> 更多>> 习近平出席金正恩举行的欢送仪式 习近平同金正恩举行会谈 2026年1至5月全国铁路发送旅客超19亿人次 要闻 李强主持召开国务院常务会议 研究2025年度中央预算执行和其他财政收支审计查出问题整改工作等 张国清在青海调研 谌贻琴出席国际劳工大会并会见瑞士联邦主席帕姆兰 以失能老人照护为重点的基本养老服务体系不断完善 我国世界自然遗产保护状况持续提升 去年全国活跃数据总量同比增28.46% 最新政策 国务院关于印发《现代化应急体系建设“十五五”规划》的通知 国办关于加强监管防范风险促进私募投资基金高质量发展的指导意见 国务院关于印发《加快农业农村现代化“十五五”规划》的通知 国务院关于对外投资的规定 国务院关于同意在粤港澳大湾区内地九市暂时调整实施有关行政法规规定的批复 国务院政策文件库 政府信息公开 | 惠企助企政策集纳查询 政策解读 国常会解读 | 国务院常务会议审议通过《教育发展“十五五”规划》 国常会解读 | 国务院部署美丽中国建设工作 国务院政策例行吹风会：四部门解读《城市更新“十五五”规划》 国务院组织机构 国旗 国歌 国徽 | 国情 国务院公报 | 国家行政法规库 | 国家规章库 企业购置不动产转移登记“高效办成一件事”部署开展 人形机器人与具身智能实景实训专项行动启动 5月份我国消费市场运行总体平稳 政务联播 教育部部署高校毕业生就业“百日冲刺”行动 住房城乡建设部：“十五五”我国将建设改造城市地下管网约77万公里 三峡水运新通道破土动工 建言征集 | 回应关切 网民希望支持更多中小企业参加广交会，商务",
-      "evidence_path": "evidence_cache/290ae9fe537b453edfdc5aa4c3c9acf109513b25fb2a8a8995b221445e0f7880.txt",
-      "content_hash": "290ae9fe537b453edfdc5aa4c3c9acf109513b25fb2a8a8995b221445e0f7880",
+      "text_sample": "中国政府网_中央人民政府门户网站 首页 | 简 | 繁 | EN | 登录 个人中心 退出 | 邮箱 | 无障碍 EN https://www.gov.cn/ 习近平同缅甸总统敏昂莱举行会谈 6月16日，国家主席习近平在北京同来华进行国事访问的缅甸总统敏昂莱举行会谈 习近平为缅甸总统敏昂莱举行欢迎仪式 习近平同缅甸总统敏昂莱举行会谈 6月16日，国家主席习近平在北京同来华进行国事访问的缅甸总统敏昂莱举行会谈 习近平为缅甸总统敏昂莱举行欢迎仪式 更多 >> 更多>> 习近平：一体推进教育科技人才发展 习近平同金正恩举行会谈 2026年全国城市联合招聘春招提供岗位超1268万个 要闻 李强主持国务院第二十次专题学习 李强同越南总理黎明兴通电话 何立峰会见美国联邦众议员科雷亚 张国清在青海调研 国家统计局：5月份国民经济运行总体平稳、向新向优 重点行业节能降碳改造攻坚三年行动开展 最新政策 国务院关于印发《现代化应急体系建设“十五五”规划》的通知 国办关于加强监管防范风险促进私募投资基金高质量发展的指导意见 国务院关于印发《加快农业农村现代化“十五五”规划》的通知 国务院关于对外投资的规定 国务院关于同意在粤港澳大湾区内地九市暂时调整实施有关行政法规规定的批复 国务院政策文件库 政府信息公开 | 惠企助企政策集纳查询 政策解读 国常会解读 | 国务院常务会议审议通过《教育发展“十五五”规划》 国常会解读 | 国务院部署美丽中国建设工作 国务院政策例行吹风会：四部门解读《城市更新“十五五”规划》 国务院组织机构 国旗 国歌 国徽 | 国情 国务院公报 | 国家行政法规库 | 国家规章库 企业购置不动产转移登记“高效办成一件事”部署开展 人形机器人与具身智能实景实训专项行动启动 5月份我国消费市场运行总体平稳 政务联播 教育部部署高校毕业生就业“百日冲刺”行动 住房城乡建设部：“十五五”我国将建设改造城市地下管网约77万公里 三峡水运新通道破土动工 建言征集 | 回应关切 网民希望支持更多中小企业参加广交会，商务部对外贸易司回应了 网民希望方便老人订火车票、老人儿童优先检票，国铁",
+      "evidence_path": "evidence_cache/1876daa27eaf95470b5e57fb8896d6c874e2868a7fb010d8d5c8bb55193b9481.txt",
+      "content_hash": "1876daa27eaf95470b5e57fb8896d6c874e2868a7fb010d8d5c8bb55193b9481",
       "error": "",
       "fetch_attempts": [
         {
@@ -190,7 +195,7 @@
           "status": 200,
           "method": "httpx",
           "bytes": 67444,
-          "text_chars": 2652,
+          "text_chars": 2576,
           "title": "中国政府网_中央人民政府门户网站",
           "error": "",
           "meta_refresh_url": ""
@@ -203,6 +208,9 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "政治新闻"
       ]
@@ -214,12 +222,12 @@
       "status": 200,
       "content_type": "text/html;charset=UTF-8",
       "title": "The State Council of the People's Republic of China",
-      "bytes": 58828,
-      "elapsed_seconds": 0.354,
+      "bytes": 58920,
+      "elapsed_seconds": 0.397,
       "method": "httpx",
-      "text_sample": "The State Council of the People's Republic of China App HOME NEWS INSTITUTIONS POLICIES ARCHIVE 中文 Preserving the past, bridging civilizations: Xi's cultural heritage bond More>> Xi says he reaches important consensus with Kim on developing China-DPRK relations in new era Xi calls on China, DPRK to consolidate trust, boost practical cooperation 166 foreign-invested enterprises approved for value-added telecom services NEWS Chinese premier chairs State Council executive meeting China will continue to share development opportunities with other countries: vice premier Chinese state councilor attends International Labour Conference China's world natural heritage sites see sustained conservation improvement China railway passenger trips hit record 1.9 bln in January-May POLICIES China issues plan to advance emergency response system modernization during 2026-2030 China issues guidelines to bo",
-      "evidence_path": "evidence_cache/f55c08cd7cee4f4f247a02e6d436a3de88cd5f78b6217fb7ebb17ef653dbc25a.txt",
-      "content_hash": "f55c08cd7cee4f4f247a02e6d436a3de88cd5f78b6217fb7ebb17ef653dbc25a",
+      "text_sample": "The State Council of the People's Republic of China App HOME NEWS INSTITUTIONS POLICIES ARCHIVE 中文 Xi's article on boosting education, sci-tech, talent building to be published More>> Xi's article on boosting education, sci-tech, talent building to be published Xi calls on China, DPRK to consolidate trust, boost practical cooperation 166 foreign-invested enterprises approved for value-added telecom services NEWS Chinese premier calls for strengthening implementation of functional zoning strategy Chinese premier says China ready to work with Vietnam to expand bilateral trade Chinese vice premier meets U.S. Representative Lou Correa Chinese vice premier stresses development of salt lake industrial bases, natural disaster response National Economy Showed Steady Momentum with Innovation-led and High-quality Development in May POLICIES China issues plan to advance emergency response system mo",
+      "evidence_path": "evidence_cache/f8a2500a322e67c93f4c9e0cc50f0221bf57215eb3702b3e24d56b4149adeace.txt",
+      "content_hash": "f8a2500a322e67c93f4c9e0cc50f0221bf57215eb3702b3e24d56b4149adeace",
       "error": "",
       "fetch_attempts": [
         {
@@ -227,8 +235,8 @@
           "final_url": "https://english.www.gov.cn/",
           "status": 200,
           "method": "httpx",
-          "bytes": 58828,
-          "text_chars": 4560,
+          "bytes": 58920,
+          "text_chars": 4676,
           "title": "The State Council of the People's Republic of China",
           "error": "",
           "meta_refresh_url": ""
@@ -241,6 +249,9 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "政治新闻"
       ]
@@ -252,12 +263,12 @@
       "status": 200,
       "content_type": "text/html",
       "title": "Ministry of Foreign Affairs of the People's Republic of China",
-      "bytes": 46216,
-      "elapsed_seconds": 3.515,
+      "bytes": 46246,
+      "elapsed_seconds": 0.69,
       "method": "httpx",
       "text_sample": "Ministry of Foreign Affairs of the People's Republic of China IPC Visas English EN 简体中文 Français Русский Español عربي Ministry of Foreign Affairs People’s Republic of China The Ministry Main Responsibilities The Minister Principal Officials Departments Related Agencies News Top Stories Speeches Diplomatic Schedule New Ambassadors MFA News Spokesperson’s Remarks News from Overseas Missions Resources Communiqués Foreign Policies In Focus Diplomatic History Diplomatic Figures Protocol Affairs Overseas Missions Chinese Embassies Chinese Consulates General Chinese Missions to International Organizations and Representative Offices Abroad Countries and Regions Asia Africa Europe North America South America Oceania ABOUT CHINA HOME THE MINISTRY Main Responsibilities The Minister Principal Officials Departments Related Agencies NEWS Top Stories Speeches Diplomatic Schedule New Ambassadors MFA New",
-      "evidence_path": "evidence_cache/4ec670b069917045dc25bcbdaa386369d950b56b5aa0a5f94b46abaf29fe0550.txt",
-      "content_hash": "4ec670b069917045dc25bcbdaa386369d950b56b5aa0a5f94b46abaf29fe0550",
+      "evidence_path": "evidence_cache/91d603224e58b47b05a27cdcedf0d45cfb8976fb0bc9a1cc9f25467b0a9ff3fe.txt",
+      "content_hash": "91d603224e58b47b05a27cdcedf0d45cfb8976fb0bc9a1cc9f25467b0a9ff3fe",
       "error": "",
       "fetch_attempts": [
         {
@@ -265,8 +276,8 @@
           "final_url": "https://www.mfa.gov.cn/eng/",
           "status": 200,
           "method": "httpx",
-          "bytes": 46216,
-          "text_chars": 7422,
+          "bytes": 46246,
+          "text_chars": 7463,
           "title": "Ministry of Foreign Affairs of the People's Republic of China",
           "error": "",
           "meta_refresh_url": ""
@@ -279,15 +290,20 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "政治新闻"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 3,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-14T10:07:35.134954+00:00",
-  "fetched_at_hkt": "2026-06-14T18:07:35.135134+08:00"
+  "fetched_at": "2026-06-16T03:06:39.588804+00:00",
+  "fetched_at_hkt": "2026-06-16T11:06:39.588828+08:00"
 }

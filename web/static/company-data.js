@@ -9,7 +9,7 @@ const companyState = {
   query: "",
   company: "",
   metric: "",
-  sourceType: "verified-performance",
+  sourceType: "",
   group: "",
   category: "",
   valueType: "",
@@ -50,7 +50,7 @@ const els = {
   metricModalClose: document.querySelector("#metricModalClose"),
 };
 
-const MATRIX_METRICS = [
+const CORE_MATRIX_METRICS = [
   "披露日期",
   "最新披露",
   "收益",
@@ -61,6 +61,8 @@ const MATRIX_METRICS = [
   "券商观点",
   "市场反应",
 ];
+
+const MATRIX_EXTRA_LIMIT = 14;
 
 function setClock() {
   els.headerTime.textContent = `${new Date().toLocaleString("zh-CN", { hour12: false })} · Asia/Hong_Kong`;
@@ -148,7 +150,8 @@ function renderStats(data) {
     <span><strong>${summary.companies || 0}</strong> 家公司</span>
     <span><strong>${summary.metrics || 0}</strong> 类指标</span>
     <span><strong>${summary.verifiedRecords || 0}</strong> 条核验字段</span>
-    <span><strong>${summary.crawlRecords || 0}</strong> 条公开监测</span>
+    <span><strong>${summary.publishedAiFacts || summary.crawlRecords || 0}</strong> 条 AI 发布事实</span>
+    <span><strong>${summary.acceptedAiFacts || 0}</strong> 条 AI 接受事实</span>
     <span><strong>${summary.suppressedRecords || 0}</strong> 条已拦截</span>
     <span>更新于 ${escapeHtml(data.generatedAt || "-")}</span>
   `;
@@ -197,20 +200,27 @@ function sourceLinksHtml(row) {
 }
 
 function openMetricModal(row) {
-  if (!row) return;
-  els.metricModalCompany.textContent = row.company;
-  els.metricModalTitle.textContent = row.metric;
+  const rows = Array.isArray(row) ? row : [row].filter(Boolean);
+  if (!rows.length) return;
+  const primary = rows[0];
+  els.metricModalCompany.textContent = primary.company;
+  els.metricModalTitle.textContent = primary.metric;
   els.metricModalContent.innerHTML = `
-    <p class="metric-modal-value">${highlightNumbers(row.detail || row.value || "-")}</p>
-    <dl>
-      <div><dt>披露口径</dt><dd>${escapeHtml(row.disclosure || row.rowRef || "-")}</dd></div>
-      <div><dt>披露日期</dt><dd>${escapeHtml(row.disclosureDate || "-")}</dd></div>
-      <div><dt>数据状态</dt><dd>${escapeHtml(rowQualityText(row))}</dd></div>
-    </dl>
-    <div class="metric-modal-sources">
-      <strong>来源</strong>
-      ${sourceLinksHtml(row) || "<span>无可点击来源</span>"}
-    </div>
+    ${rows.map((item, index) => `
+      <article class="metric-modal-fact">
+        ${rows.length > 1 ? `<span class="metric-modal-index">确认事实 ${index + 1}</span>` : ""}
+        <p class="metric-modal-value">${highlightNumbers(item.detail || item.value || "-")}</p>
+        <dl>
+          <div><dt>披露口径</dt><dd>${escapeHtml(item.disclosure || item.rowRef || "-")}</dd></div>
+          <div><dt>披露日期</dt><dd>${escapeHtml(item.disclosureDate || "-")}</dd></div>
+          <div><dt>数据状态</dt><dd>${escapeHtml(rowQualityText(item))}</dd></div>
+        </dl>
+        <div class="metric-modal-sources">
+          <strong>来源</strong>
+          ${sourceLinksHtml(item) || "<span>无可点击来源</span>"}
+        </div>
+      </article>
+    `).join("")}
   `;
   els.metricModal.hidden = false;
 }
@@ -274,10 +284,31 @@ function filteredRows() {
 
 function renderMatrix() {
   const rows = filteredRows();
-  const companies = [...new Set(rows.map((row) => row.company))].sort((a, b) => a.localeCompare(b, "zh-CN"));
-  const metrics = companyState.metric ? [companyState.metric] : MATRIX_METRICS;
-  const rowLookup = new Map(rows.map((row) => [`${row.company}::${row.metric}`, row]));
-  els.matrixCount.textContent = `${companies.length} 家公司 · ${metrics.length} 项指标`;
+  const availableMetrics = [...new Set(rows.map((row) => row.metric))];
+  const hasNarrowFilter = Boolean(companyState.metric || companyState.category || companyState.company || companyState.query);
+  const coreMetrics = CORE_MATRIX_METRICS.filter((metric) => availableMetrics.includes(metric));
+  const extraMetrics = availableMetrics
+    .filter((metric) => !CORE_MATRIX_METRICS.includes(metric))
+    .sort((a, b) => a.localeCompare(b, "zh-CN"));
+  const metrics = companyState.metric
+    ? [companyState.metric]
+    : hasNarrowFilter
+      ? [...coreMetrics, ...extraMetrics.slice(0, MATRIX_EXTRA_LIMIT)]
+      : coreMetrics;
+  const companies = [...new Set(rows.filter((row) => metrics.includes(row.metric)).map((row) => row.company))]
+    .sort((a, b) => a.localeCompare(b, "zh-CN"));
+  const rowLookup = new Map();
+  rows.forEach((row) => {
+    const key = `${row.company}::${row.metric}`;
+    if (!rowLookup.has(key)) rowLookup.set(key, []);
+    rowLookup.get(key).push(row);
+  });
+  const matrixTable = els.matrixHead.closest("table");
+  if (matrixTable) {
+    matrixTable.style.minWidth = `${190 + metrics.length * 210}px`;
+  }
+  const hiddenMetricCount = Math.max(0, availableMetrics.length - metrics.length);
+  els.matrixCount.textContent = `${companies.length} 个主体 · 显示 ${metrics.length}/${availableMetrics.length} 项指标 · ${rows.length} 条确认数据${hiddenMetricCount ? " · 其余请用筛选/明细查看" : ""}`;
   
   if (!companies.length) {
     els.matrixHead.innerHTML = `
@@ -302,12 +333,14 @@ function renderMatrix() {
         <tr>
           <th scope="row"><strong>${escapeHtml(metric)}</strong></th>
           ${companies.map((company) => {
-            const row = rowLookup.get(`${company}::${metric}`);
-            if (!row) return `<td class="matrix-empty">-</td>`;
+            const cellRows = rowLookup.get(`${company}::${metric}`) || [];
+            if (!cellRows.length) return `<td class="matrix-empty">-</td>`;
+            const row = cellRows[0];
             return `
               <td>
-                <button class="matrix-value-button" type="button" data-row-id="${escapeHtml(row.id)}" title="查看${escapeHtml(company)}的${escapeHtml(metric)}详情">
+                <button class="matrix-value-button" type="button" data-row-key="${escapeHtml(`${company}::${metric}`)}" title="查看${escapeHtml(company)}的${escapeHtml(metric)}详情">
                   <span>${highlightNumbers(row.value || "-")}</span>
+                  ${cellRows.length > 1 ? `<b class="matrix-fact-count">+${cellRows.length - 1}</b>` : ""}
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </td>
@@ -330,12 +363,14 @@ function renderMatrix() {
         <tr>
           <th scope="row"><strong>${escapeHtml(company)}</strong><small>${escapeHtml(meta)}</small></th>
           ${metrics.map((metric) => {
-            const row = rowLookup.get(`${company}::${metric}`);
-            if (!row) return `<td class="matrix-empty">-</td>`;
+            const cellRows = rowLookup.get(`${company}::${metric}`) || [];
+            if (!cellRows.length) return `<td class="matrix-empty">-</td>`;
+            const row = cellRows[0];
             return `
               <td>
-                <button class="matrix-value-button" type="button" data-row-id="${escapeHtml(row.id)}" title="查看${escapeHtml(company)}的${escapeHtml(metric)}详情">
+                <button class="matrix-value-button" type="button" data-row-key="${escapeHtml(`${company}::${metric}`)}" title="查看${escapeHtml(company)}的${escapeHtml(metric)}详情">
                   <span>${highlightNumbers(row.value || "-")}</span>
+                  ${cellRows.length > 1 ? `<b class="matrix-fact-count">+${cellRows.length - 1}</b>` : ""}
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
               </td>
@@ -345,9 +380,9 @@ function renderMatrix() {
       `;
     }).join("");
   }
-  els.matrixBody.querySelectorAll("[data-row-id]").forEach((button) => {
+  els.matrixBody.querySelectorAll("[data-row-key]").forEach((button) => {
     button.addEventListener("click", () => {
-      openMetricModal(companyState.rows.find((row) => row.id === button.dataset.rowId));
+      openMetricModal(rowLookup.get(button.dataset.rowKey) || []);
     });
   });
 }
@@ -451,7 +486,7 @@ els.resetFilters.addEventListener("click", () => {
     query: "",
     company: "",
     metric: "",
-    sourceType: "verified-performance",
+    sourceType: "",
     group: "",
     category: "",
     valueType: "",
@@ -461,7 +496,7 @@ els.resetFilters.addEventListener("click", () => {
   els.search.value = "";
   els.companyFilter.value = "";
   els.metricFilter.value = "";
-  els.sourceTypeFilter.value = "verified-performance";
+  els.sourceTypeFilter.value = "";
   els.groupFilter.value = "";
   els.categoryFilter.value = "";
   els.valueTypeFilter.value = "";

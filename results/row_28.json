@@ -17,12 +17,12 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-    "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-    "https://www.ofca.gov.hk/en/site_map/index.html",
     "https://www.ofca.gov.hk/en/home/index.html",
+    "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+    "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
     "https://www.mddi.gov.sg/newsroom/opening-remarks-by-mr-s-iswaran-at-the-sgd-industry-day/",
-    "https://www.enisa.europa.eu/news"
+    "https://www.enisa.europa.eu/news",
+    "https://www.ofca.gov.hk/en/site_map/index.html"
   ],
   "attempted_urls": [
     "https://www.ofca.gov.hk/en/home/index.html",
@@ -33,13 +33,13 @@
     "https://www.mddi.gov.sg/newsroom/opening-remarks-by-mr-s-iswaran-at-the-sgd-industry-day/"
   ],
   "extracted": {
-    "频谱拍卖": "n/site_map/index.html Office of the Communications Authority - Site Map What's New About Us Roles & Functions Vision, Mission & Values Organisation Chart Advisory Committees Radio Spectrum and Technical Standards Advisor",
-    "5G/6G规划": "oadcasting Infrastructures WiFi Access Points Publicity Events District Anti-Phone Deception Ambassador Scheme Consumer Education Campaigns Online Exhibition Media Education Talks 5G Campus Application Competition \"Stay ",
-    "网络共享": "ctivities from Telecommunications Perspectives 5G Services Mainland and Hong Kong Closer Economic Partnership Arrangement (CEPA) Digital Terrestrial Television Services Experience Sharing on 5G Applications Interconnecti",
+    "频谱拍卖": "aring Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Su",
+    "5G/6G规划": "rs Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embracing the New 5G Era",
+    "网络共享": "w More For Consumers Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embrac",
     "覆盖义务": "bles in Hong Kong Protection of Underground Telecommunications Infrastructure Subsidy Scheme to Extend Fibre-based Networks to Villages in Remote Areas Subsidy Scheme to Extend 5G Coverage in Rural and Remote Areas Radio",
     "网络安全": "National / EU authorities Cyber Threats EU incident response and cyber crisis management Market Product Security and Certification Risk Management Skills and competences State of cybersecurity in the EU Vulnerability Dis",
     "卫星通信": "and Hong Kong Closer Economic Partnership Arrangement (CEPA) Digital Terrestrial Television Services Experience Sharing on 5G Applications Interconnection Numbering & Portability Satellite Television Services Short Messa",
-    "携号转网/漫游": "eds. Mobile Roaming in Greater Bay Area SOURCE: https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html Office of the Communications Authority - Mobile Number Portability MNP Statistics Statis"
+    "携号转网/漫游": "@OFCA Read More Play Previous Next Home SOURCE: https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html Office of the Communications Authority - Mobile Number Portability MNP Statistics Statis"
   },
   "missing_fields": [],
   "entity_results": [
@@ -47,138 +47,24 @@
       "entity": "通信监管机构",
       "status": "ok",
       "source_urls": [
-        "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-        "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-        "https://www.ofca.gov.hk/en/site_map/index.html",
         "https://www.ofca.gov.hk/en/home/index.html",
+        "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+        "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
         "https://www.mddi.gov.sg/newsroom/opening-remarks-by-mr-s-iswaran-at-the-sgd-industry-day/",
-        "https://www.enisa.europa.eu/news"
+        "https://www.enisa.europa.eu/news",
+        "https://www.ofca.gov.hk/en/site_map/index.html"
       ],
       "extracted": {
-        "频谱拍卖": "n/site_map/index.html Office of the Communications Authority - Site Map What's New About Us Roles & Functions Vision, Mission & Values Organisation Chart Advisory Committees Radio Spectrum and Technical Standards Advisor",
-        "5G/6G规划": "oadcasting Infrastructures WiFi Access Points Publicity Events District Anti-Phone Deception Ambassador Scheme Consumer Education Campaigns Online Exhibition Media Education Talks 5G Campus Application Competition \"Stay ",
-        "网络共享": "ctivities from Telecommunications Perspectives 5G Services Mainland and Hong Kong Closer Economic Partnership Arrangement (CEPA) Digital Terrestrial Television Services Experience Sharing on 5G Applications Interconnecti",
+        "频谱拍卖": "aring Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Su",
+        "5G/6G规划": "rs Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embracing the New 5G Era",
+        "网络共享": "w More For Consumers Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embrac",
         "覆盖义务": "bles in Hong Kong Protection of Underground Telecommunications Infrastructure Subsidy Scheme to Extend Fibre-based Networks to Villages in Remote Areas Subsidy Scheme to Extend 5G Coverage in Rural and Remote Areas Radio",
         "网络安全": "National / EU authorities Cyber Threats EU incident response and cyber crisis management Market Product Security and Certification Risk Management Skills and competences State of cybersecurity in the EU Vulnerability Dis",
         "卫星通信": "and Hong Kong Closer Economic Partnership Arrangement (CEPA) Digital Terrestrial Television Services Experience Sharing on 5G Applications Interconnection Numbering & Portability Satellite Television Services Short Messa",
-        "携号转网/漫游": "eds. Mobile Roaming in Greater Bay Area SOURCE: https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html Office of the Communications Authority - Mobile Number Portability MNP Statistics Statis"
+        "携号转网/漫游": "@OFCA Read More Play Previous Next Home SOURCE: https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html Office of the Communications Authority - Mobile Number Portability MNP Statistics Statis"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 28,
-          "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-          "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
-          "bytes": 5183,
-          "elapsed_seconds": 1.271,
-          "method": "httpx",
-          "text_sample": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area [Index] [Section Index] [Previous] In order to meet the growing demand for roaming services within the Greater Bay Area, operators offer a wide range of mobile roaming service plans at a lower charge as compared with standard roaming rates to consumers, such as: Greater Bay Area Plans (GBA plans) GBA plan offers a single service plan for shared use of a mobile data quota for usage within the Greater Bay Area and other cities in the Mainland. Roaming voice services are usually offered at a lower charge as compared with standard roaming rates. One-Card-Multiple-Numbers (1CMN) Plans 1CMN plan provides one local mobile number per location (e.g. Hong Kong/Mainland/Macao) for use by the same customer thus allowing easier and more affordable access to mobile data and voice connections in that location. Data Roaming Day ",
-          "evidence_path": "evidence_cache/1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da.txt",
-          "content_hash": "1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-              "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 5183,
-              "text_chars": 1546,
-              "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "regulator_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "通信监管机构"
-          ]
-        },
-        {
-          "row": 28,
-          "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-          "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Office of the Communications Authority - Mobile Number Portability",
-          "bytes": 3817,
-          "elapsed_seconds": 1.273,
-          "method": "httpx",
-          "text_sample": "Office of the Communications Authority - Mobile Number Portability MNP Statistics Statistics on Mobile Number Portings Code of Practice Code of Practice related to Implementation of Mobile Number Portability HKCA Specifications HKCA 2103 - Requirements for Mobile Number Portability by Database Solution HKCA 2104 - Functional Specification of Administration Database For Mobile Number Portability Mobile Number Portability",
-          "evidence_path": "evidence_cache/d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83.txt",
-          "content_hash": "d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-              "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 3817,
-              "text_chars": 423,
-              "title": "Office of the Communications Authority - Mobile Number Portability",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "regulator_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "通信监管机构"
-          ]
-        },
-        {
-          "row": 28,
-          "url": "https://www.ofca.gov.hk/en/site_map/index.html",
-          "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Office of the Communications Authority - Site Map",
-          "bytes": 17731,
-          "elapsed_seconds": 1.283,
-          "method": "httpx",
-          "text_sample": "Office of the Communications Authority - Site Map What's New About Us Roles & Functions Vision, Mission & Values Organisation Chart Advisory Committees Radio Spectrum and Technical Standards Advisory Committee (SSAC) Telecommunications Regulatory Affairs Advisory Committee (TRAAC) Telecommunications Users and Consumers Advisory Committee (TUCAC) Reports Trading Fund Reports Major Tasks & Projects Performance Pledges Environmental Reports OFCA Close-up All Articles Career@OFCA Career Paths Job Openings OFCA Mascot For Consumers Alerts from OFCA Numbers used for Paging Services with effect from 1 July 2021 Be a Smart User General Advice Hot Topics Safety Help for Consumers Others Gallery TV & Radio Announcements Short Videos Posters Information Leaflets Operators' Information Broadcasting Services Providers Telecommunications Services Providers Customer Charters of Operators Performance Pl",
-          "evidence_path": "evidence_cache/f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a.txt",
-          "content_hash": "f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.ofca.gov.hk/en/site_map/index.html",
-              "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 17731,
-              "text_chars": 3889,
-              "title": "Office of the Communications Authority - Site Map",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "regulator_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "通信监管机构"
-          ]
-        },
         {
           "row": 28,
           "url": "https://www.ofca.gov.hk/en/home/index.html",
@@ -187,7 +73,7 @@
           "content_type": "text/html",
           "title": "Office of the Communications Authority - Home",
           "bytes": 11326,
-          "elapsed_seconds": 1.294,
+          "elapsed_seconds": 0.661,
           "method": "httpx",
           "text_sample": "Office of the Communications Authority - Home Previous Next Play Muted Play Video I am looking for information... View All For Consumers For Industry For Media Who We Are What's New More For Consumers Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Subsidy Scheme to Extend Fibre-based Networks to Villages in Remote Areas View all News & Info Latest Press Releases Figures & Statistics Fact Sheets View all Information Zone Do You Know... Play More Statistics Highlights Play More Interactive Zone Play Who We Are A Cross-disciplinary Professional Team Read More A Tra",
           "evidence_path": "evidence_cache/7aae02937788c7b2fe8068a7cae750a21fbc6fd47aa528770475fe5ea908f48f.txt",
@@ -213,6 +99,91 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "通信监管机构"
+          ]
+        },
+        {
+          "row": 28,
+          "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Office of the Communications Authority - Mobile Number Portability",
+          "bytes": 3817,
+          "elapsed_seconds": 0.81,
+          "method": "httpx",
+          "text_sample": "Office of the Communications Authority - Mobile Number Portability MNP Statistics Statistics on Mobile Number Portings Code of Practice Code of Practice related to Implementation of Mobile Number Portability HKCA Specifications HKCA 2103 - Requirements for Mobile Number Portability by Database Solution HKCA 2104 - Functional Specification of Administration Database For Mobile Number Portability Mobile Number Portability",
+          "evidence_path": "evidence_cache/d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83.txt",
+          "content_hash": "d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+              "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 3817,
+              "text_chars": 423,
+              "title": "Office of the Communications Authority - Mobile Number Portability",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "regulator_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "通信监管机构"
+          ]
+        },
+        {
+          "row": 28,
+          "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
+          "bytes": 5183,
+          "elapsed_seconds": 0.857,
+          "method": "httpx",
+          "text_sample": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area [Index] [Section Index] [Previous] In order to meet the growing demand for roaming services within the Greater Bay Area, operators offer a wide range of mobile roaming service plans at a lower charge as compared with standard roaming rates to consumers, such as: Greater Bay Area Plans (GBA plans) GBA plan offers a single service plan for shared use of a mobile data quota for usage within the Greater Bay Area and other cities in the Mainland. Roaming voice services are usually offered at a lower charge as compared with standard roaming rates. One-Card-Multiple-Numbers (1CMN) Plans 1CMN plan provides one local mobile number per location (e.g. Hong Kong/Mainland/Macao) for use by the same customer thus allowing easier and more affordable access to mobile data and voice connections in that location. Data Roaming Day ",
+          "evidence_path": "evidence_cache/1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da.txt",
+          "content_hash": "1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+              "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 5183,
+              "text_chars": 1546,
+              "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "regulator_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "通信监管机构"
           ]
@@ -225,7 +196,7 @@
           "content_type": "text/html",
           "title": "Opening Remarks by Minister S Iswaran at the SG:D Industry Day | Ministry of Digital Development and Information",
           "bytes": 427769,
-          "elapsed_seconds": 1.584,
+          "elapsed_seconds": 1.454,
           "method": "httpx",
           "text_sample": "Opening Remarks by Minister S Iswaran at the SG:D Industry Day | Ministry of Digital Development and Information Skip to main content A Singapore Government Agency Website How to identify Official website links end with .gov.sg Government agencies communicate via .gov.sg websites (e.g. go.gov.sg/open). Trusted websites Secure websites use HTTPS Look for a lock ( ) or https:// as an added precaution. Share sensitive information only on official, secure websites. Government officials will never ask you to transfer money or disclose bank log-in details over a phone call. Call the 24/7 ScamShield Helpline at 1799 if you are unsure if something is a scam Who we are What we do Resources Newsroom Committee of Supply Join us Home Newsroom Opening Remarks by Minister S Iswaran at the SG:D Industry Day Speeches Opening Remarks by Minister S Iswaran at the SG:D Industry Day 17 October 2019 This art",
           "evidence_path": "evidence_cache/8b2c40822b06d16f9d62686a2d59004e0ae1582dda30e5de292faaf92a7ceda7.txt",
@@ -251,6 +222,9 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "通信监管机构"
           ]
@@ -263,7 +237,7 @@
           "content_type": "text/html; charset=UTF-8",
           "title": "News | ENISA",
           "bytes": 84443,
-          "elapsed_seconds": 2.947,
+          "elapsed_seconds": 2.624,
           "method": "httpx",
           "text_sample": "News | ENISA Go to the main content Topics Topics Learn more about the topics Access For National / EU authorities Cyber Threats EU incident response and cyber crisis management Market Product Security and Certification Risk Management Skills and competences State of cybersecurity in the EU Vulnerability Disclosure Private Sector Artificial Intelligence and Next Gen Technologies Awareness and Cyber Hygiene Certification and Standards Cyber Threats Cybersecurity of Critical Sectors Digital Identity and Data Protection Incident management Risk Management Skills and competences (for companies) Vulnerability Disclosure Citizens Cyber Hygiene Cyber Incident Awareness Education and career path Publications Newsroom & Events News Cybersecurity in focus: News & updates from ENISA Access Events Cybersecurity in practice: Events & Workshops by ENISA Access Press office Corporate identity Cybersecu",
           "evidence_path": "evidence_cache/78b7127ab9f2aeabc7f0b6a5f003697a42ab99e1b91af12117f250ee4f03b8ba.txt",
@@ -289,131 +263,72 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "通信监管机构"
+          ]
+        },
+        {
+          "row": 28,
+          "url": "https://www.ofca.gov.hk/en/site_map/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Office of the Communications Authority - Site Map",
+          "bytes": 17731,
+          "elapsed_seconds": 13.092,
+          "method": "curl_crawler_ua",
+          "text_sample": "Office of the Communications Authority - Site Map What's New About Us Roles & Functions Vision, Mission & Values Organisation Chart Advisory Committees Radio Spectrum and Technical Standards Advisory Committee (SSAC) Telecommunications Regulatory Affairs Advisory Committee (TRAAC) Telecommunications Users and Consumers Advisory Committee (TUCAC) Reports Trading Fund Reports Major Tasks & Projects Performance Pledges Environmental Reports OFCA Close-up All Articles Career@OFCA Career Paths Job Openings OFCA Mascot For Consumers Alerts from OFCA Numbers used for Paging Services with effect from 1 July 2021 Be a Smart User General Advice Hot Topics Safety Help for Consumers Others Gallery TV & Radio Announcements Short Videos Posters Information Leaflets Operators' Information Broadcasting Services Providers Telecommunications Services Providers Customer Charters of Operators Performance Pl",
+          "evidence_path": "evidence_cache/f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a.txt",
+          "content_hash": "f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.ofca.gov.hk/en/site_map/index.html",
+              "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
+              "status": 0,
+              "method": "httpx",
+              "bytes": 0,
+              "text_chars": 0,
+              "title": "",
+              "error": "ConnectTimeout('_ssl.c:1011: The handshake operation timed out')",
+              "meta_refresh_url": ""
+            },
+            {
+              "url": "https://www.ofca.gov.hk/en/site_map/index.html",
+              "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
+              "status": 200,
+              "method": "curl_crawler_ua",
+              "bytes": 17731,
+              "text_chars": 3889,
+              "title": "Office of the Communications Authority - Site Map",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "regulator_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "通信监管机构"
           ]
         }
       ],
-      "confidence_score": 0.4,
-      "verification_reason": "The extracted data contains multiple fields that do not match the source text context. For example, '频谱拍卖' includes unrelated site map content, '5G/6G规划' includes a duplicated substring from a different page, '覆盖义务' is not mentioned, and '网络安全' references EU cyber topics not present in the source. Only '携号转网/漫游' and partially '网络共享' align with the source material about mobile roaming and number portability."
+      "confidence_score": 0.6,
+      "verification_reason": "Most extracted fields have loose topical alignment with the source text, but some contain irrelevant or concatenated text (e.g., '频谱拍卖' includes unrelated phrases), and others are not directly supported by the actual content."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 28,
-      "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-      "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
-      "bytes": 5183,
-      "elapsed_seconds": 1.271,
-      "method": "httpx",
-      "text_sample": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area [Index] [Section Index] [Previous] In order to meet the growing demand for roaming services within the Greater Bay Area, operators offer a wide range of mobile roaming service plans at a lower charge as compared with standard roaming rates to consumers, such as: Greater Bay Area Plans (GBA plans) GBA plan offers a single service plan for shared use of a mobile data quota for usage within the Greater Bay Area and other cities in the Mainland. Roaming voice services are usually offered at a lower charge as compared with standard roaming rates. One-Card-Multiple-Numbers (1CMN) Plans 1CMN plan provides one local mobile number per location (e.g. Hong Kong/Mainland/Macao) for use by the same customer thus allowing easier and more affordable access to mobile data and voice connections in that location. Data Roaming Day ",
-      "evidence_path": "evidence_cache/1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da.txt",
-      "content_hash": "1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-          "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 5183,
-          "text_chars": 1546,
-          "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "regulator_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "通信监管机构"
-      ]
-    },
-    {
-      "row": 28,
-      "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-      "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Office of the Communications Authority - Mobile Number Portability",
-      "bytes": 3817,
-      "elapsed_seconds": 1.273,
-      "method": "httpx",
-      "text_sample": "Office of the Communications Authority - Mobile Number Portability MNP Statistics Statistics on Mobile Number Portings Code of Practice Code of Practice related to Implementation of Mobile Number Portability HKCA Specifications HKCA 2103 - Requirements for Mobile Number Portability by Database Solution HKCA 2104 - Functional Specification of Administration Database For Mobile Number Portability Mobile Number Portability",
-      "evidence_path": "evidence_cache/d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83.txt",
-      "content_hash": "d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-          "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 3817,
-          "text_chars": 423,
-          "title": "Office of the Communications Authority - Mobile Number Portability",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "regulator_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "通信监管机构"
-      ]
-    },
-    {
-      "row": 28,
-      "url": "https://www.ofca.gov.hk/en/site_map/index.html",
-      "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Office of the Communications Authority - Site Map",
-      "bytes": 17731,
-      "elapsed_seconds": 1.283,
-      "method": "httpx",
-      "text_sample": "Office of the Communications Authority - Site Map What's New About Us Roles & Functions Vision, Mission & Values Organisation Chart Advisory Committees Radio Spectrum and Technical Standards Advisory Committee (SSAC) Telecommunications Regulatory Affairs Advisory Committee (TRAAC) Telecommunications Users and Consumers Advisory Committee (TUCAC) Reports Trading Fund Reports Major Tasks & Projects Performance Pledges Environmental Reports OFCA Close-up All Articles Career@OFCA Career Paths Job Openings OFCA Mascot For Consumers Alerts from OFCA Numbers used for Paging Services with effect from 1 July 2021 Be a Smart User General Advice Hot Topics Safety Help for Consumers Others Gallery TV & Radio Announcements Short Videos Posters Information Leaflets Operators' Information Broadcasting Services Providers Telecommunications Services Providers Customer Charters of Operators Performance Pl",
-      "evidence_path": "evidence_cache/f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a.txt",
-      "content_hash": "f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.ofca.gov.hk/en/site_map/index.html",
-          "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 17731,
-          "text_chars": 3889,
-          "title": "Office of the Communications Authority - Site Map",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "regulator_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "通信监管机构"
-      ]
-    },
     {
       "row": 28,
       "url": "https://www.ofca.gov.hk/en/home/index.html",
@@ -422,7 +337,7 @@
       "content_type": "text/html",
       "title": "Office of the Communications Authority - Home",
       "bytes": 11326,
-      "elapsed_seconds": 1.294,
+      "elapsed_seconds": 0.661,
       "method": "httpx",
       "text_sample": "Office of the Communications Authority - Home Previous Next Play Muted Play Video I am looking for information... View All For Consumers For Industry For Media Who We Are What's New More For Consumers Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Subsidy Scheme to Extend Fibre-based Networks to Villages in Remote Areas View all News & Info Latest Press Releases Figures & Statistics Fact Sheets View all Information Zone Do You Know... Play More Statistics Highlights Play More Interactive Zone Play Who We Are A Cross-disciplinary Professional Team Read More A Tra",
       "evidence_path": "evidence_cache/7aae02937788c7b2fe8068a7cae750a21fbc6fd47aa528770475fe5ea908f48f.txt",
@@ -448,6 +363,91 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "通信监管机构"
+      ]
+    },
+    {
+      "row": 28,
+      "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+      "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Office of the Communications Authority - Mobile Number Portability",
+      "bytes": 3817,
+      "elapsed_seconds": 0.81,
+      "method": "httpx",
+      "text_sample": "Office of the Communications Authority - Mobile Number Portability MNP Statistics Statistics on Mobile Number Portings Code of Practice Code of Practice related to Implementation of Mobile Number Portability HKCA Specifications HKCA 2103 - Requirements for Mobile Number Portability by Database Solution HKCA 2104 - Functional Specification of Administration Database For Mobile Number Portability Mobile Number Portability",
+      "evidence_path": "evidence_cache/d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83.txt",
+      "content_hash": "d19a016a12582e75cec50c99450610b49b745b39ed8d7e648b600fe5bc9c9f83",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/industry_focus/industry_focus/portability/mnp/index.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 3817,
+          "text_chars": 423,
+          "title": "Office of the Communications Authority - Mobile Number Portability",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "regulator_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "通信监管机构"
+      ]
+    },
+    {
+      "row": 28,
+      "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+      "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
+      "bytes": 5183,
+      "elapsed_seconds": 0.857,
+      "method": "httpx",
+      "text_sample": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area [Index] [Section Index] [Previous] In order to meet the growing demand for roaming services within the Greater Bay Area, operators offer a wide range of mobile roaming service plans at a lower charge as compared with standard roaming rates to consumers, such as: Greater Bay Area Plans (GBA plans) GBA plan offers a single service plan for shared use of a mobile data quota for usage within the Greater Bay Area and other cities in the Mainland. Roaming voice services are usually offered at a lower charge as compared with standard roaming rates. One-Card-Multiple-Numbers (1CMN) Plans 1CMN plan provides one local mobile number per location (e.g. Hong Kong/Mainland/Macao) for use by the same customer thus allowing easier and more affordable access to mobile data and voice connections in that location. Data Roaming Day ",
+      "evidence_path": "evidence_cache/1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da.txt",
+      "content_hash": "1ad8ec115b5c31e17e46fb9552d6af21368a0caebfbfef22627afab70d1717da",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/consumer_focus/guide/general/gba/index.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 5183,
+          "text_chars": 1546,
+          "title": "Office of the Communications Authority - Mobile Roaming in Greater Bay Area",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "regulator_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "通信监管机构"
       ]
@@ -460,7 +460,7 @@
       "content_type": "text/html",
       "title": "Opening Remarks by Minister S Iswaran at the SG:D Industry Day | Ministry of Digital Development and Information",
       "bytes": 427769,
-      "elapsed_seconds": 1.584,
+      "elapsed_seconds": 1.454,
       "method": "httpx",
       "text_sample": "Opening Remarks by Minister S Iswaran at the SG:D Industry Day | Ministry of Digital Development and Information Skip to main content A Singapore Government Agency Website How to identify Official website links end with .gov.sg Government agencies communicate via .gov.sg websites (e.g. go.gov.sg/open). Trusted websites Secure websites use HTTPS Look for a lock ( ) or https:// as an added precaution. Share sensitive information only on official, secure websites. Government officials will never ask you to transfer money or disclose bank log-in details over a phone call. Call the 24/7 ScamShield Helpline at 1799 if you are unsure if something is a scam Who we are What we do Resources Newsroom Committee of Supply Join us Home Newsroom Opening Remarks by Minister S Iswaran at the SG:D Industry Day Speeches Opening Remarks by Minister S Iswaran at the SG:D Industry Day 17 October 2019 This art",
       "evidence_path": "evidence_cache/8b2c40822b06d16f9d62686a2d59004e0ae1582dda30e5de292faaf92a7ceda7.txt",
@@ -486,6 +486,9 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "通信监管机构"
       ]
@@ -498,7 +501,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "News | ENISA",
       "bytes": 84443,
-      "elapsed_seconds": 2.947,
+      "elapsed_seconds": 2.624,
       "method": "httpx",
       "text_sample": "News | ENISA Go to the main content Topics Topics Learn more about the topics Access For National / EU authorities Cyber Threats EU incident response and cyber crisis management Market Product Security and Certification Risk Management Skills and competences State of cybersecurity in the EU Vulnerability Disclosure Private Sector Artificial Intelligence and Next Gen Technologies Awareness and Cyber Hygiene Certification and Standards Cyber Threats Cybersecurity of Critical Sectors Digital Identity and Data Protection Incident management Risk Management Skills and competences (for companies) Vulnerability Disclosure Citizens Cyber Hygiene Cyber Incident Awareness Education and career path Publications Newsroom & Events News Cybersecurity in focus: News & updates from ENISA Access Events Cybersecurity in practice: Events & Workshops by ENISA Access Press office Corporate identity Cybersecu",
       "evidence_path": "evidence_cache/78b7127ab9f2aeabc7f0b6a5f003697a42ab99e1b91af12117f250ee4f03b8ba.txt",
@@ -524,15 +527,72 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "通信监管机构"
+      ]
+    },
+    {
+      "row": 28,
+      "url": "https://www.ofca.gov.hk/en/site_map/index.html",
+      "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Office of the Communications Authority - Site Map",
+      "bytes": 17731,
+      "elapsed_seconds": 13.092,
+      "method": "curl_crawler_ua",
+      "text_sample": "Office of the Communications Authority - Site Map What's New About Us Roles & Functions Vision, Mission & Values Organisation Chart Advisory Committees Radio Spectrum and Technical Standards Advisory Committee (SSAC) Telecommunications Regulatory Affairs Advisory Committee (TRAAC) Telecommunications Users and Consumers Advisory Committee (TUCAC) Reports Trading Fund Reports Major Tasks & Projects Performance Pledges Environmental Reports OFCA Close-up All Articles Career@OFCA Career Paths Job Openings OFCA Mascot For Consumers Alerts from OFCA Numbers used for Paging Services with effect from 1 July 2021 Be a Smart User General Advice Hot Topics Safety Help for Consumers Others Gallery TV & Radio Announcements Short Videos Posters Information Leaflets Operators' Information Broadcasting Services Providers Telecommunications Services Providers Customer Charters of Operators Performance Pl",
+      "evidence_path": "evidence_cache/f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a.txt",
+      "content_hash": "f4a8107f6a850a83c59f5956d4c902505dbb20dbe6fe649eb697c20bccc44a5a",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.ofca.gov.hk/en/site_map/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
+          "status": 0,
+          "method": "httpx",
+          "bytes": 0,
+          "text_chars": 0,
+          "title": "",
+          "error": "ConnectTimeout('_ssl.c:1011: The handshake operation timed out')",
+          "meta_refresh_url": ""
+        },
+        {
+          "url": "https://www.ofca.gov.hk/en/site_map/index.html",
+          "final_url": "https://www.ofca.gov.hk/en/site_map/index.html",
+          "status": 200,
+          "method": "curl_crawler_ua",
+          "bytes": 17731,
+          "text_chars": 3889,
+          "title": "Office of the Communications Authority - Site Map",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "regulator_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "通信监管机构"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 6,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-14T10:07:34.251619+00:00",
-  "fetched_at_hkt": "2026-06-14T18:07:34.251806+08:00"
+  "fetched_at": "2026-06-16T03:06:03.504191+00:00",
+  "fetched_at_hkt": "2026-06-16T11:06:03.504234+08:00"
 }

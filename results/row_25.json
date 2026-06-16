@@ -42,12 +42,12 @@
           "status": 200,
           "content_type": "text/html",
           "title": "HKSAR Government Press Releases",
-          "bytes": 14555,
-          "elapsed_seconds": 0.079,
+          "bytes": 12030,
+          "elapsed_seconds": 0.183,
           "method": "httpx",
-          "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Immigration Department to introduce Seamless e-Channel service Bank Indonesia, Hong Kong Monetary Authority and People's Bank of China sign MOU to promote bilateral transactions in Indonesian Rupiah and offshore Chinese Renminbi between Indonesia and Hong Kong (with photo) Hong Kong Customs seizes suspected counterfeit goods worth about $156 million in \"Clean Sheet\" operation (with photo) Hong Kong Customs detects three smuggling cases involving river trade vessels with goods worth about $32 million seized (with photo) Sixth-term Commission on Poverty convenes seventh meeting (with photos) Construction output for first quarter of 2026 Inspection of aquatic products imported from Japan CHP investigates Mpox case imported from Thailand Effective Exchange Rate Index HKMC's HK$12 billion inaugural p",
-          "evidence_path": "evidence_cache/2de5dd99e075ccf5485dc1aeb819298669ec18ce4390d6f57825b917c8605aca.txt",
-          "content_hash": "2de5dd99e075ccf5485dc1aeb819298669ec18ce4390d6f57825b917c8605aca",
+          "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Implementation of regulatory enhancements for mediation profession to solidify HK's status as capital of mediation Chinese Culture Festival 2026 to focus on Luoyang by presenting Hong Kong debut of Luoyang Yu Opera Troupe with classic play and excerpts in July (with photos) Red flag hoisted at Hung Shing Yeh Beach Red flags hoisted at several beaches Decision on 2026-27 civil service pay adjustment announced Flag-raising ceremony cancelled Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
+          "evidence_path": "evidence_cache/a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db.txt",
+          "content_hash": "a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db",
           "error": "",
           "fetch_attempts": [
             {
@@ -55,8 +55,8 @@
               "final_url": "https://www.info.gov.hk/gia/general/today.htm",
               "status": 200,
               "method": "httpx",
-              "bytes": 14555,
-              "text_chars": 2046,
+              "bytes": 12030,
+              "text_chars": 767,
               "title": "HKSAR Government Press Releases",
               "error": "",
               "meta_refresh_url": ""
@@ -69,6 +69,9 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "社会资讯"
           ]
@@ -81,7 +84,7 @@
           "content_type": "text/html",
           "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
           "bytes": 119864,
-          "elapsed_seconds": 0.795,
+          "elapsed_seconds": 1.103,
           "method": "httpx",
           "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
           "evidence_path": "evidence_cache/43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749.txt",
@@ -107,13 +110,16 @@
           "robots_status": "not_found_allow",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "社会资讯"
           ]
         }
       ],
       "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains a single field '本地生活咨询' with a value that appears to be a navigation or footer text from an unrelated page (housingauthority.gov.hk), while the source text is about HKSAR Government press releases and does not mention '本地生活咨询' or any similar concept. The extracted data does not correspond to any part of the source text."
+      "verification_reason": "The extracted data contains '本地生活咨询' and a URL for the Housing Authority press releases, while the source text is entirely in English and contains no such phrase. The source text does not mention '本地生活咨询' or provide that specific URL, indicating the extracted data does not accurately reflect the source text."
     }
   ],
   "entity_missing": [],
@@ -125,12 +131,12 @@
       "status": 200,
       "content_type": "text/html",
       "title": "HKSAR Government Press Releases",
-      "bytes": 14555,
-      "elapsed_seconds": 0.079,
+      "bytes": 12030,
+      "elapsed_seconds": 0.183,
       "method": "httpx",
-      "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Immigration Department to introduce Seamless e-Channel service Bank Indonesia, Hong Kong Monetary Authority and People's Bank of China sign MOU to promote bilateral transactions in Indonesian Rupiah and offshore Chinese Renminbi between Indonesia and Hong Kong (with photo) Hong Kong Customs seizes suspected counterfeit goods worth about $156 million in \"Clean Sheet\" operation (with photo) Hong Kong Customs detects three smuggling cases involving river trade vessels with goods worth about $32 million seized (with photo) Sixth-term Commission on Poverty convenes seventh meeting (with photos) Construction output for first quarter of 2026 Inspection of aquatic products imported from Japan CHP investigates Mpox case imported from Thailand Effective Exchange Rate Index HKMC's HK$12 billion inaugural p",
-      "evidence_path": "evidence_cache/2de5dd99e075ccf5485dc1aeb819298669ec18ce4390d6f57825b917c8605aca.txt",
-      "content_hash": "2de5dd99e075ccf5485dc1aeb819298669ec18ce4390d6f57825b917c8605aca",
+      "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Implementation of regulatory enhancements for mediation profession to solidify HK's status as capital of mediation Chinese Culture Festival 2026 to focus on Luoyang by presenting Hong Kong debut of Luoyang Yu Opera Troupe with classic play and excerpts in July (with photos) Red flag hoisted at Hung Shing Yeh Beach Red flags hoisted at several beaches Decision on 2026-27 civil service pay adjustment announced Flag-raising ceremony cancelled Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
+      "evidence_path": "evidence_cache/a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db.txt",
+      "content_hash": "a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db",
       "error": "",
       "fetch_attempts": [
         {
@@ -138,8 +144,8 @@
           "final_url": "https://www.info.gov.hk/gia/general/today.htm",
           "status": 200,
           "method": "httpx",
-          "bytes": 14555,
-          "text_chars": 2046,
+          "bytes": 12030,
+          "text_chars": 767,
           "title": "HKSAR Government Press Releases",
           "error": "",
           "meta_refresh_url": ""
@@ -152,6 +158,9 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "社会资讯"
       ]
@@ -164,7 +173,7 @@
       "content_type": "text/html",
       "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
       "bytes": 119864,
-      "elapsed_seconds": 0.795,
+      "elapsed_seconds": 1.103,
       "method": "httpx",
       "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
       "evidence_path": "evidence_cache/43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749.txt",
@@ -190,15 +199,20 @@
       "robots_status": "not_found_allow",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "社会资讯"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 2,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-11T10:04:21.032330+00:00",
-  "fetched_at_hkt": "2026-06-11T18:04:21.032346+08:00"
+  "fetched_at": "2026-06-16T03:05:13.388195+00:00",
+  "fetched_at_hkt": "2026-06-16T11:05:13.388244+08:00"
 }

@@ -1506,12 +1506,88 @@ select {
   font-size: 12px;
 }
 
-.citation-link {
-  color: var(--red);
-  font-weight: 700;
-  margin-left: 2px;
-  font-size: 0.75em;
+.citation-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4em;
+  height: 1.4em;
+  margin: 0 2px;
+  border-radius: 50%;
+  background-color: #e5e7eb; /* light gray similar to ChatGPT */
+  color: #4b5563; /* darker gray */
+  font-size: 0.7em;
+  font-weight: 600;
   vertical-align: super;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  line-height: 1;
+}
+
+.citation-marker:hover {
+  background-color: var(--blue);
+  color: white;
+}
+
+.citation-popover {
+  position: absolute;
+  z-index: 9999;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  max-width: 320px;
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  pointer-events: none;
+}
+
+.citation-popover.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.citation-popover .popover-header {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.citation-popover .popover-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.citation-popover .popover-links a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--blue-soft);
+  transition: background 0.2s;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.citation-popover .popover-links a:hover {
+  background: rgba(0, 119, 200, 0.15);
+}
+
+.citation-popover .popover-links a::before {
+  content: "🔗";
+  font-size: 12px;
 }
 
 .rag-process {
@@ -1545,6 +1621,68 @@ select {
   font-weight: 700;
   color: var(--text-secondary);
   word-break: break-all;
+}
+
+/* ── Citation Footer ────────────────────────────────── */
+.citation-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.citation-footer-header {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.citation-footer-icon {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.citation-footer-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.message-body a.citation-footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.03);
+  color: #888;
+  text-decoration: none;
+  font-size: 11.5px;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-body a.citation-footer-link:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #555;
+  text-decoration: none;
+}
+
+.citation-footer-num {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted, #888);
+}
+
+.citation-footer-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .message.user {
@@ -2959,6 +3097,49 @@ pre {
   mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
 }
 
+.subtitle-spacer {
+  height: 30px;
+}
+
+.subtitle-line {
+  --subtitle-progress: 0%;
+  position: relative;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.18);
+  font-size: 13px;
+  line-height: 1.65;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.subtitle-line.is-past {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.subtitle-line.is-active {
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 15px;
+  font-weight: 700;
+  transform: translateX(2px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.subtitle-line-text {
+  position: relative;
+  z-index: 1;
+  color: inherit;
+}
+
+.subtitle-line.is-active .subtitle-line-text {
+  color: transparent;
+  background: linear-gradient(90deg, #fff var(--subtitle-progress), rgba(255, 255, 255, 0.34) var(--subtitle-progress));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.subtitle-line-fill {
+  display: none;
+}
+
 .audio-player-content {
   display: flex;
   flex-direction: column;
@@ -3479,7 +3660,7 @@ pre {
 }
 
 .company-matrix-table {
-  width: 100%;
+  width: max-content;
   min-width: 2200px;
   border-collapse: separate;
   border-spacing: 0;
@@ -3498,12 +3679,22 @@ pre {
   font-size: 12px;
   font-weight: 900;
   text-align: left;
+  white-space: nowrap;
+}
+
+.company-matrix-table thead th:not(:first-child),
+.company-matrix-table tbody td {
+  min-width: 210px;
+  width: 210px;
+  max-width: 210px;
 }
 
 .company-matrix-table thead th:first-child {
   left: 0;
   z-index: 4;
+  min-width: 190px;
   width: 190px;
+  max-width: 190px;
 }
 
 .company-matrix-table tbody th,
@@ -3655,6 +3846,36 @@ pre {
   max-height: calc(100vh - 160px);
   overflow: auto;
   padding: 20px;
+}
+
+.metric-modal-fact + .metric-modal-fact {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(118, 170, 210, 0.32);
+}
+
+.metric-modal-index,
+.matrix-fact-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #0068b5;
+  background: rgba(0, 132, 202, 0.1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.metric-modal-index {
+  min-height: 24px;
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
+
+.matrix-fact-count {
+  flex: 0 0 auto;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 5px;
 }
 
 .metric-modal-value {
@@ -3975,4 +4196,41 @@ pre {
   .company-metrics-table {
     min-width: 900px;
   }
+}
+
+/* Minimal Tool Call Style */
+.tool-details {
+  margin: 4px 0;
+}
+.tool-summary {
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  color: #9ca3af;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+  transition: color 0.2s;
+}
+.tool-summary::-webkit-details-marker {
+  display: none;
+}
+.tool-summary:hover {
+  color: #4b5563;
+}
+.tool-name {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-left: 4px;
+}
+.tool-body {
+  margin-top: 2px;
+  padding: 4px 0 4px 10px;
+  border-left: 2px solid #f3f4f6;
+  font-size: 12px;
+  color: #6b7280;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }

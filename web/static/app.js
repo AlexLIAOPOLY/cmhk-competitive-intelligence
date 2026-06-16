@@ -260,12 +260,13 @@ function renderInsights(status) {
   const totalUrls = Number(crawl.total || 0);
   const successUrls = Number(crawl.success || 0);
   const failedUrls = Number(crawl.failed || 0);
+  const fallbackUrls = Number(crawl.fallback || 0);
   const successRate = Number(crawl.successRate || 0);
   
   if (els.qualityScore) {
     els.qualityScore.textContent = totalUrls ? `成功 ${successRate}%` : "--";
     els.qualityScore.title = totalUrls
-      ? `本轮共抓取 ${totalUrls} 个 URL：成功 ${successUrls} 个，失败 ${failedUrls} 个`
+      ? `本轮共抓取 ${totalUrls} 个 URL：实时成功 ${successUrls} 个，实时失败 ${failedUrls} 个，其中历史证据回退 ${fallbackUrls} 个`
       : "暂无本轮 URL 抓取结果";
   }
 
@@ -273,16 +274,18 @@ function renderInsights(status) {
   initOrUpdateChart('qualityCanvas', {
     type: 'doughnut',
     data: {
-      labels: ['抓取成功', '抓取失败'],
+      labels: ['实时成功', '实时失败', '历史证据回退'],
       datasets: [{
-        data: [successUrls, failedUrls],
+        data: [successUrls, Math.max(0, failedUrls - fallbackUrls), fallbackUrls],
         backgroundColor: [
           'rgba(16, 185, 129, 0.95)', // emerald
-          'rgba(239, 68, 68, 0.95)'   // red
+          'rgba(239, 68, 68, 0.95)',  // red
+          'rgba(245, 158, 11, 0.95)'  // amber
         ],
         hoverBackgroundColor: [
           'rgba(52, 211, 153, 1)',
-          'rgba(248, 113, 113, 1)'
+          'rgba(248, 113, 113, 1)',
+          'rgba(251, 191, 36, 1)'
         ],
         borderWidth: 3,
         borderColor: '#ffffff',
@@ -1048,7 +1051,8 @@ function updateSubtitles() {
   let sentences;
   if (!subtitleDiv.dataset.sentences) {
     const text = subtitleDiv.dataset.fullText;
-    sentences = text.match(/[^。！？\n]+[。！？\n]*/g) || [text];
+    sentences = (text.match(/[^。！？\n]+[。！？\n]*/g) || [text]).map((item) => item.trim()).filter(Boolean);
+    if (!sentences.length) sentences = [text];
     subtitleDiv.dataset.sentences = JSON.stringify(sentences);
   } else {
     sentences = JSON.parse(subtitleDiv.dataset.sentences);
@@ -1058,37 +1062,47 @@ function updateSubtitles() {
   const currentChars = progress * totalChars;
   
   let charSum = 0;
+  let sentenceStart = 0;
   let activeIndex = 0;
   for (let i = 0; i < sentences.length; i++) {
-    charSum += sentences[i].length;
-    if (currentChars <= charSum) {
+    const nextCharSum = charSum + sentences[i].length;
+    if (currentChars <= nextCharSum || i === sentences.length - 1) {
       activeIndex = i;
+      sentenceStart = charSum;
       break;
     }
+    charSum = nextCharSum;
   }
-  
-  if (subtitleDiv.dataset.activeIndex === String(activeIndex)) return;
-  subtitleDiv.dataset.activeIndex = activeIndex;
-  
-  let html = "";
-  sentences.forEach((s, i) => {
-    if (i < activeIndex) {
-      html += `<div style="color: rgba(255,255,255,0.4); font-size: 13px; transition: all 0.3s; margin-bottom: 8px;">${escapeHtml(s)}</div>`;
-    } else if (i === activeIndex) {
-      html += `<div style="color: #fff; font-size: 15px; font-weight: bold; transition: all 0.3s; margin-bottom: 8px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${escapeHtml(s)}</div>`;
-    } else {
-      html += `<div style="color: rgba(255,255,255,0.15); font-size: 13px; transition: all 0.3s; margin-bottom: 8px;">${escapeHtml(s)}</div>`;
-    }
+
+  if (subtitleDiv.dataset.renderedSentences !== subtitleDiv.dataset.sentences) {
+    const html = sentences.map((sentence, index) => `
+      <div class="subtitle-line" data-subtitle-index="${index}">
+        <span class="subtitle-line-fill">${escapeHtml(sentence)}</span>
+        <span class="subtitle-line-text">${escapeHtml(sentence)}</span>
+      </div>
+    `).join("");
+    subtitleDiv.innerHTML = `<div class="subtitle-spacer"></div>${html}<div class="subtitle-spacer"></div>`;
+    subtitleDiv.dataset.renderedSentences = subtitleDiv.dataset.sentences;
+    subtitleDiv.dataset.activeIndex = "";
+  }
+
+  const activeSentenceLength = Math.max(sentences[activeIndex]?.length || 1, 1);
+  const activeProgress = Math.max(0, Math.min(1, (currentChars - sentenceStart) / activeSentenceLength));
+  const activeChanged = subtitleDiv.dataset.activeIndex !== String(activeIndex);
+  subtitleDiv.dataset.activeIndex = String(activeIndex);
+
+  subtitleDiv.querySelectorAll(".subtitle-line").forEach((line) => {
+    const index = Number(line.dataset.subtitleIndex || 0);
+    line.classList.toggle("is-past", index < activeIndex);
+    line.classList.toggle("is-active", index === activeIndex);
+    line.classList.toggle("is-future", index > activeIndex);
+    line.style.setProperty("--subtitle-progress", index < activeIndex ? "100%" : index === activeIndex ? `${activeProgress * 100}%` : "0%");
   });
-  
-  // Add padding elements so the active text stays near the center
-  subtitleDiv.innerHTML = `<div style="height: 30px;"></div>` + html + `<div style="height: 30px;"></div>`;
-  
-  // smooth scrolling
-  const activeEl = subtitleDiv.children[activeIndex + 1]; // +1 because of the top padding div
-  if (activeEl) {
+
+  const activeEl = subtitleDiv.querySelector(`.subtitle-line[data-subtitle-index="${activeIndex}"]`);
+  if (activeEl && activeChanged && subtitleDiv.style.display !== "none") {
     const scrollTarget = activeEl.offsetTop - subtitleDiv.clientHeight / 2 + activeEl.clientHeight / 2;
-    subtitleDiv.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+    subtitleDiv.scrollTo({ top: scrollTarget, behavior: "smooth" });
   }
 }
 
@@ -1116,6 +1130,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
       subtitleDiv.dataset.fullText = "";
       subtitleDiv.dataset.sentences = "";
       subtitleDiv.dataset.activeIndex = "";
+      subtitleDiv.dataset.renderedSentences = "";
     }
   }
   
@@ -1133,6 +1148,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
       subtitleDiv.dataset.fullText = summary;
       subtitleDiv.dataset.sentences = "";
       subtitleDiv.dataset.activeIndex = "";
+      subtitleDiv.dataset.renderedSentences = "";
       subtitleDiv.hidden = false;
       subtitleDiv.style.display = "none"; // Hide by default until user clicks expand
       els.subtitleToggleBtn.hidden = false;
@@ -1140,6 +1156,9 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
       updateSubtitles();
     } else {
       subtitleDiv.dataset.fullText = "";
+      subtitleDiv.dataset.sentences = "";
+      subtitleDiv.dataset.activeIndex = "";
+      subtitleDiv.dataset.renderedSentences = "";
       subtitleDiv.hidden = true;
       subtitleDiv.style.display = "none";
       els.subtitleToggleBtn.hidden = true;
@@ -1172,6 +1191,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     updateAudioPlayerUI();
     els.audioProgressBar.value = 0;
     els.audioCurrentTime.textContent = "00:00";
+    updateSubtitles();
   });
   
   if (els.subtitleToggleBtn) {
@@ -1212,6 +1232,7 @@ if (els.audioProgressBar) {
     updateProgressFill();
     if (state.currentAudio) {
       state.currentAudio.currentTime = e.target.value;
+      updateSubtitles();
     }
   });
   
@@ -1519,7 +1540,23 @@ function setMessageContent(node, content, markdown = false) {
   if (markdown) {
     if (text.className === "message-text") text.className = "markdown-body";
     let html = typeof marked !== 'undefined' ? marked.parse(content) : content;
-    html = html.replace(/\[(\d+)\]/g, '<sup class="citation-link">[$1]</sup>');
+    html = html.replace(/\[(\d+)\]/g, (match, p1) => {
+      const idx = parseInt(p1, 10);
+      let href = null;
+      if (node.dataset.references) {
+        try {
+          const refs = JSON.parse(node.dataset.references);
+          const ref = refs.find(r => r.index === idx);
+          if (ref && ref.links && ref.links.length > 0 && ref.links[0].url) {
+            href = ref.links[0].url;
+          }
+        } catch(e) {}
+      }
+      if (href) {
+        return `<a href="${href}" target="_blank" class="citation-marker" data-ref-id="${idx}" style="text-decoration:none;">${idx}</a>`;
+      }
+      return `<sup class="citation-marker" data-ref-id="${idx}">${idx}</sup>`;
+    });
     text.innerHTML = html;
   } else {
     text.textContent = content;
@@ -1559,24 +1596,47 @@ function appendRagProcess(node, text) {
 }
 
 function appendRagSources(node, sources, links) {
-  let processNode = node.querySelector(".rag-process");
-  if (!processNode) {
-    processNode = document.createElement("div");
-    processNode.className = "rag-process";
-    const body = node.querySelector(".message-body");
-    body.insertBefore(processNode, body.firstChild);
+  // No-op for the top process display - we now show sources in the footer instead
+  // (kept for compatibility)
+}
+
+function appendCitationFooter(node, references, links) {
+  // Remove any existing citation footer
+  const existing = node.querySelector(".citation-footer");
+  if (existing) existing.remove();
+
+  // Build the list of links to display
+  let refList = [];
+  if (references && references.length) {
+    refList = references;
+  } else if (links && links.length) {
+    // fallback: build pseudo-references from flat links
+    refList = links.map((l, i) => ({ index: i + 1, source: l.label, links: [l] }));
   }
-  const step = document.createElement("div");
-  step.className = "rag-sources";
-  if (links && links.length) {
-    const htmlLinks = links.map((l, i) => `<a href="${l.url}" target="_blank" style="color:var(--blue);text-decoration:none;">[${i+1}] ${l.label}</a>`).join(", ");
-    step.innerHTML = `检索来源: ${htmlLinks}`;
-  } else if (sources && sources.length) {
-    step.textContent = `检索来源: ${sources.join(", ")}`;
-  } else {
-    return;
-  }
-  processNode.appendChild(step);
+  if (!refList.length) return;
+
+  const footer = document.createElement("div");
+  footer.className = "citation-footer";
+
+  const list = document.createElement("div");
+  list.className = "citation-footer-list";
+
+  refList.forEach(ref => {
+    const refLinks = ref.links || [];
+    refLinks.forEach(link => {
+      const a = document.createElement("a");
+      a.href = link.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.className = "citation-footer-link";
+      a.innerHTML = `<span class="citation-footer-num">[${ref.index}]</span><span class="citation-footer-label">${link.label}</span>`;
+      list.appendChild(a);
+    });
+  });
+
+  footer.appendChild(list);
+  const body = node.querySelector(".message-body");
+  body.appendChild(footer);
 }
 
 function resizeChatInput() {
@@ -1660,7 +1720,13 @@ async function sendChat(message) {
         } else if (event.type === "process") {
           appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
-          appendRagSources(assistantNode, event.sources, event.links);
+          // Store references for the popover + footer
+          if (event.references) {
+            assistantNode.dataset.references = JSON.stringify(event.references);
+          }
+          if (event.links) {
+            assistantNode.dataset.links = JSON.stringify(event.links);
+          }
         } else if (event.type === "delta") {
           answer += event.text;
           let displayAnswer = answer;
@@ -1680,6 +1746,8 @@ async function sendChat(message) {
             }
           }
           displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*$/i, ""); // hide incomplete tags
+          displayAnswer = displayAnswer.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim(); // strip LLM citation tags
+          displayAnswer = displayAnswer.replace(/<引用来源>[\s\S]*$/gi, "").trim(); // hide incomplete ones
           
           setMessageContent(assistantNode, displayAnswer, true);
           if (suggestionsHTML) {
@@ -1692,11 +1760,12 @@ async function sendChat(message) {
           let displayAnswer = answer.replace(/<suggestions>[\s\S]*$/, "");
           setMessageContent(assistantNode, displayAnswer, true);
         } else if (event.type === "tool_start") {
-          answer += `\n\n> ⏳ **正在运行工具**: \`${event.name}\`\n> 参数: \`${event.input}\`\n\n`;
+          answer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;">调用工具: \`${event.name}\`</div>\n\n`;
           setMessageContent(assistantNode, answer, true);
           els.messages.scrollTop = els.messages.scrollHeight;
         } else if (event.type === "tool_end") {
-          answer += `\n\n> ✅ **工具返回结果**:\n> \`\`\`\n> ${event.output}\n> \`\`\`\n\n`;
+          // Output is typically handled by the streaming chunk itself, but if we get here just quietly log it
+          answer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;opacity:0.5;">工具调用完成</div>\n\n`;
           setMessageContent(assistantNode, answer, true);
           els.messages.scrollTop = els.messages.scrollHeight;
         } else if (event.type === "action_result") {
@@ -1738,8 +1807,35 @@ async function sendChat(message) {
             console.error("Suggestion parse error final:", e, sugMatch[1]);
         }
       }
-      finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*$/i, "");
+      // Strip <引用来源> tag from final answer (LLM sometimes outputs it despite instructions)
+      const citationTagMatch = finalAnswer.match(/<引用来源>([\s\S]*?)<\/引用来源>/i);
+      let llmCitationText = citationTagMatch ? citationTagMatch[1].trim() : null;
+      finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
+      finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*$/gi, "").trim();
+      finalAnswer = finalAnswer.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
+      finalAnswer = finalAnswer.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
+
       setMessageContent(assistantNode, finalAnswer, true);
+      // Inject citation footer if we have reference data
+      const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
+      const storedLinks = assistantNode.dataset.links ? JSON.parse(assistantNode.dataset.links) : null;
+      if (storedRefs || storedLinks) {
+        appendCitationFooter(assistantNode, storedRefs, storedLinks);
+      } else if (llmCitationText) {
+        // Fallback: parse LLM's own citation text into simple link items
+        // e.g. "[来源 1] weekly_report.md — 政治资讯\n[来源 2] final_audit.md — ..."
+        const fallbackRefs = [];
+        const lines = llmCitationText.split(/\n|(?=\[来源\s*\d+\])/g);
+        for (const line of lines) {
+          const m = line.match(/\[来源\s*(\d+)\]\s*([^—\n]+)/);
+          if (m) {
+            const idx = parseInt(m[1]);
+            const src = m[2].trim();
+            fallbackRefs.push({ index: idx, source: src, links: [{ label: src, url: `/references/${src}` }] });
+          }
+        }
+        if (fallbackRefs.length) appendCitationFooter(assistantNode, fallbackRefs, null);
+      }
       if (suggestionsHTML) {
         const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
         b.insertAdjacentHTML("beforeend", suggestionsHTML);
@@ -1899,7 +1995,7 @@ async function openDashboard() {
       if (container) {
         container.innerHTML = `
           <div class="dashboard-loading" style="text-align: center; padding: 40px;">
-            <p style="color: #10b981; font-weight: bold; font-size: 16px; margin-bottom: 16px;">✅ 飞书表格子表已成功生成！</p>
+            <p style="color: #10b981; font-weight: bold; font-size: 16px; margin-bottom: 16px;">飞书表格子表已成功生成！</p>
             <a href="${data.url}" target="_blank" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">点击跳转到飞书查看</a>
           </div>
         `;
@@ -1971,3 +2067,8 @@ fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);
 });
 setInterval(() => fetchStatus().catch(console.error), 10000);
+
+// Citation Popover Logic
+let citationPopover = document.createElement("div");
+citationPopover.className = "citation-popover";
+document.body.appendChild(citationPopover);

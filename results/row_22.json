@@ -14,10 +14,10 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.policyaddress.gov.hk/2025/en/index.html",
-    "https://www.digitalpolicy.gov.hk/en/",
     "https://www.policyaddress.gov.hk/2024/en/index.html",
-    "https://www.itib.gov.hk/en/index.html"
+    "https://www.policyaddress.gov.hk/2025/en/index.html",
+    "https://www.itib.gov.hk/en/index.html",
+    "https://www.digitalpolicy.gov.hk/en/"
   ],
   "attempted_urls": [
     "https://www.policyaddress.gov.hk/2025/en/index.html",
@@ -26,7 +26,7 @@
     "https://www.itib.gov.hk/en/index.html"
   ],
   "extracted": {
-    "施政报告": "SOURCE: https://www.policyaddress.gov.hk/2025/en/index.html The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highligh",
+    "施政报告": "SOURCE: https://www.policyaddress.gov.hk/2024/en/index.html The Chief Executive's 2024 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highligh",
     "战略规划": "SOURCE: https://www.itib.gov.hk/en/index.html Innovation, Technology and Industry Bureau - Home | ITIB | Innohk Skip to content Previous Slide Next Slide Conceptual Outline of the Development Plan for the Innovation and ",
     "区域发展": "Economies Legal Framework Multi-functional Smart Lampposts Multi-application Smart ID Card (MASC) Success Stories Key Initiatives Facilitating Cross-boundary Data Flow within the Greater Bay Area iAM Smart Artificial Int",
     "重大投资": "ts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Governance Enhancin"
@@ -37,13 +37,13 @@
       "entity": "政治资讯（和25行可能存在重合，请Alex考虑是否合并）",
       "status": "ok",
       "source_urls": [
-        "https://www.policyaddress.gov.hk/2025/en/index.html",
-        "https://www.digitalpolicy.gov.hk/en/",
         "https://www.policyaddress.gov.hk/2024/en/index.html",
-        "https://www.itib.gov.hk/en/index.html"
+        "https://www.policyaddress.gov.hk/2025/en/index.html",
+        "https://www.itib.gov.hk/en/index.html",
+        "https://www.digitalpolicy.gov.hk/en/"
       ],
       "extracted": {
-        "施政报告": "SOURCE: https://www.policyaddress.gov.hk/2025/en/index.html The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highligh",
+        "施政报告": "SOURCE: https://www.policyaddress.gov.hk/2024/en/index.html The Chief Executive's 2024 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highligh",
         "战略规划": "SOURCE: https://www.itib.gov.hk/en/index.html Innovation, Technology and Industry Bureau - Home | ITIB | Innohk Skip to content Previous Slide Next Slide Conceptual Outline of the Development Plan for the Innovation and ",
         "区域发展": "Economies Legal Framework Multi-functional Smart Lampposts Multi-application Smart ID Card (MASC) Success Stories Key Initiatives Facilitating Cross-boundary Data Flow within the Greater Bay Area iAM Smart Artificial Int",
         "重大投资": "ts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Governance Enhancin"
@@ -52,89 +52,13 @@
       "raw_records": [
         {
           "row": 22,
-          "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-          "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "The Chief Executive's 2025 Policy Address",
-          "bytes": 12926,
-          "elapsed_seconds": 0.916,
-          "method": "httpx",
-          "text_sample": "The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Deepening Reforms for Our People Leveraging Our Strengths for a Brighter Future Strengthen our governance systems Accelerate the development of the Northern Metropolis Industry development and reform Consolidate our strengths Integrate into the overall national development Promote the integrated development of education, technology and talents Promote the integrated development of culture, sports and tourism Support the local economy and strengthen labour protection Create land for housing development and enhance commuting convenience Deepen reform of the healthcare system Promote social development for a caring and inclusive society",
-          "evidence_path": "evidence_cache/abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919.txt",
-          "content_hash": "abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-              "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 12926,
-              "text_chars": 906,
-              "title": "The Chief Executive's 2025 Policy Address",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
-          ]
-        },
-        {
-          "row": 22,
-          "url": "https://www.digitalpolicy.gov.hk/en/",
-          "final_url": "https://www.digitalpolicy.gov.hk/en/",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "Home | Digital Policy Office",
-          "bytes": 130728,
-          "elapsed_seconds": 0.943,
-          "method": "httpx",
-          "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
-          "evidence_path": "evidence_cache/60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de.txt",
-          "content_hash": "60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.digitalpolicy.gov.hk/en/",
-              "final_url": "https://www.digitalpolicy.gov.hk/en/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 130728,
-              "text_chars": 7458,
-              "title": "Home | Digital Policy Office",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "not_found_allow",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "entity_hits": [
-            "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
-          ]
-        },
-        {
-          "row": 22,
           "url": "https://www.policyaddress.gov.hk/2024/en/index.html",
           "final_url": "https://www.policyaddress.gov.hk/2024/en/index.html",
           "status": 200,
           "content_type": "text/html",
           "title": "The Chief Executive's 2024 Policy Address",
           "bytes": 12354,
-          "elapsed_seconds": 1.083,
+          "elapsed_seconds": 0.868,
           "method": "httpx",
           "text_sample": "The Chief Executive's 2024 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Reform for Enhancing Development and Building Our Future Together Fully and faithfully implement \"One Country, Two Systems\" and strengthening our governance systems Consolidate and enhance our advantages Develop new quality productive forces Build Hong Kong into an international hub for high-calibre talents Integrated development of culture, sports and tourism and foster economic diversification Create land to build more housing Deepen reform of the healthcare system Build a caring and inclusive society 2024©",
           "evidence_path": "evidence_cache/294137419829c065c3e1bd8e6db90bcdbc0dba81a939b3d359c9e1ff1227233f.txt",
@@ -160,6 +84,50 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
+          ]
+        },
+        {
+          "row": 22,
+          "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+          "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "The Chief Executive's 2025 Policy Address",
+          "bytes": 12926,
+          "elapsed_seconds": 0.896,
+          "method": "httpx",
+          "text_sample": "The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Deepening Reforms for Our People Leveraging Our Strengths for a Brighter Future Strengthen our governance systems Accelerate the development of the Northern Metropolis Industry development and reform Consolidate our strengths Integrate into the overall national development Promote the integrated development of education, technology and talents Promote the integrated development of culture, sports and tourism Support the local economy and strengthen labour protection Create land for housing development and enhance commuting convenience Deepen reform of the healthcare system Promote social development for a caring and inclusive society",
+          "evidence_path": "evidence_cache/abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919.txt",
+          "content_hash": "abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+              "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 12926,
+              "text_chars": 906,
+              "title": "The Chief Executive's 2025 Policy Address",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
           ]
@@ -172,7 +140,7 @@
           "content_type": "text/html",
           "title": "Innovation, Technology and Industry Bureau - Home | ITIB | Innohk",
           "bytes": 38529,
-          "elapsed_seconds": 1.446,
+          "elapsed_seconds": 1.183,
           "method": "httpx",
           "text_sample": "Innovation, Technology and Industry Bureau - Home | ITIB | Innohk Skip to content Previous Slide Next Slide Conceptual Outline of the Development Plan for the Innovation and Technology Industry in the San Tin Technopole Current Slide Development Outline for the Hong Kong Park of the Hetao Shenzhen-Hong Kong Science and Technology Innovation Co-operation Zone Policy Statement on Facilitating Data Flow and Safeguarding Data Security in Hong Kong Hong Kong Innovation and Technology Development Blueprint Setting up I&T business in Hong Kong Safeguarding National Security Hong Kong Smart City WHAT'S NEW ABOUT US I&T SUPPORT Secretary's Blog I&T ACHIEVEMENTS Enhancing the I&T ecosystem I&T talent pool Smart Hong Kong Connecting the Mainland and the world",
           "evidence_path": "evidence_cache/d4bdc68e0c75954415dae4fa4f47efca9bf03984bbd2da0934f3b2817819bd4a.txt",
@@ -198,93 +166,61 @@
           "robots_status": "not_found_allow",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
+          ]
+        },
+        {
+          "row": 22,
+          "url": "https://www.digitalpolicy.gov.hk/en/",
+          "final_url": "https://www.digitalpolicy.gov.hk/en/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Home | Digital Policy Office",
+          "bytes": 131371,
+          "elapsed_seconds": 1.209,
+          "method": "httpx",
+          "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
+          "evidence_path": "evidence_cache/60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de.txt",
+          "content_hash": "60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.digitalpolicy.gov.hk/en/",
+              "final_url": "https://www.digitalpolicy.gov.hk/en/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 131371,
+              "text_chars": 7458,
+              "title": "Home | Digital Policy Office",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
           ]
         }
       ],
-      "confidence_score": 0.6,
-      "verification_reason": "The extracted data contains pieces of text from multiple source pages (Policy Address, Digital Policy Office, ITIB), but the '施政报告' and '战略规划' entries seem partially correct; however, '区域发展' and '重大投资' are not directly found in the provided source text, and the source text does not mention these keys explicitly. The extraction appears to fragment and mix content without clear mapping."
+      "confidence_score": 0.5,
+      "verification_reason": "The extracted data includes snippets of URLs and page content that appear plausible for the source texts, but the exact text in the 'Extracted Data' does not always appear verbatim in the provided 'Source Text' excerpts. For example, the extracted '施政报告' text matches the beginning of the first source, but '重大投资' and '区域发展' text includes elements from multiple sources but is not directly quoted. The '战略规划' text matches the start of the ITIB source but is cut off. The extraction lacks specific contextual matching and appears to be partial or inferred, leading to medium confidence."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 22,
-      "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-      "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "The Chief Executive's 2025 Policy Address",
-      "bytes": 12926,
-      "elapsed_seconds": 0.916,
-      "method": "httpx",
-      "text_sample": "The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Deepening Reforms for Our People Leveraging Our Strengths for a Brighter Future Strengthen our governance systems Accelerate the development of the Northern Metropolis Industry development and reform Consolidate our strengths Integrate into the overall national development Promote the integrated development of education, technology and talents Promote the integrated development of culture, sports and tourism Support the local economy and strengthen labour protection Create land for housing development and enhance commuting convenience Deepen reform of the healthcare system Promote social development for a caring and inclusive society",
-      "evidence_path": "evidence_cache/abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919.txt",
-      "content_hash": "abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-          "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 12926,
-          "text_chars": 906,
-          "title": "The Chief Executive's 2025 Policy Address",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
-      ]
-    },
-    {
-      "row": 22,
-      "url": "https://www.digitalpolicy.gov.hk/en/",
-      "final_url": "https://www.digitalpolicy.gov.hk/en/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Home | Digital Policy Office",
-      "bytes": 130728,
-      "elapsed_seconds": 0.943,
-      "method": "httpx",
-      "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
-      "evidence_path": "evidence_cache/60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de.txt",
-      "content_hash": "60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.digitalpolicy.gov.hk/en/",
-          "final_url": "https://www.digitalpolicy.gov.hk/en/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 130728,
-          "text_chars": 7458,
-          "title": "Home | Digital Policy Office",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "not_found_allow",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "entity_hits": [
-        "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
-      ]
-    },
     {
       "row": 22,
       "url": "https://www.policyaddress.gov.hk/2024/en/index.html",
@@ -293,7 +229,7 @@
       "content_type": "text/html",
       "title": "The Chief Executive's 2024 Policy Address",
       "bytes": 12354,
-      "elapsed_seconds": 1.083,
+      "elapsed_seconds": 0.868,
       "method": "httpx",
       "text_sample": "The Chief Executive's 2024 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Reform for Enhancing Development and Building Our Future Together Fully and faithfully implement \"One Country, Two Systems\" and strengthening our governance systems Consolidate and enhance our advantages Develop new quality productive forces Build Hong Kong into an international hub for high-calibre talents Integrated development of culture, sports and tourism and foster economic diversification Create land to build more housing Deepen reform of the healthcare system Build a caring and inclusive society 2024©",
       "evidence_path": "evidence_cache/294137419829c065c3e1bd8e6db90bcdbc0dba81a939b3d359c9e1ff1227233f.txt",
@@ -319,6 +255,50 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
+      ]
+    },
+    {
+      "row": 22,
+      "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+      "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "The Chief Executive's 2025 Policy Address",
+      "bytes": 12926,
+      "elapsed_seconds": 0.896,
+      "method": "httpx",
+      "text_sample": "The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Deepening Reforms for Our People Leveraging Our Strengths for a Brighter Future Strengthen our governance systems Accelerate the development of the Northern Metropolis Industry development and reform Consolidate our strengths Integrate into the overall national development Promote the integrated development of education, technology and talents Promote the integrated development of culture, sports and tourism Support the local economy and strengthen labour protection Create land for housing development and enhance commuting convenience Deepen reform of the healthcare system Promote social development for a caring and inclusive society",
+      "evidence_path": "evidence_cache/abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919.txt",
+      "content_hash": "abbbad60c14c2b67160e882a597d8186814a3cf4d810d36a61cd6d2d4168f919",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+          "final_url": "https://www.policyaddress.gov.hk/2025/en/index.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 12926,
+          "text_chars": 906,
+          "title": "The Chief Executive's 2025 Policy Address",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
       ]
@@ -331,7 +311,7 @@
       "content_type": "text/html",
       "title": "Innovation, Technology and Industry Bureau - Home | ITIB | Innohk",
       "bytes": 38529,
-      "elapsed_seconds": 1.446,
+      "elapsed_seconds": 1.183,
       "method": "httpx",
       "text_sample": "Innovation, Technology and Industry Bureau - Home | ITIB | Innohk Skip to content Previous Slide Next Slide Conceptual Outline of the Development Plan for the Innovation and Technology Industry in the San Tin Technopole Current Slide Development Outline for the Hong Kong Park of the Hetao Shenzhen-Hong Kong Science and Technology Innovation Co-operation Zone Policy Statement on Facilitating Data Flow and Safeguarding Data Security in Hong Kong Hong Kong Innovation and Technology Development Blueprint Setting up I&T business in Hong Kong Safeguarding National Security Hong Kong Smart City WHAT'S NEW ABOUT US I&T SUPPORT Secretary's Blog I&T ACHIEVEMENTS Enhancing the I&T ecosystem I&T talent pool Smart Hong Kong Connecting the Mainland and the world",
       "evidence_path": "evidence_cache/d4bdc68e0c75954415dae4fa4f47efca9bf03984bbd2da0934f3b2817819bd4a.txt",
@@ -357,15 +337,61 @@
       "robots_status": "not_found_allow",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
+      ]
+    },
+    {
+      "row": 22,
+      "url": "https://www.digitalpolicy.gov.hk/en/",
+      "final_url": "https://www.digitalpolicy.gov.hk/en/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Home | Digital Policy Office",
+      "bytes": 131371,
+      "elapsed_seconds": 1.209,
+      "method": "httpx",
+      "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
+      "evidence_path": "evidence_cache/60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de.txt",
+      "content_hash": "60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.digitalpolicy.gov.hk/en/",
+          "final_url": "https://www.digitalpolicy.gov.hk/en/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 131371,
+          "text_chars": 7458,
+          "title": "Home | Digital Policy Office",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "政治资讯（和25行可能存在重合，请Alex考虑是否合并）"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 4,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-14T10:06:31.682740+00:00",
-  "fetched_at_hkt": "2026-06-14T18:06:31.682927+08:00"
+  "fetched_at": "2026-06-16T03:05:01.194438+00:00",
+  "fetched_at_hkt": "2026-06-16T11:05:01.194468+08:00"
 }

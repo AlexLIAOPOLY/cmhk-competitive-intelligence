@@ -55,7 +55,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
           "bytes": 89401,
-          "elapsed_seconds": 0.475,
+          "elapsed_seconds": 0.484,
           "method": "httpx",
           "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
           "evidence_path": "evidence_cache/332566384e1075622dce1561f7cc8560879ee4f6abf2ea2dbb760a983b915d08.txt",
@@ -81,6 +81,9 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "行业资讯"
           ]
@@ -92,12 +95,12 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Total Telecom - News, analysis and events for global telecoms",
-          "bytes": 650134,
-          "elapsed_seconds": 1.118,
+          "bytes": 649982,
+          "elapsed_seconds": 1.381,
           "method": "httpx",
-          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page O2 and Mavenir build personalised audio support for customers with hearing loss Posted by Harry Baldock | Jun 12, 2026 AMD, Dell and University of Cambridge set SAIL on AI lab Posted by Harry Baldock | Jun 11, 2026 India’s tel",
-          "evidence_path": "evidence_cache/3df7f2e30ff83454bbfadc328e6985651ff5a5cd93f219b3eff475ba8febf330.txt",
-          "content_hash": "3df7f2e30ff83454bbfadc328e6985651ff5a5cd93f219b3eff475ba8febf330",
+          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Bridging the education gap with smart classrooms Posted by Harry Baldock | Jun 15, 2026 O2 and Mavenir build personalised audio support for customers with hearing loss Posted by Harry Baldock | Jun 12, 2026 AMD, Dell and Unive",
+          "evidence_path": "evidence_cache/a44b365a01ffc0277b34e77c5f9e7356ce6992bbc8c7c1ee78efe43f3660bdaa.txt",
+          "content_hash": "a44b365a01ffc0277b34e77c5f9e7356ce6992bbc8c7c1ee78efe43f3660bdaa",
           "error": "",
           "fetch_attempts": [
             {
@@ -105,8 +108,8 @@
               "final_url": "https://totaltele.com/",
               "status": 200,
               "method": "httpx",
-              "bytes": 650134,
-              "text_chars": 7701,
+              "bytes": 649982,
+              "text_chars": 7694,
               "title": "Total Telecom - News, analysis and events for global telecoms",
               "error": "",
               "meta_refresh_url": ""
@@ -119,6 +122,9 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "行业资讯"
           ]
@@ -130,8 +136,8 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Press Releases - Newsroom",
-          "bytes": 110498,
-          "elapsed_seconds": 2.858,
+          "bytes": 110347,
+          "elapsed_seconds": 1.64,
           "method": "httpx",
           "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
           "evidence_path": "evidence_cache/e9fd3f5b75002e1972d683567297dd2b6dd746af2b94c291cc25f5487d5a0d6c.txt",
@@ -143,7 +149,7 @@
               "final_url": "https://www.gsma.com/newsroom/press-releases/",
               "status": 200,
               "method": "httpx",
-              "bytes": 110498,
+              "bytes": 110347,
               "text_chars": 4229,
               "title": "Press Releases - Newsroom",
               "error": "",
@@ -157,13 +163,16 @@
           "robots_status": "checked",
           "robots_allowed": true,
           "skip_reason": "",
+          "live_fetch_status": "",
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
           "entity_hits": [
             "行业资讯"
           ]
         }
       ],
       "confidence_score": 0.3,
-      "verification_reason": "The extracted data contains garbled and incomplete fragments that do not accurately match the source text. For example, '技术动态' and '市场趋势' include nonsensical English phrases like 'rowth Strategy' and 't Places', and fail to capture the core content about Telco AI Cloud. '企业重大合作' mentions MWC Barcelona and Yaskawa, which are present in the source, but is incomplete and lacks context. '前沿产品' misrepresents content from unrelated parts. Overall, the extraction is low quality with many errors."
+      "verification_reason": "The extracted data contains numerous fragmented phrases and typos (e.g., 'rowth Strategy', 'vernance') that do not accurately represent the source text. While some keywords like 'Telco AI Cloud' and 'SoftBank' appear, the overall structure and content are poorly extracted, with many irrelevant or truncated segments."
     }
   ],
   "entity_missing": [],
@@ -176,7 +185,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
       "bytes": 89401,
-      "elapsed_seconds": 0.475,
+      "elapsed_seconds": 0.484,
       "method": "httpx",
       "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
       "evidence_path": "evidence_cache/332566384e1075622dce1561f7cc8560879ee4f6abf2ea2dbb760a983b915d08.txt",
@@ -202,6 +211,9 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "行业资讯"
       ]
@@ -213,12 +225,12 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Total Telecom - News, analysis and events for global telecoms",
-      "bytes": 650134,
-      "elapsed_seconds": 1.118,
+      "bytes": 649982,
+      "elapsed_seconds": 1.381,
       "method": "httpx",
-      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page O2 and Mavenir build personalised audio support for customers with hearing loss Posted by Harry Baldock | Jun 12, 2026 AMD, Dell and University of Cambridge set SAIL on AI lab Posted by Harry Baldock | Jun 11, 2026 India’s tel",
-      "evidence_path": "evidence_cache/3df7f2e30ff83454bbfadc328e6985651ff5a5cd93f219b3eff475ba8febf330.txt",
-      "content_hash": "3df7f2e30ff83454bbfadc328e6985651ff5a5cd93f219b3eff475ba8febf330",
+      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Bridging the education gap with smart classrooms Posted by Harry Baldock | Jun 15, 2026 O2 and Mavenir build personalised audio support for customers with hearing loss Posted by Harry Baldock | Jun 12, 2026 AMD, Dell and Unive",
+      "evidence_path": "evidence_cache/a44b365a01ffc0277b34e77c5f9e7356ce6992bbc8c7c1ee78efe43f3660bdaa.txt",
+      "content_hash": "a44b365a01ffc0277b34e77c5f9e7356ce6992bbc8c7c1ee78efe43f3660bdaa",
       "error": "",
       "fetch_attempts": [
         {
@@ -226,8 +238,8 @@
           "final_url": "https://totaltele.com/",
           "status": 200,
           "method": "httpx",
-          "bytes": 650134,
-          "text_chars": 7701,
+          "bytes": 649982,
+          "text_chars": 7694,
           "title": "Total Telecom - News, analysis and events for global telecoms",
           "error": "",
           "meta_refresh_url": ""
@@ -240,6 +252,9 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "行业资讯"
       ]
@@ -251,8 +266,8 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Press Releases - Newsroom",
-      "bytes": 110498,
-      "elapsed_seconds": 2.858,
+      "bytes": 110347,
+      "elapsed_seconds": 1.64,
       "method": "httpx",
       "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
       "evidence_path": "evidence_cache/e9fd3f5b75002e1972d683567297dd2b6dd746af2b94c291cc25f5487d5a0d6c.txt",
@@ -264,7 +279,7 @@
           "final_url": "https://www.gsma.com/newsroom/press-releases/",
           "status": 200,
           "method": "httpx",
-          "bytes": 110498,
+          "bytes": 110347,
           "text_chars": 4229,
           "title": "Press Releases - Newsroom",
           "error": "",
@@ -278,15 +293,20 @@
       "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
+      "live_fetch_status": "",
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
       "entity_hits": [
         "行业资讯"
       ]
     }
   ],
   "live_fetch_status": "ok",
+  "live_fetch_success_count": 3,
+  "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-14T10:07:34.085115+00:00",
-  "fetched_at_hkt": "2026-06-14T18:07:34.085294+08:00"
+  "fetched_at": "2026-06-16T03:06:28.937069+00:00",
+  "fetched_at_hkt": "2026-06-16T11:06:28.937085+08:00"
 }
