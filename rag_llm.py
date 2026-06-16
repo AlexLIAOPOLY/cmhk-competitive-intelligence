@@ -12,6 +12,9 @@ from ai_config import load_ai_config
 
 
 ROOT = Path(__file__).resolve().parent
+AGENT_KNOWLEDGE_ROOT = ROOT / "agent_knowledge"
+AGENT_KNOWLEDGE_ALLOWED_SUFFIXES = {".md", ".txt", ".json", ".csv", ".tsv"}
+AGENT_KNOWLEDGE_SKIP_NAMES = {".DS_Store"}
 
 
 def _read_text(path: Path, limit: int = 60000) -> str:
@@ -20,14 +23,91 @@ def _read_text(path: Path, limit: int = 60000) -> str:
     return path.read_text(encoding="utf-8", errors="ignore")[:limit]
 
 
+def _read_json(path: Path) -> dict[str, Any]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
 def _tokens(text: str) -> set[str]:
     return {item.lower() for item in re.findall(r"[A-Za-z0-9_\-\u4e00-\u9fff]{2,}", text or "")}
 
 
 def _local_ref(source: str) -> str:
-    if source in {"weekly_report.docx", "weekly_report_from_word_template.docx", "weekly_report.html", "weekly_report.md"}:
+    if source in {"weekly_report.docx", "weekly_report_from_word_template.docx"}:
         return f"/outputs/{source}"
     return f"/references/{source}"
+
+
+def _is_allowed_knowledge_file(path: Path) -> bool:
+    if path.name in AGENT_KNOWLEDGE_SKIP_NAMES:
+        return False
+    if path.name.startswith("."):
+        return False
+    if path.suffix.lower() not in AGENT_KNOWLEDGE_ALLOWED_SUFFIXES:
+        return False
+    return path.is_file()
+
+
+def _knowledge_dataset_id(folder: Path) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]+", "-", folder.name).strip("-") or folder.name
+
+
+def _knowledge_manifest(folder: Path) -> dict[str, Any]:
+    manifest = _read_json(folder / "manifest.json")
+    dataset_id = str(manifest.get("id") or _knowledge_dataset_id(folder)).strip()
+    title = str(manifest.get("title") or folder.name).strip()
+    summary = str(manifest.get("summary") or manifest.get("description") or "").strip()
+    tags = manifest.get("tags") if isinstance(manifest.get("tags"), list) else []
+    keywords = manifest.get("keywords") if isinstance(manifest.get("keywords"), list) else []
+    entrypoints = manifest.get("entrypoints") if isinstance(manifest.get("entrypoints"), list) else []
+    source_type = str(manifest.get("source_type") or manifest.get("sourceType") or "local").strip()
+    scope = str(manifest.get("scope") or "").strip()
+    updated_at = str(manifest.get("updated_at") or manifest.get("updatedAt") or "").strip()
+    quality = str(manifest.get("quality") or manifest.get("quality_note") or "").strip()
+    return {
+        "id": dataset_id,
+        "title": title,
+        "summary": summary,
+        "tags": [str(item).strip() for item in tags if str(item).strip()],
+        "keywords": [str(item).strip() for item in keywords if str(item).strip()],
+        "entrypoints": [str(item).strip() for item in entrypoints if str(item).strip()],
+        "source_type": source_type,
+        "scope": scope,
+        "updated_at": updated_at,
+        "quality": quality,
+        "folder": folder.relative_to(ROOT).as_posix(),
+        "manifest_path": (folder / "manifest.json").relative_to(ROOT).as_posix() if (folder / "manifest.json").exists() else "",
+    }
+
+
+def list_knowledge_datasets() -> list[dict[str, Any]]:
+    datasets: list[dict[str, Any]] = []
+    if not AGENT_KNOWLEDGE_ROOT.exists():
+        return datasets
+    for folder in sorted(AGENT_KNOWLEDGE_ROOT.iterdir()):
+        if not folder.is_dir() or folder.name.startswith("."):
+            continue
+        manifest = _knowledge_manifest(folder)
+        files = []
+        for path in sorted(folder.rglob("*")):
+            if not _is_allowed_knowledge_file(path):
+                continue
+            rel = path.relative_to(ROOT).as_posix()
+            files.append(
+                {
+                    "path": rel,
+                    "name": path.name,
+                    "url": _local_ref(rel),
+                    "size": path.stat().st_size,
+                    "entrypoint": path.name in set(manifest.get("entrypoints") or []),
+                }
+            )
+        manifest["files"] = files
+        datasets.append(manifest)
+    return datasets
 
 
 def _chunk_text(source: str, text: str, max_chars: int = 1200) -> list[dict[str, Any]]:
@@ -75,21 +155,91 @@ def _result_chunks() -> list[dict[str, Any]]:
     return chunks
 
 
+def _agent_knowledge_chunks() -> list[dict[str, Any]]:
+    chunks: list[dict[str, Any]] = []
+    if not AGENT_KNOWLEDGE_ROOT.exists():
+        return chunks
+    for dataset in list_knowledge_datasets():
+        folder = ROOT / dataset["folder"]
+        manifest_text = json.dumps(
+            {
+                "dataset": dataset["title"],
+                "id": dataset["id"],
+                "summary": dataset.get("summary"),
+                "scope": dataset.get("scope"),
+                "source_type": dataset.get("source_type"),
+                "tags": dataset.get("tags"),
+                "keywords": dataset.get("keywords"),
+                "entrypoints": dataset.get("entrypoints"),
+                "quality": dataset.get("quality"),
+                "files": [item["path"] for item in dataset.get("files", [])],
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        manifest_source = dataset.get("manifest_path") or f"{dataset['folder']}/manifest.json"
+        chunks.extend(_chunk_text(manifest_source, manifest_text, max_chars=1600))
+        entrypoints = set(dataset.get("entrypoints") or [])
+        ordered_files = sorted(
+            [ROOT / item["path"] for item in dataset.get("files", [])],
+            key=lambda p: (0 if p.name in entrypoints else 1, p.name),
+        )
+        for path in ordered_files:
+            if not _is_allowed_knowledge_file(path):
+                continue
+            source = path.relative_to(ROOT).as_posix()
+            text = _read_text(path, limit=120000)
+            if path.suffix.lower() == ".json":
+                try:
+                    text = json.dumps(json.loads(text), ensure_ascii=False, indent=2)
+                except Exception:
+                    pass
+            chunks.extend(_chunk_text(source, text, max_chars=1600))
+    return chunks
+
+
 def build_rag_index() -> list[dict[str, Any]]:
     chunks: list[dict[str, Any]] = []
     for name in ["weekly_report.md", "final_audit.md", "coverage_report.tsv", "run_log.tsv"]:
         chunks.extend(_chunk_text(name, _read_text(ROOT / name)))
+    chunks.extend(_agent_knowledge_chunks())
     chunks.extend(_result_chunks())
     return chunks
 
 
 def retrieve_context(question: str, limit: int = 8) -> list[dict[str, Any]]:
     query_tokens = _tokens(question)
+    core_metric_question = any(
+        key in question
+        for key in [
+            "近三年",
+            "过去三年",
+            "三年",
+            "趋势",
+            "核心数据",
+            "主要数据",
+            "财务数据",
+            "经营数据",
+            "收入",
+            "收益",
+            "净利润",
+            "毛利率",
+            "EBITDA",
+            "资本开支",
+            "现金流",
+            "同业",
+            "对比",
+        ]
+    )
     scored: list[tuple[int, int, dict[str, Any]]] = []
     for index, chunk in enumerate(build_rag_index()):
         chunk_tokens = _tokens(chunk["text"] + " " + chunk["source"])
         overlap = len(query_tokens & chunk_tokens)
         source_boost = 3 if chunk["source"] == "weekly_report.md" else 0
+        if chunk["source"].startswith("agent_knowledge/"):
+            source_boost += 4
+            if core_metric_question:
+                source_boost += 10
         if any(key in question for key in ["建议", "风险", "重点", "总结", "摘要", "周报"]):
             source_boost += 2 if chunk["source"] in {"weekly_report.md", "final_audit.md"} else 0
         score = overlap + source_boost
@@ -222,14 +372,17 @@ def stream_llm_with_rag(question: str):
     
     meta_links = []
     seen_urls = set()
-    for chunk in chunks:
-        for link in chunk.get("links", []):
+    references = []
+    for i, chunk in enumerate(chunks):
+        chunk_links = chunk.get("links", [])
+        references.append({"index": i + 1, "source": chunk["source"], "links": chunk_links})
+        for link in chunk_links:
             url = link.get("url")
             if url and url not in seen_urls:
                 seen_urls.add(url)
                 meta_links.append(link)
                 
-    yield {"type": "meta", "model": model, "provider": provider, "sources": [chunk["source"] for chunk in chunks], "links": meta_links}
+    yield {"type": "meta", "model": model, "provider": provider, "sources": [chunk["source"] for chunk in chunks], "links": meta_links, "references": references}
     
     context_parts = []
     for i, chunk in enumerate(chunks):

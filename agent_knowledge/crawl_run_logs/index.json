@@ -1,0 +1,88 @@
+[
+  {
+    "crawl_run_id": "20260616_181035",
+    "trigger": "manual-backfill",
+    "started_at_hkt": "2026-06-16T18:10:44.251082+08:00",
+    "completed_at_hkt": "2026-06-17T07:30:30+08:00",
+    "crawl_return_code": null,
+    "duration_ms": null,
+    "feishu": {
+      "spreadsheet_token": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",
+      "main_sheet_id": "9c638d",
+      "log_sheet_id": "3JeuTS",
+      "log_sheet_title": "爬虫日志_20260616_181035",
+      "url": "https://cmhk-try.feishu.cn/sheets/ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA?sheet=3JeuTS",
+      "sync_ok": true,
+      "result_columns": {
+        "run_label": "(06-16)",
+        "start_col": "BO",
+        "mid_col": "BP",
+        "end_col": "BQ",
+        "insert_index": 66,
+        "data_range": "9c638d!BO2:BQ34",
+        "header_range": "9c638d!BO1:BQ1"
+      },
+      "compliance_gaps": [
+        "row 26 entity 香港本地监管 has no source url",
+        "row 26 entity 政策 has no source url",
+        "row 27 entity 重点国家 has no source url",
+        "row 27 entity 地区AI与数据监管 has no source url",
+        "row 29 entity 国际组织 has no source url",
+        "row 29 entity 行业权威机构 has no source url",
+        "row 30 entity 宏观经济 has no source url",
+        "row 30 entity 人口 has no source url",
+        "row 30 entity 消费 has no source url"
+      ]
+    },
+    "local_files": {
+      "final_audit": "final_audit.md",
+      "coverage_report": "coverage_report.tsv",
+      "run_log_tsv": "run_log.tsv",
+      "run_log_json": "run_log.json",
+      "daily_validation": "daily_validation.json",
+      "curation_latest": "curation_data/latest.json",
+      "agent_trace": "curation_data/agent_trace.jsonl"
+    },
+    "final_audit": {
+      "generated_at": "2026-06-16T18:10:35.829733",
+      "rows_crawled": "33",
+      "ok_rows": "33",
+      "partial_rows": "0",
+      "failed_rows": "0",
+      "fulfilled": "33/33 (100.0%)",
+      "live_url_success": "166/166 (100.0%)",
+      "live_url_failures": "0",
+      "restored_from_previous_evidence": "0"
+    },
+    "run_log": {
+      "rows": 166,
+      "success_urls": 166,
+      "failed_urls": 0,
+      "fallback_urls": 0
+    },
+    "curation": {
+      "agent_run_id": "20260616_221713_e83b8379",
+      "started_at": "2026-06-16T22:17:13+08:00",
+      "completed_at": "2026-06-16T22:21:25+08:00",
+      "tasks": 209,
+      "accepted": 209,
+      "rejected": 0,
+      "review": 0,
+      "gaps": 0,
+      "recrawl_rows": [],
+      "agent_trace": "curation_data/agent_trace.jsonl",
+      "search_verification": {
+        "checked": 209,
+        "corrected": 1,
+        "review": 0,
+        "conflicts": 30,
+        "workers": 4,
+        "online_search": true,
+        "online_checked": 209,
+        "online_votes": 96
+      }
+    },
+    "metrics_refresh": {},
+    "agent_trace_feishu_sync": {}
+  }
+]

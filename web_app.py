@@ -10,17 +10,19 @@ import sys
 import threading
 import time
 from datetime import datetime
+from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import crawl
+from crawl_run_registry import latest_crawl_run_summary, load_index as load_crawl_run_index, register_crawl_run
 from ai_config import load_ai_config, save_ai_config
 from crawl_settings import SETTINGS_PATH, load_settings, save_settings
 from company_metrics import build_company_metrics_payload
 from extractors import row_fields
-from rag_llm import ask_llm_with_rag, stream_llm_with_rag
-from agent import stream_agent
+from rag_llm import ask_llm_with_rag, list_knowledge_datasets, stream_llm_with_rag
+from agent import available_agent_skills, stream_agent
 from tts_service import (
     AUDIO_DIR,
     audio_info_for_report,
@@ -48,16 +50,64 @@ EXCLUDED_REPORT_NAMES = {
     "carrier_performance_template.docx",
     "模板.docx",
 }
-REFERENCE_FILES = {"final_audit.md", "coverage_report.tsv", "run_log.tsv"}
+REFERENCE_FILES = {"weekly_report.md", "weekly_report.html", "final_audit.md", "coverage_report.tsv", "run_log.tsv"}
 
 
 def reference_path(name: str) -> Path | None:
-    clean = Path(name).name
+    raw = str(name or "").strip().lstrip("/")
+    clean = Path(raw).name
     if clean in REFERENCE_FILES:
         return ROOT / clean
     if re.fullmatch(r"row_\d+\.json", clean):
         return RESULTS_DIR / clean
+    if raw.startswith("agent_knowledge/"):
+        target = (ROOT / raw).resolve()
+        knowledge_root = (ROOT / "agent_knowledge").resolve()
+        if knowledge_root in target.parents and target.exists() and target.is_file():
+            return target
     return None
+
+
+def decode_text_bytes(body: bytes) -> str:
+    for encoding in ("utf-8-sig", "utf-8", "gb18030", "big5", "cp950"):
+        try:
+            return body.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return body.decode("utf-8", errors="replace")
+
+
+def read_display_text(path: Path) -> str:
+    suffix = path.suffix.lower()
+    if suffix == ".docx":
+        try:
+            from docx import Document
+
+            doc = Document(str(path))
+            parts = [paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip()]
+            for table in doc.tables:
+                for row in table.rows:
+                    cells = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+                    if cells:
+                        parts.append(" | ".join(cells))
+            return "\n".join(parts)
+        except Exception as exc:
+            return f"Word 文档预览失败：{exc}"
+    if suffix == ".pdf":
+        try:
+            from pypdf import PdfReader
+
+            reader = PdfReader(str(path))
+            return "\n\n".join((page.extract_text() or "").strip() for page in reader.pages).strip()
+        except Exception as exc:
+            return f"PDF 预览失败：{exc}"
+    raw = decode_text_bytes(path.read_bytes())
+    if suffix == ".json":
+        try:
+            raw = json.dumps(json.loads(raw), ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+    return raw
 
 
 def settings_rows() -> list[dict]:
@@ -267,6 +317,7 @@ def build_crawl_result_visuals() -> dict:
         return {
             "success": 0,
             "failed": 0,
+            "fallback": 0,
             "total": 0,
             "successRate": 0,
             "completedAt": "",
@@ -280,11 +331,20 @@ def build_crawl_result_visuals() -> dict:
 
     success = 0
     failed = 0
+    fallback = 0
     for item in rows:
         if not isinstance(item, dict):
             continue
         status = int(item.get("http_status") or 0)
-        if 200 <= status < 400:
+        used_fallback = str(item.get("evidence_fallback_used") or "").lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        if used_fallback:
+            fallback += 1
+            failed += 1
+        elif 200 <= status < 400:
             success += 1
         else:
             failed += 1
@@ -292,6 +352,7 @@ def build_crawl_result_visuals() -> dict:
     return {
         "success": success,
         "failed": failed,
+        "fallback": fallback,
         "total": total,
         "successRate": round((success / total) * 100) if total else 0,
         "completedAt": time.strftime(
@@ -620,7 +681,7 @@ def run_crawl() -> dict:
             agent_run_id = str(load_curation_status().get("run_id") or "")
             if log_sheet_id and agent_run_id:
                 agent_trace_sync = append_agent_trace_to_feishu_log(log_sheet_id, agent_run_id)
-    return {
+    result = {
         "ok": proc.returncode == 0
         and (main_sync is None or main_sync.returncode == 0)
         and (performance_sync is None or performance_sync["ok"])
@@ -642,22 +703,50 @@ def run_crawl() -> dict:
         "agentTraceFeishuSync": agent_trace_sync,
         "status": build_status(),
     }
+    result["crawlRunRegistry"] = register_crawl_run(
+        crawl_return_code=proc.returncode,
+        duration_ms=result["durationMs"],
+        sync_result=json_object_from_output(main_sync.stdout) if main_sync and main_sync.returncode == 0 else {},
+        metrics_refresh=metrics_refresh or {},
+        trace_sync=agent_trace_sync or {},
+        trigger="api-crawl",
+    )
+    return result
 
 
 def run_company_metrics_refresh() -> dict:
     started = time.time()
     # A full web crawl must act on high-priority evidence gaps, not merely record
     # them. Keep the retry bounded to one round and six rows.
+    command = [
+        sys.executable,
+        str(ROOT / "run_data_curation.py"),
+        "--recrawl-gaps",
+        "--max-recrawl-rows",
+        "6",
+        "--max-recrawl-rounds",
+        "1",
+        "--ai-workers",
+        os.environ.get("CMHK_AI_WORKERS", "3"),
+        "--search-verify-workers",
+        os.environ.get("CMHK_SEARCH_VERIFY_WORKERS", "4"),
+    ]
+    search_verify_online = os.environ.get("CMHK_SEARCH_VERIFY_ONLINE", "1").lower() not in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }
+    if search_verify_online:
+        command.extend(
+            [
+                "--search-verify-online",
+                "--search-verify-online-limit",
+                os.environ.get("CMHK_SEARCH_VERIFY_ONLINE_LIMIT", "0"),
+            ]
+        )
     proc = subprocess.run(
-        [
-            sys.executable,
-            str(ROOT / "run_data_curation.py"),
-            "--recrawl-gaps",
-            "--max-recrawl-rows",
-            "6",
-            "--max-recrawl-rounds",
-            "1",
-        ],
+        command,
         cwd=str(ROOT),
         text=True,
         capture_output=True,
@@ -688,8 +777,26 @@ def stream_company_metrics_refresh(
         "6",
         "--max-recrawl-rounds",
         "1",
+        "--ai-workers",
+        os.environ.get("CMHK_AI_WORKERS", "3"),
+        "--search-verify-workers",
+        os.environ.get("CMHK_SEARCH_VERIFY_WORKERS", "4"),
         *(extra_args or []),
     ]
+    search_verify_online = os.environ.get("CMHK_SEARCH_VERIFY_ONLINE", "1").lower() not in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }
+    if search_verify_online:
+        command.extend(
+            [
+                "--search-verify-online",
+                "--search-verify-online-limit",
+                os.environ.get("CMHK_SEARCH_VERIFY_ONLINE_LIMIT", "0"),
+            ]
+        )
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
     write_sse(
@@ -712,6 +819,7 @@ def stream_company_metrics_refresh(
                         "主体校验",
                         "质量审计",
                         "冲突仲裁",
+                        "搜索验证",
                         "缺口规划",
                         "Supervisor 工具决策",
                         "定向补爬（最多 6 行、1 轮）",
@@ -1031,7 +1139,40 @@ def output_overview() -> str:
 def check_local_action(message: str) -> dict | None:
     text = message.strip()
     lowered = text.lower()
-    if any(key in text for key in ["爬虫", "爬取", "抓取", "重新爬", "跑数据", "更新数据"]):
+    crawl_log_intent = any(
+        key in text
+        for key in [
+            "爬虫日志",
+            "爬取日志",
+            "抓取日志",
+            "上次爬虫",
+            "上一次爬虫",
+            "最近爬虫",
+            "飞书日志",
+            "日志页",
+            "失败链接",
+            "覆盖率",
+        ]
+    )
+    if crawl_log_intent and not any(key in text for key in ["重新", "开始", "执行", "触发", "跑一下", "跑一遍"]):
+        return {"content": latest_crawl_run_summary(5)}
+
+    crawl_execute_intent = any(
+        key in text
+        for key in [
+            "重新爬",
+            "重新抓",
+            "开始爬",
+            "开始抓",
+            "执行爬虫",
+            "触发爬虫",
+            "跑数据",
+            "更新数据",
+            "全量爬取",
+            "全量抓取",
+        ]
+    )
+    if crawl_execute_intent:
         result = run_crawl()
         if result["ok"]:
             return {
@@ -1074,7 +1215,21 @@ def check_local_action(message: str) -> dict | None:
         }
 
     status = build_status()
-    if any(key in text for key in ["状态", "检查", "现在", "文件"]):
+    status_intent = any(
+        key in text
+        for key in [
+            "系统状态",
+            "运行状态",
+            "当前状态",
+            "检查系统",
+            "检查后端",
+            "结果文件状态",
+            "输出文件状态",
+            "现在有多少文件",
+            "现在有哪些文件",
+        ]
+    ) or text in {"状态", "检查", "现在", "文件"}
+    if status_intent:
         return {
             "content": (
                 f"当前已有 {status['results']['count']} 个结果文件，"
@@ -1141,6 +1296,11 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path.startswith("/references/"):
             target = reference_path(unquote(parsed.path.removeprefix("/references/")))
             if target and target.exists():
+                self.serve_reference_head(target)
+                return
+        if parsed.path.startswith("/references-raw/"):
+            target = reference_path(unquote(parsed.path.removeprefix("/references-raw/")))
+            if target and target.exists():
                 self.serve_head(target)
                 return
         if parsed.path.startswith("/archives/"):
@@ -1199,6 +1359,28 @@ class AppHandler(BaseHTTPRequestHandler):
                     "summary": load_curation_status(),
                 },
             )
+            return
+        if path == "/api/agent-skills":
+            json_response(self, {"ok": True, "skills": available_agent_skills()})
+            return
+        if path == "/api/agent-datasets":
+            json_response(
+                self,
+                {
+                    "ok": True,
+                    "root": "agent_knowledge",
+                    "allowedExtensions": [".md", ".txt", ".json", ".csv", ".tsv"],
+                    "datasets": list_knowledge_datasets(),
+                },
+            )
+            return
+        if path == "/api/crawl-runs":
+            query = parse_qs(parsed.query)
+            try:
+                limit = max(1, min(50, int(query.get("limit", ["20"])[0])))
+            except Exception:
+                limit = 20
+            json_response(self, {"ok": True, "runs": load_crawl_run_index()[:limit]})
             return
         if path == "/api/dashboard":
             try:
@@ -1483,6 +1665,13 @@ class AppHandler(BaseHTTPRequestHandler):
             if not target:
                 json_response(self, {"ok": False, "error": "reference not allowed"}, 404)
                 return
+            self.serve_reference(target)
+            return
+        if path.startswith("/references-raw/"):
+            target = reference_path(unquote(path.removeprefix("/references-raw/")))
+            if not target:
+                json_response(self, {"ok": False, "error": "reference not allowed"}, 404)
+                return
             self.serve_file(target)
             return
         if path.startswith("/static/"):
@@ -1519,6 +1708,9 @@ class AppHandler(BaseHTTPRequestHandler):
             log_sheet_id = ""
             log_sheet_title = ""
             crawl_failed_count = 0
+            sync_result = {}
+            metrics_refresh = {}
+            trace_sync = {}
 
             # Sync to Feishu after full crawl
             if proc.returncode == 0 and (ROOT / "write_payload.json").exists():
@@ -1695,10 +1887,19 @@ class AppHandler(BaseHTTPRequestHandler):
                     for item in run_log_data:
                         url = item.get("url", "")
                         status = int(item.get("http_status") or 0)
-                        if 200 <= status < 400:
+                        used_fallback = str(
+                            item.get("evidence_fallback_used") or ""
+                        ).lower() in {"1", "true", "yes"}
+                        if 200 <= status < 400 and not used_fallback:
                             success_items.append({"url": url, "reason": "OK"})
                         else:
-                            reason = item.get("error") or item.get("skip_reason") or f"HTTP {status}"
+                            reason = (
+                                item.get("fallback_reason")
+                                if used_fallback
+                                else item.get("error")
+                                or item.get("skip_reason")
+                                or f"HTTP {status}"
+                            )
                             failure_items.append({"url": url, "reason": reason})
                     crawl_failed_count = len(failure_items)
                     summary_payload = json.dumps({
@@ -1713,11 +1914,31 @@ class AppHandler(BaseHTTPRequestHandler):
                 pass
 
             duration_ms = round((time.time() - started) * 1000)
+            crawl_run_record = register_crawl_run(
+                crawl_return_code=proc.returncode,
+                duration_ms=duration_ms,
+                sync_result=sync_result,
+                metrics_refresh=metrics_refresh,
+                trace_sync=trace_sync,
+                trigger="api-crawl-stream",
+            )
+            write_sse(
+                self,
+                {
+                    "type": "log",
+                    "text": (
+                        "爬虫运行日志索引已保存："
+                        f"{crawl_run_record.get('crawl_run_id')}；"
+                        f"飞书日志页：{(crawl_run_record.get('feishu') or {}).get('log_sheet_title') or '未写入'}。"
+                    ),
+                },
+            )
             payload = json.dumps({
                 "type": "done",
                 "ok": proc.returncode == 0 and crawl_failed_count == 0,
                 "durationMs": duration_ms,
-                "status": build_status()
+                "status": build_status(),
+                "crawlRunRegistry": crawl_run_record,
             }, ensure_ascii=False)
             self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
             self.wfile.flush()
@@ -1872,14 +2093,22 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/chat-stream":
             payload = read_request_json(self)
             message = str(payload.get("message") or "")
+            web_search_enabled = bool(payload.get("webSearchEnabled"))
+            thinking_enabled = bool(payload.get("thinkingEnabled"))
+            selected_skill_ids = payload.get("selectedSkillIds")
+            if not isinstance(selected_skill_ids, list):
+                selected_skill_ids = []
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
             self.send_header("Connection", "keep-alive")
             self.end_headers()
-            
-            action = check_local_action(message)
+
+            action = None if web_search_enabled else check_local_action(message)
             if action:
+                if action.get("meta"):
+                    body = json.dumps(action["meta"], ensure_ascii=False)
+                    self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                 body = json.dumps({"type": "delta", "text": action["content"]}, ensure_ascii=False)
                 self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                 if "crawl" in action:
@@ -1892,7 +2121,12 @@ class AppHandler(BaseHTTPRequestHandler):
                 self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                 self.wfile.flush()
             else:
-                for event in stream_agent(message):
+                for event in stream_agent(
+                    message,
+                    force_web_search=web_search_enabled,
+                    selected_skill_ids=[str(item) for item in selected_skill_ids],
+                    thinking_enabled=thinking_enabled,
+                ):
                     body = json.dumps(event, ensure_ascii=False)
                     self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                     self.wfile.flush()
@@ -1908,6 +2142,8 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         body = path.read_bytes()
         content_type = mimetypes.guess_type(str(path))[0] or "application/octet-stream"
+        if content_type.startswith("text/") or path.suffix.lower() in {".md", ".tsv", ".json"}:
+            content_type = f"{content_type}; charset=utf-8"
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
@@ -1916,12 +2152,65 @@ class AppHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def serve_reference(self, path: Path) -> None:
+        if not path.exists() or not path.is_file():
+            json_response(self, {"ok": False, "error": "file not found"}, 404)
+            return
+        suffix = path.suffix.lower()
+        if suffix in {".md", ".tsv", ".json", ".txt", ".docx", ".pdf"}:
+            raw = read_display_text(path)
+            title = path.name
+            raw_ref = quote(path.relative_to(ROOT).as_posix(), safe="/")
+            body = f"""<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{escape(title)}</title>
+  <style>
+    body {{ margin: 0; padding: 24px; background: #f8fafc; color: #172033; font: 14px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }}
+    .bar {{ position: sticky; top: 0; margin: -24px -24px 18px; padding: 14px 24px; background: rgba(248, 250, 252, 0.96); border-bottom: 1px solid #d8e3ee; backdrop-filter: blur(8px); }}
+    h1 {{ margin: 0 0 4px; font-size: 18px; }}
+    a {{ color: #0067b1; font-weight: 700; text-decoration: none; }}
+    pre {{ margin: 0; padding: 18px; overflow: auto; white-space: pre-wrap; word-break: break-word; background: #fff; border: 1px solid #d8e3ee; border-radius: 8px; box-shadow: 0 1px 4px rgba(15, 29, 46, 0.06); font: 13px/1.75 ui-monospace, SFMono-Regular, Menlo, Consolas, "PingFang SC", "Microsoft YaHei", monospace; }}
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <h1>{escape(title)}</h1>
+    <a href="/references-raw/{raw_ref}" target="_blank" rel="noopener noreferrer">打开原始文件</a>
+  </div>
+  <pre>{escape(raw)}</pre>
+</body>
+</html>""".encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        self.serve_file(path)
+
+    def serve_reference_head(self, path: Path) -> None:
+        if not path.exists() or not path.is_file():
+            self.send_response(404)
+            self.end_headers()
+            return
+        if path.suffix.lower() in {".md", ".tsv", ".json", ".txt", ".docx", ".pdf"}:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            return
+        self.serve_head(path)
+
     def serve_head(self, path: Path, download: bool = False) -> None:
         if not path.exists() or not path.is_file():
             self.send_response(404)
             self.end_headers()
             return
         content_type = mimetypes.guess_type(str(path))[0] or "application/octet-stream"
+        if content_type.startswith("text/") or path.suffix.lower() in {".md", ".tsv", ".json"}:
+            content_type = f"{content_type}; charset=utf-8"
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(path.stat().st_size))

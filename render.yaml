@@ -24,6 +24,8 @@ services:
         value: https://api.deepseek.com
       - key: AI_MODEL
         value: deepseek-v4-flash
+      - key: AI_THINKING_MODEL
+        value: deepseek-reasoner
       - key: DEEPSEEK_API_KEY
         sync: false
       - key: CMHK_REQUIRE_ROBOTS

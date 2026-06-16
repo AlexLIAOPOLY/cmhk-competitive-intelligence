@@ -1,0 +1,32 @@
+{
+  "id": "crawl-run-logs",
+  "title": "爬虫运行日志索引",
+  "summary": "记录每次全量爬虫对应的本地审计文件、飞书日志页、Agent 数据整理运行 ID 和质量摘要，供小竞 AI 调度、追溯和回答运行状态问题。",
+  "source_type": "internal_operational_log",
+  "scope": "运行审计与调度索引；完整逐 URL 日志以飞书日志子表和 run_log.tsv 为准。",
+  "updated_at": "2026-06-17",
+  "tags": [
+    "爬虫日志",
+    "运行审计",
+    "Agent调度",
+    "飞书日志",
+    "数据质量"
+  ],
+  "keywords": [
+    "爬虫日志",
+    "运行记录",
+    "飞书日志",
+    "Agent trace",
+    "覆盖率",
+    "失败链接",
+    "缺口",
+    "调度"
+  ],
+  "entrypoints": [
+    "README.md",
+    "index.md",
+    "latest.json",
+    "index.json"
+  ],
+  "quality": "index.json/latest.json 为调度索引；飞书日志页保存完整 run_log.tsv 和 Agent trace，若本地索引与飞书不一致，以飞书日志页和 daily_validation.json 为准。"
+}

@@ -1,0 +1,406 @@
+﻿subject,legal_name,ticker,metric_key,metric_zh,year,value,unit
+中国移动,China Mobile Limited,0941.HK,revenue,营业收入/收益,2023,"1,009,309",millions CNY
+中国移动,China Mobile Limited,0941.HK,revenue,营业收入/收益,2024,"1,040,759",millions CNY
+中国移动,China Mobile Limited,0941.HK,revenue,营业收入/收益,2025,"1,050,187",millions CNY
+中国移动,China Mobile Limited,0941.HK,revenue_growth_yoy,收入同比增长,2023,7.69%,millions CNY
+中国移动,China Mobile Limited,0941.HK,revenue_growth_yoy,收入同比增长,2024,3.12%,millions CNY
+中国移动,China Mobile Limited,0941.HK,revenue_growth_yoy,收入同比增长,2025,0.91%,millions CNY
+中国移动,China Mobile Limited,0941.HK,gross_profit,毛利,2023,"284,705",millions CNY
+中国移动,China Mobile Limited,0941.HK,gross_profit,毛利,2024,"301,770",millions CNY
+中国移动,China Mobile Limited,0941.HK,gross_profit,毛利,2025,"302,975",millions CNY
+中国移动,China Mobile Limited,0941.HK,gross_margin,毛利率,2023,28.21%,millions CNY
+中国移动,China Mobile Limited,0941.HK,gross_margin,毛利率,2024,28.99%,millions CNY
+中国移动,China Mobile Limited,0941.HK,gross_margin,毛利率,2025,28.85%,millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_income,经营利润/营业利润,2023,"139,349",millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_income,经营利润/营业利润,2024,"144,155",millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_income,经营利润/营业利润,2025,"149,230",millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_margin,经营利润率,2023,13.81%,millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_margin,经营利润率,2024,13.85%,millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_margin,经营利润率,2025,14.21%,millions CNY
+中国移动,China Mobile Limited,0941.HK,net_income,净利润/股东应占利润,2023,"131,766",millions CNY
+中国移动,China Mobile Limited,0941.HK,net_income,净利润/股东应占利润,2024,"138,373",millions CNY
+中国移动,China Mobile Limited,0941.HK,net_income,净利润/股东应占利润,2025,"137,095",millions CNY
+中国移动,China Mobile Limited,0941.HK,ebitda,EBITDA,2023,"346,481",millions CNY
+中国移动,China Mobile Limited,0941.HK,ebitda,EBITDA,2024,"335,256",millions CNY
+中国移动,China Mobile Limited,0941.HK,ebitda,EBITDA,2025,"295,216",millions CNY
+中国移动,China Mobile Limited,0941.HK,ebitda_margin,EBITDA率,2023,34.33%,millions CNY
+中国移动,China Mobile Limited,0941.HK,ebitda_margin,EBITDA率,2024,32.21%,millions CNY
+中国移动,China Mobile Limited,0941.HK,ebitda_margin,EBITDA率,2025,28.11%,millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_cash_flow,经营现金流,2023,"303,780",millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_cash_flow,经营现金流,2024,"315,741",millions CNY
+中国移动,China Mobile Limited,0941.HK,operating_cash_flow,经营现金流,2025,"232,919",millions CNY
+中国移动,China Mobile Limited,0941.HK,capital_expenditures,资本开支,2023,"-181,263",millions CNY
+中国移动,China Mobile Limited,0941.HK,capital_expenditures,资本开支,2024,"-155,979",millions CNY
+中国移动,China Mobile Limited,0941.HK,capital_expenditures,资本开支,2025,"-156,951",millions CNY
+中国移动,China Mobile Limited,0941.HK,free_cash_flow,自由现金流,2023,"122,517",millions CNY
+中国移动,China Mobile Limited,0941.HK,free_cash_flow,自由现金流,2024,"159,762",millions CNY
+中国移动,China Mobile Limited,0941.HK,free_cash_flow,自由现金流,2025,"75,968",millions CNY
+中国移动,China Mobile Limited,0941.HK,cash_and_equivalents,现金及等价物,2023,"178,772",millions CNY
+中国移动,China Mobile Limited,0941.HK,cash_and_equivalents,现金及等价物,2024,"242,275",millions CNY
+中国移动,China Mobile Limited,0941.HK,cash_and_equivalents,现金及等价物,2025,"171,094",millions CNY
+中国移动,China Mobile Limited,0941.HK,total_assets,总资产,2023,"1,957,357",millions CNY
+中国移动,China Mobile Limited,0941.HK,total_assets,总资产,2024,"2,072,827",millions CNY
+中国移动,China Mobile Limited,0941.HK,total_assets,总资产,2025,"2,092,882",millions CNY
+中国移动,China Mobile Limited,0941.HK,total_debt,总债务,2023,"102,934",millions CNY
+中国移动,China Mobile Limited,0941.HK,total_debt,总债务,2024,"88,442",millions CNY
+中国移动,China Mobile Limited,0941.HK,total_debt,总债务,2025,"101,197",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,revenue,营业收入/收益,2023,"513,551",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,revenue,营业收入/收益,2024,"523,569",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,revenue,营业收入/收益,2025,"523,925",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,revenue_growth_yoy,收入同比增长,2023,6.67%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,revenue_growth_yoy,收入同比增长,2024,1.95%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,revenue_growth_yoy,收入同比增长,2025,0.07%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,gross_profit,毛利,2023,"260,335",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,gross_profit,毛利,2024,"150,067",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,gross_profit,毛利,2025,"152,310",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,gross_margin,毛利率,2023,50.69%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,gross_margin,毛利率,2024,28.66%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,gross_margin,毛利率,2025,29.07%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_income,经营利润/营业利润,2023,"37,128",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_income,经营利润/营业利润,2024,"39,117",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_income,经营利润/营业利润,2025,"40,325",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_margin,经营利润率,2023,7.23%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_margin,经营利润率,2024,7.47%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_margin,经营利润率,2025,7.70%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,net_income,净利润/股东应占利润,2023,"30,446",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,net_income,净利润/股东应占利润,2024,"33,012",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,net_income,净利润/股东应占利润,2025,"33,185",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,ebitda,EBITDA,2023,"112,362",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,ebitda,EBITDA,2024,"123,998",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,ebitda,EBITDA,2025,"119,803",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,ebitda_margin,EBITDA率,2023,21.88%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,ebitda_margin,EBITDA率,2024,23.68%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,ebitda_margin,EBITDA率,2025,22.87%,millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_cash_flow,经营现金流,2023,"137,508",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_cash_flow,经营现金流,2024,"145,268",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,operating_cash_flow,经营现金流,2025,"124,519",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,capital_expenditures,资本开支,2023,"-89,866",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,capital_expenditures,资本开支,2024,"-90,271",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,capital_expenditures,资本开支,2025,"-73,148",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,free_cash_flow,自由现金流,2023,"47,642",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,free_cash_flow,自由现金流,2024,"54,997",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,free_cash_flow,自由现金流,2025,"51,371",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,cash_and_equivalents,现金及等价物,2023,"81,046",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,cash_and_equivalents,现金及等价物,2024,"102,009",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,cash_and_equivalents,现金及等价物,2025,"99,806",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,total_assets,总资产,2023,"835,814",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,total_assets,总资产,2024,"866,625",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,total_assets,总资产,2025,"870,644",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,total_debt,总债务,2023,"65,191",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,total_debt,总债务,2024,"69,355",millions CNY
+中国电信,China Telecom Corporation Limited,0728.HK,total_debt,总债务,2025,"61,932",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,revenue,营业收入/收益,2023,"372,597",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,revenue,营业收入/收益,2024,"389,589",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,revenue,营业收入/收益,2025,"392,223",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,revenue_growth_yoy,收入同比增长,2023,4.97%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,revenue_growth_yoy,收入同比增长,2024,4.56%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,revenue_growth_yoy,收入同比增长,2025,0.68%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,gross_profit,毛利,2023,"211,398",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,gross_profit,毛利,2024,"217,153",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,gross_profit,毛利,2025,"216,463",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,gross_margin,毛利率,2023,56.74%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,gross_margin,毛利率,2024,55.74%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,gross_margin,毛利率,2025,55.19%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_income,经营利润/营业利润,2023,"16,146",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_income,经营利润/营业利润,2024,"13,206",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_income,经营利润/营业利润,2025,"15,897",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_margin,经营利润率,2023,4.33%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_margin,经营利润率,2024,3.39%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_margin,经营利润率,2025,4.05%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,net_income,净利润/股东应占利润,2023,"18,726",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,net_income,净利润/股东应占利润,2024,"20,613",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,net_income,净利润/股东应占利润,2025,"20,816",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,ebitda,EBITDA,2023,"84,122",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,ebitda,EBITDA,2024,"79,494",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,ebitda,EBITDA,2025,"80,522",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,ebitda_margin,EBITDA率,2023,22.58%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,ebitda_margin,EBITDA率,2024,20.40%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,ebitda_margin,EBITDA率,2025,20.53%,millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_cash_flow,经营现金流,2023,"102,391",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_cash_flow,经营现金流,2024,"89,402",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,operating_cash_flow,经营现金流,2025,"90,175",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,capital_expenditures,资本开支,2023,"-79,375",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,capital_expenditures,资本开支,2024,"-75,740",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,capital_expenditures,资本开支,2025,"-67,641",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,free_cash_flow,自由现金流,2023,"23,016",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,free_cash_flow,自由现金流,2024,"13,662",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,free_cash_flow,自由现金流,2025,"22,534",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,cash_and_equivalents,现金及等价物,2023,"47,733",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,cash_and_equivalents,现金及等价物,2024,"28,480",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,cash_and_equivalents,现金及等价物,2025,"25,109",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,total_assets,总资产,2023,"661,051",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,total_assets,总资产,2024,"671,237",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,total_assets,总资产,2025,"669,618",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,total_debt,总债务,2023,"46,425",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,total_debt,总债务,2024,"41,207",millions CNY
+中国联通,China Unicom (Hong Kong) Limited,0762.HK,total_debt,总债务,2025,"34,087",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,revenue,营业收入/收益,2023,"94,009",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,revenue,营业收入/收益,2024,"97,772",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,revenue,营业收入/收益,2025,"100,411",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,revenue_growth_yoy,收入同比增长,2023,1.99%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,revenue_growth_yoy,收入同比增长,2024,4.00%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,revenue_growth_yoy,收入同比增长,2025,2.70%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,gross_profit,毛利,2023,"77,757",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,gross_profit,毛利,2024,"81,207",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,gross_profit,毛利,2025,"83,231",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,gross_margin,毛利率,2023,82.71%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,gross_margin,毛利率,2024,83.06%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,gross_margin,毛利率,2025,82.89%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_income,经营利润/营业利润,2023,"14,898",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_income,经营利润/营业利润,2024,"15,804",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_income,经营利润/营业利润,2025,"17,187",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_margin,经营利润率,2023,15.85%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_margin,经营利润率,2024,16.16%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_margin,经营利润率,2025,17.12%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,net_income,净利润/股东应占利润,2023,"9,750",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,net_income,净利润/股东应占利润,2024,"10,729",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,net_income,净利润/股东应占利润,2025,"11,630",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,ebitda,EBITDA,2023,"52,513",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,ebitda,EBITDA,2024,"54,646",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,ebitda,EBITDA,2025,"54,676",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,ebitda_margin,EBITDA率,2023,55.86%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,ebitda_margin,EBITDA率,2024,55.89%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,ebitda_margin,EBITDA率,2025,54.45%,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_cash_flow,经营现金流,2023,"32,840",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_cash_flow,经营现金流,2024,"49,468",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,operating_cash_flow,经营现金流,2025,"56,116",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,capital_expenditures,资本开支,2023,"-33,464",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,capital_expenditures,资本开支,2024,"-29,783",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,capital_expenditures,资本开支,2025,"-30,510",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,free_cash_flow,自由现金流,2023,-624,millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,free_cash_flow,自由现金流,2024,"19,685",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,free_cash_flow,自由现金流,2025,"25,606",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,cash_and_equivalents,现金及等价物,2023,"3,955",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,cash_and_equivalents,现金及等价物,2024,"2,598",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,cash_and_equivalents,现金及等价物,2025,"12,312",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,total_assets,总资产,2023,"326,007",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,total_assets,总资产,2024,"332,834",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,total_assets,总资产,2025,"336,579",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,total_debt,总债务,2023,"94,626",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,total_debt,总债务,2024,"92,542",millions CNY
+中国铁塔,China Tower Corporation Limited,0788.HK,total_debt,总债务,2025,"90,460",millions CNY
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,revenue,营业收入/收益,2023,"34,330",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,revenue,营业收入/收益,2024,"34,753",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,revenue,营业收入/收益,2025,"36,553",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,revenue_growth_yoy,收入同比增长,2023,0.60%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,revenue_growth_yoy,收入同比增长,2024,1.23%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,revenue_growth_yoy,收入同比增长,2025,5.18%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,gross_profit,毛利,2023,"16,876",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,gross_profit,毛利,2024,"17,043",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,gross_profit,毛利,2025,"17,413",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,gross_margin,毛利率,2023,49.16%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,gross_margin,毛利率,2024,49.04%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,gross_margin,毛利率,2025,47.64%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_income,经营利润/营业利润,2023,"7,746",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_income,经营利润/营业利润,2024,"8,248",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_income,经营利润/营业利润,2025,"8,289",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_margin,经营利润率,2023,22.56%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_margin,经营利润率,2024,23.73%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_margin,经营利润率,2025,22.68%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,net_income,净利润/股东应占利润,2023,"4,991",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,net_income,净利润/股东应占利润,2024,"5,070",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,net_income,净利润/股东应占利润,2025,"5,286",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,ebitda,EBITDA,2023,"9,934",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,ebitda,EBITDA,2024,"10,225",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,ebitda,EBITDA,2025,"10,064",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,ebitda_margin,EBITDA率,2023,28.94%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,ebitda_margin,EBITDA率,2024,29.42%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,ebitda_margin,EBITDA率,2025,27.53%,millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_cash_flow,经营现金流,2023,"11,261",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_cash_flow,经营现金流,2024,"11,911",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,operating_cash_flow,经营现金流,2025,"11,628",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,capital_expenditures,资本开支,2023,"-2,138",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,capital_expenditures,资本开支,2024,"-2,037",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,capital_expenditures,资本开支,2025,"-1,977",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,free_cash_flow,自由现金流,2023,"9,123",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,free_cash_flow,自由现金流,2024,"9,874",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,free_cash_flow,自由现金流,2025,"9,651",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,cash_and_equivalents,现金及等价物,2023,"1,630",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,cash_and_equivalents,现金及等价物,2024,"1,850",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,cash_and_equivalents,现金及等价物,2025,"1,957",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,total_assets,总资产,2023,"112,118",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,total_assets,总资产,2024,"116,813",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,total_assets,总资产,2025,"121,152",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,total_debt,总债务,2023,"47,453",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,total_debt,总债务,2024,"44,395",millions HKD
+HKT / csl / 1O1O,HKT Trust and HKT Limited,6823.HK,total_debt,总债务,2025,"48,337",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,revenue,营业收入/收益,2023,"4,896",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,revenue,营业收入/收益,2024,"4,643",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,revenue,营业收入/收益,2025,"5,448",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,revenue_growth_yoy,收入同比增长,2023,0.29%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,revenue_growth_yoy,收入同比增长,2024,-5.17%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,revenue_growth_yoy,收入同比增长,2025,17.34%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,gross_profit,毛利,2023,"3,130",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,gross_profit,毛利,2024,"3,018",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,gross_profit,毛利,2025,"3,243",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,gross_margin,毛利率,2023,63.93%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,gross_margin,毛利率,2024,65.00%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,gross_margin,毛利率,2025,59.53%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_income,经营利润/营业利润,2023,-96,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_income,经营利润/营业利润,2024,-1,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_income,经营利润/营业利润,2025,4,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_margin,经营利润率,2023,-1.96%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_margin,经营利润率,2024,-0.02%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_margin,经营利润率,2025,0.07%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,net_income,净利润/股东应占利润,2023,-52,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,net_income,净利润/股东应占利润,2024,6,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,net_income,净利润/股东应占利润,2025,-25,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,ebitda,EBITDA,2023,787,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,ebitda,EBITDA,2024,904,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,ebitda,EBITDA,2025,928,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,ebitda_margin,EBITDA率,2023,16.07%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,ebitda_margin,EBITDA率,2024,19.47%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,ebitda_margin,EBITDA率,2025,17.03%,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_cash_flow,经营现金流,2023,"1,127",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_cash_flow,经营现金流,2024,"1,081",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,operating_cash_flow,经营现金流,2025,"1,211",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,capital_expenditures,资本开支,2023,-481,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,capital_expenditures,资本开支,2024,-434,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,capital_expenditures,资本开支,2025,-440,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,free_cash_flow,自由现金流,2023,646,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,free_cash_flow,自由现金流,2024,647,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,free_cash_flow,自由现金流,2025,771,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,cash_and_equivalents,现金及等价物,2023,"1,910",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,cash_and_equivalents,现金及等价物,2024,"3,168",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,cash_and_equivalents,现金及等价物,2025,594,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,total_assets,总资产,2023,"14,560",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,total_assets,总资产,2024,"13,970",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,total_assets,总资产,2025,"13,412",millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,total_debt,总债务,2023,482,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,total_debt,总债务,2024,463,millions HKD
+3HK / Hutchison,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,total_debt,总债务,2025,401,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,revenue,营业收入/收益,2023,"6,763",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,revenue,营业收入/收益,2024,"6,221",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,revenue,营业收入/收益,2025,"6,253",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,revenue_growth_yoy,收入同比增长,2023,-2.79%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,revenue_growth_yoy,收入同比增长,2024,-8.01%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,revenue_growth_yoy,收入同比增长,2025,0.52%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,gross_profit,毛利,2023,"3,440",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,gross_profit,毛利,2024,"3,406",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,gross_profit,毛利,2025,"3,342",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,gross_margin,毛利率,2023,50.87%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,gross_margin,毛利率,2024,54.75%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,gross_margin,毛利率,2025,53.44%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_income,经营利润/营业利润,2023,701.77,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_income,经营利润/营业利润,2024,699.18,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_income,经营利润/营业利润,2025,750.98,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_margin,经营利润率,2023,10.38%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_margin,经营利润率,2024,11.24%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_margin,经营利润率,2025,12.01%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,net_income,净利润/股东应占利润,2023,268.85,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,net_income,净利润/股东应占利润,2024,470.13,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,net_income,净利润/股东应占利润,2025,478.9,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,ebitda,EBITDA,2023,"1,708",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,ebitda,EBITDA,2024,"1,699",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,ebitda,EBITDA,2025,"1,750",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,ebitda_margin,EBITDA率,2023,25.26%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,ebitda_margin,EBITDA率,2024,27.31%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,ebitda_margin,EBITDA率,2025,27.98%,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_cash_flow,经营现金流,2023,"2,254",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_cash_flow,经营现金流,2024,"2,162",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,operating_cash_flow,经营现金流,2025,"2,133",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,capital_expenditures,资本开支,2023,-708.77,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,capital_expenditures,资本开支,2024,-601.55,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,capital_expenditures,资本开支,2025,-597.47,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,free_cash_flow,自由现金流,2023,"1,546",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,free_cash_flow,自由现金流,2024,"1,560",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,free_cash_flow,自由现金流,2025,"1,536",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,cash_and_equivalents,现金及等价物,2023,"1,155",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,cash_and_equivalents,现金及等价物,2024,"1,577",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,cash_and_equivalents,现金及等价物,2025,"2,028",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,total_assets,总资产,2023,"10,899",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,total_assets,总资产,2024,"11,178",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,total_assets,总资产,2025,"11,308",millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,total_debt,总债务,2023,852.99,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,total_debt,总债务,2024,963.18,millions HKD
+SmarTone,SmarTone Telecommunications Holdings Limited,0315.HK,total_debt,总债务,2025,877.59,millions HKD
+HKBN,HKBN Ltd.,1310.HK,revenue,营业收入/收益,2023,"11,692",millions HKD
+HKBN,HKBN Ltd.,1310.HK,revenue,营业收入/收益,2024,"10,651",millions HKD
+HKBN,HKBN Ltd.,1310.HK,revenue,营业收入/收益,2025,"11,129",millions HKD
+HKBN,HKBN Ltd.,1310.HK,revenue_growth_yoy,收入同比增长,2023,0.57%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,revenue_growth_yoy,收入同比增长,2024,-8.91%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,revenue_growth_yoy,收入同比增长,2025,4.48%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,gross_profit,毛利,2023,"4,047",millions HKD
+HKBN,HKBN Ltd.,1310.HK,gross_profit,毛利,2024,"3,904",millions HKD
+HKBN,HKBN Ltd.,1310.HK,gross_profit,毛利,2025,"3,974",millions HKD
+HKBN,HKBN Ltd.,1310.HK,gross_margin,毛利率,2023,34.61%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,gross_margin,毛利率,2024,36.65%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,gross_margin,毛利率,2025,35.71%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_income,经营利润/营业利润,2023,721.13,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_income,经营利润/营业利润,2024,864.88,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_income,经营利润/营业利润,2025,917.49,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_margin,经营利润率,2023,6.17%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_margin,经营利润率,2024,8.12%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_margin,经营利润率,2025,8.24%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,net_income,净利润/股东应占利润,2023,"-1,267",millions HKD
+HKBN,HKBN Ltd.,1310.HK,net_income,净利润/股东应占利润,2024,10.28,millions HKD
+HKBN,HKBN Ltd.,1310.HK,net_income,净利润/股东应占利润,2025,206.86,millions HKD
+HKBN,HKBN Ltd.,1310.HK,ebitda,EBITDA,2023,"1,861",millions HKD
+HKBN,HKBN Ltd.,1310.HK,ebitda,EBITDA,2024,"1,950",millions HKD
+HKBN,HKBN Ltd.,1310.HK,ebitda,EBITDA,2025,"1,954",millions HKD
+HKBN,HKBN Ltd.,1310.HK,ebitda_margin,EBITDA率,2023,15.91%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,ebitda_margin,EBITDA率,2024,18.30%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,ebitda_margin,EBITDA率,2025,17.56%,millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_cash_flow,经营现金流,2023,"1,983",millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_cash_flow,经营现金流,2024,"2,058",millions HKD
+HKBN,HKBN Ltd.,1310.HK,operating_cash_flow,经营现金流,2025,"1,911",millions HKD
+HKBN,HKBN Ltd.,1310.HK,capital_expenditures,资本开支,2023,-489.39,millions HKD
+HKBN,HKBN Ltd.,1310.HK,capital_expenditures,资本开支,2024,-362.71,millions HKD
+HKBN,HKBN Ltd.,1310.HK,capital_expenditures,资本开支,2025,-493.58,millions HKD
+HKBN,HKBN Ltd.,1310.HK,free_cash_flow,自由现金流,2023,"1,493",millions HKD
+HKBN,HKBN Ltd.,1310.HK,free_cash_flow,自由现金流,2024,"1,696",millions HKD
+HKBN,HKBN Ltd.,1310.HK,free_cash_flow,自由现金流,2025,"1,417",millions HKD
+HKBN,HKBN Ltd.,1310.HK,cash_and_equivalents,现金及等价物,2023,"1,017",millions HKD
+HKBN,HKBN Ltd.,1310.HK,cash_and_equivalents,现金及等价物,2024,"1,217",millions HKD
+HKBN,HKBN Ltd.,1310.HK,cash_and_equivalents,现金及等价物,2025,"1,192",millions HKD
+HKBN,HKBN Ltd.,1310.HK,total_assets,总资产,2023,"18,148",millions HKD
+HKBN,HKBN Ltd.,1310.HK,total_assets,总资产,2024,"17,669",millions HKD
+HKBN,HKBN Ltd.,1310.HK,total_assets,总资产,2025,"17,253",millions HKD
+HKBN,HKBN Ltd.,1310.HK,total_debt,总债务,2023,"11,493",millions HKD
+HKBN,HKBN Ltd.,1310.HK,total_debt,总债务,2024,"11,502",millions HKD
+HKBN,HKBN Ltd.,1310.HK,total_debt,总债务,2025,"11,291",millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,revenue,营业收入/收益,2023,597.9,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,revenue,营业收入/收益,2024,584.49,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,revenue,营业收入/收益,2025,538.74,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,revenue_growth_yoy,收入同比增长,2023,6.24%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,revenue_growth_yoy,收入同比增长,2024,-2.24%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,revenue_growth_yoy,收入同比增长,2025,-7.83%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,gross_profit,毛利,2023,-218.15,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,gross_profit,毛利,2024,-174.76,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,gross_profit,毛利,2025,-165.37,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,gross_margin,毛利率,2023,-36.49%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,gross_margin,毛利率,2024,-29.90%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,gross_margin,毛利率,2025,-30.70%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_income,经营利润/营业利润,2023,-427.77,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_income,经营利润/营业利润,2024,-409.76,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_income,经营利润/营业利润,2025,-360.35,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_margin,经营利润率,2023,-71.55%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_margin,经营利润率,2024,-70.11%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_margin,经营利润率,2025,-66.89%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,net_income,净利润/股东应占利润,2023,-589.27,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,net_income,净利润/股东应占利润,2024,-553.34,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,net_income,净利润/股东应占利润,2025,-489.98,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,ebitda,EBITDA,2023,-343.23,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,ebitda,EBITDA,2024,-341.96,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,ebitda,EBITDA,2025,-302.59,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,ebitda_margin,EBITDA率,2023,-57.41%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,ebitda_margin,EBITDA率,2024,-58.51%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,ebitda_margin,EBITDA率,2025,-56.17%,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_cash_flow,经营现金流,2023,-287.25,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_cash_flow,经营现金流,2024,-220.65,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,operating_cash_flow,经营现金流,2025,-213.92,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,capital_expenditures,资本开支,2023,-76.75,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,capital_expenditures,资本开支,2024,-66.7,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,capital_expenditures,资本开支,2025,-52.02,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,free_cash_flow,自由现金流,2023,-364,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,free_cash_flow,自由现金流,2024,-287.35,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,free_cash_flow,自由现金流,2025,-265.93,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,cash_and_equivalents,现金及等价物,2023,28.92,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,cash_and_equivalents,现金及等价物,2024,53.77,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,cash_and_equivalents,现金及等价物,2025,113.73,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,total_assets,总资产,2023,945.16,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,total_assets,总资产,2024,882.53,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,total_assets,总资产,2025,867.06,millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,total_debt,总债务,2023,"1,843",millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,total_debt,总债务,2024,"2,277",millions HKD
+i-CABLE,i-CABLE Communications Limited,1097.HK,total_debt,总债务,2025,"2,724",millions HKD

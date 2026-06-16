@@ -1,0 +1,307 @@
+{
+  "generated_at": "2026-06-16T00:06:32",
+  "sources_by_company": {
+    "中国移动": [
+      {
+        "label": "中国移动2026年第一季度报告",
+        "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国移动2025年度业绩公告",
+        "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020",
+        "type": "annual_results"
+      },
+      {
+        "label": "中国移动股息历史",
+        "url": "https://www.chinamobileltd.com/en/ir/dividend.php",
+        "type": "official_dividend"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "中国电信": [
+      {
+        "label": "中国电信2026年第一季度报告",
+        "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国电信2025年度业绩公告",
+        "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "中国电信股息历史",
+        "url": "https://www.chinatelecom-h.com/en/ir/dividend.php",
+        "type": "official_dividend"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "中国联通": [
+      {
+        "label": "中国联通2026年一季度FAQ",
+        "url": "https://www.chinaunicom.com.hk/en/ir/faq.php",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国联通2025年度业绩公告",
+        "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "中国联通股息历史",
+        "url": "https://www.chinaunicom.com.hk/en/ir/dividend.php",
+        "type": "official_dividend"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "中国铁塔": [
+      {
+        "label": "中国铁塔2026年第一季度未经审核KPI",
+        "url": "https://ir.china-tower.com/en/global/home.php",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国铁塔2025年度业绩演示",
+        "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "中国铁塔2025业绩新闻稿",
+        "url": "https://www.china-tower.com/Index/show/catid/17/id/1648.html",
+        "type": "official_news"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "HKT / csl / 1O1O": [
+      {
+        "label": "HKT 2025年度业绩演示",
+        "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "HKT 2025年度业绩公告",
+        "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "3HK / Hutchison": [
+      {
+        "label": "和记电讯香港2025年度业绩演示",
+        "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "和记电讯香港2025年度业绩新闻稿",
+        "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "SmarTone": [
+      {
+        "label": "SmarTone 2025/26中期业绩",
+        "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf",
+        "type": "interim_results"
+      },
+      {
+        "label": "SmarTone投资者关系",
+        "url": "https://www.smartoneholdings.com/about_us/investor/overview/english/index.html",
+        "type": "official_ir"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "HKBN": [
+      {
+        "label": "HKBN 2026财年中期业绩",
+        "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
+        "type": "interim_results"
+      },
+      {
+        "label": "HKBN 2025财年年度业绩",
+        "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ],
+    "HGC": [
+      {
+        "label": "HGC企业转型动态",
+        "url": "https://www.hgc-intl.com/insights/hgc-sets-out-for-full-scale-transformation",
+        "type": "official_news"
+      },
+      {
+        "label": "HGC业务概览",
+        "url": "https://www.hgc-intl.com/international-business",
+        "type": "official_overview"
+      }
+    ],
+    "i-CABLE": [
+      {
+        "label": "i-CABLE 2025年度业绩公告",
+        "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/balance-sheet/",
+        "type": "normalized_financials"
+      },
+      {
+        "label": "StockAnalysis cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/cash-flow-statement/",
+        "type": "normalized_financials"
+      }
+    ]
+  },
+  "quality_notes_by_company": {
+    "中国移动": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "中国电信": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "中国联通": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "中国铁塔": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "HKT / csl / 1O1O": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "3HK / Hutchison": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "SmarTone": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "HKBN": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ],
+    "HGC": [
+      "非上市主体，未稳定公开三年完整财务报表；只记录公开可核验说明，不填造财务数值。"
+    ],
+    "i-CABLE": [
+      "三年财务表采用 StockAnalysis 对港股公告的标准化表格；回答正式结论时应优先引用官方年报/业绩公告复核关键数。"
+    ]
+  }
+}

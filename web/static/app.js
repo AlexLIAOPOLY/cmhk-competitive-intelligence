@@ -11,6 +11,10 @@ const state = {
   currentAudioButton: null,
   isScrubbing: false,
   agentTraceLoaded: false,
+  webSearchEnabled: false,
+  thinkingEnabled: false,
+  agentSkills: [],
+  selectedSkillIds: new Set(),
 };
 
 const els = {
@@ -72,6 +76,10 @@ const els = {
   messages: document.querySelector("#messages"),
   chatForm: document.querySelector("#chatForm"),
   chatInput: document.querySelector("#chatInput"),
+  skillToggle: document.querySelector("#skillToggle"),
+  skillMenu: document.querySelector("#skillMenu"),
+  thinkingToggle: document.querySelector("#thinkingToggle"),
+  webSearchToggle: document.querySelector("#webSearchToggle"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
   qualityScore: document.querySelector("#qualityScore"),
@@ -148,7 +156,97 @@ function setChatBusy(value) {
   state.chatBusy = value;
   els.chatSubmitButton.disabled = value;
   els.chatInput.disabled = value;
+  if (els.webSearchToggle) els.webSearchToggle.disabled = value;
+  if (els.thinkingToggle) els.thinkingToggle.disabled = value;
+  if (els.skillToggle) els.skillToggle.disabled = value;
   els.chatSubmitButton.textContent = value ? "生成中" : "发送";
+}
+
+function renderWebSearchToggle() {
+  const button = els.webSearchToggle;
+  if (!button) return;
+  button.classList.toggle("is-active", state.webSearchEnabled);
+  button.setAttribute("aria-pressed", state.webSearchEnabled ? "true" : "false");
+  button.title = state.webSearchEnabled ? "已打开联网搜索，本轮会优先调用网页搜索" : "打开联网搜索";
+  const label = button.querySelector("span");
+  if (label) label.textContent = state.webSearchEnabled ? "联网" : "搜索";
+}
+
+function renderThinkingToggle() {
+  const button = els.thinkingToggle;
+  if (!button) return;
+  button.classList.toggle("is-active", state.thinkingEnabled);
+  button.setAttribute("aria-pressed", state.thinkingEnabled ? "true" : "false");
+  button.title = state.thinkingEnabled ? "已打开深度思考，本轮会使用 reasoning 模型并加强核验" : "打开深度思考";
+  const label = button.querySelector("span");
+  if (label) label.textContent = state.thinkingEnabled ? "深思" : "思考";
+}
+
+function renderSkillToggle() {
+  const button = els.skillToggle;
+  if (!button) return;
+  const count = state.selectedSkillIds.size;
+  button.classList.toggle("is-active", count > 0);
+  button.setAttribute("aria-pressed", count > 0 ? "true" : "false");
+  button.setAttribute("aria-expanded", els.skillMenu && !els.skillMenu.hidden ? "true" : "false");
+  const label = button.querySelector("span");
+  if (label) label.textContent = count ? `能力 ${count}` : "能力";
+  const selectedTitles = state.agentSkills
+    .filter((skill) => state.selectedSkillIds.has(skill.id))
+    .map((skill) => skill.title);
+  button.title = selectedTitles.length ? `已载入: ${selectedTitles.join("、")}` : "选择 Agent Skill";
+}
+
+function renderSkillMenu() {
+  const menu = els.skillMenu;
+  if (!menu) return;
+  if (!state.agentSkills.length) {
+    menu.innerHTML = `<div class="skill-menu-empty">暂无可用 Skill</div>`;
+    renderSkillToggle();
+    return;
+  }
+  const items = state.agentSkills.map((skill) => {
+    const active = state.selectedSkillIds.has(skill.id);
+    const tags = Array.isArray(skill.tags) ? skill.tags : [];
+    return `
+      <button class="skill-option ${active ? "is-active" : ""}" type="button" data-skill-id="${escapeHtml(skill.id)}">
+        <span class="skill-option-check">${active ? "✓" : ""}</span>
+        <span class="skill-option-main">
+          <span class="skill-option-top">
+            <strong>${escapeHtml(skill.title)}</strong>
+            <em>${active ? "已载入" : "可选"}</em>
+          </span>
+          <small>${escapeHtml(skill.description || skill.summary || skill.path || "")}</small>
+          ${tags.length ? `<span class="skill-tags">${tags.slice(0, 4).map((tag) => `<b>${escapeHtml(tag)}</b>`).join("")}</span>` : ""}
+          ${skill.data ? `<span class="skill-data">${escapeHtml(skill.data)}</span>` : ""}
+        </span>
+      </button>
+    `;
+  }).join("");
+  menu.innerHTML = `
+    <div class="skill-menu-head">
+      <strong>选择分析能力</strong>
+      <span>可多选，随本轮问题载入</span>
+    </div>
+    ${items}
+  `;
+  renderSkillToggle();
+}
+
+async function loadAgentSkills() {
+  try {
+    const response = await fetch("/api/agent-skills");
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "加载 Skills 失败");
+    state.agentSkills = Array.isArray(data.skills) ? data.skills : [];
+    renderSkillMenu();
+  } catch (error) {
+    state.agentSkills = [];
+    if (els.skillMenu) {
+      els.skillMenu.innerHTML = `<div class="skill-menu-empty">${escapeHtml(error.message)}</div>`;
+    }
+    renderSkillToggle();
+  }
 }
 
 function fileType(fileName) {
@@ -425,10 +523,14 @@ function renderInsights(status) {
       : "暂无清洗拦截数据";
   }
 
-  const chips = [
-    ...(evidenceGaps ? [{ label: "证据未覆盖，需补爬", value: evidenceGaps, kind: "gap" }] : []),
-    ...rejectReasons.slice(0, evidenceGaps ? 5 : 6),
-  ].map((item) => ({
+  const hasUnpublishedReasons = evidenceGaps > 0 || rejected > 0 || rejectReasons.length > 0;
+  const chips = (hasUnpublishedReasons
+    ? [
+        ...(evidenceGaps ? [{ label: "证据未覆盖，需补爬", value: evidenceGaps, kind: "gap" }] : []),
+        ...rejectReasons.slice(0, evidenceGaps ? 5 : 6),
+      ]
+    : [{ label: "无缺口或质量拦截，本轮状态正常", value: Math.max(accepted, 1), kind: "clean" }]
+  ).map((item) => ({
     ...item,
     label: String(item.label || "").replace("未通过指标格式与单位门禁", "格式/单位未过")
       .replace("数值或事实依据不足", "依据不足")
@@ -438,6 +540,30 @@ function renderInsights(status) {
       .replace("指标名疑似串入公司名称", "指标名异常")
       .replace("抽取结果不可用", "抽取不可用")
   }));
+  const sourceColors = chips.map((chip, index) => {
+    if (chip.kind === "clean") return 'rgba(16, 185, 129, 0.88)';
+    if (chip.kind === "gap") return 'rgba(59, 130, 246, 0.85)';
+    return [
+      'rgba(16, 185, 129, 0.85)',
+      'rgba(245, 158, 11, 0.85)',
+      'rgba(239, 68, 68, 0.85)',
+      'rgba(139, 92, 246, 0.85)',
+      'rgba(14, 165, 233, 0.85)',
+      'rgba(236, 72, 153, 0.85)'
+    ][index % 6];
+  });
+  const sourceHoverColors = chips.map((chip, index) => {
+    if (chip.kind === "clean") return 'rgba(5, 150, 105, 1)';
+    if (chip.kind === "gap") return 'rgba(96, 165, 250, 1)';
+    return [
+      'rgba(52, 211, 153, 1)',
+      'rgba(251, 191, 36, 1)',
+      'rgba(248, 113, 113, 1)',
+      'rgba(167, 139, 250, 1)',
+      'rgba(56, 189, 248, 1)',
+      'rgba(244, 114, 182, 1)'
+    ][index % 6];
+  });
   
   initOrUpdateChart('sourceCanvas', {
     type: 'bar',
@@ -445,24 +571,8 @@ function renderInsights(status) {
       labels: chips.map(c => c.label),
       datasets: [{
         data: chips.map(c => c.value),
-        backgroundColor: [
-          'rgba(59, 130, 246, 0.85)',
-          'rgba(16, 185, 129, 0.85)',
-          'rgba(245, 158, 11, 0.85)',
-          'rgba(239, 68, 68, 0.85)',
-          'rgba(139, 92, 246, 0.85)',
-          'rgba(14, 165, 233, 0.85)',
-          'rgba(236, 72, 153, 0.85)'
-        ],
-        hoverBackgroundColor: [
-          'rgba(96, 165, 250, 1)',
-          'rgba(52, 211, 153, 1)',
-          'rgba(251, 191, 36, 1)',
-          'rgba(248, 113, 113, 1)',
-          'rgba(167, 139, 250, 1)',
-          'rgba(56, 189, 248, 1)',
-          'rgba(244, 114, 182, 1)'
-        ],
+        backgroundColor: sourceColors,
+        hoverBackgroundColor: sourceHoverColors,
         borderRadius: 6,
         barThickness: 10
       }]
@@ -481,6 +591,7 @@ function renderInsights(status) {
           anchor: 'end',
           align: 'right',
           font: { weight: '600', size: 12, family: 'Inter, sans-serif' },
+          formatter: (value, context) => chips[context.dataIndex]?.kind === "clean" ? `已发布 ${accepted} 条` : value,
           display: function(context) { return context.dataset.data[context.dataIndex] > 0; }
         },
         tooltip: {
@@ -489,7 +600,9 @@ function renderInsights(status) {
           displayColors: false,
           callbacks: {
             title: (items) => items?.[0]?.label || "",
-            label: (item) => `${item.label}：${item.formattedValue} 条；本轮发布 ${accepted} 条`
+            label: (item) => chips[item.dataIndex]?.kind === "clean"
+              ? `未发现证据缺口或质量拦截；本轮发布 ${accepted} 条`
+              : `${item.label}：${item.formattedValue} 条；本轮发布 ${accepted} 条`
           }
         }
       },
@@ -1464,9 +1577,16 @@ function inlineMarkdown(value) {
 }
 
 function markdownToHtml(markdown) {
-  const lines = String(markdown || "").split(/\r?\n/);
+  const chartBlocks = [];
+  const source = String(markdown || "").replace(/<chart>\s*([\s\S]*?)\s*<\/chart>/gi, (_match, jsonText) => {
+    const index = chartBlocks.length;
+    chartBlocks.push(jsonText);
+    return `\n\n@@CHART_BLOCK_${index}@@\n\n`;
+  });
+  const lines = source.split(/\r?\n/);
   const html = [];
   let listType = null;
+  let tableRows = null;
 
   function closeList() {
     if (listType) {
@@ -1475,11 +1595,47 @@ function markdownToHtml(markdown) {
     }
   }
 
+  function closeTable() {
+    if (!tableRows) return;
+    const rows = tableRows;
+    tableRows = null;
+    if (!rows.length) return;
+    html.push('<div class="chat-table-wrap"><table class="chat-data-table">');
+    rows.forEach((cells, rowIndex) => {
+      const tag = rowIndex === 0 ? "th" : "td";
+      html.push("<tr>");
+      cells.forEach((cell) => html.push(`<${tag}>${inlineMarkdown(cell.trim())}</${tag}>`));
+      html.push("</tr>");
+    });
+    html.push("</table></div>");
+  }
+
   for (const rawLine of lines) {
     const line = rawLine.trim();
     if (!line) {
       closeList();
+      closeTable();
       continue;
+    }
+    const chartMatch = line.match(/^@@CHART_BLOCK_(\d+)@@$/);
+    if (chartMatch) {
+      closeList();
+      closeTable();
+      const chartIndex = Number(chartMatch[1]);
+      html.push(`<div class="chart-placeholder" data-chart-index="${chartIndex}"></div>`);
+      continue;
+    }
+    if (/^\|.+\|$/.test(line)) {
+      const cells = line.split("|").slice(1, -1);
+      if (cells.every((cell) => /^:?-{3,}:?$/.test(cell.trim()))) {
+        continue;
+      }
+      closeList();
+      if (!tableRows) tableRows = [];
+      tableRows.push(cells);
+      continue;
+    } else {
+      closeTable();
     }
     if (/^[-*_]{3,}$/.test(line)) {
       closeList();
@@ -1532,35 +1688,225 @@ function markdownToHtml(markdown) {
     html.push(`<p>${inlineMarkdown(line)}</p>`);
   }
   closeList();
-  return html.join("");
+  closeTable();
+  let rendered = html.join("");
+  chartBlocks.forEach((jsonText, index) => {
+    rendered = rendered.replace(
+      `<div class="chart-placeholder" data-chart-index="${index}"></div>`,
+      renderChartBlock(jsonText)
+    );
+  });
+  return rendered;
+}
+
+function parseChartNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const num = Number(String(value).replace(/,/g, ""));
+  return Number.isFinite(num) ? num : null;
+}
+
+function renderChartBlock(jsonText) {
+  let chart;
+  try {
+    chart = JSON.parse(jsonText);
+  } catch (error) {
+    return `<pre class="chart-error">图表数据解析失败：${escapeHtml(error.message)}</pre>`;
+  }
+  const x = Array.isArray(chart.x) ? chart.x.map(String) : [];
+  const series = Array.isArray(chart.series) ? chart.series : [];
+  if (!x.length || !series.length) return "";
+  const width = 720;
+  const height = 300;
+  const pad = { left: 58, right: 22, top: 42, bottom: 48 };
+  const plotW = width - pad.left - pad.right;
+  const plotH = height - pad.top - pad.bottom;
+  const values = [];
+  series.forEach((item) => (Array.isArray(item.data) ? item.data : []).forEach((value) => {
+    const num = parseChartNumber(value);
+    if (num !== null) values.push(num);
+  }));
+  if (!values.length) return "";
+  let min = Math.min(...values);
+  let max = Math.max(...values);
+  if (min === max) {
+    min = min > 0 ? 0 : min - 1;
+    max = max + 1;
+  } else if (min > 0) {
+    min = 0;
+  }
+  const scaleY = (value) => pad.top + (max - value) / (max - min) * plotH;
+  const scaleX = (index) => pad.left + (x.length === 1 ? plotW / 2 : index / (x.length - 1) * plotW);
+  const colors = ["#0077c8", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed", "#0891b2"];
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((ratio) => min + (max - min) * ratio);
+  const fmt = (value) => {
+    const abs = Math.abs(value);
+    if (abs >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (abs >= 1000) return `${Math.round(value / 1000)}k`;
+    if (abs >= 100) return String(Math.round(value));
+    return String(Math.round(value * 100) / 100);
+  };
+  let svg = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(chart.title || "趋势图")}">`;
+  svg += `<text x="${pad.left}" y="22" class="chart-title">${escapeHtml(chart.title || "趋势图")}</text>`;
+  if (chart.unit) svg += `<text x="${width - pad.right}" y="22" text-anchor="end" class="chart-unit">${escapeHtml(chart.unit)}</text>`;
+  ticks.forEach((tick) => {
+    const y = scaleY(tick);
+    svg += `<line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" class="chart-grid"></line>`;
+    svg += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" class="chart-axis">${escapeHtml(fmt(tick))}</text>`;
+  });
+  x.forEach((label, index) => {
+    const xPos = scaleX(index);
+    svg += `<text x="${xPos}" y="${height - 18}" text-anchor="middle" class="chart-axis">${escapeHtml(label)}</text>`;
+  });
+  if (chart.type === "bar") {
+    const groupW = plotW / Math.max(x.length, 1);
+    const barW = Math.max(10, Math.min(26, groupW / Math.max(series.length + 1, 2)));
+    series.forEach((item, sIndex) => {
+      const color = colors[sIndex % colors.length];
+      (item.data || []).forEach((value, index) => {
+        const num = parseChartNumber(value);
+        if (num === null) return;
+        const xPos = pad.left + index * groupW + groupW / 2 + (sIndex - (series.length - 1) / 2) * barW;
+        const y = scaleY(num);
+        const zeroY = scaleY(0);
+        svg += `<rect x="${xPos - barW / 2}" y="${Math.min(y, zeroY)}" width="${barW}" height="${Math.abs(zeroY - y)}" rx="3" fill="${color}"></rect>`;
+      });
+    });
+  } else {
+    series.forEach((item, sIndex) => {
+      const color = colors[sIndex % colors.length];
+      const points = (item.data || []).map((value, index) => {
+        const num = parseChartNumber(value);
+        return num === null ? null : `${scaleX(index)},${scaleY(num)}`;
+      }).filter(Boolean);
+      if (points.length) svg += `<polyline points="${points.join(" ")}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>`;
+      (item.data || []).forEach((value, index) => {
+        const num = parseChartNumber(value);
+        if (num === null) return;
+        svg += `<circle cx="${scaleX(index)}" cy="${scaleY(num)}" r="4" fill="${color}"></circle>`;
+      });
+    });
+  }
+  svg += "</svg>";
+  const legend = series.map((item, index) => `<span><i style="background:${colors[index % colors.length]}"></i>${escapeHtml(item.name || `系列 ${index + 1}`)}</span>`).join("");
+  const notes = Array.isArray(chart.notes) && chart.notes.length
+    ? `<ul>${chart.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>`
+    : "";
+  return `<div class="chat-chart-card">${svg}<div class="chart-legend">${legend}</div>${notes}</div>`;
+}
+
+function stripAssistantControlText(content) {
+  let text = content || "";
+  text = text.replace(/<suggestions>[\s\S]*?<\/suggestions>/gi, "").trim();
+  text = text.replace(/<suggestions>[\s\S]*$/gi, "").trim();
+  text = text.replace(/^\s*\[\s*["“][\s\S]*?["”]\s*(?:,\s*["“][\s\S]*?["”]\s*){1,}\]\s*$/m, "").trim();
+  text = text.replace(/\n\s*\[\s*["“][\s\S]*?["”]\s*(?:,\s*["“][\s\S]*?["”]\s*){1,}\]\s*$/m, "").trim();
+  text = text.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
+  text = text.replace(/<引用来源>[\s\S]*$/gi, "").trim();
+  text = text.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
+  text = text.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
+  return text;
+}
+
+function renderCitationMarkers(html, node) {
+  return html.replace(/\[(?:来源\s*)?(\d+)\]/g, (match, p1) => {
+    const idx = parseInt(p1, 10);
+    let href = null;
+    let label = `来源 ${idx}`;
+    if (node.dataset.references) {
+      try {
+        const refs = JSON.parse(node.dataset.references);
+        const ref = refs.find(r => r.index === idx);
+        if (ref && ref.links && ref.links.length > 0 && ref.links[0].url) {
+          href = ref.links[0].url;
+          label = ref.links[0].label || ref.source || label;
+        } else if (ref) {
+          label = ref.source || label;
+        }
+      } catch(e) {}
+    }
+    if (href) {
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="citation-marker" data-ref-id="${idx}" title="${escapeHtml(label)}" style="text-decoration:none;">${idx}</a>`;
+    }
+    return `<sup class="citation-marker" data-ref-id="${idx}" title="${escapeHtml(label)}">${idx}</sup>`;
+  });
+}
+
+function readStoredJson(node, key, fallback = []) {
+  if (!node.dataset[key]) return fallback;
+  try {
+    const value = JSON.parse(node.dataset[key]);
+    return Array.isArray(value) ? value : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function mergeCitationMeta(node, event) {
+  const existingRefs = readStoredJson(node, "references");
+  const incomingRefs = Array.isArray(event.references) ? event.references : [];
+  const incomingLinks = Array.isArray(event.links) ? event.links : [];
+  const mergedRefs = [];
+  const mergedLinks = [];
+
+  const sourceType = event.provider ? "网络" : "本地";
+  const addLink = (link) => {
+    if (!link || !link.url) return;
+    if (!mergedLinks.some((item) => item.url === link.url)) {
+      mergedLinks.push({
+        label: link.label || link.url,
+        url: link.url,
+      });
+    }
+  };
+  const addRef = (ref, fallbackType) => {
+    const links = Array.isArray(ref.links) ? ref.links.filter((link) => link && link.url) : [];
+    const currentMax = mergedRefs.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
+    const index = Number(ref.index) || currentMax + 1;
+    const normalizedLinks = links.map((link) => ({
+      label: link.label || ref.source || `来源 ${index}`,
+      url: link.url,
+    }));
+    const normalizedRef = {
+      index,
+      originalIndex: ref.originalIndex || ref.index,
+      source: ref.source || (normalizedLinks[0] && normalizedLinks[0].label) || `来源 ${index}`,
+      sourceType: ref.sourceType || fallbackType,
+      links: normalizedLinks,
+    };
+    mergedRefs.push(normalizedRef);
+    normalizedLinks.forEach(addLink);
+  };
+
+  existingRefs.forEach((ref) => addRef(ref, ref.sourceType || "来源"));
+  incomingRefs.forEach((ref) => addRef(ref, sourceType));
+  if (!incomingRefs.length) {
+    incomingLinks.forEach((link) => addRef({ source: link.label, links: [link] }, sourceType));
+  }
+
+  node.dataset.references = JSON.stringify(mergedRefs);
+  node.dataset.links = JSON.stringify(mergedLinks);
 }
 
 function setMessageContent(node, content, markdown = false) {
   const text = node.querySelector(".message-text") || node.querySelector(".markdown-body");
   if (markdown) {
     if (text.className === "message-text") text.className = "markdown-body";
-    let html = typeof marked !== 'undefined' ? marked.parse(content) : content;
-    html = html.replace(/\[(\d+)\]/g, (match, p1) => {
-      const idx = parseInt(p1, 10);
-      let href = null;
-      if (node.dataset.references) {
-        try {
-          const refs = JSON.parse(node.dataset.references);
-          const ref = refs.find(r => r.index === idx);
-          if (ref && ref.links && ref.links.length > 0 && ref.links[0].url) {
-            href = ref.links[0].url;
-          }
-        } catch(e) {}
-      }
-      if (href) {
-        return `<a href="${href}" target="_blank" class="citation-marker" data-ref-id="${idx}" style="text-decoration:none;">${idx}</a>`;
-      }
-      return `<sup class="citation-marker" data-ref-id="${idx}">${idx}</sup>`;
-    });
+    const cleaned = stripAssistantControlText(content);
+    let html = markdownToHtml(cleaned);
+    html = renderCitationMarkers(html, node);
     text.innerHTML = html;
   } else {
     text.textContent = content;
   }
+}
+
+function scrollMessagesToBottom() {
+  if (!els.messages) return;
+  const scroll = () => {
+    els.messages.scrollTop = els.messages.scrollHeight;
+  };
+  scroll();
+  requestAnimationFrame(scroll);
 }
 
 function addMessage(role, content, markdown = false) {
@@ -1577,8 +1923,49 @@ function addMessage(role, content, markdown = false) {
   node.append(avatar, body);
   els.messages.appendChild(node);
   setMessageContent(node, content, markdown);
-  els.messages.scrollTop = els.messages.scrollHeight;
+  scrollMessagesToBottom();
   return node;
+}
+
+function messageBody(node) {
+  return node.querySelector(".message-body");
+}
+
+function ensureToolList(node) {
+  const body = messageBody(node);
+  if (!body) return null;
+  let list = body.querySelector(":scope > .tool-call-list");
+  if (!list) {
+    list = document.createElement("div");
+    list.className = "tool-call-list";
+    const text = body.querySelector(":scope > .message-text, :scope > .markdown-body");
+    body.insertBefore(list, text || null);
+  }
+  return list;
+}
+
+function currentMessageTextNode(node) {
+  let text = node.querySelector(".message-body > .message-text:last-of-type, .message-body > .markdown-body:last-of-type");
+  if (!text) {
+    text = document.createElement("div");
+    text.className = "message-text";
+    const body = messageBody(node);
+    body.appendChild(text);
+  }
+  return text;
+}
+
+function setCurrentMessageContent(node, content, markdown = false) {
+  const text = currentMessageTextNode(node);
+  if (markdown) {
+    if (text.className === "message-text") text.className = "markdown-body";
+    const cleaned = stripAssistantControlText(content);
+    let html = markdownToHtml(cleaned);
+    html = renderCitationMarkers(html, node);
+    text.innerHTML = html;
+  } else {
+    text.textContent = content;
+  }
 }
 
 function appendRagProcess(node, text) {
@@ -1617,6 +2004,9 @@ function appendCitationFooter(node, references, links) {
 
   const footer = document.createElement("div");
   footer.className = "citation-footer";
+  const header = document.createElement("div");
+  header.className = "citation-footer-header";
+  header.textContent = "引用来源";
 
   const list = document.createElement("div");
   list.className = "citation-footer-list";
@@ -1629,14 +2019,51 @@ function appendCitationFooter(node, references, links) {
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.className = "citation-footer-link";
-      a.innerHTML = `<span class="citation-footer-num">[${ref.index}]</span><span class="citation-footer-label">${link.label}</span>`;
+      const num = document.createElement("span");
+      num.className = "citation-footer-num";
+      num.textContent = `[${ref.index}]`;
+      const type = document.createElement("span");
+      type.className = "citation-footer-type";
+      type.textContent = ref.sourceType || "";
+      const label = document.createElement("span");
+      label.className = "citation-footer-label";
+      label.textContent = link.label || ref.source || link.url;
+      a.title = label.textContent;
+      a.append(num);
+      if (ref.sourceType) a.append(type);
+      a.append(label);
       list.appendChild(a);
     });
   });
 
-  footer.appendChild(list);
+  footer.append(header, list);
   const body = node.querySelector(".message-body");
   body.appendChild(footer);
+}
+
+function appendToolCallCard(node, event) {
+  const list = ensureToolList(node);
+  if (!list) return;
+  const id = event.id || `${event.name || "tool"}-${list.querySelectorAll(".tool-details").length}`;
+  let card = list.querySelector(`[data-tool-id="${CSS.escape(id)}"]`);
+  if (!card) {
+    card = document.createElement("details");
+    card.className = "tool-details";
+    card.open = false;
+    card.dataset.toolId = id;
+    card.innerHTML = `
+      <summary class="tool-summary">调用工具:<span class="tool-name"></span></summary>
+      <div class="tool-body">处理中...</div>
+    `;
+    list.appendChild(card);
+  }
+  const nameNode = card.querySelector(".tool-name");
+  const bodyNode = card.querySelector(".tool-body");
+  if (nameNode) nameNode.textContent = event.name || "工具";
+  if (bodyNode && event.type === "tool_call_result") {
+    const args = event.args ? `参数:\n${event.args}\n\n` : "";
+    bodyNode.textContent = `${args}结果:\n${event.content || "工具调用完成。"}`;
+  }
 }
 
 function resizeChatInput() {
@@ -1692,16 +2119,20 @@ async function sendChat(message) {
   setChatBusy(true);
   try {
     const assistantNode = addMessage("assistant", "正在连接...");
+    const webSearchEnabled = Boolean(state.webSearchEnabled);
+    const thinkingEnabled = Boolean(state.thinkingEnabled);
+    const selectedSkillIds = Array.from(state.selectedSkillIds);
     const response = await fetch("/api/chat-stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, webSearchEnabled, thinkingEnabled, selectedSkillIds }),
     });
     if (!response.ok || !response.body) throw new Error("对话请求失败");
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
     let answer = "";
+    let segmentAnswer = "";
     let isDone = false;
     while (true) {
       const { value, done } = await reader.read();
@@ -1717,19 +2148,20 @@ async function sendChat(message) {
         if (event.type === "done") {
           isDone = true;
           break;
+        } else if (event.type === "thinking_status") {
+          appendRagProcess(assistantNode, event.text || "深度思考已开启。");
         } else if (event.type === "process") {
           appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
-          // Store references for the popover + footer
-          if (event.references) {
-            assistantNode.dataset.references = JSON.stringify(event.references);
-          }
-          if (event.links) {
-            assistantNode.dataset.links = JSON.stringify(event.links);
-          }
+          mergeCitationMeta(assistantNode, event);
+        } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
+          appendToolCallCard(assistantNode, event);
+          if (event.type === "tool_call_start") segmentAnswer = "";
+          scrollMessagesToBottom();
         } else if (event.type === "delta") {
           answer += event.text;
-          let displayAnswer = answer;
+          segmentAnswer += event.text;
+          let displayAnswer = segmentAnswer;
           const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
           let suggestionsHTML = "";
           if (sugMatch) {
@@ -1745,29 +2177,30 @@ async function sendChat(message) {
                console.error("Suggestion parse error:", e, sugMatch[1]);
             }
           }
-          displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*$/i, ""); // hide incomplete tags
-          displayAnswer = displayAnswer.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim(); // strip LLM citation tags
-          displayAnswer = displayAnswer.replace(/<引用来源>[\s\S]*$/gi, "").trim(); // hide incomplete ones
+          displayAnswer = stripAssistantControlText(displayAnswer);
           
-          setMessageContent(assistantNode, displayAnswer, true);
+          setCurrentMessageContent(assistantNode, displayAnswer, true);
           if (suggestionsHTML) {
-            const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
+            const b = currentMessageTextNode(assistantNode);
             b.insertAdjacentHTML("beforeend", suggestionsHTML);
           }
-          els.messages.scrollTop = els.messages.scrollHeight;
+          scrollMessagesToBottom();
         } else if (event.type === "error") {
           answer += `\n\n**错误：** ${event.text}`;
-          let displayAnswer = answer.replace(/<suggestions>[\s\S]*$/, "");
-          setMessageContent(assistantNode, displayAnswer, true);
+          segmentAnswer += `\n\n**错误：** ${event.text}`;
+          let displayAnswer = segmentAnswer.replace(/<suggestions>[\s\S]*$/, "");
+          setCurrentMessageContent(assistantNode, displayAnswer, true);
         } else if (event.type === "tool_start") {
           answer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;">调用工具: \`${event.name}\`</div>\n\n`;
-          setMessageContent(assistantNode, answer, true);
-          els.messages.scrollTop = els.messages.scrollHeight;
+          segmentAnswer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;">调用工具: \`${event.name}\`</div>\n\n`;
+          setCurrentMessageContent(assistantNode, segmentAnswer, true);
+          scrollMessagesToBottom();
         } else if (event.type === "tool_end") {
           // Output is typically handled by the streaming chunk itself, but if we get here just quietly log it
           answer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;opacity:0.5;">工具调用完成</div>\n\n`;
-          setMessageContent(assistantNode, answer, true);
-          els.messages.scrollTop = els.messages.scrollHeight;
+          segmentAnswer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;opacity:0.5;">工具调用完成</div>\n\n`;
+          setCurrentMessageContent(assistantNode, segmentAnswer, true);
+          scrollMessagesToBottom();
         } else if (event.type === "action_result") {
           if (event.generation) {
             appendLog([
@@ -1789,7 +2222,7 @@ async function sendChat(message) {
       }
       if (isDone) break;
     }
-    if (!answer.trim()) setMessageContent(assistantNode, "操作完成。", true);
+    if (!answer.trim()) setCurrentMessageContent(assistantNode, "操作完成。", true);
     else {
       let finalAnswer = answer;
       const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
@@ -1814,8 +2247,11 @@ async function sendChat(message) {
       finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*$/gi, "").trim();
       finalAnswer = finalAnswer.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
       finalAnswer = finalAnswer.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
+      finalAnswer = stripAssistantControlText(finalAnswer);
 
-      setMessageContent(assistantNode, finalAnswer, true);
+      if (segmentAnswer.trim()) {
+        setCurrentMessageContent(assistantNode, finalAnswer.includes(segmentAnswer) ? stripAssistantControlText(segmentAnswer) : segmentAnswer, true);
+      }
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
       const storedLinks = assistantNode.dataset.links ? JSON.parse(assistantNode.dataset.links) : null;
@@ -1837,15 +2273,16 @@ async function sendChat(message) {
         if (fallbackRefs.length) appendCitationFooter(assistantNode, fallbackRefs, null);
       }
       if (suggestionsHTML) {
-        const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
+        const b = currentMessageTextNode(assistantNode);
         b.insertAdjacentHTML("beforeend", suggestionsHTML);
       } else {
         // Fallback: AI didn't output suggestions, generate defaults based on the user message
         const fallback = generateFallbackSuggestions(message);
         const fallbackHTML = `<div class="suggestion-chips">` + fallback.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
-        const b = assistantNode.querySelector(".message-text") || assistantNode.querySelector(".markdown-body");
+        const b = currentMessageTextNode(assistantNode);
         b.insertAdjacentHTML("beforeend", fallbackHTML);
       }
+      scrollMessagesToBottom();
     }
     await fetchStatus();
   } catch (error) {
@@ -2037,10 +2474,61 @@ els.clearChatButton.addEventListener("click", () => {
     <div class="message assistant">
       <span class="avatar">AI</span>
       <div class="message-body">
-        <div class="message-text">您好！我是一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>2. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>3. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
+        <div class="message-text">您好！我是一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>联网搜索</b>：按需检索公开网页并保留来源引用。<br>2. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>3. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>4. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
       </div>
     </div>
   `;
+});
+
+if (els.webSearchToggle) {
+  renderWebSearchToggle();
+  els.webSearchToggle.addEventListener("click", () => {
+    if (state.chatBusy) return;
+    state.webSearchEnabled = !state.webSearchEnabled;
+    renderWebSearchToggle();
+    els.chatInput.focus();
+  });
+}
+
+if (els.thinkingToggle) {
+  renderThinkingToggle();
+  els.thinkingToggle.addEventListener("click", () => {
+    if (state.chatBusy) return;
+    state.thinkingEnabled = !state.thinkingEnabled;
+    renderThinkingToggle();
+    els.chatInput.focus();
+  });
+}
+
+if (els.skillToggle) {
+  renderSkillToggle();
+  loadAgentSkills();
+  els.skillToggle.addEventListener("click", () => {
+    if (state.chatBusy || !els.skillMenu) return;
+    els.skillMenu.hidden = !els.skillMenu.hidden;
+    renderSkillToggle();
+  });
+}
+
+if (els.skillMenu) {
+  els.skillMenu.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const option = event.target.closest(".skill-option");
+    if (!option || state.chatBusy) return;
+    const skillId = option.dataset.skillId;
+    if (!skillId) return;
+    if (state.selectedSkillIds.has(skillId)) state.selectedSkillIds.delete(skillId);
+    else state.selectedSkillIds.add(skillId);
+    renderSkillMenu();
+    els.chatInput.focus();
+  });
+}
+
+document.addEventListener("click", (event) => {
+  if (!els.skillMenu || els.skillMenu.hidden) return;
+  if (event.target.closest(".skill-picker")) return;
+  els.skillMenu.hidden = true;
+  renderSkillToggle();
 });
 
 els.chatForm.addEventListener("submit", (event) => {

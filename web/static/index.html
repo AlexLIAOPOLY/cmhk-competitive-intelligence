@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=81" />
+    <link rel="stylesheet" href="/static/styles.css?v=91" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -147,7 +147,7 @@
           <div class="chat-header">
             <div>
               <h2>小竞AI</h2>
-              <p>智能 Agent：支持多轮对话、RAG 检索、触发定向爬虫，以及飞书表格协同。</p>
+              <p>智能 Agent：支持联网搜索、RAG 检索、触发定向爬虫，以及飞书表格协同。</p>
             </div>
             <button class="quiet-button small" id="aiSettingsButton" type="button">设置</button>
             <button class="quiet-button small" id="clearChatButton" type="button">清空</button>
@@ -156,11 +156,59 @@
           <div class="messages" id="messages">
             <div class="message assistant">
               <span class="avatar">竞</span>
-              <div class="message-body">您好！我是小竞AI，一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>2. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>3. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
+              <div class="message-body">您好！我是小竞AI，一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>联网搜索</b>：按需检索公开网页并保留来源引用。<br>2. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>3. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>4. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
             </div>
           </div>
           <form class="chat-form" id="chatForm">
-            <textarea id="chatInput" rows="1" autocomplete="off" placeholder="问周报重点、风险建议，或输入：重新生成周报"></textarea>
+            <div class="chat-composer">
+              <div class="skill-picker">
+                <button
+                  class="skill-toggle"
+                  id="skillToggle"
+                  type="button"
+                  aria-expanded="false"
+                  title="选择 Agent Skill"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6h16"></path>
+                    <path d="M4 12h16"></path>
+                    <path d="M4 18h16"></path>
+                  </svg>
+                  <span>能力</span>
+                </button>
+                <div class="skill-menu" id="skillMenu" hidden></div>
+              </div>
+              <button
+                class="thinking-toggle"
+                id="thinkingToggle"
+                type="button"
+                aria-pressed="false"
+                title="打开深度思考"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 18h6"></path>
+                  <path d="M10 22h4"></path>
+                  <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.7.6-1.1 1.4-1.2 2.3h-4.6c-.1-.9-.5-1.7-1.2-2.3z"></path>
+                </svg>
+                <span>思考</span>
+              </button>
+              <button
+                class="web-search-toggle"
+                id="webSearchToggle"
+                type="button"
+                aria-pressed="false"
+                title="打开联网搜索"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M2 12h20"></path>
+                  <path d="M12 2a15.3 15.3 0 0 1 0 20"></path>
+                  <path d="M12 2a15.3 15.3 0 0 0 0 20"></path>
+                </svg>
+                <span>搜索</span>
+              </button>
+              <textarea id="chatInput" rows="1" autocomplete="off" placeholder="问周报重点、风险建议，或输入：重新生成周报"></textarea>
+            </div>
             <button id="chatSubmitButton" type="submit">发送</button>
           </form>
         </aside>
@@ -288,6 +336,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=82"></script>
+    <script src="/static/app.js?v=94"></script>
   </body>
 </html>
