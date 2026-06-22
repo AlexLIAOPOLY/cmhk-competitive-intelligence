@@ -10,6 +10,9 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.error
+import urllib.request
+import uuid
 from datetime import datetime
 from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -58,6 +61,224 @@ REFERENCE_FILES = {"weekly_report.md", "weekly_report.html", "final_audit.md", "
 UPLOAD_DATASET_PREFIX = "user-upload"
 UPLOAD_ALLOWED_SUFFIXES = {".txt", ".md", ".csv", ".tsv", ".json", ".docx", ".pdf"}
 UPLOAD_MAX_BYTES = 8 * 1024 * 1024
+CHAT_THREADS_DIR = ROOT / "agent_chat_threads"
+CHAT_THREADS_PATH = CHAT_THREADS_DIR / "threads.json"
+CHAT_THREADS_LOCK = threading.Lock()
+
+
+def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:
+    now = datetime.now().astimezone()
+    client_ip = ""
+    try:
+        client_ip = str(handler.client_address[0] or "")
+    except Exception:
+        client_ip = ""
+    forwarded_for = str(handler.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
+    real_ip = str(handler.headers.get("X-Real-IP") or "").strip()
+    visible_ip = forwarded_for or real_ip or client_ip or "unknown"
+    if visible_ip in {"127.0.0.1", "::1", "localhost"} or visible_ip.startswith(("10.", "192.168.", "172.16.", "172.17.", "172.18.", "172.19.", "172.20.", "172.21.", "172.22.", "172.23.", "172.24.", "172.25.", "172.26.", "172.27.", "172.28.", "172.29.", "172.30.", "172.31.")):
+        location_hint = "本机或内网访问；按服务端时区和用户工作环境推断为 Hong Kong / Asia_Hong_Kong"
+    else:
+        location_hint = "公网 IP；未接入第三方 GeoIP，不能精确到城市"
+    return {
+        "current_time": now.isoformat(timespec="seconds"),
+        "timezone": now.tzname() or "local",
+        "utc_offset": now.strftime("%z"),
+        "client_ip": client_ip,
+        "forwarded_for": forwarded_for,
+        "real_ip": real_ip,
+        "visible_ip": visible_ip,
+        "location_hint": location_hint,
+    }
+
+
+def _now_iso() -> str:
+    return datetime.now().isoformat(timespec="seconds")
+
+
+def _clean_chat_message(item: dict) -> dict | None:
+    if not isinstance(item, dict):
+        return None
+    role = "assistant" if item.get("role") == "assistant" else "user"
+    content = str(item.get("content") or "").strip()
+    if not content:
+        return None
+    return {"role": role, "content": content[:20000]}
+
+
+def load_chat_threads() -> list[dict]:
+    if not CHAT_THREADS_PATH.exists():
+        return []
+    try:
+        data = json.loads(CHAT_THREADS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    threads = data.get("threads") if isinstance(data, dict) else data
+    if not isinstance(threads, list):
+        return []
+    return [item for item in threads if isinstance(item, dict) and item.get("id")]
+
+
+def save_chat_threads(threads: list[dict]) -> None:
+    CHAT_THREADS_DIR.mkdir(parents=True, exist_ok=True)
+    CHAT_THREADS_PATH.write_text(
+        json.dumps({"threads": threads[:200]}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+def chat_thread_summaries() -> list[dict]:
+    threads = sorted(load_chat_threads(), key=lambda item: str(item.get("updatedAt") or ""), reverse=True)
+    threads = sorted(threads, key=lambda item: 0 if item.get("pinned") else 1)
+    summaries = []
+    for thread in threads:
+        messages = thread.get("messages") if isinstance(thread.get("messages"), list) else []
+        last = next((m for m in reversed(messages) if isinstance(m, dict) and m.get("content")), {})
+        summaries.append(
+            {
+                "id": thread.get("id"),
+                "title": thread.get("title") or "未命名对话",
+                "createdAt": thread.get("createdAt"),
+                "updatedAt": thread.get("updatedAt"),
+                "messageCount": len(messages),
+                "preview": str(last.get("content") or "")[:120],
+                "pinned": bool(thread.get("pinned")),
+            }
+        )
+    return summaries
+
+
+def _sanitize_thread_title(raw: str) -> str:
+    title = re.sub(r"^[\"'“”‘’\s]+|[\"'“”‘’\s]+$", "", str(raw or ""))
+    title = re.sub(r"^(标题|对话标题|主题)[:：]\s*", "", title)
+    title = re.sub(r"[\r\n\t]+", " ", title)
+    title = re.sub(r"\s+", " ", title).strip(" -_，。,.")
+    return title[:24] or "新对话"
+
+
+def _fallback_thread_title(first_user: str) -> str:
+    text = re.sub(r"\s+", " ", str(first_user or "")).strip()
+    if text in {"你好", "您好", "hi", "hello", "看看", "测试"}:
+        return "初次咨询"
+    text = re.sub(r"^(请|帮我|麻烦|能不能|可以|给我)", "", text).strip()
+    return _sanitize_thread_title(text[:18] or "新对话")
+
+
+def _thread_title_source(messages: list[dict]) -> str:
+    generic = {"你好", "您好", "hi", "hello", "看看", "测试"}
+    users = [str(item.get("content") or "").strip() for item in messages if item.get("role") == "user"]
+    for text in users:
+        normalized = re.sub(r"\s+", " ", text).strip()
+        if len(normalized) >= 6 and normalized.lower() not in generic:
+            return normalized
+    return users[0] if users else ""
+
+
+def generate_chat_thread_title(first_user: str) -> str:
+    first_user = str(first_user or "").strip()
+    if not first_user:
+        return "新对话"
+    config = load_ai_config(include_key=True)
+    api_key = (os.environ.get("OPENAI_API_KEY") or str(config.get("api_key") or "")).strip()
+    if not api_key:
+        return _fallback_thread_title(first_user)
+    provider = str(config.get("provider") or "deepseek").lower()
+    model = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-v4-flash")
+    base_url = str(config.get("base_url") or ("https://api.openai.com/v1" if provider == "openai" else "https://api.deepseek.com")).rstrip("/")
+    prompt = (
+        "请根据用户第一条问题生成一个中文对话标题。"
+        "要求：6到12个汉字或短词；不要照抄原句；不要加引号、标点、解释或前缀。\n\n"
+        f"用户第一问：{first_user[:500]}"
+    )
+    body = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "你只输出简洁中文标题。"},
+            {"role": "user", "content": prompt},
+        ],
+        "temperature": 0.1,
+        "max_tokens": 24,
+    }
+    req = urllib.request.Request(
+        f"{base_url}/chat/completions",
+        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+        content = payload.get("choices", [{}])[0].get("message", {}).get("content", "")
+        return _sanitize_thread_title(content) or _fallback_thread_title(first_user)
+    except Exception:
+        return _fallback_thread_title(first_user)
+
+
+def get_chat_thread(thread_id: str) -> dict | None:
+    for thread in load_chat_threads():
+        if str(thread.get("id")) == thread_id:
+            return thread
+    return None
+
+
+def upsert_chat_thread(payload: dict) -> dict:
+    messages = [_clean_chat_message(item) for item in payload.get("messages", []) if isinstance(item, dict)]
+    messages = [item for item in messages if item]
+    title = str(payload.get("title") or "").strip()
+    thread_id = str(payload.get("id") or "").strip() or uuid.uuid4().hex[:12]
+    now = _now_iso()
+    existing_title = ""
+    for thread in load_chat_threads():
+        if str(thread.get("id")) == thread_id and thread.get("title"):
+            existing_title = str(thread.get("title"))
+            break
+    if title:
+        title = _sanitize_thread_title(title)
+    title_source = _thread_title_source(messages)
+    first_user = next((item["content"] for item in messages if item["role"] == "user"), "")
+    if existing_title and existing_title not in {first_user[:24], _fallback_thread_title(first_user), "你好", "看看"}:
+        title = existing_title
+    else:
+        title = generate_chat_thread_title(title_source or first_user)
+    with CHAT_THREADS_LOCK:
+        threads = load_chat_threads()
+        existing = next((item for item in threads if str(item.get("id")) == thread_id), None)
+        record = {
+            "id": thread_id,
+            "title": title[:80],
+            "createdAt": (existing or {}).get("createdAt") or now,
+            "updatedAt": now,
+            "messages": messages[-80:],
+            "agentContextKey": str(payload.get("agentContextKey") or ""),
+            "loadedSkillIds": [str(item) for item in payload.get("loadedSkillIds", []) if str(item)],
+            "pinned": bool((existing or {}).get("pinned")),
+        }
+        threads = [item for item in threads if str(item.get("id")) != thread_id]
+        threads.insert(0, record)
+        save_chat_threads(threads)
+    return record
+
+
+def delete_chat_thread(thread_id: str) -> bool:
+    with CHAT_THREADS_LOCK:
+        threads = load_chat_threads()
+        next_threads = [item for item in threads if str(item.get("id")) != thread_id]
+        save_chat_threads(next_threads)
+    return len(next_threads) != len(threads)
+
+
+def set_chat_thread_pinned(thread_id: str, pinned: bool) -> dict | None:
+    with CHAT_THREADS_LOCK:
+        threads = load_chat_threads()
+        updated = None
+        for thread in threads:
+            if str(thread.get("id")) == thread_id:
+                thread["pinned"] = bool(pinned)
+                thread["updatedAt"] = _now_iso()
+                updated = thread
+                break
+        save_chat_threads(threads)
+    return updated
 
 
 def reference_path(name: str) -> Path | None:
@@ -1408,6 +1629,15 @@ class AppHandler(BaseHTTPRequestHandler):
                 limit = 50
             json_response(self, {"ok": True, "memories": load_memories(limit=limit)})
             return
+        if path == "/api/chat-threads":
+            query = parse_qs(parsed.query)
+            thread_id = str(query.get("id", [""])[0] or "")
+            if thread_id:
+                thread = get_chat_thread(thread_id)
+                json_response(self, {"ok": bool(thread), "thread": thread}, 200 if thread else 404)
+            else:
+                json_response(self, {"ok": True, "threads": chat_thread_summaries()})
+            return
         if path == "/api/agent-dataset-lineage":
             query = parse_qs(parsed.query)
             raw_ids = query.get("datasetId", []) + query.get("datasetIds", [])
@@ -2173,6 +2403,28 @@ class AppHandler(BaseHTTPRequestHandler):
             memory_id = str(payload.get("id") or "")
             json_response(self, {"ok": delete_memory(memory_id), "id": memory_id})
             return
+        if parsed.path == "/api/chat-threads":
+            try:
+                payload = read_request_json(self)
+                action = str(payload.get("action") or "save")
+                if action == "delete":
+                    thread_id = str(payload.get("id") or "")
+                    json_response(self, {"ok": delete_chat_thread(thread_id), "threads": chat_thread_summaries()})
+                elif action == "pin":
+                    thread_id = str(payload.get("id") or "")
+                    pinned = bool(payload.get("pinned"))
+                    thread = set_chat_thread_pinned(thread_id, pinned)
+                    json_response(
+                        self,
+                        {"ok": bool(thread), "thread": thread, "threads": chat_thread_summaries()},
+                        200 if thread else 404,
+                    )
+                else:
+                    thread = upsert_chat_thread(payload)
+                    json_response(self, {"ok": True, "thread": thread, "threads": chat_thread_summaries()})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
         if parsed.path == "/api/chat":
             json_response(self, {"ok": False, "error": "deprecated API, use stream"}, 404)
             return
@@ -2213,6 +2465,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 conversation_history=conversation_history,
                 emit_context_events=emit_context_events,
                 loaded_skill_ids=[str(item) for item in loaded_skill_ids],
+                runtime_context=request_runtime_context(self),
             ):
                 body = json.dumps(event, ensure_ascii=False)
                 self.wfile.write(f"data: {body}\n\n".encode("utf-8"))

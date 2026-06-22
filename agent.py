@@ -1525,7 +1525,7 @@ def _agent_tools(allow_web_search: bool = True):
     return tools
 
 
-def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True):
+def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, runtime_context: dict[str, Any] | None = None):
     config = load_ai_config()
     api_key = config.get("api_key", "") or os.environ.get("OPENAI_API_KEY", "")
     base_url = config.get("base_url", "") or os.environ.get("OPENAI_API_BASE", "")
@@ -1561,8 +1561,20 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True):
         quarterly_crosscheck_sentence = "`needs_official_row_crosscheck` 只能作为线索，正式结论必须读取本地已保存官方来源或本地引用原文核验。"
         web_rule = "【回答方式】只输出答案本身，不额外解释当前能力配置、联网能力或前端设置，也不要引导用户调整前端设置；本地依据不足时，只说缺少哪些本地数据或引用。\n"
     
+    runtime_context = runtime_context or {}
+    runtime_lines = [
+        f"- 当前时间: {runtime_context.get('current_time') or 'unknown'}",
+        f"- 时区: {runtime_context.get('timezone') or 'unknown'} ({runtime_context.get('utc_offset') or ''})",
+        f"- 请求 IP: {runtime_context.get('visible_ip') or runtime_context.get('client_ip') or 'unknown'}",
+        f"- X-Forwarded-For: {runtime_context.get('forwarded_for') or 'none'}",
+        f"- 位置推断: {runtime_context.get('location_hint') or 'unknown'}",
+    ]
+    runtime_context_text = "\n".join(runtime_lines)
+
     system_message = (
         "你是中国移动战略部公开信息监测系统的智能 RAG 和运维助手。\n"
+        "【当前运行上下文】以下信息由后端按本次请求实时注入。凡用户提到“今天、现在、目前、最新、上个季度、上一季度、最近”等相对时间，必须优先用这里的当前时间和时区定位；涉及地域、网络可达性或本地/公网判断时，可参考请求 IP 和位置推断，但不要把粗略位置当作精确地理定位。\n"
+        f"{runtime_context_text}\n"
         "调用 `feishu_cli` 时必须使用完整参数 `--spreadsheet-token ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA`，不要使用 `-t` 简写或位置参数。例如查询数据使用：`sheets +read --spreadsheet-token ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA --range 9c638d!A1:C10`。\n"
         "【核心法则】如果你不确定某个 CLI 命令（特别是 `+update`、`+write` 等子命令）的具体用法和参数格式，**绝对不允许瞎猜尝试**！你必须先执行 `feishu_cli sheets +update --help` 等命令查阅帮助文档，然后再进行真正的调用。\n"
         "【重要】核心数据表的工作表名称是\"主表\"，其对应的 sheet_id 为 9c638d。当查询或修改\"主表\"时，务必使用 9c638d 作为 range 前缀，例如 `--range 9c638d!A2:Z2`。\n"
@@ -1580,7 +1592,7 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True):
         "【表格输出限制】除非用户明确要求导出完整 CSV/Excel，否则最终回答中的 Markdown 表格最多输出 30 行、8 列；超过范围时先给摘要和关键行，并提示用户缩小范围或导出文件。后端会对超限表格做截断，不要把大表格分批塞进同一条回答。\n"
         "【爬虫日志调度】每次全量爬虫完成后，系统会登记 `agent_knowledge/crawl_run_logs/`：本地只保存运行索引和摘要，完整逐 URL 日志与 Agent 处理流程写入飞书日志子表。用户问上次爬虫、失败链接、覆盖率、日志在哪、Agent 是否处理完成时，必须先调用 `list_crawl_runs`；需要更细节再用 `search_local_reports` 或 `read_local_reference` 读取 `run_log.tsv`、`coverage_report.tsv`、`final_audit.md`。\n"
         "【操作工具决策权】用户要求生成周报、生成运营商业绩摘要、全量爬取、查看输出文件、查看爬取设置或查看系统状态时，由你根据用户真实意图自行决定是否调用 `trigger_report_generation`、`trigger_carrier_performance_report_generation`、`trigger_full_crawl`、`list_report_outputs`、`get_crawl_settings_summary`、`get_system_status` 等工具。不要把“输出预测表”“生成预测图”“正式结论”等分析表达误判成报告生成；只有用户确实要产出 Word 周报或业绩摘要时才调用生成类工具。\n"
-        "【前端展示边界】前端会按事件顺序展示工具调用卡片、已载入的 Agent Skill 和已发送给 AI 的数据库。最终正文不要再写“我先检索”“让我读取”“现在我来获取”等过程旁白；直接输出结论、数据、依据和必要的不确定性。工具调用过程由前端工具卡表达。\n"
+        "【前端展示边界】前端会按事件顺序展示工具调用卡片、已载入的 Agent Skill、已发送给 AI 的数据库，以及你在工具调用前后的简短可审计过程说明。过程说明可以用一两句话解释别名判断、相对时间定位、检索范围和读取原文动作，例如“移动通常指中国移动”“按当前日期，上个完整季度是 2026Q1”；最终正文不要再重复“我先检索”“让我读取”“现在我来获取”等过程旁白，直接输出结论、数据、依据和必要的不确定性。\n"
         f"{retrieval_pairing_rule}"
         f"{local_original_rule}"
         f"{cross_check_rule}"
@@ -1665,6 +1677,26 @@ def _format_conversation_history(history: list[dict[str, Any]] | None) -> str:
     return "同一聊天线程的最近对话如下，用于理解代词、继续追问和上一轮结论；若与本轮用户新指令冲突，以本轮新指令为准。\n" + "\n".join(lines)
 
 
+def _tool_process_text(tool_name: str) -> str:
+    labels = {
+        "load_agent_skills": "我读取本轮需要的 Agent Skill 选择。",
+        "read_agent_skill": "我读取相关 Agent Skill 的完整指令。",
+        "select_agent_databases": "我确认本轮会发送给 AI 的数据库。",
+        "list_local_datasets": "我读取本轮已选数据库列表。",
+        "search_agent_memory": "我查找长期记忆中是否有相关规则。",
+        "search_local_reports": "我读取已选数据库并检索摘要片段。",
+        "read_local_reference": "我读取命中的数据库原文，确认数据口径和来源。",
+        "web_search": "我联网检索公开来源。",
+        "read_webpage": "我读取网页原文核验细节。",
+        "render_python_chart": "我基于已核验数据生成图表。",
+        "forecast_quarterly_metric": "我调用趋势预测工具，使用历史数据生成预测。",
+        "get_system_status": "我读取系统当前状态。",
+        "list_report_outputs": "我查看已有报告输出。",
+        "list_crawl_runs": "我读取爬虫运行日志。",
+    }
+    return labels.get(tool_name, f"我调用 {tool_name or '工具'} 获取依据。")
+
+
 def stream_agent(
     message: str,
     force_web_search: bool = False,
@@ -1675,6 +1707,7 @@ def stream_agent(
     conversation_history: list[dict[str, Any]] | None = None,
     emit_context_events: bool = True,
     loaded_skill_ids: list[str] | None = None,
+    runtime_context: dict[str, Any] | None = None,
 ) -> Generator[dict[str, Any], None, None]:
     _reset_web_search_indexes()
     try:
@@ -1710,7 +1743,12 @@ def stream_agent(
         thinking_enabled=thinking_enabled,
         approved_action_ids=approved_action_ids or [],
     )
-    agent = get_agent(thinking_enabled=thinking_enabled, allow_web_search=force_web_search)
+    try:
+        agent = get_agent(thinking_enabled=thinking_enabled, allow_web_search=force_web_search, runtime_context=runtime_context)
+    except TypeError as exc:
+        if "runtime_context" not in str(exc):
+            raise
+        agent = get_agent(thinking_enabled=thinking_enabled, allow_web_search=force_web_search)
     thinking_step = 0
 
     def thinking_event(text: str) -> dict[str, Any]:
@@ -1898,6 +1936,15 @@ def stream_agent(
                             tool_calls_acc[current_key] = {"name": tc.get("name"), "args": "", "id": tc_id}
                             if thinking_enabled:
                                 yield thinking_event(f"准备调用工具：{tc.get('name') or '工具'}。")
+                            process_event = {
+                                "type": "process_line",
+                                "id": f"process-{tc_id}",
+                                "toolId": tc_id,
+                                "toolName": tc.get("name") or "工具",
+                                "text": _tool_process_text(tc.get("name") or "工具"),
+                            }
+                            recorder.observe(process_event)
+                            yield process_event
                             event = {"type": "tool_call_start", "id": tc_id, "name": tc.get("name") or "工具"}
                             recorder.observe(event)
                             yield event

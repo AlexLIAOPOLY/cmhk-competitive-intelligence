@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=108" />
+    <link rel="stylesheet" href="/static/styles.css?v=118" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -145,7 +145,21 @@
       <section class="modal-backdrop chat-backdrop" id="chatModal" hidden>
         <aside class="chat-panel floating-chat" aria-label="AI 对话">
           <div class="chat-header">
-            <div>
+            <div class="chat-nav-controls" aria-label="对话导航">
+              <button class="chat-sidebar-rail-button" id="toggleChatThreadsButton" type="button" title="展开历史对话" aria-label="展开历史对话">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+                  <path d="M9 5v14"></path>
+                </svg>
+              </button>
+              <button class="chat-new-thread-button" id="newChatThreadButton" type="button" title="新对话" aria-label="新对话">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5v14"></path>
+                  <path d="M5 12h14"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="chat-header-title">
               <h2>小竞AI</h2>
               <p>智能 Agent：支持联网搜索、RAG 检索、趋势判断、来源核验和数据协同。</p>
             </div>
@@ -153,12 +167,28 @@
             <button class="quiet-button small" id="clearChatButton" type="button">清空</button>
             <button class="close-btn" id="closeChatButton" type="button" aria-label="关闭">&times;</button>
           </div>
+          <div class="chat-workspace is-sidebar-collapsed" id="chatWorkspace">
+            <aside class="chat-thread-sidebar" id="chatThreadSidebar" aria-label="历史对话">
+              <div class="chat-thread-header">
+                <strong>历史对话</strong>
+              </div>
+              <div class="chat-thread-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M20 20l-3.5-3.5"></path>
+                </svg>
+                <input id="chatThreadSearchInput" type="search" autocomplete="off" placeholder="搜索对话" />
+              </div>
+              <div class="chat-thread-list" id="chatThreadList"></div>
+            </aside>
+            <div class="chat-session">
           <div class="messages" id="messages">
             <div class="message assistant">
               <span class="avatar">竞</span>
               <div class="message-body">您好！我是小竞AI，面向 CMHK 竞对、云厂商和宏观政策数据的分析型 Agent。我可以帮您：<br>1. <b>查数据</b>：检索本地三类数据库，说明覆盖主体、期间、指标口径和来源。<br>2. <b>核来源</b>：优先使用官方值，标明 verification_count、source-gap 和冲突状态。<br>3. <b>看趋势</b>：基于季度、半年度和年度历史数据做趋势判断与预测边界说明。<br>4. <b>找外部信息</b>：需要时联网检索公开网页，并把来源带回回答。<br>请问今天需要分析什么？</div>
             </div>
           </div>
+          <div class="queued-message-list" id="chatQueueList" hidden></div>
           <form class="chat-form" id="chatForm">
             <div class="chat-composer">
               <div class="skill-picker">
@@ -234,6 +264,8 @@
             </div>
             <button id="chatSubmitButton" type="submit">发送</button>
           </form>
+            </div>
+          </div>
         </aside>
       </section>
 
@@ -367,6 +399,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=112"></script>
+    <script src="/static/app.js?v=120"></script>
   </body>
 </html>

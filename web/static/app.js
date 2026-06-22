@@ -24,6 +24,10 @@ const state = {
   knowledgeUploadBusy: false,
   pendingConfirmedActions: new Set(),
   chatHistory: [],
+  chatThreads: [],
+  activeThreadId: null,
+  chatQueue: [],
+  chatThreadSearch: "",
   agentContextKey: "",
   loadedSkillIds: new Set(),
 };
@@ -83,6 +87,14 @@ const els = {
   refreshAgentMemory: document.querySelector("#refreshAgentMemory"),
   clearLogButton: document.querySelector("#clearLogButton"),
   clearChatButton: document.querySelector("#clearChatButton"),
+  toggleChatThreadsButton: document.querySelector("#toggleChatThreadsButton"),
+  collapseChatThreadsButton: document.querySelector("#collapseChatThreadsButton"),
+  newChatThreadButton: document.querySelector("#newChatThreadButton"),
+  chatWorkspace: document.querySelector("#chatWorkspace"),
+  chatThreadSidebar: document.querySelector("#chatThreadSidebar"),
+  chatThreadSearchInput: document.querySelector("#chatThreadSearchInput"),
+  chatThreadList: document.querySelector("#chatThreadList"),
+  chatQueueList: document.querySelector("#chatQueueList"),
   chatFab: document.querySelector("#chatFab"),
   chatModal: document.querySelector("#chatModal"),
   closeChatButton: document.querySelector("#closeChatButton"),
@@ -171,14 +183,14 @@ function setBusy(value, label = "运行中", action = "all") {
 
 function setChatBusy(value) {
   state.chatBusy = value;
-  els.chatSubmitButton.disabled = value;
-  els.chatInput.disabled = value;
-  if (els.webSearchToggle) els.webSearchToggle.disabled = value;
-  if (els.thinkingToggle) els.thinkingToggle.disabled = value;
-  if (els.skillToggle) els.skillToggle.disabled = value;
-  if (els.databaseToggle) els.databaseToggle.disabled = value;
+  els.chatSubmitButton.disabled = false;
+  els.chatInput.disabled = false;
+  if (els.webSearchToggle) els.webSearchToggle.disabled = false;
+  if (els.thinkingToggle) els.thinkingToggle.disabled = false;
+  if (els.skillToggle) els.skillToggle.disabled = false;
+  if (els.databaseToggle) els.databaseToggle.disabled = false;
   if (els.knowledgeUploadButton) els.knowledgeUploadButton.disabled = value || state.knowledgeUploadBusy;
-  els.chatSubmitButton.textContent = value ? "生成中" : "发送";
+  els.chatSubmitButton.textContent = value ? "排队" : "发送";
 }
 
 function renderWebSearchToggle() {
@@ -2156,6 +2168,39 @@ function renderChartBlock(jsonText) {
   return `<div class="chat-chart-card">${svg}<div class="chart-legend">${legend}</div>${notes}</div>`;
 }
 
+const ASSISTANT_PROCESS_MARKERS = "(?:用户问的是|“[^”]{1,20}”通常指|\"[^\"]{1,20}\"通常指|我先|我来|我需要|为了获取|检索到了|检索只返回|数据包摘要显示|数据包显示|实际上，从数据包摘要|但早期的数据|CSV内容太大|让我|现在让我|现在我(?:已|来|开始|生成|整理)|现在(?:生成|整理|读取|检索)|我整理一下|数据已经齐全|数据非常清晰|很好|我已经有了|从JSON中|从数据中我已获取|需要搜索|需要确认|需要.*数据|从已有的数据|从JSON看到|当前时间为|按当前日期|上一个季度就是|[^。！？\\n]{0,30}最新一个完整季度是)";
+
+function extractAssistantProcessLines(content) {
+  const original = content || "";
+  if (!original.trim()) return { answer: original, processLines: [] };
+  const processSentencePattern = new RegExp(`(^|[。！？]\\s*)(${ASSISTANT_PROCESS_MARKERS}[^。！？]*(?:[。！？]|$))`, "g");
+  const processLines = [];
+  let answer = original.replace(processSentencePattern, (match, prefix, sentence) => {
+    const clean = sentence.replace(/\s+/g, " ").trim();
+    if (clean) processLines.push(clean);
+    return prefix && prefix.trim() ? prefix.trim() : "";
+  });
+  const processLinePattern = new RegExp(`^\\s*${ASSISTANT_PROCESS_MARKERS}[\\s\\S]*?(?:。|！|？|$)\\s*$`);
+  answer = answer
+    .split(/\n+/)
+    .filter((line) => {
+      const clean = line.trim();
+      if (!clean) return false;
+      if (processLinePattern.test(clean)) {
+        processLines.push(clean.replace(/\s+/g, " "));
+        return false;
+      }
+      if (/需要(?:搜索|确认|补充|获取|读取|更多).*数据/.test(clean)) {
+        processLines.push(clean.replace(/\s+/g, " "));
+        return false;
+      }
+      return true;
+    })
+    .join("\n")
+    .trim();
+  return { answer, processLines: [...new Set(processLines)].slice(0, 12) };
+}
+
 function stripAssistantControlText(content) {
   let text = content || "";
   text = text.replace(/<suggestions>[\s\S]*?<\/suggestions>/gi, "").trim();
@@ -2167,7 +2212,7 @@ function stripAssistantControlText(content) {
   text = text.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
   text = text.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
   text = text.replace(/^\s*(?:联网搜索已关闭|当前联网搜索已关闭|已关闭联网搜索|由于联网搜索|因为联网搜索|本轮不会调用|我不能联网|当前不能联网)[^\n。！？]*(?:[。！？]|\n|$)/gmi, "").trim();
-  const processMarkers = "(?:我先|我需要|为了获取|检索到了|数据包摘要显示|实际上，从数据包摘要|但早期的数据|CSV内容太大|让我|现在让我|现在我(?:已|来|开始|生成|整理)|现在(?:生成|整理|读取|检索)|我整理一下|数据已经齐全|我已经有了|从JSON中|从数据中我已获取|需要搜索|需要确认|需要.*数据|从已有的数据|从JSON看到)";
+  const processMarkers = ASSISTANT_PROCESS_MARKERS;
   const processSentencePattern = new RegExp(`(^|[。！？]\\s*)${processMarkers}[^。！？]*(?:[。！？]|$)`, "g");
   text = text.replace(processSentencePattern, (match, prefix) => (prefix && prefix.trim() ? prefix.trim() : "")).trim();
   const formalStart = text.search(/\n?\s*(?:数据汇总（自然年收入|##\s*中国铁塔|中国铁塔6年收入趋势|结论[：:])/);
@@ -2371,6 +2416,206 @@ function addMessage(role, content, markdown = false) {
   return node;
 }
 
+function chatThreadId() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+  }
+  return `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function initialAssistantText() {
+  return "您好！我是小竞AI，面向 CMHK 竞对、云厂商和宏观政策数据的分析型 Agent。我可以帮您：<br>1. <b>查数据</b>：检索本地三类数据库，说明覆盖主体、期间、指标口径和来源。<br>2. <b>核来源</b>：优先使用官方值，标明 verification_count、source-gap 和冲突状态。<br>3. <b>看趋势</b>：基于季度、半年度和年度历史数据做趋势判断与预测边界说明。<br>4. <b>找外部信息</b>：需要时联网检索公开网页，并把来源带回回答。<br>请问今天需要分析什么？";
+}
+
+function resetChatMessages() {
+  els.messages.innerHTML = `
+    <div class="message assistant">
+      <span class="avatar">AI</span>
+      <div class="message-body">
+        <div class="message-text">${initialAssistantText()}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderChatThreadList() {
+  if (!els.chatThreadList) return;
+  const query = String(state.chatThreadSearch || "").trim().toLowerCase();
+  const threads = state.chatThreads.filter((thread) => {
+    if (!query) return true;
+    return [thread.title, thread.preview]
+      .map((item) => String(item || "").toLowerCase())
+      .some((text) => text.includes(query));
+  });
+  if (!state.chatThreads.length) {
+    els.chatThreadList.innerHTML = `<div class="agent-memory-empty">暂无历史对话</div>`;
+    return;
+  }
+  if (!threads.length) {
+    els.chatThreadList.innerHTML = `<div class="agent-memory-empty">没有匹配的对话</div>`;
+    return;
+  }
+  els.chatThreadList.innerHTML = threads.map((thread) => `
+    <div class="chat-thread-item ${thread.id === state.activeThreadId ? "is-active" : ""}" data-thread-id="${escapeHtml(thread.id)}">
+      <button class="chat-thread-main" type="button">
+        <span class="chat-thread-title">${thread.pinned ? "置顶 · " : ""}${escapeHtml(thread.title || "未命名对话")}</span>
+        <span class="chat-thread-preview">${escapeHtml(thread.preview || `${thread.messageCount || 0} 条消息`)}</span>
+      </button>
+      <button class="chat-thread-pin ${thread.pinned ? "is-pinned" : ""}" type="button" title="${thread.pinned ? "取消置顶" : "置顶"}" aria-label="${thread.pinned ? "取消置顶" : "置顶"}" data-action="pin">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"></path><path d="M8 3h8l-1 7 3 4H6l3-4z"></path></svg>
+      </button>
+      <button class="chat-thread-delete" type="button" title="删除" aria-label="删除">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </div>
+  `).join("");
+}
+
+async function loadChatThreads() {
+  if (!els.chatThreadList) return;
+  try {
+    const response = await fetch("/api/chat-threads");
+    const payload = await response.json();
+    if (!payload.ok) throw new Error(payload.error || "历史对话加载失败");
+    state.chatThreads = Array.isArray(payload.threads) ? payload.threads : [];
+    renderChatThreadList();
+  } catch (error) {
+    els.chatThreadList.innerHTML = `<div class="agent-memory-empty">${escapeHtml(error.message || String(error))}</div>`;
+  }
+}
+
+async function persistActiveThread() {
+  if (!state.activeThreadId && !state.chatHistory.length) return;
+  if (!state.activeThreadId) state.activeThreadId = chatThreadId();
+  try {
+    const response = await fetch("/api/chat-threads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: state.activeThreadId,
+        messages: state.chatHistory,
+        agentContextKey: state.agentContextKey,
+        loadedSkillIds: Array.from(state.loadedSkillIds),
+      }),
+    });
+    const payload = await response.json();
+    if (!payload.ok) throw new Error(payload.error || "保存失败");
+    state.activeThreadId = payload.thread && payload.thread.id ? payload.thread.id : state.activeThreadId;
+    state.chatThreads = Array.isArray(payload.threads) ? payload.threads : state.chatThreads;
+    renderChatThreadList();
+  } catch (error) {
+    console.warn("保存历史对话失败", error);
+  }
+}
+
+function startNewChatThread() {
+  state.activeThreadId = chatThreadId();
+  state.chatHistory = [];
+  state.agentContextKey = "";
+  state.loadedSkillIds = new Set();
+  state.chatQueue = [];
+  resetChatMessages();
+  renderChatQueue();
+  renderChatThreadList();
+  els.chatInput.focus();
+}
+
+async function openChatThread(threadId) {
+  if (!threadId) return;
+  try {
+    const response = await fetch(`/api/chat-threads?id=${encodeURIComponent(threadId)}`);
+    const payload = await response.json();
+    if (!payload.ok || !payload.thread) throw new Error(payload.error || "对话不存在");
+    const thread = payload.thread;
+    state.activeThreadId = thread.id;
+    state.chatHistory = Array.isArray(thread.messages) ? thread.messages : [];
+    state.agentContextKey = String(thread.agentContextKey || "");
+    state.loadedSkillIds = new Set(Array.isArray(thread.loadedSkillIds) ? thread.loadedSkillIds : []);
+    els.messages.innerHTML = "";
+    if (!state.chatHistory.length) {
+      resetChatMessages();
+    } else {
+      state.chatHistory.forEach((item) => addMessage(item.role, item.content, item.role === "assistant"));
+    }
+    renderChatThreadList();
+  } catch (error) {
+    addMessage("assistant", `打开历史对话失败：${error.message || String(error)}`);
+  }
+}
+
+async function deleteChatThread(threadId) {
+  if (!threadId) return;
+  try {
+    const response = await fetch("/api/chat-threads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", id: threadId }),
+    });
+    const payload = await response.json();
+    state.chatThreads = Array.isArray(payload.threads) ? payload.threads : state.chatThreads;
+    if (state.activeThreadId === threadId) startNewChatThread();
+    renderChatThreadList();
+  } catch (error) {
+    console.warn("删除历史对话失败", error);
+  }
+}
+
+async function pinChatThread(threadId, pinned) {
+  if (!threadId) return;
+  try {
+    const response = await fetch("/api/chat-threads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "pin", id: threadId, pinned }),
+    });
+    const payload = await response.json();
+    if (!payload.ok) throw new Error(payload.error || "置顶失败");
+    state.chatThreads = Array.isArray(payload.threads) ? payload.threads : state.chatThreads;
+    renderChatThreadList();
+  } catch (error) {
+    addMessage("assistant", `置顶对话失败：${error.message || String(error)}`);
+  }
+}
+
+function renderChatQueue() {
+  if (!els.chatQueueList) return;
+  if (!state.chatQueue.length) {
+    els.chatQueueList.hidden = true;
+    els.chatQueueList.innerHTML = "";
+    return;
+  }
+  els.chatQueueList.hidden = false;
+  els.chatQueueList.innerHTML = state.chatQueue.map((item, index) => `
+    <div class="queued-message-item" data-queue-id="${escapeHtml(item.id)}">
+      <strong>等待 ${index + 1}</strong>
+      <span class="queued-message-text">${escapeHtml(item.message)}</span>
+      <button class="queued-message-action" type="button" data-action="edit">修改</button>
+      <button class="queued-message-action" type="button" data-action="remove">撤回</button>
+    </div>
+  `).join("");
+}
+
+function enqueueChatMessage(message) {
+  state.chatQueue.push({ id: chatThreadId(), message });
+  renderChatQueue();
+}
+
+function processNextQueuedChat() {
+  if (state.chatBusy || !state.chatQueue.length) return;
+  const next = state.chatQueue.shift();
+  renderChatQueue();
+  if (next && next.message) sendChat(next.message);
+}
+
+function setChatSidebarCollapsed(collapsed) {
+  if (!els.chatWorkspace) return;
+  els.chatWorkspace.classList.toggle("is-sidebar-collapsed", collapsed);
+  if (els.toggleChatThreadsButton) {
+    els.toggleChatThreadsButton.title = collapsed ? "展开历史对话" : "收起历史对话";
+    els.toggleChatThreadsButton.setAttribute("aria-label", collapsed ? "展开历史对话" : "收起历史对话");
+  }
+}
+
 function clearConnectingPlaceholder(node) {
   const placeholder = node.querySelector('.message-body > [data-placeholder="connecting"]');
   if (placeholder) placeholder.remove();
@@ -2470,8 +2715,72 @@ function appendAssistantActionLine(node, event) {
   const line = document.createElement("div");
   line.className = "assistant-action-line";
   line.dataset.toolId = id;
+  line.dataset.toolName = event.name || "";
   line.textContent = toolNarrationText(event.name);
   appendStreamBlock(node, line);
+}
+
+function appendAssistantProcessLine(node, text, beforeNode = null, preferredToolName = "") {
+  const body = messageBody(node);
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (!body || !clean) return;
+  const key = clean.slice(0, 240);
+  const toolName = preferredToolName || processLineToolAnchorName(clean);
+  const isModelProcessSentence = /^(?:我先|我来|让我|现在让我|我需要|为了|需要)/.test(clean);
+  const existingForTool = toolName
+    ? [...body.querySelectorAll(".assistant-process-line")].find((item) => item.dataset.toolName === toolName)
+    : null;
+  if (existingForTool) {
+    if (!existingForTool.dataset.fromTypedEvent || isModelProcessSentence) return;
+    existingForTool.remove();
+  }
+  const exists = [...body.querySelectorAll(".assistant-process-line")].some((item) => item.dataset.processKey === key);
+  if (exists) return;
+  const line = document.createElement("div");
+  line.className = "assistant-process-line";
+  line.dataset.processKey = key;
+  if (toolName) line.dataset.toolName = toolName;
+  line.textContent = clean;
+  if (beforeNode && beforeNode.parentNode === body) {
+    body.insertBefore(line, beforeNode);
+  } else {
+    body.appendChild(line);
+  }
+}
+
+function processLineToolAnchorName(text) {
+  const clean = String(text || "");
+  if (/Agent Skill|Skill|完整指令|完整 SKILL/i.test(clean)) return "read_agent_skill";
+  if (/数据库|数据集|可用的数据集|已选数据库/.test(clean)) return "list_local_datasets";
+  if (/长期记忆|记忆|相关规则/.test(clean)) return "search_agent_memory";
+  if (/官方核验|原文|核验文件|确认细节|确认口径|具体行数据|行数据|查询一下/.test(clean)) return "read_local_reference";
+  if (/检索|摘要片段|查找|搜索|查询/.test(clean)) return "search_local_reports";
+  if (/当前时间|按当前日期|上一个季度|完整季度|最新一个完整季度/.test(clean)) return "search_local_reports";
+  return "";
+}
+
+function findProcessInsertionAnchor(node, text, fallbackNode = null, preferredToolName = "") {
+  const body = messageBody(node);
+  if (!body) return fallbackNode;
+  const toolName = preferredToolName || processLineToolAnchorName(text);
+  if (toolName) {
+    const actionLine = [...body.querySelectorAll(".assistant-action-line")].find((item) => item.dataset.toolName === toolName);
+    if (actionLine) return actionLine;
+    const toolCard = [...body.querySelectorAll(".tool-details")].find((item) => item.dataset.toolName === toolName);
+    if (toolCard) return toolCard;
+  }
+  return fallbackNode;
+}
+
+function renderAssistantTextWithProcess(node, rawContent, markdown = true, textNode = null) {
+  const target = textNode || currentMessageTextNode(node);
+  const { answer: contentWithoutProcess, processLines } = extractAssistantProcessLines(rawContent);
+  processLines.forEach((line) => {
+    const toolName = processLineToolAnchorName(line);
+    appendAssistantProcessLine(node, line, findProcessInsertionAnchor(node, line, target, toolName), toolName);
+  });
+  setCurrentMessageContent(node, contentWithoutProcess, markdown, target);
+  return contentWithoutProcess;
 }
 
 function appendRagProcess(node, text) {
@@ -2580,6 +2889,7 @@ function appendToolCallCard(node, event) {
     `;
     appendStreamBlock(node, card);
   }
+  card.dataset.toolName = event.name || technicalName;
   const iconNode = card.querySelector(".tool-icon");
   const labelNode = card.querySelector(".tool-label");
   const nameNode = card.querySelector(".tool-name");
@@ -2684,8 +2994,12 @@ function compactChatHistory() {
 }
 
 async function sendChat(message, options = {}) {
+  if (!state.activeThreadId) state.activeThreadId = chatThreadId();
   const conversationHistory = compactChatHistory();
   addMessage("user", message);
+  state.chatHistory.push({ role: "user", content: message });
+  state.chatHistory = state.chatHistory.slice(-80);
+  persistActiveThread();
   setChatBusy(true);
   try {
     const assistantNode = addMessage("assistant", "正在连接...");
@@ -2778,6 +3092,16 @@ async function sendChat(message, options = {}) {
           if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
           mergeCitationMeta(assistantNode, event);
+        } else if (event.type === "process_line") {
+          const anchor = findProcessInsertionAnchor(assistantNode, event.text, null, event.toolName || "");
+          appendAssistantProcessLine(assistantNode, event.text, anchor, event.toolName || "");
+          const toolName = event.toolName || processLineToolAnchorName(event.text);
+          if (toolName) {
+            const line = [...assistantNode.querySelectorAll(".assistant-process-line")].find((item) => item.dataset.toolName === toolName);
+            if (line) line.dataset.fromTypedEvent = "true";
+          }
+          hasVisibleAssistantText = true;
+          scrollMessagesToBottom();
         } else if (event.type === "action_confirmation") {
           appendActionConfirmation(assistantNode, event, message);
         } else if (event.type === "run_summary") {
@@ -2810,10 +3134,8 @@ async function sendChat(message, options = {}) {
                console.error("Suggestion parse error:", e, sugMatch[1]);
             }
           }
-          displayAnswer = stripAssistantControlText(displayAnswer);
-          
-          setCurrentMessageContent(assistantNode, displayAnswer, true, textNode);
-          if (displayAnswer.trim()) {
+          const renderedAnswer = renderAssistantTextWithProcess(assistantNode, displayAnswer, true, textNode);
+          if (renderedAnswer.trim()) {
             hasVisibleAssistantText = true;
           }
           dedupeAssistantTextBlocks(assistantNode);
@@ -2866,10 +3188,10 @@ async function sendChat(message, options = {}) {
     }
     if (!answer.trim()) {
       setCurrentMessageContent(assistantNode, "操作完成。", true);
-      state.chatHistory.push({ role: "user", content: message });
       state.chatHistory.push({ role: "assistant", content: "操作完成。" });
-      state.chatHistory = state.chatHistory.slice(-12);
+      state.chatHistory = state.chatHistory.slice(-80);
       state.agentContextKey = contextKey;
+      await persistActiveThread();
     } else {
       let finalAnswer = answer;
       const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
@@ -2896,7 +3218,7 @@ async function sendChat(message, options = {}) {
       finalAnswer = finalAnswer.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
       finalAnswer = stripAssistantControlText(finalAnswer);
 
-      setCurrentMessageContent(assistantNode, finalAnswer, true);
+          finalAnswer = renderAssistantTextWithProcess(assistantNode, finalAnswer, true);
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
       const storedLinks = assistantNode.dataset.links ? JSON.parse(assistantNode.dataset.links) : null;
@@ -2928,19 +3250,23 @@ async function sendChat(message, options = {}) {
         b.insertAdjacentHTML("beforeend", fallbackHTML);
       }
       if (finalAnswer.trim()) {
-        state.chatHistory.push({ role: "user", content: message });
         state.chatHistory.push({ role: "assistant", content: finalAnswer });
-        state.chatHistory = state.chatHistory.slice(-12);
+        state.chatHistory = state.chatHistory.slice(-80);
       }
       state.agentContextKey = contextKey;
+      await persistActiveThread();
       scrollMessagesToBottom();
     }
     await fetchStatus();
   } catch (error) {
     addMessage("assistant", `处理失败：${error.message}`);
+    state.chatHistory.push({ role: "assistant", content: `处理失败：${error.message}` });
+    state.chatHistory = state.chatHistory.slice(-80);
+    await persistActiveThread();
   } finally {
     setChatBusy(false);
     els.chatInput.focus();
+    processNextQueuedChat();
   }
 }
 
@@ -3127,7 +3453,10 @@ els.chatFab.addEventListener("click", () => {
 });
 
 window.clickSuggestion = function(text) {
-  if (state.chatBusy) return;
+  if (state.chatBusy) {
+    enqueueChatMessage(text);
+    return;
+  }
   els.chatInput.value = text;
   resizeChatInput();
   els.chatForm.requestSubmit();
@@ -3142,18 +3471,75 @@ els.chatModal.addEventListener("click", (event) => {
 });
 
 els.clearChatButton.addEventListener("click", () => {
-  state.chatHistory = [];
-  state.agentContextKey = "";
-  state.loadedSkillIds = new Set();
-  els.messages.innerHTML = `
-    <div class="message assistant">
-      <span class="avatar">AI</span>
-      <div class="message-body">
-        <div class="message-text">您好！我是一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>联网搜索</b>：按需检索公开网页并保留来源引用。<br>2. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>3. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>4. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
-      </div>
-    </div>
-  `;
+  startNewChatThread();
 });
+
+if (els.toggleChatThreadsButton && els.chatWorkspace) {
+  els.toggleChatThreadsButton.addEventListener("click", () => {
+    setChatSidebarCollapsed(!els.chatWorkspace.classList.contains("is-sidebar-collapsed"));
+  });
+}
+
+if (els.collapseChatThreadsButton) {
+  els.collapseChatThreadsButton.addEventListener("click", () => {
+    setChatSidebarCollapsed(true);
+  });
+}
+
+if (els.newChatThreadButton) {
+  els.newChatThreadButton.addEventListener("click", startNewChatThread);
+}
+
+if (els.chatThreadList) {
+  els.chatThreadList.addEventListener("click", (event) => {
+    const item = event.target.closest(".chat-thread-item");
+    if (!item) return;
+    const threadId = item.dataset.threadId;
+    if (event.target.closest(".chat-thread-pin")) {
+      event.preventDefault();
+      const thread = state.chatThreads.find((entry) => entry.id === threadId);
+      pinChatThread(threadId, !(thread && thread.pinned));
+      return;
+    }
+    if (event.target.closest(".chat-thread-delete")) {
+      event.preventDefault();
+      deleteChatThread(threadId);
+      return;
+    }
+    openChatThread(threadId);
+    if (window.matchMedia("(max-width: 720px)").matches) setChatSidebarCollapsed(true);
+  });
+}
+
+if (els.chatThreadSearchInput) {
+  els.chatThreadSearchInput.addEventListener("input", () => {
+    state.chatThreadSearch = els.chatThreadSearchInput.value;
+    renderChatThreadList();
+  });
+}
+
+if (els.chatQueueList) {
+  els.chatQueueList.addEventListener("click", (event) => {
+    const action = event.target.dataset.action;
+    const item = event.target.closest(".queued-message-item");
+    if (!action || !item) return;
+    const queueId = item.dataset.queueId;
+    const queued = state.chatQueue.find((entry) => entry.id === queueId);
+    if (!queued) return;
+    if (action === "remove") {
+      state.chatQueue = state.chatQueue.filter((entry) => entry.id !== queueId);
+      renderChatQueue();
+      return;
+    }
+    if (action === "edit") {
+      els.chatInput.value = queued.message;
+      state.chatQueue = state.chatQueue.filter((entry) => entry.id !== queueId);
+      renderChatQueue();
+      resizeChatInput();
+      els.chatInput.focus();
+    }
+  });
+}
 
 if (els.webSearchToggle) {
   renderWebSearchToggle();
@@ -3275,9 +3661,14 @@ document.addEventListener("click", (event) => {
 els.chatForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const message = els.chatInput.value.trim();
-  if (!message || state.chatBusy) return;
+  if (!message) return;
   els.chatInput.value = "";
   resizeChatInput();
+  if (state.chatBusy) {
+    enqueueChatMessage(message);
+    els.chatInput.focus();
+    return;
+  }
   sendChat(message);
 });
 
@@ -3286,12 +3677,12 @@ els.chatInput.addEventListener("input", resizeChatInput);
 els.chatInput.addEventListener("keydown", (event) => {
   if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
   event.preventDefault();
-  if (state.chatBusy) return;
   els.chatForm.requestSubmit();
 });
 
 setClock();
 setInterval(setClock, 30000);
+loadChatThreads();
 fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);
 });
