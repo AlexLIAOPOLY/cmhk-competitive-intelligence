@@ -12,10 +12,10 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
     "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer",
     "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
-    "https://www.i-cablebroadband-offer.com/"
+    "https://www.i-cablebroadband-offer.com/",
+    "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/"
   ],
   "attempted_urls": [
     "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
@@ -24,7 +24,7 @@
     "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer"
   ],
   "extracted": {
-    "宽带套餐": "explore the possibility of cooperating with the industry to share resources and technologies, thereby enhancing overall competitiveness to further meet customers' requirements for broadband services. In recent years, giv",
+    "宽带套餐": "關於有線寬頻 管理層 發展里程 企業願景、使命宣言和 價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 私隱政策 個人資料收集聲明 © 2023 有線寬頻免責聲明及版權(版權所有) SOURCE: https://www.i-cablebroadband-offer.com/ 有線寬頻I-CABLE | 寬頻 | 香",
     "电讯业务战略合作": "perating environment over the past year. We are grateful for the concerted efforts of our colleagues, whose dedication ensured that both of the Group's main businesses — Media and Telecommunications — achieved solid resu"
   },
   "missing_fields": [],
@@ -33,58 +33,17 @@
       "entity": "iCable",
       "status": "ok",
       "source_urls": [
-        "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
         "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer",
         "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
-        "https://www.i-cablebroadband-offer.com/"
+        "https://www.i-cablebroadband-offer.com/",
+        "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/"
       ],
       "extracted": {
-        "宽带套餐": "explore the possibility of cooperating with the industry to share resources and technologies, thereby enhancing overall competitiveness to further meet customers' requirements for broadband services. In recent years, giv",
+        "宽带套餐": "關於有線寬頻 管理層 發展里程 企業願景、使命宣言和 價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 私隱政策 個人資料收集聲明 © 2023 有線寬頻免責聲明及版權(版權所有) SOURCE: https://www.i-cablebroadband-offer.com/ 有線寬頻I-CABLE | 寬頻 | 香",
         "电讯业务战略合作": "perating environment over the past year. We are grateful for the concerted efforts of our colleagues, whose dedication ensured that both of the Group's main businesses — Media and Telecommunications — achieved solid resu"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 18,
-          "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-          "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
-          "bytes": 923561,
-          "elapsed_seconds": 0.866,
-          "method": "httpx",
-          "text_sample": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu Skip to main content Markdown filings API · 412-page report → ~3,200 tokens · Markdown filings API. Get API access → Companies Filings Customers Solutions Hedge Funds Asset Managers Analytics Platforms Academic Research API Log in Sign up Get API access Open assistant AI assistant Sign in to chat with this filing The assistant answers questions, extracts KPIs, and summarises risk factors directly from the filing text. Sign up Log in Sending… i-Cable Communications Limited — Annual Report 2024 Apr 22, 2025 Original Digital View Digital 49682_rns_2025-04-22_60eed67e-8dd0-4030-a7b3-1731ecf35e08.pdf Annual Report Open in viewer Opens in your device viewer 同線寬頻 i-CABLE i-CABLE COMMUNICATIONS LIMITED 有線寬頻通訊有限公司 STOCK CODE 股份代號：1097 2024 Annual Report 年報 Contents目錄 02 Corporate Information 公司資料 04 Chairman's Statement 主席報",
-          "evidence_path": "evidence_cache/0be5e0be819baa2236e605e172e55cbe9df7931855c4cc8a86e65de398737aa1.txt",
-          "content_hash": "0be5e0be819baa2236e605e172e55cbe9df7931855c4cc8a86e65de398737aa1",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-              "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 923561,
-              "text_chars": 551503,
-              "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "commercial_data",
-          "jurisdiction": "EU",
-          "tos_status": "approved",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "iCable"
-          ]
-        },
         {
           "row": 18,
           "url": "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer",
@@ -93,7 +52,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "i-CABLE Communications Limited appoints new Chief Executive Officer - 有線寬頻 | i-CABLE Communications Limited",
           "bytes": 20294,
-          "elapsed_seconds": 0.87,
+          "elapsed_seconds": 3.987,
           "method": "httpx",
           "text_sample": "i-CABLE Communications Limited appoints new Chief Executive Officer - 有線寬頻 | i-CABLE Communications Limited 繁 EN Home About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Governance Financial Calender Annual & Interim Reports Announcements Shareholder Services Newsroom Career Opportunities i-CABLE Internship Programme Contact Us Feedback Form This press release is available in Chinese only. 29/1/2026 i-CABLE Communications Limited appoints new Chief Executive Officer i-CABLE Communications Limited (\"i-CABLE \") (Stock Code: 1097) announced today changes to its senior management team. Chief Executive Officer and Executive Director Mr. Felix TO Chi-Hak (Mr. To) has resigned from his positions with the Board of Directors. Ms. Sandy YU (Ms. Yu) and Mr. Herman HO (Mr. Ho) have also resigned from their ",
           "evidence_path": "evidence_cache/cda32a8211c0e8006ed8d03cbf3bfebea1efa4f67e1cc52ce6d37cd465905609.txt",
@@ -120,6 +79,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -134,7 +94,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited",
           "bytes": 28724,
-          "elapsed_seconds": 0.912,
+          "elapsed_seconds": 3.992,
           "method": "httpx",
           "text_sample": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited 繁 EN 主頁 關於有線寬頻 管理層 發展里程 企業願景、使命宣言 和價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 年報 / 中期報告 年報 2025 年報 2024 年報 2023 年報 2022 年報 中期報告 2025 中期報告 2024 中期報告 2023 中期報告 2022 中期報告 香港荃灣海盛路九號有線電視大樓七樓 電話: (852) 2112 6868 傳真: (852) 2112 7878 電郵: [REDACTED_EMAIL] 關於有線寬頻 管理層 發展里程 企業願景、使命宣言和 價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 私隱政策 個人資料收集聲明 © 2023 有線寬頻免責聲明及版權(版權所有)",
           "evidence_path": "evidence_cache/276a42d6ae1fe2ce20e45b94ca420281e743f063bfc446ed57c24b2cfb8b6538.txt",
@@ -161,6 +121,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -174,12 +135,12 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "有線寬頻I-CABLE | 寬頻 | 香港",
-          "bytes": 1035174,
-          "elapsed_seconds": 1.165,
+          "bytes": 1350003,
+          "elapsed_seconds": 4.501,
           "method": "httpx",
-          "text_sample": "有線寬頻I-CABLE | 寬頻 | 香港 top of page 有線寬頻 I-CABLE 最新優惠查詢 ​ 查看有線寬頻服務計劃詳情 whatapp 查詢最新優惠 直接致電查詢 致電查詢98452745 ​選擇有線寬頻原因? ​ 額免安裝費 額免搬遷費 ​真正光纖入屋 I-Cable光纖寬頻服務 覆蓋港9新界 ​光纖頻寬上限已提升至下載及上載1GPS ​180日自選 生效日期 指定計劃拍供自選性生效延遲,服務啟動日期 ​由你決定,輕鬆鎖定限時優惠 ​穩定服務保證 設有服務保證計劃,保障你的寬頻上網體驗 ​(適用於指定光纖服務計劃) whatapp查詢 98452745 致電查詢98452745查詢 查詢有線寬頻200M優惠 致電查詢98452745 服務計劃詳情 有線寬頻 公居屋/私樓價優惠 ​ 查詢有線寬頻私人屋苑優惠 查詢有線寬頻公居屋優惠 主頁 查詢公務員優加員工優惠 查詢有線寬頻2000M優惠 名字 * 電話 * 地址 * 提交 可以填寫資料 我們會盡快聯絡你！ 有線寬頻手提電話服務計劃 本地5G 10GB $68 24個月/36個月 5G 20GB $78 24個月/36個月 熱賣5G 50GB $98 24個月/36個月 （數據過後1M速度） （轉台額免服務費/ 新號碼$18 隨道費） 查詢有線寬頻手提電話計劃 有線18寶 賽馬頻道月費計劃 $88 24個月 限時優惠額外送3個月 ​平均$77 24個月 ​full pay $1888 24個月 查有線電視18寶 寶馬計劃 i ​ 有線寬頻破天荒優惠價 有線寬頻 - 多種月費計劃CP超高 200M $68 36個月 200M $78 24個月 200M $78 36個月送Tplink c6 router 200M $88 36個月包家居電話服務 ​ 1000M $88 36個月 1000M $98 24個月 1000M... 有線寬頻I-CABLE OFFER [REDACTED_EMAIL] 請寄送資料給我們 ，我們會盡快回覆您。 姓名 電話 查詢地址 提交 [REDACTED_EMAIL] botto",
-          "evidence_path": "evidence_cache/2a9510514f07684f689c8acd7cbc71e31d5c6946d4efa11ebad8bc7d80044530.txt",
-          "content_hash": "2a9510514f07684f689c8acd7cbc71e31d5c6946d4efa11ebad8bc7d80044530",
+          "text_sample": "有線寬頻I-CABLE | 寬頻 | 香港 top of page 有線寬頻 I-CABLE 最新優惠查詢 ​ 查看有線寬頻服務計劃詳情 whatapp 查詢最新優惠 直接致電查詢 致電查詢98452745 ​選擇有線寬頻原因? ​ 額免安裝費 額免搬遷費 ​真正光纖入屋 I-Cable光纖寬頻服務 覆蓋港9新界 ​光纖頻寬上限已提升至下載及上載1GPS ​180日自選 生效日期 指定計劃拍供自選性生效延遲,服務啟動日期 ​由你決定,輕鬆鎖定限時優惠 ​穩定服務保證 設有服務保證計劃,保障你的寬頻上網體驗 ​(適用於指定光纖服務計劃) whatapp查詢 98452745 致電查詢98452745查詢 查詢有線寬頻200M優惠 致電查詢98452745 服務計劃詳情 有線寬頻 公居屋/私樓價優惠 ​ 查詢有線寬頻私人屋苑優惠 查詢有線寬頻公居屋優惠 主頁 查詢公務員優加員工優惠 查詢有線寬頻2000M優惠 名字 * 電話 * 地址 * 安裝時間或生效日期 * 現在用哪一間公司 還是沒有 提交 可以填寫資料 我們會盡快聯絡你！ 有線寬頻手提電話服務計劃 本地5G 10GB $68 24個月/36個月 5G 20GB $78 24個月/36個月 熱賣5G 50GB $98 24個月/36個月 （數據過後1M速度） （轉台額免服務費/ 新號碼$18 隨道費） 查詢有線寬頻手提電話計劃 有線18寶 賽馬頻道月費計劃 $88 24個月 限時優惠額外送3個月 ​平均$77 24個月 ​full pay $1888 24個月 查有線電視18寶 寶馬計劃 i ​ 有線寬頻破天荒優惠價 有線寬頻 - 多種月費計劃CP超高 200M $68 36個月 200M $78 24個月 200M $78 36個月送Tplink c6 router 200M $88 36個月包家居電話服務 ​ 1000M $88 36個月 1000M $98 24個月 1000M... 有線寬頻I-CABLE OFFER [REDACTED_EMAIL] 請寄送資料給我們 ，我們會盡快回覆您。 姓名 電話 查詢地址 ",
+          "evidence_path": "evidence_cache/7a86dad55cf84c365a010fcd257e67bb5b2076698ba1010e4adb829b00a7db43.txt",
+          "content_hash": "7a86dad55cf84c365a010fcd257e67bb5b2076698ba1010e4adb829b00a7db43",
           "error": "",
           "fetch_attempts": [
             {
@@ -187,8 +148,8 @@
               "final_url": "https://www.i-cablebroadband-offer.com/",
               "status": 200,
               "method": "httpx",
-              "bytes": 1035174,
-              "text_chars": 909,
+              "bytes": 1350003,
+              "text_chars": 935,
               "title": "有線寬頻I-CABLE | 寬頻 | 香港",
               "error": "",
               "meta_refresh_url": ""
@@ -202,6 +163,49 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "iCable"
+          ]
+        },
+        {
+          "row": 18,
+          "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+          "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
+          "bytes": 924457,
+          "elapsed_seconds": 5.246,
+          "method": "httpx",
+          "text_sample": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu Skip to main content Markdown filings API · 412-page report → ~3,200 tokens · Markdown filings API. Get API access → Companies Filings Customers Solutions Hedge Funds Asset Managers Analytics Platforms Academic Research API Log in Sign up Get API access Open assistant AI assistant Sign in to chat with this filing The assistant answers questions, extracts KPIs, and summarises risk factors directly from the filing text. Sign up Log in Sending… i-Cable Communications Limited — Annual Report 2024 Apr 22, 2025 Original Digital View Digital 49682_rns_2025-04-22_60eed67e-8dd0-4030-a7b3-1731ecf35e08.pdf Annual Report Open in viewer Opens in your device viewer 同線寬頻 i-CABLE i-CABLE COMMUNICATIONS LIMITED 有線寬頻通訊有限公司 STOCK CODE 股份代號：1097 2024 Annual Report 年報 Contents目錄 02 Corporate Information 公司資料 04 Chairman's Statement 主席報",
+          "evidence_path": "evidence_cache/e211a4c9d6260556eb4fcc16f3c92cc011cfb989b4594e014477e86276efe5eb.txt",
+          "content_hash": "e211a4c9d6260556eb4fcc16f3c92cc011cfb989b4594e014477e86276efe5eb",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+              "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 924457,
+              "text_chars": 551565,
+              "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "commercial_data",
+          "jurisdiction": "EU",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -209,53 +213,12 @@
           ]
         }
       ],
-      "confidence_score": 0.2,
-      "verification_reason": "The extracted data contains fragments that appear to be from the source text, but they are incomplete and cut off mid-sentence. The first extracted snippet about broadband does not directly match any sentence in the provided source text, suggesting it may be from a different part of the document not included. The second snippet about telecommunications business cooperation is partially present in the Chairman's Statement but is truncated and slightly misaligned. Overall, the extracted data does not accurately represent the source text due to incompleteness and mismatches."
+      "confidence_score": 0.3,
+      "verification_reason": "The extracted data contains '宽带套餐' with text from a broadband offer page, which is present in the source, but the '电讯业务战略合作' key has content about operating environment and media/telecommunications that does not appear in the provided source text; the source focuses on CEO changes, annual reports, broadband offers, and corporate info, not strategic partnership details. Thus, the extracted data is only partially accurate."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 18,
-      "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-      "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
-      "bytes": 923561,
-      "elapsed_seconds": 0.866,
-      "method": "httpx",
-      "text_sample": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu Skip to main content Markdown filings API · 412-page report → ~3,200 tokens · Markdown filings API. Get API access → Companies Filings Customers Solutions Hedge Funds Asset Managers Analytics Platforms Academic Research API Log in Sign up Get API access Open assistant AI assistant Sign in to chat with this filing The assistant answers questions, extracts KPIs, and summarises risk factors directly from the filing text. Sign up Log in Sending… i-Cable Communications Limited — Annual Report 2024 Apr 22, 2025 Original Digital View Digital 49682_rns_2025-04-22_60eed67e-8dd0-4030-a7b3-1731ecf35e08.pdf Annual Report Open in viewer Opens in your device viewer 同線寬頻 i-CABLE i-CABLE COMMUNICATIONS LIMITED 有線寬頻通訊有限公司 STOCK CODE 股份代號：1097 2024 Annual Report 年報 Contents目錄 02 Corporate Information 公司資料 04 Chairman's Statement 主席報",
-      "evidence_path": "evidence_cache/0be5e0be819baa2236e605e172e55cbe9df7931855c4cc8a86e65de398737aa1.txt",
-      "content_hash": "0be5e0be819baa2236e605e172e55cbe9df7931855c4cc8a86e65de398737aa1",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-          "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 923561,
-          "text_chars": 551503,
-          "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "commercial_data",
-      "jurisdiction": "EU",
-      "tos_status": "approved",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "iCable"
-      ]
-    },
     {
       "row": 18,
       "url": "https://www.i-cablecomm.com/en-newsroom/i-cable-communications-limited-appoints-new-chief-executive-officer",
@@ -264,7 +227,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "i-CABLE Communications Limited appoints new Chief Executive Officer - 有線寬頻 | i-CABLE Communications Limited",
       "bytes": 20294,
-      "elapsed_seconds": 0.87,
+      "elapsed_seconds": 3.987,
       "method": "httpx",
       "text_sample": "i-CABLE Communications Limited appoints new Chief Executive Officer - 有線寬頻 | i-CABLE Communications Limited 繁 EN Home About i-CABLE Directors & Senior Management Milestones Vision, Mission & Values Our Businesses Investor Relations Corporate Information Corporate Governance Financial Calender Annual & Interim Reports Announcements Shareholder Services Newsroom Career Opportunities i-CABLE Internship Programme Contact Us Feedback Form This press release is available in Chinese only. 29/1/2026 i-CABLE Communications Limited appoints new Chief Executive Officer i-CABLE Communications Limited (\"i-CABLE \") (Stock Code: 1097) announced today changes to its senior management team. Chief Executive Officer and Executive Director Mr. Felix TO Chi-Hak (Mr. To) has resigned from his positions with the Board of Directors. Ms. Sandy YU (Ms. Yu) and Mr. Herman HO (Mr. Ho) have also resigned from their ",
       "evidence_path": "evidence_cache/cda32a8211c0e8006ed8d03cbf3bfebea1efa4f67e1cc52ce6d37cd465905609.txt",
@@ -291,6 +254,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -305,7 +269,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited",
       "bytes": 28724,
-      "elapsed_seconds": 0.912,
+      "elapsed_seconds": 3.992,
       "method": "httpx",
       "text_sample": "年報 / 中期報告 - 有線寬頻 | i-CABLE Communications Limited 繁 EN 主頁 關於有線寬頻 管理層 發展里程 企業願景、使命宣言 和價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 年報 / 中期報告 年報 2025 年報 2024 年報 2023 年報 2022 年報 中期報告 2025 中期報告 2024 中期報告 2023 中期報告 2022 中期報告 香港荃灣海盛路九號有線電視大樓七樓 電話: (852) 2112 6868 傳真: (852) 2112 7878 電郵: [REDACTED_EMAIL] 關於有線寬頻 管理層 發展里程 企業願景、使命宣言和 價值觀 我們的業務 投資者關係 公司資料 企業管治 財務日誌 年報 / 中期報告 企業公告 股東服務 新聞中心 就業機會 i-CABLE 實習生計劃 聯絡我們 客戶意見表 私隱政策 個人資料收集聲明 © 2023 有線寬頻免責聲明及版權(版權所有)",
       "evidence_path": "evidence_cache/276a42d6ae1fe2ce20e45b94ca420281e743f063bfc446ed57c24b2cfb8b6538.txt",
@@ -332,6 +296,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -345,12 +310,12 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "有線寬頻I-CABLE | 寬頻 | 香港",
-      "bytes": 1035174,
-      "elapsed_seconds": 1.165,
+      "bytes": 1350003,
+      "elapsed_seconds": 4.501,
       "method": "httpx",
-      "text_sample": "有線寬頻I-CABLE | 寬頻 | 香港 top of page 有線寬頻 I-CABLE 最新優惠查詢 ​ 查看有線寬頻服務計劃詳情 whatapp 查詢最新優惠 直接致電查詢 致電查詢98452745 ​選擇有線寬頻原因? ​ 額免安裝費 額免搬遷費 ​真正光纖入屋 I-Cable光纖寬頻服務 覆蓋港9新界 ​光纖頻寬上限已提升至下載及上載1GPS ​180日自選 生效日期 指定計劃拍供自選性生效延遲,服務啟動日期 ​由你決定,輕鬆鎖定限時優惠 ​穩定服務保證 設有服務保證計劃,保障你的寬頻上網體驗 ​(適用於指定光纖服務計劃) whatapp查詢 98452745 致電查詢98452745查詢 查詢有線寬頻200M優惠 致電查詢98452745 服務計劃詳情 有線寬頻 公居屋/私樓價優惠 ​ 查詢有線寬頻私人屋苑優惠 查詢有線寬頻公居屋優惠 主頁 查詢公務員優加員工優惠 查詢有線寬頻2000M優惠 名字 * 電話 * 地址 * 提交 可以填寫資料 我們會盡快聯絡你！ 有線寬頻手提電話服務計劃 本地5G 10GB $68 24個月/36個月 5G 20GB $78 24個月/36個月 熱賣5G 50GB $98 24個月/36個月 （數據過後1M速度） （轉台額免服務費/ 新號碼$18 隨道費） 查詢有線寬頻手提電話計劃 有線18寶 賽馬頻道月費計劃 $88 24個月 限時優惠額外送3個月 ​平均$77 24個月 ​full pay $1888 24個月 查有線電視18寶 寶馬計劃 i ​ 有線寬頻破天荒優惠價 有線寬頻 - 多種月費計劃CP超高 200M $68 36個月 200M $78 24個月 200M $78 36個月送Tplink c6 router 200M $88 36個月包家居電話服務 ​ 1000M $88 36個月 1000M $98 24個月 1000M... 有線寬頻I-CABLE OFFER [REDACTED_EMAIL] 請寄送資料給我們 ，我們會盡快回覆您。 姓名 電話 查詢地址 提交 [REDACTED_EMAIL] botto",
-      "evidence_path": "evidence_cache/2a9510514f07684f689c8acd7cbc71e31d5c6946d4efa11ebad8bc7d80044530.txt",
-      "content_hash": "2a9510514f07684f689c8acd7cbc71e31d5c6946d4efa11ebad8bc7d80044530",
+      "text_sample": "有線寬頻I-CABLE | 寬頻 | 香港 top of page 有線寬頻 I-CABLE 最新優惠查詢 ​ 查看有線寬頻服務計劃詳情 whatapp 查詢最新優惠 直接致電查詢 致電查詢98452745 ​選擇有線寬頻原因? ​ 額免安裝費 額免搬遷費 ​真正光纖入屋 I-Cable光纖寬頻服務 覆蓋港9新界 ​光纖頻寬上限已提升至下載及上載1GPS ​180日自選 生效日期 指定計劃拍供自選性生效延遲,服務啟動日期 ​由你決定,輕鬆鎖定限時優惠 ​穩定服務保證 設有服務保證計劃,保障你的寬頻上網體驗 ​(適用於指定光纖服務計劃) whatapp查詢 98452745 致電查詢98452745查詢 查詢有線寬頻200M優惠 致電查詢98452745 服務計劃詳情 有線寬頻 公居屋/私樓價優惠 ​ 查詢有線寬頻私人屋苑優惠 查詢有線寬頻公居屋優惠 主頁 查詢公務員優加員工優惠 查詢有線寬頻2000M優惠 名字 * 電話 * 地址 * 安裝時間或生效日期 * 現在用哪一間公司 還是沒有 提交 可以填寫資料 我們會盡快聯絡你！ 有線寬頻手提電話服務計劃 本地5G 10GB $68 24個月/36個月 5G 20GB $78 24個月/36個月 熱賣5G 50GB $98 24個月/36個月 （數據過後1M速度） （轉台額免服務費/ 新號碼$18 隨道費） 查詢有線寬頻手提電話計劃 有線18寶 賽馬頻道月費計劃 $88 24個月 限時優惠額外送3個月 ​平均$77 24個月 ​full pay $1888 24個月 查有線電視18寶 寶馬計劃 i ​ 有線寬頻破天荒優惠價 有線寬頻 - 多種月費計劃CP超高 200M $68 36個月 200M $78 24個月 200M $78 36個月送Tplink c6 router 200M $88 36個月包家居電話服務 ​ 1000M $88 36個月 1000M $98 24個月 1000M... 有線寬頻I-CABLE OFFER [REDACTED_EMAIL] 請寄送資料給我們 ，我們會盡快回覆您。 姓名 電話 查詢地址 ",
+      "evidence_path": "evidence_cache/7a86dad55cf84c365a010fcd257e67bb5b2076698ba1010e4adb829b00a7db43.txt",
+      "content_hash": "7a86dad55cf84c365a010fcd257e67bb5b2076698ba1010e4adb829b00a7db43",
       "error": "",
       "fetch_attempts": [
         {
@@ -358,8 +323,8 @@
           "final_url": "https://www.i-cablebroadband-offer.com/",
           "status": 200,
           "method": "httpx",
-          "bytes": 1035174,
-          "text_chars": 909,
+          "bytes": 1350003,
+          "text_chars": 935,
           "title": "有線寬頻I-CABLE | 寬頻 | 香港",
           "error": "",
           "meta_refresh_url": ""
@@ -373,6 +338,49 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "iCable"
+      ]
+    },
+    {
+      "row": 18,
+      "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+      "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
+      "bytes": 924457,
+      "elapsed_seconds": 5.246,
+      "method": "httpx",
+      "text_sample": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu Skip to main content Markdown filings API · 412-page report → ~3,200 tokens · Markdown filings API. Get API access → Companies Filings Customers Solutions Hedge Funds Asset Managers Analytics Platforms Academic Research API Log in Sign up Get API access Open assistant AI assistant Sign in to chat with this filing The assistant answers questions, extracts KPIs, and summarises risk factors directly from the filing text. Sign up Log in Sending… i-Cable Communications Limited — Annual Report 2024 Apr 22, 2025 Original Digital View Digital 49682_rns_2025-04-22_60eed67e-8dd0-4030-a7b3-1731ecf35e08.pdf Annual Report Open in viewer Opens in your device viewer 同線寬頻 i-CABLE i-CABLE COMMUNICATIONS LIMITED 有線寬頻通訊有限公司 STOCK CODE 股份代號：1097 2024 Annual Report 年報 Contents目錄 02 Corporate Information 公司資料 04 Chairman's Statement 主席報",
+      "evidence_path": "evidence_cache/e211a4c9d6260556eb4fcc16f3c92cc011cfb989b4594e014477e86276efe5eb.txt",
+      "content_hash": "e211a4c9d6260556eb4fcc16f3c92cc011cfb989b4594e014477e86276efe5eb",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+          "final_url": "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 924457,
+          "text_chars": 551565,
+          "title": "i-Cable Communications Limited - Annual Report 2024 | FinancialReports.eu",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "commercial_data",
+      "jurisdiction": "EU",
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -386,6 +394,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-16T03:02:31.911348+00:00",
-  "fetched_at_hkt": "2026-06-16T11:02:31.911370+08:00"
+  "fetched_at": "2026-06-22T02:43:21.909703+00:00",
+  "fetched_at_hkt": "2026-06-22T10:43:21.909872+08:00"
 }

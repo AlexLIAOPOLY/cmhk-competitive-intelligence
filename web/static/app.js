@@ -15,6 +15,17 @@ const state = {
   thinkingEnabled: false,
   agentSkills: [],
   selectedSkillIds: new Set(),
+  expandedSkillIds: new Set(),
+  skillSelectionTouched: false,
+  agentDatasets: [],
+  selectedDatasetIds: new Set(),
+  expandedDatasetIds: new Set(),
+  datasetSelectionTouched: false,
+  knowledgeUploadBusy: false,
+  pendingConfirmedActions: new Set(),
+  chatHistory: [],
+  agentContextKey: "",
+  loadedSkillIds: new Set(),
 };
 
 const els = {
@@ -68,6 +79,8 @@ const els = {
   aiModel: document.querySelector("#aiModel"),
   aiApiKey: document.querySelector("#aiApiKey"),
   aiConfigStatus: document.querySelector("#aiConfigStatus"),
+  agentMemoryList: document.querySelector("#agentMemoryList"),
+  refreshAgentMemory: document.querySelector("#refreshAgentMemory"),
   clearLogButton: document.querySelector("#clearLogButton"),
   clearChatButton: document.querySelector("#clearChatButton"),
   chatFab: document.querySelector("#chatFab"),
@@ -78,6 +91,10 @@ const els = {
   chatInput: document.querySelector("#chatInput"),
   skillToggle: document.querySelector("#skillToggle"),
   skillMenu: document.querySelector("#skillMenu"),
+  databaseToggle: document.querySelector("#databaseToggle"),
+  databaseMenu: document.querySelector("#databaseMenu"),
+  knowledgeUploadButton: document.querySelector("#knowledgeUploadButton"),
+  knowledgeUploadInput: document.querySelector("#knowledgeUploadInput"),
   thinkingToggle: document.querySelector("#thinkingToggle"),
   webSearchToggle: document.querySelector("#webSearchToggle"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
@@ -159,6 +176,8 @@ function setChatBusy(value) {
   if (els.webSearchToggle) els.webSearchToggle.disabled = value;
   if (els.thinkingToggle) els.thinkingToggle.disabled = value;
   if (els.skillToggle) els.skillToggle.disabled = value;
+  if (els.databaseToggle) els.databaseToggle.disabled = value;
+  if (els.knowledgeUploadButton) els.knowledgeUploadButton.disabled = value || state.knowledgeUploadBusy;
   els.chatSubmitButton.textContent = value ? "生成中" : "发送";
 }
 
@@ -167,9 +186,9 @@ function renderWebSearchToggle() {
   if (!button) return;
   button.classList.toggle("is-active", state.webSearchEnabled);
   button.setAttribute("aria-pressed", state.webSearchEnabled ? "true" : "false");
-  button.title = state.webSearchEnabled ? "已打开联网搜索，本轮会优先调用网页搜索" : "打开联网搜索";
+  button.title = state.webSearchEnabled ? "本轮使用网页来源" : "本轮只用本地来源";
   const label = button.querySelector("span");
-  if (label) label.textContent = state.webSearchEnabled ? "联网" : "搜索";
+  if (label) label.textContent = "联网搜索";
 }
 
 function renderThinkingToggle() {
@@ -177,7 +196,9 @@ function renderThinkingToggle() {
   if (!button) return;
   button.classList.toggle("is-active", state.thinkingEnabled);
   button.setAttribute("aria-pressed", state.thinkingEnabled ? "true" : "false");
-  button.title = state.thinkingEnabled ? "已打开深度思考，本轮会使用 reasoning 模型并加强核验" : "打开深度思考";
+  button.title = state.thinkingEnabled
+    ? "深度思考已开启：使用 reasoning 模型；显示可审计思考轨迹，不展示原始思维链"
+    : "打开深度思考";
   const label = button.querySelector("span");
   if (label) label.textContent = state.thinkingEnabled ? "深思" : "思考";
 }
@@ -194,51 +215,194 @@ function renderSkillToggle() {
   const selectedTitles = state.agentSkills
     .filter((skill) => state.selectedSkillIds.has(skill.id))
     .map((skill) => skill.title);
-  button.title = selectedTitles.length ? `已载入: ${selectedTitles.join("、")}` : "选择 Agent Skill";
+  button.title = selectedTitles.length ? `已载入 Agent Skill: ${selectedTitles.join("、")}` : "选择 Agent Skill";
 }
 
 function renderSkillMenu() {
   const menu = els.skillMenu;
   if (!menu) return;
   if (!state.agentSkills.length) {
-    menu.innerHTML = `<div class="skill-menu-empty">暂无可用 Skill</div>`;
+    menu.innerHTML = `<div class="skill-menu-empty">暂无可用 Agent Skill</div>`;
     renderSkillToggle();
     return;
   }
   const items = state.agentSkills.map((skill) => {
     const active = state.selectedSkillIds.has(skill.id);
+    const expanded = state.expandedSkillIds.has(skill.id);
     const tags = Array.isArray(skill.tags) ? skill.tags : [];
+    const description = skill.description || skill.summary || skill.path || "";
+    const detailRows = [
+      description ? `<p class="option-detail-text">${escapeHtml(description)}</p>` : "",
+      skill.data ? `<p class="option-detail-row"><b>数据</b><span>${escapeHtml(skill.data)}</span></p>` : "",
+      skill.path ? `<p class="option-detail-row"><b>路径</b><span>${escapeHtml(skill.path)}</span></p>` : "",
+    ].filter(Boolean).join("");
     return `
       <button class="skill-option ${active ? "is-active" : ""}" type="button" data-skill-id="${escapeHtml(skill.id)}">
         <span class="skill-option-check">${active ? "✓" : ""}</span>
         <span class="skill-option-main">
           <span class="skill-option-top">
             <strong>${escapeHtml(skill.title)}</strong>
-            <em>${active ? "已载入" : "可选"}</em>
+            <em>${active ? "已选" : "可选"}</em>
           </span>
-          <small>${escapeHtml(skill.description || skill.summary || skill.path || "")}</small>
+          <small>${escapeHtml(description)}</small>
           ${tags.length ? `<span class="skill-tags">${tags.slice(0, 4).map((tag) => `<b>${escapeHtml(tag)}</b>`).join("")}</span>` : ""}
-          ${skill.data ? `<span class="skill-data">${escapeHtml(skill.data)}</span>` : ""}
+          ${expanded && detailRows ? `<span class="option-detail">${detailRows}</span>` : ""}
         </span>
+        <span class="option-expand" data-expand-kind="skill" title="${expanded ? "收起完整描述" : "展开完整描述"}">${expanded ? "▴" : "▾"}</span>
       </button>
     `;
   }).join("");
-  menu.innerHTML = `
-    <div class="skill-menu-head">
-      <strong>选择分析能力</strong>
-      <span>可多选，随本轮问题载入</span>
-    </div>
-    ${items}
-  `;
+  menu.innerHTML = items || `<div class="skill-menu-empty">暂无可用能力</div>`;
   renderSkillToggle();
+}
+
+function renderDatabaseToggle() {
+  const button = els.databaseToggle;
+  if (!button) return;
+  const count = state.selectedDatasetIds.size;
+  button.classList.toggle("is-active", count > 0);
+  button.setAttribute("aria-pressed", count > 0 ? "true" : "false");
+  button.setAttribute("aria-expanded", els.databaseMenu && !els.databaseMenu.hidden ? "true" : "false");
+  const label = button.querySelector("span");
+  if (label) label.textContent = count ? `数据库 ${count}` : "数据库";
+  const selectedTitles = state.agentDatasets
+    .filter((dataset) => state.selectedDatasetIds.has(dataset.id))
+    .map((dataset) => dataset.title || dataset.id);
+  button.title = selectedTitles.length ? `已选择数据库: ${selectedTitles.join("、")}` : "选择发送给 AI 的数据库";
+}
+
+function renderDatabaseMenu() {
+  const menu = els.databaseMenu;
+  if (!menu) return;
+  const uploadAction = `
+    <button class="database-upload-action ${state.knowledgeUploadBusy ? "is-loading" : ""}" id="knowledgeUploadButton" type="button" ${state.chatBusy || state.knowledgeUploadBusy ? "disabled" : ""}>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3v12"></path>
+        <path d="m7 8 5-5 5 5"></path>
+        <path d="M5 21h14"></path>
+        <path d="M6 17h12"></path>
+      </svg>
+      <span>
+        <strong>上传文件作为知识库</strong>
+        <small>支持 txt、md、csv、tsv、json、docx、pdf；上传后自动选中</small>
+      </span>
+    </button>
+  `;
+  const items = state.agentDatasets.map((dataset) => {
+    const active = state.selectedDatasetIds.has(dataset.id);
+    const expanded = state.expandedDatasetIds.has(dataset.id);
+    const tags = Array.isArray(dataset.tags) ? dataset.tags : [];
+    const fileCount = Array.isArray(dataset.files) ? dataset.files.length : 0;
+    const summary = dataset.summary || dataset.scope || dataset.folder || "";
+    const detailRows = [
+      summary ? `<p class="option-detail-text">${escapeHtml(summary)}</p>` : "",
+      dataset.scope ? `<p class="option-detail-row"><b>范围</b><span>${escapeHtml(dataset.scope)}</span></p>` : "",
+      dataset.id ? `<p class="option-detail-row"><b>ID</b><span>${escapeHtml(dataset.id)}</span></p>` : "",
+      dataset.folder ? `<p class="option-detail-row"><b>路径</b><span>${escapeHtml(dataset.folder)}</span></p>` : "",
+      `<p class="option-detail-row"><b>文件</b><span>${fileCount} 个</span></p>`,
+    ].filter(Boolean).join("");
+    return `
+      <button class="database-option ${active ? "is-active" : ""}" type="button" data-dataset-id="${escapeHtml(dataset.id)}">
+        <span class="database-option-check">${active ? "✓" : ""}</span>
+        <span class="database-option-main">
+          <span class="database-option-top">
+            <strong>${escapeHtml(dataset.title || dataset.id)}</strong>
+          </span>
+          <small>${escapeHtml(summary)}</small>
+          ${tags.length ? `<span class="database-tags">${tags.slice(0, 4).map((tag) => `<b>${escapeHtml(tag)}</b>`).join("")}</span>` : ""}
+          <span class="database-data">${escapeHtml(dataset.id)} · ${fileCount} 个文件</span>
+          ${expanded && detailRows ? `<span class="option-detail">${detailRows}</span>` : ""}
+        </span>
+        <span class="option-expand" data-expand-kind="dataset" title="${expanded ? "收起完整描述" : "展开完整描述"}">${expanded ? "▴" : "▾"}</span>
+      </button>
+    `;
+  }).join("");
+  menu.innerHTML = uploadAction + (items || `<div class="database-menu-empty">暂无可用数据库</div>`);
+  renderDatabaseToggle();
+}
+
+async function loadAgentDatasets() {
+  try {
+    const response = await fetch("/api/agent-datasets");
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "加载数据库失败");
+    state.agentDatasets = Array.isArray(data.datasets) ? data.datasets : [];
+    if (!state.datasetSelectionTouched) {
+      state.selectedDatasetIds = new Set(state.agentDatasets.map((dataset) => dataset.id).filter(Boolean));
+    }
+    renderDatabaseMenu();
+  } catch (error) {
+    state.agentDatasets = [];
+    if (els.databaseMenu) {
+      els.databaseMenu.innerHTML = `<div class="database-menu-empty">${escapeHtml(error.message)}</div>`;
+    }
+    renderDatabaseToggle();
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || "");
+      resolve(result.includes(",") ? result.split(",", 2)[1] : result);
+    };
+    reader.onerror = () => reject(reader.error || new Error("读取文件失败"));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadKnowledgeFile(file) {
+  if (!file || state.knowledgeUploadBusy) return;
+  const maxBytes = 8 * 1024 * 1024;
+  if (file.size > maxBytes) {
+    addMessage("assistant", "文件过大，当前单文件上限为 8MB。");
+    return;
+  }
+  state.knowledgeUploadBusy = true;
+  renderDatabaseMenu();
+  try {
+    const contentBase64 = await fileToBase64(file);
+    const response = await fetch("/api/agent-datasets/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type || "",
+        size: file.size,
+        contentBase64,
+      }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "上传失败");
+    state.agentDatasets = Array.isArray(data.datasets) ? data.datasets : state.agentDatasets;
+    const datasetId = data.dataset && data.dataset.id;
+    if (datasetId) {
+      state.selectedDatasetIds.add(datasetId);
+      state.datasetSelectionTouched = true;
+    }
+    renderDatabaseMenu();
+    addMessage("assistant", `已上传「${file.name}」并作为本轮已选择数据库，可直接向小竞AI提问。`);
+  } catch (error) {
+    addMessage("assistant", `上传知识库失败：${error.message || String(error)}`);
+  } finally {
+    state.knowledgeUploadBusy = false;
+    renderDatabaseMenu();
+    if (els.knowledgeUploadInput) els.knowledgeUploadInput.value = "";
+  }
 }
 
 async function loadAgentSkills() {
   try {
     const response = await fetch("/api/agent-skills");
     const data = await response.json();
-    if (!data.ok) throw new Error(data.error || "加载 Skills 失败");
+    if (!data.ok) throw new Error(data.error || "加载 Agent Skill 失败");
     state.agentSkills = Array.isArray(data.skills) ? data.skills : [];
+    if (!state.skillSelectionTouched && state.selectedSkillIds.size === 0) {
+      state.agentSkills.forEach((skill) => {
+        if (skill && skill.id) state.selectedSkillIds.add(skill.id);
+      });
+    }
     renderSkillMenu();
   } catch (error) {
     state.agentSkills = [];
@@ -247,6 +411,44 @@ async function loadAgentSkills() {
     }
     renderSkillToggle();
   }
+}
+
+async function loadAgentMemory() {
+  if (!els.agentMemoryList) return;
+  els.agentMemoryList.textContent = "加载中...";
+  try {
+    const response = await fetch("/api/agent-memory?limit=50");
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "读取记忆失败");
+    const memories = Array.isArray(data.memories) ? data.memories : [];
+    if (!memories.length) {
+      els.agentMemoryList.innerHTML = `<div class="agent-memory-empty">暂无长期记忆</div>`;
+      return;
+    }
+    els.agentMemoryList.innerHTML = memories.map((item) => `
+      <article class="agent-memory-item" data-memory-id="${escapeHtml(item.id || "")}">
+        <div>
+          <strong>${escapeHtml(item.content || "")}</strong>
+          <small>${escapeHtml(item.created_date || "")}${item.tags && item.tags.length ? ` · ${escapeHtml(item.tags.join("、"))}` : ""}</small>
+        </div>
+        <button type="button" class="quiet-button small" data-delete-memory="${escapeHtml(item.id || "")}">删除</button>
+      </article>
+    `).join("");
+  } catch (error) {
+    els.agentMemoryList.textContent = error.message || String(error);
+  }
+}
+
+async function deleteAgentMemory(memoryId) {
+  if (!memoryId) return;
+  const response = await fetch("/api/agent-memory/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: memoryId }),
+  });
+  const data = await response.json();
+  if (!data.ok) throw new Error(data.error || "删除失败");
+  await loadAgentMemory();
 }
 
 function fileType(fileName) {
@@ -264,8 +466,78 @@ function iconSvg(name) {
     volume: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/>',
     waveform: '<path d="M2 12h2"/><path d="M6 8v8"/><path d="M10 4v16"/><path d="M14 9v6"/><path d="M18 7v10"/><path d="M22 12h-2"/>',
     download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+    globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20"/><path d="M12 2a15.3 15.3 0 0 0 0 20"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+    fileSearch: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h7"/><path d="M14 2v6h6"/><circle cx="16" cy="16" r="3"/><path d="M21 21l-2.8-2.8"/>',
+    fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h6"/>',
+    database: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>',
+    chartLine: '<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/><path d="M18 7h1v1"/>',
+    table: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M9 4v16"/><path d="M15 4v16"/>',
+    crawler: '<rect x="5" y="8" width="14" height="10" rx="3"/><path d="M12 8V4"/><path d="M8 13h.01"/><path d="M16 13h.01"/><path d="M9 18l-2 3"/><path d="M15 18l2 3"/>',
+    terminal: '<path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>',
+    status: '<path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/>',
   };
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || ""}</svg>`;
+}
+
+function toolIconName(toolName) {
+  const name = String(toolName || "").toLowerCase();
+  if (name.includes("agent_skills")) return "terminal";
+  if (name.includes("read_agent_skill")) return "terminal";
+  if (name.includes("agent_databases")) return "database";
+  if (name.includes("web_search") || name.includes("read_webpage")) return "globe";
+  if (name.includes("search_local_reports")) return "fileSearch";
+  if (name.includes("read_local_reference")) return "fileText";
+  if (name.includes("list_local_datasets") || name.includes("list_crawl_runs")) return "database";
+  if (name.includes("render_python_chart")) return "chartLine";
+  if (name.includes("feishu")) return "table";
+  if (name.includes("crawl") || name.includes("recrawl")) return "crawler";
+  if (name.includes("system_status")) return "status";
+  if (name.includes("cli") || name.includes("trigger_")) return "terminal";
+  return "search";
+}
+
+function toolFriendlyName(toolName) {
+  const name = String(toolName || "");
+  const labels = {
+    list_local_datasets: "读取数据库列表",
+    search_local_reports: "读取数据库摘要",
+    read_local_reference: "读取数据库原文",
+    web_search: "联网搜索",
+    read_webpage: "读取网页",
+    trigger_crawl: "触发爬虫",
+    list_crawl_runs: "爬虫日志",
+    feishu_cli: "飞书表格",
+    trigger_report_generation: "生成报告",
+    render_python_chart: "生成图表",
+    get_system_status: "系统状态",
+    load_agent_skills: "载入 Agent Skill",
+    read_agent_skill: "读取 Agent Skill",
+    select_agent_databases: "确认数据库选择",
+  };
+  return labels[name] || name || "工具";
+}
+
+function toolNarrationText(toolName) {
+  const name = String(toolName || "");
+  const labels = {
+    load_agent_skills: "我先载入本轮需要的 Agent Skill。",
+    read_agent_skill: "我读取相关 Agent Skill 的完整指令。",
+    select_agent_databases: "我确认本轮数据库选择。",
+    list_local_datasets: "我读取本轮已选数据库列表。",
+    search_local_reports: "我读取已选数据库并检索摘要片段。",
+    read_local_reference: "我读取命中的数据库原文。",
+    web_search: "我同步联网检索公开来源。",
+    read_webpage: "我打开关键网页核对原文。",
+    render_python_chart: "我把核验后的数据生成图表。",
+    get_system_status: "我先读取系统当前状态。",
+    list_report_outputs: "我先查看已有报告输出。",
+    list_crawl_runs: "我先读取爬虫运行日志。",
+    trigger_crawl: "我开始触发爬虫任务。",
+    trigger_report_generation: "我开始触发报告生成。",
+    forecast_quarterly_metric: "我调用趋势预测工具生成预测结果。",
+  };
+  return labels[name] || `我调用 ${toolFriendlyName(name)} 工具。`;
 }
 
 function fileDescription(file) {
@@ -317,7 +589,7 @@ function sumValues(items = []) {
 }
 
 // Register datalabels globally
-if (typeof ChartDataLabels !== 'undefined') {
+if (typeof Chart !== "undefined" && typeof ChartDataLabels !== 'undefined') {
   Chart.register(ChartDataLabels);
 }
 
@@ -341,6 +613,7 @@ function withoutChartAnimation(options = {}) {
 function initOrUpdateChart(id, config) {
   const canvas = document.getElementById(id);
   if (!canvas) return;
+  if (typeof Chart === "undefined") return;
   const existingChart = chartInstances[id];
   if (existingChart && existingChart.config.type === config.type) {
     existingChart.data = config.data;
@@ -643,8 +916,11 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     const typeInfo = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
+    const subtitleCues = file.audio && Array.isArray(file.audio.subtitleCues)
+      ? JSON.stringify(file.audio.subtitleCues)
+      : "";
     const audioAction = file.audio && file.audio.exists
-      ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.summary || '')}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+      ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.spokenText || file.audio.summary || '')}" data-subtitle-cues="${escapeHtml(subtitleCues)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
       : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
@@ -675,7 +951,15 @@ function bindOutputTableEvents(target) {
     button.addEventListener("click", () => generateAudio(button.dataset.path, button));
   });
   target.querySelectorAll(".audio-play-button").forEach((button) => {
-    button.addEventListener("click", () => playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary));
+    button.addEventListener("click", () => {
+      let subtitleCues = [];
+      try {
+        subtitleCues = JSON.parse(button.dataset.subtitleCues || "[]");
+      } catch (_error) {
+        subtitleCues = [];
+      }
+      playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary, subtitleCues);
+    });
   });
   target.querySelectorAll(".file-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
@@ -755,7 +1039,7 @@ function tracePhaseLabel(phase) {
     thinking: "Agent 判断",
     decision: "执行决定",
     answer: "本步结论",
-    tool_call: "调用工具",
+    tool_call: "工具执行",
     tool_result: "工具返回",
   };
   return labels[phase] || phase || "事件";
@@ -1160,34 +1444,54 @@ function updateSubtitles() {
   
   const progress = state.currentAudio.currentTime / state.currentAudio.duration;
   if (isNaN(progress)) return;
-  
-  let sentences;
-  if (!subtitleDiv.dataset.sentences) {
-    const text = subtitleDiv.dataset.fullText;
-    sentences = (text.match(/[^。！？\n]+[。！？\n]*/g) || [text]).map((item) => item.trim()).filter(Boolean);
-    if (!sentences.length) sentences = [text];
-    subtitleDiv.dataset.sentences = JSON.stringify(sentences);
-  } else {
-    sentences = JSON.parse(subtitleDiv.dataset.sentences);
+
+  let cues = [];
+  try {
+    cues = JSON.parse(subtitleDiv.dataset.cues || "[]");
+  } catch (_error) {
+    cues = [];
   }
-  
-  const totalChars = subtitleDiv.dataset.fullText.length;
-  const currentChars = progress * totalChars;
-  
-  let charSum = 0;
-  let sentenceStart = 0;
+  const hasTimedCues = Array.isArray(cues) && cues.length > 0;
+  let sentences;
   let activeIndex = 0;
-  for (let i = 0; i < sentences.length; i++) {
-    const nextCharSum = charSum + sentences[i].length;
-    if (currentChars <= nextCharSum || i === sentences.length - 1) {
-      activeIndex = i;
-      sentenceStart = charSum;
-      break;
+  let activeProgress = 0;
+  if (hasTimedCues) {
+    sentences = cues.map((cue) => String(cue.text || "")).filter(Boolean);
+    const currentTime = state.currentAudio.currentTime;
+    activeIndex = cues.findIndex((cue) => currentTime < Number(cue.end || 0));
+    if (activeIndex < 0) activeIndex = cues.length - 1;
+    const cue = cues[activeIndex] || {};
+    const start = Number(cue.start || 0);
+    const end = Math.max(Number(cue.end || start), start + 0.05);
+    activeProgress = Math.max(0, Math.min(1, (currentTime - start) / (end - start)));
+  } else {
+    if (!subtitleDiv.dataset.sentences) {
+      const text = subtitleDiv.dataset.fullText;
+      sentences = (text.match(/[^。！？\n]+[。！？\n]*/g) || [text]).map((item) => item.trim()).filter(Boolean);
+      if (!sentences.length) sentences = [text];
+      subtitleDiv.dataset.sentences = JSON.stringify(sentences);
+    } else {
+      sentences = JSON.parse(subtitleDiv.dataset.sentences);
     }
-    charSum = nextCharSum;
+    const totalChars = subtitleDiv.dataset.fullText.length;
+    const currentChars = progress * totalChars;
+    let charSum = 0;
+    let sentenceStart = 0;
+    for (let i = 0; i < sentences.length; i++) {
+      const nextCharSum = charSum + sentences[i].length;
+      if (currentChars <= nextCharSum || i === sentences.length - 1) {
+        activeIndex = i;
+        sentenceStart = charSum;
+        break;
+      }
+      charSum = nextCharSum;
+    }
+    const activeSentenceLength = Math.max(sentences[activeIndex]?.length || 1, 1);
+    activeProgress = Math.max(0, Math.min(1, (currentChars - sentenceStart) / activeSentenceLength));
   }
 
-  if (subtitleDiv.dataset.renderedSentences !== subtitleDiv.dataset.sentences) {
+  const renderedKey = JSON.stringify(sentences);
+  if (subtitleDiv.dataset.renderedSentences !== renderedKey) {
     const html = sentences.map((sentence, index) => `
       <div class="subtitle-line" data-subtitle-index="${index}">
         <span class="subtitle-line-fill">${escapeHtml(sentence)}</span>
@@ -1195,12 +1499,10 @@ function updateSubtitles() {
       </div>
     `).join("");
     subtitleDiv.innerHTML = `<div class="subtitle-spacer"></div>${html}<div class="subtitle-spacer"></div>`;
-    subtitleDiv.dataset.renderedSentences = subtitleDiv.dataset.sentences;
+    subtitleDiv.dataset.renderedSentences = renderedKey;
     subtitleDiv.dataset.activeIndex = "";
   }
 
-  const activeSentenceLength = Math.max(sentences[activeIndex]?.length || 1, 1);
-  const activeProgress = Math.max(0, Math.min(1, (currentChars - sentenceStart) / activeSentenceLength));
   const activeChanged = subtitleDiv.dataset.activeIndex !== String(activeIndex);
   subtitleDiv.dataset.activeIndex = String(activeIndex);
 
@@ -1219,7 +1521,7 @@ function updateSubtitles() {
   }
 }
 
-function playAudio(url, button = null, fileName = "音频摘要", summary = "") {
+function playAudio(url, button = null, fileName = "音频摘要", summary = "", subtitleCues = []) {
   if (!url) return;
   
   // Toggle pause if clicking the same active audio
@@ -1242,6 +1544,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     if (subtitleDiv) {
       subtitleDiv.dataset.fullText = "";
       subtitleDiv.dataset.sentences = "";
+      subtitleDiv.dataset.cues = "";
       subtitleDiv.dataset.activeIndex = "";
       subtitleDiv.dataset.renderedSentences = "";
     }
@@ -1260,6 +1563,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     if (summary) {
       subtitleDiv.dataset.fullText = summary;
       subtitleDiv.dataset.sentences = "";
+      subtitleDiv.dataset.cues = JSON.stringify(Array.isArray(subtitleCues) ? subtitleCues : []);
       subtitleDiv.dataset.activeIndex = "";
       subtitleDiv.dataset.renderedSentences = "";
       subtitleDiv.hidden = false;
@@ -1270,6 +1574,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "") 
     } else {
       subtitleDiv.dataset.fullText = "";
       subtitleDiv.dataset.sentences = "";
+      subtitleDiv.dataset.cues = "";
       subtitleDiv.dataset.activeIndex = "";
       subtitleDiv.dataset.renderedSentences = "";
       subtitleDiv.hidden = true;
@@ -1571,9 +1876,16 @@ function escapeHtml(value) {
 
 function inlineMarkdown(value) {
   return escapeHtml(value)
+    .replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, '<div class="chat-image-wrapper"><img src="$2" alt="$1" class="chat-inline-image" loading="lazy" /><a href="$2" download class="chat-image-download-btn" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></a></div>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/`(.+?)`/g, "<code>$1</code>");
+}
+
+function extractFirstMarkdownImage(value) {
+  const match = String(value || "").match(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/);
+  if (!match) return null;
+  return { markdown: match[0], alt: match[1] || "图表", url: match[2] };
 }
 
 function markdownToHtml(markdown) {
@@ -1705,13 +2017,55 @@ function parseChartNumber(value) {
   return Number.isFinite(num) ? num : null;
 }
 
-function renderChartBlock(jsonText) {
-  let chart;
-  try {
-    chart = JSON.parse(jsonText);
-  } catch (error) {
-    return `<pre class="chart-error">图表数据解析失败：${escapeHtml(error.message)}</pre>`;
+function chartTickStep(count) {
+  if (count <= 10) return 1;
+  if (count <= 20) return 2;
+  if (count <= 32) return 3;
+  return Math.max(4, Math.round(count / 10));
+}
+
+function parseLegacyChartJson(jsonText) {
+  const raw = String(jsonText || "").trim();
+  if (!raw) return null;
+  const candidates = [raw];
+  const fenced = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  if (fenced !== raw) candidates.push(fenced);
+  const unescaped = fenced
+    .replace(/\\"/g, '"')
+    .replace(/\\n/g, "\n")
+    .replace(/\\t/g, "\t");
+  if (unescaped !== fenced) candidates.push(unescaped);
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate);
+      const chart = parsed && typeof parsed === "object" && parsed.chart_spec ? parsed.chart_spec : parsed;
+      if (!chart || typeof chart !== "object") continue;
+      if (typeof chart.series === "string") {
+        try {
+          chart.series = JSON.parse(chart.series);
+        } catch (_error) {
+          // Keep trying other candidates; this chart is not renderable as SVG.
+        }
+      }
+      if (Array.isArray(chart.series)) {
+        chart.series = chart.series
+          .filter((item) => item && typeof item === "object")
+          .map((item) => ({
+            ...item,
+            data: Array.isArray(item.data) ? item.data : (Array.isArray(item.values) ? item.values : []),
+          }));
+      }
+      return chart;
+    } catch (_error) {
+      // Try the next tolerated shape.
+    }
   }
+  return null;
+}
+
+function renderChartBlock(jsonText) {
+  const chart = parseLegacyChartJson(jsonText);
+  if (!chart) return "";
   const x = Array.isArray(chart.x) ? chart.x.map(String) : [];
   const series = Array.isArray(chart.series) ? chart.series : [];
   if (!x.length || !series.length) return "";
@@ -1753,9 +2107,17 @@ function renderChartBlock(jsonText) {
     svg += `<line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" class="chart-grid"></line>`;
     svg += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" class="chart-axis">${escapeHtml(fmt(tick))}</text>`;
   });
-  x.forEach((label, index) => {
+  const tickStep = chartTickStep(x.length);
+  const tickIndexes = x.map((_label, index) => index).filter((index) => index % tickStep === 0 || index === x.length - 1);
+  const rotateLabels = tickIndexes.length > 10;
+  tickIndexes.forEach((index) => {
+    const label = x[index];
     const xPos = scaleX(index);
-    svg += `<text x="${xPos}" y="${height - 18}" text-anchor="middle" class="chart-axis">${escapeHtml(label)}</text>`;
+    if (rotateLabels) {
+      svg += `<text x="${xPos}" y="${height - 18}" text-anchor="end" transform="rotate(-35 ${xPos} ${height - 18})" class="chart-axis">${escapeHtml(label)}</text>`;
+    } else {
+      svg += `<text x="${xPos}" y="${height - 18}" text-anchor="middle" class="chart-axis">${escapeHtml(label)}</text>`;
+    }
   });
   if (chart.type === "bar") {
     const groupW = plotW / Math.max(x.length, 1);
@@ -1804,6 +2166,29 @@ function stripAssistantControlText(content) {
   text = text.replace(/<引用来源>[\s\S]*$/gi, "").trim();
   text = text.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
   text = text.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
+  text = text.replace(/^\s*(?:联网搜索已关闭|当前联网搜索已关闭|已关闭联网搜索|由于联网搜索|因为联网搜索|本轮不会调用|我不能联网|当前不能联网)[^\n。！？]*(?:[。！？]|\n|$)/gmi, "").trim();
+  const processMarkers = "(?:我先|我需要|为了获取|检索到了|数据包摘要显示|实际上，从数据包摘要|但早期的数据|CSV内容太大|让我|现在让我|现在我(?:已|来|开始|生成|整理)|现在(?:生成|整理|读取|检索)|我整理一下|数据已经齐全|我已经有了|从JSON中|从数据中我已获取|需要搜索|需要确认|需要.*数据|从已有的数据|从JSON看到)";
+  const processSentencePattern = new RegExp(`(^|[。！？]\\s*)${processMarkers}[^。！？]*(?:[。！？]|$)`, "g");
+  text = text.replace(processSentencePattern, (match, prefix) => (prefix && prefix.trim() ? prefix.trim() : "")).trim();
+  const formalStart = text.search(/\n?\s*(?:数据汇总（自然年收入|##\s*中国铁塔|中国铁塔6年收入趋势|结论[：:])/);
+  if (formalStart > 0 && new RegExp(processMarkers).test(text.slice(0, formalStart))) {
+    text = text.slice(formalStart).trim();
+  }
+  const processLinePattern = new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?:。|$)\\s*$`);
+  text = text
+    .split(/\n+/)
+    .filter((line) => {
+      const clean = line.trim();
+      if (!clean) return false;
+      if (processLinePattern.test(clean)) return false;
+      if (/需要(?:搜索|确认|补充|获取|读取|更多).*数据/.test(clean)) return false;
+      if (/^(?:各年收入|从已有的数据|从JSON看到|我需要确认)/.test(clean)) return false;
+      return true;
+    })
+    .join("\n")
+    .trim();
+  text = text.replace(new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?=\\n\\s*(?:#{1,3}\\s+|[一二三四五六七八九十\\d]+[、.]\\s+|[^\\n：:]{2,18}[：:]|$))`, "g"), "").trim();
+  text = text.replace(/^\s*[-–—]{3,}\s*$/gm, "").trim();
   return text;
 }
 
@@ -1847,6 +2232,7 @@ function mergeCitationMeta(node, event) {
   const incomingLinks = Array.isArray(event.links) ? event.links : [];
   const mergedRefs = [];
   const mergedLinks = [];
+  const seenRefs = new Set();
 
   const sourceType = event.provider ? "网络" : "本地";
   const addLink = (link) => {
@@ -1860,6 +2246,11 @@ function mergeCitationMeta(node, event) {
   };
   const addRef = (ref, fallbackType) => {
     const links = Array.isArray(ref.links) ? ref.links.filter((link) => link && link.url) : [];
+    const refKey = links.length
+      ? links.map((link) => `${link.url}|${link.label || ""}`).join("||")
+      : `${ref.source || ""}|${ref.index || ""}`;
+    if (seenRefs.has(refKey)) return;
+    seenRefs.add(refKey);
     const currentMax = mergedRefs.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
     const index = Number(ref.index) || currentMax + 1;
     const normalizedLinks = links.map((link) => ({
@@ -1885,6 +2276,56 @@ function mergeCitationMeta(node, event) {
 
   node.dataset.references = JSON.stringify(mergedRefs);
   node.dataset.links = JSON.stringify(mergedLinks);
+  if (event.contextAudit) {
+    const audit = event.contextAudit;
+    const retained = Number(audit.retained_chunks || 0);
+    const input = Number(audit.input_chunks || 0);
+    const tokens = Number(audit.token_estimate || 0);
+    const budget = Number(audit.token_budget || 0);
+    const compressed = Number(audit.compressed_chunks || 0);
+    const skipped = Number(audit.skipped_chunks || 0);
+    appendRagProcess(
+      node,
+      `上下文预算：保留 ${retained}/${input} 个片段，估算 ${tokens}/${budget} tokens，压缩 ${compressed} 个，跳过 ${skipped} 个。`
+    );
+  }
+  if (event.retrievalQuality) {
+    const quality = event.retrievalQuality;
+    const score = Number(quality.score || 0);
+    appendRagProcess(
+      node,
+      `检索质量：${quality.status || "unknown"}，评分 ${score}/100，官方命中 ${Number(quality.official_hits || 0)} 个，来源 ${Number(quality.unique_sources || 0)} 个。`
+    );
+  }
+}
+
+function appendActionConfirmation(node, event, originalMessage) {
+  const body = node.querySelector(".message-body");
+  if (!body || !event.actionId) return;
+  const existing = body.querySelector(`[data-action-id="${CSS.escape(event.actionId)}"]`);
+  if (existing) return;
+  const card = document.createElement("div");
+  card.className = "action-confirm-card";
+  card.dataset.actionId = event.actionId;
+  card.innerHTML = `
+    <strong>需要确认：${escapeHtml(event.label || "执行操作")}</strong>
+    <p>${escapeHtml(event.description || event.risk || "该操作会修改数据或触发任务。")}</p>
+    <button type="button" class="primary-button small">确认执行</button>
+  `;
+  const button = card.querySelector("button");
+  button.addEventListener("click", () => {
+    state.pendingConfirmedActions.add(event.actionId);
+    button.disabled = true;
+    button.textContent = "已确认，正在执行";
+    sendChat(originalMessage, { approvedActionIds: [event.actionId] });
+  });
+  body.appendChild(card);
+}
+
+function appendRunSummary(node, event) {
+  const ms = Number(event.durationMs || 0);
+  const seconds = ms ? `${(ms / 1000).toFixed(1)}s` : "-";
+  appendRagProcess(node, `本轮完成：${event.status || "ok"}，工具 ${Number(event.toolCount || 0)} 次，用时 ${seconds}。`);
 }
 
 function setMessageContent(node, content, markdown = false) {
@@ -1919,12 +2360,20 @@ function addMessage(role, content, markdown = false) {
   body.className = "message-body";
   const text = document.createElement("div");
   text.className = "message-text";
+  if (role === "assistant" && content === "正在连接...") {
+    text.dataset.placeholder = "connecting";
+  }
   body.appendChild(text);
   node.append(avatar, body);
   els.messages.appendChild(node);
   setMessageContent(node, content, markdown);
   scrollMessagesToBottom();
   return node;
+}
+
+function clearConnectingPlaceholder(node) {
+  const placeholder = node.querySelector('.message-body > [data-placeholder="connecting"]');
+  if (placeholder) placeholder.remove();
 }
 
 function messageBody(node) {
@@ -1934,29 +2383,41 @@ function messageBody(node) {
 function ensureToolList(node) {
   const body = messageBody(node);
   if (!body) return null;
-  let list = body.querySelector(":scope > .tool-call-list");
-  if (!list) {
+  let list = body.lastElementChild;
+  if (!list || !list.classList.contains("tool-call-list")) {
     list = document.createElement("div");
     list.className = "tool-call-list";
-    const text = body.querySelector(":scope > .message-text, :scope > .markdown-body");
-    body.insertBefore(list, text || null);
+    body.appendChild(list);
   }
   return list;
 }
 
+function appendStreamBlock(node, element) {
+  const body = messageBody(node);
+  if (!body || !element) return null;
+  body.appendChild(element);
+  return element;
+}
+
 function currentMessageTextNode(node) {
-  let text = node.querySelector(".message-body > .message-text:last-of-type, .message-body > .markdown-body:last-of-type");
-  if (!text) {
+  const body = messageBody(node);
+  let text = body.lastElementChild;
+  if (
+    !text ||
+    text.classList.contains("assistant-status-line") ||
+    text.classList.contains("assistant-action-line") ||
+    (!text.classList.contains("message-text") && !text.classList.contains("markdown-body"))
+  ) {
     text = document.createElement("div");
     text.className = "message-text";
-    const body = messageBody(node);
+    text._rawMarkdown = "";
     body.appendChild(text);
   }
   return text;
 }
 
-function setCurrentMessageContent(node, content, markdown = false) {
-  const text = currentMessageTextNode(node);
+function setCurrentMessageContent(node, content, markdown = false, textNode = null) {
+  const text = textNode || currentMessageTextNode(node);
   if (markdown) {
     if (text.className === "message-text") text.className = "markdown-body";
     const cleaned = stripAssistantControlText(content);
@@ -1968,18 +2429,76 @@ function setCurrentMessageContent(node, content, markdown = false) {
   }
 }
 
+function dedupeAssistantTextBlocks(node) {
+  const body = messageBody(node);
+  if (!body) return;
+  const blocks = [...body.querySelectorAll(":scope > .message-text, :scope > .markdown-body")]
+    .filter((item) => !item.classList.contains("assistant-status-line") && item.textContent.trim().length > 80);
+  const seen = new Map();
+  blocks.forEach((block) => {
+    const normalized = block.textContent.replace(/\s+/g, " ").trim();
+    const key = /中国铁塔/.test(normalized) && /2017/.test(normalized) && /2025/.test(normalized) && /Q1=/.test(normalized)
+      ? "china-tower-quarterly-revenue-list"
+      : normalized.slice(0, 120);
+    if (!key) return;
+    const earlier = seen.get(key);
+    if (earlier && earlier.isConnected) {
+      earlier.remove();
+    }
+    seen.set(key, block);
+  });
+}
+
+function appendStableChartImage(node, chartImage) {
+  const body = messageBody(node);
+  if (!body || !chartImage || !chartImage.url) return;
+  const existing = body.querySelector(`.chart-result-block[data-chart-url="${CSS.escape(chartImage.url)}"]`);
+  if (existing) return;
+  const block = document.createElement("div");
+  block.className = "chart-result-block";
+  block.dataset.chartUrl = chartImage.url;
+  block.innerHTML = inlineMarkdown(chartImage.markdown);
+  body.appendChild(block);
+}
+
+function appendAssistantActionLine(node, event) {
+  const body = messageBody(node);
+  if (!body || !event || event.type !== "tool_call_start") return;
+  const id = event.id || `${event.name || "tool"}-${node.querySelectorAll(".assistant-action-line").length}`;
+  const existing = node.querySelector(`.assistant-action-line[data-tool-id="${CSS.escape(id)}"]`);
+  if (existing) return;
+  const line = document.createElement("div");
+  line.className = "assistant-action-line";
+  line.dataset.toolId = id;
+  line.textContent = toolNarrationText(event.name);
+  appendStreamBlock(node, line);
+}
+
 function appendRagProcess(node, text) {
+  if (!node || node.dataset.showThinkingPanel !== "true") return;
   let processNode = node.querySelector(".rag-process");
   if (!processNode) {
-    processNode = document.createElement("div");
+    processNode = document.createElement("details");
     processNode.className = "rag-process";
+    const title = document.createElement("summary");
+    title.className = "rag-process-title";
+    title.innerHTML = `<span class="rag-process-caret" aria-hidden="true">▾</span><span>Thinking</span><span class="thinking-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>`;
+    title.setAttribute("aria-label", "Thinking");
+    processNode.appendChild(title);
+    const steps = document.createElement("div");
+    steps.className = "rag-process-steps";
+    processNode.appendChild(steps);
     const body = node.querySelector(".message-body");
     body.insertBefore(processNode, body.firstChild);
   }
+  const steps = processNode.querySelector(".rag-process-steps");
+  if (!steps) return;
+  const exists = [...steps.querySelectorAll(".rag-step")].some((item) => item.textContent === text);
+  if (exists) return;
   const step = document.createElement("div");
   step.className = "rag-step";
   step.textContent = text;
-  processNode.appendChild(step);
+  steps.appendChild(step);
 }
 
 function appendRagSources(node, sources, links) {
@@ -2011,7 +2530,7 @@ function appendCitationFooter(node, references, links) {
   const list = document.createElement("div");
   list.className = "citation-footer-list";
 
-  refList.forEach(ref => {
+  refList.slice(0, 12).forEach(ref => {
     const refLinks = ref.links || [];
     refLinks.forEach(link => {
       const a = document.createElement("a");
@@ -2042,33 +2561,57 @@ function appendCitationFooter(node, references, links) {
 }
 
 function appendToolCallCard(node, event) {
-  const list = ensureToolList(node);
-  if (!list) return;
-  const id = event.id || `${event.name || "tool"}-${list.querySelectorAll(".tool-details").length}`;
-  let card = list.querySelector(`[data-tool-id="${CSS.escape(id)}"]`);
+  const body = messageBody(node);
+  if (!body) return;
+  const id = event.id || `${event.name || "tool"}-${node.querySelectorAll(".tool-details").length}`;
+  let card = node.querySelector(`.tool-details[data-tool-id="${CSS.escape(id)}"]`);
   if (!card) {
     card = document.createElement("details");
     card.className = "tool-details";
     card.open = false;
     card.dataset.toolId = id;
     card.innerHTML = `
-      <summary class="tool-summary">调用工具:<span class="tool-name"></span></summary>
+      <summary class="tool-summary">
+        <span class="tool-icon" aria-hidden="true"></span>
+        <span class="tool-label"></span>
+        <span class="tool-name"></span>
+      </summary>
       <div class="tool-body">处理中...</div>
     `;
-    list.appendChild(card);
+    appendStreamBlock(node, card);
   }
+  const iconNode = card.querySelector(".tool-icon");
+  const labelNode = card.querySelector(".tool-label");
   const nameNode = card.querySelector(".tool-name");
   const bodyNode = card.querySelector(".tool-body");
-  if (nameNode) nameNode.textContent = event.name || "工具";
+  const technicalName = event.name || "tool";
+  if (iconNode) iconNode.innerHTML = iconSvg(toolIconName(technicalName));
+  if (labelNode) labelNode.textContent = toolFriendlyName(technicalName);
+  if (nameNode) nameNode.textContent = technicalName;
+  card.classList.toggle("is-done", event.type === "tool_call_result");
   if (bodyNode && event.type === "tool_call_result") {
     const args = event.args ? `参数:\n${event.args}\n\n` : "";
-    bodyNode.textContent = `${args}结果:\n${event.content || "工具调用完成。"}`;
+    const result = event.content ? `结果:\n${event.content}` : "";
+    if (event.name === "render_python_chart") {
+      bodyNode.classList.add("markdown-body");
+      bodyNode.innerHTML = markdownToHtml(`${args}${result}`);
+    } else {
+      bodyNode.classList.remove("markdown-body");
+      bodyNode.textContent = `${args}${result}`;
+    }
+    bodyNode.hidden = !args && !event.content;
   }
 }
 
 function resizeChatInput() {
+  const value = els.chatInput.value || "";
+  const isSingleLine = !value.includes("\n");
+  if (isSingleLine) {
+    els.chatInput.style.height = "30px";
+    return;
+  }
   els.chatInput.style.height = "auto";
-  els.chatInput.style.height = `${Math.min(120, Math.max(42, els.chatInput.scrollHeight))}px`;
+  els.chatInput.style.height = `${Math.min(120, Math.max(30, els.chatInput.scrollHeight))}px`;
 }
 
 function generateFallbackSuggestions(userMessage) {
@@ -2114,26 +2657,106 @@ function generateFallbackSuggestions(userMessage) {
   return suggestions.slice(0, 3);
 }
 
-async function sendChat(message) {
+function normalizeSuggestionList(items) {
+  if (!Array.isArray(items)) return [];
+  const blocked = /(联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|web_search|read_webpage)/i;
+  return items
+    .map((item) => String(item || "").trim())
+    .filter((item) => item && !blocked.test(item))
+    .slice(0, 3);
+}
+
+function currentAgentContextKey(skillIds, datasetIds) {
+  return JSON.stringify({
+    skills: [...skillIds].sort(),
+    datasets: [...datasetIds].sort(),
+  });
+}
+
+function compactChatHistory() {
+  return state.chatHistory
+    .slice(-8)
+    .map((item) => ({
+      role: item.role === "assistant" ? "assistant" : "user",
+      content: String(item.content || "").replace(/\s+/g, " ").trim().slice(0, 1800),
+    }))
+    .filter((item) => item.content);
+}
+
+async function sendChat(message, options = {}) {
+  const conversationHistory = compactChatHistory();
   addMessage("user", message);
   setChatBusy(true);
   try {
     const assistantNode = addMessage("assistant", "正在连接...");
     const webSearchEnabled = Boolean(state.webSearchEnabled);
     const thinkingEnabled = Boolean(state.thinkingEnabled);
+    assistantNode.dataset.showThinkingPanel = thinkingEnabled ? "true" : "false";
     const selectedSkillIds = Array.from(state.selectedSkillIds);
+    const selectedDatasetIds = Array.from(state.selectedDatasetIds);
+    const contextKey = currentAgentContextKey(selectedSkillIds, selectedDatasetIds);
+    const emitContextEvents = contextKey !== state.agentContextKey;
+    const loadedSkillIds = Array.from(state.loadedSkillIds);
+    const approvedActionIds = Array.isArray(options.approvedActionIds) ? options.approvedActionIds : [];
     const response = await fetch("/api/chat-stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, webSearchEnabled, thinkingEnabled, selectedSkillIds }),
+      body: JSON.stringify({
+        message,
+        webSearchEnabled,
+        thinkingEnabled,
+        selectedSkillIds,
+        selectedDatasetIds,
+        approvedActionIds,
+        conversationHistory,
+        emitContextEvents,
+        loadedSkillIds,
+      }),
     });
     if (!response.ok || !response.body) throw new Error("对话请求失败");
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
     let answer = "";
-    let segmentAnswer = "";
+    const insertedChartUrls = new Set();
+    let hasVisibleAssistantText = false;
     let isDone = false;
+
+    const showImmediateStatus = () => {
+      if (hasVisibleAssistantText) return;
+      if (!assistantNode.querySelector(".assistant-status-line")) {
+        const statusNode = document.createElement("div");
+        statusNode.className = "assistant-status-line";
+        statusNode.textContent = "正在分析请求，并调用相关工具获取依据。";
+        const body = messageBody(assistantNode);
+        if (body) body.appendChild(statusNode);
+      }
+      hasVisibleAssistantText = true;
+      scrollMessagesToBottom();
+    };
+
+    const renderToolEvent = (event) => {
+      if (event.type === "tool_call_start") {
+        appendAssistantActionLine(assistantNode, event);
+      }
+      if (event.type === "tool_call_result" && event.name === "read_agent_skill" && event.args) {
+        try {
+          const parsedArgs = JSON.parse(event.args);
+          if (parsedArgs && parsedArgs.skill_id) state.loadedSkillIds.add(String(parsedArgs.skill_id));
+        } catch (e) {
+          // Ignore malformed tool args; the visible tool card still shows the call.
+        }
+      }
+      appendToolCallCard(assistantNode, event);
+      if (event.type === "tool_call_result" && event.name === "render_python_chart") {
+        const chartImage = extractFirstMarkdownImage(event.content);
+        if (chartImage && !insertedChartUrls.has(chartImage.url)) {
+          insertedChartUrls.add(chartImage.url);
+          appendStableChartImage(assistantNode, chartImage);
+        }
+      }
+    };
+
     while (true) {
       const { value, done } = await reader.read();
       if (done) break;
@@ -2144,34 +2767,44 @@ async function sendChat(message) {
         const line = part.split("\n").find((item) => item.startsWith("data:"));
         if (!line) continue;
         const event = JSON.parse(line.replace(/^data:\s*/, ""));
+        if (event.type !== "done") clearConnectingPlaceholder(assistantNode);
         
         if (event.type === "done") {
           isDone = true;
           break;
         } else if (event.type === "thinking_status") {
-          appendRagProcess(assistantNode, event.text || "深度思考已开启。");
+          if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "process") {
-          appendRagProcess(assistantNode, event.text);
+          if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
           mergeCitationMeta(assistantNode, event);
+        } else if (event.type === "action_confirmation") {
+          appendActionConfirmation(assistantNode, event, message);
+        } else if (event.type === "run_summary") {
+          if (thinkingEnabled) appendRunSummary(assistantNode, event);
         } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
-          appendToolCallCard(assistantNode, event);
-          if (event.type === "tool_call_start") segmentAnswer = "";
+          if (!hasVisibleAssistantText) {
+            showImmediateStatus();
+          }
+          renderToolEvent(event);
           scrollMessagesToBottom();
         } else if (event.type === "delta") {
           answer += event.text;
-          segmentAnswer += event.text;
-          let displayAnswer = segmentAnswer;
-          const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
+          const textNode = currentMessageTextNode(assistantNode);
+          if (textNode._rawMarkdown === undefined) textNode._rawMarkdown = "";
+          textNode._rawMarkdown += event.text;
+
+          let displayAnswer = textNode._rawMarkdown;
+          const sugMatch = answer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
           let suggestionsHTML = "";
           if (sugMatch) {
             try {
               let jsonStr = sugMatch[1].trim();
               jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
-              const arr = JSON.parse(jsonStr);
+              const arr = normalizeSuggestionList(JSON.parse(jsonStr));
               displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
               if (arr && arr.length > 0) {
-                suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
+                suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
               }
             } catch (e) {
                console.error("Suggestion parse error:", e, sugMatch[1]);
@@ -2179,28 +2812,37 @@ async function sendChat(message) {
           }
           displayAnswer = stripAssistantControlText(displayAnswer);
           
-          setCurrentMessageContent(assistantNode, displayAnswer, true);
+          setCurrentMessageContent(assistantNode, displayAnswer, true, textNode);
+          if (displayAnswer.trim()) {
+            hasVisibleAssistantText = true;
+          }
+          dedupeAssistantTextBlocks(assistantNode);
           if (suggestionsHTML) {
-            const b = currentMessageTextNode(assistantNode);
-            b.insertAdjacentHTML("beforeend", suggestionsHTML);
+            textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
           }
           scrollMessagesToBottom();
         } else if (event.type === "error") {
           answer += `\n\n**错误：** ${event.text}`;
-          segmentAnswer += `\n\n**错误：** ${event.text}`;
-          let displayAnswer = segmentAnswer.replace(/<suggestions>[\s\S]*$/, "");
-          setCurrentMessageContent(assistantNode, displayAnswer, true);
+          const errTextNode = currentMessageTextNode(assistantNode);
+          if (errTextNode._rawMarkdown === undefined) errTextNode._rawMarkdown = "";
+          errTextNode._rawMarkdown += `\n\n**错误：** ${event.text}`;
+          let displayAnswer = errTextNode._rawMarkdown.replace(/<suggestions>[\s\S]*$/, "");
+          setCurrentMessageContent(assistantNode, displayAnswer, true, errTextNode);
+          hasVisibleAssistantText = true;
+          dedupeAssistantTextBlocks(assistantNode);
         } else if (event.type === "tool_start") {
-          answer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;">调用工具: \`${event.name}\`</div>\n\n`;
-          segmentAnswer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;">调用工具: \`${event.name}\`</div>\n\n`;
-          setCurrentMessageContent(assistantNode, segmentAnswer, true);
+          const label = escapeHtml(toolFriendlyName(event.name));
+          const technicalName = escapeHtml(event.name || "tool");
+          const icon = iconSvg(toolIconName(event.name));
+          const toolHtml = `<div class="inline-tool-event"><span class="tool-icon" aria-hidden="true">${icon}</span><strong>${label}</strong><code>${technicalName}</code></div>`;
+          answer += `\n\n${toolHtml}\n\n`;
+          const toolTextNode = currentMessageTextNode(assistantNode);
+          if (toolTextNode._rawMarkdown === undefined) toolTextNode._rawMarkdown = "";
+          toolTextNode._rawMarkdown += `\n\n${toolHtml}\n\n`;
+          setCurrentMessageContent(assistantNode, toolTextNode._rawMarkdown, true, toolTextNode);
           scrollMessagesToBottom();
         } else if (event.type === "tool_end") {
-          // Output is typically handled by the streaming chunk itself, but if we get here just quietly log it
-          answer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;opacity:0.5;">工具调用完成</div>\n\n`;
-          segmentAnswer += `\n\n<div style="font-size:12px;color:#888;margin:4px 0;opacity:0.5;">工具调用完成</div>\n\n`;
-          setCurrentMessageContent(assistantNode, segmentAnswer, true);
-          scrollMessagesToBottom();
+          // Tool result cards handle completion state; do not add a separate completion line.
         } else if (event.type === "action_result") {
           if (event.generation) {
             appendLog([
@@ -2222,8 +2864,13 @@ async function sendChat(message) {
       }
       if (isDone) break;
     }
-    if (!answer.trim()) setCurrentMessageContent(assistantNode, "操作完成。", true);
-    else {
+    if (!answer.trim()) {
+      setCurrentMessageContent(assistantNode, "操作完成。", true);
+      state.chatHistory.push({ role: "user", content: message });
+      state.chatHistory.push({ role: "assistant", content: "操作完成。" });
+      state.chatHistory = state.chatHistory.slice(-12);
+      state.agentContextKey = contextKey;
+    } else {
       let finalAnswer = answer;
       const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
       let suggestionsHTML = "";
@@ -2231,10 +2878,10 @@ async function sendChat(message) {
         try {
           let jsonStr = sugMatch[1].trim();
           jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
-          const arr = JSON.parse(jsonStr);
+          const arr = normalizeSuggestionList(JSON.parse(jsonStr));
           finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
           if (arr && arr.length > 0) {
-            suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
+            suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
           }
         } catch (e) {
             console.error("Suggestion parse error final:", e, sugMatch[1]);
@@ -2249,9 +2896,7 @@ async function sendChat(message) {
       finalAnswer = finalAnswer.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
       finalAnswer = stripAssistantControlText(finalAnswer);
 
-      if (segmentAnswer.trim()) {
-        setCurrentMessageContent(assistantNode, finalAnswer.includes(segmentAnswer) ? stripAssistantControlText(segmentAnswer) : segmentAnswer, true);
-      }
+      setCurrentMessageContent(assistantNode, finalAnswer, true);
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
       const storedLinks = assistantNode.dataset.links ? JSON.parse(assistantNode.dataset.links) : null;
@@ -2282,6 +2927,12 @@ async function sendChat(message) {
         const b = currentMessageTextNode(assistantNode);
         b.insertAdjacentHTML("beforeend", fallbackHTML);
       }
+      if (finalAnswer.trim()) {
+        state.chatHistory.push({ role: "user", content: message });
+        state.chatHistory.push({ role: "assistant", content: finalAnswer });
+        state.chatHistory = state.chatHistory.slice(-12);
+      }
+      state.agentContextKey = contextKey;
       scrollMessagesToBottom();
     }
     await fetchStatus();
@@ -2316,6 +2967,7 @@ els.aiSettingsButton.addEventListener("click", () => {
   loadAiConfig().catch((error) => {
     els.aiConfigStatus.textContent = error.message;
   });
+  loadAgentMemory().catch(() => {});
 });
 
 els.closeAiSettings.addEventListener("click", () => {
@@ -2336,6 +2988,26 @@ els.aiSettingsForm.addEventListener("submit", (event) => {
       els.aiConfigStatus.textContent = error.message;
     });
 });
+
+if (els.refreshAgentMemory) {
+  els.refreshAgentMemory.addEventListener("click", () => {
+    loadAgentMemory().catch((error) => {
+      if (els.agentMemoryList) els.agentMemoryList.textContent = error.message || String(error);
+    });
+  });
+}
+
+if (els.agentMemoryList) {
+  els.agentMemoryList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete-memory]");
+    if (!button) return;
+    button.disabled = true;
+    deleteAgentMemory(button.dataset.deleteMemory).catch((error) => {
+      button.disabled = false;
+      if (els.aiConfigStatus) els.aiConfigStatus.textContent = error.message || String(error);
+    });
+  });
+}
 
 els.fileEditForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -2470,6 +3142,9 @@ els.chatModal.addEventListener("click", (event) => {
 });
 
 els.clearChatButton.addEventListener("click", () => {
+  state.chatHistory = [];
+  state.agentContextKey = "";
+  state.loadedSkillIds = new Set();
   els.messages.innerHTML = `
     <div class="message assistant">
       <span class="avatar">AI</span>
@@ -2510,16 +3185,75 @@ if (els.skillToggle) {
   });
 }
 
+if (els.databaseToggle) {
+  renderDatabaseToggle();
+  loadAgentDatasets();
+  els.databaseToggle.addEventListener("click", () => {
+    if (state.chatBusy || !els.databaseMenu) return;
+    els.databaseMenu.hidden = !els.databaseMenu.hidden;
+    renderDatabaseToggle();
+  });
+}
+
+if (els.knowledgeUploadInput) {
+  els.knowledgeUploadInput.addEventListener("change", () => {
+    const file = els.knowledgeUploadInput.files && els.knowledgeUploadInput.files[0];
+    uploadKnowledgeFile(file);
+  });
+}
+
 if (els.skillMenu) {
   els.skillMenu.addEventListener("click", (event) => {
     event.stopPropagation();
+    const expand = event.target.closest(".option-expand");
+    if (expand) {
+      const option = expand.closest(".skill-option");
+      const skillId = option && option.dataset.skillId;
+      if (!skillId) return;
+      if (state.expandedSkillIds.has(skillId)) state.expandedSkillIds.delete(skillId);
+      else state.expandedSkillIds.add(skillId);
+      renderSkillMenu();
+      return;
+    }
     const option = event.target.closest(".skill-option");
     if (!option || state.chatBusy) return;
     const skillId = option.dataset.skillId;
     if (!skillId) return;
+    state.skillSelectionTouched = true;
     if (state.selectedSkillIds.has(skillId)) state.selectedSkillIds.delete(skillId);
     else state.selectedSkillIds.add(skillId);
     renderSkillMenu();
+    els.chatInput.focus();
+  });
+}
+
+if (els.databaseMenu) {
+  els.databaseMenu.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const uploadAction = event.target.closest(".database-upload-action");
+    if (uploadAction) {
+      if (state.chatBusy || state.knowledgeUploadBusy || !els.knowledgeUploadInput) return;
+      els.knowledgeUploadInput.click();
+      return;
+    }
+    const expand = event.target.closest(".option-expand");
+    if (expand) {
+      const option = expand.closest(".database-option");
+      const datasetId = option && option.dataset.datasetId;
+      if (!datasetId) return;
+      if (state.expandedDatasetIds.has(datasetId)) state.expandedDatasetIds.delete(datasetId);
+      else state.expandedDatasetIds.add(datasetId);
+      renderDatabaseMenu();
+      return;
+    }
+    const option = event.target.closest(".database-option");
+    if (!option || state.chatBusy) return;
+    const datasetId = option.dataset.datasetId;
+    if (!datasetId) return;
+    state.datasetSelectionTouched = true;
+    if (state.selectedDatasetIds.has(datasetId)) state.selectedDatasetIds.delete(datasetId);
+    else state.selectedDatasetIds.add(datasetId);
+    renderDatabaseMenu();
     els.chatInput.focus();
   });
 }
@@ -2529,6 +3263,13 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".skill-picker")) return;
   els.skillMenu.hidden = true;
   renderSkillToggle();
+});
+
+document.addEventListener("click", (event) => {
+  if (!els.databaseMenu || els.databaseMenu.hidden) return;
+  if (event.target.closest(".database-picker")) return;
+  els.databaseMenu.hidden = true;
+  renderDatabaseToggle();
 });
 
 els.chatForm.addEventListener("submit", (event) => {

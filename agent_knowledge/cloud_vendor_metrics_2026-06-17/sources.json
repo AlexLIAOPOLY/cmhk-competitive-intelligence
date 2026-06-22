@@ -1,0 +1,87 @@
+{
+  "amazon_2025_10k": {
+    "label": "Amazon.com 2025 Form 10-K, AWS segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+    "type": "official_10k"
+  },
+  "amazon_ir_annual_reports": {
+    "label": "Amazon Investor Relations annual reports, proxies and shareholder letters index",
+    "url": "https://ir.aboutamazon.com/annual-reports-proxies-and-shareholder-letters/default.aspx",
+    "type": "official_ir_report_index"
+  },
+  "alphabet_2025_10k": {
+    "label": "Alphabet 2025 Form 10-K, Google Cloud segment table",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+    "type": "official_10k"
+  },
+  "alphabet_ir_sec_filings": {
+    "label": "Alphabet Investor Relations SEC filings index",
+    "url": "https://abc.xyz/investor/sec-filings/",
+    "type": "official_ir_filings_index"
+  },
+  "microsoft_2025_10k": {
+    "label": "Microsoft 2025 Annual Report, segment and product revenue tables",
+    "url": "https://www.microsoft.com/investor/reports/ar25/index.html",
+    "type": "official_annual_report"
+  },
+  "microsoft_ir_annual_reports": {
+    "label": "Microsoft Investor Relations annual reports index",
+    "url": "https://www.microsoft.com/en-us/investor/annual-reports",
+    "type": "official_ir_report_index"
+  },
+  "oracle_2025_10k": {
+    "label": "Oracle FY2025 Form 10-K, cloud services and cloud/license tables",
+    "url": "https://www.sec.gov/Archives/edgar/data/1341439/000095017025087926/orcl-20250531.htm",
+    "type": "official_10k"
+  },
+  "oracle_ir_sec_filings": {
+    "label": "Oracle Investor Relations SEC filings index",
+    "url": "https://investor.oracle.com/sec-filings/default.aspx",
+    "type": "official_ir_filings_index"
+  },
+  "alibaba_fy2025_pdf": {
+    "label": "Alibaba Group FY2025 results PDF, Cloud Intelligence Group tables",
+    "url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+    "type": "official_results_pdf"
+  },
+  "alibaba_fy2024_businesswire": {
+    "label": "Alibaba Group FY2024 results release, Cloud Intelligence Group FY2024/FY2023 tables",
+    "url": "https://www.businesswire.com/news/home/20240513641121/en/Alibaba-Group-Announces-March-Quarter-2024-and-Fiscal-Year-2024-Results",
+    "type": "official_results_release"
+  },
+  "alibaba_ir_financial_results": {
+    "label": "Alibaba Investor Relations earnings and financials index",
+    "url": "https://www.alibabagroup.com/ir-financial-reports-quarterly-results",
+    "type": "official_ir_results_index"
+  },
+  "tencent_2025_annual_pdf": {
+    "label": "Tencent Holdings 2025 Annual Report, FinTech and Business Services tables",
+    "url": "https://static.www.tencent.com/uploads/2026/04/09/62d786fcf3d3c8cb7e54791ee95439ac.pdf",
+    "type": "official_annual_report_pdf"
+  },
+  "tencent_2024_annual_pdf": {
+    "label": "Tencent Holdings 2024 Annual Report, FinTech and Business Services tables",
+    "url": "https://static.www.tencent.com/uploads/2025/04/08/1132b72b565389d1b913aea60a648d73.pdf",
+    "type": "official_annual_report_pdf"
+  },
+  "tencent_ir_financial_reports": {
+    "label": "Tencent Investor Relations financial reports index",
+    "url": "https://www.tencent.com/en-us/investors/financial-reports.html",
+    "type": "official_ir_report_index"
+  },
+  "huawei_2025_annual": {
+    "label": "Huawei 2025 Annual Report, Cloud Computing business segment table",
+    "url": "https://www.huawei.com/en/annual-report/2025",
+    "type": "official_annual_report"
+  },
+  "huawei_2024_annual": {
+    "label": "Huawei 2024 Annual Report, Cloud Computing business segment table",
+    "url": "https://www.huawei.com/en/annual-report/2024",
+    "type": "official_annual_report"
+  },
+  "huawei_annual_report_index": {
+    "label": "Huawei annual report index",
+    "url": "https://www.huawei.com/en/annual-report",
+    "type": "official_report_index"
+  }
+}

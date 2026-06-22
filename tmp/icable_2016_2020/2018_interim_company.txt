@@ -1,0 +1,2225 @@
+                     i-CABLE COMMUNICATIONS LIMITED 有線寬頻通訊有限公司
+有線寬頻通訊有限公司                                                       i-CABLE COMMUNICATIONS LIMITED
+股份代號 : 1097                                                      STOCK CODE: 1097
+
+
+
+
+              2018
+              中期報告
+                                                                                                  2018
+                                                                                                  Interim Report
+
+
+
+
+                     INTERIM REPORT 2018 中期報告
+CONTENTS
+
+2          Corporate Information
+
+3          Highlights
+
+5          Business Review
+
+8          Management Discussion and Analysis
+
+16         Report on Review of Interim Financial Information
+
+18         Condensed Consolidated Statement of Profit or Loss
+
+19         Condensed Consolidated Statement of Comprehensive Income
+
+20         Condensed Consolidated Statement of Financial Position
+
+22         Condensed Consolidated Statement of Changes in Equity
+
+24         Condensed Consolidated Statement of Cash Flows
+
+25         Notes to the Condensed Consolidated Interim Financial Information
+
+45         Corporate Governance and Additional Information
+
+
+
+
+The English text of this interim report shall prevail over the Chinese text in case
+of inconsistencies or discrepancies.
+     CORPORATE INFORMATION
+
+     BOARD OF DIRECTORS                                   AUTHORISED REPRESENTATIVES
+
+     Non-executive Directors                              Mr. Andrew Wah Wai CHIU
+                                                          Mr. KWOK Chi Kin
+     Tan Sri Dato’ David CHIU (Chairman)
+     Dr. CHENG Kar-Shun, Henry GBM, GBS                   COMPANY SECRETARY
+       (Vice-chairman)
+                                                          Mr. KWOK Chi Kin
+     Dr. CHENG Chi-Kong, Adrian JP
+     Mr. TSANG On Yip, Patrick
+                                                          PRINCIPAL BANKER
+     Mr. HOONG Cheong Thard
+                                                          The Hongkong and Shanghai Banking
+     Executive Director                                     Corporation Limited
+
+     Mr. Andrew Wah Wai CHIU                              SHARE REGISTRAR AND
+                                                          TRANSFER OFFICE
+     Independent Non-executive Directors
+                                                          Tricor Tengis Limited
+     Mr. LAM Kin-Fung, Jeffrey GBS, JP                    Level 22, Hopewell Centre,
+     Mr. HU Shao Ming Herman SBS, JP                      183 Queen’s Road East,
+     Mr. LUK Koon Hoo, Roger BBS, JP                      Hong Kong
+     Mr. TANG Sing Ming Sherman
+
+     AUDIT COMMITTEE                                      REGISTERED OFFICE
+                                                          8th Floor, Cable TV Tower,
+     Mr. LUK Koon Hoo, Roger (Chairman)
+                                                          9 Hoi Shing Road,
+     Mr. HOONG Cheong Thard
+                                                          Tsuen Wan,
+     Mr. TANG Sing Ming Sherman
+                                                          Hong Kong
+     NOMINATION COMMITTEE
+                                                          AUDITOR
+     Tan Sri Dato’ David CHIU (Chairman)
+     Mr. LAM Kin-Fung, Jeffrey                            PricewaterhouseCoopers,
+     Mr. LUK Koon Hoo, Roger                              Certified Public Accountants
+
+
+     COMPENSATION COMMITTEE                               CORPORATE WEBSITE
+     Mr. LAM Kin-Fung, Jeffrey (Chairman)                 www.i-cablecomm.com
+     Tan Sri Dato’ David CHIU
+     Mr. TSANG On Yip, Patrick                            STOCK CODE
+     Mr. HU Shao Ming Herman
+                                                          01097
+     Mr. LUK Koon Hoo, Roger
+
+
+02   i-CABLE Communications Limited Interim Report 2018
+HIGHLIGHTS
+
+•    The financial performance of i-CABLE Communications Limited (the “Company” or
+     “i-CABLE”), its subsidiaries and consolidated structured entities (collectively the “Group”)
+     for the six months ended June 30, 2018 was affected by the decline of advertising and
+     subscription revenues.
+
+
+•    On the subscription business front, the customer base contracted in earlier months of the
+     first half of 2018 as compared to the corresponding period in 2017. Number of subscribers
+     has demonstrated improvement following the introduction of new contents and channels
+     during the period under review.
+
+
+•    The decline of pay television (“Pay TV”) advertising revenue was mainly due to the
+     intensifying competition from OTT (over-the-top) platforms and digital media. The decline
+     was offset by the increase in free television advertising revenue as the business started
+     ramping up.
+
+
+•    Television (“TV”) segment EBITDA(Note 1) increased from a loss of approximately HK$123
+     million for the corresponding period in 2017 to a loss of approximately HK$191 million for
+     the first half of 2018 due to a decrease in revenue and the start-up costs associated with
+     introduction of free TV channel.
+
+
+•    Internet and multimedia segment EBITDA(Note 1) recorded an increase from approximately
+     HK$54 million for the corresponding period in 2017 to approximately HK$56 million for the
+     first half of 2018.
+
+
+                                                                               Unaudited
+                                                                   Six months ended June 30,
+                                                                              2018                 2017
+                                                                         HK$’000               HK$’000
+
+
+
+Revenue                                                                  587,468                641,112
+Loss from operations                                                    (284,190)              (221,840)
+Loss for the period                                                     (253,563)              (141,137)
+
+
+                                                                                             (Restated)
+                                                                        HK cents              HK cents
+Basic loss per share                                                           (4.1)                 (5.7)
+Diluted loss per share                                                         (4.1)                 (5.7)
+
+
+                                                        i-CABLE Communications Limited Interim Report 2018   03
+     HIGHLIGHTS (continued)
+
+
+                                                                                Unaudited               Audited
+                                                                                   June 30,      December 31,
+                                                                                       2018                2017
+                                                                                   HK$’000             HK$’000
+
+
+
+     Total assets                                                                1,823,489           2,064,782
+     Total liabilities                                                             (902,288)           (934,935)
+     Total equity                                                                  921,201           1,129,847
+
+
+     Gearing ratio (Note 2)                                                           53.7%               43.8%
+
+
+     Notes:
+
+
+     1.    “EBITDA” represents earnings before interest income, finance costs, non-operating income, income
+           tax credit, depreciation of property, plant and equipment but after amortisation of programming
+           library.
+
+
+     2.    The gearing ratio measured in terms of the total interest-bearing borrowings divided by total equity.
+
+
+
+
+04   i-CABLE Communications Limited Interim Report 2018
+BUSINESS REVIEW
+
+OPERATING ENVIRONMENT
+
+The Group’s financial performance in the first half of 2018 was affected by the decline of
+advertising and subscription revenues. The decline of Pay TV advertising revenue was mainly
+due to the intensifying competition from OTT platforms and digital media. The decline was
+offset by the increase in free TV advertising revenue as the business started ramping up. On
+the subscription business front, the customer base contracted in the earlier of the first half of
+2018 as compared to the corresponding period in 2017. Number of subscribers has
+demonstrated improvement following the introduction of new contents and channels during
+the period under review.
+
+
+Business
+
+Keen competition in the market has continued to contract the subscription customer base of
+Pay TV service and broadband service, however, the subscription average revenue per user
+was only slightly affected.
+
+
+                                                                              June                  June
+Customers (‘000)                                                              2018                 2017
+
+
+
+TV                                                                             833                   889
+Broadband                                                                      150                   153
+Telephony                                                                        88                    95
+
+
+FANhub with enhanced content viewing features combined with our mobile app served as a
+major proposition to facilitate the acquisition and retention of Pay TV subscription customers.
+Broadcasting equipment was upgraded to improve the video and transmission quality of TV
+programmes, and the viewing experience was enriched with multi-screen function, allowing
+our subscribers to watch our content more conveniently.
+
+
+The Group continues to upgrade our network to provide high speed Gigabit-capable Passive
+Optical Network (“GPON”) services and to enhance the FANhub platform to support our
+enhanced and interactive services, so that our subscribers are able to enjoy more stable and
+faster internet access.
+
+
+
+
+                                                        i-CABLE Communications Limited Interim Report 2018   05
+     BUSINESS REVIEW (continued)
+
+     Directly impacted by the shift of advertising dollars to digital media and online platforms,
+     airtime sales business of Pay TV underperformed in the first half of 2018. The Group is building
+     up the airtime sales business of Fantastic Television Limited (“Fantastic TV”), the local free TV
+     channel that was launched in May 2017.
+
+
+     The Group is under-going major changes, aiming to improve business performance in the
+     second half of 2018.
+
+
+     Programming
+
+     i-CABLE’s news has always been well-recognised by the market as evidenced by the high
+     ranking in news and finance channel in the Appreciation Index in past years. This was further
+     demonstrated by the awards winning in various i-CABLE’s news programmes over the years.
+
+
+     Amid fierce competition from traditional TV, online media threat and change of audiences’
+     viewing habits, entertainment platform strived to maintain our competitive edge by providing
+     bespoke specialty channels with premium content to our subscribers. Movie channels continue
+     to offer a wide range of movie choices to film buffs including the critically acclaimed Korean
+     movie “A Taxi Driver” (逆權司機) and Best Film of the 37th Hong Kong Film Awards — “Our
+     Time will Come” (明月幾時有). “Movie 2” channel was renamed to “Cable Movie Classics” (有線
+     經典電影台) to bring viewers not only Hong Kong golden classics but also classic movies
+     around the world. Drama channel made a substantial growth in viewership. Korean family
+     dramas continue to attract eye-balls, both “Band of Sisters” (姐姐還活著) and “Return of
+     Fortunate Bok” (回來的福丹芝) ranked the highest viewership entertainment programmes
+     during the period. Our self-productions continue to embrace originality and local flavor. “4-Hour
+     Living Circle” (四小時生活圈) not only exhibited a fresh new format with distinctive prospective,
+     but also delivered a stylish twist to traditional travel programme. The Group’s self-produced
+     entertainment programmes focus on local and international entertainment news for the
+     purpose of fostering relationships with different partners in the entertainment industry.
+
+
+
+
+06   i-CABLE Communications Limited Interim Report 2018
+BUSINESS REVIEW (continued)
+
+During the period, the Group continued to offer major soccer events such as UEFA Champion
+League, German Bundesliga, J.League, etc and broadened the variety of major sports
+programmes that interest local subscribers. We covered horse racing and a new programme
+“Be A Big Punter” (我要做大戶) on horse racing channel. The Group also carried other major
+sports events like “Hong Kong Sevens” (香港國際七人欖球賽), “FIVB Women’s Nations League”
+(世界女排聯賽), “FIVB Men’s Nations League“ (世界男排聯賽), “FIBA Men’s Basketball World
+Cup 2019 Qualifiers” (FIBA世界盃男子籃球資格賽), “CBA” (中國職業籃球聯賽), “ASEAN
+Basketball League” (東南亞職業籃球聯賽) and “Thomas & Uber Cup Badminton” (湯姆斯盃及優
+霸盃羽毛球賽) etc.
+
+
+In March 2018, the Group had business arrangements with Fox Networks Group Asia Pacific
+Limited on the provision of programme channels to Pay TV with a variety of programmes
+including world-class sports, entertainment, lifestyle and news contents. These arrangements
+serve to perfectly complements i-CABLE’s award winning news and creative local production
+programmes, and provides a range of new genres for our subscribers.
+
+
+
+
+                                                     i-CABLE Communications Limited Interim Report 2018   07
+     MANAGEMENT DISCUSSION AND ANALYSIS
+
+     (A) REVIEW OF RESULTS
+
+           Revenue of the Group for the six months ended June 30, 2018 decreased by
+           approximately HK$54 million or 8% to approximately HK$587 million (for the six months
+           ended June 30, 2017: HK$641 million).
+
+
+           Operating costs of the Group for the six months ended June 30, 2018, including selling,
+           general and administrative and other operating expenses, cost of sales, network
+           expenses and programming costs, increased by approximately HK$8 million to
+           approximately HK$871 million (for the six months ended June 30, 2017: HK$863 million).
+           Selling, general and administrative and other operating expenses of the Group increased
+           by approximately 7%, cost of sales of the Group increased by approximately 15%, while
+           network expenses of the Group decreased by approximately 15% and programming costs
+           of the Group increased by approximately 4%.
+
+
+           Loss from operations of the Group for the six months ended June 30, 2018 was
+           approximately HK$284 million, representing an increase of approximately 28%, as
+           compared with the operating loss of approximately HK$222 million for the corresponding
+           period in 2017.
+
+
+           During the six months ended June 30, 2018, the Group recorded a gain on the disposal of
+           subsidiaries, which were property holding companies, of approximately HK$32 million (for
+           the six months ended June 30, 2017: HK$72 million). Gain on disposal of real properties
+           during the six months ended June 30, 2017 was approximately HK$11 million and there
+           was no disposal of real properties during the six months ended June 30, 2018.
+
+
+           After the recognition of interest income, finance costs, non-operating income and income
+           tax credit, the Group recorded a net loss of approximately HK$254 million for the six
+           months ended June 30, 2018 (for the six months ended June 30, 2017: HK$141 million).
+           Basic and diluted loss per share for the six months ended June 30, 2018 were
+           approximately HK4.1 cents (basic and diluted loss per share for the six months ended
+           June 30, 2017 (restated): HK5.7 cents).
+
+
+
+
+08   i-CABLE Communications Limited Interim Report 2018
+MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+(B) SEGMENTAL INFORMATION
+
+   The principal activities of the Group include television, and internet and multimedia
+   operations.
+
+
+   Television
+
+   The television segment includes operations related to the television subscription
+   business, domestic free television programme service, advertising, channel carriage,
+   television relay service, programme licensing, network maintenance, and other related
+   businesses.
+
+
+   Revenue derived from the television segment for the six months ended June 30, 2018
+   decreased by approximately 11% to approximately HK$416 million (for the six months
+   ended June 30, 2017: HK$466 million) on lower subscription and advertising revenue.
+
+
+   Operating costs before depreciation incurred by the television segment for the six months
+   ended June 30, 2018 increased by approximately 3% to approximately HK$607 million (for
+   the six months ended June 30, 2017: HK$589 million). EBITDA for the six months ended
+   June 30, 2018 was at a loss of approximately HK$191 million (for the six months ended
+   June 30, 2017: a loss of approximately HK$123 million) due to a decrease in revenue and
+   the start-up costs associated with introduction of free TV channel.
+
+
+   Internet and multimedia
+
+   The internet and multimedia segment includes operations related to broadband internet
+   access services, portal operation, mobile content licensing, telephony services as well as
+   other related businesses.
+
+
+   Revenue derived from the internet and multimedia segment for the six months ended
+   June 30, 2018 decreased by approximately 4% to approximately HK$156 million (for the
+   six months ended June 30, 2017: HK$162 million).
+
+
+   Operating costs before depreciation incurred by the internet and multimedia segment for
+   the six months ended June 30, 2018 decreased by approximately 7% to approximately
+   HK$100 million (for the six months ended June 30, 2017: HK$108 million). EBITDA for the
+   six months ended June 30, 2018 increased by approximately 4% to approximately HK$56
+   million (for the six months ended June 30, 2017: HK$54 million).
+
+                                                      i-CABLE Communications Limited Interim Report 2018   09
+     MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+     (C) LIQUIDITY, FINANCIAL RESOURCES AND CAPITAL STRUCTURE
+
+           As at June 30, 2018, the Group had cash and bank balances and restricted bank balances
+           of approximately HK$298 million and HK$14 million respectively, as compared to
+           approximately HK$568 million and HK$17 million respectively as at December 31, 2017.
+           The cash and bank balances and restricted bank balances of the Group as at June 30,
+           2018 and December 31, 2017 are mainly denominated in Hong Kong Dollar (“HK$”). The
+           gearing ratio, measured in terms of the total interest-bearing borrowings divided by total
+           equity, was approximately 53.7% (December 31, 2017: 43.8%). The capital structure of the
+           Group was 35% debt and 65% equity as at June 30, 2018, representing an increase of
+           approximately 5% and a decrease of approximately 5% respectively as compared with
+           30% debt and 70% equity as at December 31, 2017.
+
+
+           Consolidated net asset value of the Group as at June 30, 2018 was approximately HK$921
+           million, representing a decrease of approximately 18%, as compared with consolidated
+           net asset value of the Group as at December 31, 2017 of approximately HK$1,130 million.
+
+
+           The carrying amount of interest-bearing borrowings denominated in HK$ as at June 30,
+           2018 was HK$495 million (December 31, 2017: HK$495 million), which carries interest at
+           variable rates, of which HK$395 million was repayable on demand and HK$100 million
+           would become due after one year but not more than two years. The committed borrowing
+           facilities available to the Group but not drawn as at June 30, 2018 amounted to HK$5
+           million (as at December 31, 2017: HK$11 million).
+
+
+
+
+10   i-CABLE Communications Limited Interim Report 2018
+MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+   In September 2017, the Company completed the open offer (the “Open Offer”) of
+   3,352,520,666 shares of the Company (the “Shares”) at the offer price of HK$0.21 per
+   Share for net proceeds of approximately HK$687 million and completed the conversion of
+   the loan capitalisation amount of HK$300 million to 841,987,090 Shares in accordance
+   with the loan capitalisation agreement among the Company, Hong Kong Cable Television
+   Limited (“HKCTV”) (a subsidiary of the Company) and Wharf Finance Limited.
+
+
+   The following table sets forth the information in relation to the use of the net proceeds
+   from the Open Offer:
+
+
+   Unutilised amount of                                                         Unutilised amount of
+   net proceeds as                                                              net proceeds as at
+   at December 31, 2017,                 Actual use of                          June 30, 2018, intended
+   intended use of such                  net proceeds during                    use of such unutilised
+   unutilised net proceeds               the six months ended                   net proceeds and
+   and expected timeline                 June 30, 2018                          expected timeline
+
+
+   A p p r o x i m a t e l y H K $ 5 2 3 m i l l i o n Approximately HK$225 million Approximately HK$298 million
+   comprising:                           comprising:                            (being unutilised net proceeds of
+                                                                                approximately HK$523 million less
+                                                                                use of net proceeds during the six
+                                                                                months ended June 30, 2018 of
+                                                                                approximately HK$225 million)
+                                                                                comprising:
+
+
+   (i)   approximately HK$146 million (i)      approximately HK$60 million for (i)    approximately HK$86 million
+         for investments in network            investments in network related         for investments in network
+         related capital expenditure           capital expenditure;                   related capital expenditure
+         within 3 years from the                                                      within 3 years from the
+         completion of the Open Offer;                                                completion of the Open
+                                                                                      Offer;
+
+
+
+
+                                                                 i-CABLE Communications Limited Interim Report 2018   11
+     MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+
+           Unutilised amount of                                                                 Unutilised amount of
+           net proceeds as                                                                      net proceeds as at
+           at December 31, 2017,                   Actual use of                                June 30, 2018, intended
+           intended use of such                    net proceeds during                          use of such unutilised
+           unutilised net proceeds                 the six months ended                         net proceeds and
+           and expected timeline                   June 30, 2018                                expected timeline
+
+
+           (ii)    approximately HK$143 million (ii)      approximately HK$31 million (ii)             approximately HK$112
+                   for investments in television          for investments in television                million for investments in
+                   related capital expenditure            related capital expenditure;                 television related capital
+                   within 3 years from the                                                             expenditure within 3 years
+                   completion of the Open Offer;                                                       from the completion of the
+                                                                                                       Open Offer;
+
+
+           (iii)   approximately HK$75 million (iii)      approximately HK$25 million (iii)            approximately HK$50 million
+                   for investments in other               for investments in other                     for investments in other
+                   capital expenditure within 3           capital expenditure; and                     capital expenditure within 3
+                   years from the completion of                                                        years from the completion of
+                   the Open Offer; and                                                                 the Open Offer; and
+
+
+           (iv)    approximately HK$159 million (iv)      a p p r o x i m a t e l y H K $ 1 0 9 (iv)   approximately HK$50 million
+                   for funding required for               million for funding required                 for funding required for
+                   operating requirements of the          for operating requirements                   operating requirements of
+                   Group within 2 years from the          of the Group                                 the Group within 2 years
+                   completion of the Open Offer                                                        from the completion of the
+                                                                                                       Open Offer
+
+
+           The proceeds from the Open Offer were used, and are expected to be used, according to
+           the intentions previously disclosed by the Company.
+
+
+           The Group’s assets and liabilities are mainly denominated in HK$ and United States
+           Dollars (“US$”) and it earns its revenue and incurs costs and expenses mainly in HK$ and
+           US$. As HK$ is pegged to US$, the Group does not expect any significant foreign currency
+           exposure arising from the fluctuation of the US$/HK$ or HK$/US$ exchange rates.
+
+
+
+
+12   i-CABLE Communications Limited Interim Report 2018
+MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+   Capital expenditure on property, plant and equipment during the six months ended June
+   30, 2018 amounted to approximately HK$96 million (for the six months ended June 30,
+   2017: HK$109 million) and the additions to programming library during the six months
+   ended June 30, 2018 was approximately HK$51 million (for the six months ended June 30,
+   2017: HK$51 million).
+
+
+   The Group financed its operations generally with internally generated cash flows, the
+   available credit facilities and the proceeds from the Open Offer.
+
+
+(D) CONTINGENT LIABILITIES
+
+   As at June 30, 2018, there were contingent liabilities in respect of guarantees provided by
+   the Company to a bank and Wharf Finance Limited totally of HK$500 million (as at
+   December 31, 2017: HK$500 million) in respect of guarantee facilities of borrowings up to
+   HK$500 million (as at December 31, 2017: HK$500 million) to a wholly-owned subsidiary of
+   the Company, of which HK$495 million (as at December 31, 2017: HK$495 million) was
+   utilised by the subsidiary of the Company.
+
+
+   The maximum exposure of the Company at the end of the reporting period under the
+   guarantees was the amount of facilities drawn down by the wholly-owned subsidiary of
+   the Company amounted to HK$495 million (as at December 31, 2017: HK$495 million).
+
+
+(E) HUMAN RESOURCES
+
+   The Group had 1,898 employees as at June 30, 2018 (as at June 30, 2017: 1,940). Total
+   gross salaries and related costs before capitalisation and incurred for the six months
+   ended June 30, 2018 amounted to approximately HK$323 million (for the six months
+   ended June 30, 2017: HK$345 million). The remuneration of the directors of the Company
+   (the “Directors”) and the employees of the Group including salaries and bonus are
+   determined with reference to their qualifications, experience, duties and responsibilities
+   with the Group, as well as the Group’s performance and the prevailing market conditions.
+   Besides, the Group regularly provides training courses for the employees of the Group to
+   meet their needs. Under the share option scheme of the Company adopted on May 24,
+   2018, share options of the Company may be granted to the Directors and eligible
+   employees of the Group to subscribe for Shares.
+
+
+
+
+                                                      i-CABLE Communications Limited Interim Report 2018   13
+     MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+     (F) OPERATING ENVIRONMENT
+
+           The Group’s financial performance in the first half of 2018 was affected by the decline of
+           advertising and subscription revenue. The decline of Pay TV advertising revenue was
+           mainly due to the intensifying competition from OTT platforms and digital media. The
+           decline was offset by the increase in free TV advertising revenue as the business started
+           ramping up. On the subscription business front, the customer base contracted in the
+           earlier of the first half of 2018 as compared to the corresponding period in 2017. Number
+           of subscribers has demonstrated improvement following the introduction of new contents
+           and channels during the period under review.
+
+
+     (G) CHARGE ON GROUP ASSETS
+
+           As at June 30, 2018, restricted bank balances of approximately HK$14 million (as at
+           December 31, 2017: HK$17 million) were made by the Group to secure certain banking
+           facilities granted to the Group.
+
+
+     (H) MATERIAL ACQUISITIONS AND DISPOSALS AND SIGNIFICANT
+         INVESTMENTS
+
+           There was no material acquisition or disposal of subsidiary and associated company or
+           significant investments of the Group, which would have been required to be disclosed
+           under the Rules Governing the Listing of Securities (the “Listing Rules”) on The Stock
+           Exchange of Hong Kong Limited (the “Stock Exchange”), for the six months ended June 30,
+           2018.
+
+
+     (I) FUTURE PLANS FOR MATERIAL INVESTMENTS OR CAPITAL
+         ASSETS
+
+           The Group will continue to invest in property, plant and equipment and programming
+           library as required by its business operations, and explore the market and identify any
+           business opportunities which may provide its growth and development potential, enhance
+           the profitability, and strive for better return to the shareholders of the Company (the
+           “Shareholders”).
+
+
+           The Group’s ongoing capital expenditure will be funded by internal cash flows generated
+           from operations, the available credit facilities and the proceeds from the Open Offer.
+
+
+
+14   i-CABLE Communications Limited Interim Report 2018
+MANAGEMENT DISCUSSION AND ANALYSIS (continued)
+
+(J) OUTLOOK
+
+   The Group will continue to focus on its existing business operations and will explore new
+   opportunities in the market. The Group has expanded its operation to include an English
+   news desk and Putonghua finance desk, to support the newly established Hong Kong
+   International Business Channel (“HKIBC”), a 24-hour English free television channel in
+   Hong Kong, which was officially launched on July 30, 2018 on Channel 76. HKIBC focuses
+   on providing financial news and information with programmes in both English and
+   Putonghua.
+
+
+   The Group will continue to review its capital structure and the composition of its assets
+   and liabilities periodically and will strive to make good use of available cash on hand for
+   its operations and continue to exercise additional prudence to invest in programming
+   library, content enrichment, HD/OTT upgrades, customer service improvement, GPON for
+   higher spend broadband service and new businesses, as well as marketing and media
+   initiatives to sharpen the competitiveness of the Group.
+
+
+
+
+                                                     i-CABLE Communications Limited Interim Report 2018   15
+     REPORT ON REVIEW OF INTERIM FINANCIAL INFORMATION
+
+
+
+
+     TO THE BOARD OF DIRECTORS OF i-CABLE COMMUNICATIONS LIMITED
+     (incorporated in Hong Kong with limited liability)
+
+
+     Introduction
+
+     We have reviewed the interim financial information set out on pages 18 to 44, which comprises
+     the condensed consolidated statement of financial position of i-CABLE Communications
+     Limited (the “Company”), its subsidiaries and consolidated structured entities (together, the
+     “Group”) as at June 30, 2018 and the related condensed consolidated statement of profit or
+     loss, the condensed consolidated statement of comprehensive income, the condensed
+     statement of changes in equity and the condensed consolidated statement of cash flows for
+     the six-month period then ended, and a summary of significant accounting policies and other
+     explanatory notes. The Rules Governing the Listing of Securities on The Stock Exchange of
+     Hong Kong Limited require the preparation of a report on interim financial information to be in
+     compliance with the relevant provisions thereof and Hong Kong Accounting Standard 34
+     “Interim Financial Reporting” issued by the Hong Kong Institute of Certified Public Accountants.
+     The directors of the Company are responsible for the preparation and presentation of this
+     interim financial information in accordance with Hong Kong Accounting Standard 34 “Interim
+     Financial Reporting”. Our responsibility is to express a conclusion on this interim financial
+     information based on our review and to report our conclusion solely to you, as a body, in
+     accordance with our agreed terms of engagement and for no other purpose. We do not
+     assume responsibility towards or accept liability to any other person for the contents of this
+     report.
+
+
+
+
+16   i-CABLE Communications Limited Interim Report 2018
+REPORT ON REVIEW OF INTERIM FINANCIAL INFORMATION (continued)
+
+Scope of Review
+
+We conducted our review in accordance with Hong Kong Standard on Review Engagements
+2410, “Review of Interim Financial Information Performed by the Independent Auditor of the
+Entity” issued by the Hong Kong Institute of Certified Public Accountants. A review of interim
+financial information consists of making inquiries, primarily of persons responsible for financial
+and accounting matters, and applying analytical and other review procedures. A review is
+substantially less in scope than an audit conducted in accordance with Hong Kong Standards
+on Auditing and consequently does not enable us to obtain assurance that we would become
+aware of all significant matters that might be identified in an audit. Accordingly, we do not
+express an audit opinion.
+
+
+Conclusion
+
+Based on our review, nothing has come to our attention that causes us to believe that the
+interim financial information of the Group is not prepared, in all material respects, in
+accordance with Hong Kong Accounting Standard 34 “Interim Financial Reporting”.
+
+
+
+
+PricewaterhouseCoopers
+Certified Public Accountants
+
+
+Hong Kong, August 24, 2018
+
+
+
+
+                                                         i-CABLE Communications Limited Interim Report 2018   17
+     CONDENSED CONSOLIDATED STATEMENT OF PROFIT OR LOSS
+     For the six months ended June 30, 2018 — unaudited
+
+
+                                                                  Six months ended June 30,
+                                                                          2018             2017
+                                                          Note        HK$’000          HK$’000
+
+
+
+     Revenue                                              7, 8         587,468          641,112
+     Programming costs                                                (482,832)        (463,136)
+     Network expenses                                                 (165,902)        (194,307)
+     Selling, general and administrative and
+       other operating expenses                                       (179,518)        (167,746)
+     Cost of sales                                                     (43,406)         (37,763)
+
+
+     Loss from operations                                  8          (284,190)        (221,840)
+     Interest income                                                     1,458               62
+     Finance costs                                                      (4,300)          (4,686)
+     Non-operating income                                               32,445           82,890
+
+
+     Loss before taxation                                  9          (254,587)        (143,574)
+     Income tax credit                                     10            1,024            2,437
+
+
+     Loss for the period                                              (253,563)        (141,137)
+
+
+     Attributable to:
+       Equity shareholders of the Company                             (253,563)        (141,137)
+
+
+     Loss per share                                        11                        (Restated)
+       Basic                                                     (4.1) HK cents   (5.7) HK cents
+
+
+       Diluted                                                   (4.1) HK cents   (5.7) HK cents
+
+
+
+
+18   i-CABLE Communications Limited Interim Report 2018
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+For the six months ended June 30, 2018 — unaudited
+
+
+                                                                    Six months ended June 30,
+                                                                               2018                 2017
+                                                                          HK$’000               HK$’000
+
+
+
+Loss for the period                                                      (253,563)              (141,137)
+
+
+Other comprehensive income for the period
+Item that may be reclassified subsequently to profit or loss:
+  Currency translation difference                                               254                     81
+
+
+Total comprehensive income for the period                                (253,309)              (141,056)
+
+
+Attributable to:
+  Equity shareholders of the Company                                     (253,309)              (141,056)
+
+
+
+
+                                                         i-CABLE Communications Limited Interim Report 2018   19
+     CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+     As at June 30, 2018
+
+
+                                                                 Unaudited        Audited
+                                                                  June 30,   December 31,
+                                                                     2018           2017
+                                                          Note    HK$’000         HK$’000
+
+
+
+     ASSETS
+     Non-current assets
+       Property, plant and equipment                               879,902        888,775
+       Programming library                                         143,640        151,577
+       Intangible assets                                             1,218          1,218
+       Interest in an associate                                          –              –
+       Contract acquisition costs                                   15,402              –
+       Deferred tax assets                                         302,223        303,472
+       Deposits, prepayments and other receivables                  31,212         39,006
+
+
+                                                                 1,373,597      1,384,048
+
+
+     Current assets
+       Inventories                                                  14,133         13,981
+       Trade receivables                                   12       44,477         43,822
+       Deposits, prepayments and other receivables                  57,080         38,187
+       Contract acquisition costs                                   21,615              –
+       Restricted bank balances                                     14,490         16,710
+       Cash and bank balances                                      298,097        568,034
+
+
+                                                                   449,892        680,734
+
+
+     Total assets                                                1,823,489      2,064,782
+
+
+
+
+20   i-CABLE Communications Limited Interim Report 2018
+CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION (continued)
+As at June 30, 2018
+
+
+                                                              Unaudited                 Audited
+                                                                 June 30,       December 31,
+                                                                      2018                 2017
+                                                Note             HK$’000               HK$’000
+
+
+
+EQUITY
+Capital and reserves
+  Share capital                                  14            7,844,472             7,844,472
+  Reserves                                                    (6,923,271)            (6,714,625)
+
+
+Total equity                                                     921,201             1,129,847
+
+
+LIABILITIES
+Non-current liabilities
+  Interest-bearing borrowings                                    100,000                100,000
+  Deferred tax liabilities                                                 –               2,447
+  Accrued expenses and other payables                              21,068                21,068
+  Receipts in advance and customers’ deposits                          173                   919
+
+
+                                                                 121,241                124,434
+
+
+Current liabilities
+  Trade payables                                 13                17,755                17,150
+  Accrued expenses and other payables                            219,582                235,771
+  Receipts in advance and customers’ deposits                    148,618                162,494
+  Interest-bearing borrowings                                    395,000                395,000
+  Current tax liabilities                                                92                    86
+
+
+                                                                 781,047                810,501
+
+
+Total liabilities                                                902,288                934,935
+
+
+Total equity and liabilities                                   1,823,489             2,064,782
+
+
+
+
+                                                i-CABLE Communications Limited Interim Report 2018   21
+     CONDENSED CONSOLIDATED STATEMENT OF CHANGES IN EQUITY
+     For the six months ended June 30, 2018 — unaudited
+
+                                                           Attributable to equity shareholders of the Company
+                                                                                                Share
+                                            Share         Capital   Exchange Accumulated       option           Total       Total
+                                           capital        reserve    reserve       losses     reserve     reserves         equity
+                                          HK$’000         HK$’000     HK$’000     HK$’000      HK$’000      HK$’000       HK$’000
+
+
+
+     Balance at December 31, 2017
+       (audited)                         7,844,472         13,985       3,261   (6,731,871)          –    (6,714,625)    1,129,847
+
+
+       Adjustment on adoption
+        of HKFRS 15 (Note 4)                    –               –           –      33,903            –          33,903     33,903
+
+
+     Balance at January 1, 2018
+       (restated)                        7,844,472         13,985       3,261   (6,697,968)          –    (6,680,722)    1,163,750
+
+
+       Loss for the period                      –               –           –     (253,563)          –     (253,563)      (253,563)
+       Other comprehensive income               –               –        254             –           –            254         254
+
+
+     Total comprehensive income for
+       the period                               –               –        254      (253,563)          –     (253,309)      (253,309)
+
+
+     Transactions with owners
+     Share option expense                       –               –           –            –      10,760          10,760     10,760
+
+
+     Total transactions with owners             –               –           –            –      10,760          10,760     10,760
+
+
+     Balance at June 30, 2018
+       (unaudited)                       7,844,472         13,985       3,515   (6,951,531)     10,760    (6,923,271)     921,201
+
+
+
+
+22   i-CABLE Communications Limited Interim Report 2018
+CONDENSED CONSOLIDATED STATEMENT OF CHANGES IN EQUITY (continued)
+For the six months ended June 30, 2018 — unaudited
+
+                                                 Attributable to equity shareholders of the Company
+                                       Share         Capital   Exchange Accumulated              Total         Total
+                                      capital        reserve     reserve         losses      reserves         equity
+                                      HK$’000        HK$’000      HK$’000       HK$’000        HK$’000       HK$’000
+
+
+
+Balance at January 1, 2017           6,857,599        13,985        2,858     (6,369,044)    (6,352,201)     505,398
+
+
+ Loss for the period                        –              –            –       (141,137)     (141,137)     (141,137)
+ Other comprehensive income                 –              –           81              –              81          81
+
+
+Total comprehensive income for
+ the period                                 –              –           81       (141,137)     (141,056)     (141,056)
+
+
+Balance at June 30, 2017
+ (unaudited)                         6,857,599        13,985        2,939     (6,510,181)    (6,493,257)     364,342
+
+
+
+
+                                                                  i-CABLE Communications Limited Interim Report 2018    23
+     CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS
+     For the six months ended June 30, 2018 – unaudited
+
+                                                          Six months ended June 30,
+                                                                 2018          2017
+                                                              HK$’000       HK$’000
+
+
+     Cash flows from operating activities
+     Loss before taxation                                    (254,587)      (143,574)
+
+     Adjustments for:
+     Finance costs                                              4,300         4,686
+     Interest income                                           (1,458)          (62)
+     Depreciation                                              97,350       104,191
+     Amortisation of programming library                       58,640        54,445
+     Others                                                   (21,425)      (82,771)
+
+     Operating loss before changes in working capital        (117,180)       (63,085)
+
+     Changes in working capital                               (51,120)       (47,354)
+
+     Cash flows used in operations                           (168,300)      (110,439)
+
+     The People’s Republic of China (“PRC”) tax paid             (171)          (235)
+
+     Net cash used in operating activities                   (168,471)      (110,674)
+
+     Cash flows from investing activities
+     Interest received                                          1,718             74
+     Purchase of property, plant and equipment                (93,818)       (95,462)
+     Proceeds from disposal of subsidiaries                    38,800         77,850
+     Other investing activities                               (43,888)       (38,080)
+
+     Net cash used in investing activities                    (97,188)       (55,618)
+
+     Cash flows from financing activities
+     Drawdown of interest-bearing borrowings                        –       155,000
+     Repayment of interest-bearing borrowings                       –       (40,000)
+     Finance costs paid                                        (4,300)       (4,686)
+
+     Net cash (used in)/from financing activities              (4,300)      110,314
+
+     Net decrease in cash and cash equivalents               (269,959)       (55,978)
+
+     Cash and cash equivalents at January 1                   568,034        85,814
+
+     Effect of foreign exchange rate changes                       22             20
+
+     Cash and cash equivalents at June 30                     298,097        29,856
+
+
+
+
+24   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION
+
+1. General information
+
+   i-CABLE Communications Limited (the “Company”) is a limited liability company
+   incorporated in Hong Kong. The address of its registered office in Hong Kong is 8th Floor,
+   Cable TV Tower, 9 Hoi Shing Road, Tsuen Wan, Hong Kong.
+
+
+   The Company has its primary listing on The Stock Exchange of Hong Kong Limited.
+
+
+   The Company, its subsidiaries and consolidated structured entities (together the “Group”)
+   are engaged in television subscription business, advertising, channel carriage, television
+   relay service, programme licensing, network maintenance, miscellaneous television
+   related businesses, broadband internet access services, portal operation, mobile content
+   licensing, and telephony services as well as other related businesses.
+
+
+   The condensed consolidated Interim Financial Information for the six months ended June
+   30, 2018 (the “Interim Financial Information”) is presented in thousands of Hong Kong
+   dollars (HK$’000), unless otherwise stated. The Interim Financial Information has been
+   approved for issue by the board of directors (the “Directors”) of the Company on August
+   24, 2018.
+
+
+   The financial information relating to the year ended December 31, 2017 that is included in
+   the Interim Financial Information as comparative information does not constitute the
+   Company’s statutory annual consolidated financial statements for that year but is derived
+   from those financial statements. Further information relating to these statutory financial
+   statements required to be disclosed in accordance with section 436 of the Hong Kong
+   Companies Ordinance (Cap. 622) is as follows:
+
+
+   The Company has delivered the financial statements for the year ended December 31,
+   2017 to the Registrar of Companies as required by section 662(3) of, and Part 3 of
+   Schedule 6 to, the Hong Kong Companies Ordinance (Cap. 622).
+
+
+   The Company’s auditor has reported on those financial statements. The auditor’s report
+   was unqualified; did not include a reference to any matters to which the auditor drew
+   attention by way of emphasis without qualifying its report; and did not contain a
+   statement under sections 406(2), 407(2) or (3) of the Hong Kong Companies Ordinance
+   (Cap. 622).
+
+
+
+                                                     i-CABLE Communications Limited Interim Report 2018   25
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     2. Basis of preparation
+
+           This Interim Financial Information has been prepared in accordance with Hong Kong
+           Accounting Standard (“HKAS”) 34 “Interim Financial Reporting” issued by the Hong Kong
+           Institute of Certified Public Accountants.
+
+
+           This Interim Financial Information should be read in conjunction with the Group’s annual
+           financial statements for the year ended December 31, 2017, which have been prepared in
+           accordance with Hong Kong Financial Reporting Standards (“HKFRSs”).
+
+
+           As at June 30, 2018, the Group had net current liabilities of HK$331,155,000 (December
+           31, 2017: HK$129,767,000). The net current liabilities included an interest-bearing
+           borrowing of HK$395 million which was drawn from a banking facility of HK$400 million
+           and is repayable on demand and such banking facility is subject to review. The Group also
+           had an interest-bearing borrowing of HK$100 million which was drawn from a revolving
+           loan facility of HK$100 million given by Wharf Finance Limited (“Wharf Finance”) and is
+           due on December 31, 2019.
+
+
+           In the opinion of the Directors, after taking into account, among other things, the
+           expected renewal of existing banking facilities, financial resources available to the Group,
+           the current level of operations of the Group, and the bank deposits and cash balances,
+           the Directors are satisfied that the Group will have sufficient working capital to fund its
+           operations and commitments and remain as a going concern in the foreseeable future.
+           Accordingly, the Directors are satisfied that it is appropriate to prepare the Interim
+           Financial Information of the Group on a going concern basis. The Directors are not aware
+           of any material uncertainties related to events or conditions that may cast significant
+           doubt upon the Group’s ability to continue as a going concern.
+
+
+
+
+26   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+3. Significant accounting policies
+
+    The significant accounting policies applied are consistent with those of the annual
+    financial statements for the year ended December 31, 2017, as described in those annual
+    financial statements, except for the adoption of the new standard, amendments to
+    HKFRSs and interpretation effective for the financial year ending December 31, 2018, and
+    the accounting policy of share-based payment.
+
+
+    (a)   New standard, amendments to standards and interpretation effective in
+          current accounting period and are relevant to the Group’s operations
+
+          During the period ended June 30, 2018, the Group has adopted the following new
+          standard, amendments to standards and interpretation which are relevant to the
+          Group’s operations and are mandatory for accounting periods beginning on January
+          1, 2018:
+
+
+          HKFRS 15                         Revenue from Contracts with Customers
+          HKFRS 2 (Amendments)             Classification and Measurement of Share-based
+                                              Payment Transactions
+          HKFRS 15 (Amendments)            Clarifications to HKFRS 15
+          HK (IFRIC) 22                    Foreign Currency Transactions and Advance
+                                              Consideration
+          Annual Improvement Project       Annual Improvements 2014–2016 Cycle
+
+
+          The adoption of these new standard, amendments to standards and interpretation
+          does not have any significant change to the accounting policies or any significant
+          effect on the results and financial position of the Group, except as described in Note
+          4 below.
+
+
+
+
+                                                       i-CABLE Communications Limited Interim Report 2018   27
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     3. Significant accounting policies (continued)
+
+           (b)    New standards, amendments to standards and interpretation that are not
+                  yet effective and have not been early adopted by the Group
+
+                  The following new standards, amendments to standards and interpretation have
+                  been published which are mandatory for the Group’s accounting periods beginning
+                  on or after January 1, 2019 but have not been early adopted by the Group:
+
+
+                  HKFRS 16                                Leases (1)
+                  HKFRS 17                                Insurance Contracts (2)
+                  HKFRS 9 (Amendments)                    Prepayment Features with Negative Compensation
+                                                               and Modification of Financial Liabilities (1)
+                  HKFRS 10 and HKAS 28                    Sale or Contribution of Assets between an Investor
+                        (Amendments)                           and its Associate or Joint Venture (3)
+                  HKAS 19 (Amendments)                    Employee Benefits (1)
+                  HKAS 28 (Amendments)                    Investments in Associates and Joint Ventures (1)
+                  HK (IFRIC) 23                           Uncertainty over Income Tax Treatments (1)
+                  Annual Improvements Project             Annual Improvements 2015–2017 Cycle (1)
+
+                  (1)
+                          Effective for annual periods beginning on or after January 1, 2019
+                  (2)
+                          Effective for annual periods beginning on or after January 1, 2021
+                  (3)
+                          Effective date is to be determined
+
+
+                  HKFRS 16 ‘Leases’
+
+                  Currently the Group classifies leases into finance leases and operating leases and
+                  accounts for the lease arrangements differently, depending on the classification of
+                  the lease. The Group enters into some leases as the lessor and others as the lessee.
+
+
+
+
+28   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+3. Significant accounting policies (continued)
+
+    (b)   New standards, amendments to standards and interpretation that are not
+          yet effective and have not been early adopted by the Group (continued)
+
+          HKFRS 16 ‘Leases’ (continued)
+
+          HKFRS 16 is not expected to impact significantly on the way that lessors account for
+          their rights and obligations under a lease. However, once HKFRS 16 is adopted,
+          lessees will no longer distinguish between finance leases and operating leases.
+          Instead, subject to practical expedients, lessees will account for all leases in a
+          similar way to current finance lease accounting, i.e. at the commencement date of
+          the lease the lessee will recognise and measure a lease liability at the present value
+          of the minimum future lease payments and will recognise a corresponding “right-of-
+          use” asset. After initial recognition of this asset and liability, the lessee will recognise
+          interest expense accrued on the outstanding balance of the lease liability, and the
+          depreciation of the right-of-use asset, instead of the current policy of recognising
+          rental expenses incurred under operating leases on a systematic basis over the
+          lease term. As a practical expedient, the lessee can elect not to apply this
+          accounting model to short-term leases (i.e. where the lease term is 12 months or
+          less) and to leases of low-value assets, in which case the rental expenses would
+          continue to be recognised on a systematic basis over the lease term.
+
+
+          HKFRS 16 will primarily affect the Group’s accounting as a lessee of leases for
+          property, plant and equipment which are currently classified as operating leases.
+          The application of the new accounting model is expected to lead to an increase in
+          both assets and liabilities and to impact on the timing of the expense recognition in
+          the consolidated statement of profit or loss over the period of the lease.
+
+
+          HKFRS 16 is effective for annual periods beginning on or after January 1, 2019.
+
+
+          There are no other standards that are not yet effective and that would be expected
+          to have a material impact on the Group.
+
+
+
+
+                                                          i-CABLE Communications Limited Interim Report 2018   29
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     3. Significant accounting policies (continued)
+
+           (c)    Share-based compensation
+
+                  The Group operates an equity-settled, share-based compensation plan. The fair
+                  value of the employee services received in exchange for the grant of share options
+                  is recognised as an expense. The total amount to be expensed over the vesting
+                  period is determined by reference to the fair value of the options granted at the date
+                  of grant, excluding the impact of any non-market vesting conditions. At the end of
+                  each reporting period, the Group revises its estimates of the number of options that
+                  are expected to vest. It recognises the impact of the revision of original estimates, if
+                  any, in the consolidated statement of profit or loss, with a corresponding adjustment
+                  to equity.
+
+
+                  The proceeds received net of any directly attributable transaction costs are credited
+                  to share capital (nominal value) when the options are exercised. On lapse of share
+                  options according to the plan, corresponding amount recognised in share option
+                  reserve is transferred to retained profits.
+
+
+                  The grant by the Company of options over its equity instruments to the employees
+                  of subsidiary undertakings in the Group is treated as a capital contribution. The fair
+                  value of employee services received, measured by reference to the grant date fair
+                  value, is recognised over the vesting period as an increase to investment in
+                  subsidiary undertakings, with a corresponding credit to equity in the parent entity
+                  accounts.
+
+
+
+
+30   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+4. Change in accounting policy
+
+    The Group has adopted HKFRS 15 “Revenue from Contracts with Customers” from January
+    1, 2018. In accordance with the transition provisions in HKFRS 15, the Group has adopted
+    the new standard retrospectively with the cumulative effect of initial application
+    recognised as an adjustment to the opening balance of accumulated losses on January 1,
+    2018. In summary, the following adjustments were made to the amounts recognised in
+    the condensed consolidated statement of financial position as the date of initial
+    application (January 1, 2018):
+
+
+                                             December 31,
+                                                       2017            Effect of           January 1,
+                                             As previously         adoption of                     2018
+                                                  reported            HKFRS 15               Restated
+                                                    HK$’000              HK$’000               HK$’000
+
+
+
+    Contract acquisition costs                              –              33,903                33,903
+    Accumulated losses                            (6,731,871)              33,903            (6,697,968)
+
+
+    Accounting for costs incurred to obtain a contract
+
+    From 2015 to 2017, costs amounting to HK$33,903,000 related to commission expense
+    were expensed as they did not qualify for recognition as an asset under any of the other
+    accounting standards. However, costs related directly to the contracts are expected to be
+    recovered. They were therefore capitalised as costs to obtain a contract following the
+    adoption of HKFRS 15 and included in contract acquisition costs in the condensed
+    consolidated statement of financial position on January 1, 2018, resulting in net
+    adjustment to accumulated losses of the same amount. The asset is amortised on a
+    straight line basis over the term of the specific contract it relates to, consistent with the
+    pattern of recognition of the associated revenue. During the six months ended June 30,
+    2018, the Group recognised amortisation of HK$11,039,000, which increased cost of
+    providing services and increased loss after taxation by the same amount, and capitalised
+    commission of HK$14,153,000.
+
+
+
+
+                                                        i-CABLE Communications Limited Interim Report 2018   31
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     4. Change in accounting policy (continued)
+
+           Financial statement line items which are affected in the current reporting period by
+           application of HKFRS 15 are as follows:
+
+
+                                                           Six months ended June 30, 2018
+
+                                                                          Effect of
+                                                                        adoption of
+                                                          HKAS 18        HKFRS 15        As reported
+                                                            HK$’000         HK$’000          HK$’000
+
+
+
+           Selling, general and administrative
+              and other operating expenses                  182,632          (3,114)         179,518
+
+
+                                                                   As at June 30, 2018
+
+                                                                          Effect of
+                                                                        adoption of
+                                                          HKAS 18        HKFRS 15        As reported
+                                                            HK$’000         HK$’000          HK$’000
+
+
+
+           Contract acquisition costs                              –         37,017           37,017
+           Accumulated losses                             (6,988,548)        37,017        (6,951,531)
+
+
+           As a t Ja nua r y 1, 2018 a nd June 30, 2018, recei p ts i n ad van ce amo u n ti n g to
+           HK$115,318,000 and HK$101,343,000 respectively, represented contract liabilities in
+           relation to advance payments made by the customers while the underlying services are
+           yet to be provided under HKFRS 15.
+
+
+     5. Estimates and judgements
+
+           The preparation of Interim Financial Information requires management to make
+           judgements, estimates and assumptions that affect the application of accounting policies
+           and the reported amounts of assets and liabilities, income and expense. Actual results
+           may differ from these estimates.
+
+
+
+
+32   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+5. Estimates and judgements (continued)
+
+    In preparing this Interim Financial Information, the significant judgements made by
+    management in applying the Group’s accounting policies and the key sources of
+    estimation uncertainty were the same as those that applied to the consolidated financial
+    statements for the year ended December 31, 2017.
+
+
+6. Financial risk management and financial instruments
+
+    (a)   Financial risk factors
+
+          The Group’s activities expose it to a variety of financial risks: market risk (including
+          currency risk, fair value interest rate risk, cash flow interest rate risk and price risk),
+          credit risk and liquidity risk.
+
+
+          The Interim Financial Information does not include all financial risk management
+          information and disclosures required in the annual financial statements, and should
+          be read in conjunction with the Group’s annual financial statements for the year
+          ended December 31, 2017.
+
+
+          There have been no changes in the risk management policies since December 31,
+          2017.
+
+
+    (b)   Liquidity risk
+
+          Compared to the year end, there was no material change in the contractual
+          undiscounted cash outflows for financial liabilities.
+
+
+7. Revenue
+
+    Revenue comprises principally subscription, service and related fees for television, and
+    internet and multimedia (including telephony) services. It also includes advertising income
+    net of agency deductions, channel service and distribution fees, programme licensing
+    income, film exhibition and distribution income, network maintenance income and other
+    related income.
+
+
+
+
+                                                          i-CABLE Communications Limited Interim Report 2018   33
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     8. Segment information
+
+           The Group managed its businesses according to the nature of services provided. The
+           Group’s chief operating decision maker (the “CODM”) has determined two reportable
+           operating segments for measuring performance and allocating resources. The segments
+           are television, and internet and multimedia.
+
+
+           The television segment includes operations related to the television subscription
+           business, domestic free television programme service, advertising, channel carriage,
+           television relay service, programme licensing, network maintenance, and other related
+           businesses.
+
+
+           The internet and multimedia segment includes operations related to broadband internet
+           access services, portal operation, mobile content licensing, telephony services as well as
+           other related businesses.
+
+
+           The CODM evaluates performance primarily based on earnings before interest, taxation,
+           depreciation and amortisation (“EBITDA”) and segment results. The CODM defines EBITDA
+           to mean earnings before interest income, finance costs, non-operating income, income
+           tax credit, depreciation of property, plant and equipment but after amortisation of
+           programming library.
+
+
+           Inter-segment pricing is generally determined at arm’s length basis.
+
+
+           Segment assets principally comprise all tangible assets and current assets with the
+           exception of interest in an associate and deferred tax assets. Segment liabilities include
+           all liabilities and interest-bearing borrowings directly attributable to and managed by each
+           segment with the exception of current tax liabilities and deferred tax liabilities.
+
+
+           In addition to receiving segment information concerning EBITDA and segment results, the
+           CODM is provided with segment information concerning revenue (including inter-segment
+           revenue).
+
+
+
+
+34   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+8. Segment information (continued)
+
+    Information regarding the Group’s reportable segments as provided to the CODM for the
+    purposes of resource allocation and assessment of segment performance for the six
+    months ended June 30, 2018 and 2017 is set out below:
+
+
+                                                                                      Unaudited
+                                                                               Six months ended June 30,
+                                           Television             Internet and multimedia            Others                     Total
+                                         2018            2017          2018          2017         2018          2017        2018           2017
+                                      HK$’000      HK$’000         HK$’000        HK$’000     HK$’000         HK$’000    HK$’000        HK$’000
+
+
+
+    Reportable segment revenue        419,915       470,699         156,127        162,296     17,365          15,286    593,407        648,281
+    Less: Inter-segment revenue         (4,263)         (4,515)        (104)          (104)     (1,572)        (2,550)     (5,939)        (7,169)
+
+
+    Revenue from external customers
+      (Note)                          415,652       466,184         156,023        162,192     15,793          12,736    587,468        641,112
+
+
+    Reportable segment EBITDA         (191,261)    (123,090)         56,496         53,563        5,864         3,038    (128,901)       (66,489)
+    Depreciation                       (60,518)     (65,679)        (35,501)       (37,220)        (178)         (211)    (96,197)      (103,110)
+
+
+    Reportable segment results
+      before corporate expenses       (251,779)    (188,769)         20,995         16,343        5,686         2,827    (225,098)      (169,599)
+
+
+    Corporate expenses and
+      depreciation                                                                                                        (59,092)       (52,241)
+
+
+    Loss from operations                                                                                                 (284,190)      (221,840)
+    Interest income                                                                                                         1,458             62
+    Finance costs                                                                                                          (4,300)        (4,686)
+    Non-operating income                                                                                                  32,445         82,890
+    Income tax credit                                                                                                       1,024          2,437
+
+
+    Loss for the period                                                                                                  (253,563)      (141,137)
+
+
+    Note: For the six months ended June 30, 2018, HK$11,067,000 and HK$576,401,000 were
+               recognised as revenue at a point in time and over time respectively.
+
+
+
+
+                                                                                  i-CABLE Communications Limited Interim Report 2018                35
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     8. Segment information (continued)
+                                                          Unaudited         Audited
+                                                            June 30,   December 31,
+                                                               2018           2017
+                                                            HK$’000         HK$’000
+
+
+
+           Segment assets
+
+
+              Television                                   1,008,013      1,192,638
+              Internet and multimedia                        444,341        485,979
+              Others                                          20,860         27,814
+
+
+                                                           1,473,214      1,706,431
+           Corporate assets                                   48,052         54,879
+           Interest in an associate                                –              –
+           Deferred tax assets                               302,223        303,472
+
+
+           Total assets                                    1,823,489      2,064,782
+
+
+           Segment liabilities
+
+
+              Television                                     602,890        628,941
+              Internet and multimedia                        239,727        232,429
+              Others                                          22,918         23,254
+
+
+                                                             865,535        884,624
+           Corporate liabilities                              36,661         47,778
+           Current tax liabilities                                92            86
+           Deferred tax liabilities                                –          2,447
+
+
+           Total liabilities                                 902,288        934,935
+
+
+
+
+36   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+8. Segment information (continued)
+    During the six months ended June 30, 2018, there were additions of HK$95,741,000 (2017:
+    HK$108,887,000) to property, plant and equipment and HK$50,704,000 (2017:
+    HK$51,343,000) to programming library respectively.
+
+
+    Geographical segment:
+
+
+    No geographical segment information is shown as, during the period presented, less than
+    10% of the Group’s segment revenue, segment results, segment assets and segment
+    liabilities are derived from activities conducted outside Hong Kong.
+
+
+9. Loss before taxation
+    Loss before taxation is stated after charging/(crediting):
+
+
+                                                                               Unaudited
+                                                                   six months ended June 30,
+                                                                              2018                 2017
+                                                                         HK$’000               HK$’000
+
+
+
+    Depreciation
+      — assets held for use under operating leases                         10,353                11,077
+      — other assets                                                       86,997                93,114
+    Amortisation of programming library (Note)                             58,640                54,445
+    Interest expenses on borrowings                                          4,300                 4,686
+    Non-operating income
+      — gain on disposal of subsidiaries                                  (31,634)              (71,508)
+      — gain on disposal of real properties                                        –            (10,970)
+      — net gain on disposal of plant and equipment                           (811)                 (412)
+
+
+    Note:   Amortisation of programming library was included within programming costs in the
+            consolidated results of the Group.
+
+
+
+
+                                                        i-CABLE Communications Limited Interim Report 2018   37
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     10. Income tax credit
+           Hong Kong and PRC profits tax has been provided at the rate of 16.5% (2017: 16.5%) and
+           at the rates of taxation prevailing in the countries in which the Group operates
+           respectively. The provision for both Hong Kong and PRC tax is calculated by applying the
+           estimated annual effective tax rate.
+
+
+                                                                              Unaudited
+                                                                      six months ended June 30,
+                                                                             2018             2017
+                                                                          HK$’000          HK$’000
+
+
+
+           Current income tax — PRC                                           174              211
+           Deferred income taxation                                         (1,198)          (2,648)
+
+
+                                                                            (1,024)          (2,437)
+
+
+     11. Loss per share
+
+           The calculation of basic loss per share is based on the loss attributable to equity
+           shareholders of the Company of HK$253,563,000 (2017: HK$141,137,000) and the
+           weighted average of 6,206,020,156 ordinary shares of the Company (the “Shares”) (2017
+           (restated): 2,474,160,252) in issue during the period.
+
+
+                                                                                         (Restated)
+                                                                            2018              2017
+
+
+
+           Weighted average number of the Shares
+           Issued Shares at January 1                               6,206,020,156     2,011,512,400
+           Effect of Open Offer (Note 14(ii))                                   –      462,647,852
+
+
+           Weighted average number of the Shares at
+              June 30                                               6,206,020,156     2,474,160,252
+
+
+
+
+38   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+11. Loss per share (continued)
+
+    The diluted loss per share for 2018 and 2017 equals to the basic loss per share since the
+    exercise of the outstanding share options would not have a dilutive effect on the loss per
+    share.
+
+
+    The loss per share for the six months ended June 30, 2017 was restated by adjusting the
+    weighted average number of shares in issue for the bonus element due to the Open
+    Offer.
+
+
+12. Trade receivables
+
+    An ageing analysis of trade receivables from trade debtors (net of allowance for doubtful
+    debts), based on the invoice date is set out as follows:
+
+
+                                                                      Unaudited                 Audited
+                                                                         June 30,       December 31,
+                                                                              2018                 2017
+                                                                         HK$’000               HK$’000
+
+
+
+    0 to 30 days                                                           17,398                14,673
+    31 to 60 days                                                            6,441               11,352
+    61 to 90 days                                                            8,572                 7,606
+    Over 90 days                                                           12,066                10,191
+
+
+                                                                           44,477                43,822
+
+
+    The Group has a defined credit policy. The general credit terms allowed range from 0 to
+    90 days in respect of television subscription, and internet and multimedia services and
+    from 0 to 270 days in respect of advertising services.
+
+
+
+
+                                                        i-CABLE Communications Limited Interim Report 2018   39
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     13. Trade payables
+
+           An ageing analysis of trade payables, based on the invoice date is set out as follows:
+
+
+                                                                         Unaudited            Audited
+                                                                            June 30,    December 31,
+                                                                               2018                 2017
+                                                                            HK$’000           HK$’000
+
+
+
+           0 to 30 days                                                        9,157            9,594
+           31 to 60 days                                                       3,446            3,827
+           61 to 90 days                                                       1,632                 848
+           Over 90 days                                                        3,520            2,881
+
+
+                                                                             17,755            17,150
+
+
+     14. Share capital
+                                                                       Number of
+                                                                            shares           Amount
+                                                                                              HK$’000
+
+
+
+           Ordinary shares, issued and fully paid:
+           At January 1, 2017 and June 30, 2017                       2,011,512,400         6,857,599
+           Shares issued under Open Offer (Note ii)                   3,352,520,666           704,029
+           Shares issued under Loan Capitalisation (Note ii)           841,987,090            300,000
+           Transaction costs incurred in respect of Open Offer                    –            (17,156)
+
+
+           At December 31, 2017, January 1, 2018 and
+              June 30, 2018                                           6,206,020,156         7,844,472
+
+
+
+
+40   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+14. Share capital (continued)
+    Notes:
+
+
+    (i)    Share option scheme
+
+
+           A new share option scheme was adopted by the Company on May 24, 2018 which will be valid
+           and effective for a period of ten years from the date of adoption.
+
+
+           On June 15, 2018, share options carrying the rights to subscribe for a total of 279,200,000
+           Shares were granted to certain eligible persons under the share option scheme at an exercise
+           price of HK$0.21 per Share.
+
+
+           The fair value of the share options granted at the date of grant, June 15, 2018, was estimated
+           at HK$20,771,000. During the period from the date of grant to June 30, 2018, no share options
+           was exercised, lapsed or cancelled.
+
+
+    (ii)   Open offer and loan capitalisation
+
+
+           In September 2017, the Company completed an open offer (the “Open Offer”) of 3,352,520,666
+           Shares on the basis of five offer shares for every three then existing shares at the offer price
+           of HK$0.21 per offer share, for gross proceeds of HK$704,029,000 (net proceeds of
+           HK$686,873,000) and completed the conversion of the loan capitalisation amount (the “Loan
+           Capitalisation”) of HK$300,000,000 to 841,987,090 Shares.
+
+
+15. Dividend
+
+    The board of Directors does not recommend the payment of any interim dividend for the
+    six months ended June 30, 2018 (2017: HK$Nil).
+
+
+
+
+                                                              i-CABLE Communications Limited Interim Report 2018   41
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     16. Capital commitments
+
+           Capital commitments outstanding as of June 30, 2018 were as follows:
+
+
+                                                                           Unaudited           Audited
+                                                                              June 30,    December 31,
+                                                                                  2018             2017
+                                                                             HK$’000           HK$’000
+
+
+
+           Property, plant and equipment
+           — Contracted but not provided for                                   12,951           15,504
+
+
+           Programming library
+           — Contracted but not provided for                                   26,037           34,703
+
+
+                                                                               38,988           50,207
+
+
+     17. Contingent liabilities
+
+           At June 30, 2018, there were contingent liabilities in respect of the following:
+
+
+           (a)    The Company has undertaken to provide financial support to certain of its
+                  subsidiaries in order to enable them to continue to operate as going concerns.
+
+
+           (b)    Guarantees to a bank and Wharf Finance totalling HK$500,000,000 (December 31,
+                  2017: HK$500,000,000) in respect of guarantee facilities to a wholly-owned
+                  subsidiary of the Company. Of this amount, at June 30, 2018, HK$395,000,000
+                  (December 31, 2017: HK$395,000,000) from a bank and HK$100,000,000 (December
+                  31, 2017: HK$100,000,000) from Wharf Finance were utilised by the subsidiary of the
+                  Company.
+
+
+
+
+42   i-CABLE Communications Limited Interim Report 2018
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+17. Contingent liabilities (continued)
+    As at the end of the reporting period, the Company has issued two separate guarantees
+    to a bank and Wharf Finance in respect of loan facilities granted to a subsidiary of the
+    Company. As at June 30, 2018, the Directors did not consider it probable that a claim
+    would be made against the Company under any of the guarantees. The maximum
+    exposure of the Company at the end of the reporting period under the guarantees was
+    the amount of facilities drawn down by the wholly-owned subsidiary of the Company
+    amounting to HK$495,000,000 (December 31, 2017: HK$495,000,000).
+
+
+18. Material related party transactions
+    (a)   In addition to the transactions and balances disclosed elsewhere in the condensed
+          consolidated interim financial information of the Group, the Group entered into the
+          following material related party transactions during the period:
+
+
+                                                                               Unaudited
+                                                                   six months ended June 30,
+                                                                              2018                 2017
+                                                                         HK$’000               HK$’000
+
+
+
+          Rentals and related management fees on land
+            and buildings paid to former fellow subsidiaries
+            of the Company                                                         –             24,588
+          Management fees paid to a former fellow
+            subsidiary of the Company                                              –               4,706
+          Finance costs paid to a former fellow subsidiary
+            of the Company                                                         –               2,055
+
+
+          In September 2017, The Wharf (Holdings) Limited (“Wharf”) and its subsidiaries and
+          affiliates ceased to be related parties of the Group. Accordingly, the transactions
+          with Wharf or any of its subsidiaries and affiliates were no longer included in the
+          material related party transactions.
+
+
+    (b)   Key management compensation amounted to HK$8,294,000 for the six months
+          ended June 30, 2018 (June 30, 2017: HK$6,625,000).
+
+
+
+
+                                                        i-CABLE Communications Limited Interim Report 2018   43
+     NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (continued)
+
+     19. Comparatives figures
+
+           Certain comparative figures have been reclassified to conform to the current period’s
+           presentation. There is no impact on net loss, net assets or net cash flows as a result of
+           the reclassification.
+
+
+
+
+44   i-CABLE Communications Limited Interim Report 2018
+CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION
+
+CORPORATE GOVERNANCE PRACTICES
+
+The Company is committed to maintaining a high standard of corporate governance practices,
+and procedures and to complying with the statutory and regulatory requirements with an aim
+to maximising the Shareholders’ values and interests as well as to enhancing the stakeholders’
+transparency and accountability. During the financial period under review, the Company has
+complied with all applicable code provisions of the Corporate Governance Code (the “CG
+Code”) as set out in Appendix 14 of the Listing Rules, except for the following deviation:
+
+
+Code Provision A.6.7 of the CG Code stipulates that independent non-executive directors and
+other non-executive directors, as equal board members, should give the board and any
+committees on which they serve the benefit of their skills, expertise and varied backgrounds
+and qualifications through regular attendance and active participation. They should also attend
+general meetings and develop a balanced understanding of the views of shareholders.
+
+
+Dr. CHENG Kar-Shun, Henry and Dr. CHENG Chi-Kong, Adrian, the non-executive Directors, and
+Mr. LUK Koon Hoo, Roger, an independent non-executive Director and the chairman of the
+audit committee of the Company (the “Audit Committee”) and member of the nomination
+committee of the Company and compensation committee of the Company, were unable to
+attend the annual general meeting of the Company held on May 24, 2018 as they had another
+business engagements at the time of such meeting.
+
+
+MODEL CODE FOR SECURITIES TRANSACTIONS
+
+The Company has adopted the Model Code for Securities Transactions by Directors of Listed
+Issuers (the “Model Code”) set out in Appendix 10 to the Listing Rules. The Company, having
+made specific enquiries of all the Directors, was not aware of any non-compliance with the
+required standard set out in the Model Code during the six months ended June 30, 2018.
+
+
+The Company has also applied the principles of the Model Code for securities transactions by
+the employees of the Group.
+
+
+
+
+                                                         i-CABLE Communications Limited Interim Report 2018   45
+     CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+     DIRECTORS’ INTERESTS IN SECURITIES
+
+     Save as disclosed below, as at June 30, 2018, none of the Directors or chief executive of the
+     Company had any interests or short positions in the Shares, underlying Shares or debentures
+     of the Company or any of its associated corporations (within the meaning of Part XV of the
+     Securities and Futures Ordinance, Chapter 571 of the Laws of Hong Kong (the “SFO”)), which
+     were required to be notified to the Company and the Stock Exchange pursuant to the
+     provisions of Divisions 7 and 8 of Part XV of the SFO, including interests or short positions
+     which they were taken or deemed to have under such provisions of the SFO, or which were
+     required, pursuant to section 352 of the SFO, to be entered in the register referred to therein,
+     or which were required, pursuant to the Model Code for Securities Transactions by Directors
+     adopted by the Company, to be notified to the Company and the Stock Exchange.
+
+
+     Long position in underlying Shares — share options
+
+     Share options granted to the Directors
+
+                                                                  Number of Shares issuable under the share options granted
+                                                                Balance                                                 Balance
+                                                                   as at Granted Exercised       Lapsed Cancelled          as at Exercise
+                                  Date            Exercisable January 1,    during     during     during     during     June 30,     price
+     Name                         of grant        period           2018 the period the period the period the period        2018 per Share
+                                                                           (Note 2)                                                   HK$
+
+
+     Tan Sri Dato’ David CHIU     June 15, 2018   (Note 1)            – 62,000,000          –           –          – 62,000,000      0.210
+
+
+     Dr. CHENG Kar-Shun, Henry    June 15, 2018   (Note 1)            – 62,000,000          –           –          – 62,000,000      0.210
+
+
+     Dr. CHENG Chi-Kong, Adrian   June 15, 2018   (Note 1)            – 20,000,000          –           –          – 20,000,000      0.210
+
+
+     Mr. TSANG On Yip, Patrick    June 15, 2018   (Note 1)            – 26,250,000          –           –          – 26,250,000      0.210
+
+
+     Mr. HOONG Cheong Thard       June 15, 2018   (Note 1)            – 26,250,000          –           –          – 26,250,000      0.210
+
+
+     Mr. Andrew Wah Wai CHIU      June 15, 2018   (Note 1)            – 35,500,000          –           –          – 35,500,000      0.210
+
+
+
+                                                                      – 232,000,000         –           –          – 232,000,000
+
+
+
+
+46   i-CABLE Communications Limited Interim Report 2018
+CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+Notes:
+
+
+(1)     50% of the share options are exercisable from June 15, 2018 to June 14, 2028 (both dates inclusive);
+        and 50% of the share options are exercisable from June 15, 2019 to June 14, 2028 (both dates
+        inclusive).
+
+
+(2)     The closing price per Share as stated in the daily quotation sheet issued by the Stock Exchange
+        immediately before the date on which the share options were granted was HK$0.155.
+
+
+(3)     The cash consideration paid by each of the Directors for the grant of share options was HK$1.00.
+
+
+SUBSTANTIAL SHAREHOLDERS’ INTERESTS IN SECURITIES
+
+Save as disclosed below, as at June 30, 2018, so far as is known to the Directors or chief
+executive of the Company, the Company had not been notified by any persons (other than the
+Directors or chief executive of the Company) who had interests or short positions in the Shares
+or underlying Shares which would fall to be disclosed to the Company under the provisions of
+Divisions 2 and 3 of Part XV of the SFO or which were recorded in the register required to be
+kept by the Company under Section 336 of the SFO.
+
+
+Long positions in the Shares
+                                                             Number of Shares
+                                                                                                                Approximate
+                                                                 Interest of                                   percentage of
+                                 Beneficial       Spouse       a controlled          Other                     the number of
+Name of Shareholder                  owner       interest       corporation        interest           Total issued Shares
+
+
+
+Forever Top (Asia) Limited     2,682,362,480            –                 –               –    2,682,362,480          43.22%
+
+
+HSBC Trustee (C.I.) Limited               –             –                 –     618,953,533     618,953,533            9.97%
+                                                                                    (Note 1)
+
+
+Ng Hung Sang                    106,504,000     54,870,000       212,942,000              –     374,316,000            6.03%
+                                                  (Note 2)          (Note 3)
+
+
+Ng Lai King Pamela               54,870,000    319,446,000                –               –     374,316,000            6.03%
+                                                  (Note 4)
+
+
+
+
+                                                                       i-CABLE Communications Limited Interim Report 2018      47
+     CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+     Notes:
+
+
+     1.    HSBC Trustee (C.I.) Limited was deemed to be interested in 618,953,533 Shares by virtue of being
+           the trustee of a discretionary trust.
+
+
+     2.    Ng Hung Sang, the spouse of Ng Lai King Pamela, was deemed to be interested in 54,870,000 Shares
+           which Ng Lai King Pamela is interested in under the SFO.
+
+
+     3.    Ng Hung Sang was deemed to be interested in 212,942,000 Shares which his controlled corporations
+           are interested in under the SFO. South China Finance and Management Limited directly held
+           212,942,000 Shares. South China Financial Holdings Limited held 100% control in South China
+           Finance and Management Limited. Ng Hung Sang, through his 100% controlled corporations, held
+           25.66% control in South China Financial Holdings Limited.
+
+
+     4.    Ng Lai King Pamela, the spouse of Ng Hung Sang, was deemed to be interested in 319,446,000
+           Shares which Ng Hung Sang is interested in under the SFO.
+
+
+     SHARE OPTION SCHEME
+
+     The Company previously adopted a share option scheme on November 2, 1999 which expired
+     on November 2, 2009 and all outstanding unexercised share options granted thereunder
+     expired on December 31, 2009. The Company adopted a new share option scheme (the “Share
+     Option Scheme”) on May 24, 2018 which will be valid and effective for a period of ten years
+     from the date of adoption.
+
+
+     The purpose of the Share Option Scheme is to attract and retain the best available personnel,
+     to provide additional incentives to the eligible persons, to recognise and acknowledge the
+     contributions that the eligible persons have made or may make to the Group and to promote
+     the success of the business of the Group. The board of Directors (the “Board”) considers that
+     the Share Option Scheme would motivate more persons to make contribution to the Group,
+     facilitate the retention and the recruitment of high-calibre staff of the Group. The Board also
+     believes that it is in the interest of the Group as a whole for a broader category of eligible
+     persons other than the employees and directors such as consultants and advisers to be given
+     incentives to participate in the growth of, and make contribution to, the Group in the form of
+     options to subscribe for Shares. Furthermore, the Board considers that the eligible persons will
+     share common interests and objectives with the Group upon their exercise of the share options
+     granted by the Company, which is beneficial to the long-term development of the Group.
+
+
+
+
+48   i-CABLE Communications Limited Interim Report 2018
+CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+During the period from the date of the adoption of the Share Option Scheme to June 30, 2018,
+movement of share options granted by the Company to eligible persons was as follows:
+
+
+a.   Details of the movement of share options granted to the Directors are disclosed under
+     section headed “Directors’ Interests in Securities” above.
+
+
+b.   Details of the movement of share options granted to other eligible persons (other than
+     the Directors) are as follows:
+
+                                                                 Number of Shares issuable under the share options granted
+                                                            Balance     Granted       Exercised   Lapsed    Cancelled        Balance    Exercise
+                                                               as at      during         during    during      during           as at      price
+     Eligible               Date of         Exercisable   January 1,         the            the       the         the        June 30,        per
+     Persons                grant           period             2018       period         period    period      period           2018      Share
+                                                                         (Note 2)                                                           HK$
+
+
+     Employee               June 15, 2018   (Note 1)               –   40,200,000             –         –           –   40,200,000         0.210
+
+     Other participants     June 15, 2018   (Note 1)               –    7,000,000             –         –           –    7,000,000         0.210
+
+
+                                                                   –   47,200,000             –         –           –   47,200,000
+
+
+     Notes:
+
+
+     (1)        50% of the share options are exercisable from June 15, 2018 to June 14, 2028 (both dates
+                inclusive); and 50% of the share options are exercisable from June 15, 2019 to June 14, 2028
+                (both dates inclusive).
+
+
+     (2)        The closing price per Share as stated in the daily quotation sheet issued by the Stock
+                Exchange immediately before the date on which the share options were granted was
+                HK$0.155.
+
+
+     (3)        The cash consideration paid by each of the eligible persons for the grant of share options was
+                HK$1.00.
+
+
+
+
+                                                                                    i-CABLE Communications Limited Interim Report 2018             49
+     CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+     The fair value of the share options granted at the date of grant, June 15, 2018, was estimated
+     at approximately HK$21 million using the Binomial option pricing model. Value was estimated
+     based on the risk-free rate at 2.25% per annum with reference to the market yield rates of the
+     Hong Kong Government Bond (maturing on August 22, 2028) as of the value date, a historical
+     volatility of 66.08% calculated based on the historical price with period equals to the life of the
+     share options, assuming zero dividend yield based on historical dividend payout records. Share
+     options which are forfeited prior to the expiry date will be released directly to the reserve. The
+     Binomial option pricing model requires input of subjective assumptions such as the expected
+     stock price volatility. Change in the subjective input may materially affect the fair value
+     estimates. With regard to the subjectivity and uncertainty of the values of the options, such
+     values are subject to a number of assumptions and the limitation of the Binomial option pricing
+     model.
+
+
+     DISCLOSURE PURSUANT TO RULE 13.21 OF THE LISTING RULES
+
+     HKCTV as borrower, and the Company, as guarantor, confirmed the acceptance of a facility
+     letter issued by a bank (the “Lender”), as the lender, in respect of, among other things, a
+     HK$400,000,000 revolving loan facility (the “Revolving Loan Facility”) being subject to review at
+     any time and in any event by February 28, 2019 by the Lender; and the Company, as applicant,
+     on behalf of Hong Kong Cable News Express Limited, a wholly-owned subsidiary of the
+     Company, (together with HKCTV, the “Borrowers”) confirmed the acceptance of a facility letter
+     issued by the Lender in respect of a HK$30,000,000 performance bond facility (the
+     “Performance Bond Facility”) with a maximum tenor of five years being subject to review at
+     any time and in any event by February 28, 2019 by the Lender.
+
+
+     Pursuant to the facility letters in relation to both the Revolving Loan Facility and the
+     Performance Bond Facility, the Borrowers have undertaken that Forever Top (Asia) Limited, the
+     controlling shareholder of the Company, would (i) hold greater than 35% of the total number of
+     the issued Shares and (ii) be the single largest Shareholder. In the event of a breach of the
+     aforesaid covenant, the Lender has the right to suspend, withdraw or make demand in respect
+     of the whole or any part of the respective facilities made available to the relevant Borrower at
+     any time or determine whether or not to permit drawings in relation to the respective facilities.
+
+
+     During the six months ended June 30, 2018, the above specific performance obligations under
+     the Revolving Loan Facility and the Performance Bond Facility have been complied with. Details
+     of the transactions have been set out in the announcement of the Company dated April 17,
+     2018.
+
+50   i-CABLE Communications Limited Interim Report 2018
+CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+AUDIT COMMITTEE AND REVIEW OF INTERIM RESULTS
+
+The Company has set up an Audit Committee with majority of the members being the
+independent non-executive Directors with terms of reference in accordance with the
+requirements of the Listing Rules for the purposes of, among others, reviewing the financial
+information of the Group, and oversighting the Group’s financial reporting system, and risk
+management and internal control systems, as well as the Group’s corporate governance
+matters. As at the date of this report, the Audit Committee comprises Mr. LUK Koon Hoo, Roger
+(an independent non-executive Director and the chairman of the Audit Committee), Mr. HOONG
+Cheong Thard (a non-executive Director) and Mr. TANG Sing Ming Sherman (an independent
+non-executive Director).
+
+
+The unaudited condensed consolidated interim financial information of the Group and the
+interim report of the Company for the six months ended June 30, 2018 have been reviewed by
+the Audit Committee with no disagreement by the Audit Committee. The auditor of the
+Company, PricewaterhouseCoopers, has reviewed the unaudited condensed consolidated
+interim financial information of the Group for the six months ended June 30, 2018 in
+accordance with Hong Kong Standard on Review Engagements 2410 “Review of Interim
+Financial Information Performed by the Independent Auditor of the Entity” issued by the Hong
+Kong Institute of Certified Public Accountants.
+
+
+UPDATE ON INFORMATION OF THE DIRECTORS
+
+Changes in the information of Directors since the disclosure made in the annual report of the
+Company for the year ended December 31, 2017, which is required to be disclosed pursuant to
+Rule 13.51B(1) of the Listing Rules, is set out below:
+
+
+Dr. CHENG Kar-Shun, Henry, a non-executive Director and the Vice-chairman of the Company,
+has retired as an independent non-executive director of Hang Seng Bank Limited, a company
+whose shares are listed on the Stock Exchange, with effect from May 10, 2018. Dr. CHENG has
+tendered his resignation as an independent non-executive director of HKR International
+Limited, a company whose shares are listed on the Stock Exchange, with effect from March 31,
+2018. He has also tendered his resignation as the chairman and non-executive director of
+Newton Resources Limited, a company whose shares are listed on the Stock Exchange, with
+effect from April 9, 2018.
+
+
+
+
+                                                         i-CABLE Communications Limited Interim Report 2018   51
+     CORPORATE GOVERNANCE AND ADDITIONAL INFORMATION (continued)
+
+     Dr. CHENG Chi-Kong, Adrian, a non-executive Director, has been appointed as a non-executive
+     director of New Century Healthcare Holding Co. Limited, a company whose shares are listed on
+     the Stock Exchange, with effect from June 1, 2018.
+
+
+     Mr. LAM Kin-Fung, Jeffrey, an independent non-executive Director, has been appointed as an
+     independent non-executive director of Wing Tai Properties Limited, a company whose shares
+     are listed on the Stock Exchange, with effect from June 6, 2018.
+
+
+     Mr. LUK Koon Hoo, Roger, an independent non-executive Director, has been appointed as an
+     independent non-executive director of Harbour Centre Development Limited, a company
+     whose shares are listed on the Stock Exchange, with effect from June 1, 2018.
+
+
+     INTERIM DIVIDEND
+
+     The Board does not recommend the payment of any interim dividend for the six months ended
+     June 30, 2018 (for the six months ended June 30, 2017: HK$Nil).
+
+
+     PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED
+     SECURITIES
+
+     Neither the Company nor any of its subsidiaries purchased, sold or redeemed any listed
+     securities of the Company during the six months ended June 30, 2018.
+
+
+                                                                        By order of the Board
+                                                             i-CABLE Communications Limited
+                                                                 Tan Sri Dato’ David CHIU
+                                                                             Chairman
+
+
+     Hong Kong, August 24, 2018
+
+
+     As at the date of this report, the Board comprises ten Directors, namely Tan Sri Dato’ David
+     Chiu (Chairman), Dr. Cheng Kar-Shun, Henry (Vice-chairman), Dr. Cheng Chi-Kong, Adrian, Mr.
+     Tsang On Yip, Patrick and Mr. Hoong Cheong Thard as non-executive Directors, Mr. Andrew
+     Wah Wai Chiu as executive Director, and Mr. Lam Kin-Fung, Jeffrey, Mr. Hu Shao Ming Herman,
+     Mr. Luk Koon Hoo, Roger and Mr. Tang Sing Ming Sherman as independent non-executive
+     Directors.
+
+
+
+
+52   i-CABLE Communications Limited Interim Report 2018
+

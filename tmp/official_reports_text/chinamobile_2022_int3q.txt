@@ -1,0 +1,519 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited
+take no responsibility for the contents of this announcement, make no representation as to
+its accuracy or completeness and expressly disclaim any liability whatsoever for any loss
+howsoever arising from or in reliance upon the whole or any part of the contents of this
+announcement.
+
+
+                                 CHINA MOBILE LIMITED
+                                   中國移動有限公司
+                               (Incorporated in Hong Kong with limited liability under the Companies Ordinance)
+                                                            (Stock Code: 941)
+
+
+
+         RESULTS FOR THE FIRST THREE QUARTERS OF 2022
+
+ The unaudited results and performance indicators of the Group for the first three
+ quarters of 2022:
+
+ •    Operating revenue was RMB723.5 billion, up by 11.5% year-on-year; of which,
+      revenue from telecommunications services was RMB620.1 billion, up by 8.3% year-
+      on-year
+
+ •    EBITDA was RMB251.5 billion, up by 5.9% year-on-year
+
+ •    Profit attributable to equity shareholders was RMB98.5 billion, up by 13.0% year-on-
+      year
+
+ •    Mobile customers amounted to 974 million; of which, 5G package customers
+      amounted to 557 million
+
+ •    Wireline broadband customers amounted to 265 million
+
+
+
+
+                                                  –1–
+SELECTED UNAUDITED KEY PERFORMANCE INDICATORS
+
+Financial Data
+
+                                       For the period from     For the period from
+                                         1 January 2022 to      1 January 2021 to
+                                        30 September 2022      30 September 2021             Change
+
+Operating Revenue (RMB)                        723.5 billion        648.6 billion             11.5%
+Of which, Revenue from
+  Telecommunications Services (RMB)            620.1 billion          572.9 billion            8.3%
+  Sales of Products and Others (RMB)           103.4 billion           75.8 billion           36.4%
+EBITDA (RMB)                                   251.5 billion          237.5 billion            5.9%
+EBITDA Margin                                        34.8%                  36.6%
+Profit before Taxation (RMB)                   128.0 billion          115.0 billion           11.3%
+Profit Attributable to Equity
+  Shareholders (RMB)                            98.5 billion           87.2 billion           13.0%
+Margin of Profit Attributable to
+  Equity Shareholders                                13.6%                  13.4%
+
+Operating Data
+
+                                                                         As at                  As at
+                                                          30 September 2022/           30 June 2022/
+                                                          For the period from    For the period from
+                                                            1 January 2022 to     1 January 2022 to
+                                                           30 September 2022            30 June 2022
+
+Mobile Business
+ Total Customers                                                   974 million           970 million
+ Net Additional Customers *                                      17.15 million         12.96 million
+ 5G Package Customers                                              557 million           511 million
+ 5G Network Customers **                                           292 million           263 million
+ Average Revenue per User per Month (ARPU)
+    (RMB/user/month) *                                                    50.7                  52.3
+ Total Voice Usage (minutes) *                                 2,222.2 billion        1,456.6 billion
+ Average Minutes of Usage per User per Month (MOU)
+    (minutes/user/month) *                                                256                    254
+ Handset Data Traffic (GB) *                                     104.5 billion           68.3 billion
+ Average Handset Data Traffic per User per Month (DOU)
+    (GB/user/month) *                                                     13.6                  13.5
+
+Wireline Broadband Business
+ Total Customers                                                   265 million           256 million
+ Net Additional Customers *                                      24.82 million         15.95 million
+ Average Revenue per User per Month (ARPU)
+    (RMB/user/month) *                                                    34.8                  36.3
+*    for the relevant reporting period
+**   5G network customers are mobile customers who have used the 5G network in the current month and
+     stayed on the network at the end of the month
+
+
+                                              –2–
+In the first three quarters of 2022, in the face of the headwinds and challenges posed by
+COVID-19 and other complexities in the external environment, the Group adopted a scientific
+approach to its reform and development as well as COVID-19 prevention and control. It
+further promoted value-oriented operations by leveraging its business scale and drove the
+comprehensive and integrated development of its CHBN 1 markets. Riding on 5G, CFN
+(computing force network) and smart mid-end platform, it established a new information
+service system of “connectivity, computing force and ability”. Following these initiatives,
+the Group achieved notable results in digital-intelligent transformation and maintained a
+favourable business growth trend.
+
+Following its persistent efforts to further promote the integrated management of “data
+access, applications and customer benefits” and its increased focus on precise scenario-based
+operations, the Group achieved stable growth in the scale and value of its mobile customers.
+It attained a solid customer base with the number of mobile customers totalling around 974
+million as at 30 September 2022, following a net addition of 17.15 million in the first three
+quarters. Of which, the total numbers of 5G package customers and 5G network customers
+reached 557 million and 292 million respectively, and continued to be industry-leading.
+Mobile ARPU increased by 1.0% year-on-year to RMB50.7 for the first three quarters. The
+Group will continue to reinforce synergistic development across operations, focus on both
+scale and quality of its 5G development and better satisfy customers’ digital consumption
+demands. It will strive to achieve stable and healthy growth in mobile ARPU for the full year
+of 2022.
+
+The Group placed a focus on delving into the value upside of the “full-gigabit network +
+cloud-based applications” service suite and took proactive actions to transform its “Home”
+business toward HDICT (home data, information and communications technology) solutions.
+Contribution from smart home business to the Group’s revenue growth continued to increase.
+As at 30 September 2022, the total number of wireline broadband customers of the Group
+amounted to 265 million, following a net addition of 24.82 million in the first three quarters.
+Of which, the total number of household broadband customers amounted to 238 million,
+following a net addition of 19.66 million in the first three quarters. For the first three quarters,
+wireline broadband ARPU grew by 0.2% year-on-year to RMB34.8. Household customer
+blended ARPU grew by 3.2% year-on-year to RMB41.1.
+
+The Group continued to advance the integrated development of its “network, cloud and DICT
+(data, information and communications technology)” and significantly strengthened its market,
+product and support capabilities across-the-board, demonstrating robust growth momentum in
+its “Business” market. For the first three quarters, DICT revenue grew by 40.0% year-on-year
+to RMB68.5 billion.
+
+
+
+
+1
+     CHBN refers to the “Customer” market (C), the “Home” market (H), the “Business” market (B) and the
+     “New” market (N).
+
+
+                                                –3–
+The Group’s operating revenue grew by 11.5% year-on-year to RMB723.5 billion for the first
+three quarters of 2022. Of which, revenue from telecommunications services grew by 8.3%
+year-on-year to RMB620.1 billion, and that from sales of products and others increased by
+36.4% year-on-year to RMB103.4 billion.
+
+The Group maintained a leading level of profitability, with profit attributable to equity
+shareholders increasing by 13.0% year-on-year to RMB98.5 billion and margin of profit
+attributable to equity shareholders increasing by 0.2 percentage points year-on-year to 13.6%
+for the first three quarters of 2022. EBITDA2 went up by 5.9% year-on-year to RMB251.5
+billion, with EBITDA as a percentage of telecommunications services revenue standing at
+40.6%.
+
+The Group will continue to enhance quality and efficiency, focus on quality improvement,
+speed up the development of capabilities, strengthen its system for synergistic business
+operations, and reinforce risk prevention and control. It will strive to achieve favourable
+growth in telecommunications services revenue and net profit for the full year of 2022.
+
+
+
+
+2
+     EBITDA = profit from operations + depreciation and amortization
+
+
+
+                                                 –4–
+GROUP RESULTS
+
+China Mobile Limited (the “Company”) is pleased to announce the unaudited consolidated
+results of the Company and its subsidiaries (the “Group”) for the nine months ended
+30 September 2022, which have been prepared in accordance with International Financial
+Reporting Standards.
+
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+(UNAUDITED)
+for the nine months ended 30 September 2022
+(Expressed in Renminbi (“RMB”))
+
+                                                              Nine months ended
+                                                                30 September
+                                                                 2022           2021
+                                                               Million       Million
+
+Operating revenue
+ Revenue from telecommunications services                      620,137        572,870
+ Revenue from sales of products and others                     103,350         75,760
+
+                                                               723,487        648,630
+
+Operating expenses
+ Network operation and support expenses                        195,650        173,908
+ Depreciation and amortization                                 149,337        145,798
+ Employee benefit and related expenses                          96,676         87,440
+ Selling expenses                                               37,320         39,340
+ Cost of products sold                                         101,448         75,080
+ Other operating expenses                                       40,860         35,346
+
+                                                               621,291        556,912
+
+Profit from operations                                         102,196         91,718
+
+Other gains                                                      5,055          4,750
+Interest and other income                                       13,577         11,355
+Finance costs                                                   (1,761)        (2,073)
+Income from investments accounted for using
+  the equity method                                              8,888           9,209
+
+Profit before taxation                                         127,955        114,959
+
+Taxation                                                       (29,321)        (27,636)
+
+PROFIT FOR THE PERIOD                                           98,634         87,323
+
+
+
+                                          –5–
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+(UNAUDITED) (CONTINUED)
+for the nine months ended 30 September 2022
+(Expressed in RMB)
+
+                                                                Nine months ended
+                                                                  30 September
+                                                                   2022           2021
+                                                                 Million       Million
+
+Other comprehensive income for the period, net of tax:
+  Items that will not be subsequently
+    reclassified to profit or loss
+    Changes in the fair value of financial assets measured at
+      fair value through other comprehensive income                 (310)         (194)
+    Share of other comprehensive (loss)/income of
+      investments accounted for using the equity method               (9)           10
+
+  Items that may be subsequently reclassified
+    to profit or loss
+    Currency translation differences                               2,840          (189)
+    Share of other comprehensive loss of investments
+      accounted for using the equity method                         (772)          (89)
+
+TOTAL COMPREHENSIVE INCOME
+ FOR THE PERIOD                                                  100,383        86,861
+
+Profit attributable to:
+  Equity shareholders of the Company                              98,532        87,197
+  Non-controlling interests                                          102           126
+
+PROFIT FOR THE PERIOD                                             98,634        87,323
+
+Total comprehensive income attributable to:
+  Equity shareholders of the Company                             100,281        86,735
+  Non-controlling interests                                          102           126
+
+TOTAL COMPREHENSIVE INCOME
+ FOR THE PERIOD                                                  100,383        86,861
+
+Earnings per share – Basic                                      RMB4.62      RMB4.26
+
+Earnings per share – Diluted                                    RMB4.62      RMB4.26
+
+
+
+
+                                            –6–
+CONDENSED CONSOLIDATED BALANCE SHEET (UNAUDITED)
+as at 30 September 2022
+(Expressed in RMB)
+
+                                                              As at          As at
+                                                      30 September    31 December
+                                                              2022           2021
+                                                            Million        Million
+
+Assets
+Non-current assets
+  Property, plant and equipment                            727,396        723,305
+  Construction in progress                                  86,492         71,742
+  Right-of-use assets                                       53,012         55,350
+  Land use rights                                           15,440         15,739
+  Goodwill                                                  35,344         35,344
+  Other intangible assets                                    7,429          8,171
+  Investments accounted for using the equity method        174,647        169,556
+  Deferred tax assets                                       45,284         43,216
+  Financial assets measured at fair value through
+    other comprehensive income                                 391            689
+  Financial assets measured at fair value through
+    profit or loss                                         145,601         78,600
+  Restricted bank deposits                                   5,514          7,046
+  Other non-current assets                                  44,177         37,198
+
+                                                          1,340,727      1,245,956
+Current assets
+ Inventories                                                15,515         10,203
+ Contract assets                                             9,917          6,551
+ Accounts receivable                                        62,920         34,668
+ Other receivables                                          12,856         10,137
+ Amount due from ultimate holding company                    2,315          2,612
+ Prepayments and other current assets                       24,704         28,291
+ Prepaid income tax                                            503            875
+ Other financial assets measured at amortized cost          18,736         33,884
+ Financial assets measured at fair value through
+   profit or loss                                          108,163        132,995
+ Restricted bank deposits                                    1,804          2,163
+ Bank deposits                                              90,293         89,049
+ Cash and cash equivalents                                 205,294        243,943
+
+                                                           553,020        595,371
+
+Total assets                                              1,893,747      1,841,327
+
+
+
+
+                                           –7–
+CONDENSED CONSOLIDATED BALANCE SHEET (UNAUDITED) (CONTINUED)
+as at 30 September 2022
+(Expressed in RMB)
+
+                                                           As at          As at
+                                                   30 September    31 December
+                                                           2022           2021
+                                                         Million        Million
+
+Equity and liabilities
+Liabilities
+Current liabilities
+  Accounts payable                                      174,035        152,712
+  Bills payable                                          14,106         12,747
+  Contract liabilities                                   72,882         79,068
+  Accrued expenses and other payables                   258,501        274,509
+  Amount due to ultimate holding company                  7,957         23,478
+  Income tax payable                                     13,358         13,575
+  Lease liabilities                                      22,118         26,059
+
+                                                        562,957        582,148
+
+Non-current liabilities
+ Lease liabilities – non-current                         36,880         30,922
+ Deferred revenue                                         8,811          8,487
+ Deferred tax liabilities                                 3,157          2,369
+ Other non-current liabilities                            7,323          7,109
+
+                                                         56,171         48,887
+
+Total liabilities                                       619,128        631,035
+
+Equity
+  Share capital                                         453,504        402,130
+  Reserves                                              817,058        804,220
+
+Total equity attributable to equity shareholders
+  of the Company                                       1,270,562      1,206,350
+
+Non-controlling interests                                  4,057         3,942
+
+Total equity                                           1,274,619      1,210,292
+
+Total equity and liabilities                           1,893,747      1,841,327
+
+
+
+
+                                           –8–
+CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS (UNAUDITED)
+for the nine months ended 30 September 2022
+(Expressed in RMB)
+
+                                                             Nine months ended
+                                                               30 September
+                                                                2022           2021
+                                                              Million       Million
+
+Operating activities
+
+Profit before taxation                                       127,955        114,957
+Adjustments for:
+  – Depreciation and amortization                            149,337        145,798
+  – Interest and other income                                (13,577)       (11,355)
+  – Finance costs                                              1,761          2,073
+  – Income from investments accounted for using the equity
+       method                                                  (8,888)       (9,209)
+  – Others                                                      8,363         6,613
+
+Operating cash flows before changes in working capital       264,951        248,877
+
+Changes in working capital
+ – Increase in inventories                                     (5,560)       (5,924)
+ – Increase in contract assets                                 (4,954)       (2,792)
+ – Increase in accounts receivable                            (35,683)      (17,111)
+ – Increase in accounts payable                                15,451         9,009
+ – (Decrease)/increase in contract liabilities                 (6,186)        2,300
+ – Others                                                      30,731        44,619
+
+Cash generated from operations                               258,750        278,978
+
+Tax paid
+  – The mainland of China and other countries and regions’
+      enterprise income tax paid                              (31,002)      (29,715)
+  – Hong Kong profits tax paid                                   (156)         (147)
+
+Net cash generated from operating activities                 227,592        249,116
+
+
+
+
+                                             –9–
+CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS (UNAUDITED)
+(CONTINUED)
+for the nine months ended 30 September 2022
+(Expressed in RMB)
+
+                                                              Nine months ended
+                                                                30 September
+                                                                 2022           2021
+                                                               Million       Million
+
+Investing activities
+
+Payment for property, plant and equipment                     (133,901)     (125,569)
+Payment for land use rights                                        (60)            –
+Payment for other intangible assets                             (2,632)       (4,230)
+Proceeds from disposal and write-off of property,
+  plant and equipment                                              406           259
+Decrease in bank deposits (including non-current portion)        5,112        16,964
+Decrease in other financial assets measured
+  at amortized cost (including non-current portion)              5,753        12,542
+Decrease in restricted bank deposits (excluding deposited
+  customer reserves)                                            1,570          2,598
+Interest and other finance income received                     10,225         10,500
+Payment for investment accounted for using
+  the equity method                                                  –          (221)
+Dividends received from investments accounted
+  for using the equity method                                    3,703         3,853
+Purchase of financial assets measured at fair value through
+  profit or loss                                               (99,000)      (72,280)
+Proceeds from disposal of financial assets measured
+  at fair value through profit or loss                         60,305         42,435
+Proceeds from disposal of financial assets measured
+  at fair value through other comprehensive income                  22             –
+
+Net cash used in investing activities                         (148,497)     (113,149)
+
+
+
+
+                                            – 10 –
+CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS (UNAUDITED)
+(CONTINUED)
+for the nine months ended 30 September 2022
+(Expressed in RMB)
+
+                                                                 Nine months ended
+                                                                   30 September
+                                                                    2022           2021
+                                                                  Million       Million
+
+Financing activities
+
+Proceeds received from exercise of over-allotment
+  of RMB Shares                                                     3,286               –
+Dividends paid to the Company’s equity shareholders               (84,920)        (57,585)
+Interest paid in relation to short-term deposits placed by
+  CMCC Group                                                          (55)            (98)
+Net repayment of short-term deposits placed by CMCC Group         (16,781)        (18,758)
+Repayment of principal and interest of lease liabilities          (19,356)        (20,260)
+Payment for purchase of own shares                                   (707)              –
+Others                                                                (97)            (72)
+
+Net cash used in financing activities                            (118,630)        (96,773)
+
+Net (decrease)/increase in cash and cash equivalents              (39,535)         39,194
+
+Cash and cash equivalents, beginning of period                    243,943         212,729
+
+Effect of changes in foreign exchange rate                            886            (429)
+
+Cash and cash equivalents, end of period                          205,294         251,494
+
+
+The Board wishes to remind investors that the above results and performance indicators are
+based on the Group’s unaudited management accounts. Investors are cautioned not to unduly
+rely on such data.
+
+In the meantime, investors are advised to exercise caution in dealing in the securities of
+the Company.
+
+                                                                 By Order of the Board
+                                                                 China Mobile Limited
+                                                                       Yang Jie
+                                                                       Chairman
+
+Hong Kong, 20 October 2022
+
+
+
+
+                                           – 11 –
+FORWARD-LOOKING STATEMENTS
+
+Certain statements contained in this announcement may be viewed as “forward-looking
+statements” within the meaning of Section 27A of the U.S. Securities Act of 1933, as
+amended, and Section 21E of the U.S. Securities Exchange Act of 1934, as amended. Such
+forward-looking statements involve known and unknown risks, uncertainties and other factors,
+which may cause the actual performance, financial condition or results of operations of the
+Company to be materially different from those implied by such forward-looking statements.
+In addition, the Company does not intend to update these forward-looking statements. Further
+information regarding these risks, uncertainties and other factors is included in the Company’s
+most recent Annual Report on Form 20-F and other filings with the U.S. Securities and
+Exchange Commission.
+
+As at the date of this announcement, the Board of Directors of the Company comprises
+Mr. Yang Jie, Mr. Dong Xin, Mr. Li Pizheng and Mr. Li Ronghua as executive
+directors; and Mr. Stephen Yiu Kin Wah, Dr. Yang Qiang, Mr. Carmelo Lee Ka Sze and
+Mrs. Margaret Leung Ko May Yee as independent non-executive directors.
+
+
+
+
+                                            – 12 –
+

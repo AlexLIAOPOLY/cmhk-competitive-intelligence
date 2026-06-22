@@ -1,0 +1,40 @@
+Consolidated Statement of Cash Flows
+For the year ended 31 December 2024
+
+
+
+
+                                                                             Note         2024           2023
+                                                                                    HK$ million     HK$ million
+ Cash flows from operating activities
+ Cash generated from operations                                              31          1,115             1,152
+ Interest and other finance costs paid                                                     (29)              (23)
+ Tax paid                                                                                   (5)               (2)
+ Net cash from operating activities                                                      1,081             1,127
+ Cash flows from investing activities
+ Purchases of property, plant and equipment                                               (434)             (481)
+ Payments for short-term bank deposits with original maturity
+    beyond 3 months                                                                      (2,555)          (2,976)
+ Proceeds from maturity of short-term bank deposits with
+    original maturity beyond 3 months                                                    3,818             1,815
+ Proceeds from disposals of property, plant and equipment                                    1                 –
+ Interest received                                                                         202               162
+ Loan to a joint venture                                                                   (96)              (63)
+ Net cash from/(used in) investing activities                                              936            (1,543)
+ Cash flows from financing activities
+ Principal elements of lease payments                                        27           (398)             (400)
+ Dividends paid                                                                           (361)             (361)
+ Net cash used in financing activities                                                    (759)             (761)
+
+ Increase/(decrease) in cash and cash equivalents                                        1,258            (1,177)
+ Cash and cash equivalents at 1 January                                                  1,910             3,087
+ Cash and cash equivalents at 31 December                                    22          3,168             1,910
+
+
+The accompanying notes are an integral part of these financial statements.
+
+
+
+
+                                                                                                   2024 Annual Report   157
+

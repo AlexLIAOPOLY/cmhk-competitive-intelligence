@@ -48,6 +48,87 @@ def audio_paths_for_report(report_path: Path) -> list[Path]:
     return [audio_path_for_report_ext(report_path, ".mp3"), audio_path_for_report_ext(report_path, ".wav")]
 
 
+def subtitle_timing_path_for_report(report_path: Path) -> Path:
+    return audio_path_for_report_ext(report_path, ".timings.json")
+
+
+def _subtitle_sentences(text: str) -> list[str]:
+    sentences = [
+        item.strip()
+        for item in re.findall(r"[^。！？；\n]+[。！？；\n]*", text or "")
+        if item.strip()
+    ]
+    return sentences or ([text.strip()] if text.strip() else [])
+
+
+def _subtitle_sentence_weight(text: str) -> float:
+    cjk_count = len(re.findall(r"[\u3400-\u9fff]", text))
+    latin_words = len(re.findall(r"[A-Za-z]+(?:[-'][A-Za-z]+)*", text))
+    digit_count = len(re.findall(r"\d", text))
+    comma_pauses = len(re.findall(r"[，,:：、]", text))
+    sentence_pauses = len(re.findall(r"[。！？；;]", text))
+    return max(1.0, cjk_count + latin_words * 1.8 + digit_count * 1.25 + comma_pauses * 1.2 + sentence_pauses * 2.2)
+
+
+def _write_moss_subtitle_timings(output_path: Path, result: dict, runtime) -> None:
+    text_chunks = [str(item or "").strip() for item in result.get("text_chunks") or []]
+    chunk_results = result.get("chunk_results") or []
+    sample_rate = int(result.get("sample_rate") or 0)
+    if not text_chunks or sample_rate <= 0 or len(text_chunks) != len(chunk_results):
+        return
+
+    cues: list[dict] = []
+    cursor = 0.0
+    for index, (chunk_text, chunk_result) in enumerate(zip(text_chunks, chunk_results, strict=True)):
+        waveform = chunk_result.get("waveform")
+        sample_count = len(waveform) if waveform is not None else 0
+        chunk_duration = sample_count / sample_rate if sample_count > 0 else 0.0
+        sentences = _subtitle_sentences(chunk_text)
+        weights = [_subtitle_sentence_weight(sentence) for sentence in sentences]
+        total_weight = sum(weights) or 1.0
+        used_weight = 0.0
+        for sentence, weight in zip(sentences, weights, strict=True):
+            start = cursor + chunk_duration * used_weight / total_weight
+            used_weight += weight
+            end = cursor + chunk_duration * used_weight / total_weight
+            cues.append(
+                {
+                    "text": sentence,
+                    "start": round(start, 3),
+                    "end": round(max(end, start + 0.05), 3),
+                }
+            )
+        cursor += chunk_duration
+        if index < len(text_chunks) - 1:
+            cursor += float(runtime.estimate_voice_clone_inter_chunk_pause_seconds(chunk_text))
+
+    if not cues:
+        return
+    final_waveform = result.get("waveform")
+    final_duration = len(final_waveform) / sample_rate if final_waveform is not None else cursor
+    if cursor > 0 and final_duration > 0:
+        scale = final_duration / cursor
+        for cue in cues:
+            cue["start"] = round(float(cue["start"]) * scale, 3)
+            cue["end"] = round(float(cue["end"]) * scale, 3)
+        cursor = final_duration
+    timing_path = output_path.with_suffix(".timings.json")
+    timing_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "backend": "moss-tts-nano",
+                "duration": round(cursor, 3),
+                "spokenText": "".join(text_chunks),
+                "cues": cues,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
 def audio_info_for_report(report_path: Path) -> dict:
     audio_path = next((path for path in audio_paths_for_report(report_path) if path.exists()), None)
     if not audio_path:
@@ -56,7 +137,14 @@ def audio_info_for_report(report_path: Path) -> dict:
     txt_path = audio_path_for_report_ext(report_path, ".txt")
     if txt_path.exists():
         summary_text = txt_path.read_text(encoding="utf-8", errors="ignore")
-    return {
+    timing_payload = {}
+    timing_path = subtitle_timing_path_for_report(report_path)
+    if timing_path.exists():
+        try:
+            timing_payload = json.loads(timing_path.read_text(encoding="utf-8"))
+        except Exception:
+            timing_payload = {}
+    result = {
         "exists": True,
         "name": audio_path.name,
         "url": f"/audio/{quote(audio_path.name)}",
@@ -65,17 +153,28 @@ def audio_info_for_report(report_path: Path) -> dict:
         "mtimeText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(audio_path.stat().st_mtime)),
         "summary": summary_text,
     }
+    cues = timing_payload.get("cues")
+    if isinstance(cues, list) and cues:
+        result["subtitleCues"] = cues
+        result["spokenText"] = str(timing_payload.get("spokenText") or summary_text)
+    return result
 
 
 def delete_audio_for_report(report_path: Path) -> None:
-    for path in audio_paths_for_report(report_path) + [audio_path_for_report_ext(report_path, ".txt")]:
+    for path in audio_paths_for_report(report_path) + [
+        audio_path_for_report_ext(report_path, ".txt"),
+        subtitle_timing_path_for_report(report_path),
+    ]:
         if path.exists():
             path.unlink()
 
 
 def rename_audio_for_report(old_report_path: Path, new_report_path: Path) -> None:
     AUDIO_DIR.mkdir(exist_ok=True)
-    for old_audio in audio_paths_for_report(old_report_path) + [audio_path_for_report_ext(old_report_path, ".txt")]:
+    for old_audio in audio_paths_for_report(old_report_path) + [
+        audio_path_for_report_ext(old_report_path, ".txt"),
+        subtitle_timing_path_for_report(old_report_path),
+    ]:
         if not old_audio.exists():
             continue
         new_audio = audio_path_for_report_ext(new_report_path, old_audio.suffix)
@@ -394,6 +493,7 @@ def _synthesize_with_moss(text: str, output_path: Path) -> str | None:
     if truncated:
         output_path.unlink(missing_ok=True)
         raise RuntimeError(f"MOSS-TTS 分段疑似被截断：{truncated}")
+    _write_moss_subtitle_timings(output_path, result, runtime)
     return f"moss-tts-nano:{voice}:seed-{seed}:chunks-{len(frame_counts)}"
 
 

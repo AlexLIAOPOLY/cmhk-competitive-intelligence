@@ -1,0 +1,1135 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for
+the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim
+any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents
+of this announcement.
+
+
+
+
+                                              HKBN Ltd.
+                                             香港寬頻有限公司
+                               (Incorporated in the Cayman Islands with limited liability)
+                                                 Stock Code: 1310
+
+                        INTERIM RESULTS ANNOUNCEMENT
+                   FOR THE SIX MONTHS ENDED 29 FEBRUARY 2016
+                                  (All references to “$” are to the Hong Kong dollars)
+
+The Board of Directors (the “Board”) of HKBN Ltd. (the “Company”) is pleased to announce the
+unaudited consolidated results of the Company and its subsidiaries (collectively, the “Group”) for
+the six months ended 29 February 2016. These results were based on the unaudited consolidated
+interim financial statements for the six months ended 29 February 2016, which were prepared in
+accordance with the Hong Kong Accounting Standard (“HKAS”) 34, Interim financial reporting,
+issued by the Hong Kong Institute of Certified Public Accountants (“HKICPA”).
+
+    •    Net additions of residential broadband subscriptions accelerated to 38,000 (1H2015:
+         30,000), with our market share by broadband subscriptions increasing to 37.7% as of 31
+         January 2016*, up from 36.6% as of 31 August 2015.
+
+    •    Revenue and EBITDA increased year-on-year by 9% and 6% respectively to $1,226 million
+         and $511 million, while Adjusted Free Cash Flow maintained at $185 million.
+
+    •    Net profit for the period was $135 million (1H2015: net loss of $47 million) while Adjusted
+         Net Profit increased year-on-year by 31% to $210 million.
+
+    •    The Board of Directors has recommended the payment of an interim dividend of 20 HK
+         cents per share.
+
+*       Based on our broadband subscriptions and the latest available OFCA statistics as of 31 January 2016.
+
+
+
+
+                                                           1
+SHAREHOLDER LETTER
+
+Dear Fellow Shareholders,
+
+Since our IPO in March 2015, the entry of Over-The-Top (OTT) players has created a disruptive
+opportunity to accelerate our market share ambitions. We have secured partnerships with two major
+OTT operators: 1) LeEco to break the Pay-TV industry’s decade long exclusive access to English
+Premier League Soccer (EPL) and 2) TVB for access to Hong Kong’s most comprehensive local
+drama content source. Together we are now offering the best value triple play package with OTT
+content, whereas in the past, we were only strong in broadband and voice. We must act assertively,
+as we expect the window for disruption to remain open for only a couple of years starting after the
+current now TV exclusive broadcast rights of EPL ends this summer.
+
+On the enterprise side, post IPO, we completed our acquisition (the “Acquisition”) of New World
+Telecom on 31 March 2016, which has more than doubled our enterprise revenue to over $1 billion
+for an estimated market share of 5% in the enterprise space. Looking ahead, this combined scale
+will enable us to deliver continued growth of our enterprise business. Please refer to Appendix 1
+(Page 3) for a memo from our management committee to welcome the new joiners.
+
+In conclusion for the next two years, our priority is to take advantage of these unprecedented
+changes in the residential and enterprise segments to strengthen our foundation for cash flow
+growth in 3-5 years’ time.
+
+Sincerely yours and on behalf of our fellow >270 Co-Owners,
+
+
+
+
+William Yeung                                   NiQ Lai
+Chief Executive Officer and Co-Owner            Chief Talent & Financial Officer and Co-Owner
+
+
+
+
+                                                2
+SHAREHOLDER LETTER (Continued)
+
+                            Appendix 1
+
+
+
+
+                                 3
+KEY FINANCIAL AND OPERATIONAL SUMMARY
+
+Table 1: Financial highlights
+
+                                                   For the six months ended Increase/
+                                                   29 February 28 February (Decrease)
+                                                          2016         2015      YoY
+
+ Key financials ($’000)
+ Revenue                                             1,225,539    1,126,111       +9%
+ Profit/(loss) for the period                          135,252      (46,688)       n/a
+ Adjusted Net Profit 1,2                               209,634      159,559     +31%
+ EBITDA 1,3                                            511,266      482,240       +6%
+ EBITDA margin 1,4                                      41.7%        42.8%     -1.1 pp
+ Adjusted Free Cash Flow 1,5                           185,156      184,748       +0%
+
+Reconciliation of Adjusted Net Profit 1,2
+
+Profit/(loss) for the period                           135,252      (46,688)      n/a
+Amortisation of intangible assets                       56,557       55,083      +3%
+Deferred tax arising from amortisation
+  of intangible assets                                  (9,089)     (9,089)      +0%
+Loss on extinguishment of senior notes                       –      96,234     -100%
+Originating fee for banking facility expired                 –      11,600     -100%
+Listing expenses                                             –      52,419     -100%
+Transaction costs in connection with
+  business combination                                  26,914            –        n/a
+
+Adjusted Net Profit                                    209,634     159,559      +31%
+Reconciliation of EBITDA & Adjusted
+  Free Cash Flow 1,3,5
+
+Profit/(loss) for the period                           135,252     (46,688)       n/a
+Finance costs                                           66,336     198,501      -67%
+Interest income                                           (647)     (1,909)     -66%
+Income tax                                              48,200      41,141      +17%
+Depreciation                                           178,654     183,693       -3%
+Amortisation of intangible assets                       56,557      55,083       +3%
+Listing expenses                                             –      52,419     -100%
+Transaction costs in connection with
+  business combination                                  26,914            –        n/a
+
+EBITDA                                                 511,266     482,240       +6%
+Capital expenditure                                   (177,931)   (120,549)     +48%
+Net interest paid                                      (51,356)    (87,027)     -41%
+Other non-cash items                                       131      (4,512)       n/a
+Income tax paid                                       (104,094)    (84,491)     +23%
+Changes in working capital                               7,140        (913)       n/a
+
+Adjusted Free Cash Flow                                185,156     184,748       +0%
+
+
+
+                                               4
+KEY FINANCIAL AND OPERATIONAL SUMMARY (CONTINUED)
+
+Table 2: Operational highlights
+
+                                            For the six months ended         Increase/
+                                      29 February 31 August 28 February     (Decrease)
+                                             2016        2015        2015         YoY
+Residential business
+
+Residential homes passed (’000)               2,162     2,143       2,119        +2%
+
+Subscriptions (’000)
+  – Broadband                                  792       754         722        +10%
+  – Voice                                      485       534         563        -14%
+
+Market share 6
+ – Broadband                               37.7%       36.6%       35.4%      +2.3 pp
+ – Voice                                   20.5%       22.0%       22.8%      -2.3 pp
+
+Residential customers (’000)                   852       822         799         +7%
+
+Broadband churn rate 7                        0.8%      0.7%        0.6%      +0.2 pp
+
+Residential ARPU 8                            $178      $183        $184          -3%
+
+Enterprise business
+
+Commercial building coverage (’000)             2.1       2.0         2.0        +5%
+
+Subscriptions (’000)
+  – Broadband                                   40        35          31        +29%
+  – Voice                                      102        98          89        +15%
+
+Market share 6
+ – Broadband                               15.4%       14.3%       13.1%      +2.3 pp
+ – Voice                                    5.5%        5.3%        4.8%      +0.7 pp
+
+Enterprise customers (’000)                     43        39          35        +23%
+
+Broadband churn rate 9                        0.9%      0.9%        0.8%      +0.1 pp
+
+Enterprise ARPU 10                         $1,017      $1,004      $1,025         -1%
+
+
+
+
+                                          5
+Notes:
+
+(1)      EBITDA, EBITDA margin, Adjusted Free Cash Flow and Adjusted Net Profit are not measures of performance
+         under Hong Kong Financial Reporting Standards (“HKFRSs”). These measures do not represent, and should
+         not be used as substitutes for, net income or cash flows from operations as determined in accordance with
+         HKFRSs. These measures are not necessarily an indication of whether cash flow will be sufficient to fund our
+         cash requirements. In addition, our definitions of these measures may not be comparable to other similarly titled
+         measures used by other companies.
+
+(2)      Adjusted Net Profit means profit/(loss) for the period plus amortisation of intangible assets (net of deferred
+         tax credit), non-recurring finance costs and other non-recurring items. Non-recurring finance costs, in the
+         period under review, include loss on extinguishment of senior notes and originating fee for banking facility
+         expired. Other non-recurring items, in the period under review, include listing expenses and transaction costs in
+         connection with business combination.
+
+(3)      EBITDA means profit/(loss) for the period plus finance costs, income tax expense, listing expenses, transaction
+         costs in connection with business combination, depreciation and amortisation of intangible assets and less
+         interest income.
+
+(4)      EBITDA margin means EBITDA divided by revenue.
+
+(5)      Adjusted Free Cash Flow means EBITDA plus interest received and less capital expenditure, interest paid
+         and tax paid, and adjusted by changes in working capital, other non-recurring items and other non-cash items.
+         Working capital includes other non-current assets, inventories, accounts receivable, other receivables, deposits
+         and prepayments, accounts payable, deposits received and deferred services revenue. Other non-cash items, in
+         the period under review, include amortisation of obligations under granting of rights and Co-Ownership Plan II
+         related non-cash items.
+
+(6)      Our market share in broadband or voice services in Hong Kong, for residential or enterprise business, is
+         calculated by dividing the number of broadband or voice subscriptions we have at a given point in time by the
+         total number of corresponding broadband or voice subscriptions recorded by the Office of the Communications
+         Authority (OFCA) at the same point in time. The latest available OFCA statistics in broadband or voice services
+         for residential and enterprise business is as of 31 January 2016.
+
+(7)      Calculated by dividing the sum of the monthly broadband churn rate for each month of the given financial
+         period by the number of months in the period. Monthly broadband churn rate is calculated by the sum of
+         the number of residential broadband subscription terminations in a month divided by the average number of
+         residential broadband subscriptions during the respective month and multiplying the result by 100%.
+
+(8)      ARPU means average revenue per user per month. Calculated by dividing the revenue generated in the relevant
+         period from services subscribed by residential broadband subscribers, which include broadband services and
+         any bundled voice, IP-TV and/or other entertainment services, by the number of average residential broadband
+         subscriptions and further dividing by the number of months in the relevant period. Average residential broadband
+         subscriptions are calculated by dividing the sum of such subscriptions at the beginning of the period and the
+         end of the period by two. Our use and computation of residential ARPU may differ from the industry definition
+         of ARPU due to our tracking of revenue generated from all services subscribed by residential broadband
+         subscribers. We believe this gives us a better tool for observing the performance of our business as we track our
+         residential ARPU on a bundled rather than standalone basis.
+
+(9)      Calculated by dividing the sum of the monthly broadband churn rate for each month of the given financial
+         period by the number of months in the period. Monthly broadband churn rate is calculated by the sum of
+         the number of enterprise broadband subscription terminations in a month divided by the average number of
+         enterprise broadband subscriptions during the respective month and multiplying the result by 100%.
+
+(10)     ARPU means average revenue per user per month. Calculated by dividing the revenue generated in the relevant
+         period from the enterprise business (excluding revenue from IDD services) by the average number of enterprise
+         customers and further dividing by the number of months in the relevant period. Average number of enterprise
+         customers is calculated by dividing the sum of enterprise customers at the beginning of the period and the end
+         of the period by two. This metric may be distorted by the impact of certain particularly large contracts we have
+         with enterprise customers.
+
+                                                             6
+BUSINESS REVIEW
+
+During the six months ended 29 February 2016, the Group continued to grow our market share
+by broadband subscriptions further in both residential and enterprise businesses. Revenue and
+EBITDA increased year-on-year by 9% and 6% respectively, whereas Adjusted Free Cash Flow
+maintained at $185 million.
+
+Revenue grew by 9% year-on-year to $1,226 million driven by strong growth in broadband
+subscriptions despite keen competition in the residential market and accelerated growth in
+enterprise market.
+
+•    Residential revenue grew by 3% year-on-year to $899 million as we continued to gain market
+     share within the residential broadband market mainly by converting our competitors’ legacy
+     copper-based customers to our fibre-based services at attractive prices. During the six months
+     ended 29 February 2016, we achieved 38,000 net additions to 792,000 residential broadband
+     subscriptions with a 3% year-on-year decrease in residential ARPU to $178 despite keen
+     competition in the market. Our market share by broadband subscriptions increased to 37.7%
+     as of 31 January 2016, up from 36.6% as of 31 August 2015.
+
+•    Enterprise revenue grew by 17% year-on-year to $269 million as the enterprise business
+     continued to build on positive momentum with our focus in the small and medium-sized
+     enterprise (SME) segment by offering an attractive value proposition with appealing products
+     and services at attractive prices. During the six months ended 29 February 2016, we achieved
+     4,000 net additions to 43,000 enterprise customers while maintained our enterprise ARPU at
+     $1,017. Our market share by broadband subscriptions increased to 15.4% as of 31 January
+     2016, up from 14.3% as of 31 August 2015.
+
+•    Product revenue grew by 128% year-on-year to $57 million, representing 4.6% of revenue.
+     This increase was due to the bundling promotional offers with LeEco to our residential
+     broadband services.
+
+Network costs and costs of sales rose by 6% year-on-year to $137 million mainly due to higher
+costs of sales as a result of the increase in product revenue, partly offset by lower IP-TV content
+costs.
+
+Other operating expenses increased by 4% year-on-year to $847 million. Excluding the impact
+of listing expenses and transaction costs in connection with business combination, such expenses
+rose by 8% year-on-year mainly due to the increase in advertising and marketing expenses and
+talent costs for driving business growth. We believe this incremental $31 million advertising and
+marketing expenses spent upfront will set the foundation for accelerated subscriber growth in the
+later periods.
+
+Finance costs decreased by 67% year-on-year to $66 million mainly due to the one-off finance
+costs of $108 million relating to the refinancing of 5.25% senior notes, comprising the loss on
+extinguishment of senior notes of $96 million and originating fee for banking facility expired of
+$12 million incurred in the corresponding period last year.
+
+Income tax increased by 17% to $48 million mainly due to the improved financial performance
+during the period. The Group’s finance costs, listing expenses and transaction costs in connection
+with business combination were not tax deductible. Income tax as a percentage of profit before
+taxation, finance costs, listing expenses and transaction costs in connection with business
+combination was approximately 17% for each of the six months ended 29 February 2016 and 28
+February 2015.
+
+                                                7
+Profit attributable to equity shareholders was $135 million for the six months ended 29 February
+2016 while we operated at a loss of $47 million for the corresponding period last year.
+
+Adjusted Net Profit, excluding the impact of amortisation of intangible assets, non-recurring
+finance costs and non-recurring items, increased by 31% year-on-year to $210 million.
+
+EBITDA rose by 6% year-on-year to $511 million, with EBITDA margin was close to 42% on both
+financial periods. Adjusted Free Cash Flow remained at similar level for both financial periods
+at $185 million mainly due to an increase in EBITDA and a decrease in net interest paid as a
+result of the refinancing in the previous year, offset by an increase in income tax paid and capital
+expenditure to drive business growth. If excluding the incremental $31 million advertising and
+marketing expenses spent upfront, low-teens EBITDA growth and mid-teens Adjusted Free Cash
+Flow growth would have been achieved.
+
+Additions to property, plant and equipment amounted to $195 million for the six months ended 29
+February 2016, as compared to $165 million for the corresponding period last year.
+
+OUTLOOK
+
+We will strive to harvest our substantially invested network and leverage our comprehensive suite
+of service offerings to drive sustainable growth in Revenue, EBITDA and Adjusted Free Cash Flow
+through the following initiatives:
+
+•    Expand our network coverage by focusing on economically attractive residential premises and
+     commercial buildings;
+
+•    Leverage on our open approach in partnering with OTT content providers to accelerate our
+     residential broadband subscription growth;
+
+•    Further penetrate the enterprise market as the operational scale of enterprise business is
+     doubled subsequent to the Acquisition;
+
+•    Focus on executing the integration plan subsequent to the Acquisition in order to capture the
+     expected synergies; and
+
+•    Continue to cultivate and deepen our Talent-oriented Co-Ownership culture that aligns
+     risks and rewards with shareholders by enlarging the base of Co-Owners via the existing
+     Co-Ownership scheme to new HKBN Talents.
+
+LIQUIDITY AND CAPITAL RESOURCES
+
+As at 29 February 2016, the Group had total cash and cash equivalents of $271 million (31 August
+2015: $329 million) and gross debt (principal amount of outstanding borrowing) of $3,100 million
+(31 August 2015: $3,100 million), which led to a net debt position of $2,829 million (31 August
+2015: $2,771 million).
+
+•    The Group’s gearing ratio, which was expressed as a percentage of the gross debt over total
+     equity, was 214% as at 29 February 2016 (31 August 2015: 205%).
+
+
+
+
+                                                 8
+•    The Group’s net debt to EBITDA ratio, which was expressed as the gross debt net of cash and
+     cash equivalents over EBITDA for the last twelve months, was 2.8 times as at 29 February
+     2016 (31 August 2015: 2.8 times).
+
+On 19 January 2015, the Group drew down a five-year bank loan of $3,100 million bearing interest
+rate at HIBOR plus margin, in order to finance the redemption of the remaining 5.25% senior notes
+in full. Since the bank loan is repayable in full upon final maturity in January 2020, the Group
+can either refinance or renew it on maturity or earlier through sources that it deems appropriate at
+that time. This provides us with flexibility to plan for various sources of financing arrangement to
+support the expansion of our business.
+
+Cash and cash equivalents consisted of cash at bank and in hand. There was no pledged bank
+deposit as at 29 February 2016 and 31 August 2015. As at 29 February 2016, the Group had an
+undrawn revolving credit facility of $200 million (31 August 2015: $200 million).
+
+The Group can fund its capital expenditures and working capital requirements for the financial year
+ending 31 August 2016 with internal resources and available banking facilities.
+
+HEDGING
+
+The Group’s policy is to hedge the interest rate risk arising from the variable interest rates of
+the debt instruments and facilities by entering into interest-rate swaps. The Chief Executive
+Officer and Chief Talent & Financial Officer are primarily responsible for overseeing the hedging
+activities. Under their guidance, the Group’s finance team is responsible for planning, executing
+and monitoring the hedging activities. The Group would not enter into hedging arrangements for
+speculative purposes.
+
+In connection with the existing bank loan, the Group entered into an interest-rate swap arrangement
+in the principal amount of $2,635 million with an international financial institution for a term of 3.5
+years commencing from 23 February 2015. Benefiting from the hedging arrangement, the Group
+fixed the HIBOR interest rate exposure at 1.453% per annum. This interest-rate swap arrangement
+is recognised initially at fair value and remeasured at the end of each reporting period. The
+interest-rate swap does not qualify for hedge accounting under HKAS 39, Financial instruments:
+Recognition and measurement, and therefore, it is accounted for as held for trading and measured
+at fair value through profit or loss.
+
+CHARGE ON GROUP ASSETS
+
+As of 29 February 2016 and 31 August 2015, no assets of the Group were pledged to secure its
+loans and banking facilities.
+
+CONTINGENT LIABILITIES
+
+As at 29 February 2016, the Group had total contingent liabilities of $4 million (31 August 2015: $4
+million) in respect of bank guarantees provided to suppliers and utility vendors in lieu of payment
+of utility deposits.
+
+
+
+
+                                                  9
+EXCHANGE RATES
+
+All of the Group’s monetary assets and liabilities are primarily denominated in either Hong Kong
+dollars (“HKD”) or United States dollars (“USD”). Given the exchange rate of the HKD to the USD
+has remained close to the current pegged rate of HKD7.80 = USD1.00 since 1983, management
+does not expect significant foreign exchange gains or losses between the two currencies.
+
+The Group is also exposed to a certain amount of foreign exchange risk based on fluctuations
+between the HKD and the Renminbi arising from its operations. In order to limit this foreign
+currency risk exposure, the Group ensures that the net exposure is kept to an acceptable level of
+buying or selling foreign currencies at spot rates where necessary to address short-term imbalances.
+
+SIGNIFICANT INVESTMENTS, ACQUISITIONS AND DISPOSALS
+
+On 18 February 2016, HKBN Group Limited (“HKBNGL”) as purchaser and the Company as
+guarantor of HKBNGL entered into a share purchase agreement with New World Telephone
+Holdings Limited (“NWTHL”) as seller and New World Development Company Limited as
+guarantor of NWTHL, to acquire the telecommunications and online marketing solutions business
+owned by NWTHL through the acquisition of the entire issued share capital of Concord Ideas
+Ltd. and Simple Click Investments Limited (the “Target Companies”) for a cash consideration
+calculated on a cash-free, debt-free basis, of $650 million (subject to certain closing and
+post-closing adjustments). In addition, on 31 March 2016, HKBNGL and NWTHL also entered
+into a rebate agreement whereby HKBNGL will provide cash rebates for services provided by
+the Group, the Target Companies and their subsidiaries to New World Development Company
+Limited (a company whose shares are listed on The Stock Exchange of Hong Kong Limited, stock
+code: 17) and Chow Tai Fook Enterprises Limited, in each case together with their respective
+subsidiaries and related parties (within the meaning of Hong Kong Financial Reporting Standard
+24 (Related Party Disclosures)) based on 50% of settled invoices up to $50 million in aggregate.
+The Acquisition was completed on 31 March 2016. After the Acquisition, each of Concord Ideas
+Ltd. and Simple Click Investments Limited became an indirect wholly-owned subsidiary of the
+Company. Details of the Acquisition are disclosed in the circular of the Company dated 1 March
+2016 and the announcement dated 18 February 2016.
+
+Other than the aforementioned Acquisition, the Group did not make any significant investments,
+acquisitions or disposals in relation to its subsidiaries and associated companies during the six
+months ended 29 February 2016.
+
+TALENT REMUNERATION
+
+As at 29 February 2016, the Group had 2,531 permanent full-time Talents (31 August 2015: 2,430
+Talents). The Group provides remuneration package consisting of basic salary, bonus and other
+benefits. Bonus payments are discretionary and dependent on both the Group’s and individual
+performances. The Group also provides comprehensive medical insurance coverage, competitive
+retirement benefits schemes, and Talent training programs.
+
+
+
+
+                                                10
+To attract, retain and motivate skilled and experienced Talents, the Company adopted a
+Co-Ownership Plan II (the “Plan”) on 21 February 2015. Co-Ownership is a powerful expression of
+the commitment and belief our Talents have in the Group. Unlike the more traditional approach of
+giving stock options to a very limited group of senior executives, the Company’s Co-Ownership is
+open to all supervisors and above level Talents, spanning the Group’s operations across Hong Kong
+and Guangzhou. Under “Co-Ownership Plan II”, we now have over 270 Co-Owners, representing a
+majority of our supervisors and above level Talents and over 10% of our entire workforce. On their
+own volition, they invested their personal savings in the amount of between two to six months of
+salary to acquire the Company’s shares at full market price. The shares are then matched with free
+shares at a certain ratio vested over three years.
+
+Please refer to “Share Incentive Scheme” below for a summary of the Plan.
+
+SHARE INCENTIVE SCHEME
+
+Under the Plan, the Board may, in its absolute discretion, invite participants to purchase shares
+of the Company and agree to grant them a contingent right to receive shares (“RSU”) at the
+relevant matching ratio in respect of any shares purchased, subject to certain terms, conditions and
+undertakings. The total number of shares that may underlie the RSUs granted pursuant to the Plan
+shall be (i) 10% of the shares in issue on 12 March 2015 (the “Listing Date”), the date on which
+the Company was listed on The Stock Exchange of Hong Kong Limited (the “Stock Exchange”) or
+(ii) 10% or less of the shares in issue as at the date following the date of approval of the renewed
+limit (as the case may be). The Plan shall be valid and effective for the period commencing on the
+Listing Date and expiring on the tenth anniversary thereof or such earlier date as it is terminated
+in accordance with the terms of the Plan, after which period no further RSUs shall be offered or
+granted.
+
+In order to enable the Plan trustee to release shares to participants upon vesting of each RSU, the
+Company allotted and issued, on the Listing Date, by way of capitalisation issue 5,666,666 shares
+to the Plan trustee. Such shares represented approximately 0.56% of the total issued share capital
+of the Company on the Listing Date. The Plan trustee will hold such shares on trust until their
+release to participants upon vesting of the RSUs.
+
+Details of movements of the Plan during the six months ended 29 February 2016 are as follows:
+
+                                                                                                  Number of RSUs
+                                                                                                                                          To be vested on
+                                                           As at     Granted          Forfeited         Vested           As at    29 June/18 August/20 November
+                                                     1 September       during            during         during     29 February       (As at 29 February 2016)
+Participants          Date of grant      Granted            2015   the period        the period     the period           2016      2016          2017             2018
+
+
+Mr. William Chu       29 June 2015        238,608       238,608            –                 –              –         238,608     59,652       59,652       119,304
+ Kwong YEUNG*
+Mr. Ni Quiaque LAI*   29 June 2015        158,132       158,132            –                 –              –         158,132     39,533       39,533        79,066
+Other Participants    29 June 2015       2,326,246    2,318,415            –            86,506              –       2,231,909    557,890      557,890      1,116,129
+Other Participants    18 August 2015      273,612       273,612            –                 –              –         273,612     68,386       68,386       136,840
+Other Participants    20 November 2015    158,567             –      158,567                 –              –         158,567     39,639       39,639        79,289
+
+
+Total                                    3,155,165    2,988,767      158,567            86,506              –       3,060,828    765,100      765,100      1,530,628
+
+
+*        Director of the Company
+
+
+                                                                                11
+INTERIM DIVIDEND
+
+The Board has resolved to declare an interim dividend of 20 HK cents (28 February 2015: Nil)
+per share for the six months ended 29 February 2016 to the Shareholders whose names appear on
+the register of members of the Company on Monday, 9 May 2016. The interim dividend will be
+payable in cash on Friday, 20 May 2016.
+
+Whilst dividend policy of the Company is to pay not less than 90% of our Adjusted Free Cash
+Flow (“AFCF”) with an intention to pay 100% of our AFCF in respect of the relevant year/period,
+after adjusting for potential debt repayment, if required, the Company is recommending to pay
+above this range at 109% for this interim period as we had incurred additional upfront marketing
+expenses in the first half of our financial year to promote OTT content access (such as the English
+Premier League 2016/17 season commencing in August 2016) as part of our accelerated subscriber
+acquisition programmes for the full year.
+
+CLOSURE OF REGISTER OF MEMBERS
+
+The register of members of the Company will be closed from Friday, 6 May 2016 to Monday, 9
+May 2016, both days inclusive, during which period no transfer of shares will be effected. All
+transfers, accompanied by the relevant share certificates, must be lodged with the Company’s
+Hong Kong branch share registrar, Tricor Investor Services Limited at Level 22, Hopewell Centre,
+183 Queen’s Road East, Hong Kong, no later than 4:30 p.m. on Thursday, 5 May 2016 in order to
+establish the identity of the Shareholders who are entitled to qualify for the interim dividend.
+
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED SECURITIES
+
+During the six months ended 29 February 2016, neither the Company nor any of its subsidiaries
+purchased, sold or redeemed any of the listed securities of the Company.
+
+REVIEW OF INTERIM FINANCIAL INFORMATION
+
+The Audit Committee has reviewed with the management and the external auditor the unaudited
+interim results of the Group for the six months ended 29 February 2016, the accounting principles
+and practices adopted by the Group, as well as discussion on auditing, internal control, risk
+management and financial reporting matters of the Group.
+
+The unaudited interim financial report of the Group for the six months ended 29 February 2016
+has been reviewed by the Company’s external auditor in accordance with Hong Kong Standard on
+Review Engagements 2410 “Review of interim financial information performed by the independent
+auditor of the entity” issued by the HKICPA and reviewed by the Audit Committee of the
+Company.
+
+CORPORATE GOVERNANCE
+
+The Company has complied with all the code provisions as set out in the “Corporate Governance
+Code and Corporate Governance Report” contained in Appendix 14 to the Rules Governing the
+Listing of Securities (“Listing Rules”) on the Stock Exchange throughout the six months ended 29
+February 2016 except for the following deviation:
+
+
+
+
+                                                12
+Code Provision A.5.1 of the CG Code provides that the nomination committee should be
+chaired by the chairman of the board or an independent non-executive director. However,
+the nomination committee of the Company is chaired by Mr. William Chu Kwong YEUNG
+(“Mr. Yeung”), an executive Director and Chief Executive Officer of the Company. By considering
+that each independent non-executive Director of the Company has been appointed as the chairman
+of the board, audit committee and remuneration committee respectively, the Board appointed Mr.
+Yeung as the chairman of the nomination committee to make sure that each director, especially
+the independent non-executive Directors could dedicate sufficient time to perform his role.
+Since Mr. Yeung is involved in the day-to-day management of the Company and can provide
+valuable insight on the suitability of a proposed director, the Board considers that he is capable
+of assuming the responsibility of the chairman of nomination committee by leading the process of
+identifying suitable candidates and making recommendations to the Board. As at the date of this
+Announcement, the nomination committee comprises a majority of independent non-executive
+Directors, which ensures a balance of power and representation of independent non-executive
+Directors.
+
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+
+The Company has adopted the Model Code for Securities Transactions by Directors of Listed
+Issuers (the “Model Code”) set out in Appendix 10 to the Listing Rules as its code of conduct
+for dealings in securities of the Company by Directors. Having made specific enquiries with all
+Directors, they confirmed that they complied with the Model Code throughout the six months
+ended 29 February 2016.
+
+PUBLICATION OF INTERIM RESULTS ON THE WEBSITES OF THE STOCK
+EXCHANGE AND THE COMPANY
+
+This announcement will be published on the websites of the Stock Exchange (www.hkexnews.hk)
+and the Company (www.hkbnltd.net). The interim report of the Company for the six months ended
+29 February 2016 will be despatched to the shareholders of the Company and made available on
+the same websites in due course.
+
+                                                                   By order of the Board
+                                                                        HKBN Ltd.
+                                                                  Bradley Jay HORWITZ
+                                                                         Chairman
+
+Hong Kong, 20 April 2016
+
+As at the date of this announcement, the Board comprises:
+
+Executive Directors                              Independent Non-executive Directors
+Mr. William Chu Kwong YEUNG                      Mr. Bradley Jay HORWITZ (Chairman)
+Mr. Ni Quiaque LAI                               Mr. Stanley CHOW
+                                                 Mr. Quinn Yee Kwan LAW, SBS, JP
+
+Non-executive Director
+Ms. Deborah Keiko ORIDA
+
+“Where the English and the Chinese texts conflicts, the English text prevails”
+
+
+
+                                                13
+UNAUDITED CONSOLIDATED INTERIM FINANCIAL INFORMATION
+CONSOLIDATED INCOME STATEMENT
+FOR THE SIX MONTHS ENDED 29 FEBRUARY 2016
+
+                                                               Six months ended
+                                                           29 February    28 February
+                                                    Note          2016          2015
+                                                              HK$’000        HK$’000
+                                                           (Unaudited)    (Unaudited)
+
+Revenue                                              4       1,225,539      1,126,111
+
+Other net income                                    5(a)         8,194          9,841
+
+Network costs and costs of sales                              (136,504)      (128,851)
+
+Other operating expenses                            5(b)      (847,045)      (814,147)
+
+Finance costs                                       5(d)       (66,336)      (198,501)
+
+Share of losses of joint ventures                                 (396)             –
+
+Profit/(loss) before taxation                        5         183,452         (5,547)
+
+Income tax                                           6         (48,200)       (41,141)
+
+Profit/(loss) for the period attributable to
+  equity shareholders of the Company                           135,252        (46,688)
+
+Earnings/(loss) per share
+
+Basic                                                7       13.5 cents    (4.7) cents
+
+Diluted                                              7       13.5 cents    (4.7) cents
+
+
+
+
+                                               14
+CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+FOR THE SIX MONTHS ENDED 29 FEBRUARY 2016
+
+                                                                    Six months ended
+                                                                29 February    28 February
+                                                                       2016          2015
+                                                                   HK$’000        HK$’000
+                                                                (Unaudited)    (Unaudited)
+
+Profit/(loss) for the period                                        135,252        (46,688)
+
+Other comprehensive income for the period
+
+Item that may be reclassified subsequently to profit or loss:
+
+Exchange differences on translation of financial statements
+  of a subsidiary outside Hong Kong, with nil tax effect             (2,241)        (2,065)
+
+Total comprehensive income for the period attributable to
+  equity shareholders of the Company                                133,011        (48,753)
+
+
+
+
+                                                 15
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+AS AT 29 FEBRUARY 2016
+
+                                                                         At          At
+                                                                29 February   31 August
+                                                         Note          2016       2015
+                                                                   HK$’000     HK$’000
+                                                                (Unaudited)   (Audited)
+
+Non-current assets
+Goodwill                                                          1,594,110   1,594,110
+Intangible assets                                                 1,298,083   1,330,501
+Property, plant and equipment                                     1,961,034   1,969,803
+Interests in joint ventures                                           9,497       9,893
+Other non-current assets                                             16,970      19,503
+
+                                                                  4,879,694   4,923,810
+
+Current assets
+Inventories                                                          36,306     14,373
+Accounts receivable                                       8          94,529     81,685
+Other receivables, deposits and prepayments                         195,076    201,910
+Amount due from a joint venture                                         803        329
+Cash and cash equivalents                                           271,049    328,950
+
+                                                                    597,763    627,247
+
+Current liabilities
+Accounts payable                                          9          21,639      6,561
+Other payables and accrued charges                                  260,311    217,394
+Deposits received                                                    34,177     33,385
+Deferred services revenue – current portion                          57,933     55,168
+Obligations under granting of rights – current portion                9,024      9,024
+Amount due to the former substantial shareholder                          –     33,372
+Amounts due to joint ventures                                        10,000     10,000
+Contingent consideration – current portion                                –      2,457
+Tax payable                                                          86,661    121,222
+
+                                                                    479,745    488,583
+
+Net current assets                                                  118,018    138,664
+
+Total assets less current liabilities                             4,997,712   5,062,474
+
+
+
+
+                                                 16
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION (CONTINUED)
+AS AT 29 FEBRUARY 2016
+
+                                                                    At          At
+                                                           29 February   31 August
+                                                                  2016       2015
+                                                              HK$’000     HK$’000
+                                                           (Unaudited)   (Audited)
+
+Non-current liabilities
+
+Derivative financial instrument                                 19,906      13,413
+Deferred services revenue – long-term portion                   22,843      13,844
+Obligations under granting of rights – long-term portion        47,379      51,891
+Deferred tax liabilities                                       417,583     438,916
+Provision for reinstatement costs                               12,050      11,334
+Bank loan                                                    3,027,532   3,018,889
+
+                                                             3,547,293   3,548,287
+
+NET ASSETS                                                   1,450,419   1,514,187
+
+CAPITAL AND RESERVES
+
+Share capital                                                      101         101
+Reserves                                                     1,450,318   1,514,086
+
+TOTAL EQUITY                                                 1,450,419   1,514,187
+
+
+
+
+                                                17
+NOTES TO THE UNAUDITED CONSOLIDATED INTERIM FINANCIAL INFORMATION:
+
+1   BASIS OF PREPARATION
+    The unaudited consolidated interim financial information set out in this announcement does not constitute the
+    Group’s unaudited interim financial report for the six months ended 29 February 2016 but is extracted from that
+    unaudited interim report which has been prepared in accordance with the Listing Rules, including compliance
+    with HKAS 34, Interim financial reporting, issued by the HKICPA.
+
+    The Company was incorporated in the Cayman Islands on 26 November 2014 as an exempted company with
+    limited liability under the Companies Law, Chapter 22 (2013 Revision) of the Cayman Islands. As part of a
+    group reorganisation (the “Reorganisation”), the entire issued share capital of Metropolitan Light Company
+    Limited (“MLCL”) was transferred to the Company in consideration for an issue of the Company’s shares to
+    Metropolitan Light Holdings Limited (“MLHL”) (the “Share Transfer”) on 17 February 2015. MLHL was the
+    immediate holding company of MLCL prior to the Share Transfer. Upon the completion of the Share Transfer,
+    the Company became the parent company of MLCL and its subsidiaries, and the holding company of the Group.
+
+    MLHL transferred, by way of distribution, all of the Company’s shares held by it to its shareholders on 11
+    March 2015.
+
+    The shares of the Company have been listed on the Main Board of The Stock Exchange of Hong Kong
+    Limited since 12 March 2015 (the “Listing”). Upon the Listing, all of the shares offered were sold by the then
+    shareholders, the Company did not issue any new shares.
+
+    MLCL was incorporated in the Cayman Islands on 15 March 2012. On 30 May 2012, MLCL acquired the
+    telecommunication business from Hong Kong Television Network Limited.
+
+    The companies that took part in the Share Transfer were controlled by the same ultimate equity shareholders
+    before and after the Share Transfer and there were no changes in the business and operations of MLCL and its
+    subsidiaries. The Share Transfer only involved incorporating the Company with no prior substantive operations
+    as the holding company of MLCL and the Group. Accordingly, the Share Transfer has been accounted for using
+    a principle similar to that for a reverse acquisition with MLCL treated as the acquirer for accounting purposes.
+
+    The unaudited interim financial report has been prepared in accordance with the same accounting policies
+    adopted in the annual financial statements of the Group for the year ended 31 August 2015, except for the
+    accounting policy changes that are expected to be reflected in the 2016 annual financial statements. Details of
+    any changes in accounting policies are set out in note 2.
+
+    The preparation of an unaudited interim financial report in conformity with HKAS 34 requires management
+    to make judgements, estimates and assumptions that affect the application of policies and reported amounts
+    of assets and liabilities, income and expenses on a year to date basis. Actual results may differ from these
+    estimates.
+
+    The unaudited interim financial report contains condensed consolidated financial statements and selected
+    explanatory notes. The notes include an explanation of events and transactions that are significant to an
+    understanding of the changes in financial position and performance of the Group since the annual financial
+    statements for the year ended 31 August 2015. The condensed consolidated interim financial statements and
+    notes thereon do not include all of the information required for full set of financial statements prepared in
+    accordance with HKFRSs.
+
+    The interim financial report is unaudited, but has been reviewed by KPMG in accordance with Hong Kong
+    Standard on Review Engagements 2410, Review of interim financial information performed by the independent
+    auditor of the entity, issued by the HKICPA.
+
+    The financial information relating to the financial year ended 31 August 2015 that is included in the unaudited
+    interim financial report as comparative information does not constitute the Group’s financial statements for that
+    financial year but is derived from those financial statements.
+
+
+
+
+                                                       18
+2   CHANGES IN ACCOUNTING POLICIES
+    The HKICPA has issued a number of amendments to HKFRSs that are first effective for the current accounting
+    period of the Group and the Company. None of these developments have had a material effect on how the
+    Group’s results and financial position for the current and prior periods have been prepared or presented. The
+    Group has not applied any new standard or interpretation that is not yet effective for the current accounting
+    period.
+
+3   SEGMENT REPORTING
+    Operating segments, and the amounts of each segment item reported in the interim financial report, are identified
+    from the financial information provided regularly to the Group’s most senior executive management for the
+    purposes of allocating resources to, and assessing the performance of, the Group’s various lines of business and
+    geographical locations.
+
+    Individually material operating segments are not aggregated for financial reporting purposes unless the segments
+    have similar economic characteristics and are similar in respect of the nature of products and services, the nature
+    of production processes, the type or class of customers, the methods used to distribute the products or provide
+    the services, and the nature of the regulatory environment. Operating segments which are not individually
+    material may be aggregated if they share a majority of these criteria.
+
+    The Group’s management assesses the performance and allocates the resources of the Group as a whole, as
+    all of the Group’s activities are considered to be primarily the operation of fixed telecommunications network
+    services. Therefore, management considers there is only one operating segment under the requirements of
+    HKFRS 8, Operating Segments. In this regard, no segment information is presented.
+
+    No geographic information is shown as the revenue and profit from operations of the Group are primarily
+    derived from its activities in Hong Kong.
+
+4   REVENUE
+    The principal activities of the Group are provision of fixed telecommunications network services and
+    international telecommunications services to residential and enterprise customers in Hong Kong and product
+    sales.
+
+    Revenue represents revenue from fixed telecommunications network services and international
+    telecommunications services to residential and enterprise customers in Hong Kong and product sales.
+
+    The amount of each category of revenue recognised during the period is as follows:
+
+                                                                                         Six months ended
+                                                                                     29 February       28 February
+                                                                                            2016             2015
+                                                                                        HK$’000           HK$’000
+                                                                                     (Unaudited)       (Unaudited)
+
+    Residential revenue                                                                   898,951             871,671
+    Enterprise revenue                                                                    269,381             229,328
+    Product revenue                                                                        57,207              25,112
+
+                                                                                        1,225,539           1,126,111
+
+
+
+
+                                                        19
+5   PROFIT/(LOSS) BEFORE TAXATION
+    Profit/(loss) before taxation is arrived at after charging/(crediting):
+
+                                                                                   Six months ended
+                                                                               29 February       28 February
+                                                                                      2016             2015
+                                                                                  HK$’000           HK$’000
+                                                                               (Unaudited)       (Unaudited)
+
+    (a)    Other net income
+
+           Interest income                                                             (647)           (1,909)
+           Net foreign exchange (gain)/loss                                          (1,802)              724
+           Amortisation of obligations under granting of rights                      (4,512)           (4,512)
+           Change in fair value of contingent consideration                               –            (2,165)
+           Other income                                                              (1,233)           (1,979)
+
+                                                                                     (8,194)           (9,841)
+
+
+    (b)    Other operating expenses
+
+           Advertising and marketing expenses                                      222,367            191,409
+           Depreciation                                                            178,654            183,693
+           Loss/(gain) on disposal of property, plant and equipment, net               242                (33)
+           Impairment losses on accounts receivable                                  8,933             12,028
+           Talent costs (note 5(c))                                                223,069            198,989
+           Amortisation of intangible assets                                        56,557             55,083
+           Listing expenses                                                              –             52,419
+           Transaction costs in connection with business
+             combination (note 11)                                                  26,914                  –
+           Others                                                                  130,309            120,559
+
+                                                                                   847,045            814,147
+
+
+    (c)    Talent costs
+
+           Salaries, wages and other benefits                                      342,343            310,628
+           Contributions to defined contribution retirement plan                    24,304             24,233
+           Equity-settled share-based payment expenses                               4,354                  –
+           Cash-settled share-based payment expenses                                   289                  –
+
+                                                                                   371,290            334,861
+
+           Less: Talent costs capitalised as property, plant and equipment         (13,279)           (12,467)
+                 Talent costs included in advertising and marketing expenses      (134,942)          (123,405)
+
+                                                                                   223,069            198,989
+
+    Talent costs include all compensation and benefits paid to and accrued for all individuals employed by the
+    Group, including directors.
+
+
+
+
+                                                          20
+5   PROFIT/(LOSS) BEFORE TAXATION (CONTINUED)
+    Profit/(loss) before taxation is arrived at after charging/(crediting): (continued)
+
+                                                                                              Six months ended
+                                                                                          29 February       28 February
+                                                                                                 2016             2015
+                                                                                             HK$’000           HK$’000
+                                                                                          (Unaudited)       (Unaudited)
+
+    (d)   Finance costs
+
+          Interest on bank loan                                                                45,884            10,173
+          Interest on interest-rate swap, net                                                  13,959               462
+          Interest on senior notes                                                                  –            66,826
+          Fair value loss on interest-rate swap                                                 6,493            13,206
+          Loss on extinguishment of senior notes                                                    –            96,234
+          Originating fee for banking facility expired                                              –            11,600
+
+                                                                                               66,336          198,501
+
+
+    (e)   Other items
+
+          Operating lease charges in respect of land and
+            buildings: minimum lease payments                                                  17,340            18,151
+          Operating lease charges in respect of telecommunications
+            facilities and computer equipment: minimum lease payments                          61,415            61,708
+          Research and development costs                                                        8,389             9,896
+          Cost of inventories                                                                  40,007            23,159
+
+6   INCOME TAX
+                                                                                              Six months ended
+                                                                                          29 February       28 February
+                                                                                                 2016             2015
+                                                                                             HK$’000           HK$’000
+                                                                                          (Unaudited)       (Unaudited)
+
+    Current tax – Hong Kong Profits Tax                                                        67,581            62,777
+    Current tax – Outside Hong Kong                                                             1,952             2,388
+    Deferred tax                                                                              (21,333)          (24,024)
+
+                                                                                               48,200            41,141
+
+    The provision for Hong Kong Profits Tax is calculated by applying the estimated annual effective tax rate of
+    16.5% (six months ended 28 February 2015: 16.5%) of the estimated assessable profits for the six months ended
+    29 February 2016.
+
+    Income tax expense for the current taxation outside Hong Kong is mainly related to the income tax in the
+    People’s Republic of China (the “PRC”) and is similarly calculated using the estimated annual effective rate of
+    taxation that is expected to be applicable in the PRC.
+
+
+
+
+                                                          21
+7   EARNINGS/(LOSS) PER SHARE
+    (a)   Basic earnings/(loss) per share
+
+          The calculation of basic earnings/(loss) per share is based on the profit attributable to ordinary
+          equity shareholders of the Company of HK$135,252,000 (six months ended 28 February 2015: loss
+          of HK$46,688,000) and the weighted average number of ordinary shares in issue less shares held for
+          the Co-Ownership Plan II, of 1,000,000,000 ordinary shares (six months ended 28 February 2015:
+          1,000,000,000 ordinary shares). The calculation is based on the assumption that 1,000,000,000 ordinary
+          shares were in issue as if these ordinary shares issued at the date the Company became the holding
+          company of the Group were outstanding throughout both periods presented.
+
+    (b)   Diluted earnings/(loss) per share
+
+          The calculation of diluted earnings/(loss) per share is based on the profit attributable to ordinary
+          equity shareholders of the Company of HK$135,252,000 (six months ended 28 February 2015: loss of
+          HK$46,688,000) and the weighted average number of ordinary shares in issue less shares held for the
+          Co-Ownership Plan II after adjusting for the dilutive effect of the Company’s Co-Ownership Plan II,
+          calculated as follows:
+
+                                                                                       Six months ended
+                                                                                   29 February       28 February
+                                                                                          2016             2015
+                                                                                          ’000              ’000
+                                                                                   (Unaudited)       (Unaudited)
+
+          Weighted average number of ordinary shares less shares
+            held for the Co-Ownership Plan II                                         1,000,000           1,000,000
+          Effect of the Co-Ownership Plan II                                              1,761                   –
+
+          Weighted average number of ordinary shares (diluted)                        1,001,761           1,000,000
+
+8   ACCOUNTS RECEIVABLE
+    As of the end of the reporting period, the ageing analysis of accounts receivable, based on the invoice date and
+    net of allowance for doubtful debts, is as follows:
+
+                                                                                            At                  At
+                                                                                   29 February           31 August
+                                                                                          2016               2015
+                                                                                      HK$’000             HK$’000
+                                                                                   (Unaudited)           (Audited)
+
+    Within 30 days                                                                       70,119              60,383
+    31 to 60 days                                                                        17,817              14,542
+    61 to 90 days                                                                         5,964               4,619
+    Over 90 days                                                                            629               2,141
+
+    Accounts receivable, net of allowance for
+      doubtful debts                                                                     94,529              81,685
+
+    The majority of the Group’s accounts receivable is due within 30 days from the date of billing. Subscribers with
+    receivable that are more than 3 months overdue are requested to settle all outstanding balances before further
+    credit is granted.
+
+
+
+
+                                                       22
+9    ACCOUNTS PAYABLE
+     As of the end of the reporting period, the ageing analysis of accounts payable, based on the invoice date, is as
+     follows:
+
+                                                                                              At                    At
+                                                                                     29 February             31 August
+                                                                                            2016                 2015
+                                                                                        HK$’000               HK$’000
+                                                                                     (Unaudited)             (Audited)
+
+     Within 30 days                                                                         12,054               2,537
+     31 to 60 days                                                                           5,088                  12
+     61 to 90 days                                                                             534                  11
+     Over 90 days                                                                            3,963               4,001
+
+     Accounts payable                                                                       21,639               6,561
+
+10   DIVIDENDS
+     (a)   Dividend payable to equity shareholders attributable to the interim period:
+
+                                                                                         Six months ended
+                                                                                     29 February       28 February
+                                                                                            2016             2015
+                                                                                        HK$’000           HK$’000
+                                                                                     (Unaudited)       (Unaudited)
+
+           Interim dividend declared after the
+             interim period of 20 HK cents per ordinary share
+             (six months ended 28 February 2015: Nil HK
+             cents per ordinary share)                                                    201,133                   –
+
+           The interim dividend has not been recognised as a liability at the end of the reporting period.
+
+     (b)   Dividends payable to equity shareholders attributable to the previous financial year, approved and paid
+           during the interim period
+
+                                                                                         Six months ended
+                                                                                     29 February       28 February
+                                                                                            2016             2015
+                                                                                        HK$’000           HK$’000
+                                                                                     (Unaudited)       (Unaudited)
+
+           Final dividend in respect of the previous financial year,
+             approved and paid during the following interim period,
+             of 20 HK cents per ordinary share (six months ended
+             28 February 2015: Nil HK cents per ordinary share)                           201,133                   –
+
+     (c)   Dividend of US$29,660,000 (equivalent to HK$230,158,000) declared to the former immediate holding
+           company prior to the completion of the Reorganisation was approved on 18 February 2015 and recognised
+           as dividend payable to the former immediate holding company as at 28 February 2015. The dividend was
+           paid on 9 March 2015.
+
+
+
+
+                                                        23
+11   NON-ADJUSTING EVENTS AFTER THE REPORTING PERIOD
+     On 18 February 2016, HKBNGL (a subsidiary of the Company and as the purchaser), the Company (as the
+     purchaser’s guarantor), New World Telephone Holdings Limited (“NWTHL”) (as the seller) and New World
+     Development Company Limited (“NWD”) (as the seller’s guarantor) entered into a share purchase agreement
+     (the “Share Purchase Agreement”), pursuant to which, among other things, HKBNGL has conditionally agreed
+     to purchase, and NWTHL has conditionally agreed to sell, the entire issued share capital of Concord Ideas Ltd.
+     (“Concord”) and Simple Click Investments Limited (“Simple Click”) (the “Acquisition”) for a cash consideration
+     calculated on a cash-free, debt-free basis, of HK$650 million (subject to certain closing and post-closing
+     adjustments). In addition, on 31 March 2016, HKBNGL and NWTHL entered into a rebate agreement whereby
+     HKBNGL will provide cash rebates to NWTHL for services provided by the Group, Concord and Simple Click
+     and their subsidiaries to NWD and Chow Tai Fook Enterprises Limited and their subsidiaries and related parties
+     based on 50% of settled invoices up to HK$50 million in aggregate.
+
+     The Group intends to finance the Acquisition by a five-year bullet term loan facility of HK$700 million (“Term
+     Loan”) initially underwritten by JPMorgan Chase Bank, N.A., Hong Kong Branch.
+
+     The Acquisition and Term Loan were approved in an extraordinary general meeting held on 16 March 2016 and
+     the completion of the Acquisition took place on 31 March 2016. The Term Loan of HK$700 million has been
+     drawdown on the same day to settle the cash consideration of the Acquisition.
+
+     The Acquisition is to be accounted for as a business combination in accordance with HKFRS 3, Business
+     Combinations. Up to the approval date of this interim financial report, the directors are still in the process of
+     determining the fair values of the net identifiable assets of the Acquisition. No adjustments have been made to
+     the interim financial report as a result of the above event.
+
+
+
+
+                                                        24
+

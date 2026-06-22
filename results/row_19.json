@@ -33,24 +33,24 @@
     "Airtel"
   ],
   "source_urls": [
-    "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
     "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
     "https://www.telstra.com.au/aboutus/media",
+    "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
     "https://corp.kt.com/eng/html/investors/financial/business.html",
     "https://corp.kt.com/eng/html/investors/main.html",
-    "https://news.sktelecom.com/en/category/press-center/press-release",
     "https://news.sktelecom.com/en/2787",
-    "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+    "https://news.sktelecom.com/en/category/press-center/press-release",
     "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
     "https://newsroom.kddi.com/english/news/detail/kddi_nr-560_3842.html",
+    "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
     "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260416_02/",
     "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0303_00.html",
     "https://www.sec.gov/Archives/edgar/data/892450/000162828026028096/kt-20251231.htm",
-    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
-    "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
     "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
+    "https://www.airtel.in/press-release",
     "https://www.jio.com/business/5g/",
-    "https://www.airtel.in/press-release"
+    "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf"
   ],
   "attempted_urls": [
     "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
@@ -74,8 +74,8 @@
   ],
   "extracted": {
     "AI": "www.telstra.com.au/aboutus/media Media Releases | Telstra Publisher: Telstra Name: Media Releases | Telstra Copyrighted By: Telstra Family Friendly: Yes Language: English Skip to main content Telstra Personal Home Page S",
-    "5G-A": "ofit up 12% to S$2.77 billion Company News SOURCE: https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced Singtel partners Ericsson to",
-    "云": ".06.09 Press Release SK Telecom and NVIDIA Build AI Infrastructure to Power Korea’s AI Innovation SK Telecom and NVIDIA today announced that SKT plans to build a gigawatt-scale AI Cloud in Korea using the NVIDIA DSX™ pla",
+    "5G-A": "SOURCE: https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced Singtel partners Ericsson to accelerate industry transformation with 5G",
+    "云": "rs, energy, and operations—to provide AIDCs with industry-leading cost efficiency. Last year, SKT applied its high-performance, high-efficiency virtualization solution ‘Petasus AI Cloud’ to Haein, its GPU cluster built f",
     "企业ICT": "lstra Family Friendly: Yes Language: English Skip to main content Telstra Personal Home Page Search Telstra Telstra Search Telstra Telstra Search Telstra Telstra Personal Business Enterprise Search Telstra Language Sign ",
     "Capex方向": "fra services reported a negative net external debt position (ex DoT and FLO Debt) - reflecting strong balance sheet, robust cash generation and disciplined liability management. • Capex for the quarter stood at Rs 16,066"
   },
@@ -85,11 +85,11 @@
       "entity": "Singtel",
       "status": "ok",
       "source_urls": [
-        "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
-        "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced"
+        "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+        "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit"
       ],
       "extracted": {
-        "5G-A": "ofit up 12% to S$2.77 billion Company News SOURCE: https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced Singtel partners Ericsson to",
+        "5G-A": "SOURCE: https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced Singtel partners Ericsson to accelerate industry transformation with 5G",
         "AI": "本轮官方公开来源未发现 Singtel 对该字段的独立可量化披露；维持后续监测。",
         "云": "本轮官方公开来源未发现 Singtel 对该字段的独立可量化披露；维持后续监测。",
         "企业ICT": "本轮官方公开来源未发现 Singtel 对该字段的独立可量化披露；维持后续监测。",
@@ -99,13 +99,55 @@
       "raw_records": [
         {
           "row": 19,
+          "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+          "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
+          "bytes": 32693,
+          "elapsed_seconds": 4.046,
+          "method": "httpx",
+          "text_sample": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Media Centre News Releases 03 Mar 2026 News Release Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Innovation Connectivity Network",
+          "evidence_path": "evidence_cache/325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac.txt",
+          "content_hash": "325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+              "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 32693,
+              "text_chars": 245,
+              "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "SG",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "Singtel"
+          ]
+        },
+        {
+          "row": 19,
           "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
           "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Singtel posts FY26 net profit of S$5.61 billion; underlying profit up 12% to S$2.77 billion",
           "bytes": 41042,
-          "elapsed_seconds": 0.883,
+          "elapsed_seconds": 4.413,
           "method": "httpx",
           "text_sample": "Singtel posts FY26 net profit of S$5.61 billion; underlying profit up 12% to S$2.77 billion Media Centre News Releases 21 May 2026 News Release Singtel posts FY26 net profit of S$5.61 billion; underlying profit up 12% to S$2.77 billion Company News",
           "evidence_path": "evidence_cache/9c8e8c5c252e09ea215b6d307f8638409dc45ea65b8cb951e3d1ac6c2d3099a0.txt",
@@ -132,47 +174,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "Singtel"
-          ]
-        },
-        {
-          "row": 19,
-          "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-          "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
-          "bytes": 32691,
-          "elapsed_seconds": 0.939,
-          "method": "httpx",
-          "text_sample": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Media Centre News Releases 03 Mar 2026 News Release Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Innovation Connectivity Network",
-          "evidence_path": "evidence_cache/325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac.txt",
-          "content_hash": "325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-              "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 32691,
-              "text_chars": 245,
-              "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "SG",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -180,8 +182,8 @@
           ]
         }
       ],
-      "confidence_score": 0.7,
-      "verification_reason": "The extracted data for '5G-A' accurately references the source about Singtel partnering with Ericsson for 5G Advanced, though the text snippet is truncated. The other fields ('AI', '云', '企业ICT', 'Capex方向') correctly state no independent quantifiable disclosure in the official sources provided. The 5.61 billion net profit and 12% underlying profit increase from the first source are correctly captured in the '5G-A' field, but the field name mismatch and truncated information reduce confidence."
+      "confidence_score": 0.3,
+      "verification_reason": "The extracted data for '5G-A' correctly references the source article about Singtel partnering with Ericsson for 5G Advanced, but the source texts do not contain any independent quantifiable disclosures for 'AI', '云', '企业ICT', or 'Capex方向'. Those fields are marked as '未发现' (not found), which is accurate per the provided source texts, but the confidence is low because the extracted data for non-5G-A fields relies on a default statement rather than actual extracted content, and the verification is limited by the absence of any quantitative data in those categories."
     },
     {
       "entity": "Telstra",
@@ -205,8 +207,8 @@
           "status": 200,
           "content_type": "text/html;charset=utf-8",
           "title": "Media Releases | Telstra",
-          "bytes": 179630,
-          "elapsed_seconds": 0.971,
+          "bytes": 198100,
+          "elapsed_seconds": 4.314,
           "method": "httpx",
           "text_sample": "Media Releases | Telstra Publisher: Telstra Name: Media Releases | Telstra Copyrighted By: Telstra Family Friendly: Yes Language: English Skip to main content Telstra Personal Home Page Search Telstra Telstra Search Telstra Telstra Search Telstra Telstra Personal Business Enterprise Search Telstra Language Sign in Telstra You are entering quote mode Any items currently in your cart will be cleared when you enter quote mode. Cancel Enter quote mode You are leaving quote mode Any items currently in your cart will be cleared when you leave quote mode. Cancel Exit quote mode Media Releases | Telstra Search media releases Search keyword (optional) Date Range Start date Month January February March April May June July August September October November December Year End date Month January February March April May June July August September October November December Year Update search Loading ..",
           "evidence_path": "evidence_cache/9f2276b09b2c8b1ecf7cc2343a2c882e18ac4a7ba91a0288e1f0d23f43b64074.txt",
@@ -218,7 +220,7 @@
               "final_url": "https://www.telstra.com.au/aboutus/media/media-releases",
               "status": 200,
               "method": "httpx",
-              "bytes": 179630,
+              "bytes": 198100,
               "text_chars": 1451,
               "title": "Media Releases | Telstra",
               "error": "",
@@ -233,6 +235,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -240,19 +243,19 @@
           ]
         }
       ],
-      "confidence_score": 0.3,
-      "verification_reason": "The extracted data includes content from the source (e.g., website name, publisher, copyright, language) but incorrectly assigns fields like '企业ICT', '5G-A', '云', and 'Capex方向' with unrelated or non-existent statements. Only the 'AI' field partially matches the source, but overall the mapping is inaccurate and the source text lacks the structured data claimed. Low confidence."
+      "confidence_score": 0.2,
+      "verification_reason": "The extracted data only matches a small portion of the source text (header and footer text) but contains fabricated additional fields (like 'AI', '5G-A', etc.) that are not present in the source. Most extracted values are either non-existent in source or clearly made up."
     },
     {
       "entity": "SK Telecom",
       "status": "ok",
       "source_urls": [
-        "https://news.sktelecom.com/en/category/press-center/press-release",
-        "https://news.sktelecom.com/en/2787"
+        "https://news.sktelecom.com/en/2787",
+        "https://news.sktelecom.com/en/category/press-center/press-release"
       ],
       "extracted": {
-        "AI": "m/en/category/press-center/press-release Press Release – SK telecom newsroom SK telecom newsroom | Press Release Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center P",
-        "云": ".06.09 Press Release SK Telecom and NVIDIA Build AI Infrastructure to Power Korea’s AI Innovation SK Telecom and NVIDIA today announced that SKT plans to build a gigawatt-scale AI Cloud in Korea using the NVIDIA DSX™ pla",
+        "AI": "SOURCE: https://news.sktelecom.com/en/2787 SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation – SK telecom newsroom SK telecom newsroom | SK Telecom CEO Unveils ‘AI Native’ Strate",
+        "云": "rs, energy, and operations—to provide AIDCs with industry-leading cost efficiency. Last year, SKT applied its high-performance, high-efficiency virtualization solution ‘Petasus AI Cloud’ to Haein, its GPU cluster built f",
         "企业ICT": "ale LLMs as the brain. By combining SKT’s AI capabilities with collaboration from domestic and global partners, we will lead true AI-native transformation for Korean customers and enterprises.” Transforming Work Culture ",
         "Capex方向": "-hun held a press conference in Barcelona, Spain, and announced the company’s ‘AI Native’ innovation strategy, which includes a reorganization of AI infrastructure and large-scale investment plans. This strategy reflects",
         "5G-A": "本轮官方公开来源未发现 SK Telecom 对该字段的独立可量化披露；维持后续监测。"
@@ -261,54 +264,13 @@
       "raw_records": [
         {
           "row": 19,
-          "url": "https://news.sktelecom.com/en/category/press-center/press-release",
-          "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "Press Release – SK telecom newsroom",
-          "bytes": 62282,
-          "elapsed_seconds": 2.342,
-          "method": "httpx",
-          "text_sample": "Press Release – SK telecom newsroom SK telecom newsroom | Press Release Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Content List Press Release Meet SK Telecom’s official press release. Internal Search Year Select Year All Years [REDACTED_PHONE_OR_ID] 2020 Month Select Month All Months Jan. Feb. Mar. Apr. May. Jun. Jul. Aug. Sep. Oct. Nov. Dec. Search Press Release SK Telecom Develops Next-Generation Quantum Cryptography Technology with EU Research Funding SK Telecom announced today that it has secured a project under Horizon Europe, the European Union (EU)’s large scale research funding program, to develop next-generation quantum cryptography technology. 2026.06.09 Press Release SK Telecom and NVIDIA Build ",
-          "evidence_path": "evidence_cache/e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc.txt",
-          "content_hash": "e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://news.sktelecom.com/en/category/press-center/press-release",
-              "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 62282,
-              "text_chars": 3800,
-              "title": "Press Release – SK telecom newsroom",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "KR",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "SK Telecom"
-          ]
-        },
-        {
-          "row": 19,
           "url": "https://news.sktelecom.com/en/2787",
           "final_url": "https://news.sktelecom.com/en/2787",
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation – SK telecom newsroom",
           "bytes": 81307,
-          "elapsed_seconds": 2.354,
+          "elapsed_seconds": 5.443,
           "method": "httpx",
           "text_sample": "SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation – SK telecom newsroom SK telecom newsroom | SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Press Release SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation Press Release 2026.03.02 SK Telecom PR Reading Time 8 min Recommended Press Release SK Telecom to Showcase Full-Stack AI Capabilities at MWC Barcelona 2026 2026.02.22 Recommended Press Release SK Telecom to Showcase Full-Stack AI Capabilities at MWC Barcelona 2026 2026.02.22 More series Share Facebook X Email Copy URL Print · Seizing the golde",
           "evidence_path": "evidence_cache/92fd25dfc2b85b87e21a58b7f8082666a3f1a8cb109aa16e323b8cbf56a2e0b9.txt",
@@ -335,6 +297,49 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "SK Telecom"
+          ]
+        },
+        {
+          "row": 19,
+          "url": "https://news.sktelecom.com/en/category/press-center/press-release",
+          "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Press Release – SK telecom newsroom",
+          "bytes": 62282,
+          "elapsed_seconds": 5.584,
+          "method": "httpx",
+          "text_sample": "Press Release – SK telecom newsroom SK telecom newsroom | Press Release Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Content List Press Release Meet SK Telecom’s official press release. Internal Search Year Select Year All Years [REDACTED_PHONE_OR_ID] 2020 Month Select Month All Months Jan. Feb. Mar. Apr. May. Jun. Jul. Aug. Sep. Oct. Nov. Dec. Search Press Release SK Telecom Develops Next-Generation Quantum Cryptography Technology with EU Research Funding SK Telecom announced today that it has secured a project under Horizon Europe, the European Union (EU)’s large scale research funding program, to develop next-generation quantum cryptography technology. 2026.06.09 Press Release SK Telecom and NVIDIA Build ",
+          "evidence_path": "evidence_cache/e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc.txt",
+          "content_hash": "e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://news.sktelecom.com/en/category/press-center/press-release",
+              "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 62282,
+              "text_chars": 3800,
+              "title": "Press Release – SK telecom newsroom",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "KR",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -342,8 +347,8 @@
           ]
         }
       ],
-      "confidence_score": 0.65,
-      "verification_reason": "Most extracted data matches source text, but '5G-A' field states no independent quantification found, which is accurate per source review; '云' and '企业ICT' are partial or truncated and do not exactly match the source snippets; 'AI' partially matches but includes navigation elements."
+      "confidence_score": 0.7,
+      "verification_reason": "Entity 'AI' and '云' ('AI' term and 'cloud' context) are present and correct. Entity '企业ICT' text matches source. 'Capex方向' text is present. Entity '5G-A' is not mentioned in source; the source supports the 'not found' claim with no disclosure. However, the extraction includes partial or out-of-context fragments, so score is reduced."
     },
     {
       "entity": "KT",
@@ -370,7 +375,7 @@
           "content_type": "text/html",
           "title": "Business Report | KT",
           "bytes": 23847,
-          "elapsed_seconds": 1.037,
+          "elapsed_seconds": 0.987,
           "method": "httpx",
           "text_sample": "Business Report | KT Main menu shortcut Go to body text Business Report kt’s financial performance by numbers Business Report-Filing Date,Description,Filing Detail,XBRL file Filing Date Description Filing Detail XBRL file [REDACTED_PHONE_OR_ID] FY2025 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2024 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2023 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2022 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2021 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2020 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2019 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2018 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2017 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2016 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2015 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2014 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2013 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2012 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2011 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2010 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2009 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2008 Fo",
           "evidence_path": "evidence_cache/e6bc1cb7e473cdd3de74f955f6063d99964e9a4cefa5c813d6ff98e8984340a3.txt",
@@ -397,6 +402,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -411,7 +417,7 @@
           "content_type": "text/html",
           "title": "Investors | KT",
           "bytes": 17713,
-          "elapsed_seconds": 1.096,
+          "elapsed_seconds": 1.258,
           "method": "httpx",
           "text_sample": "Investors | KT Main menu shortcut Go to body text Investors We are making every effort to be the global No.1 company. Stock Information Share Price Shareholding Structure Shareholder Return Financial Information KT’s financial performance by numbers Financial Highlight Annual & Quarterly Key Figures Credit Ratings Former & Current financial information Business Report > Audit Report > IR Resources KT provides consistent management information for a wise decision of investors. IR News Subscribe to our IR Newletter and receive latest IR information when available. apply FAQ FAQ KT provides consistent management information for a wise decision of investors. Earnings Release Earnings Release KT provides consistentb management information for a wise decision of investors. IR Data",
           "evidence_path": "evidence_cache/3b2f720f7f0ea4194cc27c987764ec47c2ed893f8e43e29f8007217a73c6ed63.txt",
@@ -438,6 +444,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -452,7 +459,7 @@
           "content_type": "text/html",
           "title": "kt-20251231",
           "bytes": 8671485,
-          "elapsed_seconds": 2.663,
+          "elapsed_seconds": 2.894,
           "method": "httpx",
           "text_sample": "kt-20251231 0000892450 2025 FY false International Financial Reporting Standards M5 M5 KR KR xbrli:shares iso4217:KRW iso4217:KRW xbrli:shares xbrli:pure iso4217:USD iso4217:JPY iso4217:VND iso4217:EUR iso4217:UZS iso4217:USD xbrli:shares kt:Shares iso4217:XDR iso4217:RWF iso4217:THB iso4217:TZS iso4217:BWP iso4217:SGD iso4217:TWD iso4217:CHF iso4217:KGS iso4217:PKR 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 dei:BusinessContactMember [REDACTED_PHONE_OR_ID] 0000892450 dei:AdrMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:OrdinarySharesMember [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:IssuedCapitalMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:SharePremiumMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:RetainedEarningsMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:AccumulatedOtherComprehensiveIncomeMemb",
           "evidence_path": "evidence_cache/8d6758f6885a3890851088b25de8e967109d023cb394aea52240e0d22ef945a4.txt",
@@ -479,6 +486,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -486,8 +494,8 @@
           ]
         }
       ],
-      "confidence_score": 0.2,
-      "verification_reason": "The Extracted Data contains fragments (e.g., 'AI', '云', '企业ICT', 'Capex方向', '5G-A') that are not present or identifiable in the Source Text. Most extracted fields appear to be unrelated or misaligned with the provided source content, which primarily consists of financial report listings and XBRL tags. Only the URL 'https://corp.kt.com/eng/html/investors/financial/business.html' appears in the source, but the surrounding text does not support the extracted attributes."
+      "confidence_score": 0.5,
+      "verification_reason": "The extracted data contains fragments that appear to come from the source text, such as the URL and business report descriptions, but many values are disjointed and incomplete. For instance, 'AI' includes a URL and text snippets, '云' lists dates and member names but no clear value, '企业ICT' is a risk statement, 'Capex方向' is a partial sentence about expenses, and '5G-A' states no disclosure found. The extraction partially matches the source but lacks context and has missing or inconsistent information."
     },
     {
       "entity": "NTT Docomo",
@@ -513,7 +521,7 @@
           "content_type": "text/html; charset=ISO-8859-1",
           "title": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO",
           "bytes": 42004,
-          "elapsed_seconds": 1.066,
+          "elapsed_seconds": 1.288,
           "method": "httpx",
           "text_sample": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO For Business NTT DOCOMO BUSINESS NTT DOCOMO SOLUTIONS NTT DOCOMO GLOBAL JP Products Services Charges Support Support Contact Us Area About Us About DOCOMO NTT DOCOMO GROUP Home News & Notices Media Center Press Releases 2026 Press Releases February 25, 2026 DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure — Enabling AI Processing by Using Existing vRAN CPU Resources — Tweet TOKYO, JAPAN, February 25, 2026 --- NTT DOCOMO, INC. announced today that it successfully demonstrated the operation of AI applications directly on the general-purpose CPU resources of virtualized radio access network (vRAN), deployed in its commercial network. This demonstration confir",
           "evidence_path": "evidence_cache/2bbe482a85174c35a9779786f79a4ddbe2563e1d6928e7cf225808d0669cd608.txt",
@@ -540,6 +548,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -554,7 +563,7 @@
           "content_type": "text/html; charset=ISO-8859-1",
           "title": "Press Releases : NTT and DOCOMO Demonstrate the World's First Technology to Estimate in Advance Whether Each Network Slice Can Meet Communication Requirements for Stable Communications | News & Notices | NTT DOCOMO",
           "bytes": 52990,
-          "elapsed_seconds": 1.276,
+          "elapsed_seconds": 1.308,
           "method": "httpx",
           "text_sample": "Press Releases : NTT and DOCOMO Demonstrate the World's First Technology to Estimate in Advance Whether Each Network Slice Can Meet Communication Requirements for Stable Communications | News & Notices | NTT DOCOMO For Business NTT DOCOMO BUSINESS NTT DOCOMO SOLUTIONS NTT DOCOMO GLOBAL JP Products Services Charges Support Support Contact Us Area About Us About DOCOMO NTT DOCOMO GROUP Home News & Notices Media Center Press Releases 2026 Press Releases March 3, 2026 NTT and DOCOMO Demonstrate the World's First Technology to Estimate in Advance Whether Each Network Slice Can Meet Communication Requirements for Stable Communications — Providing visibility into each slice's suitability for meeting communication requirements and contributing to improved stability and more advanced operational planning for social infrastructure and industrial applications — Tweet NTT, Inc. NTT DOCOMO, INC. News",
           "evidence_path": "evidence_cache/f98019959b942cad74c2b84c330025a1f2ff19c6a451d87b8c4b7563267432f4.txt",
@@ -581,6 +590,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -588,8 +598,8 @@
           ]
         }
       ],
-      "confidence_score": 0.85,
-      "verification_reason": "Most entries (AI, 云, 企业ICT) are directly supported by the source text with only minor paraphrasing. The entries for 5G-A and Capex方向 are noted as unquantified from official sources, but the agent's notation is consistent with the source which does not provide specific quantified disclosures for those fields."
+      "confidence_score": 0.7,
+      "verification_reason": "The extracted data for 'AI' matches the source text. However, '云' extracts a sentence that actually originates from the second press release (2026/03/03), not the first source. '企业ICT' contains text from a different section about the company's global operations, which is not from the specific press release about AI and vRAN. '5G-A' and 'Capex方向' state that no quantifiable disclosure was found, which is correct as the source does not discuss these. The score is reduced due to the misattribution of the '云' entry and the inclusion of unrelated text in '企业ICT'."
     },
     {
       "entity": "KDDI",
@@ -614,7 +624,7 @@
           "content_type": "text/html; charset=UTF-8",
           "title": "KDDI and AMD agreed on technology collaboration toward advancing 5G Virtualized Network | KDDI News Room",
           "bytes": 49500,
-          "elapsed_seconds": 0.89,
+          "elapsed_seconds": 1.084,
           "method": "httpx",
           "text_sample": "KDDI and AMD agreed on technology collaboration toward advancing 5G Virtualized Network | KDDI News Room Contact JAPANESE Japanese web site Search Execute site search Close Vision Vision Vision TOP PAGE CEO Message Brand Mid-Term Management Strategy Service Service For Individuals Open in a new window Open in a new window (Japanese only) Open in a new window Telephone For Corporations Open in a new window News News Newsroom News Release KDDI Group News Sustainability Sustainability Sustainability Initiatives TOP PAGE Materiality ESG Report Sustainability News (Japanese Only) Corporate Info Corporate Info Corporate Info TOP PAGE The KDDI Group Philosophy KDDI Group Investor Relations Investor Relations Investor Relations TOP PAGE Management Policy Corporate Governance IR Documents IR News IR Calendar Employment Info Failure Info [ Indiv ・ Corp Open in a new window ] Open Header Menu Failu",
           "evidence_path": "evidence_cache/7a880da5eb50c7633e07efccdd336f994f52c412d9042c6a02f095d98e8bc304.txt",
@@ -641,6 +651,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -648,8 +659,8 @@
           ]
         }
       ],
-      "confidence_score": 0.4,
-      "verification_reason": "The extracted data for 'AI' correctly references the source URL and title, but the other fields (5G-A, 云, 企业ICT, Capex方向) all state '本轮官方公开来源未发现 KDDI 对该字段的独立可量化披露；维持后续监测', which is partially accurate as the source text does not explicitly quantify or disclose data for these specific terms, but the verification is incomplete because the source does mention 5G network advancement and AI era data centers, which could relate to some of those categories. The low score reflects that the extraction mostly ignores substantive content in the source beyond the title."
+      "confidence_score": 0.6,
+      "verification_reason": "Field 'AI' matches the news article regarding KDDI and AMD collaboration on 5G virtualized networks, referencing AMD EPYC CPUs and AI era data centers. However, fields '5G-A', '云', '企业ICT', and 'Capex方向' are marked as not found in the source text, which is correct per the source, but these fields are absent in the source, lowering confidence due to missing data. The source does not contain explicit independent quantifiable disclosures for those fields, so the 'not found' statements are accurate, but the incomplete coverage of expected extracted data reduces overall confidence."
     },
     {
       "entity": "SoftBank",
@@ -675,7 +686,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
           "bytes": 89401,
-          "elapsed_seconds": 0.689,
+          "elapsed_seconds": 0.54,
           "method": "httpx",
           "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
           "evidence_path": "evidence_cache/332566384e1075622dce1561f7cc8560879ee4f6abf2ea2dbb760a983b915d08.txt",
@@ -702,6 +713,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -716,7 +728,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "SoftBank Corp. to Launch Generative AI Services Using Homegrown LLM \"Sarashina\" on Cloud PF Type A with Oracle Alloy from June 2026 | About Us | SoftBank",
           "bytes": 81645,
-          "elapsed_seconds": 0.21,
+          "elapsed_seconds": 0.481,
           "method": "httpx",
           "text_sample": "SoftBank Corp. to Launch Generative AI Services Using Homegrown LLM \"Sarashina\" on Cloud PF Type A with Oracle Alloy from June 2026 | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activities Pu",
           "evidence_path": "evidence_cache/6087fe20b9758afd6b80aade10a72556e44458804202dc78238ec58c091f83c1.txt",
@@ -743,6 +755,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -750,25 +763,67 @@
           ]
         }
       ],
-      "confidence_score": 0.6,
-      "verification_reason": "Most extracted data points are not directly from the source text; 'AI' and '云' have plausible but mismatched labels, '企业ICT' is a fragmented snippet from unrelated menu text, and '5G-A' and 'Capex方向' are stated as undisclosed in the source, lowering overall accuracy."
+      "confidence_score": 0.3,
+      "verification_reason": "The extracted fields AI and cloud are partially supported as they reference the press release title, but the actual content in those keys is truncated and mismatched. The fields 企业ICT, 5G-A, and Capex方向 have no corresponding or verifiable information in the source text, and the source text lacks any structure resembling the extracted data."
     },
     {
       "entity": "Jio",
       "status": "ok",
       "source_urls": [
-        "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
-        "https://www.jio.com/business/5g/"
+        "https://www.jio.com/business/5g/",
+        "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf"
       ],
       "extracted": {
-        "AI": "lt/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf Financial Results Presentation FY 2024-25 / 4Q FY2025 25 April 2025 1 Forward Looking Statement This presentation contains forward-looking statements which ma",
+        "AI": "ises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center Transformation Application Modernization Analytics, Insights, AI Security, Management GPU Accelerated ",
         "5G-A": "or unimaginable opportunities in conjunction with the leading-edge digital technologies Know more What does Jio Hyperlite 5G Stack offer? Compliant with 3GPP, Jio Hyperlite offers 5G-as-a-Service with its compact and sca",
-        "云": "YoY to ~49 Exabytes in Q4FY25 ✓ Growing 5G subscriber mix and accelerated home connects drive industry leading traffic growth ➢ Digital revenue shows strong growth on the back of cloud services, IoT, content bundling and",
-        "企业ICT": "ecovery in 2H fueled by festive demand and Mahakumbh; pockets of urban and rural demand yet to fully recover ➢ Jio - Expanding 5G and broadband adoption across mobility, homes and enterprises; tariff hikes well absorbed ",
+        "云": ": https://www.jio.com/business/5g/ 5G for Business: Superfast Internet connectivity for Enterprises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center Transfo",
+        "企业ICT": "SOURCE: https://www.jio.com/business/5g/ 5G for Business: Superfast Internet connectivity for Enterprises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center T",
         "Capex方向": "NR 85.475 2. PAT after share of Profit / (Loss) of Rs 522 crore from JVs/ Associates Positive outcome despite macro-headwinds 7 Strong Balance Sheet: FY25 FY24 FY25 Cash Profit vs Capex (Rs crore) Particulars Rs crore Rs"
       },
       "missing_fields": [],
       "raw_records": [
+        {
+          "row": 19,
+          "url": "https://www.jio.com/business/5g/",
+          "final_url": "https://www.jio.com/business/5g/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "5G for Business: Superfast Internet connectivity for Enterprises",
+          "bytes": 1477926,
+          "elapsed_seconds": 4.069,
+          "method": "httpx",
+          "text_sample": "5G for Business: Superfast Internet connectivity for Enterprises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center Transformation Application Modernization Analytics, Insights, AI Security, Management GPU Accelerated Computing CPaaS - JioCX Products Business Solutions Mobile Security Internet of Things Business Solutions Marketing Solution Get fast, secure, scalable data-connectivity solutions, to best suit your business needs View all products Internet Leased Line High speed, dedicated, burstable and reliable internet to ... JioBusiness Solution Multiple digital services for your growing business ... Business Broadband Max Power your business with AirFiber backed high-speed inter ... Business Internet Line Jio Business Internet Line offers up to 10X burstable spe ... Managed Wi-Fi Managed Wi-Fi ... MPLS VPN Secure private En",
+          "evidence_path": "evidence_cache/8c340e4a0108199ecd59a7cf13681100359ffe4edf40ff66d41bd7464f1b4215.txt",
+          "content_hash": "8c340e4a0108199ecd59a7cf13681100359ffe4edf40ff66d41bd7464f1b4215",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.jio.com/business/5g/",
+              "final_url": "https://www.jio.com/business/5g/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 1477926,
+              "text_chars": 12705,
+              "title": "5G for Business: Superfast Internet connectivity for Enterprises",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "IN",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "Jio"
+          ]
+        },
         {
           "row": 19,
           "url": "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
@@ -777,7 +832,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 4799512,
-          "elapsed_seconds": 2.151,
+          "elapsed_seconds": 21.377,
           "method": "httpx",
           "text_sample": "Financial Results Presentation FY 2024-25 / 4Q FY2025 25 April 2025 1 Forward Looking Statement This presentation contains forward-looking statements which may be identified by their use of words like “plans,” “expects,” “will,” “anticipates,” “believes,” “intends,” “projects,” “estimates” or other words of similar meaning. All statements that address expectations or projections about the future, including, but not limited to, statements about the strategy for growth, product development, market position, expenditures, and financial results, are forward-looking statements. Forward-looking statements are based on certain assumptions and expectations of future events. The companies referred to in this presentation cannot guarantee that these assumptions and expectations are accurate or will be realized. The actual results, performance or achievements, could thus differ materially from thos",
           "evidence_path": "evidence_cache/fd88bd8c86d866b84403fbc81049c0b18ac5045ce0773d0f208777fd714aad9c.txt",
@@ -804,35 +859,57 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
             "Jio"
           ]
-        },
+        }
+      ],
+      "confidence_score": 0.4,
+      "verification_reason": "The extracted data contains several labels (e.g., 'AI', '5G-A', '云', '企业ICT', 'Capex方向') that do not correspond to any standard headings or concepts in the source text. Additionally, the extracted snippets are often truncated or misaligned (e.g., 'AI' includes a long string without clear separation, '5G-A' cuts off mid-sentence, '云' and '企业ICT' are not meaningful in context, and 'Capex方向' includes financial figures not present in the source). The source text is about Jio's 5G business services, while the extracted data appears to be a mix of unrelated or misattributed fragments."
+    },
+    {
+      "entity": "Airtel",
+      "status": "ok",
+      "source_urls": [
+        "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+        "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
+        "https://www.airtel.in/press-release"
+      ],
+      "extracted": {
+        "AI": "SOURCE: https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/ Airtel An | e to establish ",
+        "5G-A": ", Bharti Airtel, as its new Chairman, until the end of 2026. Gopal is currently the... Ericsson, Volvo Group, and Airtel announce research collaboration on Digital Twins & XR over 5G Advanced in India In a groundbreaking",
+        "云": "nisations across the country. India’s data center sector is currently witnessing rapid growth, driven by accelerating digital transformation across enterprises, rising adoption of cloud services, and expanding demand fro",
+        "企业ICT": "ds from the fund infusion to accelerate its growth plans. It plans to extensively scale its infrastructure and broaden its portfolio of services, catering to the evolving needs of enterprises, hyperscalers, and governmen",
+        "Capex方向": "fra services reported a negative net external debt position (ex DoT and FLO Debt) - reflecting strong balance sheet, robust cash generation and disciplined liability management. • Capex for the quarter stood at Rs 16,066"
+      },
+      "missing_fields": [],
+      "raw_records": [
         {
           "row": 19,
-          "url": "https://www.jio.com/business/5g/",
-          "final_url": "https://www.jio.com/business/5g/",
+          "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+          "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
           "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "5G for Business: Superfast Internet connectivity for Enterprises",
-          "bytes": 1474969,
-          "elapsed_seconds": 3.787,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
+          "bytes": 474933,
+          "elapsed_seconds": 1.681,
           "method": "httpx",
-          "text_sample": "5G for Business: Superfast Internet connectivity for Enterprises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center Transformation Application Modernization Analytics, Insights, AI Security, Management GPU Accelerated Computing CPaaS - JioCX Products Business Solutions Mobile Security Internet of Things Business Solutions Marketing Solution Get fast, secure, scalable data-connectivity solutions, to best suit your business needs View all products Internet Leased Line High speed, dedicated, burstable and reliable internet to ... JioBusiness Solution Multiple digital services for your growing business ... Business Broadband Max Power your business with AirFiber backed high-speed inter ... Business Internet Line Jio Business Internet Line offers up to 10X burstable spe ... Managed Wi-Fi Managed Wi-Fi ... MPLS VPN Secure private En",
-          "evidence_path": "evidence_cache/d3445e07573cab71623107978c6fd7f70f301a3e8cb0a0513a296e1a32443ce2.txt",
-          "content_hash": "d3445e07573cab71623107978c6fd7f70f301a3e8cb0a0513a296e1a32443ce2",
+          "text_sample": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Explore Airtel Menu Explore Airtel Account Get app Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Investment Aims to Spur AI-Data Center Expansion, Fuel Next Phase of Growth Nxtra to be Valued at Around US$3.1 Billion Post-Closing of Transaction New Delhi, March 30, 2026: Bharti Airtel (NSE: BHARTIARTL) (“Airtel”), today announced an investment of US$ 1 Billion by Alpha Wave Global, Carlyle (NASDAQ: CG) and Anchorage Capital, through their affiliates, in Nxtra Data Limited (“Nxtra”), a subsidiary of Bharti Airtel engaged in the data center business, to expand its network across India and accelerate growth. Airtel will also participate in this round. As pa",
+          "evidence_path": "evidence_cache/4ac35eaa1e31da84d392143f44725f9d74e20b344bb6e492dd4a079400dff860.txt",
+          "content_hash": "4ac35eaa1e31da84d392143f44725f9d74e20b344bb6e492dd4a079400dff860",
           "error": "",
           "fetch_attempts": [
             {
-              "url": "https://www.jio.com/business/5g/",
-              "final_url": "https://www.jio.com/business/5g/",
+              "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+              "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
               "status": 200,
               "method": "httpx",
-              "bytes": 1474969,
-              "text_chars": 12694,
-              "title": "5G for Business: Superfast Internet connectivity for Enterprises",
+              "bytes": 474933,
+              "text_chars": 199674,
+              "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
               "error": "",
               "meta_refresh_url": ""
             }
@@ -845,33 +922,13 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
-            "Jio"
+            "Airtel"
           ]
-        }
-      ],
-      "confidence_score": 0.85,
-      "verification_reason": "Most extracted data matches the source text exactly, but the 'AI' key contains a concatenation of the title and the beginning of the forward-looking statement, which is not a direct quote; the 'Capex direction' key appears to be a misinterpretation of financial data (NR 85.475 is a conversion rate, and the remaining text is a mix of unrelated figures). The other keys reflect accurate snippets from the source."
-    },
-    {
-      "entity": "Airtel",
-      "status": "ok",
-      "source_urls": [
-        "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
-        "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-        "https://www.airtel.in/press-release"
-      ],
-      "extracted": {
-        "AI": "SOURCE: https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf ’ Bharti Airtel Limited – Media Release May 13, 2026 Bharti Airtel Limited Q4 FY26 Highlights | e to establi",
-        "5G-A": ", Bharti Airtel, as its new Chairman, until the end of 2026. Gopal is currently the... Ericsson, Volvo Group, and Airtel announce research collaboration on Digital Twins & XR over 5G Advanced in India In a groundbreaking",
-        "云": "ote, demonstrating the power of our diversified portfolio. FY26 was an important year in our journey – we crossed the 650 million customer mark, launched our telco grade sovereign cloud, received RBI approval through our",
-        "企业ICT": "it gap in India. The NBFC subsidiary will be capitalised with Rs 20,000 crore to be injected over the next few years. Airtel will contribute 70% with the promoter group via Bharti Enterprises Limited, bringing in the bal",
-        "Capex方向": "fra services reported a negative net external debt position (ex DoT and FLO Debt) - reflecting strong balance sheet, robust cash generation and disciplined liability management. • Capex for the quarter stood at Rs 16,066"
-      },
-      "missing_fields": [],
-      "raw_records": [
+        },
         {
           "row": 19,
           "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
@@ -880,7 +937,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 277193,
-          "elapsed_seconds": 1.253,
+          "elapsed_seconds": 1.794,
           "method": "httpx",
           "text_sample": "’ Bharti Airtel Limited – Media Release May 13, 2026 Bharti Airtel Limited Q4 FY26 Highlights • Bharti Airtel posts consolidated quarterly revenues of Rs 55,383 crore, growth of 15.7% YoY and 2.6% on QoQ basis, driven by sustained growth in India and robust performance in Africa. • India business posts quarterly revenues of Rs 39,566 crore, up 7.7% YoY and 0.9% QoQ. The growth was led by continued focus on portfolio premiumization within the Mobile segment, strong growth momentum in the Homes segment, and consistent delivery by Airtel Business. • India mobile revenue up 8.3% YoY, supported by higher ARPU and strong growth in smartphone data customers. • The Homes business recorded another robust quarter, achieving a YoY revenue growth of 37.3%. Net customer additions continued to be strong at 1,135 K as we deepen our Wifi footprint across the regions. • Airtel Business experienced strong",
           "evidence_path": "evidence_cache/3ebdb26cf74c2c855b643bd487410c2abad25bbdf9233b8c7e5602886abd993a.txt",
@@ -907,47 +964,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "Airtel"
-          ]
-        },
-        {
-          "row": 19,
-          "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-          "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
-          "bytes": 474099,
-          "elapsed_seconds": 2.407,
-          "method": "httpx",
-          "text_sample": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Explore Airtel Menu Explore Airtel Account Get app Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Investment Aims to Spur AI-Data Center Expansion, Fuel Next Phase of Growth Nxtra to be Valued at Around US$3.1 Billion Post-Closing of Transaction New Delhi, March 30, 2026: Bharti Airtel (NSE: BHARTIARTL) (“Airtel”), today announced an investment of US$ 1 Billion by Alpha Wave Global, Carlyle (NASDAQ: CG) and Anchorage Capital, through their affiliates, in Nxtra Data Limited (“Nxtra”), a subsidiary of Bharti Airtel engaged in the data center business, to expand its network across India and accelerate growth. Airtel will also participate in this round. As pa",
-          "evidence_path": "evidence_cache/2cfab19fafd65662da3b2edc8080ca300809941adeb0b52f6904d07b67c3518e.txt",
-          "content_hash": "2cfab19fafd65662da3b2edc8080ca300809941adeb0b52f6904d07b67c3518e",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-              "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 474099,
-              "text_chars": 199417,
-              "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "IN",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -961,32 +978,21 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Contact Us | Airtel : Latest Press Release & News",
-          "bytes": 462430,
-          "elapsed_seconds": 38.085,
-          "method": "curl_crawler_ua",
-          "text_sample": "Contact Us | Airtel : Latest Press Release & News Explore Airtel Menu Explore Airtel Account Get app Media Contacts Corporate Communications Bharti Airtel Ltd., 6th floor, tower A, Plot # 16 Udyog Vihar - Ph-IV Gurgaon Haryana 122001 email: [REDACTED_EMAIL] Logos, Signature Tune KNOW MORE → Airtel Press Release June 2026 Airtel brings faster speeds and wider 5G coverage to millions with 2900+ new sites New 5G sites boosts Upper North region of India: Punjab 1,066+; Haryana 954+; Himachal Pradesh 276+; Jammu & Kashmir 619+ May 2026 Airtel launches Priority Postpaid – delivering superior network experience for its customers Bharti Airtel today announced the launch of Priority Postpaid, a new service that leverages 5G slicing technology to deliver superior and more consistent experience to customers on postpaid. This service... Airtel Secure Workforce ̶ India’s first, fu",
-          "evidence_path": "evidence_cache/9c97b6d45bf3e947bad73b7b2e9c0f691aa9733fe12b8d949ffa2dae8a06ec50.txt",
-          "content_hash": "9c97b6d45bf3e947bad73b7b2e9c0f691aa9733fe12b8d949ffa2dae8a06ec50",
+          "bytes": 463264,
+          "elapsed_seconds": 1.831,
+          "method": "httpx",
+          "text_sample": "Contact Us | Airtel : Latest Press Release & News Explore Airtel Menu Explore Airtel Account Get app Media Contacts Corporate Communications Bharti Airtel Ltd., 6th floor, tower A, Plot # 16 Udyog Vihar - Ph-IV Gurgaon Haryana 122001 email: [REDACTED_EMAIL] Logos, Signature Tune KNOW MORE → Airtel Press Release June 2026 Bharti Airtel appoints Rahul Vatts as Group Chief Regulatory Officer and Director – Corporate Affairs Airtel Extends Connectivity for Indian Army in Arunachal Pradesh Airtel pioneers mobile connectivity in difficult-to-reach locations of Arunachal Pradesh. Airtel brings faster speeds and wider 5G coverage to millions with 2900+ new sites New 5G sites boosts Upper North region of India: Punjab 1,066+; Haryana 954+; Himachal Pradesh 276+; Jammu & Kashmir 619+ May 2026 Airtel launches Priority Postpaid – delivering superior network experience for its cus",
+          "evidence_path": "evidence_cache/26d00675db7919e4a524ad7deb76e93cf17ffec828e24232ca72542b298c4957.txt",
+          "content_hash": "26d00675db7919e4a524ad7deb76e93cf17ffec828e24232ca72542b298c4957",
           "error": "",
           "fetch_attempts": [
             {
               "url": "https://www.airtel.in/press-release",
-              "final_url": "https://www.airtel.in/press-release",
-              "status": 0,
-              "method": "httpx",
-              "bytes": 0,
-              "text_chars": 0,
-              "title": "",
-              "error": "ReadTimeout('The read operation timed out')",
-              "meta_refresh_url": ""
-            },
-            {
-              "url": "https://www.airtel.in/press-release",
               "final_url": "https://www.airtel.in/press-release/",
               "status": 200,
-              "method": "curl_crawler_ua",
-              "bytes": 462430,
-              "text_chars": 192277,
+              "method": "httpx",
+              "bytes": 463264,
+              "text_chars": 192534,
               "title": "Contact Us | Airtel : Latest Press Release & News",
               "error": "",
               "meta_refresh_url": ""
@@ -1000,6 +1006,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -1007,12 +1014,96 @@
           ]
         }
       ],
-      "confidence_score": 0.3,
-      "verification_reason": "The extracted data contains fragmented and incomplete phrases that are loosely connected to the source text. Key terms like '5G-A' and '云' are not clearly present in the source, while 'SOURCE:' is partially correct but truncated. The overall extraction is inaccurate and lacks proper structure and completeness."
+      "confidence_score": 0.1,
+      "verification_reason": "The extracted data contains significant errors and fabrications. The 'AI' field misattributes a source and includes unrelated text. '5G-A' misstates the chairman and incorrectly links to a different announcement. '云' (cloud) is a Chinese character not present in the source. '企业ICT' (enterprise ICT) has a substring that partially matches but is taken out of context. 'Capex方向' combines an unrelated figure with a nonsensical phrase. Overall, the extraction does not accurately reflect the source text."
     }
   ],
   "entity_missing": [],
   "raw_records": [
+    {
+      "row": 19,
+      "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+      "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
+      "bytes": 32693,
+      "elapsed_seconds": 4.046,
+      "method": "httpx",
+      "text_sample": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Media Centre News Releases 03 Mar 2026 News Release Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Innovation Connectivity Network",
+      "evidence_path": "evidence_cache/325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac.txt",
+      "content_hash": "325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+          "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 32693,
+          "text_chars": 245,
+          "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "SG",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Singtel"
+      ]
+    },
+    {
+      "row": 19,
+      "url": "https://www.telstra.com.au/aboutus/media",
+      "final_url": "https://www.telstra.com.au/aboutus/media/media-releases",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "title": "Media Releases | Telstra",
+      "bytes": 198100,
+      "elapsed_seconds": 4.314,
+      "method": "httpx",
+      "text_sample": "Media Releases | Telstra Publisher: Telstra Name: Media Releases | Telstra Copyrighted By: Telstra Family Friendly: Yes Language: English Skip to main content Telstra Personal Home Page Search Telstra Telstra Search Telstra Telstra Search Telstra Telstra Personal Business Enterprise Search Telstra Language Sign in Telstra You are entering quote mode Any items currently in your cart will be cleared when you enter quote mode. Cancel Enter quote mode You are leaving quote mode Any items currently in your cart will be cleared when you leave quote mode. Cancel Exit quote mode Media Releases | Telstra Search media releases Search keyword (optional) Date Range Start date Month January February March April May June July August September October November December Year End date Month January February March April May June July August September October November December Year Update search Loading ..",
+      "evidence_path": "evidence_cache/9f2276b09b2c8b1ecf7cc2343a2c882e18ac4a7ba91a0288e1f0d23f43b64074.txt",
+      "content_hash": "9f2276b09b2c8b1ecf7cc2343a2c882e18ac4a7ba91a0288e1f0d23f43b64074",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.telstra.com.au/aboutus/media",
+          "final_url": "https://www.telstra.com.au/aboutus/media/media-releases",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 198100,
+          "text_chars": 1451,
+          "title": "Media Releases | Telstra",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "AU",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Telstra"
+      ]
+    },
     {
       "row": 19,
       "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-posts-fy26-net-profit",
@@ -1021,7 +1112,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "Singtel posts FY26 net profit of S$5.61 billion; underlying profit up 12% to S$2.77 billion",
       "bytes": 41042,
-      "elapsed_seconds": 0.883,
+      "elapsed_seconds": 4.413,
       "method": "httpx",
       "text_sample": "Singtel posts FY26 net profit of S$5.61 billion; underlying profit up 12% to S$2.77 billion Media Centre News Releases 21 May 2026 News Release Singtel posts FY26 net profit of S$5.61 billion; underlying profit up 12% to S$2.77 billion Company News",
       "evidence_path": "evidence_cache/9c8e8c5c252e09ea215b6d307f8638409dc45ea65b8cb951e3d1ac6c2d3099a0.txt",
@@ -1048,92 +1139,11 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "Singtel"
-      ]
-    },
-    {
-      "row": 19,
-      "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-      "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
-      "bytes": 32691,
-      "elapsed_seconds": 0.939,
-      "method": "httpx",
-      "text_sample": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Media Centre News Releases 03 Mar 2026 News Release Singtel partners Ericsson to accelerate industry transformation with 5G Advanced Innovation Connectivity Network",
-      "evidence_path": "evidence_cache/325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac.txt",
-      "content_hash": "325d653e249fb1903e39eb0f870e6573c47690630b5cd8b713f4b66241106fac",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-          "final_url": "https://www.singtel.com/about-us/media-centre/news-releases/singtel-partners-ericsson-to-accelerate-industry-transformation-with-5g-advanced",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 32691,
-          "text_chars": 245,
-          "title": "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "SG",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Singtel"
-      ]
-    },
-    {
-      "row": 19,
-      "url": "https://www.telstra.com.au/aboutus/media",
-      "final_url": "https://www.telstra.com.au/aboutus/media/media-releases",
-      "status": 200,
-      "content_type": "text/html;charset=utf-8",
-      "title": "Media Releases | Telstra",
-      "bytes": 179630,
-      "elapsed_seconds": 0.971,
-      "method": "httpx",
-      "text_sample": "Media Releases | Telstra Publisher: Telstra Name: Media Releases | Telstra Copyrighted By: Telstra Family Friendly: Yes Language: English Skip to main content Telstra Personal Home Page Search Telstra Telstra Search Telstra Telstra Search Telstra Telstra Personal Business Enterprise Search Telstra Language Sign in Telstra You are entering quote mode Any items currently in your cart will be cleared when you enter quote mode. Cancel Enter quote mode You are leaving quote mode Any items currently in your cart will be cleared when you leave quote mode. Cancel Exit quote mode Media Releases | Telstra Search media releases Search keyword (optional) Date Range Start date Month January February March April May June July August September October November December Year End date Month January February March April May June July August September October November December Year Update search Loading ..",
-      "evidence_path": "evidence_cache/9f2276b09b2c8b1ecf7cc2343a2c882e18ac4a7ba91a0288e1f0d23f43b64074.txt",
-      "content_hash": "9f2276b09b2c8b1ecf7cc2343a2c882e18ac4a7ba91a0288e1f0d23f43b64074",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.telstra.com.au/aboutus/media",
-          "final_url": "https://www.telstra.com.au/aboutus/media/media-releases",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 179630,
-          "text_chars": 1451,
-          "title": "Media Releases | Telstra",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "AU",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Telstra"
       ]
     },
     {
@@ -1144,7 +1154,7 @@
       "content_type": "text/html",
       "title": "Business Report | KT",
       "bytes": 23847,
-      "elapsed_seconds": 1.037,
+      "elapsed_seconds": 0.987,
       "method": "httpx",
       "text_sample": "Business Report | KT Main menu shortcut Go to body text Business Report kt’s financial performance by numbers Business Report-Filing Date,Description,Filing Detail,XBRL file Filing Date Description Filing Detail XBRL file [REDACTED_PHONE_OR_ID] FY2025 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2024 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2023 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2022 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2021 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2020 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2019 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2018 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2017 Form 20-F View Download [REDACTED_PHONE_OR_ID] FY2016 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2015 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2014 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2013 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2012 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2011 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2010 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2009 Form 20-F View - [REDACTED_PHONE_OR_ID] FY2008 Fo",
       "evidence_path": "evidence_cache/e6bc1cb7e473cdd3de74f955f6063d99964e9a4cefa5c813d6ff98e8984340a3.txt",
@@ -1171,6 +1181,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -1185,7 +1196,7 @@
       "content_type": "text/html",
       "title": "Investors | KT",
       "bytes": 17713,
-      "elapsed_seconds": 1.096,
+      "elapsed_seconds": 1.258,
       "method": "httpx",
       "text_sample": "Investors | KT Main menu shortcut Go to body text Investors We are making every effort to be the global No.1 company. Stock Information Share Price Shareholding Structure Shareholder Return Financial Information KT’s financial performance by numbers Financial Highlight Annual & Quarterly Key Figures Credit Ratings Former & Current financial information Business Report > Audit Report > IR Resources KT provides consistent management information for a wise decision of investors. IR News Subscribe to our IR Newletter and receive latest IR information when available. apply FAQ FAQ KT provides consistent management information for a wise decision of investors. Earnings Release Earnings Release KT provides consistentb management information for a wise decision of investors. IR Data",
       "evidence_path": "evidence_cache/3b2f720f7f0ea4194cc27c987764ec47c2ed893f8e43e29f8007217a73c6ed63.txt",
@@ -1212,51 +1223,11 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "KT"
-      ]
-    },
-    {
-      "row": 19,
-      "url": "https://news.sktelecom.com/en/category/press-center/press-release",
-      "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Press Release – SK telecom newsroom",
-      "bytes": 62282,
-      "elapsed_seconds": 2.342,
-      "method": "httpx",
-      "text_sample": "Press Release – SK telecom newsroom SK telecom newsroom | Press Release Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Content List Press Release Meet SK Telecom’s official press release. Internal Search Year Select Year All Years [REDACTED_PHONE_OR_ID] 2020 Month Select Month All Months Jan. Feb. Mar. Apr. May. Jun. Jul. Aug. Sep. Oct. Nov. Dec. Search Press Release SK Telecom Develops Next-Generation Quantum Cryptography Technology with EU Research Funding SK Telecom announced today that it has secured a project under Horizon Europe, the European Union (EU)’s large scale research funding program, to develop next-generation quantum cryptography technology. 2026.06.09 Press Release SK Telecom and NVIDIA Build ",
-      "evidence_path": "evidence_cache/e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc.txt",
-      "content_hash": "e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://news.sktelecom.com/en/category/press-center/press-release",
-          "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 62282,
-          "text_chars": 3800,
-          "title": "Press Release – SK telecom newsroom",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "KR",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "SK Telecom"
       ]
     },
     {
@@ -1267,7 +1238,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation – SK telecom newsroom",
       "bytes": 81307,
-      "elapsed_seconds": 2.354,
+      "elapsed_seconds": 5.443,
       "method": "httpx",
       "text_sample": "SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation – SK telecom newsroom SK telecom newsroom | SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Press Release SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26, Driving Korea’s Leap in AI Innovation Press Release 2026.03.02 SK Telecom PR Reading Time 8 min Recommended Press Release SK Telecom to Showcase Full-Stack AI Capabilities at MWC Barcelona 2026 2026.02.22 Recommended Press Release SK Telecom to Showcase Full-Stack AI Capabilities at MWC Barcelona 2026 2026.02.22 More series Share Facebook X Email Copy URL Print · Seizing the golde",
       "evidence_path": "evidence_cache/92fd25dfc2b85b87e21a58b7f8082666a3f1a8cb109aa16e323b8cbf56a2e0b9.txt",
@@ -1294,6 +1265,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -1302,43 +1274,44 @@
     },
     {
       "row": 19,
-      "url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
-      "final_url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+      "url": "https://news.sktelecom.com/en/category/press-center/press-release",
+      "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
       "status": 200,
-      "content_type": "text/html; charset=ISO-8859-1",
-      "title": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO",
-      "bytes": 42004,
-      "elapsed_seconds": 1.066,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Press Release – SK telecom newsroom",
+      "bytes": 62282,
+      "elapsed_seconds": 5.584,
       "method": "httpx",
-      "text_sample": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO For Business NTT DOCOMO BUSINESS NTT DOCOMO SOLUTIONS NTT DOCOMO GLOBAL JP Products Services Charges Support Support Contact Us Area About Us About DOCOMO NTT DOCOMO GROUP Home News & Notices Media Center Press Releases 2026 Press Releases February 25, 2026 DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure — Enabling AI Processing by Using Existing vRAN CPU Resources — Tweet TOKYO, JAPAN, February 25, 2026 --- NTT DOCOMO, INC. announced today that it successfully demonstrated the operation of AI applications directly on the general-purpose CPU resources of virtualized radio access network (vRAN), deployed in its commercial network. This demonstration confir",
-      "evidence_path": "evidence_cache/2bbe482a85174c35a9779786f79a4ddbe2563e1d6928e7cf225808d0669cd608.txt",
-      "content_hash": "2bbe482a85174c35a9779786f79a4ddbe2563e1d6928e7cf225808d0669cd608",
+      "text_sample": "Press Release – SK telecom newsroom SK telecom newsroom | Press Release Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Content List Press Release Meet SK Telecom’s official press release. Internal Search Year Select Year All Years [REDACTED_PHONE_OR_ID] 2020 Month Select Month All Months Jan. Feb. Mar. Apr. May. Jun. Jul. Aug. Sep. Oct. Nov. Dec. Search Press Release SK Telecom Develops Next-Generation Quantum Cryptography Technology with EU Research Funding SK Telecom announced today that it has secured a project under Horizon Europe, the European Union (EU)’s large scale research funding program, to develop next-generation quantum cryptography technology. 2026.06.09 Press Release SK Telecom and NVIDIA Build ",
+      "evidence_path": "evidence_cache/e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc.txt",
+      "content_hash": "e3da8cbb7d631804724b8de2e5fae85a69e1dd42ac52a69b139f0c558e0bf2cc",
       "error": "",
       "fetch_attempts": [
         {
-          "url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
-          "final_url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+          "url": "https://news.sktelecom.com/en/category/press-center/press-release",
+          "final_url": "https://news.sktelecom.com/en/category/press-center/press-release",
           "status": 200,
           "method": "httpx",
-          "bytes": 42004,
-          "text_chars": 6341,
-          "title": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO",
+          "bytes": 62282,
+          "text_chars": 3800,
+          "title": "Press Release – SK telecom newsroom",
           "error": "",
           "meta_refresh_url": ""
         }
       ],
       "source_policy": "allow",
       "source_type": "company_official",
-      "jurisdiction": "JP",
+      "jurisdiction": "KR",
       "tos_status": "requires_periodic_review",
-      "robots_status": "not_found_allow",
+      "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
-        "NTT Docomo"
+        "SK Telecom"
       ]
     },
     {
@@ -1349,7 +1322,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
       "bytes": 89401,
-      "elapsed_seconds": 0.689,
+      "elapsed_seconds": 0.54,
       "method": "httpx",
       "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
       "evidence_path": "evidence_cache/332566384e1075622dce1561f7cc8560879ee4f6abf2ea2dbb760a983b915d08.txt",
@@ -1376,6 +1349,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -1390,7 +1364,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "KDDI and AMD agreed on technology collaboration toward advancing 5G Virtualized Network | KDDI News Room",
       "bytes": 49500,
-      "elapsed_seconds": 0.89,
+      "elapsed_seconds": 1.084,
       "method": "httpx",
       "text_sample": "KDDI and AMD agreed on technology collaboration toward advancing 5G Virtualized Network | KDDI News Room Contact JAPANESE Japanese web site Search Execute site search Close Vision Vision Vision TOP PAGE CEO Message Brand Mid-Term Management Strategy Service Service For Individuals Open in a new window Open in a new window (Japanese only) Open in a new window Telephone For Corporations Open in a new window News News Newsroom News Release KDDI Group News Sustainability Sustainability Sustainability Initiatives TOP PAGE Materiality ESG Report Sustainability News (Japanese Only) Corporate Info Corporate Info Corporate Info TOP PAGE The KDDI Group Philosophy KDDI Group Investor Relations Investor Relations Investor Relations TOP PAGE Management Policy Corporate Governance IR Documents IR News IR Calendar Employment Info Failure Info [ Indiv ・ Corp Open in a new window ] Open Header Menu Failu",
       "evidence_path": "evidence_cache/7a880da5eb50c7633e07efccdd336f994f52c412d9042c6a02f095d98e8bc304.txt",
@@ -1417,10 +1391,53 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "KDDI"
+      ]
+    },
+    {
+      "row": 19,
+      "url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+      "final_url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+      "status": 200,
+      "content_type": "text/html; charset=ISO-8859-1",
+      "title": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO",
+      "bytes": 42004,
+      "elapsed_seconds": 1.288,
+      "method": "httpx",
+      "text_sample": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO For Business NTT DOCOMO BUSINESS NTT DOCOMO SOLUTIONS NTT DOCOMO GLOBAL JP Products Services Charges Support Support Contact Us Area About Us About DOCOMO NTT DOCOMO GROUP Home News & Notices Media Center Press Releases 2026 Press Releases February 25, 2026 DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure — Enabling AI Processing by Using Existing vRAN CPU Resources — Tweet TOKYO, JAPAN, February 25, 2026 --- NTT DOCOMO, INC. announced today that it successfully demonstrated the operation of AI applications directly on the general-purpose CPU resources of virtualized radio access network (vRAN), deployed in its commercial network. This demonstration confir",
+      "evidence_path": "evidence_cache/2bbe482a85174c35a9779786f79a4ddbe2563e1d6928e7cf225808d0669cd608.txt",
+      "content_hash": "2bbe482a85174c35a9779786f79a4ddbe2563e1d6928e7cf225808d0669cd608",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+          "final_url": "https://www.docomo.ne.jp/english/info/media_center/pr/2026/0225_02.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 42004,
+          "text_chars": 6341,
+          "title": "Press Releases : DOCOMO Successfully Demonstrates AI Application Operation Using Virtualized Radio Access Network (vRAN) Infrastructure | News & Notices | NTT DOCOMO",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "JP",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "NTT Docomo"
       ]
     },
     {
@@ -1431,7 +1448,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "SoftBank Corp. to Launch Generative AI Services Using Homegrown LLM \"Sarashina\" on Cloud PF Type A with Oracle Alloy from June 2026 | About Us | SoftBank",
       "bytes": 81645,
-      "elapsed_seconds": 0.21,
+      "elapsed_seconds": 0.481,
       "method": "httpx",
       "text_sample": "SoftBank Corp. to Launch Generative AI Services Using Homegrown LLM \"Sarashina\" on Cloud PF Type A with Oracle Alloy from June 2026 | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activities Pu",
       "evidence_path": "evidence_cache/6087fe20b9758afd6b80aade10a72556e44458804202dc78238ec58c091f83c1.txt",
@@ -1458,6 +1475,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -1472,7 +1490,7 @@
       "content_type": "text/html; charset=ISO-8859-1",
       "title": "Press Releases : NTT and DOCOMO Demonstrate the World's First Technology to Estimate in Advance Whether Each Network Slice Can Meet Communication Requirements for Stable Communications | News & Notices | NTT DOCOMO",
       "bytes": 52990,
-      "elapsed_seconds": 1.276,
+      "elapsed_seconds": 1.308,
       "method": "httpx",
       "text_sample": "Press Releases : NTT and DOCOMO Demonstrate the World's First Technology to Estimate in Advance Whether Each Network Slice Can Meet Communication Requirements for Stable Communications | News & Notices | NTT DOCOMO For Business NTT DOCOMO BUSINESS NTT DOCOMO SOLUTIONS NTT DOCOMO GLOBAL JP Products Services Charges Support Support Contact Us Area About Us About DOCOMO NTT DOCOMO GROUP Home News & Notices Media Center Press Releases 2026 Press Releases March 3, 2026 NTT and DOCOMO Demonstrate the World's First Technology to Estimate in Advance Whether Each Network Slice Can Meet Communication Requirements for Stable Communications — Providing visibility into each slice's suitability for meeting communication requirements and contributing to improved stability and more advanced operational planning for social infrastructure and industrial applications — Tweet NTT, Inc. NTT DOCOMO, INC. News",
       "evidence_path": "evidence_cache/f98019959b942cad74c2b84c330025a1f2ff19c6a451d87b8c4b7563267432f4.txt",
@@ -1499,6 +1517,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -1513,7 +1532,7 @@
       "content_type": "text/html",
       "title": "kt-20251231",
       "bytes": 8671485,
-      "elapsed_seconds": 2.663,
+      "elapsed_seconds": 2.894,
       "method": "httpx",
       "text_sample": "kt-20251231 0000892450 2025 FY false International Financial Reporting Standards M5 M5 KR KR xbrli:shares iso4217:KRW iso4217:KRW xbrli:shares xbrli:pure iso4217:USD iso4217:JPY iso4217:VND iso4217:EUR iso4217:UZS iso4217:USD xbrli:shares kt:Shares iso4217:XDR iso4217:RWF iso4217:THB iso4217:TZS iso4217:BWP iso4217:SGD iso4217:TWD iso4217:CHF iso4217:KGS iso4217:PKR 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 dei:BusinessContactMember [REDACTED_PHONE_OR_ID] 0000892450 dei:AdrMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:OrdinarySharesMember [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:IssuedCapitalMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:SharePremiumMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:RetainedEarningsMember [REDACTED_PHONE_OR_ID] 0000892450 ifrs-full:AccumulatedOtherComprehensiveIncomeMemb",
       "evidence_path": "evidence_cache/8d6758f6885a3890851088b25de8e967109d023cb394aea52240e0d22ef945a4.txt",
@@ -1540,10 +1559,53 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "KT"
+      ]
+    },
+    {
+      "row": 19,
+      "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+      "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
+      "bytes": 474933,
+      "elapsed_seconds": 1.681,
+      "method": "httpx",
+      "text_sample": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Explore Airtel Menu Explore Airtel Account Get app Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Investment Aims to Spur AI-Data Center Expansion, Fuel Next Phase of Growth Nxtra to be Valued at Around US$3.1 Billion Post-Closing of Transaction New Delhi, March 30, 2026: Bharti Airtel (NSE: BHARTIARTL) (“Airtel”), today announced an investment of US$ 1 Billion by Alpha Wave Global, Carlyle (NASDAQ: CG) and Anchorage Capital, through their affiliates, in Nxtra Data Limited (“Nxtra”), a subsidiary of Bharti Airtel engaged in the data center business, to expand its network across India and accelerate growth. Airtel will also participate in this round. As pa",
+      "evidence_path": "evidence_cache/4ac35eaa1e31da84d392143f44725f9d74e20b344bb6e492dd4a079400dff860.txt",
+      "content_hash": "4ac35eaa1e31da84d392143f44725f9d74e20b344bb6e492dd4a079400dff860",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+          "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 474933,
+          "text_chars": 199674,
+          "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Airtel"
       ]
     },
     {
@@ -1554,7 +1616,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 277193,
-      "elapsed_seconds": 1.253,
+      "elapsed_seconds": 1.794,
       "method": "httpx",
       "text_sample": "’ Bharti Airtel Limited – Media Release May 13, 2026 Bharti Airtel Limited Q4 FY26 Highlights • Bharti Airtel posts consolidated quarterly revenues of Rs 55,383 crore, growth of 15.7% YoY and 2.6% on QoQ basis, driven by sustained growth in India and robust performance in Africa. • India business posts quarterly revenues of Rs 39,566 crore, up 7.7% YoY and 0.9% QoQ. The growth was led by continued focus on portfolio premiumization within the Mobile segment, strong growth momentum in the Homes segment, and consistent delivery by Airtel Business. • India mobile revenue up 8.3% YoY, supported by higher ARPU and strong growth in smartphone data customers. • The Homes business recorded another robust quarter, achieving a YoY revenue growth of 37.3%. Net customer additions continued to be strong at 1,135 K as we deepen our Wifi footprint across the regions. • Airtel Business experienced strong",
       "evidence_path": "evidence_cache/3ebdb26cf74c2c855b643bd487410c2abad25bbdf9233b8c7e5602886abd993a.txt",
@@ -1581,10 +1643,95 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "Airtel"
+      ]
+    },
+    {
+      "row": 19,
+      "url": "https://www.airtel.in/press-release",
+      "final_url": "https://www.airtel.in/press-release/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Contact Us | Airtel : Latest Press Release & News",
+      "bytes": 463264,
+      "elapsed_seconds": 1.831,
+      "method": "httpx",
+      "text_sample": "Contact Us | Airtel : Latest Press Release & News Explore Airtel Menu Explore Airtel Account Get app Media Contacts Corporate Communications Bharti Airtel Ltd., 6th floor, tower A, Plot # 16 Udyog Vihar - Ph-IV Gurgaon Haryana 122001 email: [REDACTED_EMAIL] Logos, Signature Tune KNOW MORE → Airtel Press Release June 2026 Bharti Airtel appoints Rahul Vatts as Group Chief Regulatory Officer and Director – Corporate Affairs Airtel Extends Connectivity for Indian Army in Arunachal Pradesh Airtel pioneers mobile connectivity in difficult-to-reach locations of Arunachal Pradesh. Airtel brings faster speeds and wider 5G coverage to millions with 2900+ new sites New 5G sites boosts Upper North region of India: Punjab 1,066+; Haryana 954+; Himachal Pradesh 276+; Jammu & Kashmir 619+ May 2026 Airtel launches Priority Postpaid – delivering superior network experience for its cus",
+      "evidence_path": "evidence_cache/26d00675db7919e4a524ad7deb76e93cf17ffec828e24232ca72542b298c4957.txt",
+      "content_hash": "26d00675db7919e4a524ad7deb76e93cf17ffec828e24232ca72542b298c4957",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.airtel.in/press-release",
+          "final_url": "https://www.airtel.in/press-release/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 463264,
+          "text_chars": 192534,
+          "title": "Contact Us | Airtel : Latest Press Release & News",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Airtel"
+      ]
+    },
+    {
+      "row": 19,
+      "url": "https://www.jio.com/business/5g/",
+      "final_url": "https://www.jio.com/business/5g/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "5G for Business: Superfast Internet connectivity for Enterprises",
+      "bytes": 1477926,
+      "elapsed_seconds": 4.069,
+      "method": "httpx",
+      "text_sample": "5G for Business: Superfast Internet connectivity for Enterprises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center Transformation Application Modernization Analytics, Insights, AI Security, Management GPU Accelerated Computing CPaaS - JioCX Products Business Solutions Mobile Security Internet of Things Business Solutions Marketing Solution Get fast, secure, scalable data-connectivity solutions, to best suit your business needs View all products Internet Leased Line High speed, dedicated, burstable and reliable internet to ... JioBusiness Solution Multiple digital services for your growing business ... Business Broadband Max Power your business with AirFiber backed high-speed inter ... Business Internet Line Jio Business Internet Line offers up to 10X burstable spe ... Managed Wi-Fi Managed Wi-Fi ... MPLS VPN Secure private En",
+      "evidence_path": "evidence_cache/8c340e4a0108199ecd59a7cf13681100359ffe4edf40ff66d41bd7464f1b4215.txt",
+      "content_hash": "8c340e4a0108199ecd59a7cf13681100359ffe4edf40ff66d41bd7464f1b4215",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.jio.com/business/5g/",
+          "final_url": "https://www.jio.com/business/5g/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 1477926,
+          "text_chars": 12705,
+          "title": "5G for Business: Superfast Internet connectivity for Enterprises",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "IN",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Jio"
       ]
     },
     {
@@ -1595,7 +1742,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 4799512,
-      "elapsed_seconds": 2.151,
+      "elapsed_seconds": 21.377,
       "method": "httpx",
       "text_sample": "Financial Results Presentation FY 2024-25 / 4Q FY2025 25 April 2025 1 Forward Looking Statement This presentation contains forward-looking statements which may be identified by their use of words like “plans,” “expects,” “will,” “anticipates,” “believes,” “intends,” “projects,” “estimates” or other words of similar meaning. All statements that address expectations or projections about the future, including, but not limited to, statements about the strategy for growth, product development, market position, expenditures, and financial results, are forward-looking statements. Forward-looking statements are based on certain assumptions and expectations of future events. The companies referred to in this presentation cannot guarantee that these assumptions and expectations are accurate or will be realized. The actual results, performance or achievements, could thus differ materially from thos",
       "evidence_path": "evidence_cache/fd88bd8c86d866b84403fbc81049c0b18ac5045ce0773d0f208777fd714aad9c.txt",
@@ -1622,144 +1769,11 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "Jio"
-      ]
-    },
-    {
-      "row": 19,
-      "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-      "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
-      "bytes": 474099,
-      "elapsed_seconds": 2.407,
-      "method": "httpx",
-      "text_sample": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Explore Airtel Menu Explore Airtel Account Get app Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate Investment Aims to Spur AI-Data Center Expansion, Fuel Next Phase of Growth Nxtra to be Valued at Around US$3.1 Billion Post-Closing of Transaction New Delhi, March 30, 2026: Bharti Airtel (NSE: BHARTIARTL) (“Airtel”), today announced an investment of US$ 1 Billion by Alpha Wave Global, Carlyle (NASDAQ: CG) and Anchorage Capital, through their affiliates, in Nxtra Data Limited (“Nxtra”), a subsidiary of Bharti Airtel engaged in the data center business, to expand its network across India and accelerate growth. Airtel will also participate in this round. As pa",
-      "evidence_path": "evidence_cache/2cfab19fafd65662da3b2edc8080ca300809941adeb0b52f6904d07b67c3518e.txt",
-      "content_hash": "2cfab19fafd65662da3b2edc8080ca300809941adeb0b52f6904d07b67c3518e",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-          "final_url": "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 474099,
-          "text_chars": 199417,
-          "title": "Airtel Announces US$1 Billion Investment in Nxtra Led by Alpha Wave Global and Existing Investor Carlyle. Bharti Airtel Will Also Participate",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "IN",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Airtel"
-      ]
-    },
-    {
-      "row": 19,
-      "url": "https://www.jio.com/business/5g/",
-      "final_url": "https://www.jio.com/business/5g/",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "5G for Business: Superfast Internet connectivity for Enterprises",
-      "bytes": 1474969,
-      "elapsed_seconds": 3.787,
-      "method": "httpx",
-      "text_sample": "5G for Business: Superfast Internet connectivity for Enterprises Mobile Home Business Discover Plans Services Connectivity Voice & Collaboration Cloud Infrastructure Data Center Transformation Application Modernization Analytics, Insights, AI Security, Management GPU Accelerated Computing CPaaS - JioCX Products Business Solutions Mobile Security Internet of Things Business Solutions Marketing Solution Get fast, secure, scalable data-connectivity solutions, to best suit your business needs View all products Internet Leased Line High speed, dedicated, burstable and reliable internet to ... JioBusiness Solution Multiple digital services for your growing business ... Business Broadband Max Power your business with AirFiber backed high-speed inter ... Business Internet Line Jio Business Internet Line offers up to 10X burstable spe ... Managed Wi-Fi Managed Wi-Fi ... MPLS VPN Secure private En",
-      "evidence_path": "evidence_cache/d3445e07573cab71623107978c6fd7f70f301a3e8cb0a0513a296e1a32443ce2.txt",
-      "content_hash": "d3445e07573cab71623107978c6fd7f70f301a3e8cb0a0513a296e1a32443ce2",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.jio.com/business/5g/",
-          "final_url": "https://www.jio.com/business/5g/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 1474969,
-          "text_chars": 12694,
-          "title": "5G for Business: Superfast Internet connectivity for Enterprises",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "IN",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Jio"
-      ]
-    },
-    {
-      "row": 19,
-      "url": "https://www.airtel.in/press-release",
-      "final_url": "https://www.airtel.in/press-release/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Contact Us | Airtel : Latest Press Release & News",
-      "bytes": 462430,
-      "elapsed_seconds": 38.085,
-      "method": "curl_crawler_ua",
-      "text_sample": "Contact Us | Airtel : Latest Press Release & News Explore Airtel Menu Explore Airtel Account Get app Media Contacts Corporate Communications Bharti Airtel Ltd., 6th floor, tower A, Plot # 16 Udyog Vihar - Ph-IV Gurgaon Haryana 122001 email: [REDACTED_EMAIL] Logos, Signature Tune KNOW MORE → Airtel Press Release June 2026 Airtel brings faster speeds and wider 5G coverage to millions with 2900+ new sites New 5G sites boosts Upper North region of India: Punjab 1,066+; Haryana 954+; Himachal Pradesh 276+; Jammu & Kashmir 619+ May 2026 Airtel launches Priority Postpaid – delivering superior network experience for its customers Bharti Airtel today announced the launch of Priority Postpaid, a new service that leverages 5G slicing technology to deliver superior and more consistent experience to customers on postpaid. This service... Airtel Secure Workforce ̶ India’s first, fu",
-      "evidence_path": "evidence_cache/9c97b6d45bf3e947bad73b7b2e9c0f691aa9733fe12b8d949ffa2dae8a06ec50.txt",
-      "content_hash": "9c97b6d45bf3e947bad73b7b2e9c0f691aa9733fe12b8d949ffa2dae8a06ec50",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.airtel.in/press-release",
-          "final_url": "https://www.airtel.in/press-release",
-          "status": 0,
-          "method": "httpx",
-          "bytes": 0,
-          "text_chars": 0,
-          "title": "",
-          "error": "ReadTimeout('The read operation timed out')",
-          "meta_refresh_url": ""
-        },
-        {
-          "url": "https://www.airtel.in/press-release",
-          "final_url": "https://www.airtel.in/press-release/",
-          "status": 200,
-          "method": "curl_crawler_ua",
-          "bytes": 462430,
-          "text_chars": 192277,
-          "title": "Contact Us | Airtel : Latest Press Release & News",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "IN",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Airtel"
       ]
     }
   ],
@@ -1769,6 +1783,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-16T03:03:34.510715+00:00",
-  "fetched_at_hkt": "2026-06-16T11:03:34.510770+08:00"
+  "fetched_at": "2026-06-22T02:44:06.658128+00:00",
+  "fetched_at_hkt": "2026-06-22T10:44:06.658319+08:00"
 }

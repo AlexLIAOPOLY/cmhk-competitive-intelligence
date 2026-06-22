@@ -1,0 +1,2473 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong
+Limited take no responsibility for the contents of this announcement, make no
+representation as to its accuracy or completeness and expressly disclaim any liability
+whatsoever for any loss howsoever arising from or in reliance upon the whole or any
+part of the contents of this announcement.
+
+
+
+
+                i-CABLE COMMUNICATIONS LIMITED
+                              (Incorporated in Hong Kong with limited liability)
+                                             (Stock Code: 1097)
+
+                   FINAL RESULTS ANNOUNCEMENT
+                FOR THE YEAR ENDED 31 DECEMBER 2023
+FINANCIAL HIGHLIGHTS
+
+                                                                          Year ended 31 December
+                                                                             2023             2022
+                                                                          HK$’000        HK$’000
+                                                                                         (restated)
+
+ Continuing operations
+ Revenue                                                                    597,898        562,794
+
+ Loss from operations                                                      (427,766)      (325,847)
+
+
+ Loss from continuing operations                                           (547,564)      (623,380)
+
+ Discontinued operation
+ Loss from discontinued operation                                           (41,710)      (262,338)
+
+ Loss for the year                                                         (589,274)      (885,718)
+
+                                                                          HK cents        HK cents
+ Basic loss per share                                                         (8.3)          (12.4)
+ Diluted loss per share                                                       (8.3)          (12.4)
+
+                                                                     31 December       31 December
+                                                                            2023              2022
+                                                                         HK$’000           HK$’000
+
+ Total assets                                                              945,159          879,494
+ Total liabilities                                                      (2,273,976)      (1,619,023)
+ Total deficit                                                          (1,328,817)        (739,529)
+
+ Net gearing ratio (Note 1)                                                   -118%          -146%
+
+
+
+                                                   –1–
+•   The year of 2023 holds great significance as the world strives to emerge from the
+    impacts of the pandemic. In Hong Kong, society has fully recovered, and normal
+    traveller clearance with the Mainland and the rest of the world has resumed. In
+    this favorable environment, i-CABLE Communications Limited (the “Company”
+    or “i-CABLE”), its subsidiaries and consolidated structured entities (collectively
+    the “Group”) has also undergone a significant transformation. Following the
+    surrender of the domestic pay television programme service licence (the “Pay
+    TV Licence”), the Group gradually consolidated its resources and shifted its
+    focus on operating free-to-air television and multimedia programmes, moving
+    towards to the direction of omnimedia, while continued to enhance the
+    performance of its telecommunications business.
+
+•   The revenue from continuing operations of the Group for the year ended 31
+    December 2023 increased to approximately HK$598 million from approximately
+    HK$563 million for the year ended 31 December 2022. Due to the increase in
+    operating expenses, loss from operations from continuing operations increased
+    approximately HK$102 million to approximately HK$428 million for the year
+    ended 31 December 2023. After recognising the non-cash unrealised fair value
+    loss on the redemption option of long-term convertible bonds recognised as
+    financial assets at fair value through profit or loss (“FVTPL”) which amounted
+    to approximately HK$3 million (for the year ended 31 December 2022:
+    unrealised fair value loss of approximately HK$50 million), other non-operating
+    items and income tax, the Group recorded a decrease in net loss from continuing
+    operations to approximately HK$548 million for the year ended 31 December
+    2023, representing a decrease of approximately 12%, as compared with net loss
+    from continuing operations of approximately HK$623 million for the year ended
+    31 December 2022.
+
+•   Regarding the media segment, although the Group has terminated its pay
+    television (“Pay TV”) operation with effect from 1 June 2023 upon the approval
+    of application for the termination (the “Licence Termination”) of its Pay TV
+    Licence, the revenue generated from advertising during the year ended 31
+    December 2023 increased as compared to that of last year.
+
+•   The number of broadband and telephony customers in December 2023 decreased
+    to approximately 156,000 and 55,000, respectively, as compared to
+    approximately 198,000 and 68,000, respectively in December 2022. Revenue
+    generated from the telecommunications segment decreased by approximately
+    HK$13 million from approximately HK$399 million for the year ended 31
+    December 2022 to approximately HK$386 million for the year ended 31
+    December 2023. Due to keen market competition, the performance of the
+    telecommunications segment was inevitably affected.
+
+
+
+
+                                        –2–
+•    Loss of the Group for the year ended 31 December 2023 decreased by
+     approximately HK$297 million, representing a decrease of approximately 34%,
+     as compared to that of 2022. The decrease in the loss of the Group for the year
+     ended 31 December 2023 was mainly attributable to, among other things, (i) the
+     decrease in non-cash write-down of deferred tax assets and impairment losses on
+     certain non-current assets recognised for the year ended 31 December 2023; and
+     (ii) the decrease in fair value losses on financial assets at FVTPL for the year
+     ended 31 December 2023.
+Note:
+
+1.   Net gearing ratio represents total interest-bearing borrowings and convertible bonds less cash
+     and bank balances and restricted bank balances divided by total deficit.
+
+
+
+
+                                              –3–
+BUSINESS REVIEW
+
+OPERATING ENVIRONMENT
+
+The year of 2023 marked a transformative period for both Hong Kong and the Group.
+After a prudent evaluation of the market, the Group made the decision to terminate its
+Pay TV operation, signifying the end of one chapter and the start of another. With effect
+from 1 June 2023, the Group ceased its Pay TV operation and redirected its resources
+towards the development of an omnimedia platform, allowing the Group to adapt and
+cater to the shifting consumption habits of the audiences following the pandemic. In the
+telecommunications industry, the operating environment has become challenging due to
+factors such as evolving consumer behavior and rapid technological changes. In
+response, the Group has undertaken active strategic transformations and restructuring in
+recent years. By consolidating resources and improving efficiency in business
+operations, the Group aims to expand its business and enhance competitiveness in the
+telecommunications sector, aligning with market changes.
+
+MEDIA
+
+The outbreak of the pandemic has expedited the growth of online media platforms,
+causing a change in audience preferences towards watching programmes and films
+through online media platforms. Besides surrendering the Pay TV Licence, the Group’s
+free-to-air TV broadcaster has swiftly adapted to the changing of audience habits. It has
+moved away from a singular broadcasting mode and instead integrated all of its media
+platforms, embracing an omnimedia model to expand its reach. In the long term, the
+Group aims to augment advertising revenue across various platforms.
+
+Following the end of the pandemic, the community gradually returned to a state of
+normalcy, leading to improved business conditions in various industries, particularly the
+hotel, retail, and catering sectors exhibited the signs of recovery from the pandemic.
+However, the overall recovery fell short of initial optimism. This can be attributed to the
+pressure of rising interest rates and stock market volatility, which dampened the
+consumer sentiment. Moreover, after the pandemic, Hong Kong residents flock overseas
+during extended holidays for “Revenge Travel”, and the lifting of border restrictions
+between Hong Kong and the Mainland China resulted in the craze of Hong Kong
+residents travelling northward in droves to spend money. These factors significantly
+diminished local purchasing power. Despite advertisers have increased their advertising
+and promotional budgets, they still tend to be cautious.
+
+
+
+
+                                          –4–
+Despite the potential challenges in the business environment, the Group remained
+proactive in addressing them by leveraging its boundless creativity and strong production
+capabilities to capture audience attention. For instance, in response to the craze of
+“Revenge Travel” among Hong Kong residents and the surge in consumption in the
+Mainland China, the Group produced a series of travel programmes. Additionally, the
+Group was actively recruiting and nurturing production talents to develop more
+innovative programmes that cater to diverse age groups of its audience, which aimed to
+boost viewership ratings and enhance advertising revenue.
+
+In recent years, the structure and ecology of the media market have undergone rapid
+changes, from being dominated by traditional television and text media to being divided
+among television, streaming media, YouTube, and other social media platforms. Both
+the Group and the industry are striving to adapt to this rapid transformation. Previously,
+the entertainment industry had high entry barriers and traditional television stations held
+the advantage of scale. However, with the evolution of the internet and social media, the
+barriers to entry in the entertainment industry have significantly reduced. For instance,
+the cost of running a YouTube channel is much lower compared to that of a television
+station, and it may offer stronger profitability at different cost levels. Additionally, with
+fewer geographical restrictions, local media now have to directly compete with
+multinational streaming media, putting greater pressure on the industry. Recognising the
+need to diversify revenue sources, the Group acknowledges that relying solely on
+advertising or subscription fees is no longer sustainable. As a result, the Group has
+actively pursued collaborations with various types of advertisers, including government
+organisation, sports groups, commercial clients and school sponsoring bodies, to increase
+advertising revenue during the year ended 31 December 2023.
+
+In the third quarter of 2023, Hong Kong’s economy exhibited continued improvement,
+driven by factors such as inbound tourism and private consumption; the recovery of
+major international events and exhibitions, along with government initiatives,
+contributed to the gradual boost in the economy. In the preceding three quarters of 2023,
+consumer expenditure experienced a continuous upsurge in response to the improved
+employment rate. This resulted in increased advertising expenditure on HOY TV,
+particularly in categories such as food and beverage, health and medicine, tourism, and
+insurance. HOY TV self-produced television programmes, including the popular show
+“Where Do Do you go” (去邊啊Do姐), generated significant market buzz and garnered
+strong interest for co-sponsorships in fields such as beauty and skincare, tourism and
+insurance. Other programmes such as “Macau Miko Tour” (大馬女神Miko遊澳門),
+“Charlene Herbal Cuisine” (健康寧飲食), and “Dog Alchemist III” (煉狗術師III)
+resonated well with the audience, leading to an increase in advertising expenditure on
+retail and consumer goods.
+
+
+
+
+                                           –5–
+The Group secured the exclusive broadcasting rights for the “19th Asian Games
+Hangzhou” (the “Asian Games”) in Hong Kong and effectively capitalised on this
+opportunity to generate new revenue and established a powerful brand presence through
+its professional production. A notable achievement was the establishment of a novel
+collaboration model with sports associations, including e-sports, to live-stream the event
+on social media platforms, attracting sponsorships from banks and technology
+companies. Simultaneously, a series of tailored segments also stimulated an increase in
+viewership, resulting in additional sponsorship fees and airtime sales.
+
+However, the challenging external environment and the volatility in the local stock
+market during the year ended 31 December 2023 led to an adverse effect on the local
+economy, significantly impacting investor confidence. Consequently, there was a
+slowdown observed in advertising from real estate, financial and related trading
+platforms.
+
+COMMITTING TO SOCIETY
+
+Leveraging the media power and influence, the Group shouldered its own social
+responsibility to bring positive energy to the society and Hong Kong citizens. The
+Group’s i-CABLE News team partnered with various government departments in Hong
+Kong to develop a series of promotional programmes. These programmes aimed to
+enhance public awareness of the operations of different government departments, foster
+a deeper understanding of the government among the public, and strengthen the
+relationship between the government and the public.
+
+•   “Everlasting Mission 2”(學無止「警」的故事2) provides an exploration of the
+    diverse work of the Police Force allowing the audience to gain insights into the
+    professional knowledge and skills of the Police Force.
+
+•   “Hearts on Fire 2” (心比火熱2) delves into the various roles within the Fire Services
+    Department and promotes fire prevention activities across seasons to enhance the
+    fire safety awareness of the public.
+
+•   “Spreading Warmth with SWD Services” (社署服務暖社區) presents a series of
+    short stories highlighting the diverse services offered by the Social Welfare
+    Department.
+
+•   In December 2023, “National Security Knowledge Challenge”(國家安全常識挑戰
+    賽) took place in schools in Hong Kong, aiming to raise students’ awareness of the
+    National Security Law.
+
+
+
+
+                                          –6–
+Working Together to Create a New Vision in the Bay Area
+
+In September 2023, the Group made a press release regarding its strategic partnership
+with Guangdong Radio and Television Station, and launched a collaborative project
+“Working Together to Create a New Vision in the Bay Area” (攜手共創灣區新視界).
+The objective of this project is to jointly produce a series of dynamic and innovative TV
+programmes, tap into the potential TV audience market in the Greater Bay Area, and
+establish a significant milestone in the history of TV broadcasting in the Greater Bay
+Area.
+
+Nurturing New Force for the Industry
+
+The Group, in collaboration with the Home and Youth Affairs Bureau and The Y.Elites
+Association, has initiated the “Event Elite” Trainee Programme for the Asian Games.
+This programme involves a team of passionate young individuals interested in the sports
+and communication industry. They had joined the Group’s production team in Hangzhou
+and participated in the creation and filming of a series of documentaries showcasing the
+Hong Kong team’s participation in the Asian Games. These documentaries had been
+broadcasted online. The “Event Elite” Trainee Programme offered internship
+opportunities for young individuals who have a keen interest in pursuing a career in the
+sports editing or digital media industry to explore their interests and strengths while
+nurturing future leaders for the industry.
+
+EXPANDING REACH
+
+Over the past few years, there has been a significant shift in the entertainment
+preferences of the general public. In the past, people primarily relied on traditional
+media such as television, newspapers, and magazines. However, the media landscape has
+now evolved to include various platforms like television, streaming services, YouTube,
+and other social media. In response to these changes, the Group has taken a new
+direction and redirected its focus towards the multimedia field. It has allocated its
+resources to the development of free TV, digital media and wall screen advertising. This
+proactive reform has resulted in the Group’s three free-to-air TV channels, namely, HOY
+International Business Channel (Channel 76) (“HOY 76”), HOY TV (Channel 77)
+(“HOY 77”) and HOY Infotainment (Channel 78) (“HOY 78”), as well as mobile
+applications, achieving extensive coverage, reaching approximately 99% of the
+population in Hong Kong. As a result, the Group is able to provide free and high-quality
+TV services to a large number of viewers in Hong Kong. Additionally, the Group has
+introduced a new video streaming service that offers a more flexible viewing experience
+for both local and international audiences. Furthermore, the Group is actively expanding
+into the Mainland China market and collaborating with TV stations in the Greater Bay
+Area, which allow the Group to enrich the content of its various multimedia platforms
+and strengthen its competitiveness.
+
+
+
+
+                                          –7–
+The Group had dedicated resources in developing digital media channels to expand the
+reach and increase audience engagement. The Facebook pages operated by the Group in
+total, have accumulated more than 2.5 million followers as at 31 December 2023,
+representing an increase of 25% as compared to that of 2022. These Facebook pages
+have reached more than 34 million users. Among them, the most popular Facebook
+pages, namely HOY, HOYIBC, i-CABLE News, i-CABLE Life, and i-CABLE China,
+received a total of over 9 million interactions in 2023.
+
+MEDIA
+
+Diversified content
+
+The Group is committed to providing audiences with diversified and people-oriented
+programme content in order to achieve the unique film and television trend of HOY TV.
+
+Set out below are various programmes produced and outsourced by HOY TV in 2023,
+including variety shows, cooking and dining, lifestyle, infotainment, health, drama
+series, etc., which help to boost viewership ratings and attract TV advertising revenue
+and sponsorship.
+
+Variety shows:
+
+Cheng Yu Ling (Do Do), a prominent figure in the show business, has debuted as a host
+for a travel programme “Where Do Do you go” (去邊啊Do姐) on HOY TV. In this show,
+Do Do embarked on a journey to explore hidden scenic spots in Europe and Asia
+accompanied by five popular male celebrities, namely Terence Lam Ka Him, Jeffrey
+Ngai Tsun Sang, Tyson Yoshi, Joey Hung Ka Ho, and Ying Chi Yuet (MrLittleCat).
+
+The popular variety show “Undercover Travel Group 3.0” (臥底旅行團 3.0) is co-hosted
+by Jiro Lee Sheung Ching, and Aiyana Lo, who disguise as ordinary tourists and join
+various affordable tour groups, embarking on a journey to uncover interesting and
+unique experiences. This programme has garnered significant acclaim from the audience,
+achieving a highest audience rating of 4.5 points, and the show has gained substantial
+viewership on YouTube, with the highest number of episodes viewed over 540,000.
+
+This was the first time that Kenny Wong Tak Bun and Louise Wong Tan Ni teamed up
+to shoot a unique travel programme “Live Offline” (四遊記) for HOY TV. In this
+programme, they embarked on a journey to Shikoku in Japan, focusing on introducing
+the audience to methods of relaxation and spiritual cleansing.
+
+To complement the Group’s exclusive broadcast of the Asian Games across Hong Kong,
+the Group specially produced “杭州限定旅團”, “亞運來了” and “亞運直杭” to introduce
+the latest updates and preparation process of the Asian Games, as well as the attractions
+and latest update of Hangzhou.
+
+
+
+                                          –8–
+Hosted by Miko Wong, a well-known internet Malaysian celebrity, “Macau Miko
+Tour”(大馬女神Miko遊澳門) brings the audience to the vibrant streets and winding
+alleys of Macao, where they can delve into the multifaceted characteristics of the city.
+
+Other travel related variety shows: “Seoul Searching”(四處首羅), “Sister Travelling in
+Japan” (女遊日本) and “Hot Spring Holidays” (獨家旅行團).
+
+Dining and cooking:
+
+Hosted by Jiro Lee Sheung Ching, “Taste of the Two Dishes” (舌尖上的雙餸飯)
+ventures into two dishes rice restaurants situated across Hong Kong, Kowloon, and the
+New Territories, breaking through the conventional idea of two or three dishes rice, and
+offers a tantalising visual feast of two dishes rice.
+
+Hosted by Charlene Tse, Gloria Mak Sze Man and Wong Ching Nam, “Charlene Herbal
+Cuisine” (健康寧飲食) revolves around the theme of health, and promotes the concept
+of “homology of medicine and food” by creating delectable and nutritious medicinal
+diet.
+
+Other dining and cooking related shows: “Theme Cook 2” (煮題COOK 2)、, “A
+Hongkonger’s Guide to Old-Fashion Food” (老派美食之必要), “Cooking Martin” (馬田
+煮場),“What to Cook Today Christmas” (開飯啦聖誕), “Master Chef’s Delight 2023”
+(大廚精心推介2023), “Top 100 Hong Kong Cuisine” (全港開餐100強), “What to Cook
+Today” (開飯啦), “Lunch Time 2” (夠鐘食晏2).
+
+Lifestyle:
+
+Hosted by Omi Kwong and star dog trainer Eric Ko, “Dog Alchemist III” (煉狗術師 III)
+addresses behavior issues of pet dogs and providing solutions for their owners. Since its
+premiere, the programme has garnered high praise and has been well-received by
+numerous pet owners.
+
+Other lifestyle related shows: “Master verse of Denim” (牛仔的多重宇宙),”Good Deal
+in Japan (Kansai)” (日圓5算攻略(關西)), “Okinawa Coffee Trail” (沖繩咖啡地圖), “I’m
+a racer” (我要做車手).
+
+
+
+
+                                          –9–
+Infotainment:
+
+In recent years, Hong Kong has experienced a rise in fraudulent activities, the
+community-centered programme “Scam Alert”(東呃西騙) revealed various social fraud
+cases from a unique perspective. Hosted by Benjamin Au Yeung Wai Hoo (Ben Sir) and
+Master Seven (七仙羽師傅), “Scam Alert” (東呃西騙) involved the participation of 16
+artists to re-enact the “real fraud process” so as to alert the audience against swindlers.
+
+“Far Away From Home (Taiwan)” (離鄉別井的故事台灣篇) returned for its second
+season. Jessica Kan Shuk Yi guided the audience to witness and participate in the new
+lives of 15 groups of Hong Kong people who have relocated to Taiwan.
+
+Health:
+
+Health related shows: “Health Concern Group” (健康關注組), “Health Concern Group
+— Asian Game”(健康關注組亞運篇).
+
+Drama Series:
+
+The Group provided drama series, such as “The Legends of Monkey King” (凌雲志),
+“The Ingenious One” (雲襄傳), “Lost You Forever Season I” (長相思第一季), “Jun Jiu
+Ling” (君九齡), “Police Tactical Unit”(PTU機動部隊), “Agency” (廣告強人).
+
+On the sport programmes, the Group has always supported the development of local and
+international sports events and has exhibited exclusive coverage of several high-quality
+sports events throughout the year. Following the surrender of the Pay TV Licence, the
+Group strategically consolidated its resources and shifted its focus to the development of
+free-to-air sports events, aiming to expand the Group’s content exposure in the direction
+of omnimedia.
+
+The Group has served as the official broadcaster of the Asian Games for the seventh
+consecutive time. This was the first time that the Asian Games were broadcasted on a
+free-to-air TV channel. This achievement generated nationwide enthusiasm and
+reaffirmed Cable Sports’ leading position in the industry. In addition to the Group’s
+three free-to-air TV channels, namely, HOY 76, HOY 77 and HOY 78, as well as its
+social media platforms, the Group made extensive use of its newly renovated website
+and mobile applications to provide comprehensive coverage of Hong Kong athletes’
+events throughout the Asian Games featuring a packed schedule. The success of the
+coverage led to a surge in viewership. With the exceptional performances of the Hong
+Kong athletes and the comprehensive coverage by HOY TV, both on and off the field,
+the ratings of HOY 77 experienced a significant increase. HOY 77 also achieved its
+highest ratings since its launch, with the Chinese Women’s Volleyball Final reaching a
+peak rating of over 7.6. Online viewership was equally impressive, with over 2.45
+million visitors accessing the mobile application and website, resulting in a total of 36
+million page views during the event period.
+
+
+                                          – 10 –
+During the Asian Games, the Group collaborated with various shopping malls and
+organisations, resulting in 250 outdoor screens where the Asian Games programmes
+could be watched. Additionally, the Group actively expanded its partnerships with sports
+organisations, including collaborations with eSports organisations to broadcast the Asian
+Games, which contributed to the increased advertising revenue from banking and
+technology products. Overall, the popularity of the Asian Games, coupled with the
+production of customised content by HOY TV, has proven successful in boosting
+programme sponsorship and advertising revenue.
+
+Furthermore, the Group secured the broadcasting rights for several international
+competitions during the year ended 31 December 2023. This allowed viewers to enjoy a
+wide range of exclusive world-class competitions through the Group’s free-to-air TV
+channels and various digital media channels. The Group also provided professional
+analysis and commentary to enhance the viewing experience. Notable international
+competitions include the Hong Kong Sevens (香港國際七人欖球賽), FIVB World
+Women’s Volleyball League Hong Kong 2023 (FIVB世界女排聯賽香港2023), Carabao
+Cup (英格蘭聯賽盃), the German Cup (“DFB-Pokal”) (德國盃足球賽), EFL
+Championship (英格蘭冠軍聯賽) , Coppa Italia (意大利盃) , Copa del Rey (西班牙盃) ,
+FIBA Basketball World Cup (FIBA世界盃男子籃球賽) and FIA World Rallycross
+Championship Hong Kong China — Season Finale (FIA世界場地越野車錦標賽中國香
+港站年終賽). Apart from world-class sports events, the Group has been committed to
+producing and delivering local sports competitions and news to viewers, including
+“Loving Sports” (愛•體育) which focuses on Hong Kong sports and local athletes.
+
+Cable TV 18 Channel (有線18台)
+
+On 1 June 2023, Cable TV 18 Channel, one of the most popular horse racing channels in
+Hong Kong, made a transition from Pay TV to a multimedia platform following the
+termination of Pay TV operation. Through the collaborative efforts of various
+departments of the Group, Cable TV 18 Channel was successfully migrated to the new
+OTT platform “i-CABLE CH 18” (有線18寶). Throughout this transition, the platform’s
+stability and the quality of its original programmes were maintained. Users simply need
+to install the “i-CABLE CH 18” (有線18寶) to continue enjoying up to 14 different
+forms of professional horse racing analysis programmes on a daily basis. These
+programmes include “Race Card Talk” (排位拆局), “Be a Big Punter” (我要做大戶),
+“Race Forecast” (賽馬預測) and “18 Betting Tower” (18烽火台). Additionally, the
+mobile application “Racing GPS” (賽馬GPS) experienced a surge in downloads,
+reaching a new record high. The innovation and transformation of Cable TV 18 Channel
+have led to the diversification of programmes and services, aligning with the Group’s
+commitment to “originality, innovation, and dedication” in its horse racing programmes.
+
+
+
+
+                                         – 11 –
+i-CABLE News
+
+During the year ended 31 December 2023, i-CABLE News remained a leading source of
+24-hour news, delivering uninterrupted news coverage to viewers free of charge on HOY
+78. HOY 78 continued to uphold its philosophy of providing consistent and reliable
+i-CABLE News. For 30 years since its establishment, i-CABLE News has established
+itself as a reputable and influential news outlet, gaining recognition within the industry.
+
+In addition to providing 24-hour news coverage, HOY 78 offers a range of infotainment
+programmes. These programmes include “Inno Action” (智•創未來) which highlights
+Hong Kong’s innovation industry, “Let’s Talk” (有理有得傾) which explores important
+social and political issues in Hong Kong, “Our Home Our Country” (家國天下) which
+focuses on national conditions and Hong Kong’s national security law and is presented
+by government officials, and “World Living 2: Australia” (全世界睇住2澳洲篇) which
+provides comprehensive information on overseas property and residence. Furthermore,
+i-CABLE News has produced the flagship programme “City Focus” (一線搜查) which
+closely follows the most relevant community current affairs topics, has been broadcasted
+on HOY 77 for over 400 episodes.
+
+Digital media
+
+On 21 November 2022, the Group introduced hoy.tv, a comprehensive website that
+offers a centralised platform for accessing the programmes content of three free-to-air
+TV channels: HOY 76, HOY 77 and HOY 78. This initiative accommodates the evolving
+needs of the audience.
+
+To enhance the viewing experience for the audience and meet the high demand generated
+by the broadcasting of the Asian Games events, the Group undertook a website revamp
+during the year and offered a vast array of online on-demand videos, including over
+1,800 episodes of TV series, entertainment shows, and informative programmes, thereby
+expanding the diversity of programme content. Furthermore, in addition to news,
+finance, and sports, the Group expanded its digital content presence on i-cable.com and
+various social media platforms to encompass lifestyle and entertainment programmes.
+
+To enhance the Group’s competitiveness in the multimedia platform, hoy.tv and
+i-cable.com websites have implemented cloud infrastructure, resulting in improved
+stability and scalability for live streaming. This upgrade ensures that audiences can
+enjoy a high-quality audio-visual experience anytime and anywhere. The optimisation of
+the websites and the enrichment of content have led to a consistent growth in the number
+of users on the hoy.tv website. By December 2023, the monthly active users on hoy.tv
+website reached 0.2 million, representing a year-on-year increase of 6.5%, and more than
+0.6 million active users were recorded in the peak month of the year. However, the
+number of monthly active users on the i-cable.com website declined to 0.7 million in
+December 2023, representing a year-on-year decrease of 58% due to the termination of
+the Pay TV service.
+
+
+                                          – 12 –
+On the other hand, the Group undertook a complete overhaul of the HOY Mobile App in
+August 2023, to cater to viewers’ preferences for watching programmes on their mobile
+devices and enable users to access exciting programmes from HOY 76, HOY 77 and
+HOY 78 at anytime, as well as enjoy 24-hour live broadcasts. In addition, the HOY
+Mobile App has been updated with new interface and added features such as programmes
+search, my favorite collection and storage of viewing records to further enhance the
+viewing experience.
+
+By 31 December 2023, the HOY Mobile App has achieved significant growth in its user
+base, with over 520,000 cumulative downloads, representing a notable increase of 2.5
+times compared to the previous year; the mobile app “i-CABLE News — News, Finance,
+and Lifestyle Information Platform” (有線新聞 — 新聞、財經及生活資訊平台)
+experienced substantial growth in downloads throughout 2023. With over 1.3 million
+downloads, there was a notable increase of 13% compared to the previous year, and the
+overall number of users showed a steady upward trend.
+
+MTR In-train TV Advertising
+
+The Group’s “Cable News Express” (有線新聞速遞) is the sole distributor of the
+advertisement and content provider for the MTR In-train TV. The coverage extends to
+trains on the MTR East Rail Line, Tuen Ma Line, Kwun Tong Line, and South Island
+Line. The Group delivers a range of content to passengers on MTR trains, including real-
+time local and international news, financial updates, sports coverage, entertainment
+news, and informative programmes. It also provides advertisers with a premium outdoor
+advertising platform, enabling them to effectively convey their advertising messages to
+the passengers.
+
+Following the complete reopening of the border in March 2023, economic activities in
+Hong Kong have been gradually returning to normal. Between January and December
+2023, Hong Kong witnessed over 23 million inbound passengers, MTR recorded a 32%
+increase in average daily patronage (Monday to Friday only) on an annualised basis for
+the year. Advertisers, particularly those targeting cross-border customers, such as
+healthcare, pharmaceuticals, and dental services, have resumed their advertising
+spending in the MTR In-train TV. The border opening has created opportunities for
+various economic activities, including but not limit to hosting international events,
+conferences, and economic forums. Consequently, advertising revenue from sectors like
+insurance, lending, electronic payment, and real estate has recorded an increase.
+
+As the exclusive broadcaster of the Asian Games, “Cable News Express” took the
+initiative to create tailored content and develop a range of marketing solutions to attract
+advertising spending from the government and various product categories, including
+electronic payment, food and beverage, health and supplements, and fast-moving
+consumer goods.
+
+
+
+
+                                          – 13 –
+TELECOMMUNICATIONS BUSINESS
+
+The Group’s telecommunications business has demonstrated consistent performance and
+currently possesses a telecommunications network that serves over 2 million households
+in Hong Kong. In addition to expanding the coverage of its primary fiber network and
+enhancing the capacity of its core network to meet the demands of residential and
+business markets, the Group has also undertaken the transformation of its hybrid fiber/
+coaxial network into a full fiber network using advanced technologies in recent years.
+Furthermore, the Group has made continuous investments in the expansion of the Gigabit
+Passive Fiber Network (“GPON”) to offer high-speed Fiber-to-the-Home internet
+services to an increasing number of subscribers. These efforts are aimed at ensuring that
+its customers enjoy a stable and high-speed internet experience.
+
+With the end of the pandemic and the complete revival of the tourism industry, the
+Group has introduced roaming data service plans tailored for the Greater Bay Area, Asia,
+and global destinations to cater to the increasing demand for such services. Additionally,
+as northward consumption has gradually become a trend among Hong Kong residents,
+the Group has launched a high data usage service plan to fulfill the needs of its
+customers.
+
+For the corporate services, the Group is actively exploring B2B (business-to-business)
+opportunities and expanding its product portfolio. Leveraging its existing expertise and
+skills, the Group is seeking new avenues to expand its business scope. This includes
+venturing into the commercial broadband business, generating additional revenue
+through the management of optical cabling systems and leasing spare network capacity.
+Furthermore, the Group has maintained a strong strategic partnership with China Mobile
+Hong Kong Limited (“CMHK”) in various areas, encompassing the network
+construction, network consultation and promotion, as well as mobile communication
+business. Such initiatives have not only provided a stable source of income but have also
+facilitated the synergistic utilisation of network resources. In order to further increase
+market share, the Group will continue to explore better and more diversified
+telecommunications services while strengthening its sales channels.
+
+
+
+
+                                         – 14 –
+PRINCIPAL RISKS AND UNCERTAINTIES FACING BY THE GROUP
+
+The following principal risks and uncertainties are considered to be of significance and
+have the potential to affect the Group’s businesses, results of operations and financial
+conditions. However, they are non-exhaustive as there may be other risks and
+uncertainties arising, resulting from changes in the economy and other conditions over
+time.
+
+The media segment is experiencing an intense competition in a crowded marketplace
+with a super-dominant operator and changing user behaviour. The fragmentation of the
+audience’s media consumption habits is increasing, with viewers choosing to watch
+various types of content anytime and anywhere through new platforms and mobile
+devices. The availability of a vast array of programme content on streaming platforms
+and social media platform has intensified competition and reduced the necessity of
+relying solely on traditional fixed platforms. As a result of these factors, the Group has
+experienced weakened operating results. However, the Group remains committed to
+creativity, continuing to produce programmes that reflect local characteristics,
+integrating media platforms, and keeping pace with the dynamic media market. The
+Group will make prudent and necessary investments in programming and infrastructure
+to enhance its competitiveness.
+
+The telecommunications segment is faced with fast-changing technology and customers
+are constantly demanding for better quality and high-speed internet service. The Group’s
+operations depend on its ability to innovate and upgrade its services and the successful
+deployment of new technologies. The Group will continue to enhance its network and
+bolstering its marketing efforts through online and telephone channels to provide
+superior services to its customers. These enhancements can improve the cost efficiency
+of the telecommunications business, thereby strengthening the Group’s competitiveness
+and revenue growth potential.
+
+
+
+
+                                         – 15 –
+MANAGEMENT DISCUSSION AND ANALYSIS
+
+(A) Review of 2023 Results
+
+    Revenue from continuing operations of the Group for the year ended 31 December
+    2023 increased by approximately HK$35 million or 6% to approximately HK$598
+    million (2022: approximately HK$563 million). Revenue from discontinued operation
+    of the Group for the year ended 31 December 2023 was approximately HK$118
+    million as compared to the year ended 31 December 2022 of approximately HK$332
+    million, which represented a decrease of approximately HK$214 million or 64%.
+
+    The total operating expenses from continuing operations of the Group increased to
+    approximately HK$1,026 million for the year ended 31 December 2023 from
+    approximately HK$889 million for the year ended 31 December 2022. In which,
+    cost of services from continuing operations of the Group for the year ended 31
+    December 2023, including programming costs, network expenses and cost of sales,
+    increased by approximately HK$129 million to approximately HK$816 million
+    (2022: approximately HK$687 million). Programming costs, network expenses and
+    cost of sales from continuing operations increased by approximately 23%, 21% and
+    7% respectively as compared to the year ended 31 December 2022. Selling, general
+    and administrative and other operating expenses from continuing operations of the
+    Group increased by approximately 4% as compared to the year ended 31 December
+    2022.
+
+    The non-cash impairment losses in aggregate amount of approximately HK$47
+    million (2022:HK$62 million), HK$20 million (2022: HK$37 million) and HK$15
+    million (2022: HK$24 million) were included within programming costs, network
+    expenses and selling, general and administrative and other operating expenses,
+    respectively, for the year ended 31 December 2023 as a result of management’s
+    assessment of the business prospect of the Group in light of the latest market
+    environment.
+
+    Loss from operations from continuing operations of the Group for the year ended 31
+    December 2023 was approximately HK$428 million, representing an increase of
+    approximately 31%, as compared with the loss from operations from continuing
+    operations of approximately HK$326 million for the year ended 31 December 2022.
+
+    On top of the recognition of non-cash impairment losses on certain non-current
+    assets mentioned above, the loss from continuing operations of the Group for the
+    year ended 31 December 2023 included the recognition of fair value losses on
+    financial assets at FVTPL of approximately HK$6 million for the year ended 31
+    December 2023, as compared to the fair value losses on financial assets at FVTPL
+    of approximately HK$56 million recognised for the year ended 31 December 2022.
+
+
+
+
+                                       – 16 –
+Finance costs from continuing operations of the Group for the year ended 31
+December 2023 increased by approximately HK$28 million or 50% to
+approximately HK$84 million (2022: approximately HK$56 million), of which
+approximately HK$41 million (2022: approximately HK$39 million) was the total
+interest expense on unlisted long-term convertible bonds issued in June 2019 (the
+“2019 LCS”) and March 2021 (the “2021 LCS”), and approximately HK$37 million
+(2022: approximately HK$13 million) was interest expenses on interest-bearing
+borrowings.
+
+After the recognition of interest income, finance costs, non-operating expenses, net
+and income tax, which included the write down of deferred tax assets of
+approximately HK$23 million, the Group recorded a net loss from continuing
+operations of approximately HK$548 million for the year ended 31 December 2023
+(2022: approximately HK$623 million), representing a decrease of net loss from
+continuing operations of approximately 12%, as compared to the last year.
+
+Loss from discontinued operation for the year ended 31 December 2023 amounted
+to approximately HK$42 million (2022: approximately HK$262
+million), due to the termination of Pay TV operation with effect from 1 June 2023.
+
+Loss for the year ended 31 December 2023 decreased by approximately HK$297
+million, representing a decrease of approximately 34%, as compared to that of 2022.
+The decrease in the loss of the Group for the year ended 31 December 2023 was
+mainly attributable to, among other things, (i) the decrease in non-cash write-down
+of deferred tax assets and impairment losses on certain non-current assets recognised
+for the year ended 31 December 2023; and (ii) the decrease in fair value losses on
+financial assets at FVTPL for the year ended 31 December 2023.
+
+Basic and diluted loss per share from continuing and discontinued operations for the
+year ended 31 December 2023 was approximately HK8.3 cents (2022: approximately
+HK12.4 cents). Basic and diluted loss per share from continuing operations for the
+year ended 31 December 2023 was approximately HK7.7 cents (2022: approximately
+HK8.7 cents). Basic and diluted loss per share from discontinued operation for the
+year ended 31 December 2023 was approximately HK0.6 cents (2022: approximately
+HK3.7 cents).
+
+During the year ended 31 December 2023, included in operating expenses from
+continuing operations, impairment losses of property, plant and equipment of
+approximately HK$46 million, right-of-use assets of approximately HK$4 million,
+programming library of approximately HK$29 million and other related intangible
+assets of approximately HK$3 million, were recognised in relation to the cash-
+generating unit to which the remaining assets of the Group are allocated.
+Management determined the value in use of the cash-generating unit with the
+assistance of an independent qualified professional valuer, which is measured using
+the discounted cash flow projections. The cash flow projections are based on
+financial budgets covering a five-year period approved by the board (the “Board”)
+of directors (the “Directors”) of the Company. Cash flows beyond the five-year
+period are extrapolated using a long term growth rate. The valuation method used
+was consistent with the requirements prescribed by Hong Kong Accounting Standard
+(“HKAS”) 36 “Impairment of Assets” and remained the same as that of last year.
+
+
+                                     – 17 –
+   The key assumptions used in the cash flow projections included forecast revenue at
+   growth rates ranging from -9% to 19% (2022: -25% to 18%) and forecast operating
+   expenses at rates ranging from -20% to -1% (2022: -13% to -2%) over the five-year
+   period, which are determined by considering both internal and external factors
+   relating to the businesses; long term growth rate of 2.5% (2022: 2.5%) which is
+   consistent with the forecast of the businesses and the expected market development;
+   and the pre-tax discount rate of 16.34% (2022: 17.44%) which reflects specific risks
+   relating to the businesses. Changes in assumptions from previous year’s reflected
+   management’s latest business plans and business prospect in light of the latest
+   market environment.
+
+(B) Segmental Information
+
+   The principal activities of the Group comprise media and telecommunications
+   operations.
+
+   Media
+
+   The media segment includes operations related to the television subscription
+   business (terminated with effect from 1 June 2023), domestic free television
+   programme service, advertising, television relay service, programme licensing,
+   theatrical release and other media related businesses.
+
+   Revenue from continuing operations derived from the media segment for the year
+   e n d e d 31 D ecember 2023 inc r e a se d by a ppr oxima te ly HK$48 million to
+   approximately HK$212 million (2022: approximately HK$164 million), which was
+   mainly due to increased advertising revenue.
+
+   Operating expenses from continuing operations before depreciation, amortisation of
+   other intangible assets and impairment losses incurred by the media segment for the
+   year ended 31 December 2023 increased to approximately HK$503 million (2022:
+   approximately HK$315 million). As disclosed in “Segment Information” in Note 7
+   to the consolidated financial statements in this final results announcement, the loss
+   before depreciation, amortisation of other intangible assets and impairment losses
+   from continuing operations of the media segment for the year ended 31 December
+   2023 increased to approximately HK$291 million (2022: approximately HK$151
+   million), which was mainly due to increase in operating expenses.
+
+
+
+
+                                        – 18 –
+The Group terminated the Pay TV operation with effect from 1 June 2023 upon the
+approval of application for the Licence Termination, result to decrease in revenue
+and operating expenses form discontinued operation for the year ended 31 December
+2023. Revenue from discontinued operation of the Group for the year ended 31
+December 2023 was approximately HK$118 million as compared with year ended
+31 December 2022 of approximately HK$332 million, which represented a decrease
+of approximately HK$214 million or 64% as revenue from discontinued operation
+for the year ended 31 December 2022 represented full year effect. The operating
+expenses from discontinued operation decreased from approximately HK$595
+million for year ended 31 December 2022 to approximately HK$160 million for the
+year ended 31 December 2023 which was mainly due to the recognition of non-cash
+impairment losses on property, plant and equipment, programming library, other
+related intangible assets and contract acquisition cost in prior year and operating
+expenses from discontinued operation for the year ended 31 December 2022
+represented full year effect. Loss from discontinued operation decreased by
+approximately HK$220 million to approximately HK$42 million for the year ended
+31 December 2023 (2022: approximately HK$262 million).
+
+Telecommunications
+
+The telecommunications segment includes operations related to broadband internet
+access services, portal operation, telephony services, network leasing, network
+construction, mobile service and mobile agency service as well as other
+telecommunications related businesses.
+
+Revenue derived from the telecommunications segment for the year ended 31
+December 2023 decreased by approximately HK$13 million to approximately
+HK$386 million (2022: approximately HK$399 million).
+
+Operating expenses before depreciation, amortisation of other intangible assets and
+impairment losses incurred by the telecommunications segment for the year ended
+31 December 2023 increased by approximately 10% to approximately HK$291
+million (2022: approximately HK$264 million). As disclosed in “Segment
+Information” in Note 7 to the consolidated financial statements in this final results
+announcement, the profit before depreciation, amortisation of other intangible assets
+and impairment losses from the telecommunications segment for the year ended 31
+December 2023 decreased by approximately 30% to approximately HK$95 million
+(2022: approximately HK$135 million), which was mainly due to the increase in
+operating expenses and decrease in revenue.
+
+
+
+
+                                     – 19 –
+(C) Liquidity, Financial Resources and Capital Structure
+
+    As at 31 December 2023, the Group had cash and bank balances and restricted bank
+    balances of approximately HK$29 million and HK$12 million, respectively as
+    compared to approximately HK$42 million and HK$17 million, respectively as at
+    31 December 2022. The decrease in cash and bank balances was mainly due to the
+    net cash used in operations and investing activities and offsetting with the net cash
+    from financing activities. The cash and bank balances and restricted bank balances
+    of the Group as at 31 December 2023 and 2022 are mainly denominated in Hong
+    Kong Dollar (“HK$”). The net gearing ratio, measured in terms of the total interest-
+    bearing borrowings and convertible bonds less cash and bank balances and restricted
+    bank balances divided by total deficit, was a negative of approximately 118% (31
+    December 2022: a negative of approximately 146%). As at 31 December 2023, the
+    Group recorded total assets of approximately HK$945 million which were financed
+    by total liabilities of approximately HK$2,274 million offsetting with the total
+    deficit of approximately HK$1,329 million. As at 31 December 2022, the Group
+    recorded total assets of approximately HK$879 million which were financed by total
+    liabilities of approximately HK$1,619 million and total deficit of approximately
+    HK$740 million. The increase in total deficit was attributable to the loss for the
+    year.
+
+    Consolidated net liability value of the Group as at 31 December 2023 was
+    approximately HK$1,329 million, while the Group recorded a consolidated net
+    liability value of approximately HK$740 million as at 31 December 2022.
+
+    The carrying amount of interest-bearing borrowings denominated in HK$ as at 31
+    December 2023 was approximately HK$1,041 million (31 December 2022:
+    approximately HK$591 million), in which the bank loan carries interest at variable
+    rates and was repayable on demand; and the loans from Celestial Pioneer Limited (a
+    company holding 72.0% of the total number of issued shares of Forever Top (Asia)
+    Limited (“Forever Top”), a substantial shareholder holding 43.2% shareholding of
+    the Company, and is wholly-owned by Dr. Cheng Kar Shun, Henry (“Dr. Cheng”),
+    the Director) carry interest at fixed rates ranging from 2.5% to 6% per annum and
+    with a term of three years from the date of respective loan agreements. As at 31
+    December 2023 and 31 December 2022, the Group has utilised all committed
+    borrowing facilities.
+
+
+
+
+                                         – 20 –
+The 2019 LCS
+
+On 4 June 2019, the issuance of the 2019 LCS with the principal amount of HK$568
+million by the Company to Forever Top, the controlling shareholder of the Company
+was completed. The 2019 LCS would be convertible into 4,544,000,000 new
+ordinary shares of the Company (the “Share(s)”) upon full conversion of the 2019
+LCS based on the initial conversion price (the “Conversion Price”) of HK$0.125 per
+conversion share and the coupon rate of the 2019 LCS is 2.0% per annum and
+payable quarterly. Details of the 2019 LCS are set out in the announcements of the
+Company dated 25 January 2019 and 4 June 2019 and the circular of the Company
+dated 8 April 2019 (the “2019 Circular”). During the year ended 31 December 2023,
+there had not been any conversion of the 2019 LCS.
+
+The carrying amount of liability component of the 2019 LCS denominated in HK$
+as at 31 December 2023 was approximately HK$426 million (31 December 2022:
+approximately HK$405 million). Details of the 2019 LCS were set out in
+“Convertible Bonds” in Note 16 to the consolidated financial statements in this final
+results announcement.
+
+The net proceeds raised from the issuance of the 2019 LCS have all been utilised as
+at 31 December 2020 according to the intended use of proceeds as disclosed in the
+2019 Circular.
+
+The 2021 LCS
+
+On 31 March 2021, the issuance of the 2021 LCS with the principal amount of
+HK$200 million by the Company to Forever Top was completed. The 2021 LCS
+would be convertible into 2,941,176,470 new Shares upon full conversion of the
+2021 LCS based on the initial conversion price of HK$0.068 per conversion share
+and the coupon rate of the 2021 LCS is 2.0% per annum and payable quarterly. The
+Company may at any time on or after the date of issue of the 2021 LCS by giving
+not less than 10 business days’ written notice to the holder(s) of the 2021 LCS to
+redeem all or part of the 2021 LCS at the outstanding principal amount of the 2021
+LCS together with all accrued but unpaid interest. Details of the 2021 LCS are set
+out in the announcements of the Company dated 27 January 2021 and 31 March
+2021 and the circular of the Company dated 2 March 2021 (the “2021 Circular”).
+During the year ended 31 December 2023, there had not been any conversion or
+redemption of the 2021 LCS.
+
+The carrying amount liability component and redemption option of the 2021 LCS
+denominated in HK$ as at 31 December 2023 was approximately HK$146 million
+(31 December 2022: approximately HK$141 million) and approximately HK$34
+million (2022: approximately HK$37 million) respectively. Details of the 2021 LCS
+were set out in “Convertible Bonds” in Note 16 to the consolidated financial
+statements in this final results announcement.
+
+
+                                     – 21 –
+    The net proceeds raised from the issuance of the 2021 LCS have all been utilised as
+    at 31 December 2022 according to the intended use of proceeds as disclosed in the
+    2021 Circular.
+
+    The Group takes a centralised approach to the Group’s funding and treasury
+    management as well as optimisation of the funding cost-efficiency. The management
+    (i) strives to maintain a balanced debt and capital financing structure; (ii) ensures
+    secure and optimum return on the investment of surplus funds within an agreed risk
+    profile; (iii) oversees the treasury related financial risks, including but not limited to
+    interest rate risk, currency risk, liquidity risk and credit risk; (iv) strives to diversify
+    source of funding and maintain a balanced maturity profile; and (v) maintains an
+    appropriate control environment to protect the financial return under the fluidity
+    financial market conditions.
+
+    The Group’s assets and liabilities are mainly denominated in HK$ and United States
+    Dollars (“US$”) and it earns its revenue and incurs costs and expenses mainly in
+    HK$ and US$. As HK$ is pegged to US$, the Group does not expect any significant
+    foreign currency exposure arising from the fluctuation of the US$/HK$ or HK$/US$
+    exchange rates.
+
+    During the year ended 31 December 2023, capital expenditure on property, plant
+    and equipment amounted to approximately HK$67 million (2022: approximately
+    HK$114 million), the additions to right-of-use assets were approximately HK$201
+    million (2022: approximately HK$12 million), the additions to programming library
+    were approximately HK$43 million (2022: approximately HK$47 million) and the
+    additions to other intangible assets were approximately HK$3 million (2022:
+    HK$Nil).
+
+    The Group financed its operations generally with internally generated cash flows
+    and loans from the controlling shareholder of Forever Top.
+
+(D) Contingent Liabilities
+
+    As at 31 December 2023, the Group did not have any contingent liabilities.
+
+
+
+
+                                            – 22 –
+(E) Guarantees
+
+   As at 31 December 2023, a corporate guarantee of HK$295 million (2022: HK$400
+   million) had been provided by the Company to a bank in respect of the facility of
+   borrowing up to HK$295 million (2022: HK$400 million) to a wholly-owned
+   subsidiary of the Company, of which HK$295 million (2022: HK$295 million) was
+   utilised by the wholly-owned subsidiary of the Company.
+
+   As at 31 December 2023, the Group had made arrangements with a bank to provide
+   two separate performance bonds to the counterparties amounting to HK$35 million
+   (2022: HK$40 million), of which HK$5 million (2022: HK$10 million) was secured
+   by bank deposits. The performance bonds are to guarantee in favour of the
+   counterparties the Group’s performance in fulfilling the obligations under a contract
+   and the requirements as set out in the licence issued by a regulatory body.
+
+(F) Human Resources
+
+   The Group had 1,070 full-time employees as at 31 December 2023 (31 December
+   2022: 1,151). Total salaries and related costs before capitalisation and incurred for
+   the year ended 31 December 2023 amounted to approximately HK$409 million (for
+   the year ended 31 December 2022: approximately HK$372 million). The
+   remuneration of the Directors and the employees of the Group is determined with
+   reference to their qualifications, experience, duties and responsibilities with the
+   Group, as well as the Group’s performance and the prevailing market conditions.
+   Besides, the Group regularly provides training courses for the employees of the
+   Group to meet their needs.
+
+(G) Operating Environment
+
+   In view of the rapidly changing media landscape in Hong Kong, and fierce
+   competition among global operations related to the Pay TV content providers and
+   Pay TV operators, Hong Kong Cable Television Limited (“HKC”) has submitted an
+   application for the Licence Termination to the Government and has been granted
+   approval on 14 February 2023. The Group has terminated the Pay TV operation with
+   effect from 1 June 2023.
+
+   Although the Group has terminated the Pay TV operation with effect from 1 June
+   2023, the Group recorded a slight improvement on advertising revenue.
+
+   For broadband services, the number of customers as at 31 December 2023 decreased
+   as compared to that as at 31 December 2022, due to keen market competition. In
+   view of above, the Group will continue to expand the network coverage and upgrade
+   of the Group’s network to provide high speed Gigabit-capable Passive Optical
+   Network (“GPON”) services to enhance the Group’s competitiveness.
+
+
+
+                                        – 23 –
+(H) Charge on Group Assets
+
+    As at 31 December 2023, restricted bank balances of approximately HK$12 million
+    (31 December 2022: approximately HK$17 million) were made by the Group to
+    secure certain banking facilities granted to the Group.
+
+(I) Material Acquisitions and Disposals and Significant Investments
+
+    There was no material acquisition or disposal of subsidiaries, associated companies
+    and joint ventures or significant investments of the Group, which would have been
+    required to be disclosed under the Rules Governing the Listing of Securities on The
+    Stock Exchange of Hong Kong Limited (the “Listing Rules”), for the year ended 31
+    December 2023.
+
+(J) Future Plans for Material Investments or Capital Assets
+
+    The Group will continue to invest in property, plant and equipment and
+    programming library as required by its business operations, and explore the market
+    and identify any business opportunities which will be beneficial to its growth and
+    development, enhance its profitability, and strive for better return to the
+    shareholders of the Company (the “Shareholders”).
+
+    The Group’s ongoing capital expenditure will be funded by internal cash flows
+    generated from operations and the available credit facilities.
+
+(K) Outlook
+
+    The Group terminated its Pay TV operation in 2023 and transitioned to free TV and
+    omnimedia operations. The year of 2024 will be an important year after the
+    transformation of the media business. In view of the rapidly changing landscape of
+    the media market in Hong Kong, it is imperative to develop branded content and
+    design multi-screen interactive forms to reach audiences and users. Therefore, the
+    Group will integrate social media platforms, mobile applications, the MTR In-train
+    TV, and physical promotional events to create marketing solutions that enhance
+    customer engagement and consumption. In order to promote the development of
+    programme content and reinforce its production capabilities, the Group will continue
+    to devise innovative content marketing strategies and recruit producers with diverse
+    styles and skill sets. The Group anticipates that the transformation of local economic
+    activities and inbound tourism will have a positive impact on the quality of content
+    and the flexibility of operators in the advertising market in 2024.
+
+
+
+
+                                         – 24 –
+Media
+
+Regarding programme content, the Group remains dedicated to producing innovative
+shows that reflects current social changes and the collective feelings of audiences.
+This includes shows like “Hints of Postnatal Care” (坐月攻略), which delves deeply
+into the postnatal recovery of new mothers after the pandemic, and “Make it a better
+place 2” (香港空間改造王2), which caters to the excitement of Hong Kong people
+about purchasing homes and their aspiration to transform these spaces into cozy and
+inviting homes. The Group is also preparing to launch self-produced drama series in
+2024, aiming to provide viewers with more diversified programmes choices.
+
+To cater to the Hong Kong people who are busy with consumption, HOY TV is
+seeking innovative approaches to produce travel and food programmes, such as “UK,
+OK” (英國邊忽好) which explores hidden gems in Britain, “Along with the
+Goddesses” (女神同行) where Taiwan’s top ten popular goddesses serve as guides,
+and “Undercover Service Squad” (臥底服務團) which challenges the services
+standard offered by Hong Kong restaurants and attractions with the participation of
+artists and guests. Moreover, to enhance the popularity and topicality of these
+programmes, the Group has invited several renowned and thematic artists to host the
+shows, including Natalie Tong Sze Wing, Snow Suen Wai Suet, Ashley Chu Chi
+Yin, Maisy Ma, Mizuki Lin (林襄) and Lisa Lin (林莎).
+
+Building upon the success of last year’s broadcast of the Asian Games, the Group
+will continue its collaboration with local audiences to select a range of thrilling
+international events featuring Hong Kong athletes to support the Hong Kong team in
+2024. These include the exclusive coverage of events such as the “AFC Asian Cup“
+(亞洲盃足球賽), the “2024 World Aquatics Championships“ (2024世界游泳錦標
+賽), the “AFC Champions League“ (亞冠盃足球賽), and the “2025 FIBA Asia Cup
+Qualification Match” (2025亞洲盃籃球賽資格賽). Together with other international
+sports events, HOY TV maximises the advantages of various media platforms to
+deliver high-quality sports broadcasting to local audiences, and to elevate local
+athletes and the sports community into the spotlight, and facilitate engagement with
+audiences, witnessing the development of sports in Hong Kong.
+
+To seize the opportunities arising from the development of the Guangdong-Hong
+Kong Greater Bay Area, the Group has launched its self-produced programmes.
+These include “Map of Shenzhen” (深圳地圖) which caters to the consumption
+preferences of Hong Kong residents venturing Shenzhen, “Let’s Feast GBA” (煮題
+COOK 3灣區搵食) which focuses on the cuisines in the Greater Bay Area, and
+“Railway Traveler” (一個人鐵道行) which introduces tourist destinations along
+Mainland China’s high-speed railway. Furthermore, the Group has established a
+strategic partnership with China Guangdong Radio and Television to jointly produce
+the Cantonese Spring Festival Gala programme (龍騰灣區歡樂年) in 2024. This
+collaboration enhances the Group’s presence in the Greater Bay Area. The Group
+
+
+
+                                    – 25 –
+will continue to develop programmes with distinct Hong Kong characteristics to
+better integrate into the Greater Bay Area market. Additionally, the Group will
+pursue deeper and more comprehensive cooperation with Mainland media and
+platforms to attract more business partners and advertisers, thereby fostering
+business growth. In addition to the Greater Bay Area market, the Group will explore
+partnerships with platforms in Malaysia, Singapore, the United States, Canada, and
+other regions to tap into a broader film and television market.
+
+HOY 78 will persist in improving the production of local news and global finance
+content to capture the business potential in the banking and finance sector. In
+January 2024, the Group has introduced an exclusive interview section “Inno
+Navigator” (科創領航) in programme “Inno Action” (智•創未來), which engaged in
+discussions with ten influential guests from the science and technology sector
+regarding the progress of science and technology innovation in Hong Kong and the
+associated industry policies. “City Focus” (一線搜查), produced by the i-CABLE
+News team, is one of the highest-rated programmes at HOY TV. In the future, it will
+be broadcasted from a new studio equipped with AR (Augmented Reality)
+technology, allowing closer engagement with the public on current social issues and
+providing comprehensive analysis on diverse facets of people’s livelihoods.
+
+The Group will continue to strengthen its free-to-air TV channels, digital media
+platforms and advertising businesses following its successful expansion into the
+multimedia sector in 2023 in response to the changing operating environment. With
+the rapid advancements in 5G wireless networks and the increasing popularity of
+streaming content on smartphones, the Group will focus on improving the
+functionality of its mobile applications, including “HOY” and “i-CABLE News” as
+well as mobile webpages, to provide viewers with a more convenient and high-
+quality digital experience. Additionally, the Group will work on enhancing the flow
+and quality of film streaming on digital platform, while continuously innovating to
+provide a wider range of appealing content and advertising options to its audience,
+which will contribute to the expansion of the company’s business operations.
+
+Furthermore, following the optimisation of the HOY Mobile App, a new targeted
+sales function is added, which is expected to bring revenue growth to the Group. By
+offering value-added integrated marketing solutions and bundling multi-platform
+media services, more business opportunities will be seized in 2024 and beyond.
+
+
+
+
+                                    – 26 –
+Cable TV 18 Channel (有線18台) remains committed to delivering a comprehensive
+lineup of horse racing programmes to cater to the vast number of horse racing
+enthusiasts. The channel will continue to enhance the mobile application “Racing
+GPS” (賽馬GPS) while adhering to the principles of originality, innovation, and
+dedication. Cable TV 18 Channel (有線18台) aims to provide a greater variety of
+thrilling and top-notch horse racing information, especially for young horse racing
+fans, offering them professional horse racing analysis from different perspectives
+and maintain a leading position in the horse racing channel, so as to attract more
+new users.
+
+The recovery of economic activities and the increase in inbound tourism in the
+Greater Bay Area will directly benefit the advertising market in 2024. The
+convenience of travel on the MTR East Rail Line will attract more cross-boundary
+travelers, creating new business opportunities for both existing and new advertisers.
+To diversify content and attract advertisers, the Group plans to introduce additional
+lifestyle and entertainment content on the MTR In-train TV, with aims to associate
+more product categories with the content, thereby increasing the placement of
+advertisements and generating higher revenue. Moreover, the Group will launch new
+initiatives to offer advertisers comprehensive and customised advertising campaigns
+through bundled sales of MTR carriage advertisements and in-app advertising
+positions, resulting in additional revenue streams. Additionally, the introduction of
+targeted sales as a new advertising feature on the MTR mobile application is
+expected to generate interest from potential advertisers and drive new business
+revenue.
+
+The Group will continue to implement innovative sales strategies, offer content
+sponsorship and integrate marketing solutions to diversify the product portfolio. The
+advertising sales team of the Group will continue to deliver personalised advertising
+content, customised mini programmes, and cross-platform bundled sales to seize
+more business opportunities.
+
+Telecommunications
+
+The Group will continue to invest in the expansion of network backbone coverage
+and core network capacity. The objective is to meet the growing demands of both
+residential and commercial markets and position the Group for future growth. To
+address the rising demand for data traffic and services, the Group will strive to
+expand its network infrastructure to provide stronger network support and higher
+capacity.
+
+Through investments in extending network backbone coverage, the Group aims to
+achieve wider service coverage and enhance connectivity, resulting in higher speeds
+and a more reliable network experience. Simultaneously, expanding the capacity of
+the core network will improve network throughput and processing capabilities,
+catering to the increasing demand for data transmission while ensuring network
+stability and reliability.
+
+                                     – 27 –
+The objectives of these investments and endeavors are to facilitate the business
+expansion of the Group and address evolving market requirements. By expanding
+network capabilities and establishing a stronger infrastructure, the Group can offer
+customers a wider range of service options, cater to the diverse needs of various
+industries and users, and maintain a competitive edge.
+
+The Group will persist in pursuing potential collaborations with other business
+partners for network cooperation. Additionally, it will enhance its existing
+partnership with CMHK, a long-term strategic partner, encompassing areas such as
+content provision, network consultation, and infrastructure layout. Furthermore, the
+Group will leverage its network expertise and capabilities to support CMHK in the
+design, planning, and installation of infrastructure projects in Hong Kong.
+
+The Group has a strong belief that its telecommunications business will continue to
+operate efficiently and yield satisfactory outcomes. Moreover, the Group is eager to
+explore additional business prospects within the telecommunications sector, aiming
+to bring new impetus to the Group’s business portfolio and enhance overall
+performance growth.
+
+The Group has been focusing on formulating and implementing an organisational
+restructuring which included, among other things, (i) identifying cost-saving
+initiatives through automation and process re-engineering; (ii) promoting more
+locally produced high quality content and introducing new overseas contents; (iii)
+exploring new television content co-operation models and diversifor free television
+and other digital media platforms in view of the increasing competition from
+alternative media platforms; and (iv) performing strategic reviews on possible
+restructuring of the Group to enhance business performance and management
+efficiency, to promote synergies, and to improve cost efficiency and profitability,
+and on the financial performance of the Group. As part of a strategic review, the
+Group has been and will continue to prudently evaluate any potential partnerships.
+
+
+
+
+                                    – 28 –
+(L) Events After the Reporting Period
+
+    1.   On 4 January 2024, HKC as the borrower, entered into a loan agreement with
+         Celestial Pioneer Limited as the lender, pursuant to which, HKC obtained an
+         unsecured loan with a principal amount of HK$80,000,000 for a term of 3 years
+         from the date of the said loan agreement, with an interest rate of 6.0% per
+         annum.
+
+    2.   On 6 March 2024, HKC as the borrower, entered into a loan agreement with
+         Celestial Pioneer Limited as the lender, pursuant to which, HKC obtained an
+         unsecured loan with a principal amount of HK$90,000,000 for a term of 3 years
+         from the date of the said loan agreement, with an interest rate of 6.0% per
+         annum.
+
+    Save as disclosed above, the Group does not have any material events affecting the
+    Group’s financial performance and/or financial position significantly that have
+    occurred since the end of the financial year ended 31 December 2023.
+
+(M) Compliance With Relevant Laws and Regulations
+
+    During the year ended 31 December 2023, there was no incidence of non-
+    compliance with the relevant laws and regulations of the place in which the Group
+    operates that has a significant impact on the business operations of the Group.
+
+
+
+
+                                        – 29 –
+CONSOLIDATED STATEMENT OF PROFIT OR LOSS
+For the year ended 31 December 2023
+
+                                                             2023          2022
+                                                   Note   HK$’000     HK$’000
+                                                                      (restated)
+
+Continuing operations
+
+Revenue                                            6,7    597,898      562,794
+Cost of services
+— Programming costs                                       (396,988)   (323,310)
+— Network expenses                                        (255,649)   (210,706)
+— Cost of sales                                           (163,410)   (152,898)
+Selling, general and administrative and
+ other operating expenses                                 (209,617)   (201,727)
+
+Loss from operations                                      (427,766)   (325,847)
+
+Interest income                                                749       1,111
+Finance costs                                              (83,547)    (55,561)
+Non-operating expenses, net                                 (4,060)    (55,456)
+
+Loss before taxation                                8     (514,624)   (435,753)
+Income tax                                          9      (32,940)   (187,627)
+
+Loss from continuing operations                           (547,564)   (623,380)
+
+Discontinued operation
+Loss from discontinued operation                   10      (41,710)   (262,338)
+
+Loss for the year                                         (589,274)   (885,718)
+
+Attributable to:
+ Equity shareholders of the Company                       (589,274)   (885,718)
+
+
+
+
+                                          – 30 –
+                                                            2023              2022
+                                            Note                         (restated)
+
+Loss per share                              11
+From continuing and discontinued
+ operations
+ Basic                                             (8.3) HK cents (12.4) HK cents
+
+ Diluted                                           (8.3) HK cents (12.4) HK cents
+
+From continuing operations
+ Basic                                             (7.7) HK cents   (8.7) HK cents
+
+ Diluted                                           (7.7) HK cents   (8.7) HK cents
+
+From discontinued operation
+ Basic                                             (0.6) HK cents   (3.7) HK cents
+
+ Diluted                                           (0.6) HK cents   (3.7) HK cents
+
+
+
+
+                                   – 31 –
+CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+For the year ended 31 December 2023
+
+                                                     2023          2022
+                                                  HK$’000     HK$’000
+                                                              (restated)
+
+Loss for the year                                 (589,274)   (885,718)
+
+Other comprehensive income for the year
+Item that may be reclassified subsequently to
+  profit or loss:
+  Currency translation difference                      (14)         100
+
+Total comprehensive income for the year           (589,288)   (885,618)
+
+Attributable to:
+ Equity shareholders of the Company
+ — Continuing operations                          (547,578)   (623,280)
+ — Discontinued operation                          (41,710)   (262,338)
+
+                                                  (589,288)   (885,618)
+
+
+
+
+                                         – 32 –
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+As at 31 December 2023
+
+                                                          2023      2022
+                                                Note   HK$’000   HK$’000
+
+ASSETS
+Non-current assets
+ Property, plant and equipment                         393,219   457,567
+ Right-of-use assets                                   194,248     9,655
+ Programming library                                         –    11,075
+ Other intangible assets                                 1,218     2,661
+ Contract acquisition costs                              4,248     3,683
+ Deferred tax assets                            12      69,551   102,144
+ Deposits, prepayments and other receivables            31,154    34,132
+
+                                                       693,638   620,917
+
+Current assets
+ Inventories                                             3,416     6,473
+ Trade receivables and contract assets          13     120,203   106,219
+ Deposits, prepayments and other receivables            46,007    41,565
+ Contract acquisition costs                              6,534     6,102
+ Financial assets at fair value through
+   profit or loss                                       34,392    40,081
+ Restricted bank balances                               12,050    16,550
+ Cash and bank balances                                 28,919    41,587
+
+                                                       251,521   258,577
+
+Total assets                                           945,159   879,494
+
+
+
+
+                                       – 33 –
+                                                           2023          2022
+                                                Note    HK$’000       HK$’000
+
+EQUITY
+Capital and reserves
+ Share capital                                  15      7,928,975     7,928,975
+ Reserves                                              (9,257,792)   (8,668,504)
+
+Total deficit                                          (1,328,817)    (739,529)
+
+LIABILITIES
+Non-current liabilities
+ Convertible bonds                              16       572,005       546,040
+ Interest-bearing borrowings                    17       746,035       296,035
+ Lease liabilities                                       225,169         7,820
+ Other non-current liabilities                            26,969        21,373
+
+                                                       1,570,178       871,268
+
+Current liabilities
+ Trade payables                                 14        85,486        50,278
+ Accrued expenses and other payables                     234,879       247,316
+ Receipts in advance and customers’ deposits              83,538       117,811
+ Interest-bearing borrowings                    17       295,000       295,000
+ Lease liabilities                                         4,815        37,258
+ Current tax liabilities                                      80            92
+
+                                                         703,798       747,755
+
+Total liabilities                                      2,273,976     1,619,023
+
+Total equity and liabilities                             945,159       879,494
+
+
+
+
+                                       – 34 –
+NOTES TO THE CONSOLIDATED FINANCIAL STATEMENTS
+
+1.   GENERAL INFORMATION
+
+     i-CABLE Communications Limited is a limited liability company incorporated in Hong Kong. The
+     address of its registered office in Hong Kong is 7th Floor, Cable TV Tower, 9 Hoi Shing Road,
+     Tsuen Wan, Hong Kong.
+
+     The Company has its primary listing on The Stock Exchange of Hong Kong Limited (the “Stock
+     Exchange”).
+
+     The Group is engaged in domestic free television programme service, advertising, television relay
+     service, programme licensing, theatrical release, other media related businesses, broadband internet
+     access services, portal operation,  telephony services, network leasing, network construction, mobile
+     service and mobile agency service as well as other telecommunications related businesses. During
+     the year ended 31 December 2023, the Group discontinued its domestic pay television programme
+     service business as detailed in Note 10. Accordingly, the consolidated statement of profit or loss and
+     the  consolidated statement of comprehensive income for the year ended 31 December 2022 has been
+     re-presented.
+
+     The consolidated financial statements for the year ended 31 December 2023 (the “Financial
+     Statements”) are presented in thousands of Hong Kong dollars (HK$’000), unless otherwise stated.
+     The Financial Statements have been approved for issue by the Board on 22 March 2024.
+
+     The financial information relating to the years ended 31 December 2023 and 2022 that is included in
+     this final results announcement does not constitute the Company’s statutory annual consolidated
+     financial statements for that year but is derived from those financial statements. Further information
+     relating to these statutory financial statements required to be disclosed in accordance with section
+     436 of the Hong Kong Companies Ordinance (Cap. 622) is as follows:
+
+     The Company has delivered the consolidated financial statements of the Group for the year ended 31
+     December 2022 to the Registrar of Companies as required by section 662(3) of, and Part 3 of
+     Schedule 6 to, the Hong Kong Companies Ordinance (Cap. 622) and will deliver the consolidated
+     financial statements of the Group for the year ended 31 December 2023 in due course.
+
+     The Company’s auditor has reported on the consolidated financial statements of the Group for both
+     years. The auditor’s reports were unqualified; did not include a reference to any matters to which the
+     auditor drew attention by way of emphasis without qualifying its report; and did not contain a
+     statement under sections 406(2), 407(2) or (3) of the Hong Kong Companies Ordinance (Cap. 622).
+
+2.   BASIS OF PREPARATION
+
+     The Financial Statements have been prepared in accordance with Hong Kong Financial Reporting
+     Standards (“HKFRS”) issued by the Hong Kong Institute of Certified Public Accountants
+     (“HKICPA”) and requirements of the Hong Kong Companies Ordinance Cap. 622. The Financial
+     Statements have been prepared under the historical cost convention, except for financial assets at
+     FVTPL, which are measured at fair value.
+
+     The preparation of Financial Statements in conformity with HKFRS requires the use of certain
+     critical accounting estimates. It also requires management to exercise its judgement in the process of
+     applying the Group’s accounting policies.
+
+
+
+
+                                                 – 35 –
+During the year ended 31 December 2023, the Group incurred a net loss of HK$589 million (2022:
+HK$886 million). As at 31 December 2023, the Group’s current liabilities exceeded its current assets
+by HK$452 million (31 December 2022: HK$489 million) and total deficit amounted to HK$1,329
+million (31 December 2022: HK$740 million). Total operating cash outflows amounted to HK$287
+million (2022: HK$89 million) and total cash outflows amounted to HK$13 million during the year
+(2022: total cash outflows of HK$29 million). Included in the Group’s current liabilities was an
+interest-bearing bank borrowing of HK$295 million which is immediately repayable on demand and
+subject to review at any time and in any event not less than annually. Besides the banking facility,
+the Group has received financing from time to time from Forever Top, a substantial shareholder
+holding 43.2% equity interests of the Company, through rights issue and issue of long-term
+convertible bonds in June 2019 and March 2021 to improve the Group’s liquidity. Up to 31
+December 2023, the controlling shareholder of Forever Top has advanced unsecured 3-year interest-
+bearing loans totalling HK$750 million to the Group, of which HK$450 million was advanced to the
+Group during the year ended 31 December 2023. Subsequent to the year end, in January and March
+2024, the controlling shareholder of Forever Top further advanced unsecured 3-year interest-bearing
+loans totalling HK$170 million to the Group.
+
+In view of such circumstances, the Directors have given careful consideration of the liquidity
+requirement for the Group’s operations, the performance of the Group and available sources of
+financing in assessing whether the Group has sufficient financial resources to continue as a going
+concern. The Directors have reviewed the Group’s cash flow forecast prepared by management which
+covers a period of twelve months from 31 December 2023. The Directors have taken into account the
+following plans and measures in assessing the sufficiency of working capital requirements in the
+foreseeable future:
+
+1.   The Group’s banking facility was renewed in March 2023 and the outstanding loan balance of
+     HK$295 million has been rolled over, which will continue to be subject to the clause of the
+     bank’s overriding right to demand repayment;
+
+2.   Since the termination of the Pay TV Licence with effect from 1 June 2023, the Group continues
+     to provide domestic free television programme services and other businesses as usual, including
+     broadband telecommunications services, telephony services, network construction and mobile
+     services. The Group will continue with its strategic transformation plan to enhance the Group’s
+     business performance; enrichment of contents; cooperation with other partners and cost savings
+     initiatives; and
+
+3.   Forever Top has entered into an irrevocable deed of undertaking for a period of twelve months
+     from 31 December 2023 to provide financial support to the Group, up to a cap with reference to
+     the latest funding requirement based on the cash flow forecast as approved by the Board, as and
+     when necessary. In turn, Forever Top has received back to back financial support undertakings
+     from its controlling shareholder.
+
+Notwithstanding the above, whether the Group is able to achieve its plans and measures as described
+above, which incorporate assumptions about future events and conditions are subject to inherent
+uncertainties. In particular, whether the Group will be able to continue as a going concern would
+depend upon the continuous availability of existing banking facility, the successful implementation
+of cost saving initiatives and enhancement of business performance, and from time to time as and
+when is necessary, the financial support from Forever Top as backed by the controlling shareholder
+of Forever Top.
+
+The Directors, after due consideration of the basis of the Group’s plans and measures as well as the
+reasonably possible downside changes to the cash flow assumptions in the cash flow projections,
+consider that the Group will have sufficient working capital to meet its financial obligations as and
+when they fall due in the coming twelve months from 31 December 2023. Accordingly, the Directors
+consider it is appropriate to prepare the Financial Statement on a going concern basis.
+
+
+
+
+                                            – 36 –
+3.   MATERIAL ACCOUNTING POLICIES
+
+     The accounting policies are consistent with those as described in the Group’s financial statements for
+     the year ended 31 December 2022, except for the adoption of the amendments to standards effective
+     in the current accounting period.
+
+     (a)   New standard, amendments to standards and HKFRS Practice Statement effective in
+           current accounting period
+
+           During the year ended 31 December 2023, the Group has adopted the following new standard,
+           amendments to standards and HKFRS Practice Statement which are mandatory for accounting
+           period beginning on 1 January 2023:
+
+           HKFRS 17 and HKFRS 17                   Insurance Contracts
+            (Amendments)
+           HKFRS 17 (Amendments)                   Initial Application of HKFRS 17 and HKFRS 9
+                                                     — Comparative Information
+           HKAS 1 (Amendments) and                 Disclosure of Accounting Policies
+            HKFRS Practice Statement 2
+           HKAS 8 (Amendments)                     Definition of Accounting Estimates
+           HKAS 12 (Amendments)                    Deferred Tax related to Assets and Liabilities arising
+                                                     from a Single Transaction
+           HKAS 12 (Amendments)                    International Tax Reform — Pillar Two Model Rules
+
+           The adoption of these new standard, amendments to standards and HKFRS Practice Statement
+           does not have any significant change to the accounting policies or any significant effect on the
+           results and financial position of the Group.
+
+     (b) Amendments to standards and interpretation that are not yet effective and have not been
+         early adopted by the Group
+
+           The following amendments to standards and interpretation have been published which are
+           mandatory for the Group’s accounting periods beginning on or after 1 January 2024 but have
+           not been early adopted by the Group:
+
+           HKFRS 16 (Amendments)                   Lease Liability in a Sale and Leaseback (1)
+           HKAS 1 (Amendments)                     Classification of Liabilities as Current or Non-current (1)
+           HKAS 1 (Amendments)                     Non-current Liabilities with Covenants (1)
+           Hong Kong Interpretation 5              Presentation of Financial Statements — Classification
+            (2020)                                  by the Borrower of a Term Loan that Contains a
+                                                    Repayment on Demand Clause (1)
+           HKAS 7 and HKFRS 7                      Supplier Finance Arrangements (1)
+            (Amendments)
+           HKAS 21 (Amendments)                    Lack of Exchangeability (2)
+           HKFRS 10 and HKAS 28                    Sale or Contribution of Assets between an Investor and
+            (Amendments)                            its Associate or Joint Venture (3)
+
+           (1)
+                 Effective for accounting periods beginning on or after 1 January 2024
+           (2)
+                 Effective for accounting periods beginning on or after 1 January 2025
+           (3)
+                 Effective date is to be determined
+
+           The Group does not expect that these amendments to standards and interpretation would have
+           any material impact on its results and financial position.
+
+
+                                                  – 37 –
+4.   ESTIMATES AND JUDGEMENTS
+
+     The preparation of the Financial Statements requires management to make judgements, estimates and
+     assumptions that affect the application of accounting policies and the reported amounts of assets and
+     liabilities, income and expenses. Actual results may differ from these estimates.
+
+5.   FINANCIAL RISK MANAGEMENT AND FAIR VALUES OF FINANCIAL INSTRUMENTS
+
+     (a)   Financial risk factors
+
+           The Group’s activities expose it to a variety of financial risks: market risk (including currency
+           risk, fair value interest rate risk, cash flow interest rate risk and price risk), credit risk and
+           liquidity risk.
+
+           There have been no changes in the financial risk management policies since 31 December 2022.
+
+     (b) Liquidity risk
+
+           Compared to the year ended 31 December 2022, there was no other material change in the
+           contractual undiscounted cash outflows for financial liabilities, except for the contractual
+           undiscounted cash outflows for the drawdown of loans from Celestial Pioneer Limited of
+           HK$450,000,000 with a term of 3 years from the date of the respective loan agreements and
+           interest thereon (Note 17(b)) and the contractual undiscounted cash outflows for the inception
+           of new leases of approximately HK$350,294,000 during the year ended 31 December 2023.
+
+     (c)   Price risk
+
+           The Group is exposed to price risk through its investments and redemption option of long-term
+           convertible bonds recognised as financial assets at FVTPL. The Group manages this exposure
+           by maintaining a portfolio of investments with different risk and return profiles.
+
+           Sensitivity analysis
+
+           At 31 December 2023, if the price of the Group’s investments recognised as financial assets at
+           FVTPL had been 1% higher/lower with all other variables held constant, the loss for the year
+           would have decreased/increased by approximately HK$2,000 (2022: approximately
+           HK$27,000).
+
+           Based on the share price of the Company as at 31 December 2023, if the share price of the
+           Company had been HK$0.01 higher/lower with all other variables held constant, the fair value
+           of the redemption option of long-term convertible bonds recognised as financial assets at
+           FVTPL would have increased by approximately HK$10,954,000 and decreased by
+           approximately HK$12,676,000, respectively (2022: increased by approximately HK$4,904,000
+           and decreased by approximately HK$9,311,000, respectively) and the loss for the year would
+           have decreased by approximately HK$10,954,000 and increased by approximately
+           HK$12,676,000, respectively (2022: decreased by approximately HK$4,904,000 and increased
+           by approximately HK$9,311,000, respectively).
+
+
+
+
+                                                  – 38 –
+(d) Fair values of financial instruments
+
+    Financial instruments carried at fair value are measured by different valuation methods. The
+    inputs to valuation methods are categorised into three levels within a fair value hierarchy, as
+    follows:
+
+    Level 1: The fair value of financial instruments traded in active markets (such as publicly
+             traded derivatives, and equity securities) is based on quoted market prices at the end
+             of the reporting period. The quoted market price used for financial assets held by the
+             Group is the current bid price. These instruments are included in Level 1.
+
+    Level 2: The fair value of financial instruments that are not traded in an active market (for
+             example, over-the-counter derivatives) is determined using valuation techniques which
+             maximise the use of observable market data and rely as little as possible on entity-
+             specific estimates. If all significant inputs required to fair value an instrument are
+             observable, the instrument is included in Level 2.
+
+    Level 3: If one or more of the significant inputs is not based on observable market data, the
+             instrument is included in Level 3.
+
+    The following table presents the Group’s assets that are measured at fair value at the end of the
+    reporting period on a recurring basis:
+
+                                                Level 1        Level 2       Level 3         Total
+                                               HK$’000        HK$’000       HK$’000        HK$’000
+
+    At 31 December 2023
+    Assets
+    Financial assets at FVTPL
+    — Listed debt securities                         197              –             –            197
+    — Redemption option of long-term
+      convertible bonds                                –              –        34,195         34,195
+
+                                                     197              –        34,195         34,392
+
+
+    At 31 December 2022
+    Assets
+    Financial assets at FVTPL
+    — Listed debt securities                        2,673             –             –          2,673
+    — Redemption option of long-term
+      convertible bonds                                –              –        37,408         37,408
+
+                                                    2,673             –        37,408         40,081
+
+    During the years ended 31 December 2023 and 2022, there were no transfers between Level 1
+    and Level 2, or transfers into or out of Level 3. The Group’s policy is to recognise transfers
+    between levels of fair value hierarchy as at the end of the reporting period in which they occur.
+
+
+
+
+                                           – 39 –
+          The following table presents the changes in Level 3 financial instrument for the years ended 31
+          December 2023 and 2022:
+
+                                                                                               2023                  2022
+                                                                                            HK$’000               HK$’000
+
+          Redemption option:
+          At the beginning of the year                                                          37,408                  87,005
+          Unrealised fair value change recognised in non-operating
+            expenses, net                                                                       (3,213)             (49,597)
+
+          At the end of the year                                                                34,195                  37,408
+
+          The following table summarises the quantitative information about the significant unobservable
+          inputs used in Level 3 fair value measurements:
+
+                                                                                                 Relationship of
+                                     Fair value as at      Unobservable   Range of unobservable unobservable
+                                      31 December          inputs             inputs as at       inputs to fair value
+                                       2023           2022                     2023         2022
+                                    HK$’000      HK$’000
+
+          Redemption option of        34,195      37,408 Discount rate        7.78%        9.40% The higher the discount rate,
+            long-term convertible                                                                  the lower the fair value of
+            bonds                                                                                  the redemption option of
+                                                                                                   long-term convertible bonds
+
+          The main Level 3 input used by the Group in measuring the fair value of financial instrument is
+          derived and evaluated as follows:
+
+          Discount rate was determined with reference to the risk-free rate, credit spread of comparable
+          bonds and liquidity spread in the market.
+
+          The carrying amounts of the Group’s financial instruments carried at costs or amortised cost
+          were not materially different from their fair values as at 31 December 2023 and 2022.
+
+6.   REVENUE
+
+     Revenue comprises principally subscription, service and related fees for broadband internet access
+     and telephony services. It also includes advertising revenue net of agency deductions and distribution
+     fees, programme licensing income, film exhibition and distribution income, network leasing income,
+     network construction income, mobile service income, mobile agency service income and other
+     telecommunications income.
+
+
+
+
+                                                        – 40 –
+7.   SEGMENT INFORMATION
+
+     The Group managed its businesses according to the nature of services provided. The Group’s chief
+     operating decision maker (the “CODM”), which comprises executive Directors and senior
+     management of the Company, has determined two reportable operating segments for measuring
+     performance and allocating resources. The segments are media and telecommunications.
+
+     The media segment includes operations related to the domestic free television programme service,
+     advertising, television relay service, programme licensing, theatrical release and other media related
+     businesses.
+
+     The telecommunications segment includes operations related to broadband internet access services,
+     portal operation, telephony services, network leasing, network construction, mobile service and
+     mobile agency service as well as other telecommunications related businesses.
+
+     The CODM evaluates performance primarily based on segment results before depreciation of
+     property, plant and equipment and right-of-use assets, amortisation of other intangible assets,
+     impairment losses on property, plant and equipment, right-of-use assets, programming library, other
+     related intangible assets and contract acquisition costs, corporate expenses, corporate depreciation of
+     property, plant and equipment, corporate impairment losses, interest income, finance costs, non-
+     operating expenses, net and income tax, but after amortisation of programming library and
+     amortisation of contract acquisition costs. Besides, the CODM also evaluates performance based on
+     segment results before corporate expenses, corporate depreciation of property, plant and equipment,
+     corporate impairment losses, interest income, finance costs, non-operating expenses, net and income
+     tax, but after amortisation of programming library, amortisation of contract acquisition costs,
+     depreciation of property, plant and equipment and right-of-use assets and amortisation of other
+     intangible assets.
+
+     Inter-segment pricing is generally determined at arm’s length basis.
+
+     Segment assets principally comprise all assets with the exception of deferred tax assets and assets
+     managed at the corporate office. Segment liabilities include all liabilities, convertible bonds and
+     interest-bearing borrowings directly attributable to and managed by each segment with the exception
+     of current tax liabilities and liabilities at corporate office.
+
+     Besides, the CODM is also provided with segment information concerning revenue (including inter-
+     segment revenue).
+
+     Operating segment regarding the domestic pay television programme service was discontinued upon
+     the Licence Termination during the year ended 31 December 2023. The segment information for the
+     year ended 31 December 2022 has been re-presented and does not include any amounts for the
+     discontinued operation, which are described in more detail in Note 10.
+
+
+
+
+                                                  – 41 –
+Information regarding the Group’s reportable segments as provided to the CODM for the purposes of
+resource allocation and assessment of segment performance from continuing operations for the years
+ended 31 December 2023 and 2022 is set out below:
+
+                                                                   Year ended 31 December
+                                               Media                 Telecommunications            Total
+                                            2023          2022           2023        2022       2023          2022
+                                         HK$’000     HK$’000         HK$’000      HK$’000    HK$’000     HK$’000
+                                                     (restated)                                          (restated)
+
+Reportable segment revenue                211,967      164,067       386,139      398,935     598,106      563,002
+Less: Inter-segment revenue                     –            –          (208)        (208)       (208)        (208)
+
+Revenue from external customers           211,967      164,067       385,931      398,727     597,898      562,794
+
+
+Revenue from contracts with
+ customers:
+ Timing of revenue recognition:
+   At a point in time                       7,824        6,710        42,937       35,243      50,761       41,953
+   Over time                              204,143      157,357       342,632      363,097     546,775      520,454
+Revenue from other sources:
+ Rental income                                  –             –          362         387          362          387
+
+                                          211,967      164,067       385,931      398,727     597,898      562,794
+
+
+Reportable segment (loss)/profit
+  before depreciation, amortisation of
+  other intangible assets and
+  impairment losses                      (291,363)    (150,585)        94,982     135,072    (196,381)     (15,513)
+Depreciation                              (29,897)     (23,704)       (53,764)    (86,997)    (83,661)    (110,701)
+Amortisation of other intangible
+  assets                                   (1,097)       (3,420)           (7)          –      (1,104)      (3,420)
+Impairment losses                         (53,329)      (62,217)      (23,307)    (47,147)    (76,636)    (109,364)
+
+Reportable segment results before
+ corporate expenses, corporate
+ depreciation and corporate
+ impairment losses                       (375,686)    (239,926)       17,904         928     (357,782)    (238,998)
+
+
+
+Corporate expenses                                                                            (60,727)      (58,845)
+Corporate depreciation                                                                         (3,861)      (14,554)
+Corporate impairment losses                                                                    (5,396)      (13,450)
+
+Loss from operations                                                                         (427,766)    (325,847)
+Interest income                                                                                   749        1,111
+Finance costs                                                                                 (83,547)     (55,561)
+Non-operating expenses, net                                                                    (4,060)     (55,456)
+Income tax                                                                                    (32,940)    (187,627)
+
+Loss from continuing operations                                                              (547,564)    (623,380)
+
+
+
+                                                     – 42 –
+                                                                           2023            2022
+                                                                        HK$’000         HK$’000
+
+Segment assets
+  Media                                                                  459,713         373,735
+  Telecommunications                                                     394,932         379,086
+
+                                                                         854,645         752,821
+Corporate assets                                                          20,963          24,529
+Deferred tax assets                                                       69,551         102,144
+
+Total assets                                                             945,159         879,494
+
+
+Segment liabilities
+  Media                                                                1,499,773         913,143
+  Telecommunications                                                     742,861         692,640
+
+                                                                       2,242,634       1,605,783
+Corporate liabilities                                                     31,262          13,148
+Current tax liabilities                                                       80              92
+
+Total liabilities                                                      2,273,976       1,619,023
+
+During the year ended 31 December 2023, capital expenditure on property, plant and equipment
+amounted to approximately HK$66,916,000 (2022: approximately HK$113,574,000), the additions to
+right-of-use assets were approximately HK$201,419,000 (2022: approximately HK$11,654,000), the
+additions to programming library were approximately HK$42,844,000 (2022: approximately
+HK$47,236,000) and the additions to other intangible assets were approximately HK$2,619,000
+(2022: HK$Nil).
+
+Geographical segment:
+
+No geographical segment information is shown as, during the year presented, less than 10% of the
+Group’s segment revenue, segment results, segment assets and segment liabilities are derived from
+activities conducted outside Hong Kong.
+
+Information about major customer:
+
+Revenue of approximately HK$133,621,000 (2022: approximately HK$134,618,000) were derived
+from a single external customer during the year ended 31 December 2023, of which approximately
+HK$131,591,000 (2022: approximately HK$132,318,000) and approximately HK$2,030,000 (2022:
+approximately HK$2,300,000) were attributed to the telecommunications segment and the media
+segment, respectively.
+
+
+
+
+                                          – 43 –
+8.   LOSS BEFORE TAXATION
+
+     Loss before taxation is stated after (crediting)/charging:
+
+                                                                              2023         2022
+                                                                           HK$’000    HK$’000
+                                                                                      (restated)
+
+     Continuing operations
+     Interest income
+     Interest income from deposits with banks and listed debt securities      (749)      (1,111)
+
+     Finance costs
+       — Interest expenses on interest-bearing borrowings                   37,495      12,571
+       — Interest expenses on lease liabilities                              4,727       3,519
+       — Interest expenses on convertible bonds                             41,325      39,471
+
+     Staff costs, including Directors’ emoluments
+     Salaries, wages and other benefits*                                   287,816     141,646
+     Contributions to defined contribution retirement plans                 10,428       6,172
+
+     Other items
+     Depreciation
+      — assets held for use under operating leases                           1,074       8,142
+      — other assets                                                        72,109      93,517
+      — right-of-use assets                                                 14,339      23,596
+
+                                                                            87,522     125,255
+     Impairment losses**
+       — Property, plant and equipment                                      46,195      68,876
+       — Right-of-use assets                                                 4,217      10,070
+       — Programming library                                                28,562      38,730
+       — Other related intangible assets                                     3,058       5,138
+
+                                                                            82,032     122,814
+
+
+
+
+                                                   – 44 –
+                                                                            2023              2022
+                                                                         HK$’000         HK$’000
+                                                                                         (restated)
+
+Amortisation
+  — programming library***                                                  24,207          23,423
+  — other intangible assets                                                  1,104           3,420
+  — contract acquisition costs                                              12,184           9,160
+Net loss allowance on trade receivables                                      3,009           7,087
+Carrying amount of inventories consumed and sold                             6,878           7,932
+(Reversal of write down)/write down of inventories                            (694)          1,692
+Rental expenses in respect of land and buildings under short-term
+  leases and low-value leases not included in lease liabilities             10,558           9,529
+Auditor’s remuneration
+  — audit services                                                           3,099           2,784
+  — non-audit services                                                       1,670           1,118
+Net foreign exchange loss                                                      601             700
+Rental income under operating leases in respect of
+  — owned plant and machinery                                                 (362)           (387)
+Non-operating expense, net
+  — net gain on disposal of property, plant and equipment                     (813)            (96)
+  — gain on modification of lease contracts                                     (1)            (13)
+  — fair value losses on financial assets at FVTPL                           5,689          55,655
+
+*    During the year ended 31 December 2023, no subsidy (2022: subsidies of approximately
+     HK$10,593,000 (restated)) from the Employment Support Scheme under the Anti-epidemic
+     Fund set up by the Government of the Hong Kong Special Administrative Region (the
+     “HKSAR”) were included in salaries, wages and other benefits.
+
+**   The impairment losses of approximately HK$47,467,000, HK$19,586,000 and HK$14,979,000
+     were included within programming costs, network expenses and selling, general and
+     administrative and other operating expenses, respectively, in the consolidated statement of
+     profit or loss of the Group for the year ended 31 December 2023. The aggregate amount of the
+     impairment losses recognised for the year ended 31 December 2023 were amounted to
+     approximately HK$82,032,000, primarily as a result of management’s assessment of the
+     business prospect of the Group in light of the latest market environment.
+
+     The impairment losses of approximately HK$62,088,000 (restated), HK$36,903,000 (restated)
+     and HK$23,823,000 (restated) were included within programming costs, network expenses and
+     selling, general and administrative and other operating expenses, respectively, in the
+     consolidated statement of profit or loss of the Group for the year ended 31 December 2022. The
+     aggregate amount of the impairment losses recognised for the year ended 31 December 2022
+     were amounted to approximately HK$122,814,000 (restated), primarily as a result of the
+     Licence Termination with effect from 1 June 2023, as well as management’s assessment of the
+     business prospect of the Group in light of the latest market environment.
+
+*** Amortisation of programming library was included within programming costs in the
+    consolidated statement of profit or loss of the Group.
+
+
+
+
+                                           – 45 –
+9.   INCOME TAX
+
+     Hong Kong and other jurisdictions profits tax has been provided at the rate of 16.5% (2022: 16.5%)
+     and at the rates of taxation prevailing in the jurisdictions in which the Group operates respectively.
+
+                                                                                   2023             2022
+                                                                                HK$’000          HK$’000
+
+     Continuing operations
+
+     Current income tax
+     Provision for the year                                                           347              270
+
+     Deferred income taxation*                                                     32,593         187,357
+
+     Income tax                                                                    32,940         187,627
+
+     *     During the year ended 31 December 2023, write down of previously recognised deferred tax
+           assets of approximately HK$22,703,000 was recognised, primarily as a result of management’s
+           assessment of the business prospect of the Group in light of the latest market environment.
+
+           During the year ended 31 December 2022, write down of previously recognised deferred tax
+           assets of approximately HK$176,318,000 was recognised, primarily as a result of the Licence
+           Termination with effect from 1 June 2023, as well as management’s assessment of the business
+           prospect of the Group in light of the latest market environment.
+
+10. DISCONTINUED OPERATION
+
+     (a)   Description
+
+           In view of the rapidly changing media landscape in Hong Kong and fierce competition among
+           the global paid TV content providers and pay TV operators, HKC, a subsidiary of the Company,
+           obtained approval from the Government of the HKSAR on 14 February 2023 for the termination
+           of the Pay TV Licence with effect from 1 June 2023, which was reported in the Financial
+           Statements for the year ended 31 December 2023 as a discontinued operation.
+
+
+
+
+                                                 – 46 –
+(b) Financial performance and cash flow information
+
+    Financial information relating to discontinued operation for the years ended 31 December 2023
+    and 2022 is set out below.
+
+                                                                          2023              2022
+                                                                       HK$’000           HK$’000
+
+    Statement of profit or loss and other comprehensive
+      from discontinued operation:
+    Revenue                                                              118,228          332,405
+    Operating expenses                                                  (159,938)        (594,743)
+
+    Loss before taxation                                                 (41,710)        (262,338)
+    Income tax                                                                 –                –
+
+    Loss from discontinued operation                                     (41,710)        (262,338)
+
+    Total comprehensive income from discontinued operation               (41,710)        (262,338)
+
+
+    Cash flows from discontinued operation:
+    Net cash outflow from operating activities                           (68,835)        (142,104)
+    Net cash outflow from investing activities                                 –          (38,856)
+
+    Net decrease in cash generated by the discontinued
+     operation                                                           (68,835)        (180,960)
+
+
+    Basic loss per share from discontinued operation               (0.6) HK cents   (3.7) HK cents
+    Diluted loss per share from discontinued operation             (0.6) HK cents   (3.7) HK cents
+
+    Re-presentation of comparative figures
+
+    During the year ended 31 December 2023, the Group discontinued its Pay TV operation upon
+    the Licence Termination with effect from 1 June 2023. Accordingly, the consolidated statement
+    of profit or loss and the consolidated statement of comprehensive income for the year ended 31
+    December 2022 have been re-presented.
+
+
+
+
+                                          – 47 –
+11. LOSS PER SHARE
+
+   (a)   Basic loss per share
+
+         Basic loss per share are calculated by dividing the loss attributable to owners of the Company
+         by the weighted average number of ordinary shares in issue during the year.
+
+                                                                                  2023             2022
+                                                                                              (restated)
+
+         Loss from continuing operations attributable to equity
+           shareholders of the Company (HK$’000)                              (547,564)        (623,380)
+         Loss from discontinued operation attributable to equity
+           shareholders of the Company (HK$’000)                               (41,710)        (262,338)
+         Loss attributable to equity shareholders of the Company
+           (HK$’000)                                                          (589,274)     (885,718)
+         Weighted average number of ordinary shares in issue             7,134,623,520 7,134,623,520
+
+         Basic loss per share for loss from continuing operations
+          (HK cents)                                                               (7.7)            (8.7)
+         Basic loss per share for loss from discontinued operation
+          (HK cents)                                                               (0.6)            (3.7)
+
+         Total basic loss per share (HK cents)                                     (8.3)          (12.4)
+
+   (b) Diluted loss per share
+
+         The diluted loss per share for the years ended 31 December 2023 and 2022 equals to the basic
+         loss per share since the conversion rights attached to the unlisted long-term convertible bonds
+         would not have a dilutive effect on the loss per share.
+
+12. DEFERRED TAX ASSETS
+
+   As at 31 December 2023, the Group had recognised net deferred tax assets in respect of the future
+   benefit of unutilised tax losses which can be carried forward indefinitely without expiry date of
+   approximately HK$69,551,000 (2022: approximately HK$102,144,000), being the net balance of
+   deferred tax assets arising from tax losses of approximately HK$116,237,000 (2022: approximately
+   HK$152,410,000) and deferred tax liabilities arising from depreciation allowances in excess of the
+   related depreciation of approximately HK$46,686,000 (2022: approximately HK$50,266,000). The
+   deferred tax assets recognised as at 31 December 2023 was determined after considering the
+   estimated future taxable profits and the timing of utilisation of the tax losses in the relevant
+   subsidiary of the Company. The subsidiary has a history of recent losses in preceding periods. The
+   estimated future taxable profits of the relevant subsidiary of the Company take into account the
+   expected growth of the business due to the operating environment, business strategies, business
+   development, approved business plans, the effect of the tax planning as well as the trend of the
+   performance of the relevant subsidiary of the Company. Deferred tax assets were recognised to the
+   extent that it is probable that future taxable profits will be available against which they can be
+   utilised.
+
+
+
+
+                                                 – 48 –
+13. TRADE RECEIVABLES AND CONTRACT ASSETS
+
+                                                                                   2023             2022
+                                                                                HK$’000          HK$’000
+
+   Trade receivables                                                             130,883          107,711
+   Less: loss allowance                                                          (27,315)         (24,289)
+
+                                                                                 103,568            83,422
+   Contract assets                                                                16,635            22,797
+
+                                                                                 120,203          106,219
+
+   An ageing analysis of trade receivables (net of loss allowance), based on the invoice date is set out as
+   follows:
+
+                                                                                   2023             2022
+                                                                                HK$’000          HK$’000
+
+   0 to 30 days                                                                   54,425            47,462
+   31 to 60 days                                                                  23,235            11,332
+   61 to 90 days                                                                  12,201             6,766
+   Over 90 days                                                                   13,707            17,862
+
+                                                                                 103,568            83,422
+
+   The Group has a defined credit policy. The general credit terms allowed range from 0 to 15 days in
+   respect of television, broadband, telephony and mobile service subscription and from 0 to 30 days in
+   respect of advertising, network leasing and network construction services.
+
+14. TRADE PAYABLES
+
+   An ageing analysis of trade payables, based on the invoice date is set out as follows:
+
+                                                                                   2023             2022
+                                                                                HK$’000          HK$’000
+
+   0 to 30 days                                                                    9,976             5,947
+   31 to 60 days                                                                  19,115            17,430
+   61 to 90 days                                                                  10,916            12,301
+   Over 90 days                                                                   45,479            14,600
+
+                                                                                  85,486            50,278
+
+
+
+
+                                                – 49 –
+15. SHARE CAPITAL
+
+                                                2023                                   2022
+                                        Number of                              Number of
+                                           shares            HK$’000              shares           HK$’000
+
+   Ordinary shares, issued
+     and fully paid:
+   At 1 January                      7,134,623,520           7,928,975     7,134,623,520          7,928,975
+
+   At 31 December                    7,134,623,520           7,928,975     7,134,623,520          7,928,975
+
+16. CONVERTIBLE BONDS
+
+   (a)   The 2019 LCS
+
+         On 25 January 2019, the Company entered into the unlisted long-term convertible securities
+         subscription agreement with Forever Top, pursuant to which the Company has conditionally
+         agreed to issue, and Forever Top has conditionally agreed to subscribe for, the 2019 LCS. On 4
+         June 2019, the issuance of the 2019 LCS with the principal amount of HK$568,000,000 to
+         Forever Top was completed. The 2019 LCS would be convertible into 4,544,000,000 new
+         ordinary Shares upon full conversion of the 2019 LCS based on the initial conversion price of
+         HK$0.125 per conversion share. The initial conversion price represents a premium of
+         approximately 8.7% over the closing price of HK$0.115 per Share as quoted on the Stock
+         Exchange on 25 January 2019, being the date on which the terms of the 2019 LCS were fixed.
+         The coupon rate of the 2019 LCS is 2.0% per annum and payable quarterly. The 2019 LCS is
+         convertible into ordinary Shares at any time during the period from the date of the issue of the
+         2019 LCS up to the close of business on the maturity date, subject to the conversion restrictions.
+         The maturity date of the 2019 LCS is the end of the tenth year from date of the issue of the
+         2019 LCS and all of the remaining outstanding 2019 LCS will be redeemed by the Company at
+         100% of the outstanding principal amount of the 2019 LCS together with any interest accrued
+         but unpaid thereon.
+
+         On the date of issuance of the 2019 LCS, the fair value of liability component of approximately
+         HK$343,719,000 was recognised and the fair value of approximately HK$224,281,000,
+         representing equity element, was recognised and presented in equity heading “equity component
+         of convertible bonds” at initial recognition. The effective interest rate of the liability component
+         was 7.69% per annum. As at 31 December 2023, the carrying amount of liability component of
+         the 2019 LCS is approximately HK$425,663,000 (2022: approximately HK$405,277,000).
+
+         The relevant fair value measurement was carried out by an independent qualified professional
+         valuer not connected to the Group.
+
+
+
+
+                                                 – 50 –
+   (b) The 2021 LCS
+
+        On 27 January 2021, the Company entered into the unlisted long-term convertible securities
+        subscription agreement with Forever Top, pursuant to which the Company has conditionally
+        agreed to issue, and Forever Top has conditionally agreed to subscribe for, the 2021 LCS. On
+        31 March 2021, the issuance of the 2021 LCS with the principal amount of HK$200,000,000
+        with a maturity of 10 years by the Company to Forever Top was completed. The 2021 LCS
+        would be convertible into 2,941,176,470 new ordinary Shares upon full conversion of the 2021
+        LCS based on the initial conversion price of HK$0.068 per conversion share and the coupon
+        rate of the 2021 LCS is 2.0% per annum and payable quarterly. The Company may at any time
+        on or after the date of issue of the 2021 LCS by giving not less than 10 business days’ written
+        notice to the holder(s) of the 2021 LCS to redeem all or part of the 2021 LCS at the outstanding
+        principal amount of the 2021 LCS together with all accrued but unpaid interest.
+
+        On the date of issuance of the 2021 LCS, the fair value of liability component of approximately
+        HK$131,806,000 was recognised, the fair value of approximately HK$144,610,000,
+        representing equity element, was recognised and presented in equity heading “equity component
+        of convertible bonds” and the fair value of the redemption option of approximately
+        HK$78,061,000 was recognised as financial assets at FVTPL at initial recognition. The
+        effective interest rate of the liability component was 6.88% per annum. As at 31 December
+        2023, the carrying amount of liability component and redemption option of the 2021 LCS is
+        approximately HK$146,342,000 (2022: approximately HK$140,763,000) and approximately
+        HK$34,195,000 (2022: approximately HK$37,408,000) respectively.
+
+        The relevant fair value measurement was carried out by an independent qualified professional
+        valuer not connected to the Group.
+
+17. INTEREST-BEARING BORROWINGS
+
+                                                2023                               2022
+                                                  Non-                               Non-
+                                  Current      current       Total     Current     current      Total
+                                  HK$’000     HK$’000      HK$’000    HK$’000     HK$’000     HK$’000
+
+   Bank loan (Note (a))            295,000             –   295,000     295,000            –    295,000
+   Loans from Celestial Pioneer
+     Limited (Note (b))                   –    746,035     746,035            –    296,035     296,035
+
+   Total borrowings                295,000     746,035 1,041,035       295,000     296,035     591,035
+
+
+
+
+                                              – 51 –
+   Note:
+
+   (a)   The carrying amount of bank loan denominated in Hong Kong dollar as at 31 December 2023
+         was HK$295,000,000 (2022: HK$295,000,000), which is unsecured, carries interest at variable
+         rates and repayable on demand.
+
+   (b)   The carrying amount of the loans from Celestial Pioneer Limited (a company holding 72.0% of
+         the total number of issued shares of Forever Top and wholly owned by Dr. Cheng, the Director)
+         denominated in Hong Kong dollar as at 31 December 2023 was approximately HK$746,035,000
+         (2022: approximately HK$296,035,000), which are unsecured, carry interest at fixed rates
+         ranging from 2.5% to 6% per annum and with a term of 3 years from the date of the respective
+         loan agreements.
+
+   The maturity of interest-bearing borrowings was as follows:
+
+                                                        Loans from Celestial
+                                         Bank loan        Pioneer Limited              Total
+                                        2023       2022     2023       2022         2023     2022
+                                     HK$’000 HK$’000 HK$’000 HK$’000             HK$’000 HK$’000
+
+   Within 1 year or on demand         295,000   295,000          –          –      295,000    295,000
+   After 1 year but within 5 years          –         –    746,035    296,035      746,035    296,035
+
+                                      295,000   295,000    746,035    296,035 1,041,035       591,035
+
+18. DIVIDEND
+
+   The Board does not recommend the payment of any dividend for the year ended 31 December 2023
+   (2022: HK$Nil).
+
+19. CAPITAL COMMITMENTS
+
+   Capital commitments outstanding as at 31 December 2023 and 2022 were as follows:
+
+                                                                               2023             2022
+                                                                            HK$’000          HK$’000
+
+   Property, plant and equipment
+     — Contracted but not provided for                                            413           6,709
+
+   Programming library
+     — Contracted but not provided for                                          13,470          5,301
+
+                                                                                13,883         12,010
+
+
+
+
+                                                – 52 –
+20. GUARANTEES
+
+   As at 31 December 2023, a corporate guarantee had been provided by the Company to a bank of
+   HK$295,000,000 (2022: HK$400,000,000) in respect of the facility of borrowing up to
+   HK$295,000,000 (2022: HK$400,000,000) to a wholly-owned subsidiary of the Company, of which
+   HK$295,000,000 (2022: HK$295,000,000) was utilised by the wholly-owned subsidiary of the
+   Company.
+
+   As at 31 December 2023, the Group had made arrangements with a bank to provide two separate
+   performance bonds to the counterparties amounting to HK$35,330,000 (2022: HK$39,830,000), of
+   which HK$5,330,000 (2022: HK$9,830,000) was secured by bank deposits. The performance bonds
+   are to guarantee in favour of the counterparties the Group’s performance in fulfilling the obligations
+   under a contract and the requirements as set out in the licence issued by a regulatory body.
+
+21. EVENTS AFTER THE REPORTING PERIOD
+
+   1.   On 4 January 2024, HKC as the borrower, entered into a loan agreement with Celestial Pioneer
+        Limited, as the lender, pursuant to which, HKC obtained an unsecured loan with a principal
+        amount of HK$80,000,000 for a term of 3 years from the date of the said loan agreement, with
+        an interest rate of 6.0% per annum.
+
+   2.   On 6 March 2024, HKC as the borrower, entered into a loan agreement with Celestial Pioneer
+        Limited as the lender, pursuant to which, HKC obtained an unsecured loan with a principal
+        amount of HK$90,000,000 for a term of 3 years from the date of the said loan agreement, with
+        an interest rate of 6.0% per annum.
+
+
+
+
+                                               – 53 –
+CORPORATE GOVERNANCE CODE
+
+The Company is committed to maintaining a high standard of corporate governance
+practices, and procedures and to complying with the statutory and regulatory
+requirements with an aim to maximising the Shareholders’ values and interests as well
+as enhancing the stakeholders’ transparency and accountability. During the year ended
+31 December 2023, the Company had applied the principles of good corporate
+governance and complied with all applicable code provisions of the Corporate
+Governance Code (the “CG Code”) as set out in Appendix C1 of the Listing Rules,
+except for the following deviations:
+
+Code Provision C.1.6 of Part 2 of the CG Code stipulates that independent non-executive
+directors and other non-executive directors, as equal board members, should give the
+board and any committees on which they serve the benefit of their skills, expertise and
+varied backgrounds and qualifications through regular attendance and active
+participation. Generally, they should also attend general meetings to gain and develop a
+balanced understanding of the views of shareholders. Also, Code Provision F.2.2 of Part
+2 of the CG Code stipulates that the chairman of the board should attend the annual
+general meeting.
+
+Dr. Cheng Kar-Shun, Henry (the chairman of the Board and a non-executive Director),
+Ms. Ng Yuk Mui Jessica (a non-executive Director) and Mr. Luk Koon Hoo, Roger (an
+independent non-executive Director) were unable to attend the annual general meeting of
+the Company held on 16 June 2023 (“2023 AGM”) and the general meeting of the
+Company held on 16 June 2023 respectively as each of Dr. Cheng Kar-Shun, Henry, Ms.
+Ng Yuk Mui Jessica and Mr. Luk Koon Hoo, Roger had other engagements at the time
+of such meetings. Dr. Cheng Kar-Shun, Henry, Mr. Tsang On Yip, Patrick (the vice-
+chairman of the Board and an executive Director) and Ms. Ng Yuk Mui Jessica were
+unable to attend the general meeting of the Company held on 28 September 2023 as each
+of Dr. Cheng Kar-Shun, Henry, Mr. Tsang On Yip, Patrick and Ms. Ng Yuk Mui Jessica
+had other engagements at the time of such meeting. In the absence of the chairman of the
+Board at the 2023 AGM, Mr. Tsang On Yip, Patrick, the vice-chairman of the Board and
+an executive Director, acted as the chairman of the 2023 AGM, and together with other
+Directors present at the 2023 AGM, were sufficiently knowledgeable and capable to
+address any questions at the 2023 AGM, ensuring an effective communication with the
+Shareholders.
+
+
+
+
+                                        – 54 –
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+
+The Company has adopted the Model Code for Securities Transactions by Directors of
+Listed Issuers (the “Model Code”) as set out in Appendix C3 to the Listing Rules. The
+Company, having made specific enquiries of all the Directors, was not aware of any non-
+compliance with the required standard set out in the Model Code during the year ended
+31 December 2023.
+
+The Company has also applied the principles of the Model Code for securities
+transactions to the employees of the Group.
+
+AUDIT COMMITTEE AND REVIEW OF FINAL RESULTS
+
+The Company has set up the audit committee of the Company (the “Audit Committee”)
+with majority of the members being independent non-executive Directors with terms of
+reference adopted in accordance with the requirements of the Listing Rules for the
+purposes of, among others, reviewing the financial information of the Group, and
+overseeing the Group’s financial reporting system, and risk management and internal
+control systems, as well as the Group’s corporate governance matters. As at the date of
+this final results announcement, the Audit Committee comprises Mr. Luk Koon Hoo,
+Roger (an independent non-executive Director and the chairman of the Audit
+Committee), Prof. Hu Shao Ming Herman (an i n d e p e n d e n t non-executive Director)
+and Mr. Tang Sing Ming Sherman (an independent non-executive Director).
+
+The Financial Statements have been reviewed by the Audit Committee with no
+disagreement.
+
+SCOPE OF WORK OF PRICEWATERHOUSECOOPERS
+
+The figures in respect of the Group’s consolidated statement of financial position,
+consolidated statement of profit or loss, consolidated statement of comprehensive
+income, and the related notes thereto for the year ended 31 December 2023 as set out in
+this final results announcement have been agreed by the Group’s auditor,
+PricewaterhouseCoopers, to the amounts set out in the Group’s audited   consolidated
+financial statements for the year. The work performed by PricewaterhouseCoopers in
+this respect did not constitute an assurance engagement and consequently no opinion or
+assurance conclusion has been expressed by PricewaterhouseCoopers on this final results
+announcement.
+
+
+
+
+                                        – 55 –
+DIVIDEND
+
+The Board did not recommend the payment of any dividend for the year ended 31
+December 2023 (2022: HK$Nil).
+
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED
+SECURITIES
+
+Neither the Company nor any of its subsidiaries purchased, sold or redeemed any listed
+securities of the Company during the year ended 31 December 2023.
+
+CLOSURE OF REGISTER OF MEMBERS
+
+For determining the eligibility to attend and vote at the forthcoming annual general
+meeting of the Company (the “Forthcoming AGM”) to be held on Thursday, 6 June
+2024, the Register of Members of the Company will be closed from Monday, 3 June
+2024 to Thursday, 6 June 2024, both days inclusive, during which period no transfer of
+Shares can be registered. In order to ascertain Shareholders’ rights for the purpose of
+attending and voting at the Forthcoming AGM, all transfers, accompanied by the
+relevant share certificates, must be lodged with the Company’s registrar, Tricor Tengis
+Limited, at 17/F, Far East Finance Centre, 16 Harcourt Road, Hong Kong not later than
+4:30 p.m. on Friday, 31 May 2024.
+
+                                                        By order of the Board
+                                                 i-CABLE Communications Limited
+                                                    Dr. Cheng Kar-Shun, Henry
+                                                             Chairman
+
+Hong Kong, 22 March 2024
+
+As at the date of this announcement, the Board comprises ten Directors, namely
+Dr. Cheng Kar-Shun, Henry (Chairman) as non-executive Director; Mr. Tsang On Yip,
+Patrick (Vice-Chairman), Mr. Lie Ken Jie Remy Anthony Ket Heng, Mr. To Chi Hak
+(Chief Executive Officer) and Dr. Luk Wai Ki Elvis as executive Directors; Ms. Ng Yuk
+Mui Jessica as non-executive Director; and Mr. Lam Kin Fung Jeffrey, Prof. Hu Shao
+Ming Herman, Mr. Luk Koon Hoo, Roger and Mr. Tang Sing Ming Sherman as
+independent non-executive Directors.
+
+
+
+
+                                        – 56 –
+

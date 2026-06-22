@@ -1,0 +1,2180 @@
+China Mobile Limited
+Stock Code: 941
+
+
+
+
+Riding on the
+                  Trend
+Interim Report 2018
+Contents
+
+1     Financial Highlights
+2     Chairman’s Statement
+9     Financial Review
+11    Interim Financial Information
+11       Unaudited Condensed Consolidated Statement of Comprehensive Income
+13       Unaudited Condensed Consolidated Balance Sheet
+15       Unaudited Condensed Consolidated Statement of Changes in Equity
+16       Unaudited Condensed Consolidated Statement of Cash Flows
+17       Notes to Unaudited Condensed Consolidated Interim Financial Information
+40    Report on Review of Interim Financial Information
+41    Other Information
+
+
+
+
+FORWARD-LOOKING STATEMENTS
+Certain statements contained in this interim report may be viewed as “forward-looking statements” within
+the meaning of Section 27A of the U.S. Securities Act of 1933, as amended, and Section 21E of the U.S.
+Securities Exchange Act of 1934, as amended. Such forward-looking statements involve known and unknown
+risks, uncertainties and other factors, which may cause the actual performance, financial condition or results of
+operations of the Company to be materially different from those implied by such forward-looking statements.
+In addition, the Company does not intend to update these forward-looking statements. Further information
+regarding these risks, uncertainties and other factors is included in the Company’s most recent Annual Report
+on Form 20-F and other filings with the U.S. Securities and Exchange Commission.
+Interim Report 2018                                                                                                                                 1
+
+FINANCIAL HIGHLIGHTS
+
+
+
+
+                                                                                                             Six months ended 30 June
+                                                                                                                       2017                   2018
+
+    Operating revenue (RMB million)                                                                                388,871                391,832
+      Of which: Revenue from telecommunications services (RMB million)                                             347,950                356,120
+    EBITDA (RMB million)
+             2
+                                                                                                                   140,710                145,886
+    EBITDA margin3                                                                                                   36.2%                  37.2%
+    EBITDA as % of revenue from telecommunications services                                                          40.4%                  41.0%
+    Profit attributable to equity shareholders (RMB million)                                                         62,675                65,641
+    Margin of profit attributable to equity shareholders               4
+                                                                                                                     16.1%                  16.8%
+    Basic earnings per share (RMB)                                                                                      3.06                   3.21
+    Dividend per share – Interim (HK$)                                                                                1.623                  1.826
+    Dividend per share – Special (HK$)                                                                                3.200                        –
+
+
+
+
+Operating Revenue                                                             EBITDA
+(RMB million)                                                                 (RMB million)
+
+
+
+1H2018                                      391,832                           1H2018                                     145,886
+
+
+1H2017                                   388,871                              1H2017                                  140,710
+
+
+
+Profit Attributable to Equity Shareholders                                    Basic Earnings Per Share
+(RMB million)                                                                 (RMB)
+
+
+
+1H2018                                        65,641                          1H2018                                           3.21
+
+
+1H2017                                    62,675                              1H2017                                       3.06
+
+
+
+
+1     All revenue growth figures contained in this report are derived after applying the new revenue standard (IFRS/HKFRS 15) to the revenue figures of
+      the comparative period last year pursuant to a static calculation.
+2     The Company defines EBITDA as profit for the period before taxation, share of profit of investments accounted for using the equity method,
+      finance costs, interest and other income, other gains, depreciation and amortization of other intangible assets.
+3     EBITDA margin = EBITDA/Operating revenue
+4     Margin of profit attributable to equity shareholders = Profit attributable to equity shareholders/Operating revenue
+2                                                           China Mobile Limited
+
+
+CHAIRMAN’S STATEMENT
+
+
+
+
+Dear Shareholders,
+In the first half of 2018, market competition has
+intensified and cross-sector convergence has
+increased pace. At the same time, operators were
+required to take further actions operationally to
+comply with the state policy of “speed upgrade
+and tariff reduction”. Faced with this complex
+environment, across the China Mobile business, we
+closely adhered to the “Big Connectivity” strategy
+and took considered moves to proactively tackle both
+market competition and other emerging challenges,
+launching various initiatives for the personal mobile,
+household, corporate and emerging businesses.
+There was further integration of these four important
+growth engines, and at the same time a step-up in
+our reforms and enhancements to our management
+efficiency. Thanks to these collective and coordinated
+efforts, we have maneuvered along the course of our
+development and maintained satisfactory growth in
+our financial performance.
+
+OPERATING RESULTS
+Our financial performance in the first half of 2018
+remained healthy. We recorded operating revenue
+of RMB391.8 billion, up by 2.9% compared to the
+same period last year. Telecommunications services
+revenue was RMB356.1 billion, up by 5.5% compared
+to the same period last year, maintaining our solid
+market position. We continued to exercise delicate
+cost management in order to boost the Company’s
+cost efficiency. In the first half of 2018, our EBITDA
+grew by 3.7% compared to the same period last year,
+reaching RMB145.9 billion. Profit attributable to equity
+shareholders grew by 4.7% year-on-year to RMB65.6
+billion, maintaining our profitability at a leading level
+among top-tier global telecommunications operators.
+Interim Report 2018    3
+CHAIRMAN’S STATEMENT
+4                                                                                              China Mobile Limited
+
+CHAIRMAN’S STATEMENT
+
+
+
+
+Our total number of connections has increased              Our ongoing efforts in customer development has
+to 1.425 billion, comprising 906 million mobile            paid off with a net addition of 18.61 million mobile
+connections, 135 million wireline broadband                customers in the first half of 2018, driving the total
+connections and 384 million IoT (Internet of               number of mobile customers beyond the 900 million
+Things) smart connections. We found it particularly        milestone. Among this base 680 million are 4G
+encouraging that in some areas, machine-to-machine         customers. With a net addition of 27.32 million 4G
+connections have already outnumbered human-to-             customers in the first half of 2018, the 4G penetration
+human connections.                                         rate of our mobile customers has reached 74.7%.
+
+With due consideration given to our profitability,         We have implemented various measures to tackle
+current level of cash flow and provision for future        the head-on competition of large-data, low-tariff
+development, the Board declared payment of an              packages offered by our peers. Firstly, we activated
+interim dividend of HK$1.826 per share for 2018,           tariff elasticity to capture the upside of data traffic and
+equivalent to a dividend payout ratio of 48%.              increased the stickiness for our existing customers.
+                                                           Secondly, against the backdrop of the cancellation
+The Board believes that our industry-leading               of domestic data roaming tariffs, we optimized our
+profitability and on-going ability to generate healthy     package plans and offered a new tariff structure that
+cash flow will provide sufficient support for our future   better suits the needs of our customers. Thirdly,
+development and generate good returns for our              we launched convergence marketing initiatives
+shareholders.                                              to uncover potential mobile customers in various
+                                                           business lines including the household and corporate
+PERSONAL MOBILE MARKET                                     markets. Lastly, we enriched our content offering
+Personal mobile market remains our biggest revenue         by fostering cooperation with Internet companies
+contributor. In the first half of 2018, we effectively     to enhance customer loyalty. Our proactive actions
+implemented further initiatives in response to the         to counter the activities of competitive firms have
+“speed upgrade and tariff reduction” regulatory            yielded positive results. In the first half of 2018, the
+requirement and proactively mitigated the associated       average handset data traffic per user per month, or
+risks in advance. To counter the intensifying              DOU, of 4G customers exceeded 3GB while the total
+competition on customer and data traffic market            handset data traffic increased by 153% year-on-year.
+shares, we further adjusted our strategy and took a        Data traffic revenue maintained a double-digit growth
+series of actions to develop our 4G business as well       rate.
+as data traffic operations. As a result, we saw our
+4G net additional customers and data traffic market        We will leverage our advantages in scale, network
+share swing back to a positive trend. Overall, we          and depth of resources to optimize our marketing
+maintained our leading position in the personal mobile     strategies and make proactive moves to respond to
+market.                                                    market competition and fortify our leading position in
+                                                           the 4G market.
+In terms of network construction, we have newly
+added 190,000 4G base stations in the first half of
+the year. To reinforce our competitive edge in the
+premium 4G network, we have made measured
+investments to ensure adequate network capacity
+while continuously improving the indoor in-depth
+coverage. We worked to secure continuous coverage
+in urban areas while improving the network in rural
+areas to sustain our leading advantage in overall
+network coverage and quality.
+Interim Report 2018                                                                                            5
+CHAIRMAN’S STATEMENT
+
+
+
+
+HOUSEHOLD MARKET                                        CORPORATE MARKET
+Household market has become an important                We rode on growth opportunities presented by
+growth driver for the Company in the recent years.      the “Internet+” state policy through continued
+Committed to boosting network speed and quality         expansion into major industries and the development
+with a focus on targeted development, we sped           of key products and applications. This has resulted
+up our expansion in the household market, with          in quantifiable progress in the growth in volume
+increases in both customer base and value. In the       and revenue generated by our corporate business,
+first half of 2018, we have recorded growth in market   as well as a strengthened position in this market.
+shares in terms of both customers and revenue in        We served more than 6.70 million corporate
+the household broadband market. Net growth in           customers and achieved a 21.2% year-on-year rise
+household broadband customers reached 18.80             in telecommunications and informatisation services
+million, accounting for 57% of the total number of      revenue, with a market share of more than 38%.
+net additional customers in the industry, driving the   Internet dedicated lines and IDC (Internet Data
+total number of our household broadband customers       Centre) are amongst the key products that maintained
+to 128 million. An increasing number of customers       a fast pace of growth, with 26.9% year-on-year
+have opted for our higher-end products, with 42.5%      revenue growth from dedicated lines and 56.8%
+of our customers using broadband with bandwidth         from IDC. The market shares of the two products
+of 100Mbps or above, up by 20.5 percentage points       increased by 3.8 and 3.5 percentage points from the
+from the end of 2017. Household broadband revenue       full year 2017 respectively.
+reached RMB21.0 billion, representing a year-on-
+year increase of 49.1% and becoming an important        We delved into vertical markets by working closely
+revenue growth driver.                                  with our partners in seven key sectors, namely
+                                                        industrial, agriculture, education, public administration,
+We committed substantial effort to building out our     finance, transportation and healthcare, providing each
+smart household ecosystem. Through enhancing the        with tailored integrated solutions. A number of these
+quality of our premium products such as Mobaihe (a      solutions have developed in scale, with 11 of them
+digital set-top box) and Smart Home Gateway, we         generating annualised revenue of more than RMB100
+have boosted the growth of our household digital        million. Amongst them, our “and-Education” solution
+business. In the first half of 2018, the number of      has generated revenue of more than RMB2.0 billion
+subscribers for Mobaihe has exceeded 79.15 million,     in the first half of 2018.
+with a net addition of 21.90 million since the end
+of 2017. Penetration of this service amongst our        Our commitment to serving SMEs (small and
+household broadband customers reached 61.7%.            medium-enterprises) was underscored by substantial
+                                                        tariff reductions on Internet dedicated lines, benefiting
+High network quality and compelling content             2.13 million SMEs. We have launched concessionary
+applications have driven the continued growth in        corporate broadband packages for SMEs, significantly
+customer value. In the first half of 2018, household    reducing their broadband access costs. An SME cloud
+broadband blended ARPU reached RMB34.8, or an           application platform and structured cluster integration
+increase of 7.3% year-on-year. Our focus for the        packages were launched to build our SME base
+second half of 2018 will remain on upgrading the        through multiple channels.
+network and enhancing service quality, in order to
+obtain more customers and expand the value of our       In the second half of 2018, we will focus our efforts
+broadband business.                                     on key business areas and amplify any synergy with
+                                                        our partnering platforms that own corporate customer
+                                                        resources to speed up our expansion in the strategic
+                                                        markets of individual industries and high-value
+                                                        SMEs. This will allow us to continue a track record of
+                                                        leapfrog development in the corporate market.
+6                                                                                          China Mobile Limited
+
+CHAIRMAN’S STATEMENT
+
+
+
+
+EMERGING BUSINESS                                         We are building out a high-quality NB-IoT (Narrow
+We have been exploring ways to nurture innovation         band-Internet of Things) network and will realise
+as a key to creating new growth momentum. In              continuous coverage to areas at town level and
+this regard, we are rigorously strengthening our          above across the country by the end of this year. At
+competitiveness and growing our customer base in          the same time, we will continue to promote our self-
+the emerging business, as well as developing new          developed IoT open platform OneNET, as well as
+businesses and models of digital services to support      constructing a high performance IoT smart service
+the Company in delivering increased value. The            system, in order to provide quality one-stop service
+measures have yielded notable results. In the first       for our extensive IoT customer base. In the first half
+half of 2018, application and information services        of 2018, our IoT business achieved rapid growth, with
+revenue grew by 23.5% year-on-year, creating more         a net addition of 155 million IoT smart connections.
+significant positive impact on the overall revenue.       The total number of IoT smart connections has
+                                                          reached 384 million and revenue from IoT business
+We continued to proactively roll out initiatives          recorded a year-on-year growth of 47.6%. In the
+which blend technological innovations with product        foreseeable future, platforms and applications
+innovations. Based on our core proprietary research       associated with areas including Internet of vehicles,
+and development capabilities, we persistently             manufacturing, smart wearables, education and
+enhanced our product portfolio and features via our       healthcare will become important drivers sustaining
+professional operations. We have stepped up efforts       revenue growth of the Company.
+in developing competitive digital products, enriching
+content and innovating marketing models in order to       COMPETITION AND REGULATORY
+enhance consumer experience.                              ENVIRONMENT
+                                                          The Company’s operating environment has
+In the first half of 2018, our digital media MIGU         experienced major changes in the recent years
+introduced FIFA World Cup related quality content         surrounding industry transformation and technological
+and, leveraging this, launched target-oriented Internet   evolution, giving rise to new opportunities as well
+marketing that offered membership privileges              as imposing rigorous challenges for us as peer
+and large-data packages. The campaign achieved            competition continues to intensify and cross-sector
+encouraging results. During the period, MIGU              convergence progresses further.
+recorded more than 4.3 billion viewership on the FIFA
+World Cup matches. Our mobile payment business            The networks, businesses and services offered by
+is another focus area of development and transaction      existing operators have become more homogenous,
+value of “and-Wallet” has exceeded RMB1.36 trillion.      creating fierce competition for both customers
+                                                          and data traffic. Operators inevitably have to
+Meanwhile, we continued to leverage the innate            fundamentally change the way they market their
+advantages from being an ICT (Information and             products and services along with how they interact
+Communication Technology) operator to support the         with their customers.
+fast development of the ecosystem on our platform.
+On this platform, we sped up the sharing of our core      On another front, Internet and the real economy
+competency in areas including telecommunications,         are increasingly woven together while the vertical
+Internet, IoT and digital household services. We          value chain integration as well as horizontal cross-
+continued to unleash the synergy between our              sector integration have become more visible. Peer
+cloud resources and current applications and further      operators have transformed and upgraded their digital
+developed our data convergence, analysis and              services to foster new growth momentum. Internet
+application capabilities. These initiatives will create   companies and other industry players have also
+new growth opportunities for our future development.      moved fast to grasp emerging opportunities and build
+                                                          out their digital strategy.
+Interim Report 2018                                                                                             7
+CHAIRMAN’S STATEMENT
+
+
+
+
+In response to the new requirements of “speed              their pursuit for a better life. We are committed to
+upgrade and tariff reduction”, we have cancelled           fulfilling our social responsibility by narrowing the
+all domestic data roaming tariffs and further              digital divide, ensuring network and information
+reduced tariffs for handset data traffic, household        security, as well as improving people’s livelihood,
+broadband and corporate Internet dedicated lines.          helping the underprivileged, building out a healthy
+These measures directly benefited 750 million user         ecosystem and alleviating poverty. We are pleased
+accounts. We have enabled more people to access            to note that our efforts have gained wide recognition
+quality and affordable information and communication       from society.
+services by adopting advanced technologies and
+reducing network costs. We are striving to establish       FULL-YEAR OUTLOOK
+an innovative business model, offer a wider choice of      A visionary will adjust his strategies over time and a
+our data packages and increase customer patronage.         wise man will measure his methods against trends.
+In doing so we want to drive usage and maintain            Industry competition, cross-sector integration,
+value, which will offset the effect of tariff reductions   regulatory policies and the organic transition from old
+on our financial performance.                              drivers to new growth momentum are all changes
+                                                           and challenges that we are well aware of across
+We have been granted the LTE FDD (Frequency-               the board. We will ride on these trends and forge
+Division Duplexing) operating permit. Following this,      ahead with plans to raise market shares in our key
+we will speed up network convergence, which allows         business lines, maintain healthy growth and propel
+us to upgrade our network quality at lower costs,          transformation, in order to assume control over the
+resulting in better and more convenient customer           direction of our future development.
+services that enhance customer experience.
+                                                           Our focus for the rest of the year will remain on
+CORPORATE GOVERNANCE AND SOCIAL                            increasing our customer and data traffic market
+RESPONSIBILITY                                             shares, while striving to maintain our leadership in
+We are committed to maintaining an effective               the personal mobile market. On the one hand, we will
+governance structure by putting in place                   proactively and precisely launch all possible measures
+comprehensive and transparent mechanisms as                to expand our business scale, gain market shares
+the foundation for good corporate governance.              and maintain customer value. On the other hand, we
+We implemented the “Safeguarding Compliance”               will strengthen the cooperation with proven Internet
+programme to ensure our operations adhere to all           companies to market content-based data products on
+applicable rules and regulations. We also placed           a more massive scale, in order to further boost data
+strong emphasis on communication with the                  traffic revenue.
+investing community throughout the capital markets
+to promote a higher degree of mutual understanding         We will make dynamic moves to unleash synergies
+and trust. Our continued efforts in this aspect have       in household, corporate and emerging businesses
+gained wide recognition. So far this year we have          and turn them into growth drivers. This integrative
+won a number of awards, including “Asia’s Icon on          strategy will include marketing a combination of
+Corporate Governance” award, “Asia’s Best Investor         fixed and mobile products in an effort to promote
+Relations Company” award, “Asian Corporate                 the integrated development of our digital household
+Director Recognition Award”, “Asia’s Best CEO”             portfolio and to raise the value of our household
+award and “Asia’s Best CFO” award by the well-             business. We will also step up efforts to develop
+respected business magazine Corporate Governance           the corporate market by focusing on vertical sectors
+Asia.                                                      and accelerating the replication and promotion of
+                                                           fully-fledged industry solutions. Finally, we will
+We always hold close to our hearts the goal to help        increase the contribution from the emerging business
+resolve imbalanced development and issues of under-        by permeating relevant products into the usage
+development by providing quality network, products         scenarios of data users, hence persistently nurturing
+and services, in order to satisfy people’s needs in        new growth areas.
+8                                                                                             China Mobile Limited
+
+CHAIRMAN’S STATEMENT
+
+
+
+
+We will continue to offer our customers premium             It has been our focus to strike a reasonable balance
+services to satisfy their expectations. To do this,         between the needs for near-term returns and long-
+firstly, we will strengthen our network and IT system       term development, as well as the expectations
+support to solidify the foundation of our services          of customers, shareholders, the public and the
+and secondly, to raise customer satisfaction, we will       regulators. For full-year 2018, we will maintain stable
+establish a full-service, full-touchpoint service system,   growth in telecommunications services revenue, net
+while extending our offering to a wider range of            profits and shareholders returns. Looking forward, we
+smart services through applications of technologies         have every confidence in the Company’s sustainable
+such as AI (Artificial Intelligence) and big data, to       development.
+ensure that we provide differentiated, precise and
+proactive services. By doing so, we will enhance the        ACKNOWLEDGEMENT
+connectivity value to our customers and safeguard           Mr. Sha Yuejia resigned from his positions as
+our future development.                                     Executive Director and Vice President of the
+                                                            Company in May 2018. Having played significant
+Aligning with these new development trends,                 roles, Mr. Sha performed outstandingly and made a
+we will continue to formulate our strategy in key           tremendous contribution to the Company during his
+areas to future-proof our development. Firstly,             service. On behalf of the Board of Directors, I express
+we will proactively apply AI, big data and cloud            our sincere gratitude to Mr. Sha.
+computing technology in all aspects of operations
+to further our own digital transformation. Secondly,        Mr. Frank Wong Kwong Shing resigned from the role
+we will participate in the evolution of information         of Independent Non-Executive Director in May 2018
+and communication technology to build out our               after serving the Board for 15 years. I would like to
+infrastructure that will enable the new generation          express my heartfelt gratitude to Mr. Wong for his
+of smart connection. Thirdly, as an industry leader,        valuable contribution over the years.
+we will continue to promote open operations and
+collaboration with leading Internet companies and           Finally, on behalf of the Board, I thank all our
+industry partners, working together strategically in        shareholders, customers and the public for their long-
+order to create an innovative ecosystem that benefits       standing support, and all our staff for their hard work
+all and promotes value sharing.                             and dedication. We are committed, as always, to
+                                                            maximizing value for our shareholders.
+The development of 5G bears great significance to
+the Company for its profound implications on our
+sustainability. We have therefore attached high
+importance to 5G research and development, as
+well as 5G trial tests. Following our participation in
+the finalisation of the first set of international 5G
+technology standards in the first half of 2018, we
+will continue to proactively roll out trial tests on the
+5G network and other tests on 5G applications in the
+second half of 2018, as well as investing resources
+into the 5G Joint Innovation Centre and studying
+the possibility of cross-industry integration and           Shang Bing
+applications that will speed up the commercialisation       Chairman
+of the 5G technology. We are keen to generate
+returns on our investments and will plan our future         Hong Kong, 9 August 2018
+investments on 5G taking into consideration the level
+of maturity of the industry and business models that
+emerge.
+Interim Report 2018                                                                                         9
+
+FINANCIAL REVIEW
+
+
+
+
+OPERATING REVENUE
+In the first half of 2018, the Group’s operating revenue recorded a continuous growth to RMB391.8 billion,
+up by 2.9% over the same period last year, of which revenue from telecommunications services reached
+RMB356.1 billion, up by 5.5% over the same period last year. The Group has continued to promote the
+integrated development of the “four growth engines”, with data services continuing to maintain a positive
+growth momentum. Revenue from data services was RMB283.1 billion, up by 16.3% over the same period
+last year, and its contribution to the revenue from telecommunications services increased to 79.5%. The
+Group’s revenue structure was further optimized, of which revenue from wireless data traffic reached
+RMB205.9 billion, up by 13.0% over the same period last year, and was the largest source of revenue of the
+Group. Revenue from wireline broadband services was RMB26.0 billion, up by 49.2% over the same period
+last year, and its contribution to the revenue from telecommunications services continued to increase year
+after year. Revenue from applications and information services was RMB36.6 billion, up by 23.5% over the
+same period last year, achieving momentum for rapid scale growth.
+
+OPERATING EXPENSES
+With market competition becoming more intensified and the Group being at the key stage of its
+transformational development, the Group will continue to adhere to the principle of “forward-looking planning,
+effective resource allocation, rational investment and refined management” in order to increase revenue,
+reduce expenditure and maintain favorable profitability. In the first half of 2018, the Group’s operating
+expenses were RMB322.1 billion, up by 0.4% over the same period last year, representing 82.2% of operating
+revenue. As a result of effective cost control, percentage of operative expenses to operating revenue were
+down by 0.3 percentage points over the same period last year.
+
+With respect to asset-related costs, the Group has continued to maintain its level of investments in recent
+years. As its assets scale continued to expand, depreciation expenses increased by 4.2% in the first half
+of 2018. Tower leasing fee was RMB19.4 billion, up by 5.4% over the same period last year. The Group
+comprehensively promoted refined management, and maintenance expenses were RMB31.4 billion, down by
+4.4% over the same period last year.
+
+With respect to selling expenses, the Group focused on the precision marketing of customers and strived to
+improve the efficiency of marketing resources. Selling expenses decreased by 3.8% over the same period last
+year.
+
+With respect to personnel expenses, the Group continued to adjust and optimize its personnel structure
+and increased the compensation allocation and motivation in favor of primary frontline and core employees.
+Moreover, average labor cost has continuously increased society-wide. Employee benefit and related expenses
+for the first half of 2018 were RMB43.0 billion, up by 5.6% over the same period last year, representing 11.0%
+of operating revenue. As of 30 June 2018, the total number of employees was 485,000.
+10                                                                                            China Mobile Limited
+
+FINANCIAL REVIEW
+
+
+
+
+PROFITABILITY
+The Group strived to reinforce cost reduction and efficiency enhancement and improved operating efficiency,
+thereby continuously maintaining favorable profitability. In the first half of 2018, profit attributable to equity
+shareholders was RMB65.6 billion, up by 4.7% over the same period last year, and the margin of profit
+attributable to equity shareholders was 16.8%, representing an increase of 0.7 percentage points over the
+same period last year. EBITDA was RMB145.9 billion, up by 3.7% over the same period last year, and EBITDA
+margin was 37.2%. EBITDA represented 41.0% of revenue from telecommunications services.
+
+CAPITAL EXPENDITURE
+In order to satisfy customer demands, the Group continued to establish its quality 4G networks by precisely
+investing in network capacity maintenance and continuously improving indoor in-depth coverage, urban
+continuous coverage and rural wide area coverage. In the first half of 2018, the Group’s capital expenditure
+was RMB79.5 billion, representing 22.3% of revenue from telecommunications services, of which RMB25.6
+billion was invested in 4G networks, funded primarily by cash generated from operating activities.
+
+CAPITAL STRUCTURE
+The financial position of the Group continued to remain at a steady level. As of 30 June 2018, total assets and
+total liabilities amounted to RMB1,565.1 billion and RMB530.1 billion, respectively, and the liabilities-to-assets
+ratio was 33.9%.
+
+The Group has firmly adhered to its prudent financial risk management policies and maintained sound
+repayment capabilities.
+
+FINANCIAL POLICIES AND CASH FLOW
+Amidst the complex operating environment and investment pressure, the Group continued to maintain a
+healthy cash flow as a result of the stable and favorable growth in its business operations and revenue, refined
+cost control and the continuous effect of economies of scale. Free cash flow was RMB38.9 billion for the six
+months ended 30 June 2018. As of 30 June 2018, the Group’s total cash and bank balances were RMB394.8
+billion, of which 97.6%, 1.0% and 1.4% were denominated in Renminbi, U.S. dollars and Hong Kong dollars,
+respectively.
+
+The Group will consistently uphold prudent financial policies and strictly monitor and control financial risks in
+order to maintain a healthy cash flow generating capability as well as value preservation and enhancement
+capabilities. In addition, the Group will focus on scientific resource allocation, maintain a healthy structure and
+level of capital and reinforce and develop favorable economic benefits in order to continuously create value for
+its shareholders.
+Interim Report 2018                                                                              11
+Interim Financial Information
+
+UNAUDITED CONDENSED CONSOLIDATED
+STATEMENT OF COMPREHENSIVE INCOME
+for the six months ended 30 June 2018
+(Expressed in Renminbi (“RMB”))
+
+
+                                                                          Six months ended 30 June
+                                                                                2018           2017
+                                                                   Note        Million        Million
+Operating revenue                                                   5
+ Revenue from telecommunications services                                     356,120        347,950
+ Revenue from sales of products and others                                     35,712         40,921
+
+                                                                              391,832        388,871
+
+Operating expenses
+ Leased lines and network assets                                               24,396         23,190
+ Interconnection                                                               10,447         10,600
+ Depreciation                                                                  75,623         72,586
+ Employee benefit and related expenses                              6          42,975         40,711
+ Selling expenses                                                              32,847         34,140
+ Cost of products sold                                                         36,354         42,740
+ Other operating expenses                                                      99,505         96,930
+
+                                                                              322,147        320,897
+
+Profit from operations                                                         69,685         67,974
+
+Other gains                                                                       751            450
+
+Interest and other income                                           7           8,110          7,685
+
+Finance costs                                                                     (74)           (121)
+
+Share of profit of investments accounted for
+ using the equity method                                                        5,747          5,407
+
+Profit before taxation                                              8          84,219         81,395
+
+Taxation                                                            9         (18,477)        (18,668)
+
+PROFIT FOR THE PERIOD                                                          65,742         62,727
+
+Other comprehensive income for the period, net of tax:
+ Item that will not be subsequently reclassified to
+    profit or loss
+    Changes in the fair value of financial assets at
+      fair value through other comprehensive income                14               2               –
+
+  Items that may be subsequently reclassified to profit or loss
+     Change in value of available-for-sale financial assets                         –               3
+     Exchange differences on translation of financial statements
+       of overseas entities                                                       292            (425)
+     Share of other comprehensive income/(loss) of investments
+       accounted for using the equity method                                      551            (754)
+
+TOTAL COMPREHENSIVE INCOME FOR THE PERIOD                                      66,587         61,551
+12                                                                                             China Mobile Limited
+
+Interim Financial Information (Continued)
+UNAUDITED CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME (CONTINUED)
+
+
+
+
+for the six months ended 30 June 2018
+(Expressed in RMB)
+
+
+                                                                                    Six months ended 30 June
+                                                                                          2018           2017
+                                                                         Note            Million        Million
+Profit attributable to:
+  Equity shareholders of the Company                                                        65,641          62,675
+  Non-controlling interests                                                                    101              52
+
+
+PROFIT FOR THE PERIOD                                                                       65,742          62,727
+
+
+Total comprehensive income attributable to:
+  Equity shareholders of the Company                                                        66,486          61,499
+  Non-controlling interests                                                                    101              52
+
+
+TOTAL COMPREHENSIVE INCOME FOR THE PERIOD                                                   66,587          61,551
+
+
+
+Earnings per share – Basic and diluted                                     11             RMB3.21        RMB3.06
+
+
+EBITDA (RMB million)                                                                       145,886        140,710
+
+
+
+
+The notes on pages 17 to 39 are an integral part of this interim financial information.
+Interim Report 2018                                                                              13
+Interim Financial Information (Continued)
+
+UNAUDITED CONDENSED CONSOLIDATED
+BALANCE SHEET
+as at 30 June 2018
+(Expressed in RMB)
+
+
+
+                                                                                As at          As at
+                                                                             30 June    31 December
+                                                                                2018           2017
+                                                                     Note     Million         Million
+Assets
+Non-current assets
+ Property, plant and equipment                                       12      634,581         648,029
+ Construction in progress                                            12       94,665          78,112
+ Land lease prepayments and others                                            29,417          28,322
+ Goodwill                                                                     35,343          35,343
+ Other intangible assets                                                       2,307           1,721
+ Investments accounted for using the equity method                   13      136,725         132,499
+ Deferred tax assets                                                          37,511          33,343
+ Financial assets at fair value through other comprehensive income   14           57               –
+ Available-for-sale financial assets                                 14            –              44
+ Restricted bank deposits                                            15       12,539           6,504
+ Other non-current assets                                                      7,362               –
+
+
+                                                                             990,507         963,917
+
+
+Current assets
+ Inventories                                                                  10,641          10,222
+ Contract assets                                                               4,594               –
+ Accounts receivable                                                 16       34,482          24,153
+ Other receivables                                                   17       32,790          31,201
+ Prepayments and other current assets                                17       21,434          24,552
+ Amount due from ultimate holding company                            18          291             221
+ Tax recoverable                                                               1,280           1,519
+ Financial assets at fair value through profit or loss               14       86,822               –
+ Available-for-sale financial assets                                 14            –          65,630
+ Restricted bank deposits                                            15          331             691
+ Bank deposits                                                       19      299,197         279,371
+ Cash and cash equivalents                                           20       82,751         120,636
+
+
+                                                                             574,613         558,196
+
+
+Total assets                                                                1,565,120      1,522,113
+14                                                                                             China Mobile Limited
+
+Interim Financial Information (Continued)
+UNAUDITED CONDENSED CONSOLIDATED BALANCE SHEET (CONTINUED)
+
+
+
+
+as at 30 June 2018
+(Expressed in RMB)
+
+
+
+                                                                                              As at          As at
+                                                                                           30 June    31 December
+                                                                                              2018           2017
+                                                                         Note               Million         Million
+Equity and liabilities
+Liabilities
+Current liabilities
+  Accounts payable                                                         21              209,224         233,169
+  Bills payable                                                                              4,260           3,303
+  Deferred revenue                                                                          65,471          85,282
+  Accrued expenses and other payables                                                      225,909         190,866
+  Amount due to ultimate holding company                                   18                8,002           8,646
+  Current taxation                                                                          13,338           8,716
+
+
+                                                                                           526,204         529,982
+
+
+Non-current liabilities
+ Deferred revenue – non-current                                                              3,525           2,888
+ Deferred tax liabilities                                                                      364             362
+
+
+                                                                                             3,889           3,250
+
+
+Total liabilities                                                                          530,093         533,232
+
+
+Equity
+  Share capital                                                            22              402,130         402,130
+  Reserves                                                                                 629,551         583,506
+
+
+Total equity attributable to equity shareholders
+  of the Company                                                                          1,031,681        985,636
+Non-controlling interests                                                                     3,346          3,245
+
+
+Total equity                                                                              1,035,027        988,881
+
+
+Total equity and liabilities                                                              1,565,120      1,522,113
+
+
+
+
+The notes on pages 17 to 39 are an integral part of this interim financial information.
+Interim Report 2018                                                                                                                                             15
+Interim Financial Information (Continued)
+
+UNAUDITED CONDENSED CONSOLIDATED
+STATEMENT OF CHANGES IN EQUITY
+for the six months ended 30 June 2018
+(Expressed in RMB)
+
+
+                                                                 Attributable to equity shareholders of the Company
+                                                                                                        PRC
+                                                                                                   Statutory                                        Non-
+                                                   Share    Capital      General     Exchange      and other     Retained                     controlling       Total
+                                                  capital   reserve      reserve       reserve      reserves       profits          Total       interests      equity
+                                                  Million    Million      Million       Million       Million      Million         Million        Million      Million
+As at 1 January 2017                              402,130   (265,308)         72           609       305,205          536,313     979,021          3,117      982,138
+
+Changes in equity for the six months
+  ended 30 June 2017:
+
+  Profit for the period                                 –          –            –            –             –           62,675      62,675             52       62,727
+  Change in value of available-for-
+    sale financial assets                               –          3            –            –             –                –            3             –             3
+  Currency translation difference                       –          –            –         (425)            –                –         (425)            –          (425)
+  Share of other comprehensive loss
+    of investments accounted for
+    using equity method                                 –       (754)           –            –             –                –         (754)            –          (754)
+
+Total comprehensive income
+  for the period                                        –       (751)           –         (425)            –           62,675      61,499             52       61,551
+
+Dividends paid during the period
+  (note 10(b))                                          –          –            –            –             –          (22,204)     (22,204)            (2)     (22,206)
+Others                                                  –          –            –            –            45                –           45              –           45
+
+As at 30 June 2017                                402,130   (266,059)         72           184       305,250          576,784    1,018,361         3,167     1,021,528
+
+As at 31 December 2017
+  (As previously reported)                        402,130   (266,351)         72          (126)      327,163          522,748     985,636          3,245      988,881
+
+  Changes in accounting policies (note 3)               –       548             –            –         1,181            4,802       6,531              –        6,531
+
+As at 1 January 2018 (As restated)                402,130   (265,803)         72          (126)      328,344          527,550     992,167          3,245      995,412
+
+Changes in equity for the six months
+  ended 30 June 2018:
+
+  Profit for the period                                 –          –            –            –             –           65,641      65,641            101       65,742
+  Changes in the fair value of financial assets
+    at fair value through
+    other comprehensive income                          –          2            –            –             –                –           2              –            2
+  Currency translation difference                       –          –            –          292             –                –         292              –          292
+  Share of other comprehensive
+    income of investments accounted
+    for using equity method                             –       551             –            –             –                –         551              –          551
+
+Total comprehensive income
+  for the period                                        –       553             –          292             –           65,641      66,486            101       66,587
+
+Dividends paid during the period
+  (note 10(b))                                          –          –            –            –             –          (27,060)     (27,060)            –       (27,060)
+Others                                                  –          –            –            –            88                –           88             –            88
+
+As at 30 June 2018                                402,130   (265,250)         72           166       328,432          566,131    1,031,681         3,346     1,035,027
+
+The notes on pages 17 to 39 are an integral part of this interim financial information.
+16                                                                                             China Mobile Limited
+
+Interim Financial Information (Continued)
+
+UNAUDITED CONDENSED CONSOLIDATED
+STATEMENT OF CASH FLOWS
+for the six months ended 30 June 2018
+(Expressed in RMB)
+
+
+
+                                                                                    Six months ended 30 June
+                                                                                          2018           2017
+                                                                                         Million        Million
+Net cash generated from operating activities                                              118,317         138,265
+
+Net cash used in investing activities                                                     (128,602)       (117,743)
+
+Net cash used in financing activities                                                      (27,872)        (27,626)
+
+
+Net decrease in cash and cash equivalents                                                  (38,157)         (7,104)
+
+Cash and cash equivalents as at 1 January                                                 120,636           90,413
+
+Effect of changes in foreign exchange rate                                                    272             (301)
+
+
+Cash and cash equivalents as at 30 June                                                    82,751           83,008
+
+
+
+
+The notes on pages 17 to 39 are an integral part of this interim financial information.
+Interim Report 2018                                                                                        17
+Interim Financial Information (Continued)
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+1    GENERAL INFORMATION
+     China Mobile Limited (the “Company”) was incorporated in the Hong Kong Special Administrative Region
+     (“Hong Kong”) of the People’s Republic of China (the “PRC”) on 3 September 1997. The principal
+     activities of the Company and its subsidiaries (together referred to as the “Group”) are the provision of
+     telecommunications and related services in the Mainland China and in Hong Kong (for the purpose of
+     preparing the unaudited condensed consolidated interim financial information, Mainland China refers
+     to the PRC excluding Hong Kong, Macau Special Administrative Region of the PRC and Taiwan). The
+     Company’s immediate holding company is China Mobile Hong Kong (BVI) Limited (incorporated in British
+     Virgin Islands), and the Company’s ultimate holding company is China Mobile Communications Group Co.,
+     Ltd. (“CMCC”). The address of the Company’s registered office is 60th Floor, The Center, 99 Queen’s
+     Road Central, Hong Kong.
+
+     The shares of the Company have been listed on The Stock Exchange of Hong Kong Limited since 23
+     October 1997 and the American Depositary Shares of the Company have been listed on the New York
+     Stock Exchange since 22 October 1997.
+
+     The unaudited condensed consolidated interim financial information was approved by the board of
+     directors of the Company for issuance on 9 August 2018.
+
+     The Group’s condensed consolidated interim financial information is unaudited, but has been reviewed
+     by the Company’s Audit Committee. The condensed consolidated interim financial information has also
+     been reviewed by the Company’s independent auditor, PricewaterhouseCoopers (“PwC”), in accordance
+     with Hong Kong Standard on Review Engagements 2410, “Review of Interim Financial Information
+     Performed by the Independent Auditor of the Entity”, issued by the Hong Kong Institute of Certified
+     Public Accountants (“HKICPA”). PwC’s unmodified independent review report to the board of directors is
+     included on page 40 of this interim report.
+
+     The financial information relating to the year ended 31 December 2017, that is included in the unaudited
+     condensed consolidated interim financial information for the six months ended 30 June 2018 as
+     comparative information, does not constitute the Company’s statutory annual consolidated financial
+     statements for that year but is derived from those financial statements. Further information relating to
+     these statutory financial statements required to be disclosed in accordance with section 436 of the Hong
+     Kong Companies Ordinance (Cap. 622) is as follows:
+
+     The Company has delivered the financial statements for the year ended 31 December 2017 to the
+     Registrar of Companies as required by section 662(3) of, and Part 3 of Schedule 6 to, the Hong Kong
+     Companies Ordinance (Cap. 622).
+
+     The Company’s auditor has reported on those financial statements. The auditor’s report was unqualified;
+     did not include a reference to any matters to which the auditor drew attention by way of emphasis
+     without qualifying its report; and did not contain a statement under sections 406(2), 407(2) or (3) of the
+     Hong Kong Companies Ordinance (Cap. 622).
+18                                                                                                               China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+2    BASIS OF PREPARATION
+     The unaudited condensed consolidated interim financial information for the six months ended 30 June
+     2018 has been prepared in accordance with International Accounting Standard (“IAS”) 34, “Interim
+     financial reporting”, issued by the International Accounting Standards Board (“IASB”) and Hong Kong
+     Accounting Standard (“HKAS”) 34, “Interim financial reporting”, issued by HKICPA, which are consistent.
+
+     The preparation of the unaudited condensed consolidated interim financial information in conformity with
+     IAS/HKAS 34 requires management to make judgements, estimates and assumptions that affect the
+     application of policies and reported amounts of assets and liabilities, income and expenses on a year-to-
+     date basis. Actual results may differ from these estimates.
+
+     The unaudited condensed consolidated interim financial information should be read in conjunction with
+     the Company’s annual financial statements for the year ended 31 December 2017. The Group’s policies
+     on financial risk management were set out in the financial statements included in the Company’s 2017
+     Annual Report and there have been no significant changes in these policies for the six months ended 30
+     June 2018.
+
+     No events and transactions that are significant to the changes in financial position and performance of the
+     Group since the annual financial statements for the year ended 31 December 2017 should be included in
+     the Group’s unaudited condensed consolidated interim financial information. The unaudited condensed
+     consolidated interim financial information does not include all of the information required for a full set of
+     financial statements prepared in accordance with International Financial Reporting Standards (“IFRSs”) or
+     Hong Kong Financial Reporting Standards (“HKFRSs”).
+
+3    SIGNIFICANT ACCOUNTING POLICIES
+     Except as described below, the accounting policies applied in the preparation of this unaudited condensed
+     consolidated interim financial information are consistent with those used in the preparation of the annual
+     financial statements for the year ended 31 December 2017.
+
+     The following amended and annual improved standards are mandatory for the first time for the Group’s
+     financial year beginning on 1 January 2018 and are applicable for the Group:
+
+     IFRS/HKFRS 9 “Financial Instruments”
+     IFRS/HKFRS 15 “Revenue from Contracts with Customers”
+     Annual Improvement to IFRSs/HKFRSs 2014-2016 cycle*
+     IFRIC/HK(IFRIC) – Int 22, “Foreign Currency Transactions and Advance Consideration”
+
+     *    It includes amendment to IFRS/HKFRS 12 “Disclosure of interests in other entities” which was effective in 1 January 2017 and does
+          not have a material impact on the Group.
+
+
+     Amendments to IFRS/HKFRS effective for the financial year beginning on 1 January 2018 do not have a
+     material impact on the Group’s unaudited condensed consolidated interim financial information other than
+     IFRS/HKFRS 9 and IFRS/HKFRS 15, details of which are set out in note 3(a) and 3(b), respectively.
+Interim Report 2018                                                                                           19
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+3    SIGNIFICANT ACCOUNTING POLICIES (CONTINUED)
+     (a) IFRS/HKFRS 9 “Financial Instruments”
+          Classification and measurement
+          From 1 January 2018 onwards, the Group classifies its financial assets, depending on the Group’s
+          business model for managing the financial assets and the contractual terms of the related cash
+          flows, under the following measurement categories:
+
+          •       those to be measured at amortized cost, and
+
+          •       those to be measured at fair value (either through other comprehensive income, or through
+                  profit or loss).
+
+          (i)     The Group’s financial assets measured at amortized cost represent those financial assets
+                  that are held for collection of contractual cash flows where those cash flows represent solely
+                  payments of principal and interest. Applying IFRS/HKFRS 9 does not change the previous
+                  classification and measurement of these assets.
+
+          (ii)    For equity instruments previously classified as available-for-sale financial assets that are not
+                  held for trading, the Group has made an irrevocable election at the time of initial recognition
+                  to account for these equity investments at fair value through other comprehensive income
+                  (“FVOCI”). There is no subsequent reclassification of fair value gains and losses to profit or
+                  loss following the derecognition of the investment. Dividends from such investments continue
+                  to be recognized in profit or loss when the Group’s right to receive payments is established.
+
+          (iii)   Assets that do not meet the criteria for amortized cost or are not elected/classified as FVOCI
+                  are classified as financial assets at fair value through profit or loss (“FVPL”), which mainly
+                  comprises the wealth management products issued by banks (“WMP”). A gain or loss on a
+                  debt investment that is subsequently measured at FVPL is recognized in profit or loss and
+                  presented net within interest and other income in the period in which it arises.
+
+          Following the adoption of IFRS/HKFRS 9 from 1 January 2018 with the transitional provisions
+          in IFRS/HKFRS 9, it resulted in changes in accounting policies and adjustments to the amounts
+          recognized in the financial statements and the comparative figures have not been restated. There
+          is no impact to the Group’s total equity attributable to equity shareholders of the Company arising
+          from the reclassification of financial assets when applying IFRS/HKFRS 9.
+20                                                                                          China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+3    SIGNIFICANT ACCOUNTING POLICIES (CONTINUED)
+     (a) IFRS/HKFRS 9 “Financial Instruments” (Continued)
+          Impairment
+          From 1 January 2018, the Group assesses on a forward looking basis the expected credit losses
+          associated with its debt instruments carried at amortized cost. The Group has adopted the simplified
+          expected credit loss model for its accounts receivable and contract assets, as required by IFRS/
+          HKFRS 9 and the expected credit loss model for other debt instruments carried at amortized cost,
+          which have low credit risk at both the beginning and end of the reporting period. The impairment
+          methodology applied depends on whether there has been a significant increase in credit risk.
+
+          Financial assets are written off when there is no reasonable expectation of recovery, such as a
+          debtor failing to engage in a repayment plan with the Group. Where loans or receivables have been
+          written off, the Group continues to attempt to recover the receivable due. Where recoveries are
+          made, the recovered amount is recognized in profit or loss.
+
+          (i)    Accounts receivable and contract assets
+                 Compared to the incurred loss model under previous IAS/HKAS 39, applying the new expected
+                 credit model didn’t result in significant changes to the loss allowances for accounts receivable
+                 as at 30 June 2018 and 1 January 2018. The related retained profits was reduced by RMB165
+                 million and the PRC statutory reserves was reduced by RMB6 million as at 1 January 2018.
+
+                 Please refer to note 3(b) for details of the loss allowances for contract assets on 1 January
+                 2018.
+
+          (ii)   Other financial assets at amortized cost
+                 Other financial assets at amortized cost include cash and cash equivalents, bank deposits,
+                 loans to related parties and other receivables, etc. They are considered to be of low credit
+                 risk and thus the impairment provision recognized is limited to 12 months expected losses.
+                 Management considers that the expected credit loss is close to zero.
+
+          Investments accounted for using the equity method
+          Shanghai Pudong Development Bank Co., Ltd. (“SPD Bank”), a major associate of the Group has
+          adopted IFRS 9 for the year beginning 1 January 2018 using the modified retrospective approach
+          without restating the comparative figures in accordance with the transitional provisions stipulated
+          in IFRS 9. Accordingly, the opening balance of investment accounted for using the equity method,
+          the opening retained profits and PRC statutory reserves of the Group as at 1 January 2018 was
+          reduced by RMB2,194 million, RMB2,194 million, and RMB548 million, respectively; while the other
+          comprehensive income of the Group as at the same date was increased by RMB548 million.
+
+          Impact on the Group’s equity
+          The impact resulting from the adoption of IFRS/HKFRS 9 on the Group’s equity as at 1 January 2018
+          led to a decrease of RMB2,359 million of the retained profits, a decrease of RMB554 million of the
+          PRC statutory reserves and an increase of RMB548 million of the other comprehensive income
+          recorded in capital reserve of the Group, respectively.
+Interim Report 2018                                                                                      21
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+3    SIGNIFICANT ACCOUNTING POLICIES (CONTINUED)
+     (b) IFRS/HKFRS 15 “Revenue from Contracts with Customers”
+          In accordance with IFRS/HKFRS 15, revenue is measured at the transaction price which is the
+          amount of consideration to which the Group entitled in exchange for transferring promised
+          services or goods to the customer. For offerings which included the provision of multiple
+          performance obligations, such as telecommunications services (such as voice and data services),
+          telecommunication related products (such as handsets), customer point rewards and/or other
+          promotional goods/services, the Group allocates the transaction price received/receivable from
+          customers to each performance obligation based on the relative stand-alone selling prices.
+
+          Revenue for each performance obligation is then recognized when the Group satisfies the
+          performance obligation by transferring the promised goods or services to a customer. Revenue is
+          recognized when the customer obtains the control of the telecommunications services over the
+          time of provision of the services. Revenue is recognized when a customer obtains the control of the
+          product at a point of time.
+
+          When the Group is acting as agent in satisfying a performance obligation, the revenue is recognized
+          in the net amount of any fee or commission to which it expects to be entitled from another
+          party. The Group is acting as an agent when the Group does not obtain the control of a specified
+          good/service before it is transferred to the customer, after considering the primary obligor in the
+          arrangement, the establishment of selling price, and the inventory risks.
+
+          The excess of the cumulative revenue recognized over the cumulative consideration received and
+          due from the contracted customer is recognized as a contract asset on the consolidated balance
+          sheet. On the contrary, the excess of the cumulative consideration received from the contracted
+          customer over the cumulative revenue recognized is recognized as a contract liability recorded
+          in deferred revenue. The contract asset and the contract liability are calculated on a contract-by-
+          contract basis and are classified as current and non-current portions based on their respective
+          recovery or settlement periods. Non-current portion of contract assets are presented in other non-
+          current assets.
+
+          Incremental costs incurred to obtain a contract, which mainly comprise certain types of sales
+          commissions, are capitalized as other non-current assets and subsequently amortized on a straight-
+          line basis, if recoverable.
+
+          The previous accounting policy for the sales of multiple performance obligations was disclosed in
+          note 2(r) and note 40 in the annual financial statements for the year ended 31 December 2017.
+
+          The Group has adopted IFRS/HKFRS 15 from 1 January 2018 which resulted in changes in
+          accounting policies and adjustments to the amounts recognized in the financial statements. In
+          accordance with the transition provisions in IFRS/HKFRS 15, the Group has adopted the new rule
+          under the modified retrospective approach and the comparative figures have not been restated.
+
+          To reflect this change in accounting policy, as at 1 January 2018 the Group recognized contract
+          assets of RMB5,654 million, net of a related impairment provision amounting to RMB303 million,
+          and contract costs of RMB4,954 million, reduced its contract liabilities by RMB1,167 million,
+          respectively. Accordingly, the overall impact on the Group’s equity as at the same date were an
+          increase of RMB7,161 million of retained profits, and an increase of RMB1,735 million of the PRC
+          statutory reserves, respectively.
+22                                                                                         China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+3    SIGNIFICANT ACCOUNTING POLICIES (CONTINUED)
+     (c) Impact of standards issued but not yet applied by the Group
+          In addition, the IASB and HKICPA also published a number of new standards, amendments to
+          standards and interpretations which are effective for the financial year beginning on or after 1
+          January 2019 and have not been early adopted by the Group. Management is assessing the impact
+          of such new standards and amendments to standards and will adopt the relevant standards and
+          amendments to standards in the subsequent periods as required.
+
+          IFRS/HKFRS 16 “Leasing”
+          The Group is currently performing a detailed assessment of the effects of applying IFRS/HKFRS
+          16. The scopes and areas of the impact by IFRS/HKFRS 16 were set out in the Company’s 2017
+          Annual Report. In order to adopt IFRS/HKFRS 16 upon the mandatory effective date, the Group has
+          started to update its business processes and will continue to assess the impact on the Group’s
+          consolidated financial statements. The quantitative impact of IFRS/HKFRS 16 cannot be reasonably
+          estimated before the update and the respective detailed review are completed. The Group does not
+          intend to adopt IFRS/HKFRS 16 before its mandatory effective date.
+
+4    SEGMENT REPORTING
+     An operating segment is a component of the Group that engages in business activities from which the
+     Group may earn revenue and incur expenses, and is identified on the basis of the internal financial reports
+     that are provided to and regularly reviewed by the Group’s Chief Operating Decision Maker (the “CODM”)
+     in order to allocate resource and assess performance of the segment. The CODM has been identified
+     as the Executive Directors of the Company. For the periods presented, the Group as a whole is an
+     operating segment since the Group is only engaged in telecommunications and related businesses. No
+     geographical information has been disclosed as the majority of the Group’s operating activities are carried
+     out in Mainland China. The Group’s assets located and operating revenue derived from activities outside
+     of Mainland China are less than 5% of the Group’s assets and operating revenue, respectively.
+Interim Report 2018                                                                                   23
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+5    OPERATING REVENUE
+
+                                                                             Six months ended 30 June
+                                                                                   2018           2017
+                                                                                  Million        Million
+     Revenue from telecommunications services
+       Voice services                                                              62,914          88,127
+       Data services                                                              283,121         250,540
+       Others                                                                      10,085           9,283
+
+
+                                                                                  356,120         347,950
+
+     Revenue from sales of products and others                                     35,712          40,921
+
+
+                                                                                  391,832         388,871
+
+     The majority of the Group’s operating revenue is from contracts with customers, the remaining is not
+     material.
+
+     Based on the static calculation, with the adoption of IFRS/HKFRS 15 for the six months ended 30 June
+     2017, operating revenue and revenue from telecommunications services would have decreased by
+     RMB8,158 million and RMB10,446 million, respectively; revenue from sales of products and others would
+     have increased by RMB2,288 million.
+
+     Without the adoption of IFRS/HKFRS 15 for the six months ended 30 June 2018, operating revenue and
+     revenue from telecommunications services would have increased by RMB2,870 million and RMB4,711
+     million, respectively; revenue from sales of products and others would have decreased by RMB1,841
+     million.
+24                                                                                    China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+6    EMPLOYEE BENEFIT AND RELATED EXPENSES
+
+                                                                             Six months ended 30 June
+                                                                                   2018           2017
+                                                                                  Million        Million
+     Salaries, wages, labor service expenses and
+       other benefits                                                              37,135          35,418
+     Retirement costs: contributions to defined
+       contribution retirement plans                                                5,840           5,293
+
+
+                                                                                   42,975          40,711
+
+7    INTEREST AND OTHER INCOME
+     Interest and other income mainly comprise interest income derived from deposits placed with banks and
+     other income derived from wealth management products issued by banks (“WMP”).
+
+     For the six months ended 30 June 2018, interest income from bank deposits was RMB6,021 million (for
+     the six months ended 30 June 2017: RMB6,492 million).
+
+     For the six months ended 30 June 2018, the income from WMP was the result of changes in fair value
+     of WMP, amounting to RMB2,089 million. Please refer to note 14 for the measurement of the respective
+     fair values of the WMP.
+
+8    PROFIT BEFORE TAXATION
+     Profit before taxation is arrived at after charging the following items included in Other Operating
+     Expenses:
+
+                                                                             Six months ended 30 June
+                                                                                   2018           2017
+                                                                                  Million        Million
+     Maintenance                                                                   31,393          32,826
+     Impairment loss for doubtful accounts                                          2,663           2,185
+     Amortization of other intangible assets                                          578             150
+     Operating lease charges
+       – land and buildings                                                         6,554           6,635
+       – others                                                                     2,562           2,741
+     Operation support and research and development expenses                       23,311          19,064
+Interim Report 2018                                                                                                                         25
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+9    TAXATION
+
+                                                                                                          Six months ended 30 June
+                                                                                                                2018           2017
+                                                                                             Note              Million        Million
+     Current tax
+     Provision for Hong Kong profits tax on the
+       estimated assessable profits for the period                                             (i)                    183                    138
+     Provision for the PRC enterprise income tax on
+       the estimated taxable profits for the period                                           (ii)                25,294                25,214
+
+
+                                                                                                                  25,477                25,352
+     Deferred tax
+     Origination and reversal of temporary differences, net                                                        (7,000)               (6,684)
+
+
+                                                                                                                  18,477                18,668
+
+     Note:
+
+     (i)     The provision for Hong Kong profits tax is calculated at 16.5% of the estimated assessable profits for the six months ended 30 June
+             2018 (for the six months ended 30 June 2017: 16.5%).
+
+     (ii)    The provision for the PRC enterprise income tax is computed based on the statutory tax rate of 25% on the estimated taxable profits
+             determined in accordance with the relevant income tax rules and regulations of the PRC for the six months ended 30 June 2018 (for
+             the six months ended 30 June 2017: 25%). Certain subsidiaries of the Company enjoy a preferential tax rate of 15% (for the six months
+             ended 30 June 2017: 15%).
+
+     (iii)   On 22 April 2009, SAT issued the “Notice regarding Matters on Determination of Tax Residence Status of Chinese-controlled Offshore
+             Incorporated Enterprises under Rules of Effective Management” (“2009 Notice”). The Company is qualified as a PRC offshore-
+             registered resident enterprise for the purposes of the 2009 Notice. In accordance with the provisions under the 2009 Notice and the
+             PRC enterprise income tax law, the dividend income of the Company received/receivable from its subsidiaries in the PRC is exempt
+             from PRC enterprise income tax.
+26                                                                                       China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+10 DIVIDENDS
+   (a) Dividends attributable to the period
+
+                                                                                Six months ended 30 June
+                                                                                      2018           2017
+                                                                                     Million        Million
+          Ordinary interim dividend declared after the
+            balance sheet date of HK$1.826 (equivalent to
+            approximately RMB1.540) (2017: HK$1.623
+            (equivalent to approximately RMB1.409)) per share                         31,522           28,842
+          Special dividend declared after the
+            balance sheet date of HK$3.200
+            (equivalent to approximately RMB2.777) per share in 2017                        –          56,867
+
+
+                                                                                      31,522           85,709
+
+          The 2018 ordinary interim dividend, which is declared in Hong Kong dollars, is translated into RMB
+          with reference to the rate HK$1=RMB0.8431, being the rate announced by the State Administration
+          of Foreign Exchange in the PRC on 29 June 2018. As the ordinary interim dividend was declared
+          after the balance sheet date, such dividend had not been recognized as liability as at 30 June 2018.
+
+          In accordance with the 2009 Notice and the PRC enterprise income tax law, the Company is
+          required to withhold enterprise income tax equal to 10% of any dividend, when it is distributed
+          to non-resident enterprise shareholders whose names appeared on the Company’s register of
+          members, as of the record date for such dividend, and who were not individuals.
+
+     (b) Dividends attributable to the previous financial year, approved and paid during
+         the period
+
+                                                                                Six months ended 30 June
+                                                                                      2018           2017
+                                                                                     Million        Million
+          Ordinary final dividend in respect of the previous financial year,
+             approved and paid during the period, of HK$1.582
+            (equivalent to approximately RMB1.322) (2017: HK$1.243
+            (equivalent to approximately RMB1.112)) per share                         27,060           22,204
+Interim Report 2018                                                                                      27
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+11 EARNINGS PER SHARE
+     The calculation of basic earnings per share for the six months ended 30 June 2018 is based on the profit
+     attributable to equity shareholders of the Company of RMB65,641 million (for the six months ended 30
+     June 2017: RMB62,675 million) and the weighted average number of 20,475,482,897 shares (for the
+     six months ended 30 June 2017: 20,475,482,897 shares) in issue during the six months ended 30 June
+     2018.
+
+     For the six months ended 30 June 2018 and 2017, there were no dilutive potential ordinary shares of the
+     Company outstanding. Therefore, there was no dilution impact on weighted average number of shares
+     (diluted) of the Company.
+
+12 PROPERTY, PLANT AND EQUIPMENT AND CONSTRUCTION IN PROGRESS
+   (a) Acquisition of property, plant and equipment and construction in progress
+          During the six months ended 30 June 2018, the Group acquired items of property, plant and
+          equipment and construction in progress with an aggregate cost of RMB78,831 million (for the six
+          months ended 30 June 2017: RMB85,348 million).
+
+     (b) Write off of property, plant and equipment
+          Property, plant and equipment with a net book value of approximately RMB372 million were
+          written off during the six months ended 30 June 2018 (for the six months ended 30 June 2017:
+          approximately RMB661 million).
+
+13 INVESTMENTS ACCOUNTED FOR USING THE EQUITY METHOD
+     The amounts recognized in the unaudited condensed consolidated balance sheet are as follows:
+
+                                                                                       As at          As at
+                                                                                    30 June    31 December
+                                                                                       2018           2017
+                                                                                     Million         Million
+     Associates                                                                     135,577         131,636
+     Joint ventures                                                                   1,148             863
+
+
+                                                                                    136,725         132,499
+
+     Please refer to the note 3(a) for the impact of adoption of IFRS/HKFRS 9 for SPD Bank.
+28                                                                                            China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+13 INVESTMENTS ACCOUNTED FOR USING THE EQUITY METHOD (CONTINUED)
+     Details of major associates are as follows:
+
+                                                            Proportion
+                                           Place of         of ownership
+                                           incorporation/   interest held by
+                                           establishment    the Company’s
+     Name of associate                     and operations   subsidiary         Principal activity
+     Unlisted company
+     China Tower Corporation Limited       The PRC          38%                Construction, maintenance and
+       (“China Tower”)                                                           operation of telecommunications
+                                                                                 towers
+
+     Listed company
+     SPD Bank                              The PRC          18%                Provision of banking services
+
+     IFLYTEK Co., Ltd. (“IFLYTEK”)         The PRC          13%                Provision of Chinese speech and
+                                                                                 language technology products
+                                                                                 and services
+
+     True Corporation Public Company       Thailand         18%                Provision of telecommunications
+       Limited (“True Corporation”)                                              services
+
+     (i)   The fair values of the interests in SPD Bank, IFLYTEK and True Corporation were assessed based on
+           quoted market prices (level 1: quoted price (unadjusted) in active markets) as at the balance sheet
+           date, without any deduction of transaction costs, and disclosed as follows:
+
+                                                      As at 30 June 2018              As at 31 December 2017
+                                                      Carrying           Fair           Carrying            Fair
+                                                       amount           value            amount           value
+                                                        Million       Million             Million        Million
+           Interest in listed associates
+             – SPD Bank                                81,959           51,002            78,559               67,166
+             – IFLYTEK                                  1,845            8,620             1,852               10,598
+             – True Corporation                         7,403            6,360             7,472                7,450
+
+
+                                                       91,207           65,982            87,883               85,214
+Interim Report 2018                                                                                            29
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+13 INVESTMENTS ACCOUNTED FOR USING THE EQUITY METHOD (CONTINUED)
+     (ii)   The Group assesses at the end of each reporting period whether there is objective evidence that
+            interest in associates are impaired.
+
+            As at 30 June 2018, the fair value of investment in SPD Bank was assessed to be RMB51,002
+            million (as at 31 December 2017: RMB67,166 million), which was below its carrying amount
+            by approximately 37.8% (as at 31 December 2017: approximately 14.5%). Management of the
+            Group performed an impairment test and determined the respective recoverable amount of the
+            investment by the adoption of the value-in-use method. The calculation has considered pre-tax cash
+            flow projections of SPD Bank for the five years ending 30 June 2023 with an extrapolation made
+            to perpetuity. The discount rate used to discount the cash flows to their respective net present
+            values was based on cost of capital used to evaluate investments of similar nature in Mainland
+            China. Management judgement is required in estimating the future cash flows of SPD Bank. The
+            key assumptions are determined with reference to external sources of information such as analysts’
+            reports. Based on the management’s assessment results and sensitivity analysis performed, there
+            was no impairment of the investment as at 30 June 2018.
+
+            As at 30 June 2018, the fair value of investment in True Corporation was assessed to be RMB6,360
+            million (as at 31 December 2017: RMB7,450 million), which was below its carrying amount by
+            approximately 14.1% (as at 31 December 2017: approximately 0.3%). Management of the Group
+            performed an impairment test by considering fluctuations of True Corporation’s share price and its
+            financial performance. Management of the Group concluded that the decline in fair value of interest
+            in True Corporation as at 30 June 2018 was just temporary and being not significant. In addition, the
+            financial performance of True Corporation had met the original expectation. As a result, there was
+            no impairment recognized for the investment as at 30 June 2018.
+
+            Other than above, the management has determined that there was no impairment indicator of the
+            Group’s interests in other associates as at 30 June 2018 and 31 December 2017.
+
+            Details of major joint venture are as follows:
+
+            In 2015, China Mobile Communication Co., Ltd. (“CMC”), a wholly-owned subsidiary of the
+            Company, together with State Development & Investment Corporation and China Mobile State
+            Development & Investment Management Company Limited (45% of its registered capital is owned
+            by CMCC), established China Mobile Innovative Business Fund (Shenzhen) Partnership (Limited
+            Partnership) (the “Fund”). CMC committed to invest RMB1,500 million in cash, which represents
+            50% of the equity interest of the Fund. As at 30 June 2018, CMC had contributed RMB1,112 million
+            (as at 31 December 2017: RMB759 million) to the Fund with an outstanding commitment to further
+            invest RMB388 million (as at 31 December 2017: RMB741 million) to the Fund upon a request
+            lodged by the Fund. There were no contingent liabilities relating to the Group’s interest in this joint
+            venture as at 30 June 2018.
+30                                                                                                                        China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+14 FAIR VALUE MEASUREMENT OF FINANCIAL INSTRUMENTS
+
+                                                                     Available-for-sale financial
+                                                                                assets
+                                                                          Equity
+                                                                    investments            WMP                        FVOCI                 FVPL
+                                                                          Million         Million                     Million              Million
+     As at 31 December 2017
+       (As previously reported)                                                    44             65,630                       –                    –
+
+     Changes in accounting policies                                               (44)           (65,630)                    44             65,630
+
+
+     As at 1 January 2018
+       (As restated)                                                                 –                    –                  44             65,630
+
+     Purchase                                                                        –                    –                  10             81,390
+     Maturity                                                                        –                    –                   –            (62,287)
+     Fair value gains recognized in
+       profit or loss                                                                –                    –                    –              2,089
+     Fair value gains recognized in
+       other comprehensive income, before tax                                        –                    –                    3                    –
+
+
+     As at 30 June 2018                                                              –                    –                  57             86,822
+
+     Note:
+
+     (i)     The category of FVOCI is the equity investments that are not held for trading. The equity investments represent the Group’s
+             investments in other companies at fair values (level 1: quoted price (unadjusted) in active markets; or level 3: inputs for the assets or
+             liability that are not based on observable market data (that is, unobservable inputs)) through other comprehensive income as at 30 June
+             2018 and 31 December 2017.
+
+     (ii)    The category of FVPL mainly comprises WMPs. The WMPs will mature within one year with variable return rates indexed to the
+             performance of underlying assets. As at 30 June 2018 and 31 December 2017, they were measured at the fair value as level 3 of fair
+             value hierarchy. The fair values were determined based on cash flow discounted assuming the expected return will be obtained upon
+             maturity.
+
+
+     There were no transfers between the levels of fair value hierarchy for the six months ended 30 June
+     2018.
+
+     The remaining financial instruments were carried at amounts not materially different from their respective
+     fair values at the balance sheet dates.
+Interim Report 2018                                                                                                                    31
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+15 RESTRICTED BANK DEPOSITS
+
+                                                              As at 30 June 2018                         As at 31 December 2017
+                                                           Non-                                          Non-
+                                                         current     Current                          current      Current
+                                                          assets      assets      Total                assets       assets      Total
+                                                         Million      Million    Million              Million       Million   Million
+     Restricted bank deposits
+       – Statutory deposit reserves (Note)                  4,787              –         4,787          3,453              –         3,453
+       – Deposited customer reserves (Note)                 7,746              –         7,746          3,047              –         3,047
+       – Pledged bank deposits                                  6            331           337              4            691           695
+
+
+                                                          12,539             331        12,870          6,504            691         7,195
+
+     Note: The statutory deposit reserves and the deposited customer reserves are deposited by the subsidiaries of the Company, China Mobile
+           Finance Company Limited (“China Mobile Finance”) and China Mobile E-Commerce Co., Ltd., respectively, in accordance with relevant
+           requirements of the People’s Bank of China (“PBOC”), which are not available for use in the Group’s daily operations.
+
+
+16 ACCOUNTS RECEIVABLE
+     Aging analysis of accounts receivable, net of allowance for impairment loss of doubtful accounts is as
+     follows:
+
+                                                                                                              As at              As at
+                                                                                                           30 June        31 December
+                                                                                                              2018               2017
+                                                                                                            Million             Million
+     Within 30 days                                                                                          17,084                13,711
+     31-60 days                                                                                               3,781                 3,002
+     61-90 days                                                                                               2,432                 1,798
+     Over 90 days                                                                                            11,185                 5,642
+
+
+                                                                                                             34,482                24,153
+
+     Accounts receivable primarily comprise receivables from customers and telecommunications operators.
+     Customers with balances that are overdue or have exceeded credit limits are required to settle all
+     outstanding balances before any further telecommunications services can be provided. The increase of
+     accounts receivable is mainly due to the increase in revenue from corporate markets. Customers from
+     corporate markets normally enjoy longer credit term and have better creditability.
+
+     Accounts receivable are expected to be recovered within one year.
+32                                                                                         China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+17 OTHER RECEIVABLES, PREPAYMENTS AND OTHER CURRENT ASSETS
+     Other receivables comprise certain items which are expected to be recovered within one year. They
+     primarily include interest receivable from banks, utilities deposits and rental deposits, short-term loans
+     granted to China Tower of RMB6,000 million (as at 31 December 2017: RMB8,050 million) and other
+     short-term loans such as placements with banks and other financial institutions of RMB6,850 million (as
+     at 31 December 2017: RMB5,600 million) through China Mobile Finance at interest rates mutually agreed
+     among the parties with reference to the market interest rates.
+
+     Prepayments and other current assets primarily consist of rental prepayments, maintenance prepayments
+     and input VAT to be deducted.
+
+18 AMOUNTS DUE FROM/TO ULTIMATE HOLDING COMPANY
+     Amount due from ultimate holding company is unsecured, interest free, repayable on demand and the
+     balance arises during the ordinary course of business. They are of low credit risks because there are no
+     history of defaults for this financial assets and hence the loss allowance recognized during the period, if
+     any, was limited to 12 months expected losses.
+
+     As at 30 June 2018, amount due to ultimate holding company comprises the short-term deposits of
+     CMCC and its subsidiaries (“CMCC Group”) in China Mobile Finance amounting to RMB7,870 million
+     (as at 31 December 2017: RMB8,611 million) and the corresponding interest payable arising from the
+     deposits. The deposits are unsecured and carry interest at prevailing market rate.
+
+19 BANK DEPOSITS
+     Bank deposits represent term deposits with banks with original maturity exceeding three months. The
+     applicable interest rate is determined mainly in accordance with the benchmark interest rate published by
+     PBOC or with reference to the market interest rate.
+
+20 CASH AND CASH EQUIVALENTS
+
+                                                                                         As at           As at
+                                                                                      30 June     31 December
+                                                                                         2018            2017
+                                                                                       Million          Million
+     Bank deposits with original maturity within three months                          14,491            5,907
+     Cash at banks and on hand                                                         68,260          114,729
+
+
+                                                                                       82,751          120,636
+Interim Report 2018                                                                                       33
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+21 ACCOUNTS PAYABLE
+     Accounts payable primarily include payables for expenditure of network expansion, maintenance and
+     interconnection expenses.
+
+     The aging analysis of accounts payable is as follows:
+
+                                                                                       As at          As at
+                                                                                    30 June    31 December
+                                                                                       2018           2017
+                                                                                     Million         Million
+     Payable in the periods below:
+
+     Within 1 month or on demand                                                    182,761          201,429
+     After 1 month but within 3 months                                                8,709           13,086
+     After 3 months but within 6 months                                               8,530            7,660
+     After 6 months but within 9 months                                               2,285            2,761
+     After 9 months but within 12 months                                              6,939            8,233
+
+
+                                                                                    209,224          233,169
+
+     All of the accounts payable are expected to be settled within one year or are repayable on demand.
+
+22 SHARE CAPITAL
+     Ordinary shares, issued and fully paid:
+
+                                                             Number of                           Equivalent
+                                                                shares       HK$ million        RMB million
+     As at 1 January 2018 and 30 June 2018             20,475,482,897            382,263             402,130
+34                                                                                                              China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+23 RELATED PARTY TRANSACTIONS
+   (a) Transactions with CMCC Group
+          The following is a summary of principal related party transactions entered into by the Group with
+          CMCC Group for the six months ended 30 June 2018 and 2017. The majority of these transactions
+          also constitute continuing connected transactions as defined under Chapter 14A of the Rules
+          Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited.
+
+                                                                                                    Six months ended 30 June
+                                                                                                          2018           2017
+                                                                                       Note              Million        Million
+          Telecommunications services revenue                                            (i)                     1                   22
+          Property leasing and management services revenue                               (ii)                   70                   86
+          Property leasing and management services charges                               (ii)                  441                  449
+          Network assets leasing charges                                                (iii)                1,169                1,243
+          Network capacity leasing charges                                              (iii)                  264                  698
+          Short-term bank deposits received                                             (iv)                 7,870                  136
+          Short-term bank deposits repaid                                               (iv)                 8,611                5,552
+          Interest expenses                                                             (iv)                    74                    4
+
+          Note:
+
+          (i)     The amount represents telecommunications services settlement received/receivable from CMCC Group for the provision of
+                  telecommunications project planning, design and construction services, telecommunications line and pipeline construction
+                  services, and telecommunications line maintenance services.
+
+          (ii)    The amounts represent the rental and property management fees received/receivable from or paid/payable to CMCC Group in
+                  respect of offices, retail outlets and warehouses.
+
+          (iii)   The amounts represent the network assets leasing settlement paid/payable to CMCC Group, and the TD-SCDMA network
+                  capacity charges paid/payable to CMCC Group.
+
+          (iv)    The amounts represent the bank deposits received from or repaid to CMCC Group and interest expenses paid/payable to CMCC
+                  Group in respect of the deposits.
+Interim Report 2018                                                                                   35
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+23 RELATED PARTY TRANSACTIONS (CONTINUED)
+   (b) Amounts due from/to CMCC Group
+          Amounts due from/to CMCC Group, other than amounts due from/to ultimate holding company (note
+          18), which are included in the following accounts captions, are summarized as follows:
+
+                                                                                    As at          As at
+                                                                                 30 June    31 December
+                                                                                    2018           2017
+                                                                                  Million         Million
+          Accounts receivable                                                         267             301
+          Other receivables                                                           114             116
+          Accounts payable                                                          5,296           4,580
+          Accrued expenses and other payables                                         111             131
+
+          The amounts are unsecured, interest-free, repayable on demand/on contract terms and arise in the
+          ordinary course of business.
+
+     (c) Significant transactions with associates and joint venture of the Group and of
+         CMCC Group
+          The Group has entered into transactions with associates and joint venture of the Group or CMCC.
+          The major transactions entered into by the Group and these companies and amounts due from/to
+          these companies are as follows:
+
+                                                                                    As at          As at
+                                                                                 30 June    31 December
+                                                                                    2018           2017
+                                                                   Note           Million         Million
+          Accounts receivable                                        (i)              246             313
+          Interest receivable                                       (ii)            1,065             997
+          Other receivables                                         (iii)           9,138          12,565
+          Prepayments and other current assets                                        113              51
+          Available-for-sale financial assets                       (iii)               –          31,778
+          Financial assets at FVPL                                  (iii)          47,411               –
+          Bank deposits                                             (iii)          76,623          62,969
+          Accounts payable                                          (iv)            4,265           4,479
+          Accrued expenses and other payables                       (iv)            9,023           5,429
+36                                                                                                                 China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+23 RELATED PARTY TRANSACTIONS (CONTINUED)
+   (c) Significant transactions with associates and joint venture of the Group and of
+       CMCC Group (Continued)
+
+                                                                                                       Six months ended 30 June
+                                                                                                             2018           2017
+                                                                                         Note               Million        Million
+          Telecommunications services revenue                                               (i)                   311                  269
+          Property leasing and management services revenue                                 (v)                     23                    –
+          Charges for use of tower assets                                                  (iv)                19,420               18,419
+          Interest and other income                                                         (ii)                2,347                2,152
+          Dividend income                                                                                         156                  839
+
+          Note:
+
+          (i)     The amounts represent the telecommunications services revenue received/receivable from the Group’s associates.
+
+          (ii)    The amounts primarily represent interest received/receivable from deposits placed with SPD Bank, short-term loans granted to
+                  China Tower and placements with SPD Bank by China Mobile Finance; and represent the income from WMP purchased from
+                  SPD Bank. The interest rate of deposits placed with SPD Bank is determined in accordance with the benchmark interest rate
+                  published by PBOC.
+
+          (iii)   Other receivables primarily represent the short-term loans granted to China Tower and placements with SPD Bank by China
+                  Mobile Finance, and withholding power and utilities expenses and lease charges due from China Tower, etc.. The loans will
+                  mature by or before June 2019. Available-for-sale financial assets and financial assets at FVPL represent the WMP purchased
+                  from SPD Bank and bank deposits represent the deposits placed with SPD Bank.
+
+          (iv)    The amounts primarily represent the charges paid/payable to China Tower for the use of telecommunications towers and related
+                  assets and the services.
+
+          (v)     The amount represents the property leasing revenue received/receivable from China Tower.
+Interim Report 2018                                                                                          37
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+23 RELATED PARTY TRANSACTIONS (CONTINUED)
+   (d) Transactions with other government-related entities in the PRC
+          The Group is a government-related enterprise and operates in an economic regime currently
+          dominated by entities directly or indirectly controlled by the PRC government through government
+          authorities, agencies, affiliations and other organization (collectively referred to as “government-
+          related entities”).
+
+          Apart from transactions with CMCC Group (note 18 and 23(a)), associates and joint venture (note
+          23(c)) and the transaction to increase contribution to the Fund (note 13), the Group has collectively,
+          but not individually, significant transactions with other government-related entities which include but
+          not limited to the following:
+
+          –     rendering and receiving telecommunications services, including interconnection revenue/
+                charges
+          –     purchasing of goods, including use of public utilities
+          –     placing of bank deposits
+
+          These transactions are conducted during the ordinary course of the Group’s business based on
+          terms comparable to terms of transactions enacted with other entities that are not government-
+          related. The Group prices its telecommunications services and products based on commercial
+          negotiations with reference to rules and regulations stipulated by related authorities of the PRC
+          Government, where applicable. The Group has also established its procurement policies and
+          approval processes for purchases of products and services, which do not depend on whether the
+          counterparties are government-related entities or not.
+
+24 COMMITMENTS
+   (a) Capital commitments
+          The Group’s capital expenditure contracted for as at the balance sheet dates but not provided in the
+          unaudited condensed consolidated interim financial information were as follows:
+
+                                                                                          As at          As at
+                                                                                       30 June    31 December
+                                                                                          2018           2017
+                                                                                        Million         Million
+          Land and buildings                                                            11,546           10,950
+          Telecommunications equipment                                                  52,077           32,112
+
+
+                                                                                        63,623           43,062
+38                                                                                      China Mobile Limited
+
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+24 COMMITMENTS (CONTINUED)
+   (b) Operating lease commitments
+          The total future minimum lease payments under non-cancellable operating leases as at the balance
+          sheet dates are as follows:
+
+                                                            Leased lines
+                                                Land and    and network
+                                                buildings         assets             Others          Total
+                                                  Million        Million             Million        Million
+          As at 30 June 2018
+
+          Within one year                          10,647          49,927             1,032          61,606
+          After one year but
+            within five years                      21,972         120,229               924        143,125
+          After five years                          5,170           1,973                57          7,200
+
+
+                                                   37,789         172,129             2,013        211,931
+
+
+          As at 31 December 2017
+
+          Within one year                          10,344          46,730             1,023          58,097
+          After one year but
+            within five years                      20,372         112,465               961        133,798
+          After five years                          4,831           1,183                58          6,072
+
+
+                                                   35,547         160,378             2,042        197,967
+
+          The Group leases certain land and buildings, leased lines and network assets, motor vehicles,
+          computer and other office equipment under operating leases.
+
+     (c) Investment commitments
+          The Group has an investment commitment to a joint venture (see note 13).
+Interim Report 2018                                                                                         39
+Interim Financial Information (Continued)
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED INTERIM FINANCIAL INFORMATION (CONTINUED)
+
+
+
+
+(Expressed in RMB unless otherwise indicated)
+
+
+
+
+25 POST BALANCE SHEET EVENTS
+     After the balance sheet date, the board of directors proposed an ordinary interim dividend. Further details
+     are disclosed in note 10(a).
+
+     On 8 August 2018, China Tower successfully listed on the Main Board of The Stock Exchange of Hong
+     Kong Limited and made an offering of 43,114,800,000 new ordinary shares (including both Hong Kong
+     and International offerings, assuming no exercise of the over-allotment option) at a price of HK$1.26
+     (equivalent to approximately RMB1.10) per share. The listing of China Tower led to an increase in the
+     amount of investments accounted for using the equity method of the Group’s interest in China Tower.
+40                                                                                           China Mobile Limited
+
+
+REPORT ON REVIEW OF INTERIM FINANCIAL
+INFORMATION
+
+
+
+
+To the Board of Directors of China Mobile Limited
+(Incorporated in Hong Kong with limited liability)
+
+INTRODUCTION
+We have reviewed the condensed interim financial information set out on pages 11 to 39, which comprises the
+condensed consolidated balance sheet of China Mobile Limited (the “Company”) and its subsidiaries (together,
+the “Group”) as at 30 June 2018 and the condensed consolidated statement of comprehensive income,
+the condensed consolidated statement of changes in equity and the condensed consolidated statement of
+cash flows for the six-month period then ended, and a summary of significant accounting policies and other
+explanatory notes. The Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited
+require the preparation of a report on interim financial information to be in compliance with the relevant
+provisions thereof, and to be in compliance with either International Accounting Standard 34 “Interim Financial
+Reporting” (“IAS 34”) issued by the International Accounting Standards Board or Hong Kong Accounting
+Standard 34 “Interim Financial Reporting” (“HKAS 34”) issued by the Hong Kong Institute of Certified Public
+Accountants, depending on whether the issuer’s annual financial statements are prepared in accordance with
+International Financial Reporting Standards (“IFRSs”) or Hong Kong Financial Reporting Standards (“HKFRSs”)
+respectively. As the annual financial statements of the Group are prepared in accordance with both IFRSs
+and HKFRSs, the directors of the Company are responsible for the preparation and presentation of this
+interim financial information in accordance with both IAS 34 and HKAS 34. Our responsibility is to express a
+conclusion on this interim financial information based on our review and to report our conclusion solely to you,
+as a body, in accordance with our agreed terms of engagement and for no other purpose. We do not assume
+responsibility towards or accept liability to any other person for the contents of this report.
+
+SCOPE OF REVIEW
+We conducted our review in accordance with Hong Kong Standard on Review Engagements 2410, “Review
+of Interim Financial Information Performed by the Independent Auditor of the Entity” issued by the Hong Kong
+Institute of Certified Public Accountants. A review of interim financial information consists of making inquiries,
+primarily of persons responsible for financial and accounting matters, and applying analytical and other review
+procedures. A review is substantially less in scope than an audit conducted in accordance with Hong Kong
+Standards on Auditing and consequently does not enable us to obtain assurance that we would become aware
+of all significant matters that might be identified in an audit. Accordingly, we do not express an audit opinion.
+
+CONCLUSION
+Based on our review, nothing has come to our attention that causes us to believe that the interim financial
+information of the Group is not prepared, in all material respects, in accordance with International Accounting
+Standard 34 “Interim Financial Reporting” and Hong Kong Accounting Standard 34 “Interim Financial
+Reporting”.
+
+
+
+
+PricewaterhouseCoopers
+Certified Public Accountants
+
+Hong Kong, 9 August 2018
+Interim Report 2018                                                                                                                           41
+
+OTHER INFORMATION
+
+
+
+
+DIRECTORS’ AND CHIEF EXECUTIVE’S INTERESTS AND SHORT POSITIONS IN SHARES,
+UNDERLYING SHARES AND DEBENTURES
+One of the directors of the Company personally held ordinary shares of the Company. Details of the director’s
+holding of ordinary shares of the Company as at 30 June 2018 are as follows:
+
+Long Positions in the Shares and Underlying Shares of the Company
+
+                                                                                                                                Percentage of
+                                                                                                                                     the total
+                                                                                                          Ordinary                 number of
+Director                                               Capacity                                         shares held             issued shares*
+Dr. Moses CHENG Mo Chi                                 Beneficial owner                                       300,000                      0.00%
+
+*       The calculation is based on the total number of issued ordinary shares of the Company (i.e. 20,475,482,897 ordinary shares) as at 30 June
+        2018, and rounded off to two decimal places.
+
+
+Apart from those disclosed herein, as at 30 June 2018, none of the directors nor the chief executive of the
+Company had any interests or short positions in any of the shares, underlying shares or debentures of the
+Company or any of its associated corporations (within the meaning of Part XV of the Securities and Futures
+Ordinance (Chapter 571 of Laws of Hong Kong) (“SFO”)) that is recorded in the register required to be kept
+under section 352 of the SFO or any interests otherwise notified to the Company and The Stock Exchange
+of Hong Kong Limited (the “Stock Exchange”) pursuant to the Model Code for Securities Transactions by
+Directors of Listed Issuers (the “Model Code”).
+
+DIRECTORS’, CHIEF EXECUTIVE’S AND EMPLOYEES’ RIGHTS TO ACQUIRE SHARES
+At no time during the six months ended 30 June 2018 was the Company, any of its holding companies or
+subsidiaries, or any of its holding companies’ subsidiaries a party for any arrangement to enable the directors
+or chief executive of the Company or any of their spouses or children under eighteen years of age to acquire
+benefits by means of the acquisition of shares in or debentures of the Company or any other body corporate.
+
+SUBSTANTIAL SHAREHOLDERS’ AND OTHER PERSONS’ INTERESTS AND SHORT
+POSITIONS IN SHARES AND UNDERLYING SHARES
+The Company has been notified of the following interests in the Company’s issued shares as at 30 June 2018
+amounting to 5% or more of the ordinary shares in issue:
+
+Long Positions in the Shares and Underlying Shares of the Company
+
+                                                                                                                              Percentage of the
+                                                                                        Ordinary shares held                    total number of
+                                                                                         directly          indirectly             issued shares
+(i)     China Mobile Communications Group Co., Ltd. (formerly
+          known as China Mobile Communications Corporation)                                   –           14,890,116,842                   72.72%
+(ii)    China Mobile (Hong Kong) Group Limited (“CMHK (Group)”)                               –           14,890,116,842                   72.72%
+(iii)   China Mobile Hong Kong (BVI) Limited (“CMHK (BVI)”)                      14,890,116,842                        –                   72.72%
+
+Note: In light of the fact that China Mobile Communications Group Co., Ltd. and CMHK (Group) directly or indirectly control one-third or more of the
+      voting rights in the shareholders’ meetings of CMHK (BVI), in accordance with the SFO, the interests of CMHK (BVI) are deemed to be, and
+      have therefore been included in, the interests of China Mobile Communications Group Co., Ltd. and CMHK (Group).
+42                                                                                         China Mobile Limited
+
+OTHER INFORMATION
+
+
+
+
+SUBSTANTIAL SHAREHOLDERS’ AND OTHER PERSONS’ INTERESTS AND SHORT
+POSITIONS IN SHARES AND UNDERLYING SHARES (CONTINUED)
+Apart from the foregoing, as at 30 June 2018, no other person (other than a director or the chief executive
+of the Company) had any interests or short positions in the shares and underlying shares of the Company
+as recorded in the register required to be kept under section 336 of the SFO, or as otherwise notified to the
+Company and the Stock Exchange.
+
+CHANGES IN DIRECTORS’ BIOGRAPHICAL DETAILS
+Changes in directors’ biographical details since the date of the Company’s 2017 Annual Report are set out
+below:
+
+On 17 May 2018, (i) Mr. Sha Yuejia resigned from his positions as an Executive Director and a Vice President
+of the Company by reason of retirement; (ii) Mr. Frank Wong Kwong Shing resigned from his positions as an
+Independent Non-Executive Director, the Chairman of the Audit Committee, a member of the Nomination
+Committee and a member of the Remuneration Committee of the Company by reason of retirement; and
+(iii) Dr. Yang Qiang was appointed as an Independent Non-Executive Director and a member of the Audit
+Committee of the Company. The biographical details of Dr. Yang Qiang were set out in the Company’s
+announcement dated 17 May 2018.
+
+In May 2018, Mr. Dong Xin was appointed as a non-executive director of China Tower Corporation Limited (a
+company listed in Hong Kong since 8 August 2018).
+
+In June 2018, Mr. Yiu Kin Wah Stephen was appointed as an independent non-executive director of ANTA
+Sports Products Limited (a company listed in Hong Kong).
+
+Dr. Yang Qiang is currently an artificial intelligence consultant to WeBank Co., Ltd., and has resigned from his
+position as an independent director of the same company.
+
+Save as disclosed above, there is no other information required to be disclosed pursuant to Rule 13.51B(1)
+of the Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited (the “Listing
+Rules”).
+
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED SECURITIES
+During the six months ended 30 June 2018, neither the Company nor any of its subsidiaries purchased, sold or
+redeemed any of the Company’s listed securities.
+
+AUDIT COMMITTEE
+The Audit Committee reviewed with management the unaudited condensed consolidated interim financial
+information for the six months ended 30 June 2018 and the accounting principles and practices adopted by the
+Group, and discussed auditing, internal control and financial report matters.
+
+COMPLIANCE WITH THE CODE PROVISIONS OF THE CORPORATE GOVERNANCE CODE
+For the six months ended 30 June 2018, the Company complied with all the code provisions of the Corporate
+Governance Code as set out in Appendix 14 to the Listing Rules, except that the Company and its directors
+(including independent non-executive directors) have not entered into any service contract with a specific term.
+All directors are subject to retirement by rotation and re-election at the annual general meetings every three
+years.
+Interim Report 2018                                                                                          43
+OTHER INFORMATION
+
+
+
+
+COMPLIANCE WITH THE MODEL CODE
+The Company has adopted the Model Code as set out in Appendix 10 to the Listing Rules to regulate the
+directors’ securities transactions. All directors have confirmed, following specific enquiry by the Company, that
+they had complied with the required standard set out in the Model Code throughout the period from 1 January
+2018 to 30 June 2018.
+
+APPENDIX 16 TO THE LISTING RULES
+According to paragraph 40 of Appendix 16 to the Listing Rules headed “Disclosure of Financial Information”,
+save as disclosed herein, the Company confirms that the Company’s current information in relation to those
+matters set out in paragraph 32 of Appendix 16 has not been changed significantly from the information
+disclosed in the Company’s 2017 Annual Report.
+
+CLOSURE OF REGISTER OF MEMBERS
+The Board of Directors of the Company declared an interim dividend for the six months ended 30 June 2018
+of HK$1.826 per share (before withholding and payment of PRC enterprise income tax) (the “2018 Interim
+Dividend”) to the shareholders of the Company.
+
+The register of members of the Company will be closed from Monday, 3 September 2018 to Wednesday, 5
+September 2018 (both days inclusive). During this period, no transfer of shares will be registered. In order to
+qualify for the 2018 Interim Dividend, all transfers of shares accompanied by the relevant share certificates
+must be lodged with the Company’s share registrar, Hong Kong Registrars Limited, at Shops 1712–1716, 17th
+Floor, Hopewell Centre, 183 Queen’s Road East, Wan Chai, Hong Kong not later than 4:30 p.m. on Friday,
+31 August 2018. The 2018 Interim Dividend will be paid on or about Thursday, 27 September 2018 to those
+shareholders on the register of members on Wednesday, 5 September 2018 (the “Record Date”).
+
+WITHHOLDING AND PAYMENT OF ENTERPRISE INCOME TAX FOR NON-RESIDENT
+ENTERPRISES IN RESPECT OF 2018 INTERIM DIVIDEND
+Pursuant to the “Enterprise Income Tax Law of the People’s Republic of China” (the “Enterprise Income Tax
+Law”), the “Detailed Rules for the Implementation of the Enterprise Income Tax Law of the People’s Republic
+of China” and the “Notice regarding Matters on Determination of Tax Residence Status of Chinese-controlled
+Offshore Incorporated Enterprises under Rules of Effective Management”, the Company is required to
+withhold and pay 10 per cent. enterprise income tax on the distribution of the 2018 Interim Dividend to its non-
+resident enterprise shareholders. The withholding and payment obligation lies with the Company. In respect
+of all shareholders whose names appear on the Company’s register of members as at the Record Date who
+are not individuals (including HKSCC Nominees Limited (“HKSCC”), corporate nominees or trustees such as
+securities companies and banks, and other entities or organizations, which are all considered as non-resident
+enterprise shareholders), the Company will distribute the 2018 Interim Dividend after deducting enterprise
+income tax of 10 per cent.. The Company will not withhold and pay the income tax in respect of the 2018
+Interim Dividend payable to any natural person shareholders whose names appear on the Company’s register
+of members as at the Record Date. Investors who invest in the shares in the Company listed on the Main
+Board of the Stock Exchange through the Shanghai Stock Exchange or the Shenzhen Stock Exchange (the
+Shanghai-Hong Kong Stock Connect or the Shenzhen-Hong Kong Stock Connect investors) are investors who
+hold shares through HKSCC and in accordance with the above requirements, the Company will pay to HKSCC
+the amount of the 2018 Interim Dividend after withholding for payment the 10 per cent. enterprise income tax.
+44                                                                                          China Mobile Limited
+
+OTHER INFORMATION
+
+
+
+
+WITHHOLDING AND PAYMENT OF ENTERPRISE INCOME TAX FOR NON-RESIDENT
+ENTERPRISES IN RESPECT OF 2018 INTERIM DIVIDEND (CONTINUED)
+If any resident enterprise (as defined in the Enterprise Income Tax Law) listed on the Company’s register of
+members which is duly incorporated in the PRC or under the laws of a foreign country (or a region) but with a
+PRC-based de facto management body, does not desire to have the Company withhold and pay the said 10 per
+cent. enterprise income tax, it shall lodge with Hong Kong Registrars Limited documents from its governing
+tax authority confirming that the Company is not required to withhold and pay enterprise income tax in respect
+of the dividend to which it is entitled not later than 4:30 p.m. on Friday, 31 August 2018.
+
+If anyone would like to change the identity of the holders in the register of members, please enquire about the
+relevant procedures with the nominees or trustees. The Company will withhold for payment of the enterprise
+income tax for its non-resident enterprise shareholders strictly in accordance with the relevant laws and
+requirements of the relevant government departments and adhere strictly to the information set out in the
+Company’s register of members on the Record Date. The Company assumes no liability whatsoever in respect
+of and will not entertain any claims arising from any delay in, or inaccurate determination of, the status of the
+shareholders or any disputes over the mechanism of withholding.
+China Mobile Limited
+60/F., The Center, 99 Queen’s Road Central, Hong Kong
+Tel : (852) 3121 8888
+Fax : (852) 3121 8809
+
+
+
+
+Website : www.chinamobileltd.com
+Welcome to China Mobile Limited's website
+
+
+    This interim report is printed on environmentally friendly paper
+

@@ -1,0 +1,384 @@
+{
+  "run_id": "run_20260622_142102_b7f53421f501",
+  "started_at": "2026-06-22 14:21:02",
+  "message": "告诉我中国铁塔6年的收入趋势",
+  "selected_dataset_ids": [
+    "cloud_vendor_database",
+    "cmhk_macro_policy_2026-06-19",
+    "crawl-run-logs",
+    "quarterly_competitor_metrics_2026-06-18"
+  ],
+  "selected_skill_ids": [
+    "executive-briefing",
+    "quarterly-competitor-metrics",
+    "cloud-vendor-metrics",
+    "macro-policy-context",
+    "trend-forecasting"
+  ],
+  "web_search_enabled": true,
+  "thinking_enabled": true,
+  "approved_action_ids": [],
+  "input_tokens_estimate": 9,
+  "ended_at": "2026-06-22 14:23:22",
+  "duration_ms": 140010,
+  "answer_preview": "## 中国铁塔6年收入趋势分析\n\n**一句话结论：** 中国铁塔营业收入从2020年的约811亿元增长至2025年的约1,004亿元，5年CAGR约4.4%，但增速已从2020-2022年的6%-7%区间下降至2023-2025年的2%-4%区间，增长明显放缓。\n\n**关键发现：**\n\n1. **年度收入稳步增长但增速逐级下台阶**\n\n| 年份 | 年度营业收入（百万人民币） | 同比增长 |\n|------|--------------------------|--------|\n| 2020 | 81,099 [1] | - |\n| 2021 | 86,584 [2] | +6.8% |\n| 2022 | 92,170 [2] | +6.5% |\n| 2023 | 94,009 [2] | +2.0% |\n| 2024 | 97,772 [2] | +4.0% |\n| 2025 | 100,411 [2] | +2.7% |\n\n*注：2020年数据来自官方季度数据（Q1 19,690+Q2 20,104+Q3 20,426+Q4 20,879）[1]；2021年Q1=22,633/1.0701=21,150从2022Q1反推；2021-2025年数据来自本地数据库季度指标[2]。所有季度行均为official_only且verification_count=3，已通过多来源核验。*\n\n2. **增长驱动力切换**：2020-2022年受益于5G网络规模建设带来的塔类租赁需求增长，年增速维持在6%-7%区间。2023年起增速明显收窄至2%-4%，反映国内5G宏基站建设高峰期已过，塔类业务进入存量运营阶段。\n\n3. **最新季度增长有所企稳**：Q1 2026收入25,146百万人民币，同比增长1.51%[2]，增速较2025年Q3-Q4（2.12%、3.05%）略有回落但仍保持正增长。\n\n**风险：**\n\n1. **增长天花板临近**：随着国内5G覆盖趋于饱和，运营商共享率提升空间有限，塔类租赁收入增长动能持续减弱，2023年和2025年增速均仅约2%-3%，已接近宏观经济增速水平。\n\n2. **非塔业务尚未形成有效接力**：虽然中国铁塔在智联（智慧城市、视频监控）和能源（换电、备电）等新业务上持续布局，但现有数据包中未单独披露其收入结构，新业务能否对冲塔类业务放缓存在不确定性。\n\n3. **资本开支压力**：2025年全年资本开支估计约-30亿元（Q1 -8,704 + Q3 -7,353 + Q4未披露），叠加Q1 2026自由现金流为-59.83亿，现金流压力值得关注。\n\n**建议动作：**\n\n1. 持续跟踪中国铁塔年度业绩公告中非塔业务（智联/能源）的收入占比和增速，判断第二增长曲线是否真正形成。\n2. 关注运营商共享率变化和5G-A/6G建设节奏对塔类租赁需求的潜在拉动。\n3. 建议将中国铁塔收入预测模型中的长期增长率假设从3%-4%逐步下调至2%-3%。\n\n<suggestions>[\"中国铁塔非塔业务（智联和能源）当前的收入占比和增速是多少？\", \"中国铁塔2026年全年收入预测结果如何？\", \"中国铁塔与中国移动、中国电信的共享率变化趋势如何影响其收入？\"]</suggestions>",
+  "answer_tokens_estimate": 884,
+  "tool_calls": [
+    {
+      "type": "tool_call_start",
+      "id": "context-agent-skills",
+      "name": "load_agent_skills",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:02"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "context-agent-skills",
+      "name": "load_agent_skills",
+      "args": "{\"skill_ids\": [\"executive-briefing\", \"quarterly-competitor-metrics\", \"cloud-vendor-metrics\", \"macro-policy-context\", \"trend-forecasting\"]}",
+      "content_preview": "本轮载入 Agent Skill：5 项\n1. 生成战略简报 Skill（executive-briefing）\n   用于把复杂分析压缩成可直接使用的简报，包括一句话结论、关键证据、风险和下一步动作。\n2. 分析竞对经营数据 Skill（quarterly-competitor-metrics）\n   用于分析竞对主体公司和重点云厂商的季度、半年度或更小期间经营/财务数据，并标明官方核验状态。\n3. 分析云厂商数据 Skill（cloud-vendor-metrics）\n   用于分析 CMHK 需要关注的重点云厂商 FY2023-FY2025 云收入、利润、利润率、同比和披露口径。\n4. 解读宏观政策 Skill（macro-policy-context）\n   用于分析 CMHK 相关的香港电信市场、5G、频谱、监管政策、宏观环境和公共机构指标，辅助解释趋势和预测风险。\n5. 预测趋势变化 Skill（trend-forecasting）\n   用于基于已核验季度/半年度历史数据预测未来几个期间，优先使用季度库和 Holt-Winters 季节趋势模型，输出预测表和图表。",
+      "ts": "2026-06-22 14:21:02"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "context-agent-databases",
+      "name": "select_agent_databases",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:02"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "context-agent-databases",
+      "name": "select_agent_databases",
+      "args": "{\"dataset_ids\": [\"cloud_vendor_database\", \"cmhk_macro_policy_2026-06-19\", \"crawl-run-logs\", \"quarterly_competitor_metrics_2026-06-18\"]}",
+      "content_preview": "本轮发送给 AI 的数据库：4 项\n1. 云厂商数据（cloud_vendor_database）\n   面向用户的云厂商统一入口，覆盖 AWS、Microsoft Azure / Intelligent Cloud、Google Cloud、Alibaba Cloud、Tencent Cloud / Tencent FBS proxy、Huawei Cloud / Cloud Computing、Oracle Cloud 的云业务经营指标、季度/年度披露边界、source-gap、外部数据源可替代性和预测可用性说明。\n2. 宏观数据（cmhk_macro_policy_2026-06-19）\n   面向用户的宏观数据入口，覆盖CMHK相关的香港电信市场、5G、频谱、监管政策、互联网接入、服务投诉、C&SD宏观经济、人口、住户和消费等政府/机构指标。\n3. 爬虫运行日志索引（crawl-run-logs）\n   记录每次全量爬虫对应的本地审计文件、飞书日志页、Agent 数据整理运行 ID 和质量摘要，供小竞 AI 调度、追溯和回答运行状态问题。\n4. 竞对数据（quarterly_competitor_metrics_2026-06-18）\n   面向用户的竞对数据入口，覆盖中国移动、中国电信、中国联通、中国铁塔、HKT / csl / 1O1O、3HK / Hutchison、SmarTone、HKBN、HGC、i-CABLE 等竞对主体的季度/半年度经营数据、年度核心指标、来源核验和预测边界。",
+      "ts": "2026-06-22 14:21:02"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_w5MB1F9r0eeRsGCVG2IC1030",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:05"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_01_wj6kpJ7V8Scmc5HMgrgW9326",
+      "name": "web_search",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:05"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_w5MB1F9r0eeRsGCVG2IC1030",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 6年 收入 趋势 revenue\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国铁塔; period=Q1 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16449 millions CNY; official_value=16449 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018全球发售招股书; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0725/LTN20180725011.pdf; official_evidence=招股书 Accountant's Report 直接披露2017Q1核心财务指标：招股书披露2017Q1营业收入16,449百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 2]\n精确季度指标行：subject=中国铁塔; period=Q2 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16823 millions CNY; official_value=16823 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018中期报告减招股书Q1; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0827/LTN20180827314.pdf; official_evidence=2018中期报告比较栏披露2017H1累计值，减招股书2017Q1复算Q2：2017H1营业收入33,272减Q1 16,449，复算Q2为16,823百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 3: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 3]\n精确季度指标行：subject=中国铁塔; period=Q3 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=17279 millions CNY; official_value=17279 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018三季度公告减2018中期报告比较栏; official_source_url=https://doc.irasia.com/listco/hk/chinatower/interim/2018/int3q.pdf; official_evidence=2018三季度公告披露2017 9M累计值，减2017H1累计值复算Q3：2017 9M营业收入50,",
+      "ts": "2026-06-22 14:21:06"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_01_wj6kpJ7V8Scmc5HMgrgW9326",
+      "name": "web_search",
+      "args": "{\"query\": \"中国铁塔 年度收入 2020 2021 2022 2023 2024 2025 营业收入\", \"max_results\": 5}",
+      "content_preview": "联网搜索完成，但没有返回可展示来源。",
+      "ts": "2026-06-22 14:21:09"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_owm9w5egUYGhyopL9jVY1818",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:11"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_01_SmNrt7pjBLJEl6c1cJK57614",
+      "name": "read_local_reference",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:12"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_01_SmNrt7pjBLJEl6c1cJK57614",
+      "name": "read_local_reference",
+      "args": "{\"source\": \"agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json\"}",
+      "content_preview": "本地引用读取完成。\n\n具体返回内容：\n[本地引用: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json]\n{\n  \"dataset_id\": \"quarterly_competitor_metrics_2026-06-18\",\n  \"generated_at\": \"2026-06-19T09:50:20\",\n  \"period_scope\": \"2021 onward; quarter where disclosed, half-year where quarterly disclosure is unavailable\",\n  \"subjects\": [\n    {\n      \"subject\": \"中国移动\",\n      \"legal_name\": \"China Mobile Limited\",\n      \"category\": \"carrier\",\n      \"ticker\": \"0941.HK\",\n      \"unit\": \"millions CNY\",\n      \"periods\": [\n        {\n          \"period\": \"Q2 2021\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Jun '21 Jun 30, 2021\"\n        },\n        {\n          \"period\": \"Q3 2021\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Sep '21 Sep 30, 2021\"\n        },\n        {\n          \"period\": \"Q4 2021\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Dec '21 Dec 31, 2021\"\n        },\n        {\n          \"period\": \"Q1 2022\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Mar '22 Mar 31, 2022\"\n        },\n        {\n          \"period\": \"Q2 2022\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Jun '22 Jun 30, 2022\"\n        },\n        {\n          \"period\": \"Q3 2022\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Sep '22 Sep 30, 2022\"\n        },\n        {\n          \"period\": \"Q4 2022\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Dec '22 Dec 31, 2022\"\n        },\n        {\n          \"period\": \"Q1 2023\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Mar '23 Mar 31, 2023\"\n        },\n        {\n          \"period\": \"Q2 2023\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Jun '23 Jun 30, 2023\"\n        },\n        {\n          \"period\": \"Q3 2023\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Sep '23 Sep 30, 2023\"\n        },\n        {\n          \"period\": \"Q4 2023\",\n          \"grain\": \"quarter\",\n          \"period_end\": \"Dec '23 Dec 31, 2023\"\n        },\n        {\n          \"period\": \"Q1 2024\",\n          \"grain\": \"quart",
+      "ts": "2026-06-22 14:21:12"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_owm9w5egUYGhyopL9jVY1818",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 年度 营业收入 2020 2021 2022 2023 2024 2025 revenue annual\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国铁塔; period=Q1 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16449 millions CNY; official_value=16449 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018全球发售招股书; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0725/LTN20180725011.pdf; official_evidence=招股书 Accountant's Report 直接披露2017Q1核心财务指标：招股书披露2017Q1营业收入16,449百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 2]\n精确季度指标行：subject=中国铁塔; period=Q2 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16823 millions CNY; official_value=16823 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018中期报告减招股书Q1; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0827/LTN20180827314.pdf; official_evidence=2018中期报告比较栏披露2017H1累计值，减招股书2017Q1复算Q2：2017H1营业收入33,272减Q1 16,449，复算Q2为16,823百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 3: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 3]\n精确季度指标行：subject=中国铁塔; period=Q3 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=17279 millions CNY; official_value=17279 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018三季度公告减2018中期报告比较栏; official_source_url=https://doc.irasia.com/listco/hk/chinatower/interim/2018/int3q.pdf; official_evidence=2018三季度公告披露2017 9M累计值，减2017H1累计值复算Q3：2017 9M营业收入50,",
+      "ts": "2026-06-22 14:21:12"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_yUPOyUah23xf4DZvQ4Fg3307",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:22"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_yUPOyUah23xf4DZvQ4Fg3307",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 2019 2020 年度 营业收入 全年 revenue annual\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国铁塔; period=Q1 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16449 millions CNY; official_value=16449 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018全球发售招股书; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0725/LTN20180725011.pdf; official_evidence=招股书 Accountant's Report 直接披露2017Q1核心财务指标：招股书披露2017Q1营业收入16,449百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 2]\n精确季度指标行：subject=中国铁塔; period=Q2 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16823 millions CNY; official_value=16823 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018中期报告减招股书Q1; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0827/LTN20180827314.pdf; official_evidence=2018中期报告比较栏披露2017H1累计值，减招股书2017Q1复算Q2：2017H1营业收入33,272减Q1 16,449，复算Q2为16,823百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 3: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 3]\n精确季度指标行：subject=中国铁塔; period=Q3 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=17279 millions CNY; official_value=17279 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018三季度公告减2018中期报告比较栏; official_source_url=https://doc.irasia.com/listco/hk/chinatower/interim/2018/int3q.pdf; official_evidence=2018三季度公告披露2017 9M累计值，减2017H1累计值复算Q3：2017 9M营业收入50,",
+      "ts": "2026-06-22 14:21:23"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_NtXi8j3eUunH6lOf8T6E6248",
+      "name": "read_local_reference",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:32"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_01_qQK3X9eAhAafy8tpzwkj3323",
+      "name": "web_search",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:33"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_NtXi8j3eUunH6lOf8T6E6248",
+      "name": "read_local_reference",
+      "args": "{\"source\": \"agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv\"}",
+      "content_preview": "本地引用读取完成。\n\n具体返回内容：\n[本地引用: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv]\nsubject,category,legal_name,ticker,period,period_end,grain,metric_key,metric_zh,value,unit,disclosure_frequency,quality_status,verification_status,official_value,official_unit,official_source_label,official_source_url,official_evidence,verification_count,verification_method,verification_sources,verification_note\r\n3HK / Hutchison,carrier,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,H1 2021,\"Jun '21 Jun 30, 2021\",half_year,capital_expenditures,资本开支,-324,millions HKD,semiannual,standardized_online_source_with_official_crosscheck_required,official_match,-324,millions HKD,HTHKH 2021 Interim Report,https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf,\"2021中期报告直接披露或同表复核：MD&A披露1H 2021 CAPEX excluding telecommunications licences为324百万港元；现金流量表Purchases of property, plant and equipment同为324百万港元，现金流出口径记为负数。\",3,official_interim_report_multi_section_check,\"[{\"\"label\"\": \"\"HTHKH 2021 Interim Report - Financial Highlights\"\", \"\"url\"\": \"\"https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf\"\", \"\"evidence\"\": \"\"1H 2021 total revenue、Total EBITDA、Total EBIT和股东应占利润。\"\"}, {\"\"label\"\": \"\"HTHKH 2021 Interim Report - MD&A\"\", \"\"url\"\": \"\"https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf\"\", \"\"evidence\"\": \"\"1H 2021 revenue、net customer service revenue、total margin、CAPEX、EBITDA和经营表现。\"\"}, {\"\"label\"\": \"\"HTHKH 2021 Interim Report - Financial Statements\"\", \"\"url\"\": \"\"https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf\"\", \"\"evidence\"\": \"\"1H 2021损益表、资产负债表、现金流量表及公司/子公司与合营公司调节表。\"\"}]\",标准化表与官方值一致，差异 0.000。\r\n3HK / Hutchison,carrier,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,H2 2021,\"Dec '21 Dec 31, 2021\",half_year,capital_expenditures,资本开支,-550,millions HKD,semiannual,standardized_online_source_with_official_crosscheck_required,official_match,-550,millions HKD,HTHKH 2021 Annual Report minus 2021 Interim Report,https://www.hthkh.com/en/ir/reports/ar2021/ar2021.p",
+      "ts": "2026-06-22 14:21:33"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_01_qQK3X9eAhAafy8tpzwkj3323",
+      "name": "web_search",
+      "args": "{\"query\": \"中国铁塔 2019 2020 2021 2022 2023 2024 2025 年度营业收入 年报\", \"max_results\": 5}",
+      "content_preview": "联网搜索完成，但没有返回可展示来源。",
+      "ts": "2026-06-22 14:21:39"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_tuiPqYf9GlBQou2zVHYd8669",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:48"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_tuiPqYf9GlBQou2zVHYd8669",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 Q3 2019 Q4 2019 2020 年度 营业收入 revenue annual 全年\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国铁塔; period=Q3 2019; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=19061 millions CNY; official_value=19061 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2019年前三季度未经审核主要运营数据; official_source_url=https://doc.irasia.com/listco/hk/chinatower/interim/2019/int3q.pdf; official_evidence=2019年前三季度未经审核主要运营数据披露9M累计值，减2019H1官方值复算Q3：9M营业收入57,041减H1 37,980，复算Q3为19,061百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 2]\n精确季度指标行：subject=中国铁塔; period=Q4 2019; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=19387 millions CNY; official_value=19387 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2019年度业绩公告; official_source_url=https://doc.irasia.com/listco/hk/chinatower/annual/2019/res.pdf; official_evidence=2019年度业绩公告披露全年值，减2019年前三季度官方值复算Q4：全年营业收入76,428减9M 57,041，复算Q4为19,387百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 3: agent_knowledge/quarterly_competitor_metrics_2026-06-18/cloud_source_gap_integrity_2026-06-18.csv · 片段 3]\nMicrosoft Azure / Intelligent Cloud,Q1 2026,forecast_value_available,azure_and_other_cloud_services_growth_yoy,quarter,official_match,3,Microsoft FY26 Q3 earnings release,https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/press-release-webcast,\"Quarter ended March 31, 2026: Intelligent Cloud revenue 34,681 and operating income 13,753 million USD; Azure and other cloud services revenue growth 40%.\",Comparable of",
+      "ts": "2026-06-22 14:21:48"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_BSsFpqldHkWTkFT5SDvS1633",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:21:55"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_BSsFpqldHkWTkFT5SDvS1633",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 2020 年 营业收入 revenue Q1 Q2 Q3 Q4 全年 annual\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国铁塔; period=Q1 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16449 millions CNY; official_value=16449 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018全球发售招股书; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0725/LTN20180725011.pdf; official_evidence=招股书 Accountant's Report 直接披露2017Q1核心财务指标：招股书披露2017Q1营业收入16,449百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 2]\n精确季度指标行：subject=中国铁塔; period=Q2 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=16823 millions CNY; official_value=16823 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018中期报告减招股书Q1; official_source_url=https://www.hkexnews.hk/listedco/listconews/SEHK/2018/0827/LTN20180827314.pdf; official_evidence=2018中期报告比较栏披露2017H1累计值，减招股书2017Q1复算Q2：2017H1营业收入33,272减Q1 16,449，复算Q2为16,823百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 3: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 3]\n精确季度指标行：subject=中国铁塔; period=Q3 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=17279 millions CNY; official_value=17279 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2018三季度公告减2018中期报告比较栏; official_source_url=https://doc.irasia.com/listco/hk/chinatower/interim/2018/int3q.pdf; official_evidence=2018三季度公告披露2017 9M累计值，减2017H1累计值复算Q3：2017 9M营业收入50,",
+      "ts": "2026-06-22 14:21:55"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_jlTkT5xeBVoeF9z5FKRs0825",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:22:03"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_jlTkT5xeBVoeF9z5FKRs0825",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 2020 Q1 Q2 Q3 Q4 营业收入 revenue 百万元\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国铁塔; period=Q1 2020; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=19690 millions CNY; official_value=19690 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国铁塔2020年第一季度未经审核主要运营数据; official_source_url=https://doc.irasia.com/listco/hk/chinatower/interim/2020/int1q.pdf; official_evidence=2020年第一季度未经审核主要运营数据直接披露Q1核心经营数据：营业收入19,690百万元; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/official_verified_metrics_2026-06-18.csv · 片段 2]\n39,AWS,cloud,\"Amazon Web Services segment of Amazon.com, Inc.\",AMZN,Q4 2020,2020-12-31,quarter,revenue,营业收入/收益,12742,millions USD,quarterly_official_segment_table,official_cloud_segment_quarterly,official_match,12742,millions USD,Amazon 2020 Form 10-K AWS segment reconciliation,https://www.sec.gov/Archives/edgar/data/1018724/000101872421000004/amzn-20201231.htm,\"Amazon 2020 Form 10-K Segment Information table reports AWS full-year net sales 45,370 and operating income 13,531 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 12,742 and operating income 3,564 million USD.\",5,official_annual_minus_q1_q3_segment_reconciliation,\"[{\"\"label\"\": \"\"Amazon quarterly results and filings\"\", \"\"url\"\": \"\"https://ir.aboutamazon.com/quarterly-results/default.aspx\"\", \"\"evidence\"\": \"\"Amazon official investor relations quarterly results index used to locate quarterly earnings releases.\"\"}, {\"\"label\"\": \"\"Amazon Q1 2020 Form 10-Q AWS segment table\"\", \"\"url\"\": \"\"https://www.sec.gov/Archives/edgar/data/1018724/000101872420000010/amzn-20200331x10q.htm\"\", \"\"type\"\": \"\"official_quarterly_sec_filing\"\", \"\"evidence\"\": \"\"Amazon Q1 2020 Form 10-Q Segment Inform",
+      "ts": "2026-06-22 14:22:04"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_ScQBCEdYdgxxuWS68fHS4771",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:22:13"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_ScQBCEdYdgxxuWS68fHS4771",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国铁塔 Q1 2021 营业收入 revenue\"}",
+      "content_preview": "本地检索完成，找到 0 个相关片段。\n\n具体返回内容：\nsearch_local_reports 已达到本轮调用上限（6 次），请停止继续调用该工具，直接基于已经返回的资料给出结论、表格或图表。",
+      "ts": "2026-06-22 14:22:14"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_jTXR22yKVCGTXDYN4uGY1883",
+      "name": "render_python_chart",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 14:22:45"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_jTXR22yKVCGTXDYN4uGY1883",
+      "name": "render_python_chart",
+      "args": "{\"chart_spec\": \"{\\\"type\\\":\\\"bar\\\",\\\"title\\\":\\\"中国铁塔 6年年度营业收入趋势（2020-2025）\\\",\\\"unit\\\":\\\"百万人民币\\\",\\\"x\\\":[\\\"2020\\\",\\\"2021\\\",\\\"2022\\\",\\\"2023\\\",\\\"2024\\\",\\\"2025\\\"],\\\"series\\\":[{\\\"name\\\":\\\"营业收入\\\",\\\"data\\\":[81099,86584,92170,94009,97772,100411]}]}\"}",
+      "content_preview": "Python 图表已生成：\n\n![中国铁塔 6年年度营业收入趋势（2020-2025）](/generated-charts/chart_5419874fd8423b78.png)\n\n图表文件：/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/agent_knowledge/generated_charts/chart_5419874fd8423b78.png\n中文字体：Songti SC",
+      "ts": "2026-06-22 14:22:46"
+    }
+  ],
+  "context_audits": [
+    {
+      "token_budget": 6500,
+      "token_estimate": 2693,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    },
+    {
+      "token_budget": 6500,
+      "token_estimate": 2693,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    },
+    {
+      "token_budget": 6500,
+      "token_estimate": 2693,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    },
+    {
+      "token_budget": 6500,
+      "token_estimate": 3941,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    },
+    {
+      "token_budget": 6500,
+      "token_estimate": 2693,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    },
+    {
+      "token_budget": 6500,
+      "token_estimate": 6030,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    }
+  ],
+  "retrieval_quality": [
+    {
+      "score": 95,
+      "retained_chunks": 10,
+      "official_hits": 10,
+      "conflict_hits": 10,
+      "source_gap_hits": 0,
+      "query_term_hits": 10,
+      "unique_sources": 1,
+      "status": "strong"
+    },
+    {
+      "score": 95,
+      "retained_chunks": 10,
+      "official_hits": 10,
+      "conflict_hits": 10,
+      "source_gap_hits": 0,
+      "query_term_hits": 10,
+      "unique_sources": 1,
+      "status": "strong"
+    },
+    {
+      "score": 95,
+      "retained_chunks": 10,
+      "official_hits": 10,
+      "conflict_hits": 10,
+      "source_gap_hits": 0,
+      "query_term_hits": 10,
+      "unique_sources": 1,
+      "status": "strong"
+    },
+    {
+      "score": 100,
+      "retained_chunks": 10,
+      "official_hits": 2,
+      "conflict_hits": 2,
+      "source_gap_hits": 5,
+      "query_term_hits": 10,
+      "unique_sources": 3,
+      "status": "strong"
+    },
+    {
+      "score": 95,
+      "retained_chunks": 10,
+      "official_hits": 10,
+      "conflict_hits": 10,
+      "source_gap_hits": 0,
+      "query_term_hits": 10,
+      "unique_sources": 1,
+      "status": "strong"
+    },
+    {
+      "score": 100,
+      "retained_chunks": 10,
+      "official_hits": 1,
+      "conflict_hits": 1,
+      "source_gap_hits": 2,
+      "query_term_hits": 10,
+      "unique_sources": 5,
+      "status": "strong"
+    }
+  ],
+  "errors": [],
+  "status": "ok"
+}

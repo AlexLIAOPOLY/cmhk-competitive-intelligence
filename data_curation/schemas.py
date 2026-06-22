@@ -38,6 +38,7 @@ class CandidateFact(BaseModel):
     quality_score: float = 0.0
     decision: Literal["pending", "accepted", "rejected", "review"] = "pending"
     reasons: list[str] = Field(default_factory=list)
+    search_verification: dict[str, Any] = Field(default_factory=dict)
 
 
 class GapRecord(BaseModel):

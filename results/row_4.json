@@ -20,10 +20,10 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.1010.com.hk/",
-    "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
     "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
-    "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+    "https://www.1010.com.hk/",
+    "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+    "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
   ],
   "attempted_urls": [
     "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
@@ -36,7 +36,7 @@
     "中标": "er integrated business solutions that employ 5G and other emerging technologies (IoT, AR/VR, robotics) to facilitate business digitalisation. About Us Webinar & Event Registration Award Recognition Customer Service Suppo",
     "投资并购": "inability Practices Environmental, Social and Governance Report Consumers Enterprises Digital Ecosystem Careers Home About HKT Investor Relations Fast Facts Fast Facts HKT Limited Investment Information HKT Limited ​ Bus",
     "5G-A": "g 5G for business, digital messaging, business communication and mobile workforce collaboration solutions. Future-forward Technologies Private AI Low-Altitude Economy Solutions 5G/5.5G for Enterprise Why 1O1O 5G 5G Commu",
-    "网络API": ". © PCCW-HKT DataCom Services Limited 2026. All Rights Reserved. SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital I",
+    "网络API": "SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ ",
     "边缘计算": "Manufacturing and Logistics Travel, Transportation & Hospitality Others Job Title * Company Telephone Number * Company Email * Enquiry Details * By submitting this form, I acknowledge that I have read, understand and agr",
     "数据中心": "l is only available when both users are using VoLTE service. ● For enquiries, please call 179179. Now TV FIFA Cup 2026™ Event Pass Now TV is an exclusive Hong Kong pay TV live broadcaster of FIFA World Cup 2026™, featuri",
     "高管人事": "participates in leading frameworks, including GSMA’s Open Gateway initiative, the Linux Foundation’s CAMARA Project and the Bridge Alliance API Exchange (BAEx). Steve Ng, Managing Director of Commercial Group at HKT , sa"
@@ -47,17 +47,17 @@
       "entity": "HKT",
       "status": "ok",
       "source_urls": [
-        "https://www.1010.com.hk/",
-        "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
         "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
-        "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
+        "https://www.1010.com.hk/",
+        "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+        "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"
       ],
       "extracted": {
         "战略合作": "Internet Security Solution Norton 360 series Hong Kong Winterfest - WinterFest Delights Prepaid Local Service Travel Prepaid SIM Visitors to HK Dealer Prepaid SIM & Others csl APP Partnership Prepaid SIM Card csl Prepaid",
         "中标": "er integrated business solutions that employ 5G and other emerging technologies (IoT, AR/VR, robotics) to facilitate business digitalisation. About Us Webinar & Event Registration Award Recognition Customer Service Suppo",
         "投资并购": "inability Practices Environmental, Social and Governance Report Consumers Enterprises Digital Ecosystem Careers Home About HKT Investor Relations Fast Facts Fast Facts HKT Limited Investment Information HKT Limited ​ Bus",
         "5G-A": "g 5G for business, digital messaging, business communication and mobile workforce collaboration solutions. Future-forward Technologies Private AI Low-Altitude Economy Solutions 5G/5.5G for Enterprise Why 1O1O 5G 5G Commu",
-        "网络API": ". © PCCW-HKT DataCom Services Limited 2026. All Rights Reserved. SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital I",
+        "网络API": "SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ ",
         "边缘计算": "Manufacturing and Logistics Travel, Transportation & Hospitality Others Job Title * Company Telephone Number * Company Email * Enquiry Details * By submitting this form, I acknowledge that I have read, understand and agr",
         "数据中心": "l is only available when both users are using VoLTE service. ● For enquiries, please call 179179. Now TV FIFA Cup 2026™ Event Pass Now TV is an exclusive Hong Kong pay TV live broadcaster of FIFA World Cup 2026™, featuri",
         "高管人事": "participates in leading frameworks, including GSMA’s Open Gateway initiative, the Linux Foundation’s CAMARA Project and the Bridge Alliance API Exchange (BAEx). Steve Ng, Managing Director of Commercial Group at HKT , sa"
@@ -66,13 +66,57 @@
       "raw_records": [
         {
           "row": 4,
+          "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+          "final_url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
+          "bytes": 66390,
+          "elapsed_seconds": 4.576,
+          "method": "httpx",
+          "text_sample": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ You are now being redirected. Kindly be informed that you are leaving the 1O1O Corporate Solutions website and will be directed to a website that is not operated by us. We would like to emphasise that we are not liable for the content or availability of linked sites. Continue / Back ✕ Close By continuing to access/use this website, you agree to its use of cookies. To learn more about how you can manage your cookies setting and how our website uses cookies, please read our Cookies Policy . Accept Close Search Search Search Search Contact Us Quick Links HKT Enterprise Solutions HKT SME Solutions HKT China HKT Teleservices Enterprise Solutions Portal (ESP) 中文 Search Solutions Solutions We offer a range of corporate solutions, including 5G for business, digital m",
+          "evidence_path": "evidence_cache/5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45.txt",
+          "content_hash": "5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "final_url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 66390,
+              "text_chars": 10229,
+              "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 4,
           "url": "https://www.1010.com.hk/",
           "final_url": "https://www.1010.com.hk/",
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
           "bytes": 161517,
-          "elapsed_seconds": 0.843,
+          "elapsed_seconds": 4.963,
           "method": "httpx",
           "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
           "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
@@ -99,6 +143,51 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 4,
+          "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+          "status": 200,
+          "content_type": "text/html;charset=UTF-8",
+          "title": "Local Prepaid SIM Card in Hong Kong | csl",
+          "bytes": 200673,
+          "elapsed_seconds": 5.011,
+          "method": "httpx",
+          "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline Scam Prevention Tips PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Terti",
+          "evidence_path": "evidence_cache/f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201.txt",
+          "content_hash": "f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 200673,
+              "text_chars": 44865,
+              "title": "Local Prepaid SIM Card in Hong Kong | csl",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -115,7 +204,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "HKT",
           "bytes": 69761,
-          "elapsed_seconds": 1.034,
+          "elapsed_seconds": 5.149,
           "method": "httpx",
           "text_sample": "HKT 中文 ENG 中文 About HKT Board and Management Milestones Media Centre Investor Relations Financial Results Regulatory Filings Share Performance Corporate Governance Fast Facts FAQs Email Alert Registration Investor Contacts Sustainability Sustainability Practices Environmental, Social and Governance Report Consumers Enterprises Digital Ecosystem Careers Home About HKT Investor Relations Fast Facts Fast Facts HKT Limited Investment Information HKT Limited ​ Business Telecommunication services Key services Fixed-line Broadband Mobile communication Media entertainment Enterprise solutions Integrated global communications Contact centres Employees Over 12,700 Chairman Li Tzar Kai, Richard Listed holding company PCCW Limited (SEHK: 0008) Trading bourse Share stapled units of the HKT Trust and HKT Limited are listed on The Stock Exchange of Hong Kong Limited (SEHK: 6823) Financial year end 31 D",
           "evidence_path": "evidence_cache/66f50bd66d10629d069da351f6c9661c51a72f8c4487d7a7fa7a2c56613a51a9.txt",
@@ -142,115 +231,30 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
             "HKT"
           ]
-        },
-        {
-          "row": 4,
-          "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
-          "final_url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
-          "bytes": 66390,
-          "elapsed_seconds": 1.154,
-          "method": "httpx",
-          "text_sample": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ You are now being redirected. Kindly be informed that you are leaving the 1O1O Corporate Solutions website and will be directed to a website that is not operated by us. We would like to emphasise that we are not liable for the content or availability of linked sites. Continue / Back ✕ Close By continuing to access/use this website, you agree to its use of cookies. To learn more about how you can manage your cookies setting and how our website uses cookies, please read our Cookies Policy . Accept Close Search Search Search Search Contact Us Quick Links HKT Enterprise Solutions HKT SME Solutions HKT China HKT Teleservices Enterprise Solutions Portal (ESP) 中文 Search Solutions Solutions We offer a range of corporate solutions, including 5G for business, digital m",
-          "evidence_path": "evidence_cache/5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45.txt",
-          "content_hash": "5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
-              "final_url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 66390,
-              "text_chars": 10229,
-              "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKT",
-            "csl",
-            "1O1O"
-          ]
-        },
-        {
-          "row": 4,
-          "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
-          "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
-          "status": 200,
-          "content_type": "text/html;charset=UTF-8",
-          "title": "Local Prepaid SIM Card in Hong Kong | csl",
-          "bytes": 199932,
-          "elapsed_seconds": 1.185,
-          "method": "httpx",
-          "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline Scam Prevention Tips PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Terti",
-          "evidence_path": "evidence_cache/a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3.txt",
-          "content_hash": "a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
-              "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 199932,
-              "text_chars": 44703,
-              "title": "Local Prepaid SIM Card in Hong Kong | csl",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKT",
-            "csl",
-            "1O1O"
-          ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains terms and phrases that are not present in the source text, such as '5G-A', '边缘计算', '数据中心', '战略合作', '中标', '投资并购', '网络API', '高管人事' (some are Chinese words not found in the English-only source, and technical contexts like 5G-A or edge computing are absent). The source text is a promotional webpage for 1O1O mobile services and does not include the corporate/investment or technical details implied by the extracted categories."
+      "confidence_score": 0.4,
+      "verification_reason": "The extracted data contains many terms (e.g., '战略合作', '中标', '投资并购', '5G-A', '边缘计算', '数据中心', '高管人事') that are not explicitly or directly mentioned in the source text. Only '网络API' and general 5G-related content appear, but the mapping is loose and not clearly supported by the text."
     },
     {
       "entity": "csl",
       "status": "ok",
       "source_urls": [
-        "https://www.1010.com.hk/",
         "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+        "https://www.1010.com.hk/",
         "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
       ],
       "extracted": {
         "战略合作": "Internet Security Solution Norton 360 series Hong Kong Winterfest - WinterFest Delights Prepaid Local Service Travel Prepaid SIM Visitors to HK Dealer Prepaid SIM & Others csl APP Partnership Prepaid SIM Card csl Prepaid",
         "中标": "er integrated business solutions that employ 5G and other emerging technologies (IoT, AR/VR, robotics) to facilitate business digitalisation. About Us Webinar & Event Registration Award Recognition Customer Service Suppo",
         "5G-A": "g 5G for business, digital messaging, business communication and mobile workforce collaboration solutions. Future-forward Technologies Private AI Low-Altitude Economy Solutions 5G/5.5G for Enterprise Why 1O1O 5G 5G Commu",
-        "网络API": "te uses cookies, please read our Cookies Policy . Accept & Close SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital I",
+        "网络API": "SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ ",
         "边缘计算": "Manufacturing and Logistics Travel, Transportation & Hospitality Others Job Title * Company Telephone Number * Company Email * Enquiry Details * By submitting this form, I acknowledge that I have read, understand and agr",
         "数据中心": "l is only available when both users are using VoLTE service. ● For enquiries, please call 179179. Now TV FIFA Cup 2026™ Event Pass Now TV is an exclusive Hong Kong pay TV live broadcaster of FIFA World Cup 2026™, featuri",
         "高管人事": "participates in leading frameworks, including GSMA’s Open Gateway initiative, the Linux Foundation’s CAMARA Project and the Bridge Alliance API Exchange (BAEx). Steve Ng, Managing Director of Commercial Group at HKT , sa",
@@ -260,56 +264,13 @@
       "raw_records": [
         {
           "row": 4,
-          "url": "https://www.1010.com.hk/",
-          "final_url": "https://www.1010.com.hk/",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
-          "bytes": 161517,
-          "elapsed_seconds": 0.843,
-          "method": "httpx",
-          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
-          "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
-          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.1010.com.hk/",
-              "final_url": "https://www.1010.com.hk/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 161517,
-              "text_chars": 9373,
-              "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKT",
-            "csl",
-            "1O1O"
-          ]
-        },
-        {
-          "row": 4,
           "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
           "final_url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
           "bytes": 66390,
-          "elapsed_seconds": 1.154,
+          "elapsed_seconds": 4.576,
           "method": "httpx",
           "text_sample": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ You are now being redirected. Kindly be informed that you are leaving the 1O1O Corporate Solutions website and will be directed to a website that is not operated by us. We would like to emphasise that we are not liable for the content or availability of linked sites. Continue / Back ✕ Close By continuing to access/use this website, you agree to its use of cookies. To learn more about how you can manage your cookies setting and how our website uses cookies, please read our Cookies Policy . Accept Close Search Search Search Search Contact Us Quick Links HKT Enterprise Solutions HKT SME Solutions HKT China HKT Teleservices Enterprise Solutions Portal (ESP) 中文 Search Solutions Solutions We offer a range of corporate solutions, including 5G for business, digital m",
           "evidence_path": "evidence_cache/5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45.txt",
@@ -336,6 +297,51 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 4,
+          "url": "https://www.1010.com.hk/",
+          "final_url": "https://www.1010.com.hk/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+          "bytes": 161517,
+          "elapsed_seconds": 4.963,
+          "method": "httpx",
+          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+          "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
+          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.1010.com.hk/",
+              "final_url": "https://www.1010.com.hk/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 161517,
+              "text_chars": 9373,
+              "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -351,12 +357,12 @@
           "status": 200,
           "content_type": "text/html;charset=UTF-8",
           "title": "Local Prepaid SIM Card in Hong Kong | csl",
-          "bytes": 199932,
-          "elapsed_seconds": 1.185,
+          "bytes": 200673,
+          "elapsed_seconds": 5.011,
           "method": "httpx",
           "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline Scam Prevention Tips PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Terti",
-          "evidence_path": "evidence_cache/a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3.txt",
-          "content_hash": "a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3",
+          "evidence_path": "evidence_cache/f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201.txt",
+          "content_hash": "f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201",
           "error": "",
           "fetch_attempts": [
             {
@@ -364,8 +370,8 @@
               "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
               "status": 200,
               "method": "httpx",
-              "bytes": 199932,
-              "text_chars": 44703,
+              "bytes": 200673,
+              "text_chars": 44865,
               "title": "Local Prepaid SIM Card in Hong Kong | csl",
               "error": "",
               "meta_refresh_url": ""
@@ -379,6 +385,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -388,22 +395,22 @@
           ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "Verification failed: Expecting ',' delimiter: line 3 column 541 (char 569)"
+      "confidence_score": 0.05,
+      "verification_reason": "The extracted data contains irrelevant or fabricated terms not present in the source text. For example, '战略合作', '中标', '5G-A', '边缘计算', '数据中心', '高管人事', '投资并购' are not mentioned. Only '网络API' partially relates to Open APIs, but the source text does not explicitly mention '网络API'. The source text is about HKT's Open APIs for enterprise digital innovation, but the extracted data includes unrelated categories like Norton 360, WinterFest, SIM cards, etc. Thus, the extracted data does not accurately reflect the source text."
     },
     {
       "entity": "1O1O",
       "status": "ok",
       "source_urls": [
-        "https://www.1010.com.hk/",
         "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
+        "https://www.1010.com.hk/",
         "https://www.hkcsl.com/en/csl-local-prepaid-sim-card"
       ],
       "extracted": {
         "战略合作": "Internet Security Solution Norton 360 series Hong Kong Winterfest - WinterFest Delights Prepaid Local Service Travel Prepaid SIM Visitors to HK Dealer Prepaid SIM & Others csl APP Partnership Prepaid SIM Card csl Prepaid",
         "中标": "er integrated business solutions that employ 5G and other emerging technologies (IoT, AR/VR, robotics) to facilitate business digitalisation. About Us Webinar & Event Registration Award Recognition Customer Service Suppo",
         "5G-A": "g 5G for business, digital messaging, business communication and mobile workforce collaboration solutions. Future-forward Technologies Private AI Low-Altitude Economy Solutions 5G/5.5G for Enterprise Why 1O1O 5G 5G Commu",
-        "网络API": "te uses cookies, please read our Cookies Policy . Accept & Close SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital I",
+        "网络API": "SOURCE: https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/ HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ ",
         "边缘计算": "Manufacturing and Logistics Travel, Transportation & Hospitality Others Job Title * Company Telephone Number * Company Email * Enquiry Details * By submitting this form, I acknowledge that I have read, understand and agr",
         "数据中心": "l is only available when both users are using VoLTE service. ● For enquiries, please call 179179. Now TV FIFA Cup 2026™ Event Pass Now TV is an exclusive Hong Kong pay TV live broadcaster of FIFA World Cup 2026™, featuri",
         "高管人事": "participates in leading frameworks, including GSMA’s Open Gateway initiative, the Linux Foundation’s CAMARA Project and the Bridge Alliance API Exchange (BAEx). Steve Ng, Managing Director of Commercial Group at HKT , sa",
@@ -413,56 +420,13 @@
       "raw_records": [
         {
           "row": 4,
-          "url": "https://www.1010.com.hk/",
-          "final_url": "https://www.1010.com.hk/",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
-          "bytes": 161517,
-          "elapsed_seconds": 0.843,
-          "method": "httpx",
-          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
-          "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
-          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.1010.com.hk/",
-              "final_url": "https://www.1010.com.hk/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 161517,
-              "text_chars": 9373,
-              "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKT",
-            "csl",
-            "1O1O"
-          ]
-        },
-        {
-          "row": 4,
           "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
           "final_url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
           "bytes": 66390,
-          "elapsed_seconds": 1.154,
+          "elapsed_seconds": 4.576,
           "method": "httpx",
           "text_sample": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ You are now being redirected. Kindly be informed that you are leaving the 1O1O Corporate Solutions website and will be directed to a website that is not operated by us. We would like to emphasise that we are not liable for the content or availability of linked sites. Continue / Back ✕ Close By continuing to access/use this website, you agree to its use of cookies. To learn more about how you can manage your cookies setting and how our website uses cookies, please read our Cookies Policy . Accept Close Search Search Search Search Contact Us Quick Links HKT Enterprise Solutions HKT SME Solutions HKT China HKT Teleservices Enterprise Solutions Portal (ESP) 中文 Search Solutions Solutions We offer a range of corporate solutions, including 5G for business, digital m",
           "evidence_path": "evidence_cache/5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45.txt",
@@ -489,6 +453,51 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKT",
+            "csl",
+            "1O1O"
+          ]
+        },
+        {
+          "row": 4,
+          "url": "https://www.1010.com.hk/",
+          "final_url": "https://www.1010.com.hk/",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+          "bytes": 161517,
+          "elapsed_seconds": 4.963,
+          "method": "httpx",
+          "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+          "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
+          "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.1010.com.hk/",
+              "final_url": "https://www.1010.com.hk/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 161517,
+              "text_chars": 9373,
+              "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -504,12 +513,12 @@
           "status": 200,
           "content_type": "text/html;charset=UTF-8",
           "title": "Local Prepaid SIM Card in Hong Kong | csl",
-          "bytes": 199932,
-          "elapsed_seconds": 1.185,
+          "bytes": 200673,
+          "elapsed_seconds": 5.011,
           "method": "httpx",
           "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline Scam Prevention Tips PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Terti",
-          "evidence_path": "evidence_cache/a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3.txt",
-          "content_hash": "a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3",
+          "evidence_path": "evidence_cache/f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201.txt",
+          "content_hash": "f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201",
           "error": "",
           "fetch_attempts": [
             {
@@ -517,8 +526,8 @@
               "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
               "status": 200,
               "method": "httpx",
-              "bytes": 199932,
-              "text_chars": 44703,
+              "bytes": 200673,
+              "text_chars": 44865,
               "title": "Local Prepaid SIM Card in Hong Kong | csl",
               "error": "",
               "meta_refresh_url": ""
@@ -532,6 +541,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -542,95 +552,11 @@
         }
       ],
       "confidence_score": 0.3,
-      "verification_reason": "Extracted data contains many irrelevant or out-of-context snippets (e.g., 'Strategic Cooperation' and 'Winning Bid' text is not found in the source as distinct topics; '5G-A' is not mentioned; 'Edge Computing' and 'Data Center' are absent; 'Executive Personnel' partially matches a name in source but not a personnel change; 'Investment and M&A' statement is partially correct according to source). Only minor fragments of the extracted data (like 'Norton 360', 'Open API', '5G', 'Steve Ng') can be found in the source, but the structured categories are not clearly supported."
+      "verification_reason": "Most extracted fields (e.g., '战略合作', '中标', '5G-A', '边缘计算', '数据中心', '高管人事') are not explicitly mentioned in the provided source text. Only '网络API' and '投资并购' have partial or indirect support: '网络API' relates to Open APIs discussed, and '投资并购' appears as a note about no disclosure. The extracted data contains many irrelevant or fragmented phrases from the source, leading to low overall accuracy."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 4,
-      "url": "https://www.1010.com.hk/",
-      "final_url": "https://www.1010.com.hk/",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
-      "bytes": 161517,
-      "elapsed_seconds": 0.843,
-      "method": "httpx",
-      "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
-      "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
-      "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.1010.com.hk/",
-          "final_url": "https://www.1010.com.hk/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 161517,
-          "text_chars": 9373,
-          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "HK",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "HKT",
-        "csl",
-        "1O1O"
-      ]
-    },
-    {
-      "row": 4,
-      "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
-      "final_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "HKT",
-      "bytes": 69761,
-      "elapsed_seconds": 1.034,
-      "method": "httpx",
-      "text_sample": "HKT 中文 ENG 中文 About HKT Board and Management Milestones Media Centre Investor Relations Financial Results Regulatory Filings Share Performance Corporate Governance Fast Facts FAQs Email Alert Registration Investor Contacts Sustainability Sustainability Practices Environmental, Social and Governance Report Consumers Enterprises Digital Ecosystem Careers Home About HKT Investor Relations Fast Facts Fast Facts HKT Limited Investment Information HKT Limited ​ Business Telecommunication services Key services Fixed-line Broadband Mobile communication Media entertainment Enterprise solutions Integrated global communications Contact centres Employees Over 12,700 Chairman Li Tzar Kai, Richard Listed holding company PCCW Limited (SEHK: 0008) Trading bourse Share stapled units of the HKT Trust and HKT Limited are listed on The Stock Exchange of Hong Kong Limited (SEHK: 6823) Financial year end 31 D",
-      "evidence_path": "evidence_cache/66f50bd66d10629d069da351f6c9661c51a72f8c4487d7a7fa7a2c56613a51a9.txt",
-      "content_hash": "66f50bd66d10629d069da351f6c9661c51a72f8c4487d7a7fa7a2c56613a51a9",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
-          "final_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 69761,
-          "text_chars": 1905,
-          "title": "HKT",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "HK",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "HKT"
-      ]
-    },
     {
       "row": 4,
       "url": "https://www.1010corporate.com/en/news-updates/ezone-open-api-digital-innovation/",
@@ -639,7 +565,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions",
       "bytes": 66390,
-      "elapsed_seconds": 1.154,
+      "elapsed_seconds": 4.576,
       "method": "httpx",
       "text_sample": "HKT Enterprise Solutions: Open APIs Powering Hong Kong’s Digital Innovation and Enterprise Efficiency | 1O1O Corporate Solutions ✕ You are now being redirected. Kindly be informed that you are leaving the 1O1O Corporate Solutions website and will be directed to a website that is not operated by us. We would like to emphasise that we are not liable for the content or availability of linked sites. Continue / Back ✕ Close By continuing to access/use this website, you agree to its use of cookies. To learn more about how you can manage your cookies setting and how our website uses cookies, please read our Cookies Policy . Accept Close Search Search Search Search Contact Us Quick Links HKT Enterprise Solutions HKT SME Solutions HKT China HKT Teleservices Enterprise Solutions Portal (ESP) 中文 Search Solutions Solutions We offer a range of corporate solutions, including 5G for business, digital m",
       "evidence_path": "evidence_cache/5cfacd5e66890922224dc8a48a07c91e96f580a0452afbb3eb69fe01a5b77a45.txt",
@@ -666,6 +592,51 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "HKT",
+        "csl",
+        "1O1O"
+      ]
+    },
+    {
+      "row": 4,
+      "url": "https://www.1010.com.hk/",
+      "final_url": "https://www.1010.com.hk/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+      "bytes": 161517,
+      "elapsed_seconds": 4.963,
+      "method": "httpx",
+      "text_sample": "1O1O HK | Best 5G | #1 Strongest 5G Plan Guest Login My Cart ( 0 ) My Wishlist ( 0 ) Call Us 2888 1010 0 0 $ 0.00 What's New What's Hot ​ 1O1O H ​ O ​ ME Happenings at 1O1O Service & Privilege Enhanced 1O1O China HK 1-Card-2-Number service Handset & Device Useful Information Handset and Gadgets Trade-in Price List 1O1O select customer standalone privilege Handset iPhone 17 / Air / 17e Samsung Galaxy S26 Series | Available NOW iPhone for Life Samsung Galaxy S25 Series | Available NOW Nothing series | Available NOW Samsung Galaxy Z Fold7 & Z Flip7 | Available NOW Smart Gadget Latest Apple Watch Apple Watch Payment-by-installments Program PlayStation®5 PlayStation®VR2 Service Plan 5G Service Plan 5G Prestige Other Service Plan Global 5G Prestige Service C-level Data Roaming 5G Prestige Service Asia Pacific 5G Prestige Service China-HK-Macau 5G Prestige Service Infinite Entertainment 5G Pres",
+      "evidence_path": "evidence_cache/b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19.txt",
+      "content_hash": "b668caeb51e731c7a2806e56ad199b7c527104b8294c1b68e2e157d73743ee19",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.1010.com.hk/",
+          "final_url": "https://www.1010.com.hk/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 161517,
+          "text_chars": 9373,
+          "title": "1O1O HK | Best 5G | #1 Strongest 5G Plan",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -681,12 +652,12 @@
       "status": 200,
       "content_type": "text/html;charset=UTF-8",
       "title": "Local Prepaid SIM Card in Hong Kong | csl",
-      "bytes": 199932,
-      "elapsed_seconds": 1.185,
+      "bytes": 200673,
+      "elapsed_seconds": 5.011,
       "method": "httpx",
       "text_sample": "Local Prepaid SIM Card in Hong Kong | csl csl online shop Connection/Renewal MY HKT Customer Care Contact Us 繁 | 简 | EN Login My Account Logout What's New iPhone csl 5G Online Shop Scam Prevention Support Hotline Scam Prevention Tips PlayStation®5 csl 5G Tips for keeping your WhatsApp account safe Apple Watch Samsung Tizan OS TV Parade Promotion Short Message Service (SMS) Sender Registration Scheme iPad MacBook csl Travel Assistant csl e-Newsletter Forghetti Password Management Service Handset Tutorial csl network improvement Tariff Plans 5G Online Shop Promotion GO! FUN Roaming Annual Plan 5G Home internet service plan Now! Chill Entertainment Annual Plan 5G Multi-User Service Plan Chinese Mainland-Hong Kong-Macao 5G service plan csl Asia Pacific 5G Service Plan 5G Service Plan for new arrivals to Hong Kong Global 5G Service Plan One-stop Home Broadband and Mobile Network Service Terti",
-      "evidence_path": "evidence_cache/a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3.txt",
-      "content_hash": "a58223c493b07f9be9baaee9bb5226947655ff17bc9e8b339e234b401eacaea3",
+      "evidence_path": "evidence_cache/f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201.txt",
+      "content_hash": "f73c5f6cc1b0a3e72b8a9fb003b89846bada479645eb517f8faa1baea2b05201",
       "error": "",
       "fetch_attempts": [
         {
@@ -694,8 +665,8 @@
           "final_url": "https://www.hkcsl.com/en/csl-local-prepaid-sim-card",
           "status": 200,
           "method": "httpx",
-          "bytes": 199932,
-          "text_chars": 44703,
+          "bytes": 200673,
+          "text_chars": 44865,
           "title": "Local Prepaid SIM Card in Hong Kong | csl",
           "error": "",
           "meta_refresh_url": ""
@@ -709,12 +680,55 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
         "HKT",
         "csl",
         "1O1O"
+      ]
+    },
+    {
+      "row": 4,
+      "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+      "final_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "HKT",
+      "bytes": 69761,
+      "elapsed_seconds": 5.149,
+      "method": "httpx",
+      "text_sample": "HKT 中文 ENG 中文 About HKT Board and Management Milestones Media Centre Investor Relations Financial Results Regulatory Filings Share Performance Corporate Governance Fast Facts FAQs Email Alert Registration Investor Contacts Sustainability Sustainability Practices Environmental, Social and Governance Report Consumers Enterprises Digital Ecosystem Careers Home About HKT Investor Relations Fast Facts Fast Facts HKT Limited Investment Information HKT Limited ​ Business Telecommunication services Key services Fixed-line Broadband Mobile communication Media entertainment Enterprise solutions Integrated global communications Contact centres Employees Over 12,700 Chairman Li Tzar Kai, Richard Listed holding company PCCW Limited (SEHK: 0008) Trading bourse Share stapled units of the HKT Trust and HKT Limited are listed on The Stock Exchange of Hong Kong Limited (SEHK: 6823) Financial year end 31 D",
+      "evidence_path": "evidence_cache/66f50bd66d10629d069da351f6c9661c51a72f8c4487d7a7fa7a2c56613a51a9.txt",
+      "content_hash": "66f50bd66d10629d069da351f6c9661c51a72f8c4487d7a7fa7a2c56613a51a9",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+          "final_url": "https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 69761,
+          "text_chars": 1905,
+          "title": "HKT",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "HKT"
       ]
     }
   ],
@@ -724,6 +738,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-16T03:01:08.336887+00:00",
-  "fetched_at_hkt": "2026-06-16T11:01:08.336911+08:00"
+  "fetched_at": "2026-06-22T02:43:26.284666+00:00",
+  "fetched_at_hkt": "2026-06-22T10:43:26.284878+08:00"
 }

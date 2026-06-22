@@ -1,0 +1,3926 @@
+2017 Interim Report
+
+Corporate Information
+BOARD OF DIRECTORS
+
+AUDIT COMMITTEE
+
+Chairman and Non-executive Director
+
+CHEONG Ying Chew, Henry (Chairman)
+
+FOK Kin Ning, Canning, BA, DFM, FCA (ANZ)
+
+LAN Hong Tsung, David
+WONG Yick Ming, Rosanna
+
+Deputy Chairman and Non-executive Director
+LUI Dennis Pok Man, BSc
+
+REMUNERATION COMMITTEE
+LAN Hong Tsung, David (Chairman)
+
+Executive Director
+
+FOK Kin Ning, Canning
+
+WOO Chiu Man, Cliff, BSc
+Chief Executive Officer
+
+CHEONG Ying Chew, Henry
+
+Non-executive Directors
+
+COMPANY SECRETARY
+
+LAI Kai Ming, Dominic, BSc, MBA
+(also Alternate to FOK Kin Ning, Canning and
+Edith SHIH)
+
+Edith SHIH, BSE, MA, MA, EdM, Solicitor, FCIS, FCS(PE)
+
+Edith SHIH, BSE, MA, MA, EdM, Solicitor, FCIS, FCS(PE)
+
+AUDITOR
+
+MA Lai Chee, Gerald, BCom, MA
+(Alternate to LAI Kai Ming, Dominic)
+
+PricewaterhouseCoopers
+
+Independent Non-executive Directors
+
+PRINCIPAL BANKERS
+
+CHEONG Ying Chew, Henry, BSc, MSc
+(also Alternate to WONG Yick Ming, Rosanna)
+
+The Hongkong and Shanghai Banking Corporation Limited
+
+LAN Hong Tsung, David, GBS, ISO, JP
+
+Standard Chartered Bank (Hong Kong) Limited
+
+WONG Yick Ming, Rosanna, PhD, DBE, JP
+
+Contents
+
+•
+
+Corporate Information
+
+2
+
+Highlights
+
+3
+
+Chairman’s Statement
+
+6
+
+Management Discussion and Analysis
+
+13
+
+Group Capital Resources and Other Information
+
+17
+
+Disclosure of Interests
+
+21
+
+Share Option Scheme
+
+22
+
+Corporate Governance
+
+23
+
+Changes in Information of Directors
+
+24
+
+Report on Review of Condensed Consolidated Interim Financial
+Statements
+
+25
+
+Condensed Consolidated Income Statement
+
+26
+
+Condensed Consolidated Statement of Comprehensive Income
+
+27
+
+Condensed Consolidated Statement of Financial Position
+
+28
+
+Condensed Consolidated Statement of Changes in Equity
+
+29
+
+Condensed Consolidated Statement of Cash Flows
+
+30
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+43
+
+Glossary
+
+•
+
+Information for Shareholders
+
+Highlights
+For the
+six months
+ended
+30 June
+2017
+HK$ millions
+
+For the
+six months
+ended
+30 June
+2016
+HK$ millions
+(Restated)(1)
+
+Consolidated service revenue
+Consolidated hardware revenue
+Consolidated revenue
+
+3,896
+1,173
+5,069
+
+3,871
+1,498
+5,369
+
++1%
+-22%
+-6%
+
+Consolidated service EBITDA
+Consolidated hardware EBITDA
+Consolidated EBITDA
+
+1,252
+17
+1,269
+
+1,255
+20
+1,275
+
+–
+-15%
+–
+
+Consolidated service EBIT
+Consolidated hardware EBIT
+Consolidated EBIT
+
+460
+17
+477
+
+515
+20
+535
+
+-11%
+-15%
+-11%
+
+Service profit
+Hardware profit
+Profit attributable to shareholders
+
+313
+11
+324
+
+349
+13
+362
+
+-10%
+-15%
+-10%
+
+Earnings per share (in HK cents)
+Interim dividend per share (in HK cents)
+
+6.72
+3.90
+
+7.51
+4.00
+
+-10%
+-3%
+
+1H 2017
+vs
+1H 2016
+Change
+
+Consolidated service revenue showed a modest increase of 1% to HK$3,896 million with key focus on operation efficiency
+enhancement despite under keen market competition.
+Consolidated service EBITDA was maintained at HK$1,252 million. The increase in depreciation and amortisation was
+mainly due to a higher mobile spectrum amortisation charge after the renewal of mobile spectrum licence in October 2016.
+Profit attributable to shareholders decreased by 10% to HK$324 million.
+Earnings per share was 6.72 HK cents.
+Interim dividend per share is 3.90 HK cents.
+
+Note 1: The interim results for the six months ended 30 June 2016 have been restated and accounted for using the principle of merger accounting to reflect the acquisition of 50%
+remaining interest in HGCGC in March 2017, a joint venture engaged in data centre business under common control of the CKHH Group. Such change resulted in an increase in
+consolidated service revenue by HK$45 million and a decrease in profit attributable to shareholders by HK$14 million respectively, for the six months ended 30 June 2016.
+
+2
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Chairman’s Statement
+Hutchison Telecommunications Hong Kong Holdings Limited and its subsidiaries reported its results for the first half of 2017
+in an increasingly competitive market, especially in the mobile sector. The Group continues to focus on developing innovative
+products and services to meet ever-changing customer needs with the aim to nurture service revenue growth into the future,
+while enhancing the overall mobile and fixed-line customer experience.
+
+Results
+Consolidated revenue, comprising service and hardware revenue from mobile and fixed-line businesses, decreased by 6% from
+HK$5,369 million for the first half of 2016 to HK$5,069 million for the first half of 2017. This was the result of a drop in hardware
+revenue, partially offset by improved service revenue.
+Despite the drop in consolidated revenue, consolidated EBITDA was HK$1,269 million, comparable to the same period last year
+with key focus on efficiency to achieve savings in operating expenditure. The consolidated EBIT was HK$477 million, 11% below
+the same period in 2016 mainly as a result of higher mobile spectrum amortisation charge after the renewal of mobile spectrum
+licence in October 2016. Profit attributable to shareholders for the first half of 2017 amounted to HK$324 million, a drop of 10%
+compared with HK$362 million for the first half of 2016.
+Basic earnings per share for the first half of 2017 were 6.72 HK cents compared with 7.51 HK cents for the first half of 2016.
+
+Dividend
+The Board has declared the payment of an interim dividend of 3.90 HK cents (30 June 2016: 4.00 HK cents) per share for the
+first half of 2017, payable on Friday, 1 September 2017 to shareholders whose names appear on the Register of Members of
+the Company on Wednesday, 23 August 2017, being the record date for determining shareholders’ entitlement to the interim
+dividend. The Board expects total full-year dividend payout to be equivalent to 75% of annual profit attributable to shareholders.
+
+Business Review
+Mobile business – Hong Kong and Macau
+Mobile business revenue for the first half of 2017 amounted to HK$3,117 million, a decrease of 10% compared with
+HK$3,472 million for the first half of 2016. More than 90% of the decline in mobile revenue was the result of lower hardware
+revenue following weaker demand for new smartphones. Hardware revenue decreased by 22% from HK$1,499 million for the
+first half of 2016 to HK$1,173 million for the first half of 2017.
+Mobile net customer service revenue for the first half of 2017 was HK$1,944 million, a marginal decrease of 1% compared with
+HK$1,973 million for the first half of 2016. The slight decrease in net customer service revenue was mainly the result of a 9%
+decline in roaming revenue compared with the same period in 2016. The reduction in roaming revenue slowed down in the first
+half of 2017 from a drop of 19% for the same period in 2016 against 2015, with the signs of recovery after introduction of various
+new roaming products and promotions. Net customer service margin percentage for the first half of 2017 was maintained at 93%.
+
+2017 Interim Report
+
+3
+
+Chairman’s Statement
+
+EBITDA in the first half of 2017 decreased by 3% to HK$647 million, mainly reflecting a decrease in roaming service margin
+and lower standalone handset sales margin, partially offset by improved local net customer service margin. On the other hand,
+service EBITDA in the first half of 2017 was HK$630 million. Corresponding service EBITDA margin percentage was 32%, which
+was comparable with that in the same period of 2016. EBIT decreased by 24% to HK$240 million compared to the same period in
+2016, mainly due to the increased mobile spectrum amortisation charge after the renewal of mobile spectrum licence in October 2016.
+As of 30 June 2017, the Group was serving approximately 3.3 million customers in Hong Kong and Macau (31 December 2016:
+approximately 3.2 million), of which the number of postpaid customers was approximately 1.5 million (31 December 2016:
+approximately 1.5 million). Overall churn rate among postpaid customers improved to 1.2% in the first half of 2017 from 1.3% in
+the first half of 2016. This reflected greater user satisfaction in respect of 4G LTE network quality and enhanced customer service.
+The Group is committed to enhancing further in churn management following the recent launch of a loyalty programme among
+our customers.
+Blended local postpaid net ARPU decreased by 3% from HK$166 in the first half of 2016 to HK$161 in the first half of 2017, as a
+result of keen competition in the mobile market. Accordingly, blended local postpaid net AMPU decreased by 2% to HK$155 in the
+first half of 2017 from HK$158 in the first half of 2016. The Group will continue to launch more OTT services, innovative products,
+IoT and big data applications to meet customer demands and improve revenue.
+The Group is deploying the latest technologies and enhancing existing network architecture as the industry moves towards 5G
+and the IoT. Together with deployment of carrier aggregation technology, the Group is working on initiatives such as
+small-cell and smart antenna deployment to enable timely launch of services to meet market demand after the 5G standard and
+Hong Kong’s spectrum plans are confirmed.
+
+Fixed-line business
+Fixed-line service revenue for the first half of 2017 was HK$2,167 million, an increase of 3% compared with HK$2,112 million for the
+first half of 2016. This improvement was mainly the result of higher revenue from corporate and business market segments driven
+by growing data and ICT needs, partially offset by lower revenue from the residential market as a result of keen market competition.
+During the period, the Group acquired the remaining 50% interest in HGCGC, the then joint venture between the Group and the
+CKHH Group, to cater for the increasing demand of data centre facilities in harmony with existing advanced network infrastructure
+to develop new products and services locally and internationally.
+EBITDA in the first half of 2017 increased by 2% to HK$682 million compared with HK$669 million in the first half of 2016
+as a result of improved revenue, while EBIT for the first half of 2017 improved by 6% to HK$297 million compared with
+HK$280 million in the first half of 2016.
+
+4
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Chairman’s Statement
+
+Outlook
+Market conditions and competition look set to remain challenging in the second half of 2017. However, carriers, corporations and
+consumers alike appreciate the benefits of connectivity, which will drive continued growth in data consumption. In fact, demand
+for innovative telecommunications services will inevitably continue to rise and the Group will benefit from these opportunities.
+The Group is therefore committed to introducing innovative products designed to meet or exceed customer expectations and
+open up new revenue streams. The Group aims to concentrate more on customer retention by rewarding them for spending
+performance and loyalty. Such new initiatives will also help maximise customer satisfaction and thereby improve churn. Meanwhile,
+the Group will continue to digitise operations in order to enhance efficiency and enable timely responses to market needs.
+Fresh opportunities are emerging in this era of digitalisation, especially in areas such as the IoT, big data and cloud computing.
+Our assets and capabilities position the Group well to capitalise on the growing importance of such trends. In this regard, the
+Group will continue to optimise internal process and structure so as to harness the full benefits of increasing demand for data
+connectivity.
+Finally, I would like to take this opportunity to thank the Board and all staff members for their dedication, professionalism and
+determination to succeed.
+
+FOK Kin Ning, Canning
+Chairman
+Hong Kong, 25 July 2017
+
+2017 Interim Report
+
+5
+
+Management Discussion and Analysis
+Financial Review
+
+Consolidated service revenue
+
+Consolidated service revenue in the first half of 2017
+was HK$3,896 million, increased by 1% compared to
+HK$3,871 million in the first half of 2016. This was the result
+of a 3% increase in fixed-line revenue, partially offset by
+1% decrease in mobile service revenue from 9% decrease in
+mobile roaming revenue.
+
+4,500
+
+HK$ millions
+
+3,871
+
+3,896
+
++1%
+
+2,250
+
+0
+
+1H 2016
+(Restated)
+
+1H 2017
+
+Consolidated hardware revenue
+Consolidated hardware revenue was HK$1,173 million in the
+first half of 2017, a decrease of 22% from HK$1,498 million in
+the first half of 2016 resulting from weaker demand for new
+smartphones during the period.
+
+2,000
+
+HK$ millions
+
+1,498
+
+-22%
+
+1,173
+
+1,000
+
+0
+
+1H 2017
+
+1H 2016
+
+Key cost items
+4,000
+3,356
+740
+
+HK$ millions
+
+Total operating expenses, excluding cost of inventories sold,
+amounted to HK$3,436 million in the first half of 2017, an
+increase of 2% from HK$3,356 million in the first half of 2016.
+This was mainly due to higher mobile spectrum amortisation
+charge after the renewal of mobile spectrum in October 2016,
+partially offset by savings in customer acquisition costs with
+the focus in retention of loyal customers and cautious control
+over growth in other operating expenses achieved from
+internal efficiency initiatives.
+
+2,000
+
+3,436
+
++2%
+
+792
+
+201
+
+176
+
+446
+
+443
+
+1,969
+
+2,025
+
+1H 2016
+(Restated)
+
+1H 2017
+
+0
+
+6
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Depreciation and amortisation
+
+Staff costs
+
+Customer acquisition costs
+
+Other operating expenses
+
+Management Discussion and Analysis
+
+Consolidated service EBITDA
+
+HK$ millions
+
+Depreciation and amortisation amounted to HK$792 million
+in the first half of 2017 compared to HK$740 million in the
+first half of 2016. The increase was mainly a result of an
+increase in spectrum licence fee amortisation on 2100MHz
+band and 2300MHz band after its activation in October 2016
+as mentioned above, as well as enhancement of the 4G LTE
+network infrastructure.
+
+2,000
+
+32%
+
+32%
+
+1,255
+
+1,252
+
+36%
+
+1,000
+
+18%
+
+0
+
+Service EBITDA/EBITDA margin %
+
+Consolidated service EBITDA in the first half of 2017 was
+HK$1,252 million, comparable with HK$1,255 million in the
+first half of 2016 as a result of the above. Consolidated service
+EBITDA margin was maintained at 32% in the first half of 2017.
+
+0%
+
+1H 2016
+(Restated)
+
+1H 2017
+
+Service EBITDA
+
+Service EBITDA margin
+
+Consolidated service EBIT
+Consolidated service EBIT was HK$460 million in the first half
+of 2017, a decrease of 11% compared to HK$515 million
+in the first half of 2016, mainly due to an increase in
+depreciation and amortisation mentioned above.
+
+800
+
+16%
+13%
+515
+
+HK$ millions
+
+N e t i n t e re s t a n d o t h e r f i n a n ce co s t s a m o u n t e d t o
+HK$49 million in the first half of 2017, a decrease of 9%
+compared to HK$54 million in the first half of 2016. The
+decrease was the result of lower notional finance charge on
+decreasing spectrum licence fee liabilities, partially offset by
+higher finance cost on higher level of borrowings to finance
+the mobile spectrum licence fee settled in August 2016.
+Gearing ratio as of 30 June 2017, calculated by dividing net
+debt by net total capital, was 27% (31 December 2016: 25%)
+as a result of higher net debt position.
+
+-11%
+
+460
+
+400
+
+8%
+
+0
+
+Service EBIT/EBIT margin %
+
+12%
+
+0%
+
+1H 2016
+(Restated)
+
+1H 2017
+
+Service EBIT
+
+Service EBIT margin
+
+Profit attributable to shareholders
+Share of joint venture losses in the first half of 2017 was
+HK$3 million, comparable to HK$2 million in the first half of 2016.
+500
+
+Overall, profit attributable to shareholders of the Company in
+the first half of 2017 was HK$324 million, a decrease of 10%
+compared to HK$362 million in the first half of 2016.
+
+362
+
+HK$ millions
+
+324
+
+-10%
+250
+
+0
+
+1H 2016
+(Restated)
+
+1H 2017
+
+2017 Interim Report
+
+7
+
+Management Discussion and Analysis
+
+Business Review
+The Group is engaged in two principal businesses – mobile and fixed-line.
+
+Hong Kong and Macau mobile business highlights
+
+8
+
+For the
+six months
+ended
+30 June
+2017
+HK$ millions
+
+For the
+six months
+ended
+30 June
+2016
+HK$ millions
+
+Favourable/
+(unfavourable)
+change
+1H 2017 vs
+1H 2016
+
+Total revenue
+– Net customer service revenue
+– Local service revenue
+– Roaming service revenue
+– Hardware revenue
+– Bundled sales revenue
+– Standalone handset sales revenue
+
+3,117
+1,944
+1,615
+329
+1,173
+339
+834
+
+3,472
+1,973
+1,612
+361
+1,499
+294
+1,205
+
+-10%
+-1%
+–
+-9%
+-22%
++15%
+-31%
+
+Net customer service margin
+Net customer service margin %
+
+1,815
+93%
+
+1,829
+93%
+
+–1%
+–
+
+Standalone handset sales margin
+
+17
+
+20
+
+-15%
+
+Total CACs
+Less: Bundled sales revenue
+
+(468)
+339
+
+(443)
+294
+
+-6%
++15%
+
+Total CACs (net of handset revenue)
+
+(129)
+
+(149)
+
++13%
+
+Operating expenses
+Opex as a % of net customer service margin
+
+(1,056)
+58%
+
+(1,035)
+57%
+
+-2%
+-1% point
+
+EBITDA
+Service EBITDA
+Service EBITDA margin %
+
+647
+630
+32%
+
+665
+645
+33%
+
+-3%
+-2%
+-1% point
+
+Depreciation and amortisation
+
+(407)
+
+(351)
+
+-16%
+
+EBIT
+Service EBIT
+
+240
+223
+
+314
+294
+
+-24%
+-24%
+
+CAPEX (excluding licence)
+EBITDA less CAPEX
+
+(197)
+450
+
+(198)
+467
+
++1%
+-4%
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Management Discussion and Analysis
+
+Mobile business revenue for the first half of 2017 amounted to HK$3,117 million, a decrease of 10% compared with
+HK$3,472 million for the first half of 2016. More than 90% of the decline in mobile revenue was the result of lower hardware
+revenue following weaker demand for new smartphones. Hardware revenue decreased by 22% from HK$1,499 million for the
+first half of 2016 to HK$1,173 million for the first half of 2017.
+Mobile net customer service revenue for the first half of 2017 was HK$1,944 million, a marginal decrease of 1% compared with
+HK$1,973 million for the first half of 2016. The slight decrease in net customer service revenue was mainly the result of a 9%
+decline in roaming revenue compared with the same period in 2016. The reduction in roaming revenue slowed down in the first
+half of 2017 from a drop of 19% for the same period in 2016 against 2015, with the signs of recovery after introduction of various
+new roaming products and promotions. Net customer service margin percentage for the first half of 2017 was maintained at 93%.
+EBITDA in the first half of 2017 decreased by 3% to HK$647 million, mainly reflecting a decrease in roaming service margin
+and lower standalone handset sales margin, partially offset by improved local net customer service margin. On the other hand,
+service EBITDA in the first half of 2017 was HK$630 million. Corresponding service EBITDA margin percentage was 32%, which was
+comparable with that in the same period of 2016. EBIT decreased by 24% to HK$240 million compared to the same period in 2016,
+mainly due to the increased mobile spectrum amortisation charge after the renewal of mobile spectrum licence in October 2016.
+As of 30 June 2017, the Group was serving approximately 3.3 million customers in Hong Kong and Macau (31 December 2016:
+approximately 3.2 million), of which the number of postpaid customers was approximately 1.5 million (31 December 2016:
+approximately 1.5 million). Overall churn rate among postpaid customers improved to 1.2% in the first half of 2017 from 1.3% in
+the first half of 2016. This reflected greater user satisfaction in respect of 4G LTE network quality and enhanced customer service.
+The Group is committed to enhancing further in churn management following the recent launch of a loyalty programme among
+our customers.
+Blended local postpaid net ARPU decreased by 3% from HK$166 in the first half of 2016 to HK$161 in the first half of 2017, as a
+result of keen competition in the mobile market. Accordingly, blended local postpaid net AMPU decreased by 2% to HK$155 in the
+first half of 2017 from HK$158 in the first half of 2016. The Group will continue to launch more OTT services, innovative products,
+IoT and big data applications to meet customer demands and improve revenue.
+The Group is deploying the latest technologies and enhancing existing network architecture as the industry moves towards 5G
+and the IoT. Together with deployment of carrier aggregation technology, the Group is working on initiatives such as
+small-cell and smart antenna deployment to enable timely launch of services to meet market demand after the 5G standard and
+Hong Kong’s spectrum plans are confirmed.
+
+2017 Interim Report
+
+9
+
+Management Discussion and Analysis
+
+Key performance indicators for mobile business
+For the
+six months
+ended
+30 June
+2017
+
+For the
+six months
+ended
+30 June
+2016
+(Restated)
+
+Favourable/
+(unfavourable)
+change
+1H 2017 vs
+1H 2016
+
+Number of postpaid customers (‘000)
+Number of prepaid customers (‘000)
+
+1,486
+1,782
+
+1,481
+1,597
+
+–
++12%
+
+Total customers (‘000)
+
+3,268
+
+3,078
+
++6%
+
+Postpaid customers to the total customer base (%)
+Postpaid customers’ contribution(2) to the net customer service revenue (%)
+Monthly postpaid churn rate (%)
+
+45%
+91%
+1.2%
+
+48%
+92%
+1.3%
+
+-3% points
+-1% point
++0.1% point
+
+Local postpaid gross ARPU(2) (HK$)
+Local postpaid net ARPU(2) (HK$)
+Local postpaid net AMPU(2) (HK$)
+
+195
+161
+155
+
+209
+166
+158
+
+-7%
+-3%
+-2%
+
+Capital expenditure on property, plant and equipment in the first half of 2017 amounted to HK$197 million (1H 2016:
+HK$198 million), accounting for 10% (1H 2016: 10%) of mobile service revenue. The level of capital expenditure in the first half
+of 2017 was consistent with the same period in 2016, mainly for long-term investment in network enhancement and capacity
+expansion for 4.5G technology and launch of automation projects during the first half of 2017 to prepare for coming 5G technology
+for better service and long-term cost savings in future.
+
+Mobile capex
+
+Summary of spectrum investment as of 30 June 2017
+Spectrum band
+20%
+
+198
+
+197
+
+10%
+
+10%
+
+1H 2016
+
+1H 2017
+
+150
+
+10%
+
+0
+
+0%
+
+Capex over mobile service revenue
+
+Bandwidth
+
+Year of expiry
+
+900 MHz
+900 MHz
+1800 MHz
+2100 MHz
+2300 MHz
+2600 MHz
+2600 MHz
+
+10 MHz
+16.6 MHz
+23.2 MHz
+29.6 MHz
+30 MHz
+30 MHz*
+10 MHz*
+
+2026
+2020
+2021
+2031
+2027
+2024
+2028
+
+Macau
+900 MHz
+1800 MHz
+2100 MHz
+
+15.6 MHz
+38.8 MHz
+20 MHz
+
+2023
+2023
+2023
+
+Hong Kong
+% to service revenue
+
+HK$ millions
+
+300
+
+* Shared under 50/50 joint venture – Genius Brand Limited
+
+Note 2: The postpaid customers’ contribution, ARPU and AMPU information for the six months ended 30 June 2016 has been restated to exclude the mobile MVNO revenue.
+
+10
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Management Discussion and Analysis
+
+Fixed-line business highlights
+For the
+six months
+ended
+30 June
+2017
+HK$ millions
+
+For the
+six months
+ended
+30 June
+2016
+HK$ millions
+(Restated)
+
+Favourable/
+(unfavourable)
+change
+1H 2017 vs
+1H 2016
+
+2,167
+(1,485)
+69%
+
+2,112
+(1,443)
+68%
+
++3%
+-3%
+-1% point
+
+EBITDA
+EBITDA margin %
+
+682
+31%
+
+669
+32%
+
++2%
+-1% point
+
+Depreciation and amortisation
+EBIT
+
+(385)
+297
+
+(389)
+280
+
++1%
++6%
+
+CAPEX (excluding licence)
+EBITDA less CAPEX
+
+(230)
+452
+
+(236)
+433
+
++3%
++4%
+
+Revenue
+Operating expenses
+Opex as % of revenue
+
+Fixed-line service revenue for the first half of 2017 was HK$2,167 million, an increase of 3% compared with HK$2,112 million for the
+first half of 2016. This improvement was mainly the result of higher revenue from corporate and business market segments driven
+by growing data and ICT needs, partially offset by lower revenue from the residential market as a result of keen market competition.
+During the period, the Group acquired the remaining 50% interest in HGCGC, the then joint venture between the Group and the
+CKHH Group, to cater for the increasing demand of data centre facilities in harmony with existing advanced network infrastructure
+to develop new products and services locally and internationally.
+EBITDA in the first half of 2017 increased by 2% to HK$682 million compared with HK$669 million in the first half of 2016
+as a result of improved revenue, while EBIT for the first half of 2017 improved by 6% to HK$297 million compared with
+HK$280 million in the first half of 2016.
+
+2017 Interim Report
+
+11
+
+Management Discussion and Analysis
+
+Fixed-line service revenue
+
+1H 2016
+
+HK$2,112 million (Restated)
+
+Data Centre and
+Others
+5%
+
+Residential
+12%
+
+Corporate
+and Business
+30%
+
+International
+and Local Carrier
+53%
+
+1H 2017
+
+HK$2,167 million
+
+Residential
+12%
+
+Data Centre and
+Others
+5%
+
+Corporate
+and Business
+32%
+
+International
+and Local Carrier
+51%
+
+Fixed-line capex
+300
+
+20%
+
+HK$ millions
+
+236
+
+230
+15%
+
+150
+
+11%
+
+11%
+
+1H 2016
+(Restated)
+
+1H 2017
+
+0
+
+0%
+
+Capex over fixed-line service revenue
+
+12
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+10%
+
+% to service revenue
+
+Capital expenditure on property, plant and equipment
+in the first half of 2017 amounted to HK$230 million
+(1H 2016: HK$236 million), representing 11% (1H 2016: 11%)
+of fixed-line service revenue. The level of capital expenditure
+in the first half of 2017 was consistent with the same period
+in 2016, mainly as a result of continued focus on network
+equipment expenditure to meet customer requirements.
+
+Group Capital Resources and Other Information
+Treasury Management
+The Group’s treasury function sets financial risk management policies in accordance with policies and procedures that are
+approved by the Executive Director, and which are also subject to periodic review by the Group’s internal audit function. The
+Group’s treasury policies are designed to mitigate the impact of fluctuations in interest rates and exchange rates on the Group’s
+overall financial position and to minimise the Group’s financial risks. The Group’s treasury function operates as a centralised
+service for managing financial risks, including interest rate and foreign exchange risks, and for providing cost-efficient funding to
+the Group and its companies. It manages the majority of the Group’s funding needs, interest rate, foreign currency and credit risk
+exposures. The Group uses interest rate and foreign currency swaps and forward contracts as appropriate for risk management
+purposes only, for hedging transactions and for managing the Group’s assets and liabilities’ exposure to interest rate and foreign
+exchange rate fluctuations. It is the Group’s policy not to enter into derivative transactions for speculative purposes. It is also the
+Group’s policy not to invest liquidity in financial products, including hedge funds or similar vehicles, with significant underlying
+leverage or derivative exposure.
+
+Cash management and funding
+The Group operates a central cash management system for all of its subsidiaries. In general, financing is raised mainly in the form
+of bank borrowings to meet funding requirements of the operating subsidiaries of the Group. The Group regularly and closely
+monitors its overall debt position and reviews its funding costs and maturity profile to facilitate refinancing.
+
+Interest rate exposure
+The Group manages its interest rate exposure with a focus on reducing the Group’s overall cost of debt and exposure to changes in
+interest rates. When considered appropriate, the Group uses derivatives such as interest rate swaps and forward rate agreements
+to manage its interest rate exposure. The Group is exposed to interest rate changes that affect Hong Kong dollar borrowings which
+are at floating rates.
+
+Foreign currency exposure
+The Group runs telecommunications operations principally in Hong Kong, with transactions denominated in Hong Kong dollars.
+The Group generally endeavours to establish a natural hedge for debt financing with an appropriate level of borrowings in those
+same currencies. The Group is exposed to other currency movements, primarily in terms of certain trade receivables or payables
+and bank deposits denominated in United States dollars, Macau Patacas, Renminbi, Euros and British pounds.
+
+Credit exposure
+The Group’s holdings of surplus funds with financial institutions expose the Group to credit risk of counterparties. The Group
+controls its credit risk to non-performance by its counterparties through monitoring their equity share price movements and
+credit ratings as well as setting approved counterparty credit limits that are regularly reviewed.
+The Group is also exposed to counterparties credit risk from its operating activities, such risks are continuously monitored by the management.
+
+2017 Interim Report
+
+13
+
+Group Capital Resources and Other Information
+
+Capital and Net Debt
+As at 30 June 2017, the Group recorded share capital of HK$1,205 million and total equity of HK$12,012 million.
+The cash and cash equivalents of the Group amounted to HK$359 million as at 30 June 2017 (31 December 2016 (Restated):
+HK$357 million), 44% of which were denominated in Hong Kong dollars, 26% in Euros, 10% in United States dollars, 8% in
+Macau Patacas, with remaining in various other currencies. The Group’s carrying amount of bank borrowings amounted to
+HK$4,874 million at 30 June 2017 (31 December 2016: HK$4,467 million), which were denominated in Hong Kong dollars and
+repayable in the fourth quarter of 2019.
+As at 30 June 2017, the consolidated net debt of the Group was HK$4,515 million (31 December 2016 (Restated):
+HK$4,110 million). The Group’s net debt to net total capital ratio at 30 June 2017 was 27% (31 December 2016 (Restated): 25%).
+
+Charges on Group Assets
+As at 30 June 2017 and 31 December 2016, except for all of the shares of a joint venture owned by the Group which were
+pledged as security in favour of the joint venture partner under a cross share pledge arrangement, no material asset of the Group
+was under any charge.
+
+Borrowing Facilities Available
+Committed borrowing facilities available to the Group but not drawn as at 30 June 2017 amounted to HK$900 million
+(31 December 2016: HK$1,500 million).
+
+Contingent Liabilities
+As at 30 June 2017, the Group provided performance and other guarantees of HK$486 million (31 December 2016 (Restated):
+HK$636 million).
+
+Commitments
+As at 30 June 2017, the Group had total capital commitments of property, plant and equipment amounting to HK$741 million
+(31 December 2016 (Restated): HK$799 million).
+As at 30 June 2017, the Group had total operating lease commitments for building and other assets amounting to HK$518 million
+(31 December 2016 (Restated): HK$369 million).
+A subsidiary of the Group has acquired various blocks of spectrum bands for the provision of telecommunications services in
+Hong Kong, certain of which over various assignment years up to year 2021 and variable licence fees are payable on those
+spectrum bands based on 5% of the network revenue or the Appropriate Fee (as defined in the Unified Carrier Licence) in respect of the
+relevant year whichever is greater. The net present value of the Appropriate Fee has already been recorded as licence fee liabilities.
+
+14
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Group Capital Resources and Other Information
+
+Corporate Strategy
+The strategy of the Group is to deliver sustainable returns with solid financial fundamentals, so as to enhance long-term total
+return for shareholders. Please refer to the Chairman’s Statement and Management Discussion and Analysis for discussions and
+analyses of the performance of the Group and the basis on which the Group generates or preserves value over the longer term
+and the strategy for delivering the objective of the Group.
+
+Past Performance and Forward-looking Statements
+The performance and the results of operations of the Group contained in this report are historical in nature, and past performance
+is no guarantee for the future results of the Group. Any forward-looking statements and opinions contained in this report
+are based on current plans, estimates and projections, and therefore involve risks and uncertainties. Actual results may differ
+materially from expectations discussed in such forward-looking statements and opinions. The Group, the Directors, employees
+and agents of the Group assume (a) no obligation to correct or update the forward-looking statements or opinions contained in
+this report; and (b) no liability in the event that any of the forward-looking statements or opinions do not materialise or turn out
+to be incorrect.
+
+Human Resources
+As at 30 June 2017, the Group employed 2,173 (31 December 2016: 2,304) full-time staff members and on average 2,311 (2016:
+2,382) staff members during the six months ended 30 June 2017. Staff costs during the six months ended 30 June 2017, including
+directors’ emoluments, totalled HK$443 million (30 June 2016: HK$446 million).
+The Group fully recognises the importance of high-quality human resources in sustaining market leadership. Salary and benefits
+are kept at competitive levels, while individual performance is rewarded within the general framework of the salary, bonus and
+incentive system of the Group, which is reviewed annually. Employees are provided with a wide range of benefits that include
+medical coverage, provident funds and retirement plans, long-service awards and a share option plan. The Group stresses the
+importance of staff development and provides training programmes on an ongoing basis. Employees are also encouraged to play
+an active role in community care activities arranged by the Group.
+
+Environmental, Social and Governance Responsibility
+The Group is committed to the long-term sustainability of its businesses and the communities with which it engages. It delivers quality
+products and services to its customers by managing its businesses prudently, while executing management decisions with due care and
+attention. The Group demonstrates a strong sense of corporate social responsibility and believes such a commitment helps strengthen
+its relationship with the community. Operating as a sound corporate citizen via sponsorship and supporting socially-responsible
+projects at company level, the Group is committed to bringing positive impact to the general welfare of the community.
+
+2017 Interim Report
+
+15
+
+Group Capital Resources and Other Information
+
+Review of Interim Financial Statements
+The unaudited condensed consolidated financial statements of the Group for the six months ended 30 June 2017 has been
+reviewed by the auditor of the Company, PricewaterhouseCoopers, in accordance with International Standard on Review
+Engagements 2410 – “Review of Interim Financial Information Performed by the Independent Auditor of the Entity” issued by
+the International Auditing and Assurance Standards Board. The independent review report of the auditor will be included in the
+Interim Report to shareholders. The unaudited condensed consolidated financial statements of the Group for the six months
+ended 30 June 2017 has also been reviewed by the Audit Committee of the Company.
+
+Record Date for Interim Dividend
+The record date for the purpose of determining shareholders’ entitlement to the interim dividend is Wednesday, 23 August 2017.
+In order to qualify for the interim dividend payable on Friday, 1 September 2017, all transfers, accompanied by the relevant share
+certificates, must be lodged with the Hong Kong Share Registrar of the Company (Computershare Hong Kong Investor Services
+Limited at Rooms 1712-1716, 17th Floor, Hopewell Centre, 183 Queen’s Road East, Wanchai, Hong Kong) for registration no later
+than 4:30 pm on Wednesday, 23 August 2017.
+
+Purchase, Sale or Redemption of Listed Shares
+During the six months ended 30 June 2017, neither the Company nor any of its subsidiaries has purchased, sold or redeemed any
+of the listed shares of the Company.
+
+16
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Disclosure of Interests
+Directors’ and Chief Executive’s Interests and Short Positions in Shares, Underlying Shares
+and Debentures
+As at 30 June 2017, the interests and short positions of the Directors and Chief Executive of the Company in the shares, underlying
+shares and debentures of the Company or any of its associated corporations (within the meaning of Part XV of the SFO) which
+had been notified to the Company and the Stock Exchange pursuant to Divisions 7 and 8 of Part XV of the SFO (including interests
+and short positions which they were taken or deemed to have under such provisions of the SFO), or which were recorded in the
+register required to be kept by the Company pursuant to Section 352 of the SFO, or as otherwise notified to the Company and the
+Stock Exchange pursuant to the HTHKH Securities Code were as follows:
+
+(I)
+
+Interests and short positions in the shares, underlying shares and debentures of the Company
+Long positions in the shares and underlying shares of the Company
+
+Directors
+
+Capacity
+
+Nature of
+interests
+
+Number of
+shares held
+
+Approximate
+% of
+shareholding
+
+Interest of a
+controlled
+corporation
+
+Corporate interest
+
+1,202,380 (Note)
+
+0.0250%
+
+Lui Dennis Pok Man
+
+Beneficial owner
+
+Personal interest
+
+9,100,000
+
+0.1888%
+
+Woo Chiu Man, Cliff
+
+Beneficial owner
+
+Personal interest
+
+2,001,333
+
+0.0415%
+
+Fok Kin Ning, Canning
+
+Note:
+Such ordinary shares were held by a company which is equally controlled by Mr Fok Kin Ning, Canning and his spouse.
+
+2017 Interim Report
+
+17
+
+Disclosure of Interests
+
+(II) Interests and short positions in the shares, underlying shares and debentures of the associated
+corporations of the Company
+Long positions in the shares, underlying shares and debentures of the associated corporations of the
+Company
+Mr Fok Kin Ning, Canning had, as at 30 June 2017, the following interests:
+(i)
+
+corporate interests in 5,111,438 ordinary shares, representing approximately 0.13% of the issued voting shares, in
+CKHH; and
+
+(ii)
+
+5,100,000 ordinary shares, representing approximately 0.03% of the issued voting shares, in Hutchison
+Telecommunications (Australia) Limited comprising personal and corporate interests in 4,100,000 ordinary shares
+and 1,000,000 ordinary shares respectively.
+
+Mr Fok Kin Ning, Canning held the above personal interests in his capacity as a beneficial owner and held the above
+corporate interests through a company which is equally controlled by Mr Fok and his spouse.
+Mr Woo Chiu Man, Cliff had, as at 30 June 2017, 8,892 ordinary shares, representing approximately 0.0002% of the issued
+voting shares, in CKHH, comprising personal interests in 3,420 ordinary shares held in his capacity as a beneficial owner and
+family interests in 5,472 ordinary shares held by his spouse.
+Mr Lai Kai Ming, Dominic in his capacity as a beneficial owner had, as at 30 June 2017, personal interests in 34,200 ordinary
+shares, representing approximately 0.0008% of the issued voting shares, in CKHH.
+Ms Edith Shih had, as at 30 June 2017, the following interests:
+(i)
+
+57,187 ordinary shares, representing approximately 0.0014% of the issued voting shares, in CKHH, comprising
+personal interests in 52,125 ordinary shares held in her capacity as a beneficial owner and family interests in 5,062
+ordinary shares held by her spouse;
+
+(ii)
+
+personal interests in 60,000 ordinary shares and 76,144 American depositary shares (each representing 0.5 ordinary
+shares), in aggregate representing approximately 0.16% of the issued voting shares, in Hutchison China MediTech
+Limited held in her capacity as a beneficial owner; and
+
+(iii)
+
+personal interests in (a) a nominal amount of US$300,000 in the 7.625% Notes due 2019 issued by Hutchison
+Whampoa International (09) Limited; and (b) a nominal amount of US$250,000 in the 4.625% Notes due 2022 issued
+by Hutchison Whampoa International (11) Limited held in her capacity as a beneficial owner.
+
+Dr Lan Hong Tsung, David in his capacity as a beneficial owner had, as at 30 June 2017, personal interests in 13,680
+ordinary shares, representing approximately 0.0003% of the issued voting shares, in CKHH.
+Save as disclosed above, as at 30 June 2017, none of the Directors or Chief Executive of the Company and their respective
+associates had any interests or short positions in the shares, underlying shares and debentures of the Company or any of its
+associated corporations (within the meaning of Part XV of the SFO) which had to be notified to the Company and the Stock
+Exchange pursuant to Divisions 7 and 8 of Part XV of the SFO (including interests and short positions which he/she was taken or
+deemed to have under such provisions of the SFO), or which were recorded in the register required to be kept by the Company
+pursuant to Section 352 of the SFO, or which were required, pursuant to the HTHKH Securities Code, to be notified to the Company
+and the Stock Exchange.
+
+18
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Disclosure of Interests
+
+Interests and Short Positions of Shareholders Discloseable under the SFO
+So far as is known to the Directors and Chief Executive of the Company, as at 30 June 2017, other than the interests and short
+positions of the Directors and Chief Executive of the Company as disclosed above, the following persons had interests or short
+positions in the shares or underlying shares of the Company which would fall to be disclosed to the Company under the provisions
+of Divisions 2 and 3 of Part XV of the SFO, or which were recorded in the register required to be kept by the Company under
+Section 336 of the SFO, or as otherwise notified to the Company and the Stock Exchange:
+
+(I)
+
+Interests and short positions of substantial shareholders in the shares and underlying shares of the
+Company
+Long positions in the shares of the Company
+
+Capacity
+
+Number of
+shares held
+
+Approximate
+% of
+shareholding
+
+Hutchison Telecommunications Holdings
+Limited (“HTHL”)
+
+Beneficial owner
+
+512,961,149 (1)
+
+10.64%
+
+Hutchison Telecommunications
+Investment Holdings Limited
+(“HTIHL”)
+
+Beneficial owner
+
+2,619,929,104 (1) )
+)
+(1)
+512,961,149
+)
+)
+
+Names
+
+Interest of a controlled
+corporation
+
+65.01%
+
+CK Hutchison Global Investments
+Limited (“CKHGI”)
+
+Interest of controlled
+corporations
+
+3,132,890,253 (1)
+
+65.01%
+
+CKHH
+
+Interest of controlled
+corporations
+
+3,184,982,840 (1)(2)
+
+66.09%
+
+2017 Interim Report
+
+19
+
+Disclosure of Interests
+
+(II) Interests and short positions of other persons in the shares and underlying shares of the Company
+Long positions in the shares of the Company
+
+Names
+Yuda Limited (“Yuda”)
+Mayspin Management Limited (“Mayspin”)
+
+Li Ka-shing (“Mr Li”)
+
+Capacity
+
+Number of
+shares held
+
+Approximate
+% of
+shareholding
+
+Beneficial owner
+
+350,527,953 (3)
+
+7.27%
+
+Interest of controlled
+corporations
+
+403,979,499 (4)
+
+8.38%
+
+Founder of discretionary
+trusts
+
+153,280 (5) )
+)
+)
+(4)
+403,979,499 )
+)
+
+Interest of controlled
+corporations
+
+8.38%
+
+Notes:
+(1)
+
+HTHL is a direct wholly-owned subsidiary of HTIHL, and its interests in the share capital of the Company are duplicated in the interests of HTIHL. HTIHL in turn is a
+direct subsidiary of CKHGI, which in turn is a direct wholly-owned subsidiary of CKHH. By virtue of the SFO, CKHH and CKHGI were deemed to be interested in the
+2,619,929,104 ordinary shares of the Company held by HTIHL and the 512,961,149 ordinary shares of the Company held by HTHL.
+
+(2)
+
+Certain wholly-owned subsidiaries of Cheung Kong (Holdings) Limited (“Cheung Kong (Holdings)”) hold 52,092,587 ordinary shares of the Company. Cheung Kong
+(Holdings) is a direct wholly-owned subsidiary of CKHH. By virtue of the SFO, CKHH and Cheung Kong (Holdings) were deemed to be interested in the 52,092,587
+ordinary shares of the Company held by certain wholly-owned subsidiaries of Cheung Kong (Holdings).
+
+(3)
+
+Yuda is a direct wholly-owned subsidiary of Mayspin, which in turn is a company wholly-controlled by Mr Li. The interests held by Yuda are duplicated in the interests
+of Mayspin.
+
+(4)
+
+Mayspin is a company wholly-controlled by Mr Li and is interested in 53,451,546 ordinary shares of the Company which are held through certain of its direct
+wholly-owned subsidiaries and 350,527,953 ordinary shares of the Company which are held by Yuda. Such interests held by Mayspin are duplicated in the interests
+of Mr Li.
+
+(5)
+
+Mr Li is the settlor of each of two discretionary trusts (“DT3”and “DT4”). Each of Li Ka-Shing Castle Trustee Corporation Limited (“TDT3”, which is the trustee of DT3)
+and Li Ka-Shing Castle Trustcorp Limited (“TDT4”, which is the trustee of DT4) holds units in The Li Ka-Shing Castle Trust (“UT3”) but is not entitled to any interest or
+share in any particular property comprising the trust assets of the said unit trust. The discretionary beneficiaries of each of DT3 and DT4 are, inter alia, Mr Li Tzar Kuoi,
+Victor, his wife and children, and Mr Li Tzar Kai, Richard. Li Ka-Shing Castle Trustee Company Limited (“TUT3”) as trustee of UT3 holds 153,280 ordinary shares of the
+Company.
+The entire issued share capital of TUT3 and the trustees of DT3 and DT4 are owned by Li Ka-Shing Castle Holdings Limited (“Castle Holdco”). Mr Li and Mr Li Tzar Kuoi,
+Victor are respectively interested in one-third and two-thirds of the entire issued share capital of Castle Holdco, TUT3 is interested in the shares of the Company by
+reason only of its obligation and power to hold interests in those shares in its ordinary course of business as trustee and, when performing its functions as trustee,
+exercises its power to hold interests in the shares of the Company independently without any reference to Castle Holdco or any of Mr Li and Mr Li Tzar Kuoi, Victor,
+as a holder of the shares of Castle Holdco as aforesaid. Each of the trustee of DT3 and DT4 holds units in UT3 but is not entitled to any interest or share in any shares
+of the Company comprising the trust assets of UT3.
+As Mr Li may be regarded as founder of each of DT3 and DT4 for the purpose of the SFO, and by virtue of the above, Mr Li is taken to have a duty of disclosure in
+relation to the 153,280 ordinary shares of the Company held by TUT3 as trustee of UT3 under the SFO as a substantial shareholder of the Company.
+
+Save as disclosed above and so far as is known to the Directors and Chief Executive of the Company, as at 30 June 2017, there was
+no other person (other than the Directors and Chief Executive of the Company) who had an interest or short position in the shares
+or underlying shares of the Company which would fall to be disclosed to the Company under the provisions of Divisions 2 and 3
+of Part XV of the SFO, or which were recorded in the register required to be kept by the Company under Section 336 of the SFO,
+or as otherwise notified to the Company and the Stock Exchange.
+
+20
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Share Option Scheme
+On 6 April 2009, the Company conditionally adopted a share option scheme (the “Share Option Scheme”) for the grant of options
+to acquire ordinary shares in the share capital of the Company. The Share Option Scheme is valid and effective during the period
+commencing on 21 May 2009 and ending on 20 May 2019, being the date falling 10 years from the date on which the Share
+Option Scheme became unconditional.
+Particulars of share options outstanding under the Share Option Scheme at the beginning and at the end of the financial period
+for the six months ended 30 June 2017 and share options granted, exercised, cancelled or lapsed under the Share Option Scheme
+during such period were as follows:
+
+Category
+of participants
+
+Employees
+in aggregate
+
+Total
+
+Date of
+grant of
+share
+options(1)
+
+Number
+of share
+options
+held as at
+1 January
+2017
+
+Granted
+during
+the six
+months
+ended
+30 June
+2017
+
+Exercised
+during
+the six
+months
+ended
+30 June
+2017
+
+Lapsed/
+cancelled
+during
+the six
+months
+ended
+30 June
+2017
+
+Number
+of share
+options
+held as at
+30 June
+2017
+
+1.6.2009
+
+200,000
+
+–
+
+–
+
+–
+
+200,000
+
+200,000
+
+–
+
+–
+
+–
+
+200,000
+
+Exercise
+period
+of share
+options
+
+1.6.2009 to
+31.5.2019
+(both dates
+inclusive)
+
+Price of share of
+the Company
+Exercise prior to the prior to the
+price grant date exercise date
+of share
+of share
+of share
+(3)
+(2)
+options
+options
+options
+HK$
+HK$
+HK$
+1.00
+
+0.96
+
+N/A
+
+Notes:
+(1)
+
+The share options were vested in three tranches, approximately one third each on 1 June 2009, 23 November 2009 and 23 November 2010, respectively, so long as the
+grantee remained an Eligible Participant (as defined in the Share Option Scheme) on each vesting date.
+
+(2)
+
+The exercise price of the share options is subject to adjustment in accordance with the provisions of the Share Option Scheme.
+
+(3)
+
+The stated price was the closing price of the shares of the Company on the Stock Exchange on the trading day immediately prior to the date of grant of the share options.
+
+As at 30 June 2017, the Company had 200,000 share options outstanding under the Share Option Scheme.
+No share option was granted under the Share Option Scheme during the six months ended 30 June 2017.
+
+2017 Interim Report
+
+21
+
+Corporate Governance
+The Company strives to attain and maintain high standards of corporate governance best suited to the needs and interests of
+the Group as it believes that effective corporate governance practices are fundamental to promoting and safeguarding interests
+of shareholders and other stakeholders and enhancing shareholder value. Accordingly, the Company has adopted and applied
+corporate governance principles that emphasise a quality Board, effective risk management and internal controls systems,
+stringent disclosure practices, transparency and accountability. It is, in addition, committed to continuously improving these
+practices and inculcating an ethical corporate culture.
+
+Compliance with the Corporate Governance Code
+The Company has complied throughout the six months ended 30 June 2017 with all the code provisions of the Corporate
+Governance Code contained in Appendix 14 of the Listing Rules, other than those in respect of the nomination committee. The
+Company has considered the merits of establishing a nomination committee but is of the view that it is in the best interests of
+the Company that the Board collectively reviews, determines and approves the structure, size and composition of the Board as
+well as the appointment of any new Director, as and when appropriate. The Board is tasked with ensuring that it has a balanced
+composition of skills and experience appropriate for the requirements of the businesses of the Group and that appropriate
+individuals with relevant expertise and leadership qualities are appointed to the Board to complement the capabilities of existing
+Directors. In addition, the Board as a whole is also responsible for reviewing the succession plan for Directors, including the
+Chairman of the Board and the Chief Executive Officer.
+
+Compliance with the Model Code for Securities Transactions by Directors of the Company
+The Board has adopted its own HTHKH Securities Code regulating Directors’ dealings in securities (Group and otherwise), on terms
+no less exacting than the required standard of the Model Code for Securities Transactions by Directors of Listed Issuers set out in
+Appendix 10 of the Listing Rules. In response to specific enquiries made, all Directors confirmed that they have complied with the
+required standards set out in the HTHKH Securities Code regarding their securities transactions throughout the accounting period
+covered by this interim report.
+
+22
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Changes in Information of Directors
+Pursuant to Rule 13.51B(1) of the Listing Rules, the changes in information of Directors subsequent to the date of the 2016
+Annual Report are set out below:
+Director
+
+Details of changes
+
+Wong Yick Ming, Rosanna
+
+Retired from the following positions on 25 April 2017:
+–
+independent non-executive director of The Hongkong and Shanghai Banking
+Corporation Limited
+non-executive chairman of the Advisory Committee of The Hongkong Bank
+–
+Foundation
+
+2017 Interim Report
+
+23
+
+Report on Review of Condensed Consolidated Interim
+Financial Statements
+To the Board of Directors of
+Hutchison Telecommunications Hong Kong Holdings Limited
+(incorporated in the Cayman Islands with limited liability)
+
+Introduction
+We have reviewed the condensed consolidated interim financial statements set out on pages 25 to 42, which comprises the
+condensed consolidated statement of financial position of Hutchison Telecommunications Hong Kong Holdings Limited (the
+“Company”) and its subsidiaries (together, the “Group”) as at 30 June 2017 and the related condensed consolidated income
+statement, the condensed consolidated statement of comprehensive income, the condensed consolidated statement of changes
+in equity and the condensed consolidated statement of cash flows for the six-month period then ended, and a summary of
+significant accounting policies and other explanatory notes. The Rules Governing the Listing of Securities on The Stock Exchange
+of Hong Kong Limited require the preparation of a report on interim financial statements to be in compliance with the relevant
+provisions thereof and International Accounting Standard 34 “Interim Financial Reporting”. The directors of the Company are
+responsible for the preparation and presentation of these condensed consolidated interim financial statements in accordance
+with International Accounting Standard 34 “Interim Financial Reporting”. Our responsibility is to express a conclusion on these
+condensed consolidated interim financial statements based on our review and to report our conclusion solely to you, as a body, in
+accordance with our agreed terms of engagement and for no other purpose. We do not assume responsibility towards or accept
+liability to any other person for the contents of this report.
+
+Scope of Review
+We conducted our review in accordance with International Standard on Review Engagements 2410, “Review of Interim Financial
+Information Performed by the Independent Auditor of the Entity”. A review of interim financial statements consists of making
+inquiries, primarily of persons responsible for financial and accounting matters, and applying analytical and other review
+procedures. A review is substantially less in scope than an audit conducted in accordance with International Standards on Auditing
+and consequently does not enable us to obtain assurance that we would become aware of all significant matters that might be
+identified in an audit. Accordingly, we do not express an audit opinion.
+
+Conclusion
+Based on our review, nothing has come to our attention that causes us to believe that the condensed consolidated interim
+financial statements are not prepared, in all material respects, in accordance with International Accounting Standard 34 “Interim
+Financial Reporting”.
+
+PricewaterhouseCoopers
+Certified Public Accountants
+Hong Kong, 25 July 2017
+
+24
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Condensed Consolidated Income Statement
+For the six months ended 30 June 2017
+
+Unaudited
+2017
+HK$ millions
+
+(Restated)
+(Note 2)
+Unaudited
+2016
+HK$ millions
+
+5,069
+(1,156)
+(443)
+(176)
+(792)
+(2,025)
+
+5,369
+(1,478)
+(446)
+(201)
+(740)
+(1,969)
+
+477
+8
+(57)
+(3)
+
+535
+9
+(63)
+(2)
+
+425
+(82)
+
+479
+(78)
+
+Profit for the period
+
+343
+
+401
+
+Attributable to:
+Shareholders of the Company
+Non-controlling interests
+
+324
+19
+
+362
+39
+
+343
+
+401
+
+8
+
+6.72
+
+7.51
+
+8
+
+6.72
+
+7.51
+
+Note
+
+Revenue
+Cost of inventories sold
+Staff costs
+Customer acquisition costs
+Depreciation and amortisation
+Other operating expenses
+
+4
+
+Interest income
+Interest and other finance costs
+Share of results of joint ventures
+
+6
+6
+
+Profit before taxation
+Taxation
+
+Earnings per share attributable to shareholders of the
+Company (expressed in HK cents per share):
+– basic
+– diluted
+
+7
+
+Details of interim dividend payable to shareholders of the Company are set out in Note 9. The accompanying notes are an integral
+part of these condensed consolidated interim financial statements.
+
+2017 Interim Report
+
+25
+
+Condensed Consolidated Statement of Comprehensive Income
+For the six months ended 30 June 2017
+
+Unaudited
+2017
+HK$ millions
+
+(Restated)
+(Note 2)
+Unaudited
+2016
+HK$ millions
+
+343
+
+401
+
+1
+
+(1)
+
+Total comprehensive income for the period, net of tax
+
+344
+
+400
+
+Total comprehensive income attributable to:
+Shareholders of the Company
+Non-controlling interests
+
+325
+19
+
+361
+39
+
+344
+
+400
+
+Profit for the period
+Other comprehensive income
+Item that may be reclassified subsequently to
+income statement in subsequent periods:
+– Currency translation differences
+
+The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+26
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Condensed Consolidated Statement of Financial Position
+At 30 June 2017
+
+Unaudited
+30 June
+2017
+HK$ millions
+
+(Restated)
+(Note 2)
+31 December
+2016
+HK$ millions
+
+10,743
+4,503
+2,669
+721
+18
+451
+
+10,930
+4,503
+2,796
+770
+53
+460
+
+19,105
+
+19,512
+
+359
+1,751
+145
+
+357
+1,753
+127
+
+2,255
+
+2,237
+
+3,319
+9
+–
+–
+
+3,542
+8
+543
+41
+
+3,328
+
+4,134
+
+617
+4,874
+529
+
+573
+4,467
+514
+
+Total non-current liabilities
+
+6,020
+
+5,554
+
+Net assets
+
+12,012
+
+12,061
+
+1,205
+10,266
+
+1,205
+10,273
+
+Total shareholders’ funds
+
+11,471
+
+11,478
+
+Non-controlling interests
+
+541
+
+583
+
+12,012
+
+12,061
+
+Note
+
+ASSETS
+Non-current assets
+Property, plant and equipment
+Goodwill
+Telecommunications licences
+Other non-current assets
+Deferred tax assets
+Investments in joint ventures
+
+10
+
+11
+
+Total non-current assets
+Current assets
+Cash and cash equivalents
+Trade receivables and other current assets
+Inventories
+
+12
+13
+
+Total current assets
+Current liabilities
+Trade and other payables
+Current income tax liabilities
+Loan from a fellow subsidiary
+Interest payable to a fellow subsidiary
+
+14
+15
+15
+
+Total current liabilities
+Non-current liabilities
+Deferred tax liabilities
+Borrowings
+Other non-current liabilities
+
+CAPITAL AND RESERVES
+Share capital
+Reserves
+
+Total equity
+
+16
+17
+
+18
+
+The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+2017 Interim Report
+
+27
+
+Condensed Consolidated Statement of Changes in Equity
+For the six months ended 30 June 2017
+
+Unaudited
+Attributable to shareholders of the Company
+Cumulative
+NonShare
+Share Accumulated translation
+Pension
+Other
+controlling
+capital
+premium
+losses adjustments
+reserve
+reserves
+Total
+interests
+HK$ millions HK$ millions HK$ millions HK$ millions HK$ millions HK$ millions HK$ millions HK$ millions
+At 1 January 2017, previously reported
+Effect of merger accounting (Note 2)
+
+1,205
+–
+
+11,185
+–
+
+(849)
+(37)
+
+(13)
+–
+
+28
+–
+
+17
+(58)
+
+11,573
+(95)
+
+583
+–
+
+12,156
+(95)
+
+At 1 January 2017, restated
+
+1,205
+
+11,185
+
+(886)
+
+(13)
+
+28
+
+(41)
+
+11,478
+
+583
+
+12,061
+
+Profit for the period
+Other comprehensive income
+Currency translation differences
+
+–
+
+–
+
+324
+
+–
+
+–
+
+–
+
+324
+
+19
+
+343
+
+–
+
+–
+
+–
+
+1
+
+–
+
+–
+
+1
+
+–
+
+1
+
+Total comprehensive income, net of tax
+
+–
+
+–
+
+324
+
+1
+
+–
+
+–
+
+325
+
+19
+
+344
+
+Dividend relating to 2016 paid in 2017 (Note 9)
+
+–
+
+–
+
+(332)
+
+–
+
+–
+
+–
+
+(332)
+
+–
+
+(332)
+
+Dividend paid to non-controlling interests
+
+–
+
+–
+
+–
+
+–
+
+–
+
+–
+
+–
+
+(61)
+
+(61)
+
+At 30 June 2017
+
+1,205
+
+11,185
+
+(894)
+
+(12)
+
+28
+
+(41)
+
+11,471
+
+541
+
+12,012
+
+At 1 January 2016, previously reported
+Effect of merger accounting (Note 2)
+
+1,205
+–
+
+11,185
+–
+
+(924)
+(18)
+
+(7)
+–
+
+46
+–
+
+17
+(58)
+
+11,522
+(76)
+
+569
+–
+
+12,091
+(76)
+
+At 1 January 2016, restated
+
+1,205
+
+11,185
+
+(942)
+
+(7)
+
+46
+
+(41)
+
+11,446
+
+569
+
+12,015
+
+Profit for the period, restated
+Other comprehensive income
+Currency translation differences
+
+–
+
+–
+
+362
+
+–
+
+–
+
+–
+
+362
+
+39
+
+401
+
+–
+
+–
+
+–
+
+(1)
+
+–
+
+–
+
+(1)
+
+–
+
+(1)
+
+Total comprehensive income, net of tax
+
+–
+
+–
+
+362
+
+(1)
+
+–
+
+–
+
+361
+
+39
+
+400
+
+Dividend relating to 2015 paid in 2016 (Note 9)
+
+–
+
+–
+
+(433)
+
+–
+
+–
+
+–
+
+(433)
+
+–
+
+(433)
+
+Dividend paid to non-controlling interests
+
+–
+
+–
+
+–
+
+–
+
+–
+
+–
+
+–
+
+(58)
+
+(58)
+
+1,205
+
+11,185
+
+(1,013)
+
+(8)
+
+46
+
+(41)
+
+11,374
+
+550
+
+11,924
+
+At 30 June 2016, restated
+
+The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+28
+
+Total
+equity
+HK$ millions
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Condensed Consolidated Statement of Cash Flows
+For the six months ended 30 June 2017
+
+Unaudited
+2017
+HK$ millions
+
+(Restated)
+(Note 2)
+Unaudited
+2016
+HK$ millions
+
+1,098
+(87)
+(2)
+
+1,396
+(37)
+(1)
+
+1,009
+
+1,358
+
+(424)
+(1)
+
+(432)
+(22)
+
+–
+(46)
+
+5
+(71)
+
+Net cash used in investing activities
+
+(471)
+
+(520)
+
+Cash flows from financing activities
+Proceeds from borrowings
+Repayment of borrowings
+Repayment of loan from a fellow subsidiary
+Dividend paid to the shareholders of the Company
+Dividend paid to non-controlling interests
+
+800
+(400)
+(543)
+(332)
+(61)
+
+–
+–
+–
+(433)
+(58)
+
+Net cash used in financing activities
+
+(536)
+
+(491)
+
+Increase in cash and cash equivalents
+Cash and cash equivalents at 1 January
+
+2
+357
+
+347
+1,101
+
+Cash and cash equivalents at 30 June
+
+359
+
+1,448
+
+Note
+
+Cash flows from operating activities
+Cash generated from operations
+Interest and other finance costs paid
+Tax paid
+
+19
+
+Net cash generated from operating activities
+Cash flows from investing activities
+Purchases of property, plant and equipment
+Additions to other non-current assets
+Proceeds from disposals of property,
+plant and equipment
+Loan to a joint venture
+
+9
+
+The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+2017 Interim Report
+
+29
+
+Notes to the Condensed Consolidated Interim Financial
+Statements
+1
+
+General Information
+Hutchison Telecommunications Hong Kong Holdings Limited (the “Company”) was incorporated in the Cayman Islands on
+3 August 2007 as a company with limited liability. The address of its registered office is P.O. Box 31119, Grand Pavilion,
+Hibiscus Way, 802 West Bay Road, Grand Cayman, KY1-1205 Cayman Islands.
+The Company and its subsidiaries (together the “Group”) are principally engaged in mobile telecommunications business in
+Hong Kong and Macau and fixed-line telecommunications business in Hong Kong.
+The shares of the Company are listed on the Main Board of The Stock Exchange of Hong Kong Limited and whose American
+depositary shares, each representing ownership of 15 shares, are eligible for trading in the United States of America only
+in the over-the-counter market.
+These unaudited condensed consolidated interim financial statements (the “interim financial statements”) are presented in
+Hong Kong dollars (“HK$”), unless otherwise stated. These interim financial statements were approved for issuance by the
+Board of Directors on 25 July 2017.
+
+2
+
+Basis of Preparation
+These interim financial statements for the six months ended 30 June 2017 have been prepared in accordance with
+International Accounting Standard 34 “Interim financial reporting”. These interim financial statements should be read in
+conjunction with the annual financial statements for the year ended 31 December 2016, which have been prepared in
+accordance with International Financial Reporting Standards (“IFRS”).
+As at 30 June 2017, the current liabilities of the Group exceeded its current assets by approximately HK$1,073 million.
+Included in the current liabilities were non-refundable customer prepayments of HK$678 million which will gradually
+reduce over the contract terms of relevant subscriptions through delivery of services. Excluding the non-refundable
+customer prepayments, the net current liabilities of the Group would have been approximately HK$395 million.
+Management of the Group anticipates the net cash inflows from its operations, together with the ability to draw down
+from available banking facilities, would be sufficient to enable the Group to meet its liabilities as and when they fall due.
+Accordingly, these interim financial statements have been prepared on a going concern basis.
+On 6 March 2017, a subsidiary of the Company, entered into a sale and purchase agreement with Cosmos Technology
+Limited, a subsidiary of CK Hutchison Holdings Limited (“CKHH”), to acquire the entire issued share capital of Keen Clever
+Holdings Limited (“Keen Clever”), which owns 50% interest in HGC GlobalCentre Limited (“HGCGC”) (engages in the provision
+of data centre services in Hong Kong), at a consideration of HK$0.9 million (the “Acquisition”). The Acquisition was
+completed on the same day. Together with the 50% interest in HGCGC originally held by the Group (which was accounted
+for as an investment in a joint venture prior to the Acquisition), the Group owns 100% interest in HGCGC and it then becomes
+a wholly owned subsidiary of the Group.
+
+30
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+2
+
+Basis of Preparation (Continued)
+Given the Company and Cosmos Technology Limited were under the common control of CKHH both before and after the
+Acquisition, the Acquisition is a business combination under common control and accounted for using the principle of
+merger accounting.
+Accordingly, the assets and liabilities of Keen Clever and HGCGC acquired by the Group are stated at predecessor value, and
+were included in the Group’s interim financial statements from the beginning of the earliest period presented as if Keen
+Clever and HGCGC had always been part of the Group. No amount is recognised as consideration for goodwill or excess of
+Group’s interest in the net fair value of Keen Clever and HGCGC’s identified assets, liabilities and contingent liabilities over
+cost at the time of common control combination, to the extent of the continuation of CKHH’s interest.
+The condensed consolidated income statement includes the result of Keen Clever and HGCGC from the earliest date
+presented or since the date when Keen Clever and HGCGC first came under the control of CKHH, where there is a shorter
+period, regardless of the date of the common control combination. Comparative figures in the Group’s interim financial
+statements for the six months ended 30 June 2017 have been restated to include the results for the six months from
+1 January 2016 to 30 June 2016 and the assets and liabilities as at 31 December 2016 of Keen Clever and HGCGC.
+The following is a reconciliation of the effect arising from the business combination under common control on the
+condensed consolidated income statement and condensed consolidated statement of financial position in connection with
+the Acquisition.
+
+Profit for the six months ended 30 June 2016
+Net assets as at 31 December 2016
+
+The Group
+As previously
+reported(a)
+HK$ millions
+
+Effect arising
+from the
+Acquisition
+HK$ millions
+
+The Group
+As restated
+HK$ millions
+
+415
+
+(14)
+
+401
+
+12,156
+
+(95)
+
+12,061
+
+(a) Prior to the Acquisition, the results and assets and liabilities of HGCGC are accounted for in the interim financial statements using the equity method of accounting.
+
+A uniform set of accounting policies is adopted by Keen Clever and HGCGC. All intra-group transactions, balances and
+unrealised gains on transactions within the Group are eliminated on consolidation.
+
+3
+
+Significant Accounting Policies
+These interim financial statements have been prepared under the historical cost convention. The accounting policies
+applied and methods of computation used in the preparation of these interim financial statements are consistent with
+those used in 2016 annual financial statements, except for the adoption of new or revised standards, amendments
+and interpretations which are relevant to the operations of the Group and mandatory for annual periods beginning
+1 January 2017. The effect of the adoption of these new or revised standards, amendments and interpretations was not
+material to the results of operations or financial position of the Group.
+
+2017 Interim Report
+
+31
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+4
+
+Revenue
+Revenue comprises revenues from provision of mobile telecommunications services, sales of telecommunications
+hardware and provision of fixed-line telecommunications services. An analysis of revenue is as follows:
+Six months ended 30 June
+2017
+HK$ millions
+
+(Restated)
+2016
+HK$ millions
+
+1,930
+1,966
+1,173
+
+1,957
+1,914
+1,498
+
+5,069
+
+5,369
+
+Mobile telecommunications services
+Fixed-line telecommunications services
+Telecommunications hardware
+
+5
+
+Segment Information
+The Group is organised into two operating segments: mobile business and fixed-line business. “Others” segment represents
+corporate support functions. Management of the Group measures the performance of its segments based on EBITDA/
+(LBITDA)(a) and EBIT/(LBIT)(b) . Revenue from external customers is after elimination of inter-segment revenue. The segment
+information on revenue, EBITDA/(LBITDA) and EBIT/(LBIT) agreed to the aggregate information in these interim financial
+statements. As such, no reconciliation between the segment information and the aggregate information in these interim
+financial statements are presented.
+Six months ended 30 June 2017
+Mobile
+Fixed-line
+Others Elimination
+HK$ millions HK$ millions HK$ millions HK$ millions
+
+32
+
+Total
+HK$ millions
+
+Revenue – service
+Revenue – hardware
+
+1,944
+1,173
+
+2,167
+–
+
+–
+–
+
+(215)
+–
+
+3,896
+1,173
+
+Operating costs
+
+3,117
+(2,470)
+
+2,167
+(1,485)
+
+–
+(60)
+
+(215)
+215
+
+5,069
+(3,800)
+
+EBITDA/(LBITDA)
+Depreciation and amortisation
+
+647
+(407)
+
+682
+(385)
+
+(60)
+–
+
+–
+–
+
+1,269
+(792)
+
+EBIT/(LBIT)
+
+240
+
+297
+
+(60)
+
+–
+
+477
+
+Other information:
+Additions to property,
+plant and equipment
+
+197
+
+230
+
+–
+
+–
+
+427
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+5
+
+Segment Information (Continued)
+Six months ended 30 June 2016 (Restated)
+Mobile
+HK$ millions
+
+Fixed-line
+HK$ millions
+
+Others
+HK$ millions
+
+Elimination
+HK$ millions
+
+Total
+HK$ millions
+
+Revenue – service
+Revenue – hardware
+
+1,973
+1,499
+
+2,112
+–
+
+–
+–
+
+(214)
+(1)
+
+3,871
+1,498
+
+Operating costs
+
+3,472
+(2,807)
+
+2,112
+(1,443)
+
+–
+(59)
+
+(215)
+215
+
+5,369
+(4,094)
+
+EBITDA/(LBITDA)
+Depreciation and amortisation
+
+665
+(351)
+
+669
+(389)
+
+(59)
+–
+
+–
+–
+
+1,275
+(740)
+
+EBIT/(LBIT)
+
+314
+
+280
+
+(59)
+
+–
+
+535
+
+Other information:
+Additions to property,
+plant and equipment
+
+198
+
+236
+
+–
+
+–
+
+434
+
+1
+
+–
+
+–
+
+–
+
+1
+
+Additions to
+telecommunications licences
+(a)
+(b)
+
+6
+
+EBITDA/(LBITDA) is defined as earnings/(losses) before interest income, interest and other finance costs, taxation, depreciation and amortisation and share of results
+of joint ventures.
+EBIT/(LBIT) is defined as earnings/(losses) before interest income, interest and other finance costs, taxation and share of results of joint ventures.
+
+Interest and Other Finance Costs, Net
+Six months ended 30 June
+2017
+HK$ millions
+
+(Restated)
+2016
+HK$ millions
+
+Interest income:
+Interest income from a joint venture
+
+8
+
+9
+
+Interest and other finance costs:
+Bank loans
+Loan from a fellow subsidiary
+Notional non-cash interest accretion (a)
+Guarantee and other finance fees
+
+(35)
+(5)
+(7)
+(13)
+
+(29)
+(5)
+(19)
+(13)
+
+Less: Amounts capitalised on qualifying assets
+
+(60)
+3
+
+(66)
+3
+
+(57)
+
+(63)
+
+(49)
+
+(54)
+
+Interest and other finance costs, net
+(a)
+
+Notional non-cash interest accretion represents the notional adjustments to accrete the carrying amount of certain obligations recognised in the condensed
+consolidated statement of financial position such as licence fees liabilities and asset retirement obligations to the present value of the estimated future cash flows
+expected to be required for their settlement in the future.
+
+2017 Interim Report
+
+33
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+7
+
+Taxation
+Six months ended 30 June
+Current
+taxation
+HK$ millions
+
+2017
+Deferred
+taxation
+HK$ millions
+
+1
+2
+3
+
+Hong Kong
+Outside Hong Kong
+
+Total
+HK$ millions
+
+Current
+taxation
+HK$ millions
+
+2016
+Deferred
+taxation
+HK$ millions
+
+Total
+HK$ millions
+
+77
+2
+
+78
+4
+
+1
+3
+
+73
+1
+
+74
+4
+
+79
+
+82
+
+4
+
+74
+
+78
+
+Hong Kong profits tax has been provided at the rate of 16.5% (30 June 2016: 16.5%) on the estimated assessable profits
+less available tax losses. Taxation outside Hong Kong has been provided at the applicable current rates of taxation ruling in
+the relevant countries on the estimated assessable profits less available tax losses.
+Deferred taxation has been provided at the relevant rates on timing differences.
+
+8
+
+Earnings per Share
+The calculation of basic earnings per share is based on profit attributable to shareholders of the Company of approximately
+HK$324 million (30 June 2016 (Restated): HK$362 million) and on the weighted average number of 4,818,896,208
+(30 June 2016: Same) ordinary shares in issue during the period.
+The diluted earnings per share for the six months ended 30 June 2017 is calculated by adjusting the weighted average
+number of 4,818,896,208 (30 June 2016: Same) ordinary shares in issue with the weighted average number of 117,695
+(30 June 2016: 123,372) ordinary shares deemed to be issued assuming the exercise of the share options.
+
+9
+
+Dividend
+Six months ended 30 June
+2017
+
+2016
+
+Interim dividend (HK$ millions)
+
+188
+
+193
+
+Interim dividend per share (HK cents)
+
+3.90
+
+4.00
+
+In addition, final dividend in respect of year 2016 of 6.90 HK cents per share (30 June 2016: 9.00 HK cents per share)
+totalling HK$332 million (30 June 2016: HK$433 million) was approved and paid during the six months ended 30 June 2017.
+
+34
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+10 Property, Plant and Equipment
+During the period, the Group acquired property, plant and equipment with a cost of HK$427 million (30 June 2016
+(Restated): HK$434 million). Property, plant and equipment with a net book value of HK$0.4 million (30 June 2016:
+HK$5 million) was disposed of during the period, resulting in an insignificant loss (30 June 2016: insignificant loss).
+
+11 Other Non-Current Assets
+
+Prepayments
+Non-current deposits
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+675
+46
+
+721
+49
+
+721
+
+770
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+262
+97
+
+334
+23
+
+359
+
+357
+
+12 Cash and Cash Equivalents
+
+Cash at banks and in hand
+Short-term bank deposits
+
+The carrying values of cash and cash equivalents approximate their fair values.
+
+2017 Interim Report
+
+35
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+13 Trade Receivables and Other Current Assets
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+Trade receivables
+Less: Provision for doubtful debts
+
+1,510
+(119)
+
+1,471
+(106)
+
+Trade receivables, net of provision (a)
+Other receivables
+Prepayments and deposits
+
+1,391
+157
+203
+
+1,365
+213
+175
+
+1,751
+
+1,753
+
+The carrying values of trade receivables and other receivables approximate their fair values. The Group has established
+credit policies for customers. The average credit period granted for trade receivables ranges from 14 to 45 days, or a longer
+period for corporate or carrier customers based on individual commercial terms. There is no concentration of credit risk with
+respect to trade receivables as the Group has a large number of customers.
+
+(a) Trade receivables, net of provision
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+773
+217
+152
+249
+
+861
+196
+99
+209
+
+1,391
+
+1,365
+
+The ageing analysis of trade receivables, net of provision for
+doubtful debts is as follows:
+0 – 30 days
+31 – 60 days
+61 – 90 days
+Over 90 days
+
+36
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+14 Trade and Other Payables
+
+Trade payables (a)
+Other payables and accruals
+Deferred revenue
+Current portion of licence fees liabilities
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+537
+2,047
+678
+57
+
+731
+2,047
+708
+56
+
+3,319
+
+3,542
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+202
+95
+45
+195
+
+411
+99
+35
+186
+
+537
+
+731
+
+The carrying values of trade and other payables approximate their fair values.
+
+(a) Trade payables
+
+The ageing analysis of trade payables is as follows:
+0 – 30 days
+31 – 60 days
+61 – 90 days
+Over 90 days
+
+2017 Interim Report
+
+37
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+15 Loan from and Interest Payable to a Fellow Subsidiary
+As at 31 December 2016, the loan from a fellow subsidiary and interest payable were unsecured, bore interest at 1-month
+Hong Kong Interbank Offered Rate plus 1.38% per annum and repayable on demand. On 23 June 2017, the loan and
+interest payable were fully repaid.
+The balances were denominated in HK$.
+
+16 Borrowings
+
+Unsecured bank loans
+Repayable between 2 and 5 years
+
+30 June
+2017
+HK$ millions
+
+31 December
+2016
+HK$ millions
+
+4,874
+
+4,467
+
+The carrying values of the Group’s total borrowings as at 30 June 2017 and 31 December 2016 approximate their fair
+values which are based on cash flows discounted using the effective interest rates of the Group’s total borrowings of 1.7%
+per annum (31 December 2016: 2.1%) and are within level 2 of the fair value hierarchy.
+
+17 Other Non-Current Liabilities
+
+Non-current licence fees liabilities
+Pension obligations
+Accrued expenses
+
+38
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+187
+120
+222
+
+183
+112
+219
+
+529
+
+514
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+18 Share Capital
+(a) Authorised share capital of the Company
+The authorised share capital of the Company comprises 10 billion shares of HK$0.25 each (31 December 2016: Same).
+
+(b) Issued share capital of the Company
+Ordinary share of
+HK$0.25 each
+Number of
+Issued and
+shares
+fully paid
+HK$ millions
+At 1 January 2016, 31 December 2016,
+1 January 2017 and 30 June 2017
+
+(c)
+
+4,818,896,208
+
+1,205
+
+Share options of the Company
+The Company’s share option scheme was approved on 21 May 2009. The Board of Directors may, under the share
+option scheme, grant share options to directors, non-executive directors or employees of the Group.
+The movements in the number of share options outstanding and their related weighted average exercise price are as follows:
+
+At 1 January 2016, 31 December 2016,
+1 January 2017 and 30 June 2017
+
+Weighted
+average
+exercise price
+per share
+HK$
+
+Number of
+share options
+granted
+
+1.00
+
+200,000
+
+The exercise price of the share options granted is equal to the market price of the shares on the date of grant. The
+share options are exercisable during a period, subject to the vesting schedule, commencing on the date on which the
+share options are deemed to have been granted and ending on the date falling ten years from the date of grant of
+the share options (subject to early termination thereof). No share option was exercised during the six months ended
+30 June 2017 (year ended 31 December 2016: Nil).
+As at 30 June 2017, 200,000 (31 December 2016: Same) share options were exercisable.
+
+2017 Interim Report
+
+39
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+19 Cash Generated from Operations
+Six months ended 30 June
+2017
+HK$ millions
+
+(Restated)
+2016
+HK$ millions
+
+425
+
+479
+
+Cash flows from operating activities
+Profit before taxation
+Adjustments for:
+– Interest income (Note 6)
+– Interest and other finance costs (Note 6)
+– Depreciation and amortisation
+– Share of results of joint ventures
+Changes in working capital:
+– Decrease in trade receivables and other current assets
+– (Increase)/decrease in inventories
+– Decrease in trade and other payables
+– Retirement benefits obligations
+
+(8)
+57
+792
+3
+
+(9)
+63
+740
+2
+
+1
+(18)
+(162)
+8
+
+115
+475
+(476)
+7
+
+Cash generated from operations
+
+1,098
+
+1,396
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+470
+10
+6
+
+620
+11
+5
+
+486
+
+636
+
+20 Contingent Liabilities
+The Group had contingent liabilities in respect of the following:
+
+Performance guarantees
+Financial guarantees
+Others
+
+40
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+21 Commitments
+Outstanding commitments of the Group not provided for in these interim financial statements are as follows:
+
+(a) Capital commitments
+The Group had capital commitments contracted but not provided for as follows:
+
+Property, plant and equipment
+
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+741
+
+799
+
+(b) Operating lease commitments
+The Group had future aggregate minimum lease payments under non-cancellable operating leases as follows:
+Buildings
+30 June
+2017
+HK$ millions
+
+(Restated)
+31 December
+2016
+HK$ millions
+
+30 June
+2017
+HK$ millions
+
+31 December
+2016
+HK$ millions
+
+253
+
+208
+
+14
+
+27
+
+210
+28
+
+90
+26
+
+10
+3
+
+14
+4
+
+491
+
+324
+
+27
+
+45
+
+Not later than one year
+Later than one year but not
+later than five years
+Later than five years
+
+(c)
+
+Other assets
+
+Telecommunications licence fees
+A subsidiary of the Group has acquired various blocks of spectrum bands for the provision of telecommunications
+services in Hong Kong, certain of which over various assignment periods up to year 2021 and variable licence fees
+are payable on those spectrum bands based on 5% of the network revenue or the Appropriate Fee (as defined in the
+Unified Carrier Licence) in respect of the relevant year whichever is greater. The net present value of the Appropriate
+Fee has already been recorded as licence fee liabilities.
+
+2017 Interim Report
+
+41
+
+Notes to the Condensed Consolidated Interim Financial Statements
+
+22 Related Parties Transactions
+Transactions between the Company and its subsidiaries have been eliminated on consolidation. Save as disclosed
+elsewhere in the interim financial statements, transactions between the Group and other related parties during the period
+are not significant to the Group.
+No transactions have been entered with the directors of the Company (being the key management personnel) during the
+period other than the emoluments paid to them (being the key management personnel remuneration).
+
+42
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Glossary
+In this interim report, unless the context otherwise requires, the following expressions have the following meanings:
+Terms
+
+Definitions
+
+“4G LTE”
+
+4G Long Term Evolution
+
+“Board”
+
+the board of Directors
+
+“CACs”
+
+customer acquisition costs
+
+“CKHH”
+
+CK Hutchison Holdings Limited, a company incorporated in the Cayman Islands with
+limited liability, whose shares are listed on the Main Board of the Stock Exchange
+(Stock Code: 1)
+
+“CKHH Group”
+
+CKHH and its subsidiaries
+
+“Company” or “HTHKH”
+
+Hutchison Telecommunications Hong Kong Holdings Limited, a company incorporated
+in the Cayman Islands with limited liability, whose shares are listed on the Main Board
+of the Stock Exchange (Stock Code: 215) and whose American depositary shares are
+eligible for trading in the United States of America only in the over-the-counter market
+
+“Director(s)”
+
+director(s) of the Company
+
+“EBIT”
+
+earnings before interest income, interest and other finance costs, taxation and share of
+results of joint ventures
+
+“EBITDA”
+
+earnings before interest income, interest and other finance costs, taxation,
+depreciation and amortisation, and share of results of joint ventures
+
+“Group”
+
+the Company and its subsidiaries
+
+“HGCGC”
+
+HGC GlobalCentre Limited, a company incorporated in Hong Kong with limited liability
+
+“HK$”
+
+Hong Kong dollars, the lawful currency of Hong Kong
+
+“Hong Kong”
+
+the Hong Kong Special Administrative Region of the People’s Republic of China
+
+“HTHKH Securities Code”
+
+Model Code for Securities Transactions by Directors
+
+“ICT”
+
+Information and Communications Technology
+
+“interim financial statements”
+
+unaudited condensed consolidated interim financial statements
+
+2017 Interim Report
+
+43
+
+Glossary
+
+44
+
+Terms
+
+Definitions
+
+“IoT”
+
+Internet-of-Things
+
+“Listing Rules”
+
+the Rules Governing the Listing of Securities on the Stock Exchange
+
+“local postpaid gross ARPU”
+
+monthly average spending per postpaid user including a customer’s contribution to
+mobile devices in a bundled plan, excluding roaming revenue
+
+“local postpaid net ARPU”
+
+monthly average spending per postpaid user excluding roaming revenue and revenue
+related to handset under the non-subsidised handset business model
+
+“local postpaid net AMPU”
+
+average net margin per postpaid user; local postpaid net AMPU equals local postpaid
+net ARPU less direct variable costs (including interconnection charges)
+
+“net customer service margin”
+
+net customer service revenue less direct variable costs (including interconnection
+charges and roaming costs)
+
+“OTT”
+
+Over-The-Top
+
+“service EBITDA”
+
+EBITDA excluding standalone handset sales margin
+
+“service EBITDA margin
+percentage” or “service EBIT
+margin percentage”
+
+EBITDA or EBIT excluding standalone handset sales margin as a percentage of net
+customer service revenue
+
+“SFO”
+
+the Securities and Futures Ordinance (Chapter 571 of the Laws of Hong Kong) as
+amended, supplemented or otherwise modified from time to time
+
+“Stock Exchange”
+
+The Stock Exchange of Hong Kong Limited
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+
+Information for Shareholders
+Listing
+
+Cayman Islands Share Registrar and Transfer Office
+
+The ordinary shares of the Company are listed on the Main
+
+SMP Partners (Cayman) Limited
+
+Board of The Stock Exchange of Hong Kong Limited, and its
+
+Royal Bank House – 3rd Floor,
+
+American depositary shares (ADSs) are eligible for trading in
+
+24 Shedden Road, P.O. Box 1586,
+
+the United States of America only in the over-the-counter
+
+Grand Cayman, KY1-1110, Cayman Islands
+
+market.
+
+Telephone:
+
++1 345 949 9107
+
+Facsimile:
+
++1 345 949 5777
+
+Stock Code
+Hong Kong Share Registrar and Transfer Office
+
+215
+
+Computershare Hong Kong Investor Services Limited
+
+Financial Calendar
+
+Rooms 1712-1716, 17th Floor, Hopewell Centre,
+
+Record Date for 2017 Interim Dividend: 23 August 2017
+
+183 Queen’s Road East, Wanchai, Hong Kong
+
+Payment of 2017 Interim Dividend:
+
+Telephone:
+
++852 2862 8628
+
+Facsimile:
+
++852 2865 0990
+
+1 September 2017
+
+Registered Office
+P.O. Box 31119 Grand Pavilion, Hibiscus Way,
+
+ADS Depositary
+
+802 West Bay Road, Grand Cayman, KY1-1205 Cayman Islands
+
+Citibank, N.A.
+Citibank Shareholder Services
+
+Head Office and Principal Place of Business
+
+P.O. Box 43077, Providence, Rhode Island 02940-3077,
+
+22nd Floor, Hutchison House, 10 Harcourt Road, Hong Kong
+
+the United States of America
+
+Telephone:
+
++852 2128 1188
+
+Telephone (toll free within USA): +1 877 248 4237
+
+Facsimile:
+
++852 2128 1778
+
+Telephone (outside USA):
+
++1 781 575 4555
+
+Facsimile:
+
++1 201 324 3284
+
+Email:
+
+citibank@shareholders-online.com
+
+Principal Executive Office
+19th Floor, Hutchison Telecom Tower, 99 Cheung Fai Road,
+Tsing Yi, Hong Kong
+
+Investor Information
+
+Telephone:
+
++852 2128 2828
+
+Corporate press releases, financial reports and other investor
+
+Facsimile:
+
++852 2128 3388
+
+information are available online at the website of the Company.
+
+Investor Relations Contact
+Please direct enquiries to:
+Telephone:
+
++852 2128 6828
+
+Facsimile:
+
++852 3909 0966
+
+Email:
+
+ir@hthkh.com
+
+Website Address
+www.hthkh.com
+
+Hutchison Telecommunications Hong Kong Holdings Limited
+19/F, Hutchison Telecom Tower, 99 Cheung Fai Road, Tsing Yi, Hong Kong
+Telephone: +852 2128 2828 Facsimile: +852 2128 3388
+
+

@@ -1,0 +1,550 @@
+{
+  "generated_at": "2026-06-18T10:26:57",
+  "sources_by_subject": {
+    "中国移动": [
+      {
+        "label": "中国移动2026年第一季度报告",
+        "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国移动2025年度业绩公告",
+        "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "中国电信": [
+      {
+        "label": "中国电信2026年第一季度报告",
+        "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国电信2025年度业绩公告",
+        "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "中国联通": [
+      {
+        "label": "中国联通2026年一季度FAQ",
+        "url": "https://www.chinaunicom.com.hk/en/ir/faq.php",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国联通2025年度业绩公告",
+        "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "中国铁塔": [
+      {
+        "label": "中国铁塔2026年第一季度未经审核KPI",
+        "url": "https://ir.china-tower.com/en/global/home.php",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国铁塔2025年度业绩演示",
+        "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "HKT / csl / 1O1O": [
+      {
+        "label": "HKT 2025年度业绩演示",
+        "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "HKT 2025年度业绩公告",
+        "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "3HK / Hutchison": [
+      {
+        "label": "和记电讯香港2025年度业绩演示",
+        "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "和记电讯香港2025年度业绩新闻稿",
+        "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "SmarTone": [
+      {
+        "label": "SmarTone 2025/26中期业绩",
+        "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf",
+        "type": "interim_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "HKBN": [
+      {
+        "label": "HKBN 2026财年中期业绩",
+        "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
+        "type": "interim_results"
+      },
+      {
+        "label": "HKBN 2025财年年度业绩",
+        "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "HGC": [
+      {
+        "label": "HGC company profile",
+        "url": "https://www.hgc.com.hk/about-hgc/about-us/company-profile",
+        "type": "official_company_profile",
+        "evidence": "HGC官网确认 HGC Global Communications Limited 为综合 ICT / 固网运营商，并说明其于 2017 年成为 I Squared Capital 持有的组合公司。"
+      },
+      {
+        "label": "HGC homepage",
+        "url": "https://www.hgc.com.hk/",
+        "type": "official_company_site",
+        "evidence": "HGC官网主页列示业务入口、新闻、ESG 和公司信息入口，但未提供上市公司式季度/半年度财务报表入口。"
+      }
+    ],
+    "i-CABLE": [
+      {
+        "label": "i-CABLE 2025年度业绩公告",
+        "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_snapshot"
+      }
+    ],
+    "AWS": [
+      {
+        "label": "Amazon quarterly results and filings",
+        "url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Amazon Q1 2025 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q1/AMZN-Q1-2025-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 29,267 and operating income 11,547 million USD for the three months ended March 31, 2025."
+      },
+      {
+        "label": "Amazon Q2 2025 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q2/AMZN-Q2-2025-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 30,873 and operating income 10,160 million USD for the three months ended June 30, 2025."
+      },
+      {
+        "label": "Amazon Q3 2025 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q3/AMZN-Q3-2025-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 33,006 and operating income 11,434 million USD for the three months ended September 30, 2025."
+      },
+      {
+        "label": "Amazon 2025 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2025 Form 10-K Segment Information table reports AWS full-year net sales 128,725 and operating income 45,606 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 35,579 and operating income 12,465 million USD."
+      }
+    ],
+    "Microsoft Azure / Intelligent Cloud": [
+      {
+        "label": "Microsoft quarterly earnings",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Microsoft FY25 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2025: Intelligent Cloud revenue 26,751 and operating income 11,095 million USD; Azure and other cloud services revenue growth 33%."
+      },
+      {
+        "label": "Microsoft FY25 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended June 30, 2025: Intelligent Cloud revenue 29,878 and operating income 12,140 million USD; Azure and other cloud services revenue growth 39%."
+      },
+      {
+        "label": "Microsoft FY26 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q1/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q1/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2025: Intelligent Cloud revenue 30,897 and operating income 13,391 million USD; Azure and other cloud services revenue growth 40%."
+      },
+      {
+        "label": "Microsoft FY26 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q2/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q2/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2025: Intelligent Cloud revenue 32,907 and operating income 13,873 million USD; Azure and other cloud services revenue growth 39%."
+      },
+      {
+        "label": "Microsoft FY26 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2026: Intelligent Cloud revenue 34,681 and operating income 13,753 million USD; Azure and other cloud services revenue growth 40%."
+      }
+    ],
+    "Google Cloud": [
+      {
+        "label": "Alphabet quarterly earnings",
+        "url": "https://abc.xyz/investor/",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Alphabet Q1 2025 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000043/goog-20250331.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2025: Google Cloud revenue 12,260 million USD, operating income 2,177 million USD, and revenue growth 28%."
+      },
+      {
+        "label": "Alphabet Q2 2025 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000062/goog-20250630.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2025: Google Cloud revenue 13,624 million USD, operating income 2,826 million USD, and revenue growth 32%."
+      },
+      {
+        "label": "Alphabet Q3 2025 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2025: Google Cloud revenue 15,157 million USD, operating income 3,594 million USD, and revenue growth 34%."
+      },
+      {
+        "label": "Alphabet Q4 2025 earnings release exhibit",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm",
+        "type": "official_sec_8k_earnings_exhibit",
+        "evidence": "Quarter ended December 31, 2025: Google Cloud revenue 17,664 million USD, operating income 5,313 million USD, and revenue growth 48%."
+      },
+      {
+        "label": "Alphabet 2025 Form 10-K - Google Cloud segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "type": "official_annual_report_segment_table",
+        "evidence": "SEC 2025 Form 10-K segment table reports Google Cloud 2025 revenue of 58,705 million USD and operating income of 13,910 million USD."
+      }
+    ],
+    "Alibaba Cloud": [
+      {
+        "label": "Alibaba quarterly results",
+        "url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Alibaba June Quarter 2025 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/d09dd487-1a87-4e17-aa5d-9eb4da7eb56b/Alibaba%20Group%20Announces%20June%20Quarter%202025%20Results.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1897714462505304064",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba June quarter 2025 results report Cloud Intelligence Group revenue of RMB33,398 million, up 26% year-over-year, and adjusted EBITA of RMB2,954 million, up 26% year-over-year."
+      },
+      {
+        "label": "Alibaba September Quarter 2025 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/96ebbe16-9309-479f-b628-48b0ccc31b9c/Alibaba%20Group%20Announces%20September%20Quarter%202025%20Results%20and%20Interim%20Results%20for%20the%20Six%20Months%20Ended%20September%2030%2C%202025.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1929990445136347136",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba September quarter 2025 results report Cloud Intelligence Group revenue of RMB39,824 million, up 34% year-over-year, and adjusted EBITA of RMB3,604 million, up 35% year-over-year."
+      },
+      {
+        "label": "Alibaba December Quarter 2025 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/e48e70a1-e5c8-40ac-bdd2-951ebcb36946/Alibaba%20Group%20Announces%20December%20Quarter%202025%20Results.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1971014025827319808",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba December quarter 2025 results report Cloud Intelligence Group revenue of RMB43,284 million, up 36% year-over-year, and adjusted EBITA of RMB3,911 million, up 25% year-over-year."
+      },
+      {
+        "label": "Alibaba March Quarter 2026 and Fiscal Year 2026 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/5b1cb883-8d00-4237-a148-6631cc12a5d2/Alibaba%20Group%20Announces%20March%20Quarter%202026%20and%20Fiscal%20Year%202026%20Results.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1991237455038119936",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba March quarter 2026 results report Cloud Intelligence Group revenue of RMB41,626 million, up 38% year-over-year, and adjusted EBITA of RMB3,796 million, up 57% year-over-year."
+      }
+    ],
+    "Tencent Cloud / Tencent FBS proxy": [
+      {
+        "label": "Tencent financial reports",
+        "url": "https://www.tencent.com/en-us/investors/financial-reports.html",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Tencent 2025 second quarter earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/08/13/56af6c5c98acdc7bd757a7bd208d8189.pdf",
+        "type": "official_quarterly_earnings_release_comparative_table",
+        "evidence": "Tencent 2Q2025 income statement comparative table reports 1Q2025 FinTech and Business Services revenue of RMB54,907 million."
+      },
+      {
+        "label": "Tencent 2025 second quarter earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/08/13/56af6c5c98acdc7bd757a7bd208d8189.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent 2Q2025 release reports FinTech and Business Services revenue of RMB55,536 million and 10% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2025 third quarter earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/11/13/a33b6f19738615834787623f17d20ba3.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent 3Q2025 release reports FinTech and Business Services revenue of RMB58,174 million and 10% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2025 fourth quarter earnings release",
+        "url": "https://static.www.tencent.com/uploads/2026/03/18/e6a646796d0d869acc76271c9ee1a6a5.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent 4Q2025 release reports FinTech and Business Services revenue of RMB60,818 million and 8% year-on-year growth."
+      }
+    ],
+    "Huawei Cloud / Cloud Computing": [
+      {
+        "label": "Huawei annual and interim reports",
+        "url": "https://www.huawei.com/en/annual-report",
+        "type": "official_reports_index"
+      },
+      {
+        "label": "Huawei 2025 Annual Report quick view",
+        "url": "https://www.huawei.com/en/annual-report/2025",
+        "type": "official_annual_report_quick_view",
+        "evidence": "Huawei 2025 Annual Report By Business Segment table reports Cloud Computing revenue of CNY32,161 million for 2025, CNY33,325 million for 2024, and YoY (3.5)%; the note states revenue derived from cloud computing business, including revenue from other Huawei segments, amounted to CNY72,075 million."
+      },
+      {
+        "label": "Huawei annual reports index",
+        "url": "https://www.huawei.com/en/annual-report",
+        "type": "official_annual_reports_index",
+        "evidence": "Huawei annual reports index lists the 2025 Annual Report quick view and PDF, plus past annual reports; no quarterly or interim cloud segment financial report entry is provided on this official annual reports page."
+      }
+    ],
+    "Oracle Cloud": [
+      {
+        "label": "Oracle quarterly results",
+        "url": "https://investor.oracle.com/financials/quarterly-results/default.aspx",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Oracle FY2025 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy25-earnings-release-2025-06-11/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2025 Q4 release reports Cloud Revenue 6.7 billion USD up 27%, Cloud Infrastructure revenue 3.0 billion USD up 52%, and Cloud Application revenue 3.7 billion USD up 12%."
+      },
+      {
+        "label": "Oracle FY2026 Q1 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q1fy26-earnings-release-2025-09-09/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q1 release reports Cloud Revenue 7.2 billion USD up 28%, Cloud Infrastructure revenue 3.3 billion USD up 55%, and Cloud Application revenue 3.8 billion USD up 11%."
+      },
+      {
+        "label": "Oracle FY2026 Q2 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q2fy26-earnings-release-2025-12-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q2 release reports Cloud Revenue 8.0 billion USD up 34%, Cloud Infrastructure revenue 4.1 billion USD up 68%, and Cloud Application revenue 3.9 billion USD up 11%."
+      },
+      {
+        "label": "Oracle FY2026 Q3 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q3fy26-earnings-release-2026-03-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q3 release reports Cloud Revenue 8.9 billion USD up 44%, Cloud Infrastructure revenue 4.9 billion USD up 84%, and Cloud Application revenue 4.0 billion USD up 13%."
+      },
+      {
+        "label": "Oracle FY2026 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy26-earnings-release-2026-06-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q4 release reports Total Cloud Revenues 9.9 billion USD up 47%, Cloud Infrastructure revenue 5.8 billion USD up 93%, and Cloud Applications revenue 4.1 billion USD up 10%."
+      }
+    ]
+  },
+  "quality_notes_by_subject": {
+    "中国移动": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "中国电信": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "中国联通": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "中国铁塔": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "HKT / csl / 1O1O": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "3HK / Hutchison": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "SmarTone": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "HKBN": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "HGC": [
+      "非上市主体，未发现稳定公开季度/半年度完整财务表；本包只记录来源缺口，不估算。",
+      "无可自动抓取的公开标准化季度/半年度表；不得估算。",
+      "已核验 HGC 官网公司简介和主页；仅确认公司身份、业务范围和披露缺口，不写入任何估算财务数。"
+    ],
+    "i-CABLE": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "AWS": [
+      "AWS 使用 Amazon 官方 earnings release 和 2025 Form 10-K 的 Segment Information 表；数值为 AWS segment net sales 和 operating income，不使用 Amazon 母公司总收入替代。",
+      "2025 Q1-Q3 直接来自官方季度 earnings release；Q4 由 2025 Form 10-K AWS 全年分部数减 Q1-Q3 官方季度数复算，并在 verification_method 中标明为 official_annual_minus_q1_q3_segment_reconciliation。"
+    ],
+    "Microsoft Azure / Intelligent Cloud": [
+      "Azure 未单独披露收入；需使用 Intelligent Cloud/Server products and cloud services 代理口径。",
+      "Microsoft 不披露 Azure 绝对收入；本包写入官方 Intelligent Cloud 分部 revenue / operating income 作为代理口径，并单列 Azure and other cloud services 收入同比增速。",
+      "期间按自然季度标注：Q1 2025 对应 Microsoft FY25 Q3，Q2 2025 对应 FY25 Q4，Q3 2025 对应 FY26 Q1。"
+    ],
+    "Google Cloud": [
+      "Google Cloud 收入和经营利润使用 Alphabet 官方 SEC 10-Q/8-K 季度分部表，并与 SEC 2025 Form 10-K 的 Google Cloud 全年收入 58,705 百万美元、经营利润 13,910 百万美元精确勾稽。",
+      "Google Cloud revenue_growth_yoy 来自官方季度 10-Q/8-K 管理层讨论或业绩公告；不使用媒体摘要作为逐行核验来源。"
+    ],
+    "Alibaba Cloud": [
+      "Alibaba Cloud 使用 Alibaba 官方 Cloud Intelligence Group 分部口径；FY2026 Q4 对应截至 2026-03-31 的 March Quarter 2026。",
+      "本轮先写入官方最新季度的 revenue、revenue_growth_yoy、adjusted_ebita 和 adjusted_ebita_growth_yoy；更早季度仍需继续从官方 PDF 或年报逐项抽取。"
+    ],
+    "Tencent Cloud / Tencent FBS proxy": [
+      "腾讯云未单独披露收入；只能使用 FinTech and Business Services 代理口径并明确说明。",
+      "Tencent 不披露纯 Tencent Cloud 收入；本包使用官方 FinTech and Business Services 分部作为代理口径，需明确包含金融科技、企业服务、云/AI相关服务和电商技术服务等。",
+      "Q1 2025 行来自 Tencent 2Q2025 earnings release 的比较表；Q2-Q4 2025 来自对应官方 earnings release 的当季披露。",
+      "Q4 2025 同比增速由官方表中 4Q2025 RMB60,818 million 与 4Q2024 RMB56,125 million 复算约 8.36%，按披露口径记录为 8%。"
+    ],
+    "Huawei Cloud / Cloud Computing": [
+      "非上市公司；季度云分部收入需从官方季报/半年报/年报手工抽取，不能用估算值。",
+      "Huawei 为非上市公司，官方公开披露以年度报告为主；本包只记录季度披露缺口和年度云分部证据，不写入估算季度数据。"
+    ],
+    "Oracle Cloud": [
+      "Oracle 可披露 Cloud services 产品线收入，但分部利润为 Cloud and license 口径。",
+      "Oracle 披露 Cloud Revenue、Cloud Infrastructure (IaaS) Revenue 和 Cloud Application (SaaS) Revenue；本包不把 Oracle 总收入或 Software revenue 当作云收入。",
+      "Oracle 未披露纯云业务利润；本次只写入官方季度云收入拆分和同比增速。"
+    ]
+  }
+}

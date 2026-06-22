@@ -1,0 +1,2075 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no
+responsibility for the contents of this announcement, make no representation as to its accuracy or completeness
+and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the
+whole or any part of the contents of this announcement.
+
+
+
+
+                     (Stock Codes: 700 (HKD counter) and 80700 (RMB counter))
+
+                             ANNOUNCEMENT OF THE RESULTS
+                        FOR THE THREE MONTHS ENDED 31 MARCH 2026
+
+The Board is pleased to announce the unaudited consolidated results of the Group for
+the three months ended 31 March 2026. The Interim Financial Information of the Group
+has been reviewed by the Auditor in accordance with International Standard on Review
+Engagements 2410 “Review of interim financial information performed by the independent
+auditor of the entity” issued by the International Auditing and Assurance Standards Board,
+and by the Audit Committee.
+
+FINANCIAL PERFORMANCE HIGHLIGHTS
+                                                                      Unaudited
+                                                                  Three months ended
+                                                                               Year-                     Quarter-
+                                         31 March         31 March          on-year 31 December        on-quarter
+                                             2026             2025           change             2025      change
+                                                            (RMB in millions, unless specified)
+Revenues                                   196,458         180,022              9%          194,371           1%
+Gross profit                               111,265         100,493             11%          108,289           3%
+Operating profit                            67,375          57,566             17%           60,338          12%
+Profit for the period                       59,392          49,725             19%           59,089         0.5%
+Profit attributable to equity
+  holders of the Company                    58,093          47,821             21%           58,260        -0.3%
+EPS (RMB per share)
+  – basic                                    6.431           5.252             22%            6.433        stable
+  – diluted                                  6.302           5.129             23%            6.276         0.4%
+Non-IFRS operating profit                   75,627          69,320              9%           69,518          9%
+Non-IFRS profit attributable to
+  equity holders of the Company             67,905          61,329             11%           64,694          5%
+Non-IFRS EPS (RMB per share)
+  – basic                                    7.517           6.735             12%            7.144          5%
+  – diluted                                  7.364           6.583             12%            6.966          6%
+
+
+                                                      1
+OPERATING INFORMATION
+
+                                          As at           As at            Year-          As at     Quarter-
+                                      31 March        31 March           on-year 31 December      on-quarter
+                                          2026            2025           change           2025       change
+                                                          (in millions, unless specified)
+
+Combined MAU of
+  Weixin and WeChat                       1,432          1,402             2%            1,418          1%
+
+Mobile device MAU of QQ                     516            534             -3%             508          2%
+
+Fee-based VAS subscriptions#                266            268           -0.7%             267        -0.4%
+
+#
+     Average daily number of subscriptions during the quarter
+
+
+BUSINESS REVIEW AND OUTLOOK
+
+We started 2026 by making significant initial progress on our new AI products, as well as
+continuing to utilise AI to grow our existing core businesses. The Hy3 preview model, built
+by our revamped team of AI researchers on re-architected AI infrastructure, is a leader in its
+parameter size class, delivering practical utility and cost efficiency, and has been top ranked
+in OpenRouter token measurements since April 28. Our productivity AI agent solutions have
+attained early traction, and we believe that our WorkBuddy is currently the most widely
+used productivity AI agent service in China. Our core businesses continued to grow their
+engagement, revenue and profit, providing the cash flow to fund our AI investments, as well
+as use cases for future AI deployment.
+
+Below are some highlights from our key products and services for the reporting quarter:
+
+• Several of our evergreen games1 achieved life-time highs in quarterly gross receipts,
+  including Honour of Kings, Peacekeeper Elite and Delta Force, while new game Roco
+  Kingdom: World achieved substantial popularity.
+
+• Our automated campaign management solution AIM+ powered approximately 30% of
+  our total marketing services spending from advertisers, gaining notable traction among
+  mini game, mini drama and mini shop advertisers.
+
+
+
+
+1
+     Evergreen games refer to domestic and international games surpassing average quarterly DAU of
+     5 million for mobile or 2 million for PC, and generating over RMB4 billion annual gross receipts
+
+
+
+                                                    2
+• We scaled up the number of parameters and enhanced the algorithms for Video
+  Accounts’ content recommendation model, enabling delivery of more relevant content
+  to users. Total time spent on Video Accounts grew over 20% year-on-year.
+
+• Mini Shops sustained a rapid year-on-year growth rate in GMV as we offered incentives
+  for brand merchants and introduced coupon sharing features for frequent buyers.
+
+• Commercial payment volume grew at a faster year-on-year rate than in the fourth
+  quarter of 2025, benefitting from ongoing increase in number of transactions and higher
+  value per transaction in categories such as retail and dining services.
+
+• Tencent Cloud’s productivity AI agent solutions achieved rapid growth and healthy
+  retention rates. Among which, WorkBuddy was the most popular productivity AI agent
+  service in China, measured by DAU.
+
+• In April 2026, we launched the Hy3 preview large language model, building upon a
+  revamped AI infrastructure. We believe the Hy3 preview model is currently best in
+  class among similar-size models in terms of reasoning, agentic and coding capabilities,
+  and has become the most used model on OpenRouter since 28 April 2026, measured by
+  token usage.
+
+
+
+
+                                           3
+MANAGEMENT DISCUSSION AND ANALYSIS
+
+First Quarter of 2026 Compared to First Quarter of 2025
+
+The following table sets forth the comparative figures for the first quarter of 2026 and the
+first quarter of 2025:
+
+                                                                       Unaudited
+                                                                   Three months ended
+                                                                31 March       31 March
+                                                                    2026            2025
+                                                                    (RMB in millions)
+
+Revenues                                                          196,458          180,022
+Cost of revenues                                                  (85,193)         (79,529)
+
+Gross profit                                                      111,265          100,493
+
+Selling and marketing expenses                                     (11,343)          (7,866)
+General and administrative expenses                                (33,800)         (33,664)
+Other gains/(losses), net                                            1,253           (1,397)
+
+Operating profit                                                   67,375            57,566
+
+Net gains/(losses) from investments and others                       1,928            1,407
+Interest income                                                      4,025            3,748
+Finance costs                                                       (2,979)          (3,860)
+Share of profit/(loss) of associates and joint ventures, net         3,620            4,581
+
+Profit before income tax                                           73,969            63,442
+
+Income tax expense                                                 (14,577)         (13,717)
+
+Profit for the period                                              59,392            49,725
+
+Attributable to:
+  Equity holders of the Company                                    58,093            47,821
+  Non-controlling interests                                         1,299             1,904
+
+                                                                   59,392            49,725
+
+Non-IFRS operating profit                                          75,627            69,320
+
+Non-IFRS profit attributable to equity holders
+  of the Company                                                   67,905            61,329
+
+
+
+
+                                                4
+Revenues. Revenues increased by 9% year-on-year to RMB196.5 billion for the first quarter
+of 2026. The following table sets forth revenues of the Group and its segments for the first
+quarter of 2026 and the first quarter of 2025.
+
+                                                              Unaudited
+                                                          Three months ended
+                                                                   Year-
+                                 31 March        31 March        on-year        31 March         31 March
+                                     2026            2025         change              2026            2025
+                                                 Revenues                         % of total revenues
+                                                    (RMB in millions, unless specified)
+
+VAS                                 96,110         92,133             4%             49%             51%
+Marketing Services                  38,171         31,853            20%             19%             18%
+FinTech and Business Services       59,885         54,907             9%             31%             30%
+Others                               2,292          1,129           103%              1%              1%
+
+The Group                          196,458        180,022             9%            100%            100%
+
+
+–    Revenues from VAS increased by 4% year-on-year to RMB96.1 billion for the first
+     quarter of 2026. Domestic Games revenues were RMB45.4 billion, up 6% year-on-year,
+     with revenue growth lagging Domestic Games gross receipts growth, as the later
+     timing of the Spring Festival period in 2026 versus 2025 shifted a portion of revenue
+     recognition out of the current quarter. Domestic Games gross receipts grew at a teens
+     percentage rate year-on-year, driven by existing evergreen games including Honour
+     of Kings and Peacekeeper Elite, as well as more recent game releases including Delta
+     Force, which has recently qualified for the definition of an evergreen game, and
+     VALORANT MOBILE. International Games revenues were RMB18.8 billion, up 13%
+     year-on-year (14% on a constant-currency basis), primarily driven by higher revenues
+     from Clash Royale, Wuthering Waves and VALORANT PC. Social Networks revenues
+     decreased by 2% year-on-year to RMB31.9 billion, as the later timing of the Spring
+     Festival period resulted in less revenue recognition for domestic app-based game item
+     sales during the first quarter of 2026 versus the first quarter of 2025.
+
+–    Revenues from Marketing Services were RMB38.2 billion for the first quarter of 2026,
+     up 20% year-on-year, improving from 17% year-on-year growth in the fourth quarter of
+     2025. We upgraded our AI-driven ad recommendation model and expanded closed-loop
+     marketing capabilities within the Weixin ecosystem, which improved ad performance
+     and pricing. Advertising spending grew across most major industry categories during
+     the quarter, with notable growth from Internet services, eCommerce and games
+     categories.
+
+
+
+
+                                             5
+–    Revenues from FinTech and Business Services increased by 9% year-on-year to
+     RMB59.9 billion for the first quarter of 2026. FinTech Services revenue growth was
+     mainly due to higher revenues from commercial payment and wealth management
+     services. Business Services revenues rose by 20% year-on-year, with growth led by
+     increased cloud services revenues supported by higher demand across domestic and
+     international markets, including demand for AI-related services, and a more favorable
+     pricing environment, as well as higher eCommerce technology service fees arising from
+     growth in Mini Shops GMV.
+
+Gross profit. Gross profit for the first quarter of 2026 grew by 11% year-on-year to
+RMB111.3 billion, primarily due to increased contributions from high-margin revenue
+streams, partly offset by higher AI-related equipment depreciation and associated operating
+costs. Gross margin was 57%, up from 56% in the same period last year. The following table
+sets forth gross profit and gross margin of the Group and its segments for the first quarter of
+2026 and the first quarter of 2025.
+
+                                                                 Unaudited
+                                                             Three months ended
+                                                                     Year-
+                                  31 March       31 March          on-year       31 March       31 March
+                                      2026            2025          change             2026         2025
+                                         Gross profit/(loss)                          Gross margin
+                                                     (RMB in millions, unless specified)
+
+VAS                                  60,127         54,911            9%            63%            60%
+Marketing Services                   20,990         17,694           19%            55%            56%
+FinTech and Business Services        31,176         27,597           13%            52%            50%
+Others                               (1,028)           291           NM            (45%)           26%
+
+The Group                           111,265        100,493           11%            57%            56%
+
+
+–    Gross profit for VAS grew by 9% year-on-year to RMB60.1 billion, slightly faster
+     than revenue growth for VAS, due to increased revenue contributions from internally
+     developed games. Gross margin rose to 63%, up from 60% in the same period last year.
+
+–    Gross profit for Marketing Services was RMB21.0 billion, up 19% year-on-year, as
+     rapid revenue growth was partly offset by higher costs, including AI-related equipment
+     depreciation and associated operating costs, as we increased AI investments in order to
+     deliver more relevant content recommendations in the future. Gross margin was 55%,
+     compared with 56% in the same period last year.
+
+
+
+
+                                               6
+–   Gross profit for FinTech and Business Services rose by 13% year-on-year to RMB31.2
+    billion, slightly exceeding revenue growth for FinTech and Business Services, as we
+    benefitted from the growing scale of our cloud services and improved revenue mix
+    within FinTech Services, partly offset by higher AI-related equipment depreciation and
+    associated operating costs. Gross margin increased to 52% from 50% in the same period
+    last year.
+
+Selling and marketing expenses. Selling and marketing expenses increased by 44%
+year-on-year to RMB11.3 billion in the first quarter of 2026, mainly due to greater
+promotional efforts to support the growth of our AI-native applications and games, including
+new games.
+
+General and administrative expenses. General and administrative expenses were RMB33.9
+billion for the first quarter of 2026, broadly stable year-on-year, reflecting higher R&D
+expenses driven by our AI investments, largely offset by lower share-based compensation
+expenses, as the prior-year period included a RMB4.0 billion one-off share-based
+compensation expense related to restructuring of an existing commercial arrangement at an
+overseas subsidiary.
+
+Operating profit. Operating profit increased by 17% year-on-year to RMB67.4 billion for the
+first quarter of 2026. Non-IFRS operating profit increased by 9% year-on-year to RMB75.6
+billion. Non-IFRS operating profit excluding new AI products2 increased by 17% year-on-year
+to RMB84.4 billion.
+
+Interest income. Interest income increased by 7% year-on-year to RMB4.0 billion for the
+first quarter of 2026, mainly driven by growth in cash reserves.
+
+Finance costs. Finance costs were RMB3.0 billion for the first quarter of 2026, down from
+RMB3.9 billion in the same quarter last year, reflecting higher foreign exchange gains and
+lower interest expenses due to lower average interest rate.
+
+Share of profit/(loss) of associates and joint ventures, net. We recorded share of profits of
+associates and joint ventures of RMB3.6 billion for the first quarter of 2026, compared with
+share of profits of RMB4.6 billion in the same period last year. Non-IFRS share of profits
+of associates and joint ventures was RMB7.1 billion, compared with share of profits of
+RMB7.6 billion in the same period last year.
+
+Income tax expense. Income tax expense increased by 6% year-on-year to RMB14.5 billion
+for the first quarter of 2026, reflecting operating profit growth.
+
+Profit attributable to equity holders of the Company. Profit attributable to equity holders
+of the Company increased by 21% year-on-year to RMB58.1 billion for the first quarter
+of 2026. Non-IFRS profit attributable to equity holders of the Company increased by 11%
+year-on-year to RMB67.9 billion.
+
+
+2
+    Excludes revenues, costs and expenses for new AI products (Hy, Yuanbao, CodeBuddy, WorkBuddy, and
+    QClaw)
+
+
+                                                 7
+First Quarter of 2026 Compared to Fourth Quarter of 2025
+
+The following table sets forth the comparative figures for the first quarter of 2026 and the
+fourth quarter of 2025:
+
+                                                                       Unaudited
+                                                                   Three months ended
+                                                                31 March    31 December
+                                                                    2026            2025
+                                                                    (RMB in millions)
+
+Revenues                                                          196,458          194,371
+Cost of revenues                                                  (85,193)         (86,082)
+
+Gross profit                                                      111,265          108,289
+
+Selling and marketing expenses                                     (11,343)         (12,983)
+General and administrative expenses                                (33,800)         (36,283)
+Other gains/(losses), net                                            1,253            1,315
+
+Operating profit                                                   67,375            60,338
+
+Net gains/(losses) from investments and others                       1,928            3,303
+Interest income                                                      4,025            4,784
+Finance costs                                                       (2,979)          (3,573)
+Share of profit/(loss) of associates and joint ventures, net         3,620            6,832
+
+Profit before income tax                                           73,969            71,684
+
+Income tax expense                                                 (14,577)         (12,595)
+
+Profit for the period                                              59,392            59,089
+
+Attributable to:
+  Equity holders of the Company                                    58,093            58,260
+  Non-controlling interests                                         1,299               829
+
+                                                                   59,392            59,089
+
+Non-IFRS operating profit                                          75,627            69,518
+
+Non-IFRS profit attributable to equity holders
+  of the Company                                                   67,905            64,694
+
+
+
+
+                                                8
+Revenues. Revenues for the first quarter of 2026 increased by 1% quarter-on-quarter to
+RMB196.5 billion.
+
+–   Revenues from VAS increased by 7% quarter-on-quarter to RMB96.1 billion. Domestic
+    Games revenues were RMB45.4 billion, representing a 19% increase quarter-on-quarter,
+    primarily driven by seasonally higher revenues in the first quarter. International Games
+    revenues were RMB18.8 billion, down 11% quarter-on-quarter, due to seasonally lower
+    revenues in the first quarter. Social Networks revenues rose by 4% quarter-on-quarter to
+    RMB31.9 billion, reflecting seasonally higher revenues from domestic app-based game
+    item sales.
+
+–   Revenues from Marketing Services decreased by 7% quarter-on-quarter to RMB38.2
+    billion, reflecting a seasonal decrease in advertising activity around the Spring Festival
+    period.
+
+–   Revenues from FinTech and Business Services decreased by 2% quarter-on-quarter
+    to RMB59.9 billion, primarily due to seasonally fewer cloud project deployments
+    compared to the year-end period.
+
+Gross profit. Gross profit was RMB111.3 billion for the first quarter of 2026, up 3%
+quarter-on-quarter. Gross margin was 57%, up from 56% in the previous quarter.
+
+–   Gross profit for VAS was RMB60.1 billion, up 12% quarter-on-quarter driven by higher
+    revenues from Domestic Games. Gross margin was 63%, up from 60% in the previous
+    quarter.
+
+–   Gross profit for Marketing Services decreased by 15% quarter-on-quarter to RMB21.0
+    billion, reflecting a seasonal decrease in advertising activity, together with higher
+    AI-related equipment depreciation and associated operating costs. Gross margin was
+    55%, compared with 60% in the previous quarter.
+
+–   Gross profit for FinTech and Business Services increased by 1% quarter-on-quarter to
+    RMB31.2 billion. Gross margin was 52%, up from 51% in the previous quarter.
+
+
+
+
+                                             9
+Selling and marketing expenses. Selling and marketing expenses declined by 13%
+quarter-on-quarter to RMB11.3 billion for the first quarter of 2026, reflecting seasonally
+lower promotional activities for games and eSports events, partly offset by higher marketing
+spending to support the growth of our AI-native applications.
+
+General and administrative expenses. General and administrative expenses decreased by
+7% quarter-on-quarter to RMB33.9 billion for the first quarter of 2026, mainly due to lower
+staff costs, travel expenses, and administrative expenses. Headcount declined by 0.9%
+quarter-on-quarter during the period.
+
+Operating profit. Operating profit increased by 12% quarter-on-quarter to RMB67.4 billion
+for the first quarter of 2026. Non-IFRS operating profit increased by 9% quarter-on-quarter
+to RMB75.6 billion. Non-IFRS operating profit excluding new AI products3 increased by
+10% quarter-on-quarter to RMB84.4 billion.
+
+Share of profit/(loss) of associates and joint ventures, net. We recorded share of profits of
+associates and joint ventures of RMB3.6 billion for the first quarter of 2026, compared with
+share of profits of RMB6.8 billion for the previous quarter. Non-IFRS share of profits of
+associates and joint ventures was RMB7.1 billion for the first quarter of 2026, compared
+with share of profits of RMB9.1 billion for the previous quarter.
+
+Profit attributable to equity holders of the Company. Profit attributable to equity holders
+of the Company was RMB58.1 billion for the first quarter of 2026, broadly stable
+quarter-on-quarter. Non-IFRS profit attributable to equity holders of the Company increased
+by 5% quarter-on-quarter to RMB67.9 billion.
+
+
+
+
+3
+    Excludes revenues, costs and expenses for new AI products (Hy, Yuanbao, CodeBuddy, WorkBuddy, and
+    QClaw)
+
+
+
+                                                10
+Other Financial Information
+
+                                                                         Unaudited
+                                                                    Three months ended
+                                                             31 March    31 December            31 March
+                                                                 2026             2025              2025
+                                                               (RMB in millions, unless specified)
+
+EBITDA (a)                                                      84,167             77,126               73,817
+Adjusted EBITDA (a)                                             89,617             83,048               81,559
+Adjusted EBITDA margin (b)                                        46%                43%                  45%
+Interest and related expenses                                    3,134              3,323                3,386
+Net cash (c)                                                   146,860            107,145               90,229
+Capital expenditures (d)                                        31,936             19,632               27,476
+
+Note:
+
+(a)     EBITDA is calculated as operating profit minus other gains/(losses), net, and adding back depreciation
+        of property, plant and equipment, investment properties as well as right-of-use assets, and amortisation
+        of intangible assets and land use rights. Adjusted EBITDA is calculated as EBITDA plus equity-settled
+        share-based compensation expenses.
+
+(b)     Adjusted EBITDA margin is calculated by dividing Adjusted EBITDA by revenues.
+
+(c)     Net cash represents period end balance and is calculated as cash and cash equivalents, plus term deposits
+        and others, including highly liquid investment products held for treasury purposes, minus borrowings and
+        notes payable.
+
+(d)     Capital expenditures primarily consist of investments in IT infrastructure (including computer equipment,
+        components, and software), data centres, land use rights, office premises and intellectual properties
+        (excluding media content).
+
+
+
+
+                                                        11
+The following table reconciles our operating profit to our EBITDA and Adjusted EBITDA
+for the periods presented:
+
+                                                              Unaudited
+                                                         Three months ended
+                                                  31 March    31 December            31 March
+                                                      2026             2025              2025
+                                                    (RMB in millions, unless specified)
+
+Operating profit                                     67,375          60,338            57,566
+Adjustments:
+  Other (gains)/losses, net
+    (excluding depreciation
+    and amortisation)                                (1,312)          (1,315)           1,397
+  Depreciation of property, plant and
+    equipment and investment properties               8,334            7,912            5,295
+  Depreciation of right-of-use assets                 1,567            1,638            1,495
+  Amortisation of intangible assets and
+    land use rights                                   8,203            8,553            8,064
+
+EBITDA                                               84,167          77,126            73,817
+Equity-settled share-based compensation               5,450           5,922             7,742
+
+Adjusted EBITDA                                      89,617          83,048            81,559
+
+
+Non-IFRS Financial Measures
+
+To supplement the consolidated results of the Group prepared in accordance with IFRS,
+certain additional non-IFRS financial measures (in terms of operating profit, operating
+margin, profit for the period, profit attributable to equity holders of the Company, basic EPS
+and diluted EPS) have been presented in this announcement. These unaudited non-IFRS
+financial measures should be considered in addition to, not as a substitute for, measures of
+the Group’s financial performance prepared in accordance with IFRS. In addition, these
+non-IFRS financial measures may be defined differently from similar terms used by other
+companies.
+
+The Company ’ s management believes that the non-IFRS financial measures provide
+investors with useful supplementary information to assess the performance of the Group’s
+core operations by excluding certain non-cash items and certain impact of investment-related
+transactions. In addition, non-IFRS adjustments include relevant non-IFRS adjustments
+for the Group’s major associates based on available published financials of the relevant
+major associates, or estimates made by the Company’s management based on available
+information, certain expectations, assumptions and premises.
+
+
+                                             12
+The following tables set forth the reconciliations of the Group’ s non-IFRS financial
+measures for the first quarter of 2026 and 2025, the fourth quarter of 2025 to the nearest
+measures prepared in accordance with IFRS:
+
+                                                           Unaudited three months ended 31 March 2026
+                                                                             Adjustments
+                                                    Net (gains)/
+                                                    losses from Amortisation Impairment
+                               As Share-based          investee of intangible        provisions/          SSV &    Income tax
+                         reported compensation       companies           assets      (reversals)            CPP        effects   Non-IFRS
+                                            (a)              (b)            (c)               (d)            (e)           (f)
+                                                                 (RMB in millions, unless specified)
+
+Operating profit          67,375           6,534              –             1,578                 –         140             –      75,627
+Share of profit/(loss)
+  of associates and
+  joint ventures, net      3,620             810            817             1,612               264           –             –       7,123
+Profit for the period     59,392           7,344         (3,255)            3,190             2,467         765          (130)     69,773
+Profit attributable
+  to equity holders       58,093           7,193         (3,342)            2,862             2,397         765           (63)     67,905
+EPS (RMB per share)
+  – basic                  6.431                                                                                                    7.517
+  – diluted                6.302                                                                                                    7.364
+Operating margin            34%                                                                                                      38%
+
+                                                          Unaudited three months ended 31 December 2025
+                                                                              Adjustments
+                                                    Net (gains)/
+                                                    losses from      Amortisation      Impairment
+                              As     Share-based       investee      of intangible      provisions/       SSV &    Income tax
+                         reported   compensation     companies              assets       (reversals)        CPP        effects   Non-IFRS
+                                              (a)            (b)               (c)               (d)         (e)           (f)
+                                                                   (RMB in millions, unless specified)
+
+Operating profit          60,338           7,210              –             1,594                 –         376             –      69,518
+Share of profit/(loss)
+  of associates and
+  joint ventures, net      6,832             773            (26)            1,522                46            –            –       9,147
+Profit for the period     59,089           7,983         (7,479)            3,116             3,617        1,338         (953)     66,711
+Profit attributable
+  to equity holders       58,260           7,902         (7,515)            2,793             2,812        1,338         (896)     64,694
+EPS (RMB per share)
+  – basic                  6.433                                                                                                    7.144
+  – diluted                6.276                                                                                                    6.966
+Operating margin            31%                                                                                                      36%
+
+
+
+
+                                                                   13
+                                                               Unaudited three months ended 31 March 2025
+                                                                                 Adjustments
+                                                       Net (gains)/
+                                                       losses from      Amortisation      Impairment
+                                 As     Share-based       investee      of intangible      provisions/      SSV &    Income tax
+                            reported   compensation     companies              assets       (reversals)       CPP        effects   Non-IFRS
+                                                 (a)            (b)               (c)               (d)        (e)           (f)
+                                                                      (RMB in millions, unless specified)
+
+Operating profit             57,566          10,100              –             1,515                 –        139             –      69,320
+Share of profit/(loss)
+  of associates and
+  joint ventures, net         4,581             968            111             1,713               267          –             –       7,640
+Profit for the period        49,725          11,068            (31)            3,228              (689)       160          (769)     62,692
+Profit attributable
+  to equity holders          47,821          10,833          1,081             2,854              (719)       160          (701)     61,329
+EPS (RMB per share)
+  – basic                     5.252                                                                                                   6.735
+  – diluted                   5.129                                                                                                   6.583
+Operating margin               32%                                                                                                     39%
+
+Note:
+
+(a)     Including put options granted to employees of investee companies on their shares and shares to be issued
+        under investee companies’ share-based incentive plans which can be acquired by the Group, and other
+        incentives
+
+(b)     Including net (gains)/losses on deemed disposals/disposals of investee companies, fair value changes
+        arising from investee companies, and other expenses in relation to equity transactions of investee
+        companies
+
+(c)     Amortisation of intangible assets resulting from acquisitions
+
+(d)     Mainly including impairment provisions/(reversals) for associates, joint ventures, goodwill and other
+        intangible assets arising from acquisitions
+
+(e)     Mainly including donations and expenses incurred for the Group’s SSV & CPP initiatives
+
+(f)     Income tax effects of non-IFRS adjustments
+
+
+
+
+                                                                      14
+Liquidity and Financial Resources
+
+Our cash and debt positions as at 31 March 2026 and 31 December 2025 were as follows:
+
+                                                                            Unaudited          Audited
+                                                                             31 March    31 December
+                                                                                  2026            2025
+                                                                                 (RMB in millions)
+
+Cash and cash equivalents                                                          217,770     141,041
+Term deposits and others                                                           315,895     353,837
+Borrowings                                                                        (258,995)   (250,987)
+Notes payable                                                                     (127,810)   (136,746)
+
+Net cash                                                                          146,860     107,145
+
+
+As at 31 March 2026, the Group had net cash of RMB146.9 billion, compared to net cash of
+RMB107.1 billion as at 31 December 2025. The sequential increase in net cash was mainly
+due to free cash flow generation, partially offset by share repurchases of RMB7.9 billion and
+net cash outflow of RMB7.0 billion primarily related to investments in other corporations.
+
+Free cash flow for the first quarter of 2026 was RMB56.7 billion, reflecting net cash
+generated from operating activities of RMB101.4 billion, partially offset by payments for
+capital expenditures of RMB37.0 billion (primarily to support our AI-related investments),
+as well as payments for media content of RMB5.9 billion and lease liabilities of RMB1.8 billion.
+
+As at 31 March 2026, the fair value of our shareholdings4 in listed investee companies
+(excluding subsidiaries) was RMB547.1 billion, compared with RMB672.7 billion as at
+31 December 2025. The carrying book value of our shareholdings in unlisted investee
+companies (excluding subsidiaries) was RMB365.1 billion as at 31 March 2026, compared
+with RMB363.1 billion as at 31 December 2025.
+
+
+
+
+4
+    Including those held via special purpose vehicles, on an attributable basis
+
+
+
+
+                                                     15
+FINANCIAL INFORMATION
+
+CONDENSED CONSOLIDATED INCOME STATEMENT
+FOR THE THREE MONTHS ENDED 31 MARCH 2026
+                                                                 Unaudited
+                                                         Three months ended 31 March
+                                                                 2026           2025
+                                                  Note    RMB’Million RMB’Million
+Revenues
+  Value-added Services                                         96,110         92,133
+  Marketing Services                                           38,171         31,853
+  FinTech and Business Services                                59,885         54,907
+  Others                                                        2,292          1,129
+
+                                                   2          196,458        180,022
+Cost of revenues                                   3           (85,193)      (79,529)
+
+Gross profit                                                  111,265        100,493
+Selling and marketing expenses                     3           (11,343)       (7,866)
+General and administrative expenses                3           (33,800)      (33,664)
+Other gains/(losses), net                                        1,253        (1,397)
+
+Operating profit                                               67,375         57,566
+Net gains/(losses) from investments and others     4             1,928         1,407
+Interest income                                                  4,025         3,748
+Finance costs                                                   (2,979)       (3,860)
+Share of profit/(loss) of associates and
+   joint ventures, net                                          3,620          4,581
+
+Profit before income tax                                       73,969         63,442
+Income tax expense                                 5           (14,577)      (13,717)
+
+Profit for the period                                          59,392         49,725
+
+Attributable to:
+  Equity holders of the Company                                58,093         47,821
+  Non-controlling interests                                     1,299          1,904
+
+                                                               59,392         49,725
+
+Earnings per share for profit attributable
+  to equity holders of the Company
+  (RMB per share)
+  – basic                                         6(a)          6.431          5.252
+
+  – diluted                                       6(b)          6.302          5.129
+
+
+
+
+                                             16
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+FOR THE THREE MONTHS ENDED 31 MARCH 2026
+
+                                                                Unaudited
+                                                        Three months ended 31 March
+                                                                2026           2025
+                                                         RMB’Million RMB’Million
+
+Profit for the period                                         59,392         49,725
+
+Other comprehensive income, net of tax:
+
+  Items that may be subsequently reclassified to
+   profit or loss
+     Share of other comprehensive income of
+       associates and joint ventures                            (222)          652
+     Transfer of share of other comprehensive
+       income to profit or loss upon disposal
+       and deemed disposal of associates
+       and joint ventures                                        135              –
+     Net (losses)/gains from changes in fair value of
+       financial assets at fair value through
+       other comprehensive income                                 (60)         106
+     Transfer to profit or loss upon disposal of
+       financial assets at fair value through
+       other comprehensive income                                 (19)            1
+     Currency translation differences                         (13,883)        2,294
+     Net movement in reserves for hedges                           (5)         (213)
+  Items that will not be subsequently reclassified to
+   profit or loss
+     Share of other comprehensive income of
+       associates and joint ventures                            (330)          522
+     Net (losses)/gains from changes in fair value of
+       financial assets at fair value through
+       other comprehensive income                             (66,118)       26,361
+     Currency translation differences                          (2,887)          370
+     Net movement in reserves for hedges                           (3)            6
+
+                                                              (83,392)       30,099
+
+Total comprehensive income for the period                     (24,000)       79,824
+
+Attributable to:
+  Equity holders of the Company                               (22,676)       75,858
+  Non-controlling interests                                    (1,324)        3,966
+
+                                                              (24,000)       79,824
+
+
+
+
+                                             17
+CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+AS AT 31 MARCH 2026
+
+                                                                   Unaudited        Audited
+                                                                    31 March    31 December
+                                                                        2026           2025
+                                                          Note   RMB’Million    RMB’Million
+
+ASSETS
+Non-current assets
+  Property, plant and equipment                                      165,666        149,905
+  Land use rights                                                     22,122         22,339
+  Right-of-use assets                                                 17,353         17,367
+  Construction in progress                                             5,719          9,670
+  Investment properties                                                1,131            950
+  Intangible assets                                                  199,008        205,999
+  Investments in associates                                8         330,532        342,409
+  Investments in joint ventures                                        6,374          6,303
+  Financial assets at fair value through profit or loss    9         208,887        207,157
+  Financial assets at fair value through
+     other comprehensive income                           10         298,052        356,640
+  Prepayments, deposits and other assets                              45,424         24,540
+  Other financial assets                                               1,084          1,327
+  Deferred income tax assets                                          29,698         28,618
+  Term deposits                                                       73,404         70,302
+
+                                                                    1,404,454      1,443,526
+
+Current assets
+ Inventories                                                             582            530
+ Accounts receivable                                      11          58,116         49,930
+ Prepayments, deposits and other assets                              117,147        111,270
+ Other financial assets                                                3,779          4,201
+ Financial assets at fair value through profit or loss     9          27,627         35,929
+ Financial assets at fair value through
+    other comprehensive income                            10           8,781          8,781
+ Term deposits                                                       205,537        236,801
+ Restricted cash                                                       7,597          6,977
+ Cash and cash equivalents                                           217,770        141,041
+
+                                                                     646,936        595,460
+
+Total assets                                                        2,051,390      2,038,986
+
+
+
+                                                 18
+                                                      Unaudited         Audited
+                                                       31 March     31 December
+                                                           2026            2025
+                                             Note   RMB’Million     RMB’Million
+
+EQUITY
+Equity attributable to equity holders
+  of the Company
+  Share capital                                                –               –
+  Share premium                                           68,575          63,796
+  Treasury shares                                         (1,060)         (3,450)
+  Shares held for share award scheme                      (8,605)         (7,124)
+  Other reserves                                           7,640          90,494
+  Retained earnings                                    1,061,102       1,010,436
+
+                                                       1,127,652       1,154,152
+
+Non-controlling interests                                83,975          86,913
+
+Total equity                                           1,211,627       1,241,065
+
+LIABILITIES
+Non-current liabilities
+  Borrowings                                 14         207,881         208,369
+  Notes payable                              15         124,350         126,204
+  Long-term payables                                     10,752          10,544
+  Other financial liabilities                             3,679           2,879
+  Deferred income tax liabilities                        23,591          21,684
+  Lease liabilities                                      13,074          13,280
+  Deferred revenue                                        2,564           2,210
+
+                                                        385,891         385,170
+
+Current liabilities
+ Accounts payable                            13         141,748         121,127
+ Other payables and accruals                             81,153          96,496
+ Borrowings                                  14          51,114          42,618
+ Notes payable                               15           3,460          10,542
+ Current income tax liabilities                          19,961          18,558
+ Other tax liabilities                                    6,130           3,723
+ Other financial liabilities                              3,355           3,992
+ Lease liabilities                                        5,632           5,386
+ Deferred revenue                                       141,319         110,309
+
+                                                        453,872         412,751
+
+Total liabilities                                       839,763         797,921
+
+Total equity and liabilities                           2,051,390       2,038,986
+
+
+
+                                        19
+CONDENSED CONSOLIDATED STATEMENT OF CHANGES IN EQUITY
+FOR THE THREE MONTHS ENDED 31 MARCH 2026
+                                                                                                                       Unaudited
+                                                                                      Attributable to equity holders of the Company
+                                                                                                      Shares held
+                                                                                                        for share                                           Non-
+                                                                Share       Share    Treasury              award      Other    Retained               controlling     Total
+                                                               capital   premium       shares             scheme    reserves    earnings      Total     interests    equity
+                                                           RMB’Million RMB’Million RMB’Million       RMB’Million RMB’Million RMB’Million RMB’Million RMB’Million RMB’Million
+
+Balance at 1 January 2026                                           –       63,796         (3,450)          (7,124)         90,494    1,010,436    1,154,152    86,913    1,241,065
+
+Comprehensive income
+Profit for the period                                               –            –              –                –               –      58,093       58,093      1,299      59,392
+Other comprehensive income, net of tax:
+  – share of other comprehensive income of
+       associates and joint ventures                                –            –              –                –            (545)           –        (545)        (7)       (552)
+  – transfer of share of other comprehensive income
+       to profit or loss upon disposal and deemed
+       disposal of associates and joint ventures                    –            –              –                –             135            –         135          –         135
+  – net losses from changes in fair value of
+       financial assets at fair value through
+       other comprehensive income                                   –            –              –                –         (64,573)           –      (64,573)   (1,605)     (66,178)
+  – transfer to profit or loss upon disposal of
+       financial assets at fair value through
+       other comprehensive income                                   –            –              –                –             (17)           –          (17)       (2)         (19)
+  – currency translation differences                                –            –              –                –         (15,761)           –      (15,761)   (1,009)     (16,770)
+  – net movement in reserves for hedges                             –            –              –                –              (8)           –           (8)        –           (8)
+
+Total comprehensive income for the period                           –            –              –                –         (80,769)     58,093       (22,676)   (1,324)     (24,000)
+
+Transfer of gains on disposal and deemed disposal of
+  financial instruments to retained earnings, net of tax            –            –              –                –          (2,524)      2,524             –         –            –
+Transfer of share of other comprehensive income to
+  retained earnings upon disposal and deemed
+  disposal of associates and joint ventures                         –            –              –                –             337        (337)            –         –            –
+Share of other changes in net assets of associates
+  and joint ventures                                                –            –              –                –             825            –         825          –         825
+Transfer of share of other changes in net assets of
+  associates and joint ventures to profit or loss
+  upon disposal and deemed disposal                                 –            –              –                –          (1,288)           –       (1,288)        –       (1,288)
+
+Transactions with equity holders
+Employee share option schemes:
+  – value of employee services                                      –         319               –                –              15            –         334        13          347
+  – proceeds from shares issued,
+      net of withholding individual income tax                      –         (162)             –                –               –            –        (162)         –        (162)
+Employee share award schemes:
+  – value of employee services                                      –        4,876              –                –             137            –        5,013        91        5,104
+  – shares purchased/withheld for the share award scheme            –            –              –           (1,735)              –            –       (1,735)        –       (1,735)
+  – vesting of awarded shares                                       –         (254)             –              254               –            –            –         –            –
+Tax benefit from share-based payments                               –            –              –                –             447            –          447         –          447
+Repurchase and cancellation of shares                               –            –          3,450                –               –       (9,144)      (5,694)        –       (5,694)
+Repurchase of shares (to be cancelled)                              –            –         (1,060)               –               –            –       (1,060)        –       (1,060)
+Cash dividends                                                      –            –              –                –               –            –            –    (1,476)      (1,476)
+Non-controlling interests arising from
+  business combinations                                             –            –              –                –               –            –            –       26           26
+Acquisition of additional equity interests in
+  non wholly-owned subsidiaries                                     –            –              –                –              91           –           91      (162)         (71)
+Dilution of interests in subsidiaries                               –            –              –                –            (779)          –         (779)      137         (642)
+Disposal of subsidiaries                                            –            –              –                –               –           –            –       (46)         (46)
+Others                                                              –            –              –                –             654        (470)         184      (197)         (13)
+
+Total transactions with equity holders in their
+  capacity as equity holders for the period                         –        4,779          2,390           (1,481)            565       (9,614)      (3,361)   (1,614)      (4,975)
+
+Balance at 31 March 2026                                            –       68,575         (1,060)          (8,605)          7,640    1,061,102    1,127,652    83,975    1,211,627
+
+
+
+                                                                                             20
+                                                                                                                        Unaudited
+                                                                                      Attributable to equity holders of the Company
+                                                                                                      Shares held
+                                                                                                        for share                                            Non-
+                                                                Share        Share    Treasury             award       Other    Retained               controlling     Total
+                                                               capital    premium       shares           scheme     reserves    earnings      Total      interests    equity
+                                                           RMB’Million RMB’Million RMB’Million       RMB’Million RMB’Million RMB’Million RMB’Million RMB’Million RMB’Million
+
+Balance at 1 January 2025                                          –        43,079        (3,597)           (5,093)          47,129       892,030     973,548     80,348    1,053,896
+
+Comprehensive income
+Profit for the period                                              –             –             –                 –                    –    47,821      47,821      1,904      49,725
+Other comprehensive income, net of tax:
+  – share of other comprehensive income of
+       associates and joint ventures                               –             –             –                 –            1,203             –       1,203        (29)      1,174
+  – transfer of share of other comprehensive income
+       to profit or loss upon disposal and deemed
+       disposal of associates and joint ventures                   –             –             –                 –               (51)           –          (51)      51             –
+  – net gains from changes in fair value of
+       financial assets at fair value through
+       other comprehensive income                                  –             –             –                 –           24,932             –      24,932      1,535      26,467
+  – transfer to profit or loss upon disposal of
+       financial assets at fair value through
+       other comprehensive income                                  –             –             –                 –                1             –           1         –            1
+  – currency translation differences                               –             –             –                 –            2,159             –       2,159       505        2,664
+  – net movement in reserves for hedges                            –             –             –                 –             (207)            –        (207)        –         (207)
+
+Total comprehensive income for the period                          –             –             –                 –           28,037        47,821      75,858      3,966      79,824
+
+Transfer of losses on disposal and deemed disposal of
+  financial instruments to retained earnings, net of tax           –             –             –                 –            1,505        (1,505)           –         –            –
+Share of other changes in net assets of associates
+  and joint ventures                                               –             –             –                 –              888             –         888          –         888
+
+Transactions with equity holders
+Capital injections                                                 –             –             –                 –                    –         –            –      140          140
+Employee share option schemes:
+  – value of employee services                                     –          328              –                 –                10            –         338          9         347
+  – proceeds from shares issued,
+       net of withholding individual income tax                    –          (117)            –                 –                    –         –        (117)         –        (117)
+Employee share award schemes:
+  – value of employee services                                     –         4,304             –                 –            2,943             –        7,247       112        7,359
+  – shares purchased/withheld for the share award scheme           –             –             –              (858)               –             –         (858)        –         (858)
+  – vesting of awarded shares                                      –          (574)            –               574                –             –            –         –            –
+Tax benefit from share-based payments                              –             –             –                 –              162             –          162         –          162
+Repurchase and cancellation of shares                              –             –         3,597                 –                –       (16,628)     (13,031)        –      (13,031)
+Repurchase of shares (to be cancelled)                             –             –        (2,777)                –                –             –       (2,777)        –       (2,777)
+Cash dividends                                                     –             –             –                 –                –             –            –    (1,755)      (1,755)
+Non-controlling interests arising from
+  business combinations                                            –             –             –                 –                    –         –            –         1            1
+Acquisition of additional equity interests in
+  non wholly-owned subsidiaries                                    –             –             –                 –             (362)            –        (362)     (513)        (875)
+Dilution of interests in subsidiaries                              –             –             –                 –             (367)            –        (367)      129         (238)
+Disposal of subsidiaries                                           –             –             –                 –                –             –           –        (7)          (7)
+Others                                                             –             –             –                 –              346          (421)        (75)       54          (21)
+
+Total transactions with equity holders in their
+  capacity as equity holders for the period                        –         3,941          820               (284)           2,732       (17,049)      (9,840)   (1,830)     (11,670)
+
+Balance at 31 March 2025                                           –        47,020        (2,777)           (5,377)          80,291       921,297    1,040,454    82,484    1,122,938
+
+
+
+
+                                                                                            21
+CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS
+FOR THE THREE MONTHS ENDED 31 MARCH 2026
+
+                                                               Unaudited
+                                                       Three months ended 31 March
+                                                               2026           2025
+                                                        RMB’Million RMB’Million
+
+Net cash flows generated from operating activities          101,351         76,889
+
+Net cash flows used in investing activities                  (10,560)      (29,499)
+
+Net cash flows (used in)/generated from
+  financing activities                                       (12,117)       24,818
+
+Net increase in cash and cash equivalents                    78,674         72,208
+
+Cash and cash equivalents at beginning of the period        141,041        132,519
+
+Exchange (losses)/gains on cash and cash equivalents          (1,945)         526
+
+Cash and cash equivalents at end of the period              217,770        205,253
+
+
+
+
+                                              22
+NOTES TO THE INTERIM FINANCIAL INFORMATION
+
+1   General information, basis of preparation and presentation
+
+    The Company was incorporated in the Cayman Islands with limited liability. The shares of the Company
+    have been listed on the Main Board of the Stock Exchange since 16 June 2004.
+
+    The Company is an investment holding company. The Group is principally engaged in the provision of
+    VAS, Marketing Services, and FinTech and Business Services.
+
+    The Interim Financial Information is presented in RMB, unless otherwise stated.
+
+    The Interim Financial Information has not been audited but has been reviewed by the Auditor.
+
+    The Interim Financial Information has been prepared in accordance with IAS 34 “Interim Financial
+    Reporting” issued by the International Accounting Standards Board and should be read in conjunction
+    with the annual consolidated financial statements of the Group for the year ended 31 December 2025,
+    which have been prepared in accordance with IFRS Accounting Standards, as set out in the 2025 annual
+    report of the Company (the “2025 Financial Statements”).
+
+    Except as described below, the accounting policies and methods of computation used in the preparation
+    of the Interim Financial Information are generally consistent with those used in the 2025 Financial
+    Statements in all material aspects, which have been prepared in accordance with IFRS Accounting
+    Standards under the historical cost convention, as modified by the revaluation of FVPL, FVOCI, certain
+    other financial assets and liabilities, which are carried at fair values.
+
+    Taxes on income for the interim period are accrued using the estimated tax rates that would be applicable
+    to expected total annual assessable profit.
+
+    The following amendments to standards have been adopted by the Group for the first time for the
+    financial year beginning on 1 January 2026:
+
+    Amendments to IFRS 9 and IFRS 7                  Amendments to the Classification and Measurement of
+                                                      Financial Instruments
+
+    Amendments to IFRS 9 and IFRS 7                  Contracts Referencing Nature-dependent Electricity
+
+    Annual Improvements to IFRS                      Annual Improvements to IFRS Accounting Standards -
+      Accounting Standards                             Volume 11
+
+    The adoption of these amendments to standards does not have significant impact on the Interim Financial
+    Information of the Group.
+
+
+
+
+                                                    23
+2   Segment information and revenues
+
+    The Group has the following reportable segments for the three months ended 31 March 2026 and 2025:
+
+    –     VAS;
+
+    –     Marketing Services;
+
+    –     FinTech and Business Services; and
+
+    –     Others.
+
+    The “Others” business segment consists of the financials of investment in, production of and distribution
+    of, films and television programmes for third parties, copyrights licensing, merchandise sales and various
+    other activities.
+
+    There were no material inter-segment sales during the three months ended 31 March 2026 and 2025.
+    The revenues from external customers reported to the chief operating decision-makers are measured in a
+    manner consistent with that applied in the condensed consolidated income statement.
+
+    The segment information provided to the chief operating decision-makers for the reportable segments for
+    the three months ended 31 March 2026 and 2025 is as follows:
+
+                                                                   Unaudited
+                                                        Three months ended 31 March 2026
+                                                                   FinTech and
+                                                      Marketing        Business
+                                           VAS         Services        Services          Others         Total
+                                     RMB’Million    RMB’Million   RMB’Million     RMB’Million      RMB’Million
+
+    Segment revenues                       96,110         38,171         59,885           2,292        196,458
+
+    Gross profit/(loss)                    60,127         20,990         31,176          (1,028)       111,265
+
+    Cost of revenues
+      Depreciation                          1,515          2,014          2,165            960           6,654
+      Amortisation                          4,560          2,108             35            649           7,352
+
+
+
+
+                                                    24
+                                                                      Unaudited
+                                                           Three months ended 31 March 2025
+                                                                       FinTech and
+                                                         Marketing        Business
+                                             VAS          Services         Services         Others            Total
+                                        RMB’Million    RMB’Million   RMB’Million       RMB’Million       RMB’Million
+
+    Segment revenues                         92,133          31,853         54,907            1,129          180,022
+
+    Gross profit                             54,911          17,694         27,597             291           100,493
+
+    Cost of revenues
+      Depreciation                            1,317           1,700          1,815              11             4,843
+      Amortisation                            4,723           2,249             35             308             7,315
+
+
+
+3   Expenses by nature
+
+                                                                                      Unaudited
+                                                                             Three months ended 31 March
+                                                                                     2026              2025
+                                                                             RMB’Million        RMB’Million
+
+    Transaction costs (a)                                                            35,653                  34,023
+    Employee benefits expenses (b)                                                   32,413                  34,080
+    Content costs (excluding amortisation of intangible assets)                      17,022                  16,136
+    Technical infrastructure operations costs (excluding depreciation)               10,650                   6,722
+    Depreciation of property, plant and equipment, investment
+      properties and right-of-use assets                                              9,901                   6,790
+    Promotion and advertising expenses                                                8,716                   5,090
+    Amortisation of intangible assets (c)                                             8,138                   8,028
+
+    Note:
+
+    (a)     Transaction costs primarily consist of bank handling fees, channel and distribution costs.
+
+
+
+
+                                                       25
+(b)   During the three months ended 31 March 2026, the Group had incurred expenses for the purpose
+      of R&D of approximately RMB22,542 million (three months ended 31 March 2025: RMB18,910
+      million), which mainly comprised employee benefits expenses of approximately RMB16,255
+      million (three months ended 31 March 2025: RMB15,012 million).
+
+      No significant development expenditures had been capitalised for the three months ended 31 March
+      2026 and 2025.
+
+      During the three months ended 31 March 2026, employee benefits expenses included share-based
+      compensation expenses of approximately RMB6,534 million (three months ended 31 March 2025:
+      RMB10,100 million), which contained those incurred for employees related to the Group’s SSV
+      & CPP initiatives of approximately RMB23 million (three months ended 31 March 2025: RMB12
+      million).
+
+(c)   Amortisation charges of intangible assets are mainly in respect of media content including
+      long-form video and music content, game licences, and other content. During the three months
+      ended 31 March 2026, amortisation of media content was approximately RMB7,402 million (three
+      months ended 31 March 2025: RMB7,372 million).
+
+      During the three months ended 31 March 2026, amortisation of intangible assets included
+      amortisation of intangible assets arising from acquisitions of approximately RMB1,578 million
+      (three months ended 31 March 2025: RMB1,515 million).
+
+(d)   During the three months ended 31 March 2026, expenses incurred which were related to the
+      Group’s SSV & CPP initiatives (excluding share-based compensation expenses) were approximately
+      RMB140 million (three months ended 31 March 2025: RMB139 million).
+
+
+
+
+                                               26
+4   Net gains/(losses) from investments and others
+
+                                                                                   Unaudited
+                                                                          Three months ended 31 March
+                                                                                  2026              2025
+                                                                          RMB’Million        RMB’Million
+
+    Net gains on disposals and deemed disposals of
+      investee companies (a)                                                       3,793                  157
+    Net fair value gains/(losses) on FVPL ((b) and Note 9)                         1,047                 (623)
+    Other net fair value (losses)/gains (c)                                         (465)                 646
+    Impairment (provisions)/reversals for investments in
+      associates (Note 8(c))                                                       (2,197)                956
+    Impairment provisions for investments in
+      joint ventures and others                                                       (6)                   –
+    Donations (d)                                                                   (633)                 (58)
+    Dividend income                                                                  372                  246
+    Others                                                                            17                   83
+
+                                                                                   1,928                1,407
+
+
+
+    Note:
+
+    (a)     The net disposal and deemed disposal gains of approximately RMB3,793 million recognised during
+            the three months ended 31 March 2026 (three months ended 31 March 2025: RMB157 million)
+            comprised the following:
+
+            –    aggregate net gains of approximately RMB448 million (three months ended 31 March 2025:
+                 net losses of approximately RMB5 million) on disposals and partial disposals of investee
+                 companies of the Group;
+
+            –    aggregate net gains of approximately RMB3,663 million (three months ended 31 March 2025:
+                 RMB135 million) on deemed disposals of investee companies of the Group; and
+
+            –    aggregate net losses of approximately RMB318 million (three months ended 31 March
+                 2025: net gains of approximately RMB27 million) (Note 8) on dilution of the Group’s equity
+                 interests in certain associates due to new equity interests being issued by these associates.
+
+
+
+
+                                                     27
+    (b)   During the three months ended 31 March 2026, the net fair value gains on FVPL mainly comprised
+          net gains of approximately RMB761 million as a result of changes in valuations of certain investee
+          companies (three months ended 31 March 2025: net losses of approximately RMB743 million).
+
+    (c)   During the three months ended 31 March 2026, the other net fair value losses mainly included net
+          losses of approximately RMB482 million on other investment-related financial assets and liabilities
+          (three months ended 31 March 2025: net gains of approximately RMB728 million).
+
+    (d)   During the three months ended 31 March 2026, donations mainly included approximately RMB625
+          million for SSV & CPP initiatives of the Group (three months ended 31 March 2025: RMB21
+          million).
+
+5   Income tax expense
+
+    Income tax expense is recognised based on management’s best knowledge of the income tax rates
+    expected to be applicable for the financial year.
+
+    (a)   Cayman Islands and British Virgin Islands corporate income tax
+
+          The Group was not subject to any taxation in the Cayman Islands and the British Virgin Islands for
+          the three months ended 31 March 2026 and 2025.
+
+    (b)   Hong Kong profits tax
+
+          Hong Kong profits tax had been provided for at the rate of 16.5% on the estimated assessable
+          profits for the three months ended 31 March 2026 and 2025.
+
+    (c)   PRC CIT
+
+          PRC CIT had been provided for at applicable tax rates under the relevant laws and regulations of
+          the PRC after considering the available preferential tax benefits from refunds and allowances, and
+          on the estimated assessable profits of entities within the Group established in Chinese Mainland for
+          the three months ended 31 March 2026 and 2025. The general PRC CIT rate was 25% for the three
+          months ended 31 March 2026 and 2025.
+
+          Certain subsidiaries of the Company in Chinese Mainland were approved as High and New
+          Technology Enterprise, and they were subject to a preferential corporate income tax rate of 15% for
+          the three months ended 31 March 2026 and 2025.
+
+          In addition, certain subsidiaries of the Company were entitled to other tax concessions, mainly
+          including the preferential tax rate of 15% applicable to some subsidiaries located in certain areas of
+          Chinese Mainland upon fulfilment of certain requirements of the respective local governments.
+
+
+
+
+                                                     28
+(d)   Corporate income tax in other jurisdictions
+
+      Income tax on profits arising from other jurisdictions, including North America, Europe, Asia and
+      South America, had been calculated on the estimated assessable profits for the three months ended
+      31 March 2026 and 2025 at the respective rates prevailing in the relevant jurisdictions, which were
+      not higher than 39%.
+
+(e)   Withholding tax
+
+      According to applicable tax laws and regulations prevailing in Chinese Mainland, dividends
+      distributed by a company established in Chinese Mainland to a foreign investor with respect to
+      profit derived after 1 January 2008 are generally subject to a 10% withholding tax. If a foreign
+      investor is incorporated in Hong Kong, under the double taxation arrangement between Chinese
+      Mainland and Hong Kong, the relevant withholding tax rate applicable to such foreign investor will
+      be reduced from 10% to 5% subject to the fulfilment of certain conditions.
+
+      Dividends distributed from certain jurisdictions which the Group’s entities operate in are also
+      subject to withholding tax at respective applicable tax rates.
+
+The income tax expense of the Group for the three months ended 31 March 2026 and 2025 is analysed as
+follows:
+
+                                                                              Unaudited
+                                                                     Three months ended 31 March
+                                                                             2026              2025
+                                                                     RMB’Million        RMB’Million
+
+Current income tax                                                           11,891               12,396
+Deferred income tax                                                           2,686                1,321
+
+                                                                             14,577               13,717
+
+
+
+
+                                                29
+6   Earnings per share
+
+    (a)   Basic
+
+          Basic EPS is calculated by dividing the profit attributable to equity holders of the Company by the
+          weighted average number of ordinary shares in issue (excluding shares held for share award scheme
+          and treasury shares) during the period.
+
+                                                                                  Unaudited
+                                                                         Three months ended 31 March
+                                                                                 2026              2025
+
+          Profit attributable to equity holders of the Company
+            (RMB’Million)                                                        58,093               47,821
+
+          Weighted average number of ordinary shares in issue
+           excluding shares held for share award scheme
+           and treasury shares (million shares)                                   9,033                9,106
+
+          Basic EPS (RMB per share)                                               6.431                5.252
+
+
+
+    (b)   Diluted
+
+          The share options and awarded shares granted by the Company have potential dilutive effect
+          on the EPS. Diluted EPS is calculated by adjusting the weighted average number of ordinary
+          shares outstanding by the assumption of the conversion of all potential dilutive ordinary shares
+          arising from share options and awarded shares granted by the Company (collectively forming the
+          denominator for computing the diluted EPS), which is determined under the treasury stock method.
+
+
+
+
+                                                     30
+         In addition, the profit attributable to equity holders of the Company (the numerator) has been
+         adjusted by the effect of the share-based awards granted by the Company’s non wholly-owned
+         subsidiaries and associates, excluding those which have anti-dilutive effect on the Group’s diluted
+         EPS.
+
+                                                                                 Unaudited
+                                                                        Three months ended 31 March
+                                                                                2026              2025
+
+         Profit attributable to equity holders of the Company
+           (RMB’Million)                                                        58,093               47,821
+         Dilution effect arising from share-based awards granted
+           by non wholly-owned subsidiaries and associates
+           (RMB’Million)                                                          (284)                (323)
+
+         Profit attributable to equity holders of the Company
+           for the calculation of diluted EPS (RMB’Million)                     57,809               47,498
+
+         Weighted average number of ordinary shares in issue
+           excluding shares held for share award scheme
+           and treasury shares (million shares)                                  9,033                9,106
+         Adjustments for share options and awarded shares
+           (million shares)                                                        140                  155
+
+         Weighted average number of ordinary shares for the
+          calculation of diluted EPS (million shares)                            9,173                9,261
+
+         Diluted EPS (RMB per share)                                             6.302                5.129
+
+
+
+7   Dividends
+
+    A final dividend in respect of the year ended 31 December 2025 of HKD5.30 per share (2024: HKD4.50
+    per share) was proposed pursuant to a resolution passed by the Board on 18 March 2026 and subject to
+    the approval of the shareholders at the 2026 AGM. This proposed dividend has not been reflected as
+    dividend payable in the Interim Financial Information.
+
+    The Board did not declare any interim dividend for the three months ended 31 March 2026 and 2025.
+
+
+
+
+                                                    31
+8   Investments in associates
+
+                                                                            Unaudited               Audited
+                                                                             31 March           31 December
+                                                                                 2026                  2025
+                                                                          RMB’Million           RMB’Million
+
+    Investments in associates
+      – Listed entities (Note)                                                  183,457              182,757
+      – Unlisted entities                                                       147,075              159,652
+
+                                                                                330,532              342,409
+
+
+    Note:
+
+    As at 31 March 2026, the fair value of the investments in associates consisting of directly and indirectly
+    held listed equity interests was approximately RMB291,232 million (31 December 2025: RMB349,313
+    million).
+
+    Movement of investments in associates is analysed as follows:
+
+                                                                                   Unaudited
+                                                                          Three months ended 31 March
+                                                                                  2026              2025
+                                                                          RMB’Million        RMB’Million
+
+    At beginning of period                                                      342,409              290,343
+    Additions (a)                                                                   544                9,704
+    Transfers (b)                                                                (9,042)                  46
+    Dilution (losses)/gains on deemed disposals (Note 4(a))                        (318)                  27
+    Share of profit/(loss) of associates, net                                     3,522                4,483
+    Share of other comprehensive income of associates                              (544)               1,176
+    Share of other changes in net assets of associates                              823                  885
+    Dividends                                                                    (1,750)              (1,779)
+    Disposals                                                                    (1,118)                 (11)
+    Impairment (provisions)/reversals, net ((c) and Note 4)                      (2,197)                 956
+    Currency translation differences                                             (1,797)                (343)
+
+    At end of period                                                            330,532              305,487
+
+
+
+    Note:
+
+    (a)     During the three months ended 31 March 2026, the Group’s additions mainly comprised new
+            investments and additional investments in ordinary shares of certain investee companies.
+
+
+
+
+                                                    32
+    (b)   During the three months ended 31 March 2026, investment in an associate of approximately
+          RMB5,274 million was transferred to FVPL due to changes of certain shareholder’s rights of the
+          Group after the re-organisation of the investee company.
+
+          During the three months ended 31 March 2026, investment in an associate of approximately
+          RMB5,162 million was transferred to FVOCI due to resignation of board representative with a
+          deemed disposal gain of approximately RMB4,821 million recognised in “Net gains/(losses) from
+          investments and others”.
+
+    (c)   During the three months ended 31 March 2026, net impairment provisions of approximately
+          RMB2,197 million (three months ended 31 March 2025: net impairment reversals of approximately
+          RMB956 million) had been recognised for investments in associates, and the majority of these
+          investments’ recoverable amounts were determined using fair value less costs of disposal.
+
+9   Financial assets at fair value through profit or loss
+
+    FVPL include the following:
+
+                                                                        Unaudited              Audited
+                                                                         31 March          31 December
+                                                                             2026                 2025
+                                                                      RMB’Million          RMB’Million
+
+    Included in non-current assets:
+      Investments in listed entities                                          5,728               7,519
+      Investments in unlisted entities                                      183,102             179,553
+      Treasury investments and others                                        20,057              20,085
+
+                                                                            208,887             207,157
+
+    Included in current assets:
+      Treasury investments and others                                         27,627             35,929
+
+                                                                            236,514             243,086
+
+
+
+    Movement of FVPL is analysed as follows:
+
+                                                                               Unaudited
+                                                                      Three months ended 31 March
+                                                                              2026              2025
+                                                                           ’
+                                                                      RMB Million            ’
+                                                                                         RMB Million
+
+    At beginning of period                                                  243,086             214,567
+    Additions and transfers (a)                                              17,930              50,349
+    Changes in fair value (Note 4)                                            1,047                (623)
+    Disposals and others                                                    (21,746)            (31,241)
+    Currency translation differences                                         (3,803)                 29
+
+    At end of period                                                        236,514             233,081
+
+
+
+                                                   33
+     Note:
+
+     (a)     During the three months ended 31 March 2026, except as disclosed in Note 8(b), the Group’s
+             additions and transfers substantially represented additions to treasury investments, and new and
+             additional investments in certain investee companies.
+
+10   Financial assets at fair value through other comprehensive income
+
+     FVOCI include the following:
+
+                                                                             Unaudited             Audited
+                                                                              31 March         31 December
+                                                                                  2026                2025
+                                                                           RMB’Million         RMB’Million
+
+     Included in non-current assets:
+       Equity investments in listed entities                                     255,475             323,116
+       Equity investments in unlisted entities                                    33,714              22,746
+       Treasury investments                                                        8,863              10,778
+
+                                                                                 298,052             356,640
+
+     Included in current assets:
+       Treasury investments                                                        8,781               8,781
+
+                                                                                 306,833             365,421
+
+
+
+     Movement of FVOCI is analysed as follows:
+
+                                                                                   Unaudited
+                                                                          Three months ended 31 March
+                                                                                  2026              2025
+                                                                               ’
+                                                                          RMB Million            ’
+                                                                                             RMB Million
+
+     At beginning of period                                                      365,421             305,705
+     Additions and transfers (a)                                                  28,146              23,284
+     Changes in fair value                                                       (64,995)             26,595
+     Disposals                                                                   (15,672)            (12,957)
+     Currency translation differences                                             (6,067)                344
+
+     At end of period                                                            306,833             342,971
+
+
+
+     Note:
+
+     (a)     During the three months ended 31 March 2026, except as disclosed in Note 8(b), the Group’s
+             additions and transfers mainly comprised new and additional investments in certain investee
+             companies, and additions to treasury investments.
+
+
+
+
+                                                      34
+11   Accounts receivable
+
+     Accounts receivable and their ageing analysis, based on recognition date, are as follows:
+
+                                                                                Unaudited               Audited
+                                                                                 31 March           31 December
+                                                                                     2026                  2025
+                                                                              RMB’Million           RMB’Million
+
+     0 ~ 30 days                                                                      29,219               29,177
+     31 ~ 60 days                                                                     17,170               10,540
+     61 ~ 90 days                                                                      6,772                6,717
+     Over 90 days                                                                      4,955                3,496
+
+                                                                                      58,116               49,930
+
+
+
+     Accounts receivable as at 31 March 2026 and 31 December 2025 mainly represented amounts due from
+     marketing services customers and agents, FinTech and cloud customers, content production related
+     customers, and third party platform providers.
+
+     Marketing services customers and agents are usually granted with a credit period within 30 to 90 days
+     immediately following the month-end in which the relevant obligations under the relevant contracted
+     orders are delivered. Third party platform providers usually settle the amounts due by them within 60
+     days. Other customers, mainly including content production related customers and FinTech and cloud
+     customers, are usually granted with a credit period within 90 days.
+
+12   Share-based payments
+
+     (a)   Share option scheme
+
+           The Company had one share option scheme which remained valid and effective during the three
+           months ended 31 March 2026, namely, the 2023 Share Option Scheme. The Board may, at its
+           discretion, grant options to any qualifying participant to subscribe for shares of the Company,
+           subject to the terms and conditions stipulated therein. The exercise price must be in compliance
+           with the requirements under the Listing Rules. In addition, the option vesting period is determined
+           by the Board provided that it is not later than the last day of a 10-year period after the date of grant
+           of options.
+
+           The Company allowed certain of the grantees under the 2023 Share Option Scheme to surrender
+           their rights to receive a portion of the underlying shares (with equivalent fair value) to set off
+           against the exercise consideration and/or individual income tax payable when they exercised their
+           options.
+
+           As at 31 March 2026 and 31 December 2025, the Company did not have any outstanding share
+           options exercisable under any share option scheme other than the 2023 Share Option Scheme.
+
+
+
+
+                                                       35
+Movements in the number of share options outstanding and their related weighted average exercise
+prices are as follows:
+
+                                                                      Unaudited
+                                                             2023 Share Option Scheme
+                                                         Weighted average          Number
+                                                            exercise price       of options
+
+At 1 January 2026                                               HKD367.56            77,706,770
+Granted                                                         HKD516.78             9,203,153
+Exercised                                                       HKD322.17            (6,725,587)
+Lapsed/forfeited                                                HKD319.38               (37,799)
+
+At 31 March 2026                                                HKD388.53            80,146,537
+
+Exercisable as at 31 March 2026                                 HKD373.43            47,858,488
+
+At 1 January 2025                                               HKD349.18           109,221,125
+Granted                                                         HKD526.90             6,663,390
+Exercised                                                       HKD357.33           (20,378,928)
+Lapsed/forfeited                                                HKD362.46              (231,716)
+
+At 31 March 2025                                                HKD359.83            95,273,871
+
+Exercisable as at 31 March 2025                                 HKD357.05            59,389,134
+
+
+
+During the three months ended 31 March 2026 and 2025, no options were granted to any director of
+the Company.
+
+
+
+
+                                         36
+     (b)   Share award scheme
+
+           As at 31 March 2026, the Company had one effective share award scheme, being the 2023 Share
+           Award Scheme (effective since 17 May 2023), which was administered by an independent trustee
+           appointed by the Group. The vesting period of the awarded shares is determined by the Board.
+
+           Movements in the number of awarded shares for the three months ended 31 March 2026 and 2025
+           are as follows:
+
+                                                                                   Unaudited
+                                                                           Number of awarded shares
+                                                                          Three months ended 31 March
+                                                                                  2026              2025
+
+           At beginning of period                                            118,038,714     125,329,046
+           Granted                                                            19,334,301      17,261,799
+           Vested and transferred                                            (13,002,838)     (9,510,876)
+           Lapsed/forfeited                                                   (1,020,612)     (1,413,742)
+
+           At end of period                                                  123,349,565     131,666,227
+
+           Vested but not transferred as at end of period                          33,197      3,242,818
+
+
+
+           During the three months ended 31 March 2026, 67,259 awarded shares were granted to five
+           independent non-executive directors of the Company (three months ended 31 March 2025: 59,280
+           awarded shares were granted to five independent non-executive directors of the Company).
+
+13   Accounts payable
+
+     Accounts payable and their ageing analysis, based on invoice date, are as follows:
+
+                                                                             Unaudited          Audited
+                                                                              31 March      31 December
+                                                                                  2026             2025
+                                                                           RMB’Million      RMB’Million
+
+     0 ~ 30 days                                                                 129,289         110,812
+     31 ~ 60 days                                                                 10,882           8,447
+     61 ~ 90 days                                                                    286             326
+     Over 90 days                                                                  1,291           1,542
+
+                                                                                 141,748         121,127
+
+
+
+
+                                                     37
+14   Borrowings
+
+                                                                 Unaudited       Audited
+                                                                  31 March   31 December
+                                                                      2026          2025
+                                                               RMB’Million   RMB’Million
+
+     Included in non-current liabilities:
+       Non-current portion of long-term RMB bank borrowings,
+          unsecured (a)                                            134,425       133,325
+       Non-current portion of long-term USD bank borrowings,
+          unsecured (a)                                             46,014        46,742
+       Non-current portion of long-term EUR bank borrowings,
+          unsecured (a)                                             16,495        17,130
+       Non-current portion of long-term HKD bank borrowings,
+          unsecured (a)                                             10,941        11,165
+       Non-current portion of long-term JPY bank borrowings,
+          unsecured (a)                                                  5             6
+       Non-current portion of long-term EUR bank borrowings,
+          secured (a)                                                    1             1
+
+                                                                   207,881       208,369
+
+     Included in current liabilities:
+       RMB bank borrowings, unsecured (b)                           36,954        28,094
+       HKD bank borrowings, unsecured (b)                           12,344        12,627
+       RMB bank borrowings, secured (b)                                 50           100
+       Current portion of long-term USD bank borrowings,
+          unsecured (a)                                              1,730         1,757
+       Current portion of long-term RMB bank borrowings,
+          unsecured (a)                                                 30            30
+       Current portion of long-term JPY bank borrowings,
+          unsecured (a)                                                  4             8
+       Current portion of long-term EUR bank borrowings,
+          secured (a)                                                    2             2
+
+                                                                    51,114        42,618
+
+                                                                   258,995       250,987
+
+
+
+
+                                                 38
+Note:
+
+(a)     The aggregate principal amounts of long-term bank borrowings and applicable interest rates are as
+        follows:
+
+                                                        Unaudited                          Audited
+                                                      31 March 2026                    31 December 2025
+                                               Amount          Interest rate      Amount           Interest rate
+                                              (Million)        (per annum)       (Million)        (per annum)
+
+        RMB bank borrowings                RMB69,055     2.52% ~ 3.00%         RMB72,555     2.52% ~ 3.00%
+        RMB bank borrowings                RMB65,400 1-year LPR - 0.65%        RMB60,800 1-year LPR - 0.65%
+                                                              ~ + 0.15%                           ~ + 0.15%
+        HKD bank borrowings                HKD12,402    HIBOR + 0.25%          HKD12,402    HIBOR + 0.25%
+                                                                ~ 0.60%                             ~ 0.60%
+        USD bank borrowings                 USD6,900       SOFR + CAS           USD6,900       SOFR + CAS
+                                                                + 0.80%                             + 0.80%
+        EUR bank borrowings                 EUR2,080 EURIBOR + 0.70%            EUR2,080 EURIBOR + 0.70%
+                                                                ~ 0.75%                             ~ 0.75%
+        JPY bank borrowings                   JPY110     0.60% ~ 1.73%            JPY170     0.11% ~ 1.73%
+        JPY bank borrowings                   JPY115    TIBOR + 1.70%             JPY140    TIBOR + 1.70%
+
+(b)     The aggregate principal amounts of short-term bank borrowings and applicable interest rates are as
+        follows:
+
+                                                        Unaudited                          Audited
+                                                      31 March 2026                    31 December 2025
+                                               Amount          Interest rate      Amount           Interest rate
+                                              (Million)        (per annum)       (Million)        (per annum)
+
+        RMB bank borrowings                RMB37,190        0.90% ~ 4.00%      RMB28,339        0.70% ~ 4.00%
+        HKD bank borrowings                HKD13,980       HIBOR + 0.10%       HKD13,980       HIBOR + 0.15%
+                                                                  ~ 0.15%
+
+
+
+
+                                                  39
+15   Notes payable
+
+                                                                               Unaudited               Audited
+                                                                                31 March           31 December
+                                                                                    2026                  2025
+                                                                             RMB’Million           RMB’Million
+
+     Included in non-current liabilities:
+       Non-current portion of long-term USD notes payable                         115,384                 117,197
+       Non-current portion of long-term RMB notes payable                           8,966                   9,007
+
+                                                                                  124,350                 126,204
+
+     Included in current liabilities:
+       Current portion of long-term USD notes payable                               3,460                  10,542
+
+                                                                                  127,810                 136,746
+
+
+
+     Note:
+
+     The aggregate principal amounts of notes payable and applicable interest rates are as follows:
+
+                                                            Unaudited                            Audited
+                                                          31 March 2026                     31 December 2025
+                                                   Amount         Interest rate        Amount           Interest rate
+                                                   (Million)       (per annum)         (Million)         (per annum)
+
+     USD notes payable                           USD17,250 2.000% ~ 4.700%          USD18,250     1.810% ~ 4.700%
+     RMB notes payable                           RMB9,000 2.100% ~ 3.100%           RMB9,000      2.100% ~ 3.100%
+
+     All of these notes payable issued by the Group were unsecured.
+
+     During the three months ended 31 March 2026, a tranche of notes payable issued in June 2020 with
+     an aggregate principal amount of USD1,000 million reached its maturity and was repaid in full by the
+     Group.
+
+16   Subsequent events
+
+     There were no material subsequent events during the period from 1 April 2026 to the approval date of the
+     Interim Financial Information by the Board on 13 May 2026.
+
+
+
+
+                                                     40
+OTHER INFORMATION
+
+Purchase, Sale or Redemption of the Company’s Listed Securities
+
+During the three months ended 31 March 2026, the Company repurchased a total of
+12,650,000 shares on the Stock Exchange for an aggregate consideration of approximately
+HKD7.6 billion before expenses. The repurchased shares were subsequently cancelled. The
+repurchase was effected for the enhancement of shareholder value in the long term. Details
+of the shares repurchased are as follows:
+
+                                                Purchase consideration
+                                                      per share
+Month of purchase in              No. of                                         Aggregate
+ the three months ended           shares      Highest          Lowest         consideration
+ 31 March 2026                 purchased    price paid      price paid                 paid
+                                                 HKD             HKD                  HKD
+
+January                       10,205,000        638.00         600.50      6,357,677,095.50
+March                          2,445,000        506.00         476.40      1,196,868,575.90
+
+Total                         12,650,000                                   7,554,545,671.40
+
+
+Save as disclosed above and in the “Financial Information” section, neither the Company
+nor any of its subsidiaries has purchased, sold or redeemed any of the Company’s listed
+securities during the three months ended 31 March 2026.
+
+Employee and Remuneration Policies
+
+As at 31 March 2026, the Group had 114,848 employees (31 March 2025: 109,414). The
+number of employees employed by the Group varies from time to time depending on needs
+and employees are remunerated based on industry practice.
+
+The remuneration policy and package of the Group’s employees are periodically reviewed.
+Apart from pension funds and in-house training programmes, discretionary bonuses, share
+awards and share options may be awarded to employees according to the assessment of
+individual performance.
+
+The total remuneration cost incurred by the Group for the three months ended 31 March
+2026 was RMB32.4 billion (for the three months ended 31 March 2025: RMB34.1 billion).
+
+
+
+
+                                           41
+Audit Committee
+
+The Audit Committee, together with the Auditor, has reviewed the Group’s unaudited
+Interim Financial Information for the three months ended 31 March 2026. The Audit
+Committee has also reviewed the accounting principles and practices adopted by the Group
+and discussed auditing, risk management, internal control and financial reporting matters.
+
+Compliance with the Corporate Governance Code
+
+Save as disclosed in the corporate governance report in the 2025 annual report of the
+Company, none of the directors of the Company is aware of any information which would
+reasonably indicate that the Company has not complied with the code provisions as set out
+in the CG Code during the period from 1 January 2026 to 31 March 2026.
+
+As to the deviation from code provisions B.2.2 (regarding the retirement and re-election of
+directors) and C.2.1 (regarding the segregation of the roles of chairman and chief executive)
+of the CG Code, the Board will continue to review the current structure from time to
+time and shall make necessary changes when appropriate and inform the shareholders
+accordingly.
+
+
+
+
+                                             42
+APPRECIATION
+
+On behalf of the Board, I would like to extend our sincere gratitude to our dedicated staff
+and management team for their unwavering commitment and invaluable contributions,
+which continue to drive the Company’s growth and resilience. I would also like to express
+our sincere appreciation to our shareholders and stakeholders for their steadfast support and
+confidence in the Company.
+
+We remain firmly committed to our core principle of “Value for Users, Tech for Good” and
+continue to deliver meaningful impact through technology. Looking ahead, we will continue
+to leverage AI on innovation and long-term value creation for a more sustainable future for
+all.
+
+
+
+
+                                                                                     By Order of the Board
+                                                                                         Ma Huateng
+                                                                                          Chairman
+
+Hong Kong, 13 May 2026
+
+
+As at the date of this announcement, the directors of the Company are:
+
+Executive Director:
+Ma Huateng;
+
+Non-Executive Directors:
+Jacobus Petrus (Koos) Bekker and Charles St Leger Searle; and
+
+Independent Non-Executive Directors:
+Li Dong Sheng, Ian Charles Stone, Yang Siu Shun, Ke Yang and Zhang Xiulan.
+
+
+
+This announcement contains forward-looking statements relating to the business outlook, estimates of financial
+performance, forecast business plans and growth strategies of the Group. These forward-looking statements are
+based on information currently available to the Group and are stated herein on the basis of the outlook at the
+time of this announcement. They are based on certain expectations, assumptions and premises, some of which
+are subjective or beyond our control. These forward-looking statements may prove to be incorrect and may not
+be realised in the future. Underlying these forward-looking statements are a lot of risks and uncertainties. In
+light of the risks and uncertainties, the inclusion of forward-looking statements in this announcement should not
+be regarded as representations by the Board or the Company that the plans and objectives will be achieved, and
+investors should not place undue reliance on such statements. The Board and the Company assume no obligation
+to correct or update the forward-looking statements contained in this announcement.
+
+
+
+                                                      43
+DEFINITION
+
+In this announcement, unless the context otherwise requires, the following expressions shall
+have the following meanings:
+
+Term                           Definition
+
+“2023 Share Award              the share award scheme adopted by the Company on 17 May
+  Scheme”                      2023, as amended from time to time
+
+“2023 Share Option             the share option scheme adopted by the Company on 17 May
+  Scheme”                      2023, as amended from time to time
+
+“2026 AGM”                     the annual general meeting of the Company to be held on
+                               13 May 2026 or any adjournment thereof
+
+“AI”                           artificial intelligence
+
+“Audit Committee”              the audit committee of the Company
+
+“Auditor”                      PricewaterhouseCoopers, the auditor of the Company
+
+“Board”                        the board of directors of the Company
+
+“CAS”                          credit adjustment spread, which is a fixed spread adjustment
+                               incorporated to bridge the gap between LIBOR and SOFR in
+                               order to minimise the economic impact of the transfer from
+                               a LIBOR-based debt to a SOFR-based debt
+
+“CG Code”                      the Corporate Governance Code as set out in Appendix C1
+                               to the Listing Rules
+
+“Company”                      Tencent Holdings Limited, a limited liability company
+                               organised and existing under the laws of the Cayman Islands
+                               and the shares of which are listed on the Stock Exchange
+
+“DAU”                          daily active user accounts
+
+“Domestic Games”               for the purpose of preparing financial and operating
+                               information, Domestic Games refers to our games business
+                               in the PRC, excluding Hong Kong, the Macao Special
+                               Administrative Region and Taiwan, China
+
+
+
+                                             44
+Term                      Definition
+
+“EBITDA”                  earnings before interest, tax, depreciation and amortisation
+
+“EPS”                     earnings per share
+
+“EUR”                     the lawful currency of the European Union
+
+“EURIBOR”                 Euro Interbank Offered Rate
+
+“FinTech”                 financial technology
+
+“FVOCI”                   financial assets at fair value through other comprehensive
+                          income
+
+“FVPL”                    financial assets at fair value through profit or loss
+
+“GMV”                     gross merchandise value
+
+“Group”                   the Company and its subsidiaries
+
+“HIBOR”                   Hong Kong InterBank Offered Rate
+
+“HKD”                     the lawful currency of Hong Kong
+
+“Hong Kong”               the Hong Kong Special Administrative Region, the PRC
+
+“IAS”                     International Accounting Standards
+
+“IFRS” or “IFRS           International Financial Reporting Standards as issued by the
+  Accounting Standards”   International Accounting Standards Board
+
+“Interim Financial        the condensed consolidated interim financial statements for
+  Information”            the three months ended 31 March 2026
+
+“International Games”     for the purpose of preparing financial and operating information,
+                          International Games refers to our games business other than
+                          our Domestic Games business
+
+
+
+
+                                        45
+Term               Definition
+
+“IT”               information technology
+
+“JPY”              the lawful currency of Japan
+
+“LIBOR”            London InterBank Offered Rate
+
+“Listing Rules”    the Rules Governing the Listing of Securities on the Stock
+                   Exchange
+
+“LPR”              Loan Prime Rate
+
+“MAU”              monthly active user accounts
+
+“PC”               personal computer
+
+“PRC” or “China”   the People’s Republic of China
+
+“PRC CIT”          PRC corporate income tax as defined in the “ Corporate
+                   Income Tax Law of the People’s Republic of China”
+
+“R&D”              research and development
+
+“RMB”              the lawful currency of the PRC
+
+“SOFR”             Secured Overnight Financing Rate
+
+“SSV & CPP”        Sustainable Social Value and Common Prosperity Programmes
+
+“Stock Exchange”   The Stock Exchange of Hong Kong Limited
+
+“TIBOR”            Tokyo InterBank Offered Rate
+
+“United States”    the United States of America
+
+“USD”              the lawful currency of the United States
+
+“VAS”              value-added services
+
+
+
+
+                                46
+

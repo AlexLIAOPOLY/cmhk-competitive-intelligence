@@ -1,0 +1,137 @@
+2022 Interim Report
+Corporate Information
+
+BOARD OF DIRECTORS                               AUDIT COMMITTEE
+                                                 IP Yuk Keung (Chairman)
+Chairman and Non-executive Director              LAN Hong Tsung, David
+FOK Kin Ning, Canning, BA, DFM, FCA (ANZ)        WONG Yick Ming, Rosanna
+
+Co-Deputy Chairmen and Non-executive Directors
+                                                 NOMINATION COMMITTEE
+LUI Dennis Pok Man, BSc                          WONG Yick Ming, Rosanna (Chairman)
+WOO Chiu Man, Cliff, BSc                         Edith SHIH
+                                                 IP Yuk Keung
+Executive Director
+KOO Sing Fai, BSc
+ Chief Executive Officer
+                                                 REMUNERATION COMMITTEE
+                                                 LAN Hong Tsung, David (Chairman)
+Non-executive Directors                          FOK Kin Ning, Canning
+LAI Kai Ming, Dominic, BSc, MBA                  IP Yuk Keung
+ (also Alternate to FOK Kin Ning, Canning and
+ Edith SHIH )
+                                                 SUSTAINABILITY COMMITTEE
+Edith SHIH, BSE, MA, MA, EdM, Solicitor,
+  FCG(CS, CGP), HKFCG(CS, CGP)(PE)               Edith SHIH (Chairman)
+
+MA Lai Chee, Gerald, BCom, MA                    KOO Sing Fai
+ (Alternate to LAI Kai Ming, Dominic)            WONG Yick Ming, Rosanna
+
+Independent Non-executive Directors              COMPANY SECRETARY
+IP Yuk Keung, BSc, MSc, MSc                      Edith SHIH
+LAN Hong Tsung, David, GBS, ISO, JP
+WONG Yick Ming, Rosanna, PhD, DBE, JP            AUDITOR
+                                                 PricewaterhouseCoopers
+                                                   Certified Public Accountants
+                                                   Registered Public Interest Entity Auditor
+Contents
+
+
+
+
+           •    Corporate Information
+            2   Financial Highlights
+            3   Chairman’s Statement
+            5   Management Discussion and Analysis
+            9   Group Capital Resources and Liquidity
+           12   Disclosure of Interests
+           17   Corporate Governance
+           18   Changes in Information of Directors
+           19   Report on Review of Condensed Consolidated Interim
+                Financial Statements
+           20   Condensed Consolidated Statement of Comprehensive Income
+           21   Condensed Consolidated Statement of Financial Position
+           22   Condensed Consolidated Statement of Changes in Equity
+           23   Condensed Consolidated Statement of Cash Flows
+           24   Notes to the Condensed Consolidated Interim Financial Statements
+           34   Supplementary Financial Information
+           35   Glossary
+           •    Information for Shareholders
+    Financial Highlights
+
+                                                                                                                      1H 2022                   1H 2021
+                                                                                                                   HK$ million                HK$ million              Change
+
+        Total revenue                                                                                                        2,298                    2,565               -10%
+        Service revenue                                                                                                      1,558                    1,630                -4%
+        Total EBITDA (1)                                                                                                        695                     747                -7%
+        Total (LBIT)/EBIT (2)                                                                                                   (43)                     92              -147%
+        (Loss)/profit attributable to shareholders                                                                              (96)                     31              -410%
+        (Loss)/earnings per share (in HK cents)                                                                               (1.99)                   0.64              -410%
+        Special interim dividend per share (in HK cents)                                                                          –                   19.80              -100%
+        Interim dividend per share (in HK cents)                                                                               2.28                    2.28                  –
+
+
+
+
+    Note 1: EBITDA represents the EBITDA of the Company and subsidiary companies as well as the Group’s share of the EBITDA of a joint venture. EBITDA is defined as earnings before
+            net interest and other finance costs, taxation, depreciation and amortisation. Information concerning EBITDA has been included in the Group’s financial information and is
+            used by many industries and investors as one measure of gross cash flow generation. The Group considers EBITDA to be an important performance measure which is used
+            in the Group’s internal financial and management reporting to monitor business performance. EBITDA is not a measure of cash liquidity or financial performance under IFRS
+            and the EBITDA measures used by the Group may not be comparable to other similarly titled measures of other companies. EBITDA should not necessarily be construed as an
+            alternative to cash flows or results from operations as determined in accordance with IFRS.
+
+    Note 2: (LBIT)/EBIT represents the (LBIT)/EBIT of the Company and subsidiary companies as well as the Group’s share of the EBIT of a joint venture. (LBIT)/EBIT is defined as losses
+            or earnings before net interest and other finance costs and taxation. Information concerning (LBIT)/EBIT has been included in the Group’s financial information and is used
+            by many industries and investors as one measure of results from operations. The Group considers (LBIT)/EBIT to be an important performance measure which is used in the
+            Group’s internal financial and management reporting to monitor business performance. (LBIT)/EBIT is not a measure of financial performance under IFRS and the (LBIT)/EBIT
+            measures used by the Group may not be comparable to other similarly titled measures of other companies. (LBIT)/EBIT should not necessarily be construed as an alternative
+            to results from operations as determined in accordance with IFRS.
+
+
+
+2   Hutchison Telecommunications Hong Kong Holdings Limited
+Chairman's Statement
+
+The first half of 2022 showed a small setback of the economic recovery which resulted in a financial impediment for the Group.
+Nevertheless, the gradual easing of COVID-19 measures is expected to bring back a transition towards normality.
+
+Challenging operational uncertainties persisted during the first half of the year, leading to a decrease in the revenue of the Group
+by HK$267 million or 10% to HK$2,298 million in the first six months of 2022. Service revenue weakened by 4% compared with
+the same period last year mainly due to HK$85 million or 6% lower local service revenue from intense competition and the
+slowdown of corporate solution revenue in light of the tightened measures during the fifth-wave of COVID-19 in Hong Kong
+during the first half of 2022. This decline was partially offset by a slight improvement in roaming service revenue. Hardware and
+other product revenue reported a HK$195 million or 21% drop as a result of supply chain constraints.
+
+EBITDA decreased by HK$52 million or 7% to HK$695 million in the first six months of 2022. The lower EBITDA was mainly
+attributable to the aforementioned lower service revenue and the higher network operating costs driven by the Group’s effort
+in building the best mobile network in Hong Kong, which was partially offset by the strengthened shop-in-shop strategy and
+ongoing efficiency enhancement initiatives.
+
+LBIT was HK$43 million which, compared to the same period last year, shifted downward by HK$135 million or 147%. Aside from
+the lower service revenue and the higher network operating costs impacting EBITDA above, the decrease was mostly due to the
+higher depreciation and amortisation from the renewal of spectrum licence in 2021 as well as the robust investments in network
+infrastructure and related-technologies to cater the upsurge demand in digital experience.
+
+Loss attributable to shareholders and loss per share were HK$96 million and 1.99 HK cents, a 410% decrease compared to the
+same period last year.
+
+As of 30 June 2022, the total number of customers in Hong Kong and Macau amounted to approximately 3.0 million, a drop of
+7% from approximately 3.2 million compared with the same period last year, largely due to the real-name registration for SIM
+cards in Hong Kong which commenced on 1 March 2022. The decline was partially offset by the increase in postpaid, mobile
+broadband and SoSIM customers. Monthly churn rate of postpaid customers improved to 0.7% (1H 2021: 1.1%) mainly due to the
+effect of focused strategy to improve customer loyalty and the continuous effort in customer retention. Local postpaid net ARPU
+decreased by 7% to HK$149 as a result of softer ARPU and slower than expected corporate solutions contributions as a result of
+the tightened measures during the fifth-wave of COVID-19 in Hong Kong at the beginning of 2022.
+
+Dividend
+The Board declared an interim dividend of 2.28 HK cents (2021 interim dividend: 2.28 HK cents) per share for the six months
+ended 30 June 2022, in line with the same period last year, payable on Friday, 2 September 2022, to shareholders whose names
+appear on the Register of Members of the Company at the close of business on Wednesday, 24 August 2022, being the record
+date for determining shareholders’ entitlement to the interim dividend.
+
+
+
+
+                                                                                                                     2022 Interim Report   3
+

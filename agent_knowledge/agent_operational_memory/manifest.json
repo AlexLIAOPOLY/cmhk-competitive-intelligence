@@ -1,0 +1,28 @@
+{
+  "id": "agent_operational_memory",
+  "title": "小竞AI生产运行记忆",
+  "summary": "本地可审计长期记忆，保存用户偏好、生产规则、数据边界和已验证工作流。",
+  "source_type": "local_agent_memory",
+  "scope": "用于小竞AI和项目内 agent 的跨会话运行上下文，不替代正式数据源。",
+  "tags": [
+    "agent-memory",
+    "production",
+    "context-management"
+  ],
+  "keywords": [
+    "memory",
+    "context",
+    "token",
+    "小竞AI",
+    "生产规则"
+  ],
+  "entrypoints": [
+    "README.md",
+    "memories.jsonl"
+  ],
+  "updated_at": "2026-06-20",
+  "quality": "Agent 运行辅助记忆；正式数据结论仍以已选择数据库和审计文件为准。",
+  "visibility": "hidden",
+  "version": "2026-06-20",
+  "built_at": "2026-06-20"
+}

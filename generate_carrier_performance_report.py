@@ -21,6 +21,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt
 from docx.text.paragraph import Paragraph
 
+from company_metrics import build_company_metrics_payload
+
 
 ROOT = Path(__file__).resolve().parent
 TEMPLATE_PATH = ROOT / "carrier_performance_template.docx"
@@ -31,6 +33,7 @@ MARKET_CACHE_PATH = ROOT / "carrier_market_cache.json"
 FEISHU_MIRROR_PATH = ROOT / "carrier_performance_feishu.json"
 FEISHU_SYNC_SCRIPT = ROOT / "sync_carrier_performance_feishu.py"
 VERIFIED_FIELDS_PATH = ROOT / "carrier_performance_verified_fields.json"
+PERFORMANCE_USAGE_AUDIT_PATH = ROOT / "carrier_performance_fact_usage.json"
 RESULTS_DIR = ROOT / "results"
 COMPANIES = ["中国移动", "中国电信", "中国联通", "中国铁塔"]
 FIELD_ORDER = [
@@ -53,6 +56,11 @@ METRICS = [
     "5G网络渗透率",
 ]
 SUMMARY_TABLE_HEADERS = ["主体", "最新披露", "收益", "EBITDA / 利润", "资本开支", "派息"]
+COMPANY_FACT_ALIASES = {
+    "HKT / csl / 1O1O": {"HKT", "csl", "1O1O"},
+    "3HK / Hutchison": {"3HK", "Hutchison"},
+    "i-CABLE": {"i-CABLE", "iCable"},
+}
 MAINLAND_SUMMARY_ROWS = {
     "中国移动": ["中国移动", "2026Q1", "2665亿元", "归母净利润293亿元", "2025年1509亿元；2026年计划1366亿元", "全年每股5.27港元"],
     "中国电信": ["中国电信", "2026Q1", "2025年5296亿元", "2025年EBITDA 1439亿元", "2025年804亿元", "全年每股0.2720元"],
@@ -191,6 +199,17 @@ def clean_text(value: object, limit: int | None = None) -> str:
     return text
 
 
+def compact_market_reaction_text(value: str) -> str:
+    text = clean_text(value)
+    match = re.search(
+        r"前一交易日(\d+月\d+日)收盘价为([0-9.]+港元)，后一交易日(\d+月\d+日)收盘价为([0-9.]+港元)，(上涨|下跌)([0-9.]+%)",
+        text,
+    )
+    if match:
+        return f"业绩发布前后股价由{match.group(2)}变动至{match.group(4)}，{match.group(5)}{match.group(6)}。"
+    return text
+
+
 def normalize_hkd_units(value: str) -> str:
     def replace_cents(match: re.Match[str]) -> str:
         amount = Decimal(match.group(1)) / Decimal("100")
@@ -202,6 +221,59 @@ def normalize_hkd_units(value: str) -> str:
     text = re.sub(r"(\d+(?:\.\d+)?)\s*港仙", replace_cents, value)
     text = re.sub(r"(\d+(?:\.\d+)?)\s*HK\s*cents?", replace_cents, text, flags=re.I)
     return text
+
+
+def strip_raw_fact_text(value: object) -> str:
+    text = clean_text(value, 260)
+    text = re.sub(
+        r"^(?:片段中明确提到|片段中明确列出|片段明确提到|片段明确说明|片段提到|片段列出|新闻标题明确提及)[：:'“” ]*",
+        "",
+        text,
+    )
+    text = re.sub(r"\b(\d+(?:\.\d+)?亿港元)\s+loss\b", r"亏损\1", text, flags=re.I)
+    text = re.sub(r"\s*\((?:final|interim)\)\s*", "", text, flags=re.I)
+    return text.strip(" ：，。'“”")
+
+
+def is_publishable_fact_text(value: object) -> bool:
+    text = strip_raw_fact_text(value)
+    if not text:
+        return False
+    blocked = (
+        "片段中",
+        "公开信息已更新",
+        "Skip to main content",
+        "Log In Sign Up",
+        "Stock Screener",
+        "Final dividend per share",
+        "Net customer service revenue",
+        "Total revenue",
+        "Profit attributable",
+    )
+    if any(token.lower() in text.lower() for token in blocked):
+        return False
+    has_cn = len(re.findall(r"[\u4e00-\u9fff]", text)) >= 2
+    has_value = bool(re.search(r"\d(?:[\d,.]*)\s*(?:亿港元|百万港元|万港元|港元|亿元|元|%|GB|万|亿|栋|个|户|条)", text))
+    return has_cn or has_value
+
+
+def has_inline_content(paragraph: Paragraph) -> bool:
+    xml = paragraph._p.xml
+    return bool(
+        paragraph.text.strip()
+        or "<w:drawing" in xml
+        or "<w:pict" in xml
+        or "<w:object" in xml
+        or "<w:tbl" in xml
+        or "<w:sectPr" in xml
+    )
+
+
+def prune_trailing_empty_paragraphs(doc: Document) -> None:
+    for paragraph in reversed(doc.paragraphs):
+        if has_inline_content(paragraph):
+            break
+        remove_paragraph(paragraph)
 
 
 def load_verified_fields() -> dict:
@@ -594,8 +666,74 @@ def table_lookup(table: list[list[str]], company: str, metric: str) -> str:
     return "待补充"
 
 
+def confirmed_facts_by_report_company(companies: list[str]) -> dict[str, list[dict]]:
+    payload = build_company_metrics_payload()
+    public_rows = [
+        row
+        for row in payload.get("rows") or []
+        if row.get("sourceType") == "public-crawl" and row.get("aiStatus") == "ok"
+    ]
+    output: dict[str, list[dict]] = {}
+    for company in companies:
+        aliases = COMPANY_FACT_ALIASES.get(company, {company})
+        output[company] = [row for row in public_rows if row.get("company") in aliases]
+    return output
+
+
+def fact_field(metric: str) -> str:
+    if re.search(r"派息|股息|分派", metric, re.IGNORECASE):
+        return "dividend"
+    if re.search(r"资本开支|Capex|投资方向", metric, re.IGNORECASE):
+        return "capex"
+    if re.search(r"券商观点|评级|目标价", metric, re.IGNORECASE):
+        return "broker"
+    if re.search(r"市场反应|股价", metric, re.IGNORECASE):
+        return "market"
+    return "strategy"
+
+
+def enrich_field_with_confirmed_facts(base: str, field_key: str, facts: list[dict]) -> tuple[str, list[str]]:
+    additions: list[str] = []
+    used_ids: list[str] = []
+    normalized_base = re.sub(r"\s+", "", base).casefold()
+
+    def market_value_signature(text: str) -> set[str]:
+        return {f"{amount}{unit}" for amount, unit in re.findall(r"([0-9]+(?:\.[0-9]+)?)\s*(港元|%)", text)}
+
+    base_market_signature = market_value_signature(base) if field_key == "market" else set()
+    for fact in facts:
+        if fact_field(str(fact.get("metric") or "")) != field_key:
+            continue
+        raw_value = fact.get("value")
+        raw_detail = fact.get("detail")
+        value = strip_raw_fact_text(raw_value)
+        if not is_publishable_fact_text(value):
+            value = strip_raw_fact_text(raw_detail)
+        if not is_publishable_fact_text(value):
+            continue
+        normalized_value = re.sub(r"\s+", "", value).casefold()
+        if normalized_value in normalized_base:
+            used_ids.append(str(fact.get("id") or ""))
+            continue
+        if field_key == "market":
+            value_signature = market_value_signature(value)
+            if value_signature and value_signature.issubset(base_market_signature):
+                used_ids.append(str(fact.get("id") or ""))
+                continue
+        addition = f"{clean_text(fact.get('metric'), 32)}：{value}"
+        if addition not in additions:
+            additions.append(addition)
+        used_ids.append(str(fact.get("id") or ""))
+    if not additions:
+        return base, [item for item in used_ids if item]
+    enriched = f"{base.rstrip('。')}；另，" + "；".join(additions) + "。"
+    return enriched, [item for item in used_ids if item]
+
+
 def build_performance_sections(config: dict, cache: dict, companies: list[str]) -> list[dict]:
     sections = []
+    confirmed_facts = confirmed_facts_by_report_company(companies)
+    used_fact_ids: set[str] = set()
     for company in companies:
         company_cfg = config["companies"].get(company)
         if not company_cfg:
@@ -625,12 +763,43 @@ def build_performance_sections(config: dict, cache: dict, companies: list[str]) 
             content = clean_text(fields.get(field_key), 360)
             if field_key == "market" and not is_publishable_field(content):
                 content = market_reaction(company_cfg) or content
+            if field_key == "market":
+                content = compact_market_reaction_text(content)
             if not content:
                 content = "公开资料未单独披露该项口径。"
             if not is_publishable_field(content):
                 raise ValueError(f"业绩摘要字段未通过发布质量校验：{company} / {label}")
+            content, field_fact_ids = enrich_field_with_confirmed_facts(
+                content,
+                field_key,
+                confirmed_facts.get(company, []),
+            )
+            used_fact_ids.update(field_fact_ids)
             items.append(f"{label}：{content}")
         sections.append({"title": section_title, "items": items})
+    all_relevant_ids = {
+        str(fact.get("id") or "")
+        for facts in confirmed_facts.values()
+        for fact in facts
+        if fact.get("id")
+    }
+    PERFORMANCE_USAGE_AUDIT_PATH.write_text(
+        json.dumps(
+            {
+                "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
+                "reportCompanies": companies,
+                "acceptedRelevantFacts": len(all_relevant_ids),
+                "usedFacts": len(used_fact_ids),
+                "omittedFacts": len(all_relevant_ids - used_fact_ids),
+                "usedFactIds": sorted(used_fact_ids),
+                "omittedFactIds": sorted(all_relevant_ids - used_fact_ids),
+                "policy": "保持五点结构；派息、资本开支、券商观点和市场反应按字段合并，其余确认经营事实并入战略升级。",
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     return sections
 
 
@@ -723,6 +892,7 @@ def render_report() -> Path:
             cell.text = str(value)
 
     render_body_sections(doc, data.get("sections", []))
+    prune_trailing_empty_paragraphs(doc)
 
     output_path = dated_output_path()
     doc.save(str(output_path))

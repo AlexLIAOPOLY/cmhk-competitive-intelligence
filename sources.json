@@ -1,34 +1,42 @@
 [
   {
-    "row": "2",
-    "block": "香港本地竞对",
-    "object": "HKT / csl / 1O1O",
-    "object_cell": "HKT / csl / 1O1O",
+    "row": "20",
+    "block": "全球标杆运营商",
+    "object": "亚太运营商",
+    "object_cell": "",
     "entities": [
-      "HKT",
-      "csl",
-      "1O1O"
+      "Vodafone",
+      "Deutsche Telekom",
+      "Orange",
+      "Telefonica",
+      "BT/EE",
+      "TIM",
+      "Verizon",
+      "AT&T",
+      "T-Mobile US"
     ],
-    "package": "财报经营指标",
-    "need": "运营收入（年报中常用：总收益）、服务收入、EBITDA、净利润、客户数（移动用户数、后付用户数、预付用户数、5G用户数）、宽频线数/家宽用户数、ARPU、资本开支、派息、资本开支、战略升级、券商观点、市场反应",
-    "sources": "【HKT】\n- https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/\n- https://www.hkt.com/en/about-hkt/investor-relations/financial-results/\n- https://www.hkcsl.com/en/csl-local-prepaid-sim-card\n- https://stockanalysis.com/quote/hkg/6823/revenue/\n- https://stockanalysis.com/quote/hkg/6823/financials/\n【csl】\n- https://www.hkcsl.com/en/csl-local-prepaid-sim-card\n- https://www.1010.com.hk/\n- https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/\n【1O1O】\n- https://www.hkcsl.com/en/csl-local-prepaid-sim-card\n- https://www.1010.com.hk/\n- https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/",
+    "package": "全球趋势案例",
+    "need": "Vodafone、Deutsche Telekom、Orange、Telefonica、BT/EE、TIM、Verizon、AT&T、T-Mobile US 的网络API、Open RAN、边缘计算、FWA、AI网络",
+    "sources": "【Vodafone】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.telefonica.com/en/communication-room/press-room/\n【Deutsche Telekom】\n- https://www.telekom.com/en/media/media-information\n【Orange】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.telefonica.com/en/communication-room/press-room/\n【Telefonica】\n- https://www.telefonica.com/en/communication-room/press-room/\n【BT/EE】\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.bt.com/about/bt/our-company/group-businesses/networks\n【TIM】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.verizon.com/5g/home/\n【Verizon】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://www.verizon.com/5g/home/\n【AT&T】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.telefonica.com/en/communication-room/press-room/\n【T-Mobile US】\n- https://www.telekom.com/en/media/media-information",
     "channel": "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
-    "frequency": "每周一",
+    "frequency": "每日扫描官方新闻/公告；每周汇总复核",
     "selected_fields": [
-      "运营收入/总收益",
-      "服务收入",
-      "EBITDA",
-      "净利润",
-      "客户数/用户数",
-      "5G用户数",
-      "资本开支",
-      "宽频线数/家宽用户数",
-      "ARPU",
-      "派息",
-      "战略升级",
-      "券商观点",
-      "市场反应"
+      "网络API",
+      "Open RAN",
+      "边缘计算",
+      "FWA",
+      "AI网络"
     ],
-    "ignored_selected_fields": []
+    "ignored_selected_fields": [
+      "Vodafone",
+      "Deutsche Telekom",
+      "Orange",
+      "Telefonica",
+      "BT/EE",
+      "TIM",
+      "Verizon",
+      "AT&T",
+      "T-Mobile US"
+    ]
   }
 ]

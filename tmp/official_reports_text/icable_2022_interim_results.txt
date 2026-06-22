@@ -1,0 +1,1816 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong
+Limited take no responsibility for the contents of this announcement, make no
+representation as to its accuracy or completeness and expressly disclaim any liability
+whatsoever for any loss howsoever arising from or in reliance upon the whole or any
+part of the contents of this announcement.
+
+
+
+
+                i-CABLE COMMUNICATIONS LIMITED
+                              (Incorporated in Hong Kong with limited liability)
+                                             (Stock Code: 1097)
+
+                   INTERIM RESULTS ANNOUNCEMENT
+                 FOR THE SIX MONTHS ENDED 30 JUNE 2022
+FINANCIAL HIGHLIGHTS
+
+                                                                                  (Unaudited)
+                                                                               Six months ended
+                                                                                    30 June
+                                                                              2022            2021
+                                                                           HK$’000        HK$’000
+
+ Revenue                                                                     431,430        493,483
+
+ Loss from operations                                                       (148,628)      (154,061)
+ Depreciation                                                                104,963        108,860
+ Amortisation of other intangible assets                                       2,032          2,016
+
+ Loss from operations before depreciation and
+   amortisation of other intangible assets (Note 1)                          (41,633)        (43,185)
+
+ Loss for the period                                                        (225,874)      (175,216)
+
+                                                                           HK cents        HK cents
+ Basic loss per share                                                          (3.2)           (2.5)
+ Diluted loss per share                                                        (3.2)           (2.5)
+
+                                                                       (Unaudited)         (Audited)
+                                                                           30 June      31 December
+                                                                              2022             2021
+                                                                          HK$’000           HK$’000
+
+ Total assets                                                             1,379,712        1,485,592
+ Total liabilities                                                       (1,459,424)      (1,339,503)
+ Total (deficit)/equity                                                     (79,712)         146,089
+
+ Net gearing ratio (Note 2)                                                 -1,149%           504%
+
+
+                                                   –1–
+•   Due to the outbreak of the fifth wave of the novel coronavirus pandemic (the
+    “COVID-19”) in January 2022, it was another tough time for businesses in Hong
+    Kong in the first half of 2022. The revenue of i-CABLE Communications
+    Limited (the “Company” or “i-CABLE”), its subsidiaries and consolidated
+    structured entities (collectively the “Group”) for the six months ended 30 June
+    2022 declined by approximately HK$62 million to approximately HK$431
+    million from approximately HK$493 million for the six months ended 30 June
+    2021. With the effective cost-saving initiatives, the Group successfully managed
+    a decrease in loss from operations before depreciation and amortisation of other
+    intangible assets to approximately HK$42 million from approximately HK$43
+    million in last corresponding period. After recognising the non-cash unrealised
+    fair value loss on the redemption option of long-term convertible bonds
+    recognised as financial assets at fair value through profit or loss amounted to
+    approximately HK$40 million (for the six months ended 30 June 2021:
+    unrealised fair value gain of approximately HK$4 million), other non-operating
+    items and income tax, the Group recorded an increase in net loss to
+    approximately HK$226 million for the six months ended 30 June 2022,
+    representing an increase of approximately 29%, as compared with net loss of
+    approximately HK$175 million for the six months ended 30 June 2021.
+
+•   Since Forever Top (Asia) Limited (“Forever Top”) became the controlling
+    shareholder of i-CABLE in September 2017, with the implementation of
+    efficacious cost controls and reallocation of resources among business units to
+    maximise the value of the resources devoted, the operating expenses shrank
+    during the last four consecutive years and during the six months ended 30 June
+    2022. The operating expenses decreased from approximately HK$648 million for
+    the six months ended 30 June 2021 to approximately HK$580 million for the six
+    months ended 30 June 2022.
+
+•   The number of broadband customers in June 2022 remained stable as compared to
+    that in June 2021. Revenue generated from the telecommunications segment
+    decreased by approximately HK$12 million from approximately HK$204 million for
+    the six months ended 30 June 2021 to approximately HK$192 million for the six
+    months ended 30 June 2022. As Hong Kong’s economic activities were
+    slowdown by the fifth wave of the COVID‐19, performance of the
+    telecommunications segment was inevitably affected.
+
+
+
+
+                                       –2–
+•    Regarding the media segment, the customer base of pay television (“Pay TV”)
+     subscription business contracted during the six months ended 30 June 2022,
+     which vitiated the revenue generated from the Pay TV subscription for the six
+     months ended 30 June 2022. On the other hand, the revenue generated from the
+     airtime sales on the television platforms during the six months ended 30 June
+     2022 has declined as compared to the last corresponding period under the
+     challenge of the fifth wave of the COVID-19 in Hong Kong.
+
+•    Segment loss before depreciation and amortisation of other intangible assets of
+     the media segment decreased and segment profit before depreciation and
+     amortisation of other intangible assets of the telecommunications segment
+     dropped during the six months ended 30 June 2022 as compared to the last
+     corresponding period.
+
+Notes:
+
+1.   The Group presents the loss from operations before depreciation and amortisation of other
+     intangible assets, a non-Hong Kong Financial Reporting Standards financial measure, which is
+     a supplemental information in relation to the operating performance of the Group to enable the
+     stakeholders to evaluate and compare the performance across the same industry.
+
+2.   Net gearing ratio represents total interest-bearing borrowings and convertible bonds less cash
+     and bank balances and restricted bank balances divided by total deficit/equity.
+
+
+
+
+                                              –3–
+BUSINESS REVIEW
+
+OPERATING ENVIRONMENT
+
+The first half of 2022 was a challenging period as Hong Kong was clouded by the fifth
+wave of the COVID‐19. Under the stringent social distancing measures and the
+slowdown in economic activities, the Hong Kong economy saw a marked deterioration
+and the business environment has worsened. The media business of the Group remained
+tough in light of the intensified competition among various multimedia platforms.
+However, the Group has quickly responded to such competition and the environment by
+launching the campaign “CABLE x HKOTV Stay with you Fight Against Pandemic” (有
+線•香港開電視 陪你在家開心啲), including several television and online programmes
+providing health information and entertainment, and other productions to encourage
+viewers to fight against the COVID‐19 positively. This responsive action has enhanced
+public awareness of the media platforms of the Group. Coupled with the launch of the
+first phase of spectrum, the Group has also increased the engagement of content and
+community and ensured the transformation strategy of the Group. The celebration of the
+25th anniversary of the establishment of the Hong Kong Special Administrative Region
+(the “HKSAR”) provided the Group with business opportunities. The number of
+broadband customers remained stable during the first half of 2022 although the business
+environment in Hong Kong was impacted by the fifth wave of the COVID-19.
+
+                                                             June 2022       June 2021
+Customers                                                       (’000)          (’000)
+
+Pay TV                                                              683            731
+Broadband                                                           201            200
+Telephony                                                            71             74
+
+Media
+
+The fifth wave of the COVID‐19 was rapid and fierce in the first half of 2022. The
+Group implemented a series of viewer‐centric programmes. Considering the persistent
+lockdown of outbound travel, “Game on Snack on” (世界零食開倉戰) was produced to
+recall the scent of travelling to viewers. The Group has also quickly responded to the
+needs of the community during the outbreak of the fifth wave of the COVID‐19 by
+launching the campaign “CABLE x HKOTV Stay with you Fight Against Pandemic” (有
+線 • 香港開電視 陪你在家開心啲). Aiming to provide viewers with information and
+entertainment while staying at home in all channels of the Group from offline to online
+media platforms, the Group produced “Keep Fighting Virus” (全城抗疫講呢啲), which
+was the first edutainment live programme relating to the COVID‐19 among local TV
+stations, “Cooking in Pandemic” (疫境中的餐桌), “CABLE Stars Lesson” (有線星級學
+
+
+
+
+                                         –4–
+堂：輕鬆在家Gym) and “Anti‐pandemic Quick Tips” (抗疫懶人包). Over 150
+celebrities endorsed in the anti-epidemic project by recording cheering video clips, and
+more than 40 medical professionals worked together to compose and perform the song
+“Never Give Up” (不要放棄). These responsive actions have increased engagement of
+content and community which hence enlarged our viewership of health concerned.
+Significant self-produced health programmes “Fit to the Road” (Fit開有條路), “Osamu
+Hayashi’s Lecture” (健康原因講多D) and “Kaka’s Home Clinic” (嘉嘉醫療自助班),
+have contributed to the increase in viewership of Channel 77 Hong Kong Open TV.
+
+During the first half of 2022, the Group continued to gain wider recognition among
+viewers and media. Diverse and distinctive programmes were acquired including drama,
+topics of which related to lifestyle, health, documentary, infotainment and so forth. The
+Group has acquired high-quality programmes such as “Guru’s Travel Depart” (旅遊達人
+II出走) and TV drama like “In the Storm” (黑金風暴). With considerable investment in
+and high-profile promotional strategy of self‐produced programmes including “Mui’s
+Cafe 2” (開間咖啡店2), the brand image was improved.
+
+In celebrating the 25 th anniversary of the establishment of the HKSAR, the Group
+produced special programmes including “A 25‐Year Journey” (走過25年) and “A 25‐
+Year Journey: Exclusive Interview” (走過25年：專訪系列), which interviewed
+representatives from political and business areas who have witnessed the changes of
+Hong Kong over the past 25 years. “Stories of Lion Rock Spirit” (獅子山下的故事), a
+drama series which telecast the resilient struggle for a better life by ordinary people in
+Hong Kong over the past 3 decades, reflect Hong Kong’s famous “Lion Rock Spirit”. A
+series of marketing solutions initiatives and tailored advertising packages were created,
+driving demands for growth of potential business from government sectors and
+commercial clients during the celebration of the 25th anniversary of the establishment of
+the HKSAR.
+
+On the sports front, the Group continued to deliver a wide variety of exclusive world‐
+class competitions to viewers such as FIVB Women’s Volleyball Nations League (FIVB
+世界女排聯賽), FIVB Men’s Volleyball Nations League (FIVB 世界男排聯賽), FIBA
+3x3 Basketball World Tour (FIBA 三人籃球世界巡迴賽), FINA World Championships
+(FINA 世界游泳錦標賽), Chinese Basketball League (中國職業籃球聯賽) and so forth.
+The Group continued to feature prominent football leagues from around the world with
+professional analysis and Cantonese commentary to its viewers. Furthermore, the Group
+has been committed to producing and delivering local sports competitions and news to
+viewers, including “Loving Sports” (愛 • 體育) which focuses on local sports and local
+athletes.
+
+
+
+
+                                          –5–
+As an established and popular horse‐racing content channel in the Group’s Pay TV
+market, Channel 18 has maintained enormous popularity in horse‐racing circle due to its
+professional production and commentaries. “Race Card Talk” (排位拆局) provided first‐
+hand race card information to viewers. A series of professional horse racing analysis
+programmes, including “Be a Big Punter” (我要做大户), “Race Forecast” ( 賽馬預測)
+and “18 Betting Tower” (18 烽火台), were produced. “Trackside” (賽事傳真) and
+“Racing Review” (賽後噏Day) are also popular among viewers. The Group has launched
+the mobile application “Racing GPS” (賽馬GPS), which provides live broadcasting, on‐
+demand archives of racing programmes, professional racing information, analysis and
+membership scheme with exclusive events and online engagement campaigns.
+
+The Group has been dedicated to developing digital assets and channels. Its Facebook
+pages have accumulated more than 2 million followers, reaching 25 million users. With
+dynamic content strategy in social media, the Group has gained 57 million engagements
+on Facebook in the first half of 2022, achieving a 24% increment as compared to that in
+the previous six-month period.
+
+To keep up with digital transformation, the Group has hired a team of professionals.
+With their high calibre, the Group successfully revamped the websites of Channel 77
+Hong Kong Open TV and i‐CABLE in April 2022 and May 2022 respectively to enhance
+user experience on digital platforms. By integrating the digital assets and content with
+cloud infrastructure, both websites of Channel 77 Hong Kong Open TV and i‐CABLE
+have been providing more stable live streaming experience with high scalability.
+Channel 77 Hong Kong Open TV has also largely increased the video on demand content
+available online to more than 1,800 episodes of dramas, entertainment and informative
+programmes. Apart from professional news, finance and sports content, the Group has
+expanded digital content pillars to lifestyle and entertainment content on i-cable.com and
+social media.
+
+With website revamp and content enrichment, the number of active users of
+hkopentv.com in June 2022 has a 110% increment while i‐cable.com has also achieved a
+37% increment in the number of active users comparing to December 2021.
+
+The Group has launched a new mobile App for Hong Kong Open TV in June 2022 to
+facilitate mobile viewing experience. Mobile App “i‐CABLE News — News &
+Lifestyle” (「有線新聞 — 新聞、財經及生活資訊平台」) has accumulated almost
+800,000 downloads while “i‐CABLE Mobile” containing subscribed content for pay
+subscribers has reached 1.4 million downloads as at 30 June 2022.
+
+
+
+
+                                          –6–
+Due to the fifth wave of the COVID‐19 and hence the stringent social distancing
+measures and the slowdown of economic activities, the demand for outdoor media has
+decreased. The continuation of cross border closures at Lo Wu and Lok Ma Chau
+stations also directly limited the passenger flow from China. However, the launch of the
+East Rail Line cross‐harbour extension in May 2022 has brought convenience to
+passengers and reduced journey time, thus attracting people to travel by the Mass Transit
+Railway (the “MTR”) more frequently. As the exclusive commercial airtime sales
+distributor and content provider of the MTR In‐train TV, the Group continued to provide
+instant local and international news, financial news, sports news, entertainment news and
+infotainment to passengers throughout the day. The Group is seeing signs of recovery
+from the increased patronage alongside the improving local epidemic situation, and the
+demand for advertising has on a rising trend starting from June 2022.
+
+The competition in the paid content business in Hong Kong was intense and the customer
+base of the Pay TV subscription business contracted, leading to a decrease in revenue. In
+the first half of 2022, the revenue from the media segment decreased, as compared with
+the last corresponding period. The decrease was mainly caused by the reduction in the
+number of Pay TV subscribers as market conditions and consumer behavior changed,
+with the entry of new streaming services and various subscription platforms with diverse
+content range and attractive pricing.
+
+Telecommunications
+
+The Group currently owns and operates a territory-wide telecommunications network
+which covers over 2 million households in Hong Kong. In the first half of 2022, the
+revenue from the telecommunications business decreased as compared to that in the last
+corresponding period. The fierce competition in the broadband market presented
+immense price pressure on operators, while the business sentiment was worsened for
+fixed network carriers under the fifth wave of the COVID‐19 and tightening of social
+distancing measures. However, with the agility of the team and tremendous effort in
+creating value‐for‐money campaigns and offers for our customers, the number of
+broadband customers remained stable during the first half of 2022.
+
+One of the Group’s major sources of revenue was the various collaborations with China
+Mobile Hong Kong Company Limited including content provisions, network consultation
+and rollout, and mobile business.
+
+The data centre industry has been booming in Hong Kong. Leveraging on its well‐
+established network coverage and technology, the Group has expanded its services to
+cover the data centre connectivity business since 2021. The Group continued to expand
+the network coverage and core capacity to meet the new business requirement and
+prepare for future growth, through own investment and collaboration with other strategic
+business partners.
+
+
+
+
+                                          –7–
+MANAGEMENT DISCUSSION AND ANALYSIS
+
+(A) REVIEW OF RESULTS
+
+   The business environment in the first half of 2022 was worsened by the COVID-19.
+   Revenue of the Group for the six months ended 30 June 2022 decreased by
+   approximately HK$62 million or 13% to approximately HK$431 million (for the six
+   months ended 30 June 2021: approximately HK$493 million).
+
+   Cost of services of the Group for the six months ended 30 June 2022, including
+   programming costs, network expenses and cost of sales, decreased by approximately
+   HK$65 million to approximately HK$448 million (for the six months ended 30 June
+   2021: approximately HK$513 million). Due to the Group’s cautious spending in
+   programming, the respective costs decreased by approximately 19%. The cost of
+   sales decreased by approximately 14% which was in line with the decrease in
+   revenue during the period under review. On the other hand, the network expenses
+   increased by approximately 2% as compared to the last corresponding period, while
+   selling, general and administrative and other operating expenses of the Group
+   decreased by approximately 2% as compared to the last corresponding period.
+
+   Loss from operations of the Group for the six months ended 30 June 2022 was
+   approximately HK$149 million, representing a decrease of approximately 3%, as
+   compared with the loss from operations of approximately HK$154 million for the
+   corresponding period in 2021.
+
+   Finance costs of the Group for the six months ended 30 June 2022 increased by
+   approximately HK$3 million or 14% to approximately HK$25 million (for the six
+   months ended 30 June 2021: approximately HK$22 million), of which
+   approximately HK$19 million (for the six months ended 30 June 2021:
+   approximately HK$16 million) was the total interest expenses on unlisted long-term
+   convertible bonds issued in June 2019 (the “2019 LCS”) and March 2021 (the “2021
+   LCS”).
+
+   Net non-operating expenses of the Group amounted to approximately HK$45 million
+   for the six months ended 30 June 2022, while a net non-operating income of
+   approximately HK$4 million was recognised for the six months ended 30 June 2021.
+   Net non-operating expenses of the Group for the six months ended 30 June 2022
+   was mainly represented the non-cash unrealised fair value loss on the redemption
+   option of long-term convertible bonds recognised as financial assets at fair value
+   through profit or loss in the amount of approximately HK$40 million recorded
+   during the period (for the six months ended 30 June 2021: unrealised fair value gain
+   of approximately HK$4 million).
+
+
+
+
+                                        –8–
+  After recognising the interest income, finance costs, net non-operating expenses and
+  income tax, the Group recorded a net loss of approximately HK$226 million for the
+  six months ended 30 June 2022 (for the six months ended 30 June 2021:
+  approximately HK$175 million). Basic and diluted loss per share for the six months
+  ended 30 June 2022 were approximately HK3.2 cents (basic and diluted loss per
+  share for the six months ended 30 June 2021: approximately HK2.5 cents).
+
+(B) SEGMENTAL INFORMATION
+
+  The principal activities of the Group include media and telecommunications
+  operations.
+
+  Media
+
+  The media segment includes operations related to the television subscription
+  business, domestic free television programme service, advertising, channel carriage,
+  television relay service, programme licensing, theatrical release and other related
+  businesses.
+
+  Revenue derived from the media segment for the six months ended 30 June 2022
+  decreased by approximately 17% to approximately HK$240 million (for the six
+  months ended 30 June 2021: approximately HK$289 million) on lower subscription
+  revenue and advertising revenue.
+
+  Operating expenses before depreciation and amortisation of other intangible assets
+  incurred by the media segment for the six months ended 30 June 2022 decreased by
+  approximately 17% to approximately HK$323 million (for the six months ended 30
+  June 2021: approximately HK$387 million) mainly due to the decrease in
+  programming costs. As disclosed in “Segment Information” in Note 7 to the
+  condensed consolidated interim financial information of this interim results
+  announcement, the loss before depreciation and amortisation of other intangible
+  assets of the media segment for the six months ended 30 June 2022 decreased to
+  approximately HK$83 million (for the six months ended 30 June 2021:
+  approximately HK$98 million) which was mainly due to the net effect of the
+  decrease in revenue and the decrease in programming costs.
+
+  Telecommunications
+
+  The telecommunications segment includes operations related to broadband internet
+  access services, portal operation, telephony services, network leasing, network
+  construction, mobile service and mobile agency service as well as other related
+  businesses.
+
+  Revenue derived from the telecommunications segment for the six months ended 30
+  June 2022 decreased by approximately 6% to approximately HK$192 million (for
+  the six months ended 30 June 2021: approximately HK$204 million).
+
+                                       –9–
+   Operating expenses before depreciation and amortisation of other intangible assets
+   incurred by the telecommunications segment for the six months ended 30 June 2022
+   decreased by approximately 2% to approximately HK$121 million (for the six
+   months ended 30 June 2021: approximately HK$123 million). As disclosed in
+   “Segment Information” in Note 7 to the condensed consolidated interim financial
+   information of this interim results announcement, the profit before depreciation and
+   amortisation of other intangible assets from the telecommunications segment for the
+   six months ended 30 June 2022 decreased by approximately 12% to approximately
+   HK$71 million (for the six months ended 30 June 2021: approximately HK$81
+   million), which was mainly due to the decrease in revenue.
+
+(C) LIQUIDITY, FINANCIAL RESOURCES AND CAPITAL STRUCTURE
+
+   As at 30 June 2022, the Group had cash and bank balances and restricted bank
+   balances of approximately HK$63 million and HK$17 million respectively as
+   compared to approximately HK$70 million and HK$11 million respectively as at 31
+   December 2021. The decrease in cash and bank balances was mainly due to the net
+   cash used in operations and investing activities and offsetting with the net cash from
+   financing activities. The cash and bank balances and restricted bank balances of the
+   Group as at 30 June 2022 and 31 December 2021 were mainly denominated in Hong
+   Kong Dollar (“HK$”). The net gearing ratio, measured in terms of the total interest-
+   bearing borrowings and convertible bonds less cash and bank balances and restricted
+   bank balances divided by total deficit/equity, was a negative of approximately
+   1,149% (as divided by total deficit) as at 30 June 2022 (31 December 2021:
+   approximately 504% (as divided by total equity)). As at 30 June 2022, the Group
+   recorded total assets of approximately HK$1,380 million which were financed by
+   liabilities of approximately HK$1,460 million and deficit of approximately HK$80
+   million. As at 31 December 2021, the Group recorded total assets of approximately
+   HK$1,486 million which were financed by liabilities of approximately HK$1,340
+   million and equity of approximately HK$146 million. The decrease in equity was
+   attributable to loss for the period.
+
+   Consolidated net liability value of the Group as at 30 June 2022 was approximately
+   HK$80 million, while the Group recorded a consolidated net asset value of
+   approximately HK$146 million as at 31 December 2021.
+
+   The carrying amount of interest-bearing borrowings denominated in HK$ as at 30
+   June 2022 was approximately HK$461 million (31 December 2021: HK$295
+   million), in which the bank loan carries interest at variable rates and was repayable
+   on demand, and the loans from Celestial Pioneer Limited (a company holding 72.0%
+   of the total number of issued shares of Forever Top) carry interest at fixed rates
+   ranging from 2.5% to 3.0% per annum and with a term of 3 years from the date of
+   the respective loan agreements. The committed borrowing facilities available to the
+   Group but not drawn as at 30 June 2022 amounted to HK$105 million (31 December
+   2021: HK$105 million).
+
+
+                                        – 10 –
+The 2019 LCS
+
+On 4 June 2019, the issuance of the 2019 LCS with the principal amount of HK$568
+million by the Company to Forever Top, the controlling shareholder of the
+Company, was completed. The 2019 LCS would be convertible into 4,544,000,000
+new ordinary shares of the Company upon full conversion of the 2019 LCS based on
+the initial conversion price of HK$0.125 per conversion share and the coupon rate
+of the 2019 LCS is 2.0% per annum and payable quarterly. During the six months
+ended 30 June 2022, there had not been any conversion of the 2019 LCS. Details of
+the 2019 LCS were set out in the announcements of the Company dated 25 January
+2019 and 4 June 2019 and the circular of the Company dated 8 April 2019 (the
+“2019 Circular”).
+
+The carrying amount of the 2019 LCS denominated in HK$ as at 30 June 2022 was
+approximately HK$396 million (31 December 2021: approximately HK$386
+million). Details of the 2019 LCS were set out in “Convertible Bonds” in Note 15 to
+the condensed consolidated interim financial information in this interim results
+announcement.
+
+The net proceeds raised from the issuance of the 2019 LCS have all been utilised as
+at 31 December 2020 according to the intended use of proceeds as disclosed in the
+2019 Circular.
+
+The 2021 LCS
+
+On 31 March 2021, the issuance of the 2021 LCS with the principal amount of
+HK$200 million by the Company to Forever Top was completed. The 2021 LCS
+would be convertible into 2,941,176,470 new ordinary shares of the Company upon
+full conversion of the 2021 LCS based on the initial conversion price of HK$0.068
+per conversion share and the coupon rate of the 2021 LCS is 2.0% per annum and
+payable quarterly. The Company may at any time on or after the date of issue of the
+2021 LCS by giving not less than 10 business days’ written notice to the holder(s)
+of the 2021 LCS to redeem all or part of the 2021 LCS at the outstanding principal
+amount of the 2021 LCS together with all accrued but unpaid interest. During the
+six months ended 30 June 2022, there had not been any conversion or redemption of
+the 2021 LCS. Details of the 2021 LCS were set out in the announcements of the
+Company dated 27 January 2021 and 31 March 2021 and the circular of the
+Company dated 2 March 2021 (the “2021 Circular”).
+
+The purpose for the issuance of the 2021 LCS is to ensure the Group has sufficient
+funds to operate and for business expansion including the enhancement of the
+network infrastructure, the acquisition of programmes and programmes production
+in order to recapitalise the business to allow sufficient time for the restructuring
+initiatives to be fully implemented.
+
+
+
+                                    – 11 –
+   The carrying amount of the 2021 LCS denominated in HK$ as at 30 June 2022 was
+   approximately HK$138 million (31 December 2021: approximately HK$136
+   million). Details of the 2021 LCS were set out in “Convertible Bonds” in Note 15 to
+   the condensed consolidated interim financial information in this interim results
+   announcement.
+
+   The Group takes a centralised approach to the Group’s funding and treasury
+   management as well as optimisation of the funding cost-efficiency. The management
+   (i) maintains a balanced debt and capital financing structure; (ii) ensures secure and
+   optimum return on the investment of surplus funds within an agreed risk profile; (iii)
+   oversees the treasury-related financial risks, including but not limited to interest rate
+   risk, currency risk, liquidity risk and credit risk; (iv) strives to diversify source of
+   funding and maintain a balanced maturity profile; and (v) maintains an appropriate
+   control environment to protect the financial return under the fluidity financial
+   market conditions.
+
+   The Group’s assets and liabilities are mainly denominated in HK$ and United States
+   Dollars (“US$”) and it earns its revenue and incurs costs and expenses mainly in
+   HK$ and US$. As HK$ is pegged to US$, the Group does not expect any significant
+   foreign currency exposure arising from the fluctuation of the US$/HK$ or HK$/US$
+   exchange rates.
+
+   During the six months ended 30 June 2022, capital expenditure on property, plant
+   and equipment amounted to approximately HK$49 million (for the six months ended
+   30 June 2021: approximately HK$53 million), the additions to right-of-use assets
+   was approximately HK$1 million (for the six months ended 30 June 2021:
+   approximately HK$2 million) and the additions to programming library was
+   approximately HK$24 million (for the six months ended 30 June 2021:
+   approximately HK$23 million).
+
+   The Group financed its operations generally with internally generated cash flows,
+   the available credit facilities and the net proceeds raised from the issuance of the
+   2021 LCS.
+
+(D) CONTINGENT LIABILITIES
+
+   As at 30 June 2022, the Group did not have any contingent liabilities.
+
+(E) GUARANTEES
+
+   As at 30 June 2022, a corporate guarantee had been provided by the Company to a
+   bank of HK$400 million (31 December 2021: HK$400 million) in respect of the
+   facility of borrowing up to HK$400 million (31 December 2021: HK$400 million)
+   to a wholly-owned subsidiary of the Company, of which HK$295 million (31
+   December 2021: HK$295 million) was utilised by the subsidiary of the Company.
+
+
+                                         – 12 –
+  As at 30 June 2022, the Group had made arrangements with a bank to provide two
+  separate performance bonds to counterparties amounting to approximately HK$40
+  million (31 December 2021: approximately HK$34 million), of which approximately
+  HK$10 million (31 December 2021: approximately HK$4 million) was secured by
+  bank deposits. The performance bonds are to guarantee in favour of the
+  counterparties the Group’s performance in fulfilling the obligations under a contract
+  and the requirements as set out in the license issued by a regulatory body.
+
+(F) HUMAN RESOURCES
+
+  The Group had 1,150 employees as at 30 June 2022 (30 June 2021: 1,187). Total
+  gross salaries and related costs before capitalisation and incurred for the six months
+  ended 30 June 2022 amounted to approximately HK$171 million (for the six months
+  ended 30 June 2021: approximately HK$206 million). The remuneration of the
+  directors of the Company (the “Directors”) and the employees of the Group is
+  determined with reference to their qualifications, experience, duties and
+  responsibilities with the Group, as well as the Group’s performance and the
+  prevailing market conditions. Besides, the Group regularly provides training courses
+  for the employees of the Group to meet their needs. Pursuant to the share option
+  scheme of the Company adopted on 24 May 2018 (the “Share Option Scheme”),
+  share options of the Company (the “Share Options”) may be granted to the Directors
+  and eligible employees of the Group to subscribe for ordinary share(s) of the
+  Company (the “Share(s)”).
+
+(G) OPERATING ENVIRONMENT
+
+  In view of the intensifying competition among various multimedia platforms, the
+  Group’s media business remained tough in the first half of 2022.
+
+  The fifth wave of the COVID-19 and keen business competition in the market has
+  negative impact on the Group’s advertising revenue as well as continued to contract the
+  subscription customer base of Pay TV service, and the subscription average revenue
+  per user was affected.
+
+  For broadband services, despite a saturated market with price war triggered by the
+  incumbents and the outbreak of the fifth wave of the COVID-19, the number of
+  subscribers remained stable as at 30 June 2022 as compared to that as at 30 June
+  2021. This stable performance was mainly due to the timely adoption of effective
+  sales and marketing strategies, recognition from the market for the Group’s quality
+  of network services, as well as the continuous expansion of the network coverage
+  and upgrade of the Group’s network to provide high speed Gigabit-capable Passive
+  Optical Network (“GPON”) services.
+
+
+
+
+                                        – 13 –
+(H) CHARGE ON GROUP ASSETS
+
+   As at 30 June 2022, restricted bank balances of approximately HK$17 million
+   (31 December 2021: approximately HK$11 million) were made by the Group to
+   secure certain banking facilities granted to the Group.
+
+(I) MATERIAL ACQUISITIONS AND DISPOSALS AND SIGNIFICANT
+    INVESTMENTS
+
+   There was no material acquisition or disposal of subsidiaries, associated companies
+   and joint ventures or significant investments of the Group, which would have been
+   required to be disclosed under the Rules Governing the Listing of Securities on The
+   Stock Exchange of Hong Kong Limited (the “Listing Rules”), for the six months
+   ended 30 June 2022.
+
+(J) FUTURE PLANS FOR MATERIAL INVESTMENTS OR CAPITAL ASSETS
+
+   The Group will continue to invest in property, plant and equipment and
+   programming library as required by its business operations, and explore the market
+   and identify any business opportunities which will be beneficial to its growth and
+   development, enhance its profitability, and strive for better return to the
+   shareholders of the Company (the “Shareholders”).
+
+   The Group’s ongoing capital expenditure will be funded by internal cash flows
+   generated from operations and the available credit facilities.
+
+(K) OUTLOOK
+
+   The Group has been focusing on formulating and implementing an organisational
+   restructuring which included, among other things, (i) identifying cost‐saving
+   initiatives through automation and process re‐engineering; (ii) promoting more
+   locally‐produced high-quality content and introducing new overseas contents and
+   channels; (iii) exploring new television content cooperation models for free
+   television (“Free TV”) and other digital media platforms in view of the increasing
+   competition from alternative media platforms; and (iv) performing strategic reviews
+   on possible optimisation of the structure of the Group to enhance business
+   performance and management efficiency, to promote synergies, and to improve cost
+   efficiency and profitability, and on the financial performance of the Group. As part
+   of a strategic review, the Group has been and will continue to prudently evaluate
+   any possibilities and opportunities of potential partnerships, as well as any
+   opportunities for disposing of any loss‐making operations.
+
+
+
+
+                                       – 14 –
+Despite the fact that the Group will continue to face intense market competition, it
+is confident that the Group will be able to ride on the post‐COVID‐19 rebound and
+deliver more value to its stakeholders given its advantage as one of the major
+service providers in information and communications technology in Hong Kong
+with wide customer reach, competitive service offerings, valuable business
+partnerships and a capable and experienced management team.
+
+By the end of 2022, the Group is expected to increase the TV spectrum coverage to
+99%, and launch a new Free TV channel, Channel 78, with high-quality
+programmes, in order to better reach and retain a larger population of television
+audience via spectrum. Together with the innovative content and integrated
+marketing solutions service, the Group expects to capture more business
+opportunities to further expand the Group’s revenue streams.
+
+The proliferation of online content (many of which are offered free of charge)
+provides an abundance of choices to users, changes users’ viewing behavior and
+poses extra threat to the Group’s Pay TV subscription and Free TV business.
+However, the Group believes that local infotainment content is still creating value
+and relevance to its viewers. The Group will pursue and promote the importance of
+“Narrating Hong Kong’s story” (說好香港故事), aiming to bring positive impact to
+Hong Kong people. To achieve these purposes, the Group has been devoting and
+will continue to devote resources to promoting high-quality and diversified
+programmes for audience in the territory and to improving the video streaming
+services on digital platforms for viewers. To enhance the Group’s competitiveness,
+the Group will continue to explore the opportunities to acquire more content to
+capture and engage more customers as well as opportunities to invest in streaming
+technologies and other digital and new media platforms to meet the changing
+preferences and habits of viewers. In the second half of 2022, the Group will expand
+digital content pillars to cover more lifestyle topics on top of hard news, such as
+social hot issues, entertainment and celebrity news, local fun and travel tips, to
+enrich digital content and provide more down‐to‐earth information to audience.
+
+Under the current epidemic situation in Hong Kong where social distancing is still
+being strictly observed, demand for connectivity and data transmission by both
+individuals and businesses will continue to surge in the foreseeable future. With the
+increase in demand for connectivity anytime anywhere, the Group will expand its
+products and services. As a territory‐wide telecommunications network provider
+which covers over 2 million households in Hong Kong, the Group will continue to
+expand its core network of fibre coverage and increase its core network capacity to
+cater for both residential and commercial markets in order to drive for business
+growth. The GPON enabling fibre to the home high‐speed internet services will
+continue to be the Group’s anchor product. The Group will continue to explore
+opportunities in maximising the value of the core fibre and communication network
+of the Group.
+
+
+                                     – 15 –
+The Group will continue to enrich its content through bringing in more quality,
+value, and global infotainment choices. It will also establish strategic partnerships
+with outstanding industry players to create and curate unique value propositions and
+service offerings for both existing and new customers. By getting more partners to
+team up with the Group, it will be able to bring to its customers a wider range of
+quality services, its partners an efficient channel to market and the Group a more
+vibrant ecosystem, enabling all parties to benefit.
+
+To retain and attract more audience, the Group will continue to invest in local
+programmes including travel & food, health, documentary, infotainment, as well as
+to acquire locally produced TV drama and overseas content. To cater for the taste of
+local viewers, the Group has spent months on producing “Before and After Home
+Renovations” (香港空間改造王) and the first reality talent show “YOUNIVERSE”
+(就是青春), which is expected to be launched in the second half of 2022. Via
+“YOUNIVERSE”, the Group hopes to cultivate next generation of talents.
+
+With the increase in the spectrum coverage in the second half of 2022, the upcoming
+high‐quality programmes will be broadcast to a wider range of viewers. Together
+with the addition of the new channel, Channel 78 by the end of 2022, the Group is
+expecting a growth of number of audience, which may make them drivers for new
+product and business development.
+
+As the exclusive commercial airtime sales distributor and content provider for the
+MTR In‐train TV, the Group expects that the full opening of the East Rail Line
+cross‐harbour extension will further enhance business opportunities in the MTR In‐
+train TV platform in 2022, due to the growth in number of passengers. The
+commencement of 2022 (Phase II) Consumption Voucher Scheme will create
+positive impact on retail sectors as well as the Group’s potential revenue from
+advertisers. The Group will continue to polish its sales and marketing strategies by
+adopting creative selling strategy of content sponsorship and integrated marketing
+solutions to diversify the product portfolio.
+
+Meanwhile, the Greater Bay Area (“GBA”) represents an extraordinary opportunity
+for the Group to shape and expand its business by collaborating with major media
+and operators within the region. With the growing business and job opportunities in
+the GBA, and also the expected reopening of the border between Hong Kong and
+mainland China, the Group will continue to explore and capture massive
+opportunities whereby it can leverage its competitive advantages and increase its
+exposure in the GBA.
+
+
+
+
+                                     – 16 –
+   Looking ahead, the Group will rise to the challenge as Hong Kong is on the path to
+   recovery from the COVID‐19. The Group will continue to pay close attention to and
+   proactively respond to the development of the COVID‐19 and its impact to the
+   Group and the market. The Group will pursue its plan to deliver high speed
+   broadband services through network upgrades, and continue to explore new business
+   opportunities. Simultaneously, the Group will diligently monitor and review its
+   spending on programming library, content enrichment, and new media development.
+
+(L) EVENTS AFTER THE REPORTING PERIOD
+
+   In August 2022, Hong Kong Cable Television Limited (“HKC”, a wholly-owned
+   subsidiary of the Company), as the borrower, entered into a loan agreement with
+   Celestial Pioneer Limited as the lender, pursuant to which, the borrower obtained an
+   unsecured loan with a principal amount of HK$80 million for a term of 3 years from
+   the date of the loan agreement, with an interest rate of 3.0% per annum.
+
+   Save as disclosed above, the Group does not have any material events affecting the
+   Group’s financial performance and/or financial position significantly that have
+   occurred since 30 June 2022 and up to the date of this interim results announcement.
+
+
+
+
+                                       – 17 –
+CONDENSED CONSOLIDATED STATEMENT OF PROFIT OR LOSS
+For the six months ended 30 June 2022 – unaudited
+
+                                                             Six months ended 30 June
+                                                                   2022              2021
+                                                   Note         HK$’000           HK$’000
+
+Revenue                                            6, 7         431,430          493,483
+Cost of services
+— Programming costs                                            (239,779)        (297,541)
+— Network expenses                                             (149,459)        (146,562)
+— Cost of sales                                                 (59,182)         (68,583)
+Selling, general and administrative and
+  other operating expenses                                     (131,638)        (134,858)
+
+Loss from operations                                           (148,628)        (154,061)
+Interest income                                                     658              378
+Finance costs                                                   (25,065)         (21,952)
+Non-operating (expenses)/income, net                            (45,125)           4,123
+
+Loss before taxation                                8          (218,160)        (171,512)
+Income tax                                          9            (7,714)          (3,704)
+
+Loss for the period                                            (225,874)        (175,216)
+
+Attributable to:
+  Equity shareholders of the Company                           (225,874)        (175,216)
+
+Loss per share                                     10
+  Basic                                                   (3.2) HK cents   (2.5) HK cents
+
+  Diluted                                                 (3.2) HK cents   (2.5) HK cents
+
+
+
+
+                                          – 18 –
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+For the six months ended 30 June 2022 – unaudited
+
+                                                Six months ended 30 June
+                                                      2022            2021
+                                                   HK$’000         HK$’000
+
+Loss for the period                                (225,874)      (175,216)
+
+Other comprehensive income for the period
+Item that may be reclassified subsequently
+   to profit or loss:
+   Currency translation difference                       73            (40)
+
+Total comprehensive income for the period          (225,801)      (175,256)
+
+Attributable to:
+  Equity shareholders of the Company               (225,801)      (175,256)
+
+
+
+
+                                       – 19 –
+CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+As at 30 June 2022
+
+                                                           Unaudited        Audited
+                                                             30 June   31 December
+                                                                2022          2021
+                                                    Note    HK$’000        HK$’000
+
+ASSETS
+Non-current assets
+  Property, plant and equipment                              614,892       650,140
+  Right-of-use assets                                         54,150        74,231
+  Programming library                                         67,709        67,991
+  Other intangible assets                                      9,831        11,863
+  Contract acquisition costs                                   5,650         5,383
+  Deferred tax assets                               11       281,876       289,501
+  Deposits, prepayments and other
+  receivables                                                 43,236        35,996
+
+                                                           1,077,344      1,135,105
+
+Current assets
+  Inventories                                                  5,627         6,863
+  Trade receivables and contract assets             12        96,091       108,031
+  Deposits, prepayments and other
+  receivables                                                 61,417        48,207
+  Contract acquisition costs                                   9,523        10,938
+  Financial assets at fair value through
+   profit or loss                                             50,564        95,736
+  Restricted bank balances                                    16,550        10,550
+  Cash and bank balances                                      62,596        70,162
+
+                                                             302,368       350,487
+
+Total assets                                               1,379,712      1,485,592
+
+
+
+
+                                           – 20 –
+                                                        Unaudited          Audited
+                                                          30 June     31 December
+                                                             2022            2021
+                                                 Note    HK$’000          HK$’000
+
+EQUITY
+Capital and reserves
+  Share capital                                  14      7,928,975       7,928,975
+  Reserves                                              (8,008,687)     (7,782,886)
+
+Total (deficit)/equity                                    (79,712)        146,089
+
+LIABILITIES
+Non-current liabilities
+  Convertible bonds                              15       533,609         521,929
+  Interest-bearing borrowings                    16       166,035               –
+  Lease liabilities                                        18,074          36,192
+  Other non-current liabilities                            21,373          21,373
+
+                                                          739,091         579,494
+
+Current liabilities
+  Trade payables                                 13        32,487          57,613
+  Accrued expenses and other payables                     234,259         253,172
+  Receipts in advance and
+   customers’ deposits                                    121,739         115,213
+  Interest-bearing borrowings                    16       295,000         295,000
+  Lease liabilities                                        36,788          38,930
+  Current tax liabilities                                      60              81
+
+                                                          720,333         760,009
+
+Total liabilities                                       1,459,424        1,339,503
+
+Total equity and liabilities                            1,379,712        1,485,592
+
+
+
+
+                                        – 21 –
+NOTES TO THE CONDENSED CONSOLIDATED INTERIM FINANCIAL
+INFORMATION
+
+1   GENERAL
+
+    i-CABLE Communications Limited is a limited liability company incorporated in Hong Kong. The
+    address of its registered office in Hong Kong is 7th Floor, Cable TV Tower, 9 Hoi Shing Road,
+    Tsuen Wan, Hong Kong.
+
+    The Company has its primary listing on The Stock Exchange of Hong Kong Limited (the “Stock
+    Exchange”).
+
+    The Group is engaged in television subscription business, domestic free television programme
+    service, advertising, channel carriage, television relay service, programme licensing, theatrical
+    release, other television related businesses, broadband internet access services, portal operation,
+    telephony services, network leasing, network construction, mobile service and mobile agency service
+    as well as other internet access related businesses.
+
+    The condensed consolidated interim financial information for the six months ended 30 June 2022 (the
+    “Interim Financial Information”) is presented in thousands of Hong Kong dollars (HK$’000), unless
+    otherwise stated. The Interim Financial Information has been approved for issue by the board (the
+    “Board”) of Directors of the Company on 26 August 2022.
+
+    The financial information relating to the year ended 31 December 2021 that is included in the Interim
+    Financial Information as comparative information does not constitute the Company’s statutory annual
+    consolidated financial statements for that year but is derived from those financial statements. Further
+    information relating to these statutory financial statements required to be disclosed in accordance
+    with section 436 of the Hong Kong Companies Ordinance (Cap. 622) is as follows:
+
+    The Company has delivered the financial statements for the year ended 31 December 2021 to the
+    Registrar of Companies as required by section 662(3) of, and Part 3 of Schedule 6 to, the Hong Kong
+    Companies Ordinance (Cap. 622).
+
+    The Company’s auditor has reported on those financial statements. The auditor’s report was
+    unqualified; did not include a reference to any matters to which the auditor drew attention by way of
+    emphasis without qualifying its report; and did not contain a statement under sections 406(2), 407(2)
+    or (3) of the Hong Kong Companies Ordinance (Cap. 622).
+
+2   BASIS OF PREPARATION
+
+    This Interim Financial Information has been prepared in accordance with Hong Kong Accounting
+    Standard (“HKAS”) 34 “Interim Financial Reporting” issued by the Hong Kong Institute of Certified
+    Public Accountants.
+
+    This Interim Financial Information should be read in conjunction with the Group’s annual financial
+    statements for the year ended 31 December 2021, which have been prepared in accordance with Hong
+    Kong Financial Reporting Standards (“HKFRSs”).
+
+
+
+
+                                                 – 22 –
+During the six-months ended 30 June 2022, the Group incurred a net loss of HK$226 million (2021:
+HK$175 million) and as at 30 June 2022, the Group’s current liabilities exceeded its current assets
+by HK$418 million (31 December 2021: HK$410 million) and total deficit amounted to HK$80
+million (31 December 2021: total equity of HK$146 million). Included in its current liabilities was
+an interest-bearing borrowing of HK$295 million drawn from a banking facility of HK$400 million
+which is immediately repayable on demand and subject to review at any time from the date of this
+interim results announcement. Besides the banking facility, the Group has received financing from
+time to time from Forever Top, a substantial shareholder holding 43.2% shareholding of the
+Company, through rights issue and issue of the 2019 LCS and the 2021 LCS to improve the Group’s
+liquidity. During the six months ended 30 June 2022, the controlling shareholder of Forever Top
+advanced unsecured 3-year interest-bearing loans of an aggregate amount of HK$170 million to the
+Group.
+
+In preparing the Interim Financial Information, the Directors have given careful consideration of the
+liquidity requirement for the Group’s operations, the performance of the Group and available sources
+of financing in assessing whether the Group has sufficient financial resources to continue as a going
+concern. The Directors have reviewed the Group’s cash flow projections prepared by management
+which covers a period of not less than twelve months from 30 June 2022. The Directors have taken
+into account the following plans and measures in assessing the sufficiency of working capital
+requirements in the foreseeable future:
+
+1.   The Group’s banking facility was last renewed in mid-March 2019. As the facility is subject to
+     review at any time from the date of this interim results announcement, the Directors expect the
+     revolving bank loan facility will be successfully renewed such that the outstanding loan balance
+     of HK$295 million will be rolled over with substantially the same terms as the current facility,
+     which also include the bank’s overriding right to demand repayment.
+
+2.   There have been continuing progress and achievements of the organisational restructuring
+     which include cost saving initiatives, introduction of new contents, cooperation model with
+     other partners and strategic review of its business portfolio.
+
+3.   In August 2022, the controlling shareholder of Forever Top advanced an unsecured 3-year
+     interest-bearing loan of HK$80 million to the Group.
+
+4.   Forever Top has also confirmed its intention to provide further financial support, from time to
+     time as and when is necessary to the Group in the next twelve months from 30 June 2022.
+     Taking into account the fact that (i) Forever Top has provided continuous financial support to
+     the Group since it became the largest shareholder of the Company in September 2017; and (ii)
+     based on the back to back financial support by Forever Top’s beneficial shareholders and
+     having made all necessary enquiries, nothing came to the attention of the Directors to cause
+     them to believe that Forever Top is unable to provide financial support as and when is required
+     by the Group in the next twelve months from 30 June 2022.
+
+Based on the cash flow projections and taking into account reasonably possible downside changes to
+the cash flow assumptions in the cash flow projections for the period ending 30 June 2023, the
+continuous availability of existing banking facility, and from time to time as and when is necessary,
+the financial support from Forever Top, the Directors consider that the Group will have sufficient
+working capital to meet its financial obligations as and when they fall due in the coming twelve
+months from 30 June 2022. Accordingly, the Directors consider it is appropriate to prepare the
+Interim Financial Information on a going concern basis.
+
+
+
+
+                                            – 23 –
+3   SIGNIFICANT ACCOUNTING POLICIES
+
+    The significant accounting policies applied in the preparation of this condensed financial information
+    are consistent with those of the annual financial statements for the year ended 31 December 2021, as
+    described in those annual financial statements, except for the adoption of the amendments to
+    standards effective for the financial year ending 31 December 2022.
+
+    (a)   Amendments to standards and accounting guideline effective in current accounting period
+          and are relevant to the Group’s operations
+
+          During the period ended 30 June 2022, the Group has adopted the following amendments to
+          standards and accounting guideline which are relevant to the Group’s operations and are
+          mandatory for accounting period beginning on 1 January 2022:
+
+          HKFRS 3 (Amendments)          Reference to the Conceptual Framework
+          HKFRS 16 (Amendments)         COVID-19-Related Rent Concessions beyond 30 June 2021
+          HKAS 16 (Amendments)          Property, Plant and Equipment — Proceeds before Intended Use
+          HKAS 37 (Amendments)          Onerous Contracts — Cost of Fulfilling a Contract
+          Annual Improvements           Annual Improvement to HKFRSs 2018–2020 Cycle
+          Accounting Guideline 5        Merger Accounting for Common Control Combinations
+            (Revised)
+
+          The adoption of these amendments to standards and accounting guideline does not have any
+          significant change to the accounting policies or any significant effect on the results and
+          financial position of the Group.
+
+    (b) New standard, amendments to standards, HKFRS Practice Statement and interpretation
+        that are not yet effective and have not been early adopted by the Group
+
+          The following new standard, amendments to standards, HKFRS Practice Statement and
+          interpretation have been published which are mandatory for the Group’s accounting periods
+          beginning on or after 1 January 2023 but have not been early adopted by the Group:
+
+          HKFRS 17                                Insurance Contracts (1)
+          HKFRS 10 and HKAS 28                    Sale or Contribution of Assets between an Investor and
+           (Amendments)                             its Associate or Joint Venture (2)
+          HKAS 1 (Amendments)                     Classification of Liabilities as Current or Non-current (1)
+          HKAS 1 (Amendments) and                 Disclosure of Accounting Policies (1)
+           HKFRS Practice Statement 2
+          HKAS 8 (Amendments)                     Definition of Accounting Estimates (1)
+          HKAS 12 (Amendments)                    Deferred Tax related to Assets and Liabilities arising
+                                                    from a Single Transaction (1)
+          Hong Kong Interpretation 5 (2020)       Presentation of Financial Statements — Classification
+                                                    by the Borrower of a Term Loan that Contains a
+                                                    Repayment on Demand Clause (1)
+
+          (1)
+                Effective for accounting periods beginning on or after 1 January 2023
+          (2)
+                Effective date is to be determined
+
+          The Group does not expect that these new standard, amendments to standards, HKFRS Practice
+          Statement and interpretation would have any material impact on its results and financial
+          position.
+
+
+
+                                                 – 24 –
+4   ESTIMATES AND JUDGEMENTS
+
+    The preparation of Interim Financial Information requires management to make judgements,
+    estimates and assumptions that affect the application of accounting policies and the reported amounts
+    of assets and liabilities, income and expenses. Actual results may differ from these estimates.
+
+    In preparing this Interim Financial Information, the significant judgements made by management in
+    applying the Group’s accounting policies and the key sources of estimation uncertainty were the
+    same as those that applied to the consolidated financial statements for the year ended 31 December
+    2021.
+
+5   FINANCIAL RISK MANAGEMENT AND FAIR VALUES OF FINANCIAL INSTRUMENTS
+
+    (a)   Financial risk factors
+
+          The Group’s activities expose it to a variety of financial risks: market risk (including currency
+          risk, fair value interest rate risk, cash flow interest rate risk and price risk), credit risk and
+          liquidity risk.
+
+          The Interim Financial Information does not include all financial risk management information
+          and disclosures required in the annual financial statements, and should be read in conjunction
+          with the Group’s annual financial statements for the year ended 31 December 2021.
+
+          There have been no changes in the risk management policies since 31 December 2021.
+
+    (b) Liquidity risk
+
+          Compared to the year ended 31 December 2021, there was no other material change in the
+          contractual undiscounted cash outflows for financial liabilities, except for the contractual cash
+          outflows for the loans from Celestial Pioneer Limited of approximately HK$166,035,000 with a
+          term of 3 years from the date of the respective loan agreements and interest thereon (Note 16(b)).
+
+    (c)   Price risk
+
+          The Group is exposed to price risk through its investments and redemption option of long-term
+          convertible bonds recognised as financial assets at fair value through profit or loss. The Group
+          manages this exposure by maintaining a portfolio of investments with different risk and return
+          profiles.
+
+          Sensitivity analysis
+
+          At 30 June 2022, if the price of the Group’s investments recognised as financial assets at fair
+          value through profit or loss had been 1% higher/lower with all other variables held constant, the
+          loss for the period would have decreased/increased by approximately HK$35,000
+          (31 December 2021: approximately HK$87,000).
+
+          Based on the share price of the Company as at 30 June 2022, if the share price of the Company
+          had been HK$0.01 higher/lower with all other variables held constant, the fair value of the
+          redemption option of long-term convertible bonds recognised as financial assets at fair value
+          through profit or loss would have increased by approximately HK$11,661,000 and decreased by
+          approximately HK$9,363,000 respectively (31 December 2021: decreased by approximately
+          HK$3,780,000 and approximately HK$21,236,000 respectively) and the loss for the period
+          would have decreased by approximately HK$11,661,000 and increased by approximately
+          HK$9,363,000 respectively (31 December 2021: increased by approximately HK$3,780,000 and
+          approximately HK$21,236,000 respectively).
+
+                                                 – 25 –
+(d) Fair values of financial instruments
+
+    Financial instruments carried at fair value are measured by different valuation methods. The
+    inputs to valuation methods are categorised into three levels within a fair value hierarchy, as
+    follows:
+
+    Level 1:     The fair value of financial instruments traded in active markets (such as publicly
+                 traded derivatives, and equity securities) is based on quoted market prices at the
+                 end of the reporting period. The quoted market price used for financial assets held
+                 by the Group is the current bid price. These instruments are included in Level 1.
+
+    Level 2:     The fair value of financial instruments that are not traded in an active market (for
+                 example, over-the-counter derivatives) is determined using valuation techniques
+                 which maximise the use of observable market data and rely as little as possible on
+                 entity-specific estimates. If all significant inputs required to fair value an
+                 instrument are observable, the instrument is included in Level 2.
+
+    Level 3:     If one or more of the significant inputs is not based on observable market data, the
+                 instrument is included in Level 3.
+
+    The following table presents the Group’s assets that are measured at fair value at the end of the
+    reporting period on a recurring basis:
+
+                                               Level 1        Level 2         Level 3          Total
+                                              HK$’000        HK$’000         HK$’000         HK$’000
+
+    At 30 June 2022 (unaudited)
+    Assets
+    Financial assets at fair value
+      through profit or loss
+    — Listed debt securities                     3,498                –              –           3,498
+    — Redemption option of
+      long-term convertible
+      bonds                                           –               –         47,066 _
+                                                                                                47,066
+
+                                                 3,498                –         47,066          50,564
+
+
+    At 31 December 2021 (audited)
+    Assets
+    Financial assets at fair value
+      through profit or loss
+    — Listed debt securities                     8,731                –              –           8,731
+    — Redemption option of
+      long-term convertible
+      bonds                                           –               –         87,005          87,005
+
+                                                 8,731                –         87,005          95,736
+
+    During the six months ended 30 June 2022, there were no transfers between Level 1 and Level
+    2, or transfers into or out of Level 3 (31 December 2021: Nil). The Group’s policy is to
+    recognise transfers between levels of fair value hierarchy as at the end of the reporting period in
+    which they occur.
+
+                                            – 26 –
+The following table presents the changes in Level 3 financial instrument for the six months
+ended 30 June 2022 and 2021:
+
+                                                                                         Unaudited
+                                                                                  six months ended 30 June
+                                                                                        2022            2021
+                                                                                     HK$’000         HK$’000
+
+Redemption option:
+At the beginning of the period                                                           87,005                           –
+Inception of redemption option of long-term
+  convertible bonds                                                                             –               78,061
+Unrealised fair value change recognised in
+  non-operating (expenses)/income, net                                                  (39,939)                  4,477
+
+At the end of the period                                                                 47,066                 82,538
+
+The following table summarises the quantitative information about the significant unobservable
+inputs used in Level 3 fair value measurements:
+
+                                                                               Range of             Relationship of
+                                                          Unobservable    unobservable inputs       unobservable inputs
+                              Fair value as at            inputs                 as at              to fair value
+                              30 June    31 December                       30 June    31 December
+                                 2022            2021                         2022           2021
+                          (unaudited)        (audited)
+                             HK$’000         HK$’000
+
+Redemption option of          47,066             87,005   Discount rate     9.13%           6.88% The higher the discount
+  long‐term convertible                                                                              rate, the lower the
+  bonds                                                                                              fair value of the
+                                                                                                     redemption option
+                                                                                                     of long-term
+                                                                                                     convertible bonds
+
+The main Level 3 input used by the Group in measuring the fair value of financial instrument is
+derived and evaluated as follows:
+
+Discount rate was determined with reference to the risk free rate, credit spread of comparable
+bonds and liquidity spread in the market.
+
+The carrying amounts of the Group’s financial instruments carried at cost or amortised cost
+were not materially different from their fair values as at 30 June 2022 and 31 December 2021.
+
+
+
+
+                                                    – 27 –
+6   REVENUE
+
+    Revenue comprises principally subscription, service and related fees for television, broadband
+    internet access and telephony services. It also includes advertising revenue net of agency deductions,
+    channel service and distribution fees, programme licensing income, film exhibition and distribution
+    income, network leasing income, network construction income, mobile service income, mobile
+    agency service income and other telecommunications income.
+
+7   SEGMENT INFORMATION
+
+    The Group managed its businesses according to the nature of services provided. The Group’s chief
+    operating decision maker (the “CODM”), which comprises executive Directors and senior
+    management of the Company, has determined two reportable operating segments for measuring
+    performance and allocating resources. The segments are media and telecommunications.
+
+    The media segment includes operations related to the television subscription business, domestic free
+    television programme service, advertising, channel carriage, television relay service, programme
+    licensing, theatrical release and other related businesses.
+
+    The telecommunications segment includes operations related to broadband internet access services,
+    portal operation, telephony services, network leasing, network construction, mobile service and
+    mobile agency service as well as other related businesses.
+
+    The CODM evaluates performance primarily based on segment results before depreciation of
+    property, plant and equipment and right-of-use assets, amortisation of other intangible assets,
+    corporate expenses, corporate depreciation of property, plant and equipment, interest income, finance
+    costs, non-operating (expenses)/income, net and income tax, but after amortisation of programming
+    library and amortisation of contract acquisition costs. Besides, the CODM also evaluates performance
+    based on segment results before corporate expenses, corporate depreciation of property, plant and
+    equipment, interest income, finance costs, non-operating (expenses)/income, net and income tax, but
+    after amortisation of programming library, amortisation of contract acquisition costs, depreciation of
+    property, plant and equipment and right-of-use assets and amortisation of other intangible assets.
+
+    Inter-segment pricing is generally determined at arm’s length basis.
+
+    Segment assets principally comprise all assets, deferred tax assets and assets managed at the
+    corporate office. Segment liabilities include all liabilities, convertible bonds and interest-bearing
+    borrowings directly attributable to and managed by each segment with the exception of current tax
+    liabilities and liabilities at corporate office.
+
+    Besides, the CODM is also provided with segment information concerning revenue (including inter-
+    segment revenue).
+
+
+
+
+                                                – 28 –
+Information regarding the Group’s reportable segments as provided to the CODM for the purposes of
+resource allocation and assessment of segment performance for the six months ended 30 June 2022
+and 2021 is set out below:
+
+                                                                   Unaudited
+                                                            six months ended 30 June
+                                         Media                Telecommunications             Total
+                                      2022        2021            2022       2021         2022        2021
+                                   HK$’000     HK$’000        HK$’000    HK$’000       HK$’000     HK$’000
+
+Reportable segment revenue          239,871     289,322        191,663      204,265     431,534    493,587
+Less: Inter-segment revenue               –           –           (104)        (104)       (104)      (104)
+
+Revenue from external customers     239,871     289,322        191,559      204,161     431,430    493,483
+
+
+Revenue from contracts
+  with customers:
+  Timing of revenue recognition:
+   At a point in time                 8,949       9,459         17,155       22,610      26,104     32,069
+  Over time                         206,609     252,558        174,205      181,349     380,814    433,907
+Revenue from other sources:
+  Rental income                      24,313      27,305            199         202       24,512     27,507
+
+                                    239,871     289,322        191,559      204,161     431,430    493,483
+
+
+Reportable segment (loss)/profit
+  before depreciation and
+  amortisation of other
+  intangible assets                 (82,629)     (98,318)       70,706       80,746     (11,923)    (17,572)
+Depreciation                        (54,419)     (59,958)      (44,052)     (44,330)    (98,471)   (104,288)
+Amortisation of other
+  intangible assets                  (2,015)      (2,016)          (17)           –      (2,032)     (2,016)
+
+Reportable segment results
+  before corporate expenses
+  and corporate depreciation       (139,063)    (160,292)       26,637       36,416    (112,426)   (123,876)
+
+
+Corporate expenses                                                                      (29,710)    (25,613)
+Corporate depreciation                                                                   (6,492)     (4,572)
+
+Loss from operations                                                                   (148,628)   (154,061)
+Interest income                                                                             658         378
+Finance costs                                                                           (25,065)    (21,952)
+Non-operating (expenses)/
+  income, net                                                                           (45,125)      4,123
+Income tax                                                                               (7,714)     (3,704)
+
+Loss for the period                                                                    (225,874)   (175,216)
+
+
+
+
+                                               – 29 –
+                                                                     Unaudited            Audited
+                                                                       30 June       31 December
+                                                                          2022              2021
+                                                                      HK$’000            HK$’000
+
+Segment assets
+  Media                                                                 612,110           662,928
+  Telecommunications                                                    449,183           498,568
+
+                                                                       1,061,293        1,161,496
+Corporate assets                                                          36,543           34,595
+Deferred tax assets                                                      281,876          289,501
+
+Total assets                                                           1,379,712        1,485,592
+
+
+Segment liabilities
+  Media                                                                 839,783           786,459
+  Telecommunications                                                    604,082           537,681
+
+                                                                       1,443,865        1,324,140
+Corporate liabilities                                                     15,499           15,282
+Current tax liabilities                                                       60               81
+
+Total liabilities                                                      1,459,424        1,339,503
+
+During the six months ended 30 June 2022, there were additions of approximately HK$49,387,000
+(2021: approximately HK$53,356,000) to property, plant and equipment, approximately HK$681,000
+(2021: approximately HK$1,887,000) to right-of-use assets and approximately HK$24,413,000
+(2021: approximately HK$23,048,000) to programming library, respectively.
+
+Geographical segment:
+No geographical segment information is shown as, during the period presented, less than 10% of the
+Group’s segment revenue, segment results, segment assets and segment liabilities are derived from
+activities conducted outside Hong Kong.
+
+Information about major customer:
+Revenue of approximately HK$55,148,000 (2021: approximately HK$54,001,000) were derived from
+a single external customer during the six months ended 30 June 2022, of which approximately
+HK$54,148,000 (2021: approximately HK$53,001,000) and approximately HK$1,000,000 (2021:
+approximately HK$1,000,000) were attributed to the telecommunications segment and the media
+segment, respectively.
+
+
+
+
+                                          – 30 –
+8   LOSS BEFORE TAXATION
+
+    Loss before taxation is stated after charging/(crediting):
+
+                                                                                 Unaudited
+                                                                          six months ended 30 June
+                                                                                2022            2021
+                                                                             HK$’000         HK$’000
+
+    Finance costs
+      — Interest expenses on borrowings                                        3,737           2,502
+      — Interest expenses on lease liabilities                                 1,979           3,075
+      — Interest expenses on convertible bonds                                19,349          16,375
+
+    Other items
+    Depreciation
+      — assets held for use under operating leases                             9,755          12,126
+      — other assets                                                          74,446          76,190
+      — right-of-use assets                                                   20,762          20,544
+
+                                                                             104,963         108,860
+
+    Amortisation
+      — programming library*                                                  24,694          28,894
+      — contract acquisition costs                                             6,916           8,798
+      — other intangible assets                                                2,032           2,016
+    Non-operating expenses/(income), net
+      — net (gain)/loss on disposal of plant and equipment                       (47)             80
+      — net fair value losses/(gains) on financial assets at fair value
+           through profit or loss                                             45,172          (4,124)
+      — loss on redemptions of financial assets at fair value
+           through profit or loss                                                  –              70
+      — gain on modification of lease contracts                                    –            (149)
+
+    *    Amortisation of programming library was included within programming costs in the condensed
+         consolidated statement of profit or loss of the Group.
+
+
+
+
+                                                  – 31 –
+9    INCOME TAX
+
+     Hong Kong and other jurisdictions profits tax has been provided at the rate of 16.5% (2021: 16.5%)
+     and at the rates of taxation prevailing in the jurisdictions in which the Group operates respectively.
+
+                                                                                     Unaudited
+                                                                              six months ended 30 June
+                                                                                    2022            2021
+                                                                                 HK$’000         HK$’000
+
+     Current income tax                                                                 89                222
+     Deferred income taxation                                                        7,625              3,482
+
+                                                                                     7,714              3,704
+
+10   LOSS PER SHARE
+
+     (a)   Basic loss per share
+
+           The calculation of basic loss per Share is based on the loss attributable to equity shareholders of
+           the Company of approximately HK$225,874,000 (2021: approximately HK$175,216,000) and
+           the weighted average number of 7,134,623,520 ordinary Shares (2021: 7,134,623,520 Shares) in
+           issue during the period.
+
+     (b) Diluted loss per share
+
+           The diluted loss per Share for the six months ended 30 June 2022 and 2021 equals to the basic
+           loss per Share since the exercise of the outstanding Share Options granted under the Share
+           Option Scheme and conversion rights attached to the unlisted long-term convertible bonds
+           would not have a dilutive effect on the loss per Share.
+
+
+
+
+                                                   – 32 –
+11   DEFERRED TAX ASSETS
+
+     As at 30 June 2022, the Group had recognised net deferred tax assets in respect of the future benefit
+     of unutilised tax losses which can be carried forward indefinitely without expiry date of
+     approximately HK$281,876,000 (31 December 2021: approximately HK$289,501,000), being the net
+     balance of deferred tax assets arising from tax losses of approximately HK$327,531,000 (31
+     December 2021: approximately HK$336,370,000) and deferred tax liabilities arising from
+     depreciation allowances in excess of the related depreciation of approximately HK$45,655,000 (31
+     December 2021: approximately HK$46,869,000). The deferred tax assets recognised as at 30 June
+     2022 was determined after considering the estimated future taxable profits and the timing of
+     utilisation of the tax losses in the relevant subsidiary of the Company. The subsidiary has a history of
+     recent losses in preceding periods. The estimated future taxable profits of the relevant subsidiary of
+     the Company take into account the expected growth of the business due to the operating environment,
+     business strategies, business development, approved business plans, the effect of the tax planning as
+     well as the trend of the performance of the relevant subsidiary of the Company. Deferred tax assets
+     were recognised to the extent that it is probable that future taxable profits will be available against
+     which they can be utilised.
+
+12   TRADE RECEIVABLES AND CONTRACT ASSETS
+
+                                                                               Unaudited            Audited
+                                                                                 30 June       31 December
+                                                                                    2022              2021
+                                                                                HK$’000            HK$’000
+
+     Trade receivables                                                             80,500             81,478
+     Contract assets                                                               15,591             26,553
+
+                                                                                   96,091           108,031
+
+     An ageing analysis of trade receivables (net of loss allowance), based on the invoice date is set out as
+     follows:
+
+                                                                               Unaudited            Audited
+                                                                                 30 June       31 December
+                                                                                    2022              2021
+                                                                                HK$’000            HK$’000
+
+     0 to 30 days                                                                  50,352             42,313
+     31 to 60 days                                                                  4,224             12,963
+     61 to 90 days                                                                  8,592              9,639
+     Over 90 days                                                                  17,332             16,563
+
+                                                                                   80,500             81,478
+
+     The Group has a defined credit policy. The general credit terms allowed range from 0 to 15 days in
+     respect of television, broadband, telephony and mobile service subscription and from 0 to 30 days in
+     respect of advertising, network leasing and network construction services.
+
+
+
+
+                                                  – 33 –
+13   TRADE PAYABLES
+
+     An ageing analysis of trade payables, based on the invoice date is set out as follows:
+
+                                                                              Unaudited            Audited
+                                                                                30 June       31 December
+                                                                                   2022              2021
+                                                                               HK$’000            HK$’000
+
+     0 to 30 days                                                                   5,789            8,694
+     31 to 60 days                                                                  7,136           10,266
+     61 to 90 days                                                                  8,198            8,633
+     Over 90 days                                                                  11,364           30,020
+
+                                                                                   32,487           57,613
+
+14   SHARE CAPITAL
+
+                                                                              Number of
+                                                                                 shares          HK$’000
+
+     Ordinary shares, issued
+       and fully paid:
+     At 1 January 2021, 30 June 2021 (unaudited),
+       31 December 2021 (audited) and 30 June 2022 (unaudited)             7,134,623,520         7,928,975
+
+     (i)   Share option scheme
+
+           The Share Option Scheme was adopted by the Company on 24 May 2018 which will be valid
+           and effective for a period of ten years from the date of adoption.
+
+           On 15 June 2018, Share Options carrying the rights to subscribe for a total of 279,200,000
+           Shares were granted to certain eligible persons under the Share Option Scheme at an exercise
+           price of HK$0.210 per Share.
+
+           The fair value of the Share Options granted at the date of grant, 15 June 2018, was estimated at
+           approximately HK$20,771,000. The fair value is determined by Binomial model using inputs,
+           including share price of HK$0.15 per Share, exercise price of HK$0.21 per Share, volatility of
+           66%, risk-free rate of 2.25% and dividend yield of 0%.
+
+           As a result of the Rights Issue (as defined thereafter), the number of Shares issuable and the
+           exercise price per Share payable upon exercise of the outstanding Share Options granted under
+           the Share Option Scheme were adjusted from 279,200,000 to 287,240,960 and from HK$0.210
+           to HK$0.204 respectively.
+
+
+
+
+                                                  – 34 –
+           No Share Option was exercised during the six months ended 30 June 2022 and 2021. During the
+           six months ended 30 June 2022, Share Option carrying the rights to subscribe 241,562,240
+           Shares was lapsed (2021: Nil). As at 30 June 2022, there were no outstanding exercisable Share
+           Options carrying the rights to subscribe Shares (31 December 2021: 241,562,240 Shares).
+
+     (ii) Rights issue
+
+           On 25 January 2019, the Company announced a fund raising proposal comprising a rights issue
+           on the basis of three (3) new ordinary Shares of the Company (the “Rights Shares”) for every
+           four (4) existing Shares then held at the subscription price of HK$0.1 per Rights Share (the
+           “Rights Issue”). On 4 June 2019, the Company completed the Rights Issue of 928,603,364
+           Shares for gross proceeds of approximately HK$92,860,000 (net proceeds of approximately
+           HK$84,503,000).
+
+15   CONVERTIBLE BONDS
+
+     (i)   The 2019 LCS
+
+           On 25 January 2019, the Company entered into the unlisted long-term convertible securities
+           subscription agreement with Forever Top, pursuant to which the Company has conditionally
+           agreed to issue, and Forever Top has conditionally agreed to subscribe for, the 2019 LCS. On 4
+           June 2019, the issuance of the 2019 LCS with the principal amount of HK$568,000,000 to
+           Forever Top was completed. The 2019 LCS would be convertible into 4,544,000,000 new
+           ordinary Shares upon full conversion of the 2019 LCS based on the initial conversion price of
+           HK$0.125 per conversion share. The initial conversion price represents a premium of
+           approximately 8.7% over the closing price of HK$0.115 per Share as quoted on the Stock
+           Exchange on 25 January 2019, being the date on which the terms of the 2019 LCS were fixed.
+           The coupon rate of the 2019 LCS is 2.0% per annum and payable quarterly. The 2019 LCS is
+           convertible into ordinary Shares at any time during the period from the date of the issue of the
+           2019 LCS up to the close of business on the maturity date, subject to the conversion restrictions.
+           The maturity date of the 2019 LCS is the end of the tenth year from date of the issue of the
+           2019 LCS and all of the remaining outstanding 2019 LCS will be redeemed by the Company at
+           100% of the outstanding principal amount of the 2019 LCS together with any interest accrued
+           but unpaid thereon.
+
+           On the date of issuance of the 2019 LCS, the fair value of liability component of approximately
+           HK$343,719,000 was recognised and the fair value of approximately HK$224,281,000,
+           representing equity element, was recognised and presented in equity heading “equity component
+           of convertible bonds” at initial recognition. The effective interest rate of the liability component
+           was 7.69% per annum. As at 30 June 2022, the carrying amount of liability component of the
+           2019 LCS is approximately HK$395,527,000 (31 December 2021: approximately
+           HK$386,387,000).
+
+           The relevant fair value measurement was carried out by an independent qualified professional
+           valuer not connected to the Group.
+
+
+
+
+                                                   – 35 –
+     (ii) The 2021 LCS
+
+          On 27 January 2021, the Company entered into the unlisted long-term convertible securities
+          subscription agreement with Forever Top, pursuant to which the Company has conditionally
+          agreed to issue, and Forever Top has conditionally agreed to subscribe for, the 2021 LCS. On
+          31 March 2021, the issuance of the 2021 LCS with the principal amount of HK$200,000,000
+          with a maturity of 10 years by the Company to Forever Top was completed. The 2021 LCS
+          would be convertible into 2,941,176,470 new ordinary Shares upon full conversion of the 2021
+          LCS based on the initial conversion price of HK$0.068 per conversion share and the coupon
+          rate of the 2021 LCS is 2.0% per annum and payable quarterly. The Company may at any time
+          on or after the date of issue of the 2021 LCS by giving not less than 10 business days’ written
+          notice to the holder(s) of the 2021 LCS to redeem all or part of the 2021 LCS at the outstanding
+          principal amount of the 2021 LCS together with all accrued but unpaid interest.
+
+          On the date of issuance of the 2021 LCS, the fair value of liability component of approximately
+          HK$131,806,000 was recognised, the fair value of approximately HK$144,610,000,
+          representing equity element, was recognised and presented in equity heading “equity component
+          of convertible bonds” and the fair value of the redemption option of approximately
+          HK$78,061,000 was recognised as financial assets at fair value through profit or loss at initial
+          recognition. The effective interest rate of the liability component was 6.88% per annum. As at
+          30 June 2022, the carrying amount of liability component and redemption option of the 2021
+          LCS is approximately HK$138,082,000 (31 December 2021: approximately HK$135,542,000)
+          and approximately HK$47,066,000 (31 December 2021: approximately HK$87,005,000)
+          respectively.
+
+          The relevant fair value measurement was carried out by an independent qualified professional
+          valuer not connected to the Group.
+
+16   INTEREST-BEARING BORROWINGS
+
+                                             Unaudited                            Audited
+                                            30 June 2022                      31 December 2021
+                                                 Non-                                 Non-
+                                    Current    current   Total           Current    current    Total
+                                    HK$’000 HK$’000 HK$’000             HK$’000 HK$’000 HK$’000
+
+     Bank loan (Note (a))            295,000             –   295,000     295,000            –    295,000
+     Loans from Celestial Pioneer
+       Limited (Note (b))                   –    166,035     166,035            –           –           –
+
+     Total borrowings                295,000     166,035     461,035     295,000            –    295,000
+
+
+
+
+                                                – 36 –
+     Notes:
+
+     (a)   The carrying amount of bank loan denominated in Hong Kong dollar as at 30 June 2022 was
+           HK$295,000,000 (31 December 2021: HK$295,000,000), which is unsecured, carries interest at
+           variable rates and repayable on demand.
+
+     (b)   The carrying amount of the loans from Celestial Pioneer Limited (a company holding 72.0% of
+           the total number of issued shares of Forever Top) denominated in Hong Kong dollar as at 30
+           June 2022 was approximately HK$166,035,000 (31 December 2021: HK$Nil), which are
+           unsecured, carry interest at fixed rates ranging from 2.5% to 3.0% per annum and with a term of
+           3 years from the date of the respective loan agreements.
+
+     The maturity of interest-bearing borrowings is as follows:
+
+                                                                Loans from Celestial
+                                            Bank loan             Pioneer Limited                Total
+                                       Unaudited      Audited   Unaudited      Audited    Unaudited      Audited
+                                         30 June 31 December      30 June 31 December       30 June 31 December
+                                            2022        2021         2022        2021          2022        2021
+                                        HK$’000      HK$’000     HK$’000      HK$’000      HK$’000      HK$’000
+
+     Within 1 year or on demand          295,000      295,000           –           –        295,000     295,000
+     After 1 year but within 5 years           –            –     166,035           –        166,035           –
+
+                                         295,000      295,000     166,035           –        461,035     295,000
+
+17   DIVIDEND
+
+     The Board does not recommend the payment of any interim dividend for the six months ended 30
+     June 2022 (2021: HK$Nil).
+
+18   CAPITAL COMMITMENTS
+
+     Capital commitments outstanding are as follows:
+
+                                                                                Unaudited              Audited
+                                                                                  30 June         31 December
+                                                                                     2022                2021
+                                                                                 HK$’000              HK$’000
+
+     Property, plant and equipment
+       — Contracted but not provided for                                                 7,616            5,335
+
+     Programming library
+       — Contracted but not provided for                                             11,237              16,214
+
+                                                                                     18,853              21,549
+
+
+
+
+                                                   – 37 –
+19   GUARANTEES
+
+     As at 30 June 2022, a corporate guarantee had been provided by the Company to a bank of
+     HK$400,000,000 (31 December 2021: HK$400,000,000) in respect of the facility of borrowing up to
+     HK$400,000,000 (31 December 2021: HK$400,000,000) to a wholly-owned subsidiary of the
+     Company, of which HK$295,000,000 (31 December 2021: HK$295,000,000) was utilised by the
+     subsidiary of the Company.
+
+     As at 30 June 2022, the Group had made arrangements with a bank to provide two separate
+     performance bonds to the counterparties amounting to HK$39,830,000 (31 December 2021:
+     HK$33,830,000), of which HK$9,830,000 (31 December 2021: HK$3,830,000) was secured by bank
+     deposit. The performance bonds are to guarantee in favour of the counterparties the Group’s
+     performance in fulfilling the obligations under a contract and the requirements as set out in the
+     license issued by a regulatory body.
+
+20   EVENTS AFTER THE REPORTING PERIOD
+
+     In August 2022, HKC (a wholly-owned subsidiary of the Company), as the borrower, entered into a
+     loan agreement with Celestial Pioneer Limited as the lender, pursuant to which, the borrower
+     obtained an unsecured loan with a principal amount of HK$80 million for a term of 3 years from the
+     date of the loan agreement, with an interest rate of 3.0% per annum.
+
+
+
+
+                                               – 38 –
+CORPORATE GOVERNANCE PRACTICES
+
+The Company is committed to maintaining a high standard of corporate governance
+practices and procedures and to complying with the statutory and regulatory
+requirements with an aim to maximising the Shareholders’ values and interests as well
+as to enhancing the stakeholders’ transparency and accountability. During the six months
+ended 30 June 2022, the Company has complied with all applicable code provisions of
+the Corporate Governance Code (the “CG Code”) as set out in Appendix 14 of the
+Listing Rules, except for the following deviations:
+
+Code Provision C.1.6 of the CG Code stipulates that independent non-executive directors
+and other non-executive directors, as equal board members, should give the board and
+any committees on which they serve the benefit of their skills, expertise and varied
+backgrounds and qualifications through regular attendance and active participation.
+Generally, they should also attend general meetings to gain and develop a balanced
+understanding of the views of shareholders. Also, Code Provision F.2.2 of the CG Code
+stipulates that the chairman of the board should attend the annual general meeting.
+
+Dr. Cheng Kar-Shun, Henry (the chairman of the Board and a non-executive Director) ,
+Tan Sri Dato’ David Chiu (a vice-chairman of the Board and a non-executive Director)
+and Mr. Andrew Wah Wai Chiu (a non-executive Director) were unable to attend the
+annual general meeting of the Company held on 14 June 2022 (“2022 AGM”) as each of
+Dr. Cheng Kar-Shun, Henry and Tan Sri Dato’ David Chiu had other engagements at the
+time of such meeting and Mr. Andrew Wah Wai Chiu was out of town for other
+engagement. In the absence of the chairman of the Board, Mr. Tsang On Yip, Patrick, a
+vice-chairman of the Board and an executive Director, acted as the chairman of the 2022
+AGM to ensure an effective communication with the Shareholders.
+
+MODEL CODE FOR SECURITIES TRANSACTIONS
+
+The Company has adopted the Model Code for Securities Transactions by Directors of
+Listed Issuers (the “Model Code”) set out in Appendix 10 to the Listing Rules. The
+Company, having made specific enquiries to all the Directors, was not aware of any non-
+compliance with the required standard set out in the Model Code during the six months
+ended 30 June 2022.
+
+The Company has also applied the principles of the Model Code to the employees of the
+Group.
+
+
+
+
+                                        – 39 –
+AUDIT COMMITTEE AND REVIEW OF INTERIM RESULTS
+
+The Company has set up an audit committee (the “Audit Committee”) with majority of
+the members being the independent non-executive Directors with terms of reference in
+accordance with the requirements of the Listing Rules for the purposes of, among others,
+reviewing the financial information of the Group, and overseeing the Group’s financial
+reporting system, and risk management and internal control systems, as well as the
+Group’s corporate governance matters. As at the date of this announcement, the Audit
+Committee comprises Mr. Luk Koon Hoo, Roger (an independent non-executive Director
+and the chairman of the Audit Committee), Mr. Hoong Cheong Thard (a non-executive
+Director) and Mr. Tang Sing Ming Sherman (an independent non-executive Director).
+
+The unaudited condensed consolidated interim financial information of the Group and
+the interim report of the Company for the six months ended 30 June 2022 have been
+reviewed by the Audit Committee with no disagreement by the Audit Committee. The
+auditor of the Company, PricewaterhouseCoopers, has reviewed the unaudited condensed
+consolidated interim financial information of the Group for the six months ended 30
+June 2022 in accordance with Hong Kong Standard on Review Engagements 2410
+“Review of Interim Financial Information Performed by the Independent Auditor of the
+Entity” issued by the Hong Kong Institute of Certified Public Accountants.
+
+INTERIM DIVIDEND
+
+The Board does not recommend the payment of any interim dividend for the six months
+ended 30 June 2022 (for the six months ended 30 June 2021: HK$Nil).
+
+
+
+
+                                        – 40 –
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED
+SECURITIES
+
+Neither the Company nor any of its subsidiaries purchased, sold or redeemed any listed
+securities of the Company during the six months ended 30 June 2022.
+
+                                                        By order of the Board
+                                                 i-CABLE Communications Limited
+                                                    Dr. Cheng Kar-Shun, Henry
+                                                             Chairman
+
+Hong Kong, 26 August 2022
+
+As at the date of this announcement, the Board comprises eleven Directors, namely Dr.
+Cheng Kar-Shun, Henry (Chairman) and Tan Sri Dato’ David Chiu (Vice-chairman) as
+non-executive Directors; Mr. Tsang On Yip, Patrick (Vice-chairman) and Mr. Lie Ken
+Jie Remy Anthony Ket Heng as executive Directors; Mr. Andrew Wah Wai Chiu, Mr.
+Hoong Cheong Thard and Ms. Ng Yuk Mui Jessica as non-executive Directors; and Mr.
+Lam Kin Fung Jeffrey, Dr. Hu Shao Ming Herman, Mr. Luk Koon Hoo, Roger and Mr.
+Tang Sing Ming Sherman as independent non-executive Directors.
+
+
+
+
+                                        – 41 –
+

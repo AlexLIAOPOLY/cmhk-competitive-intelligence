@@ -1,0 +1,12 @@
+﻿dataset_id,status,issues,manifest_path,entrypoint_count,file_count,rag_chunk_count,api_checked
+cmhk_macro_policy_2026-06-19,pass,,agent_knowledge/cmhk_macro_policy_2026-06-19/manifest.json,13,14,4,True
+quarterly_competitor_metrics_2026-06-18,pass,,agent_knowledge/quarterly_competitor_metrics_2026-06-18/manifest.json,14,30,4,True
+cloud_vendor_metrics_2026-06-17,pass,,agent_knowledge/cloud_vendor_metrics_2026-06-17/manifest.json,8,9,4,True
+knowledge_integrity_audits,pass,,agent_knowledge/knowledge_integrity_audits/manifest.json,2,3,4,True
+forecast_readiness_audits,pass,,agent_knowledge/forecast_readiness_audits/manifest.json,2,3,4,True
+source_evidence_audits,pass,,agent_knowledge/source_evidence_audits/manifest.json,2,3,4,True
+source_url_reachability_audits,pass,,agent_knowledge/source_url_reachability_audits/manifest.json,2,3,4,True
+goal_readiness_audits,pass,,agent_knowledge/goal_readiness_audits/manifest.json,2,3,4,True
+agent_guidance_alignment_audits,pass,,agent_knowledge/agent_guidance_alignment_audits/manifest.json,2,3,4,True
+generated_charts,pass,,,,,,True
+quarterly_competitor_metrics_2026-06-17,pass,,,,,,True

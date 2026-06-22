@@ -1,10 +1,18 @@
 from __future__ import annotations
 
 import unittest
+import time
 from unittest.mock import patch
 
-from data_curation.schemas import EvidenceTask
-from data_curation.workflow import build_graph, supervise_gap_actions
+from data_curation.schemas import CandidateFact, EvidenceTask
+from data_curation.workflow import (
+    _votes_from_source_pages,
+    audit_quality,
+    build_graph,
+    extract_facts,
+    search_verify_facts,
+    supervise_gap_actions,
+)
 from crawl import apply_crawl_settings, redact_sensitive
 from normalize_company_metrics_ai import (
     _evidence_relevance,
@@ -81,6 +89,58 @@ class DataCurationWorkflowTests(unittest.TestCase):
             [EvidenceTask.model_validate(item).evidence_hash for item in second],
         )
         self.assertTrue(all(item["evidence_hash"] for item in first))
+
+    def test_parallel_ai_batches_preserve_candidate_order(self) -> None:
+        tasks = []
+        for index in range(4):
+            task = {
+                "id": f"parallel-{index}",
+                "company": "HKT",
+                "metric": "漫游",
+                "current_value": "",
+                "raw_text": f"HKT roaming evidence {index}",
+                "sources": ["https://www.hkt.com/en/about-hkt/investor-relations/fast-facts/"],
+                "row_ref": "row_4",
+                "evidence_hash": f"hash-{index}",
+                "source_score": 1.0,
+                "source_tier": "official",
+            }
+            tasks.append(EvidenceTask.model_validate(task).model_dump())
+
+        def fake_call_deepseek(batch):
+            index = int(batch[0]["id"].rsplit("-", 1)[1])
+            time.sleep(0.03 * (4 - index))
+            return [
+                {
+                    "id": batch[0]["id"],
+                    "status": "unavailable",
+                    "value": "未提取到有效数据",
+                    "basis": f"batch {index}",
+                    "note": "",
+                    "entity_supported": True,
+                    "metric_supported": False,
+                    "value_supported": False,
+                    "confidence": 0.1,
+                }
+            ]
+
+        with patch("data_curation.workflow.call_deepseek", side_effect=fake_call_deepseek):
+            result = extract_facts(
+                {
+                    "run_id": "unit-test",
+                    "tasks": tasks,
+                    "existing_items": {},
+                    "batch_size": 1,
+                    "ai_workers": 4,
+                    "online_ai": True,
+                }
+            )
+
+        self.assertEqual(
+            [item["id"] for item in result["candidates"]],
+            ["parallel-0", "parallel-1", "parallel-2", "parallel-3"],
+        )
+        self.assertEqual(result["summary"]["onlineBatches"], 4)
 
     def test_hkt_customer_exact_extractor(self) -> None:
         result = deterministic_extract_task(
@@ -491,6 +551,87 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["status"], "ok")
         self.assertIn("1.7百万", result["value"])
 
+    def test_operator_network_api_venture_extractors(self) -> None:
+        text = (
+            "Today, some of the world’s largest telecom operators, including "
+            "AT&T, Deutsche Telekom, Orange, Telefonica, Telstra, T-Mobile, "
+            "Verizon and Vodafone, together with Ericsson are announcing a new "
+            "venture to combine and sell network Application Programming "
+            "Interfaces (APIs) on a global scale to spur innovation in digital "
+            "services. Network APIs are the way to easily access, use and pay "
+            "for network capabilities."
+        )
+        att = deterministic_extract_task(
+            {
+                "id": "att-network-api",
+                "company": "AT&T",
+                "metric": "网络API",
+                "raw_text": text,
+            }
+        )
+        tmobile = deterministic_extract_task(
+            {
+                "id": "tmobile-network-api",
+                "company": "T-Mobile US",
+                "metric": "网络API",
+                "raw_text": text,
+            }
+        )
+        self.assertEqual(att["status"], "ok")
+        self.assertEqual(tmobile["status"], "ok")
+        self.assertIn("网络API", att["value"])
+
+    def test_tmobile_ai_ran_prnewswire_extractor(self) -> None:
+        result = deterministic_extract_task(
+            {
+                "id": "tmobile-ai-ran",
+                "company": "T-Mobile US",
+                "metric": "AI网络",
+                "raw_text": (
+                    "Ericsson and T-Mobile have moved AI-native Scheduler with "
+                    "Link Adaptation into large-scale commercial trials on live "
+                    "5G Advanced network traffic. During trials with T-Mobile, "
+                    "the AI-native Scheduler with Link Adaptation feature achieved "
+                    "close to 10 percent increase in spectral efficiency and up "
+                    "to 15 percent boost in downlink throughput."
+                ),
+            }
+        )
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("15%", result["value"])
+
+    def test_att_investor_open_ran_and_fwa_extractors(self) -> None:
+        open_ran = deterministic_extract_task(
+            {
+                "id": "att-open-ran",
+                "company": "AT&T",
+                "metric": "Open RAN",
+                "raw_text": (
+                    "AT&T Inc Analyst & Investor Day. By the end of 2026, "
+                    "we expect that 70% of our 5G traffic will flow across "
+                    "open hardware. This transition to a more open radio "
+                    "architecture will invite new technology partners."
+                ),
+            }
+        )
+        fwa = deterministic_extract_task(
+            {
+                "id": "att-fwa",
+                "company": "AT&T",
+                "metric": "FWA",
+                "raw_text": (
+                    "During the first quarter of 2026, we reported a net gain "
+                    "of 584,000 total internet connections, with 292,000 fiber "
+                    "net adds and 292,000 fixed wireless net adds. AIA revenue "
+                    "increases exceeded 100 percent."
+                ),
+            }
+        )
+        self.assertEqual(open_ran["status"], "ok")
+        self.assertIn("70%", open_ran["value"])
+        self.assertEqual(fwa["status"], "ok")
+        self.assertIn("29.2万", fwa["value"])
+
     def test_parent_annual_report_can_support_tmobile(self) -> None:
         owners = _official_domain_owners(
             "https://report.telekom.com/annual-report-2025/management-report/"
@@ -747,7 +888,506 @@ class DataCurationWorkflowTests(unittest.TestCase):
     def test_graph_contains_tool_supervisor(self) -> None:
         graph = build_graph().get_graph()
         self.assertIn("supervisor", graph.nodes)
+        self.assertIn("search_verify", graph.nodes)
+        self.assertIn(("resolve", "search_verify"), {(edge.source, edge.target) for edge in graph.edges})
+        self.assertIn(("search_verify", "plan_gaps"), {(edge.source, edge.target) for edge in graph.edges})
         self.assertIn(("plan_gaps", "supervisor"), {(edge.source, edge.target) for edge in graph.edges})
+
+    def test_search_verifier_majority_corrects_candidate_value(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 2,
+                "tasks": [
+                    {
+                        "id": "fact-a",
+                        "company": "中国移动",
+                        "metric": "收入",
+                        "row_ref": "row_29",
+                        "raw_text": "中国移动2025年营业收入达到10502亿元。",
+                        "sources": ["https://www.chinamobileltd.com/report"],
+                    }
+                ],
+                "existing_items": {
+                    "old-a": {
+                        "schemaVersion": 4,
+                        "company": "中国移动",
+                        "metric": "收入",
+                        "row_ref": "row_29",
+                        "semantic_key": "中国移动|收入|row_29",
+                        "status": "ok",
+                        "decision": "accepted",
+                        "value": "10502亿元",
+                        "quality_score": 0.96,
+                    }
+                },
+                "candidates": [
+                    {
+                        "id": "fact-a",
+                        "company": "中国移动",
+                        "metric": "收入",
+                        "value": "10500亿元",
+                        "basis": "候选值为10500亿元。",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.86,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_29",
+                        "sources": ["https://www.chinamobileltd.com/report"],
+                        "quality_score": 0.94,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["value"], "10502亿元")
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["search_verification"]["decision"], "majority_corrected")
+
+    def test_search_verifier_conflict_without_majority_goes_to_review(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 2,
+                "tasks": [
+                    {
+                        "id": "fact-b",
+                        "company": "中国电信",
+                        "metric": "收入",
+                        "row_ref": "row_23",
+                        "raw_text": "中国电信收入为5296亿元。",
+                        "sources": ["https://www.chinatelecom-h.com/report"],
+                    }
+                ],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "fact-b",
+                        "company": "中国电信",
+                        "metric": "收入",
+                        "value": "5295亿元",
+                        "basis": "候选值为5295亿元。",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.86,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_23",
+                        "sources": ["https://www.chinatelecom-h.com/report"],
+                        "quality_score": 0.94,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "review")
+        self.assertIn("搜索验证未形成多数口径", fact["reasons"])
+
+    def test_search_verifier_confirms_table_value_from_metric_window(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 1,
+                "tasks": [
+                    {
+                        "id": "icable-revenue",
+                        "company": "i-CABLE",
+                        "metric": "运营收入/总收益",
+                        "row_ref": "row_17",
+                        "raw_text": (
+                            "Fiscal Year FY 2025 FY 2024 FY 2023 "
+                            "Revenue 538.74 584.49 597.9"
+                        ),
+                        "sources": ["https://stockanalysis.com/quote/hkg/1097/financials/"],
+                    }
+                ],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "icable-revenue",
+                        "company": "i-CABLE",
+                        "metric": "运营收入/总收益",
+                        "value": "538.74（百万，单位未明确，推测为百万港元）",
+                        "basis": "片段中明确列出Revenue 538.74。",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.9,
+                        "source_score": 0.9,
+                        "source_tier": "commercial",
+                        "row_ref": "row_17",
+                        "sources": ["https://stockanalysis.com/quote/hkg/1097/financials/"],
+                        "quality_score": 0.94,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        verification = result["candidates"][0]["search_verification"]
+        self.assertGreaterEqual(verification["vote_count"], 2)
+        self.assertEqual(verification["decision"], "majority_confirmed")
+
+    def test_search_verifier_ignores_unrelated_qualitative_window(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 1,
+                "tasks": [
+                    {
+                        "id": "hkbn-board",
+                        "company": "HKBN",
+                        "metric": "董事会",
+                        "row_ref": "row_12",
+                        "raw_text": (
+                            "Corporate Governance Report Board Diversity. "
+                            "The Board has over 50% female Directors."
+                        ),
+                        "sources": ["https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"],
+                    }
+                ],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "hkbn-board",
+                        "company": "HKBN",
+                        "metric": "董事会",
+                        "value": "董事会决议宣派2025财年末期股息每股18.9港仙",
+                        "basis": "Board has resolved to declare a final dividend of 18.9 cents per share",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.96,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_12",
+                        "sources": ["https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_AnnualReport_2025.pdf"],
+                        "quality_score": 0.996,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertNotIn("搜索验证未形成多数口径", fact.get("reasons", []))
+
+    def test_search_verifier_online_search_vote_can_join_majority(self) -> None:
+        with patch(
+            "data_curation.workflow._public_web_search",
+            return_value=(
+                [
+                    {
+                        "title": "中国移动2025年营业收入达到10502亿元",
+                        "snippet": "中国移动发布年度业绩，营业收入达到10502亿元。",
+                        "url": "https://www.chinamobileltd.com/report",
+                        "provider": "unit",
+                    }
+                ],
+                "unit",
+            ),
+        ):
+            result = search_verify_facts(
+                {
+                    "run_id": "unit-test",
+                    "search_verify_workers": 2,
+                    "search_verify_online": True,
+                    "search_verify_online_limit": 1,
+                    "tasks": [
+                        {
+                            "id": "fact-online",
+                            "company": "中国移动",
+                            "metric": "收入",
+                            "row_ref": "row_29",
+                            "raw_text": "中国移动营业收入达到10502亿元。",
+                            "sources": ["https://www.chinamobileltd.com/report"],
+                        }
+                    ],
+                    "existing_items": {},
+                    "candidates": [
+                        {
+                            "id": "fact-online",
+                            "company": "中国移动",
+                            "metric": "收入",
+                            "value": "10500亿元",
+                            "basis": "候选值为10500亿元。",
+                            "status": "ok",
+                            "entity_supported": True,
+                            "metric_supported": True,
+                            "value_supported": True,
+                            "confidence": 0.86,
+                            "source_score": 1.0,
+                            "source_tier": "official",
+                            "row_ref": "row_29",
+                            "sources": ["https://www.chinamobileltd.com/report"],
+                            "quality_score": 0.94,
+                            "decision": "accepted",
+                        }
+                    ],
+                }
+            )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["value"], "10502亿元")
+        self.assertEqual(fact["search_verification"]["online_search"]["provider"], "unit")
+        self.assertGreaterEqual(result["search_verification"]["online_votes"], 1)
+
+    def test_search_verifier_zero_online_limit_checks_all_targets(self) -> None:
+        calls: list[str] = []
+
+        def fake_search(query: str):
+            calls.append(query)
+            return [], "unit-empty"
+
+        with (
+            patch("data_curation.workflow._public_web_search", side_effect=fake_search),
+            patch("data_curation.workflow._votes_from_source_pages", return_value=[]),
+        ):
+            result = search_verify_facts(
+                {
+                    "run_id": "unit-test",
+                    "search_verify_workers": 2,
+                    "search_verify_online": True,
+                    "search_verify_online_limit": 0,
+                    "tasks": [],
+                    "existing_items": {},
+                    "candidates": [
+                        {
+                            "id": f"fact-{index}",
+                            "company": "中国移动",
+                            "metric": "收入",
+                            "value": f"1050{index}亿元",
+                            "basis": f"收入为1050{index}亿元。",
+                            "status": "ok",
+                            "entity_supported": True,
+                            "metric_supported": True,
+                            "value_supported": True,
+                            "confidence": 0.9,
+                            "source_score": 1.0,
+                            "source_tier": "official",
+                            "row_ref": f"row_{index}",
+                            "sources": ["https://www.chinamobileltd.com/report"],
+                            "quality_score": 0.94,
+                            "decision": "accepted",
+                        }
+                        for index in range(3)
+                    ],
+                }
+            )
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(result["search_verification"]["online_checked"], 3)
+
+    def test_search_verifier_online_source_pages_can_recover_rejected_fact(self) -> None:
+        with (
+            patch("data_curation.workflow._public_web_search", return_value=([], "unit-empty")),
+            patch(
+                "data_curation.workflow._votes_from_source_pages",
+                return_value=[
+                    {
+                        "value": "Net Income -489.98M",
+                        "normalized_value": "-48998万",
+                        "canonical": "-48998万",
+                        "source": "公开来源页读取",
+                        "kind": "source_page",
+                        "url": "https://stockanalysis.com/quote/hkg/1097/statistics/",
+                    },
+                    {
+                        "value": "Net Income -489.98M",
+                        "normalized_value": "-48998万",
+                        "canonical": "-48998万",
+                        "source": "公开来源页读取",
+                        "kind": "source_page",
+                        "url": "https://stockanalysis.com/quote/hkg/1097/financials/",
+                    },
+                ],
+            ),
+        ):
+            result = search_verify_facts(
+                {
+                    "run_id": "unit-test",
+                    "search_verify_workers": 1,
+                    "search_verify_online": True,
+                    "search_verify_online_limit": 1,
+                    "tasks": [],
+                    "existing_items": {},
+                    "candidates": [
+                        {
+                            "id": "icable-profit",
+                            "company": "i-CABLE",
+                            "metric": "净利润",
+                            "value": "未提取到有效数据",
+                            "basis": "现有片段不是集团净利润。",
+                            "status": "unavailable",
+                            "entity_supported": False,
+                            "metric_supported": False,
+                            "value_supported": False,
+                            "confidence": 0.2,
+                            "source_score": 0.5,
+                            "source_tier": "commercial",
+                            "row_ref": "row_17",
+                            "sources": ["https://stockanalysis.com/quote/hkg/1097/financials/"],
+                            "quality_score": 0.1,
+                            "decision": "rejected",
+                            "reasons": ["抽取结果不可用"],
+                        }
+                    ],
+                }
+            )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["status"], "ok")
+        self.assertEqual(fact["value"], "-48998万")
+        self.assertEqual(fact["search_verification"]["decision"], "majority_corrected")
+
+    def test_search_verifier_rechecks_suspicious_accepted_profit_segment(self) -> None:
+        with (
+            patch("data_curation.workflow._public_web_search", return_value=([], "unit-empty")),
+            patch(
+                "data_curation.workflow._votes_from_source_pages",
+                return_value=[
+                    {
+                        "value": "Net Income -489.98M",
+                        "normalized_value": "-48998万",
+                        "canonical": "-48998万",
+                        "source": "公开来源页读取",
+                        "kind": "source_page",
+                        "url": "https://stockanalysis.com/quote/hkg/1097/statistics/",
+                    },
+                    {
+                        "value": "Net Income -489.98M",
+                        "normalized_value": "-48998万",
+                        "canonical": "-48998万",
+                        "source": "公开来源页读取",
+                        "kind": "source_page",
+                        "url": "https://stockanalysis.com/quote/hkg/1097/financials/",
+                    },
+                ],
+            ),
+        ):
+            result = search_verify_facts(
+                {
+                    "run_id": "unit-test",
+                    "search_verify_workers": 1,
+                    "search_verify_online": True,
+                    "search_verify_online_limit": 1,
+                    "tasks": [
+                        {
+                            "id": "icable-profit",
+                            "raw_text": "Segment profit before depreciation was HK$243,000,000, not net profit.",
+                            "sources": ["https://stockanalysis.com/quote/hkg/1097/financials/"],
+                        }
+                    ],
+                    "existing_items": {},
+                    "candidates": [
+                        {
+                            "id": "icable-profit",
+                            "company": "i-CABLE",
+                            "metric": "净利润",
+                            "value": "243,000,000港元；291,000,000港元；26,000,000港元；27%",
+                            "basis": "片段描述的是未扣除折旧、其他无形资产摊销及减值亏损前的经营费用和分部溢利，并非净利润。",
+                            "status": "ok",
+                            "entity_supported": True,
+                            "metric_supported": True,
+                            "value_supported": True,
+                            "confidence": 0.9,
+                            "source_score": 1.0,
+                            "source_tier": "official",
+                            "row_ref": "row_17",
+                            "sources": ["https://stockanalysis.com/quote/hkg/1097/financials/"],
+                            "quality_score": 0.99,
+                            "decision": "accepted",
+                            "reasons": [],
+                        }
+                    ],
+                }
+            )
+        fact = result["candidates"][0]
+        votes = fact["search_verification"]["votes"]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["status"], "ok")
+        self.assertEqual(fact["value"], "-48998万")
+        self.assertEqual(fact["search_verification"]["decision"], "majority_corrected")
+        self.assertTrue(fact["search_verification"]["online_search"]["enabled"])
+        self.assertNotIn("candidate", {vote["kind"] for vote in votes})
+        self.assertNotIn("local_evidence", {vote["kind"] for vote in votes})
+
+    def test_source_page_ignores_unrelated_numeric_value(self) -> None:
+        class FakeResponse:
+            text = "<html><body>Adjusted EBITDA margin changed by -1.4% year over year.</body></html>"
+
+            def raise_for_status(self) -> None:
+                return None
+
+        fact = CandidateFact(
+            id="att-fwa",
+            company="AT&T",
+            metric="FWA",
+            value="2026年一季度固定无线净增29.2万；AT&T Internet Air收入增长超过100%",
+            basis="AT&T reported 292,000 fixed wireless net adds and AIA revenue exceeded 100 percent.",
+            status="ok",
+            entity_supported=True,
+            metric_supported=True,
+            value_supported=True,
+            confidence=0.96,
+            source_score=0.72,
+            source_tier="public",
+            row_ref="row_20",
+            sources=["https://investors.att.com/report"],
+            quality_score=0.968,
+            decision="accepted",
+        )
+        with patch("httpx.get", return_value=FakeResponse()):
+            self.assertEqual(_votes_from_source_pages(fact), [])
+
+    def test_search_verifier_matches_wan_unit_to_raw_integer(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 1,
+                "tasks": [
+                    {
+                        "id": "att-fwa",
+                        "raw_text": (
+                            "During the first quarter of 2026, AT&T reported 292,000 "
+                            "fixed wireless net adds, and Internet Air revenue exceeded 100 percent."
+                        ),
+                        "sources": ["https://investors.att.com/report"],
+                    }
+                ],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "att-fwa",
+                        "company": "AT&T",
+                        "metric": "FWA",
+                        "value": "2026年一季度固定无线净增29.2万；AT&T Internet Air收入增长超过100%",
+                        "basis": "AT&T reported 292,000 fixed wireless net adds and AIA revenue exceeded 100 percent.",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.96,
+                        "source_score": 0.72,
+                        "source_tier": "public",
+                        "row_ref": "row_20",
+                        "sources": ["https://investors.att.com/report"],
+                        "quality_score": 0.968,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        verification = result["candidates"][0]["search_verification"]
+        self.assertEqual(result["candidates"][0]["decision"], "accepted")
+        self.assertGreaterEqual(verification["vote_count"], 2)
+        self.assertEqual(verification["decision"], "majority_confirmed")
 
     def test_gap_targets_restrict_recrawl_entities_and_metrics(self) -> None:
         rows = [
@@ -770,6 +1410,37 @@ class DataCurationWorkflowTests(unittest.TestCase):
             configured = apply_crawl_settings(rows)
         self.assertEqual(configured[0]["entities"], ["Hutchison"])
         self.assertEqual(configured[0]["selected_fields"], ["客户数/用户数", "市场反应"])
+
+    def test_verified_icable_fields_recover_from_evidence_gap(self) -> None:
+        result = audit_quality(
+            {
+                "candidates": [
+                    {
+                        "id": "icable-dividend",
+                        "row_ref": "row_17",
+                        "company": "i-CABLE",
+                        "metric": "派息",
+                        "status": "unavailable",
+                        "value": "",
+                        "basis": "",
+                        "note": "",
+                        "sources": [],
+                        "source_score": 0.0,
+                        "source_tier": "missing",
+                        "entity_supported": False,
+                        "metric_supported": False,
+                        "value_supported": False,
+                        "confidence": 0.0,
+                        "reasons": ["主体归属未通过", "抽取结果不可用"],
+                    }
+                ]
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["status"], "ok")
+        self.assertIn("不建议派发2025年度末期股息", fact["value"])
+        self.assertEqual(fact["reasons"], [])
 
 
 if __name__ == "__main__":

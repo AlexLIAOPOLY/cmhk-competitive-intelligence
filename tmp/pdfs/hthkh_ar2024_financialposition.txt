@@ -1,0 +1,59 @@
+Consolidated Statement of Financial Position
+At 31 December 2024
+
+
+
+
+                                                                                 Note         2024          2023
+                                                                                        HK$ million    HK$ million
+ Non-current assets
+ Property, plant and equipment                                                   13          2,888            2,983
+ Goodwill                                                                        14          2,155            2,155
+ Telecommunications licences                                                     15          2,905            3,284
+ Right-of-use assets                                                             16            474              512
+ Customer acquisition and retention costs                                        17            145              168
+ Contract assets                                                                 18            115              149
+ Other non-current assets                                                        19            391              354
+ Deferred tax assets                                                             20              1                1
+ Investment in a joint venture                                                   21            113              109
+ Total non-current assets                                                                    9,187            9,715
+
+ Current assets
+ Cash and cash equivalents                                                       22          3,168            1,910
+ Short-term bank deposits with original maturity beyond 3 months                 22            511            1,774
+ Trade receivables and other current assets                                      23            808              889
+ Contract assets                                                                 18            128              169
+ Inventories                                                                     24            168              103
+ Total current assets                                                                        4,783            4,845
+
+ Current liabilities
+ Trade and other payables                                                        25          1,442            1,637
+ Contract liabilities                                                            26            218              212
+ Lease liabilities                                                               27            333              312
+ Current income tax liabilities                                                                 16                2
+ Total current liabilities                                                                   2,009            2,163
+
+ Non-current liabilities
+ Lease liabilities                                                               27            130              170
+ Deferred tax liabilities                                                        20            180              120
+ Other non-current liabilities                                                   28          2,118            2,249
+ Total non-current liabilities                                                               2,428            2,539
+
+ Net assets                                                                                  9,533            9,858
+
+ Capital and reserves
+ Share capital                                                                   29          1,205            1,205
+ Reserves                                                                        30          8,328            8,653
+ Total equity                                                                                9,533            9,858
+
+
+The accompanying notes are an integral part of these financial statements.
+
+
+
+
+LUI Dennis Pok Man                                                KOO Sing Fai
+Director                                                          Director
+
+                                                                                                      2024 Annual Report   155
+

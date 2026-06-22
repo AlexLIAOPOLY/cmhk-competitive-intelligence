@@ -152,8 +152,8 @@ class CrawlRecoveryTests(unittest.TestCase):
         )
         owners_by_url = {url: owners for url, owners in targets}
         shared_api_source = (
-            "https://www.ericsson.com/en/press-releases/2024/9/"
-            "global-telecom-leaders-join-forces-to-redefine-the-industry-with-network-apis"
+            "https://opengateway.telefonica.com/en/news/article/"
+            "telcos-leaders-join-to-redefine-the-sector-with-network-apis"
         )
         self.assertEqual(
             owners_by_url[shared_api_source],

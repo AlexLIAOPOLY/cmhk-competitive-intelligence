@@ -1,0 +1,27 @@
+{
+  "id": "user-upload-20260618_123024-foreground_multi_test_upload",
+  "title": "用户上传：foreground_multi_test_upload.md",
+  "summary": "用户上传文件生成的临时知识库，原始文件 foreground_multi_test_upload.md，已抽取为可检索文本。",
+  "source_type": "user_uploaded_file",
+  "visibility": "archived",
+  "scope": "用户手动上传给小竞AI的知识库文件",
+  "tags": [
+    "user-upload",
+    "knowledge-base"
+  ],
+  "keywords": [
+    "foreground_multi_test_upload",
+    "foreground_multi_test_upload.md",
+    "用户上传",
+    "知识库"
+  ],
+  "entrypoints": [
+    "README.md",
+    "uploaded_knowledge.md"
+  ],
+  "updated_at": "2026-06-18T12:30:24+08:00",
+  "quality": "user_uploaded_unverified; visible to AI only when selected in the database picker",
+  "original_file": "original.md",
+  "version": "2026-06-18T12:30:24+08:00",
+  "built_at": "2026-06-18T12:30:24+08:00"
+}

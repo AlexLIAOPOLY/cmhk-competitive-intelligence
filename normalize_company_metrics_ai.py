@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from ai_config import load_ai_config
+from rag_llm import estimate_tokens
 from network_utils import urlopen_with_local_proxy_fallback
 from company_metrics import (
     AI_CACHE_PATH,
@@ -30,6 +31,7 @@ RESULTS_DIR = ROOT / "results"
 STAGING_CACHE_PATH = AI_CACHE_PATH.with_name(f"{AI_CACHE_PATH.stem}.staging.json")
 VERIFIED_FIELDS_PATH = ROOT / "carrier_performance_verified_fields.json"
 VERIFIED_SOURCES_PATH = ROOT / "carrier_performance_sources.json"
+AI_BATCH_TOKEN_BUDGET = int(os.environ.get("CMHK_CURATION_AI_BATCH_TOKEN_BUDGET", "26000"))
 
 DIRTY_PATTERNS = [
     "Skip to main content",
@@ -128,6 +130,10 @@ OFFICIAL_URL_OWNER_OVERRIDES = {
         "/annual-report-2025/management-report/"
         "development-of-business-in-the-operating-segments/united-states",
     ): {"T-Mobile US"},
+    (
+        "www1.hkexnews.hk",
+        "/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+    ): {"i-CABLE"},
 }
 
 METRIC_EVIDENCE_TERMS = {
@@ -1595,7 +1601,7 @@ def deterministic_extract_task(task: dict[str, Any]) -> dict[str, Any] | None:
         text,
         re.IGNORECASE,
     ) and re.search(
-        r"global venture.{0,500}?network APIs|network APIs.{0,500}?global venture",
+        r"(?:global venture|new venture|newly formed company).{0,700}?network APIs|network APIs.{0,700}?(?:global venture|new venture|newly formed company)",
         text,
         re.IGNORECASE | re.DOTALL,
     ):
@@ -1607,7 +1613,88 @@ def deterministic_extract_task(task: dict[str, Any]) -> dict[str, Any] | None:
                 "T-Mobile joined the global operator venture created to aggregate "
                 "and commercialize network APIs."
             ),
-            "从Ericsson官方网络API联合公告精确提取",
+            "从Telefonica Open Gateway网络API联合公告精确提取",
+        )
+
+    if company == "AT&T" and metric == "网络API" and re.search(
+        r"AT&T",
+        text,
+        re.IGNORECASE,
+    ) and re.search(
+        r"(?:global venture|new venture|newly formed company).{0,700}?network APIs|network APIs.{0,700}?(?:global venture|new venture|newly formed company)",
+        text,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        value = "参与全球运营商网络API合资平台，推动通用网络API规模化应用"
+        return _deterministic_result(
+            task,
+            value,
+            (
+                "AT&T was listed among the telecom operators announcing a new "
+                "venture to combine and sell network APIs globally."
+            ),
+            "从Telefonica Open Gateway网络API联合公告精确提取",
+        )
+
+    if company == "AT&T" and metric == "Open RAN" and re.search(
+        r"AT&T",
+        text,
+        re.IGNORECASE,
+    ) and re.search(
+        r"70%\s+of\s+our\s+5G\s+traffic.{0,180}?open hardware|Open RAN network modernization",
+        text,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        value = "预计到2026年底70%的5G流量将流经开放硬件，推进Open RAN网络现代化"
+        return _deterministic_result(
+            task,
+            value,
+            (
+                "By the end of 2026, AT&T expects that 70% of its 5G traffic "
+                "will flow across open hardware as part of a more open radio architecture."
+            ),
+            "从AT&T Analyst & Investor Day材料精确提取",
+        )
+
+    if company == "AT&T" and metric == "FWA" and re.search(
+        r"AT&T|AIA|Internet Air",
+        text,
+        re.IGNORECASE,
+    ) and re.search(
+        r"292,000\s+fixed wireless net adds|AT&T Internet Air|fixed wireless revenues",
+        text,
+        re.IGNORECASE,
+    ):
+        value = "2026年一季度固定无线净增29.2万；AT&T Internet Air收入增长超过100%"
+        return _deterministic_result(
+            task,
+            value,
+            (
+                "During the first quarter of 2026, AT&T reported 292,000 fixed "
+                "wireless net adds, and AIA revenue increases exceeded 100 percent."
+            ),
+            "从AT&T 2026年一季度8-K材料精确提取",
+        )
+
+    if company == "T-Mobile US" and metric == "AI网络" and re.search(
+        r"T-Mobile",
+        text,
+        re.IGNORECASE,
+    ) and re.search(
+        r"AI-native Scheduler.{0,900}?10 percent.{0,300}?15 percent|15 percent.{0,900}?AI-native",
+        text,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        value = "与Ericsson在5G Advanced现网试验AI-native RAN，频谱效率提升近10%、下行吞吐最高提升15%"
+        return _deterministic_result(
+            task,
+            value,
+            (
+                "During trials with T-Mobile, Ericsson's AI-native Scheduler "
+                "with Link Adaptation achieved close to 10 percent increase in "
+                "spectral efficiency and up to 15 percent boost in downlink throughput."
+            ),
+            "从PRNewswire转载的Ericsson公开新闻稿精确提取",
         )
 
     if company == "HKBN" and metric == "资产负债率":
@@ -1771,12 +1858,13 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         "basis 用一句话说明依据来自片段中的哪部分。"
         "只返回 JSON 数组，不要 Markdown。"
     )
+    prepared_tasks = _prepare_tasks_for_token_budget(tasks, model=model, token_budget=AI_BATCH_TOKEN_BUDGET)
     user_prompt = (
         "请清洗以下公司指标记录。每个输入对象有 id/company/metric/current_value/raw_text/sources。\n"
         "返回数组，每项字段必须为：id, status, value, basis, note, "
         "entity_supported, metric_supported, value_supported, confidence。\n"
         "status 只能是 ok 或 unavailable。\n\n"
-        f"{json.dumps(tasks, ensure_ascii=False)}"
+        f"{json.dumps(prepared_tasks, ensure_ascii=False)}"
     )
     body = {
         "model": model,
@@ -1803,6 +1891,29 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     if not isinstance(cleaned, list):
         raise RuntimeError("模型没有返回 JSON 数组")
     return cleaned
+
+
+def _prepare_tasks_for_token_budget(tasks: list[dict[str, Any]], *, model: str, token_budget: int) -> list[dict[str, Any]]:
+    prepared = [dict(task) for task in tasks]
+    rendered = json.dumps(prepared, ensure_ascii=False)
+    if estimate_tokens(rendered, model=model) <= token_budget:
+        return prepared
+    for raw_limit in (6000, 3600, 2200, 1200, 700):
+        compacted: list[dict[str, Any]] = []
+        for task in tasks:
+            item = dict(task)
+            item["raw_text"] = str(item.get("raw_text") or "")[:raw_limit]
+            if "current_value" in item:
+                item["current_value"] = str(item.get("current_value") or "")[:600]
+            if isinstance(item.get("sources"), list):
+                item["sources"] = item["sources"][:8]
+            item["context_compressed"] = True
+            item["compression_note"] = f"raw_text limited to {raw_limit} chars for token budget"
+            compacted.append(item)
+        if estimate_tokens(json.dumps(compacted, ensure_ascii=False), model=model) <= token_budget:
+            return compacted
+        prepared = compacted
+    return prepared
 
 
 def load_cache() -> dict[str, Any]:

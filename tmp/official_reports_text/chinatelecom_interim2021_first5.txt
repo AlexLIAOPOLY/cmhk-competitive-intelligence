@@ -1,0 +1,282 @@
+     1
+ 1
+              10
+10
+         2
+4            1
+              1 0
+
+                 1   Forward-Looking Statements
+                     Certain statements contained in this report may be viewed as “forward-
+                     looking statements” within the meaning of Section 27A of the U.S.
+
+
+
+
+         0
+                     Securities Act of 1933 (as amended) and Section 21E of the U.S.
+                     Securities Exchange Act of 1934 (as amended). Such forward-looking
+                     statements are subject to known and unknown risks, uncertainties and
+                     other factors, which may cause the actual performance, financial
+                     condition or results of operations of China Telecom Corporation Limited
+                     (the “Company”, a joint stock limited company incorporated in the
+                 1   People’s Republic of China with limited liability) to be materially different
+                     from any future performance, financial condition or results of operations
+                     implied by such forward-looking statements. In addition, we do not
+
+
+
+
+              7
+                     intend to update these forward-looking statements. Further information
+                     regarding these risks, uncertainties and other factors is included in the
+                     Company’s most recent Annual Report on Form 20-F filed with the U.S.
+                     Securities and Exchange Commission (the “SEC”) and in the Company’s
+                     other filings with the SEC.
+
+
+
+
+             9
+              1      Contents
+
+
+
+
+1 0
+                     001 Financial Highlights
+                     002 Chairman’s Statement
+                     011 Financial Review
+                     014 Report on Review of Interim Financial Information
+
+0                    015 Condensed Consolidated Statement of
+                                 Financial Position (Unaudited)
+
+
+
+
+  110
+                     017 Condensed Consolidated Statement of
+
+
+
+
+2
+                                 Comprehensive Income (Unaudited)
+
+                     019 Condensed Consolidated Statement of
+                                 Changes in Equity (Unaudited)
+
+                     020 Condensed Consolidated Statement of
+                                 Cash Flows (Unaudited)
+
+                     022 Notes to the Unaudited Condensed Consolidated
+                                 Interim Financial Information
+
+                     043 Other Information
+                                                                                Financial Highlights
+
+                                                                                           Six-month period ended
+                                                                                                  30 June
+                                                                                                2021           2020
+Operating revenues (RMB million)                                                                219,237                   193,803
+
+Service revenues1 (RMB million)                                                                 203,502                   187,110
+
+EBITDA2 (RMB million)                                                                             66,348                    63,154
+
+EBITDA margin3                                                                                    32.6%                     33.8%
+
+Net profit4 (RMB million)                                                                         17,743                    13,949
+
+Earnings per share (RMB)                                                                            0.219                     0.172
+
+Capital expenditure (RMB million)                                                                 27,005                    43,126
+
+
+
+Operating Revenues
+(RMB million)
+
+
+
+    1H2021                                                                                                             219,237
+
+    1H2020                                                                                                               193,803
+
+
+EBITDA2
+(RMB million)
+
+
+
+    1H2021                                                                                                                66,348
+
+    1H2020                                                                                                                 63,154
+
+
+Net Profit4
+(RMB million)
+
+
+
+    1H2021                                                                                                                17,743
+
+    1H2020                                                                                                                 13,949
+
+1
+       Service revenues are calculated based on operating revenues minus sales of mobile terminals, sales of wireline equipment and other
+       non-service revenues.
+2
+       EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+3
+       EBITDA margin is calculated based on EBITDA divided by service revenues.
+4
+       Net profit represents profit attributable to equity holders of the Company.
+
+                                                               China Telecom Corporation Limited Interim Report 2021                001
+Chairman’s Statement
+
+Dear Shareholders,                                                      Overall Results
+In the first half of 2021, the booming of digital                       In the first half of 2021, operating revenues of the
+economy brought the information and                                     Company amounted to RMB219.2 billion, representing
+communications industry with an unprecedented                           an increase of 13.1% year-on-year. Service revenues1
+period of strategic opportunities. The Company seized                   amounted to RMB203.5 billion, representing an
+the new development stage, insisted on the new                          increase of 8.8% year-on-year and surpassing the
+development philosophy and established the new                          industry’s average growth rate2. EBITDA3 amounted to
+development pattern. Taking A-share IPO as an                           RMB66.3 billion, representing an increase of 5.1%
+opportunity, the Company further pushed forward the                     over the same period of last year. Net profit4
+“Cloudification and Digital Transformation” strategy                    amounted to RMB17.7 billion, representing an
+on all fronts. The Company insisted on its customer-
+oriented approach, strengthened its core capabilities
+                                                                        increase of 27.2% over the same period of last year.
+                                                                        Excluding a one-off after-tax gain from the disposals
+                                                                                                                                                  1
+                                                                                                                                                 10
+
+
+
+
+                                                                                                                                                          6
+in sci-tech innovation, and accelerated the promotion                   of subsidiaries5, net profit increased by 17.0% over
+of cloud-network integration. The Company also built                    the same period of last year. Basic earnings per share
+the digitalised platform hub, strengthened the                          were RMB0.219. Capital expenditure was RMB27.0
+foundation of network and information security,                         billion and free cash flow6 was RMB26.8 billion.
+promoted green development and deepened system
+and mechanism reform. The Company expanded the                          Taking shareholders’ return into full consideration,
+cooperation and win-win ecology to create the digital                   alongside the Company’s profitability, cash flow level
+life, propel industrial upgrades and support social                     and capital needs for its future development, the
+governance. The Company made great strides in
+building Digital China, with its development
+momentum continuing to strengthen and its
+                                                                        Board of Directors has decided that the Company’s
+                                                                        profit to be distributed in cash for the year 2021 shall                      0
+development entering into the fast lane. In the first
+                                                                        be no less than 60% of the profit attributable to
+                                                                                                                                                      1
+
+                                                                                                                                                          1
+                                                                        equity holders of the Company for that year. Within
+half of the year, the Company delivered double-digit                    three years after A-share offering and listing, the
+growth in both revenue and profit, with its                             profit to be distributed in cash for each year will
+profitability achieving continuous improvement while                    gradually increase to 70% or above of the profit
+its operating results reaching a new high. The                          attributable to equity holders of the Company for that
+Company continued to create new value for its                           year. At the same time, an interim dividend will be                           1
+customers and shareholders.                                             declared and paid starting from year 2022. The Board                      1       0
+                                                                        of Directors has full confidence in the Company’s
+                                                                        future development and believes that the Company
+                                                                        will continue to create value for its shareholders by
+                                                                        virtue of its good profitability and cash flow
+                                                                        generation capability, as well as its effective capital
+                                                                        expenditure control.
+
+
+1
+      Service revenues are calculated based on operating revenues minus sales of mobile terminals, sales of wireline equipment and other
+      non-service revenues. Of which, mobile service revenues amounted to RMB97.9 billion, representing an increase of 8.2% year-on-year;
+
+
+
+
+                                                                                                                                                  10
+      wireline service revenues amounted to RMB105.6 billion, representing an increase of 9.3% year-on-year.
+2
+      Performance of the communications industry economy in the first half of 2021 released by MIIT: telecommunications revenue grew by
+      8.7% year-on-year from January to June in 2021.
+3
+      EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+4
+      Net profit represents profit attributable to equity holders of the Company.
+5
+      The one-off after-tax gain from the disposals of E-surfing Pay Co., Ltd and China Telecom Leasing Corporation Limited was approximately
+      RMB1.42 billion.
+6
+      Free cash flow is calculated based on EBITDA minus capital expenditure, income tax and depreciation charge for right-of-use assets other
+      than land-use-rights.
+
+                                                                                                                                                  1
+                                                                                                                                                 10
+
+
+
+002       China Telecom Corporation Limited Interim Report 2021
+                                                                                         Chairman’s Statement
+        0 10
+        1
+        0             1
+
+
+
+
+ 72
+    1                                                                                                      Ke Ruiwen
+                                                                                                           Chairman and
+                                                                                                           Chief Executive Officer
+
+
+
+
+               0
+                                                                                                        0
+                                                                                                              8
+        1                                                                                                                            0
+
+ 001
+6
+ 1
+
+1
+               Business Performance
+                                     3                                                                                 0
+                                                                          Dual enhancement of mobile subscriber scale and
+                                                                                                                             9
+                                                                                                                             1
+                                                                                                                                           01
+
+
+
+
+                                                                          value. Led by 5G, the Company continued to deepen
+               In the first half of 2021, the flourishing of a new        co-building and co-sharing, enrich its integrated
+               round of technological revolution and industrial           intelligent information services under converged
+               transformation created huge space for the                  scenes, and establish the individual digital life
+               development of China’s digital economy industry. The       covering entertainment, work and study. The
+               integration of 5G, cloud computing and artificial          Company also forged a high-quality experience for its
+               intelligence (AI), among others, has formed new            5G services, strengthened ecological cooperation, and
+               information infrastructure, while people’s yearning for    comprehensively deployed the application and
+               a better life is giving rise to a variety of scene-based   privilege portfolio for individual customers. Leveraging
+               demands. The integration of digital technologies and       the edge of deepened integration of 5G and
+               the real economy has unleashed the potential of            e-Surfing Cloud, the Company launched various
+               Industrial Digitalisation applications, while the demand   differentiated and innovative applications such as AR/
+               for network security has been increasing day by day.       VR, Ultra HD, e-Surfing Cloud Drive, and cloud games
+               The Company proactively embraced the opportunities         to cultivate users’ 5G usage habits, propel
+               arising from digital transformation, built up the          enhancement in both scale and value of mobile
+               differentiated edges of integrated intelligent             subscribers, and expand the potential value space for
+               information services with innovation, convergence and      future extensive adoption of the technical
+               security, and delivered excellent operating results        characteristics of 5G such as low latency and high
+               across all areas.                                          speed.
+
+
+
+                                                                     China Telecom Corporation Limited Interim Report 2021           003
+

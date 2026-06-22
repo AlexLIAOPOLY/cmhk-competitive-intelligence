@@ -1,0 +1,1109 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for
+the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim
+any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents
+of this announcement.
+
+
+
+
+                                            HKBN Ltd.
+                                           香港寬頻有限公司
+                             (Incorporated in the Cayman Islands with limited liability)
+                                                Stock Code: 1310
+
+                       INTERIM RESULTS ANNOUNCEMENT
+                  FOR THE SIX MONTHS ENDED 28 FEBRUARY 2018
+                             (All references to “$” are expressed in Hong Kong dollars)
+
+The Board of Directors (the “Board”) of HKBN Ltd. (the “Company”) is pleased to announce the
+unaudited consolidated results of the Company and its subsidiaries (collectively, the “Group”) for
+the six months ended 28 February 2018. These results were based on the unaudited consolidated
+interim financial statements for the six months ended 28 February 2018, which were prepared in
+accordance with the Hong Kong Accounting Standard (“HKAS”) 34, Interim financial reporting,
+issued by the Hong Kong Institute of Certified Public Accountants (“HKICPA”).
+
+ •     Executing our J-curve growth from the inflection point in 2H2017, as evidenced by strong
+       year-on-year growth in Revenue, EBITDA and Adjusted Free Cash Flow at 22%, 23% and
+       24%, to $1,868 million, $594 million and $237 million, respectively.
+
+ •     Residential revenue increased by 17% to $1,101 million, mainly due to the successful
+       execution of our revenue market focus strategy through the use of quad-play service
+       offerings. This allowed us to increase our historical full base residential ARPU8 by 4%
+       year-on-year, from $166 in 1H2017 to $173 in 1H2018, while keeping our monthly churn
+       rate low.
+
+ •     Enterprise revenue increased by 19% to $679 million, mainly driven by the continued
+       increase in the number of enterprise customers by 10% to 56,000 and the improvement in
+       ARPU by 4% to $1,526.
+
+ •     The Board has recommended the payment of an 18% year-on-year increase in interim
+       dividend to 26 cents per share.
+
+
+
+
+                                                          1
+SHAREHOLDER LETTER
+
+Dear Fellow Shareholders,
+
+For the six months ended 28 February 2018 (“1H2018”), we executed on our ATM1 strategy taking
+profitable market share from the legacy incumbent as to deliver Group revenue, EBITDA and DPS2
+year-on-year growth of 22%, 23% and 18%. We grabbed market share by delivering disruptive
+value, just like how we have saved Hong Kongers from exorbitant prices on International Direct
+Dial (“IDD”) in the 1990s and fixed telecom services in the 2000s. Today, we are making a big
+impact on the full suite of quad-play services for broadband, fixed-voice, OTT (over-the-top)
+content and mobile. To us, it makes no sense to charge separately for these services when we can
+provide one integrated bill to our customers.
+
+In enterprise, the full integration of the New World Telecom (“NWT”) acquisition we made in 2016
+is really paying off. For the six months ended 28 February 2018, we grew enterprise revenues by
+19% year-on-year to $679 million, which we believe, makes us the fastest growing competitor to
+the legacy incumbent.
+
+At HKBN, our strongest Legal Unfair Competitive Advantage (“LUCA”) is our shareholder
+alignment via our Co-Ownership programme; none of our competitors have anything similar.
+Today, HKBN is run by over 310 Co-Owners; none of us get upside from our ownership without
+risking our family’s wealth (“skin in the game”). In particular, for the two of us, a great majority
+of our family net worth is invested in HKBN stock and our annual dividend income far exceeds
+our salaries; as such, we are highly motivated to deliver long term sustainable DPS growth for all
+shareholders.
+
+After these interim results have been disseminated, we will launch our Co-Ownership Plan III, in
+which we aim to further deepen our shareholder alignment by opening up Co-Ownership to our
+top 663 supervisors and above, out of our total Talent base of 2,917. With regard to alignment, we
+subscribe to Simon Sinek’s book “Together is Better” as we drive towards our Co-Ownership Plan
+III aspirational goal of achieving cumulative HK$2.1 to HK$2.4 Adjusted Available Cash per Share
+for Distribution for the period FY18-20 3.
+
+Sincerely yours,
+
+
+
+
+William YEUNG                                     NiQ LAI
+Co-Owner and Chief Executive Officer              Co-Owner and Chief Operating Officer
+Footnotes:
+
+1.    Refer to HKBN’s Annual Results Presentation for the year ended 31 August 2017
+2.    DPS refers to “dividend per share”
+3.    Refer to circular of the Company dated 16 November 2017 regarding the proposed adoption of the
+      Co-Ownership Plan III
+
+
+
+
+                                                 2
+KEY FINANCIAL AND OPERATIONAL SUMMARY
+
+Table 1: Financial highlights
+
+                                                     For the six months ended
+                                                    28 February 28 February      Change
+                                                            2018          2017     YoY
+
+ Key financials ($’000)
+ Revenue                                              1,868,095     1,534,726     +22%
+ – Residential                                        1,101,411       941,025     +17%
+ – Enterprise                                           679,200       569,222     +19%
+ – Product                                               87,484        24,479    >100%
+ Profit for the period                                  240,935        46,034    >100%
+ Adjusted Net Profit1,2                                 295,489       173,985     +70%
+ EBITDA1,3                                              593,733       480,961     +23%
+ EBITDA margin1,4                                        31.8%         31.3%     +0.5pp
+ Adjusted Free Cash Flow1,5                             236,906       190,855     +24%
+
+ Reconciliation of Adjusted Net Profit1,2
+
+ Profit for the period                                  240,935        46,034    >100%
+ Amortisation of intangible assets                       64,601        64,601        –
+ Deferred tax arising from amortisation
+   of intangible assets                                  (10,047)     (10,047)        –
+ Originating fee for banking facility expired                  –       73,397     -100%
+
+ Adjusted Net Profit                                    295,489       173,985     +70%
+
+ Reconciliation of EBITDA & Adjusted
+   Free Cash Flow1,3,5
+
+ Profit for the period                                  240,935        46,034    >100%
+ Finance costs                                           27,069       116,922     -77%
+ Interest income                                           (704)          (89)   >100%
+ Income tax                                              47,146        43,809      +8%
+ Depreciation                                           214,686       209,684      +2%
+ Amortisation of intangible assets                       64,601        64,601        –
+
+ EBITDA                                                 593,733       480,961     +23%
+ Capital expenditure                                   (188,898)     (196,616)     -4%
+ Net interest paid                                      (50,482)      (56,718)    -11%
+ Other non-cash items                                       720         4,066     -82%
+ Income tax paid                                       (113,507)     (120,599)     -6%
+ Changes in working capital                              (4,660)       79,761    >100%
+
+ Adjusted Free Cash Flow                                236,906       190,855     +24%
+
+
+
+
+                                                3
+KEY FINANCIAL AND OPERATIONAL SUMMARY (CONTINUED)
+Table 2: Operational highlights
+
+                                                  For the six months ended
+                                           28 February     31 August 28 February   Change
+                                                  2018          2017       2017      YoY
+Number of Talents                                  2,917      2,888        2,815     +4%
+Residential business
+ Fixed telecommunications network services business
+ Residential homes passed (’000)                   2,266      2,249        2,225     +2%
+ Subscriptions (’000)
+ – Broadband                                        872         871         878      -1%
+ – Voice                                            515         518         524      -2%
+ Market share6
+ – Broadband                                    37.0%        37.1%        37.6%    -0.6pp
+ – Voice                                        22.3%        22.2%        22.2%    +0.1pp
+ Broadband churn rate7                             0.9%       0.9%         0.7%    +0.2pp
+ Residential ARPU8                                 $173       $168         $166      +4%
+ Mobile business
+ Subscriptions (’000)                               222         147          54    >100%
+ – Mobile (without broadband services)              114          78          27    >100%
+ – Mobile (with broadband services)                 108          69          27    >100%
+ Mobile ARPU
+ – Mobile (without broadband services)11           $142       $119         $141      +1%
+ – Mobile (with broadband services)12              $311       $268         $287      +8%
+ Residential customers (’000)                      1,003        994         928      +8%
+Enterprise business
+ Commercial building coverage                      2,368      2,349        2,316     +2%
+ Subscriptions (’000)
+ – Broadband                                         55          53          50     +10%
+ – Voice                                            137         132         127      +8%
+ Market share6
+ – Broadband                                    19.0%        18.8%        17.8%    +1.2pp
+ – Voice                                         7.4%         7.2%         6.8%    +0.6pp
+ Enterprise customers (’000)                          56         54          51     +10%
+ Broadband churn rate9                             1.2%       1.7%         1.3%     -0.1pp
+ Enterprise ARPU10                              $1,526       $1,463       $1,467     +4%
+                                               4
+Notes:
+
+(1)      EBITDA, EBITDA margin, Adjusted Free Cash Flow and Adjusted Net Profit are not measures of performance
+         under Hong Kong Financial Reporting Standards (“HKFRSs”). These measures do not represent, and should
+         not be used as substitutes for, net income or cash flows from operations as determined in accordance with
+         HKFRSs. These measures are not necessarily an indication of whether cash flow will be sufficient to fund our
+         cash requirements. In addition, our definitions of these measures may not be comparable to other similarly titled
+         measures used by other companies.
+
+(2)      Adjusted Net Profit means profit for the period plus amortisation of intangible assets (net of deferred tax credit
+         and direct cost incurred in corresponding period) and non-recurring finance costs. Non-recurring finance costs,
+         in the prior period, include originating fee for banking facility expired.
+
+(3)      EBITDA means profit for the period plus finance costs, income tax expense, depreciation and amortisation of
+         intangible assets (net of direct cost incurred in corresponding period) and less interest income.
+
+(4)      EBITDA margin means EBITDA divided by revenue.
+
+(5)      Adjusted Free Cash Flow means EBITDA plus interest received and less capital expenditure, interest paid and
+         tax paid, and adjusted by changes in working capital and other non-cash items. Working capital includes other
+         non-current assets, inventories, trade receivables, other receivables, deposits and prepayments, trade payables,
+         deposits received and deferred services revenue. Other non-cash items, in the period under review, include
+         amortisation of obligations under granting of rights and Co-Ownership Plan II related non-cash items.
+
+(6)      Our market share in broadband or voice services in Hong Kong, for residential or enterprise business, is
+         calculated by dividing the number of broadband or voice subscriptions we have at a given point in time by the
+         total number of corresponding broadband or voice subscriptions recorded by the Office of the Communications
+         Authority (“OFCA”) at the same point in time. Based on the latest disclosure from OFCA for December 2017
+         market data, total market figures from January 2016 to November 2016 were revised to reflect the adjustments
+         filed by the Internet Service Provider(s).
+
+(7)      Calculated by dividing the sum of the monthly broadband churn rate for each month of the given financial
+         period by the number of months in the financial period. Monthly broadband churn rate is calculated by the sum
+         of the number of residential broadband subscription terminations in a month divided by the average number of
+         residential broadband subscriptions during the respective month and multiplying the result by 100%.
+
+(8)      ARPU means average revenue per user per month. Calculated by dividing the revenue generated in the relevant
+         period from services subscribed by residential broadband subscribers, which include broadband services and any
+         bundled voice, IP-TV and/or other entertainment services (excluding revenue from IDD and mobile services),
+         by the number of average residential broadband subscriptions and further dividing by the number of months
+         in the relevant period. Average residential broadband subscriptions are calculated by dividing the sum of such
+         subscriptions at the beginning of the period and the end of the period by two. Our use and computation of
+         residential ARPU may differ from the industry definition of ARPU due to our tracking of revenue generated
+         from all services subscribed by residential broadband subscribers. We believe this gives us a better tool for
+         observing the performance of our business as we track our residential ARPU on a bundled rather than standalone
+         basis.
+
+(9)      Calculated by dividing the sum of the monthly broadband churn rate for each month of the given financial
+         period by the number of months in the period. Monthly broadband churn rate is calculated by the sum of
+         the number of enterprise broadband subscription terminations in a month divided by the average number of
+         enterprise broadband subscriptions during the respective month and multiplying the result by 100%.
+
+(10)     ARPU means average revenue per user per month. Calculated by dividing the revenue generated in the relevant
+         period from the enterprise telecom business (excluding revenue from IDD and mobile services) by the average
+         number of enterprise customers and further dividing by the number of months in the relevant period. Average
+         number of enterprise customers is calculated by dividing the sum of enterprise customers at the beginning of the
+         period and the end of the period by two. This metric may be distorted by the impact of certain particularly large
+         contracts we have with enterprise customers.
+
+
+
+
+                                                             5
+(11)   Mobile (without broadband services) ARPU means average revenue per user per month. Calculated by dividing
+       the revenue generated in the relevant period from services subscribed by residential mobile subscribers (without
+       broadband services), which include all services revenue (excluding IDD and broadband services), by the number
+       of average residential mobile subscriptions (without broadband services) and further dividing by the number
+       of months in the relevant period. Average residential mobile subscriptions (without broadband services) are
+       calculated by dividing the sum of such subscriptions at the beginning of the period and the end of the period
+       by two. Our use and computation of Mobile (without broadband services) ARPU may differ from the industry
+       definition of ARPU due to our tracking of revenue generated from all services subscribed by residential mobile
+       subscribers (without broadband services). We believe this gives us a better tool for observing the performance of
+       our business as we track our residential mobile ARPU on a bundled rather than standalone basis.
+
+(12)   Mobile (with broadband services) ARPU means average revenue per user per month. Calculated by dividing
+       the revenue generated in the relevant period from services subscribed by residential mobile subscribers (with
+       broadband services), which include all services revenue (excluding IDD services), by the number of average
+       residential mobile subscriptions (with broadband services) and further dividing by the number of months in the
+       relevant period. Average residential mobile subscriptions (with broadband services) are calculated by dividing
+       the sum of such subscriptions at the beginning of the period and the end of the period by two. Our use and
+       computation of Mobile (with broadband services) ARPU may differ from the industry definition of ARPU due to
+       our tracking of revenue generated from all services subscribed by residential mobile subscribers (with broadband
+       services). We believe this gives us a better tool for observing the performance of our business as we track our
+       residential mobile ARPU on a bundled rather than standalone basis.
+
+
+
+
+                                                           6
+BUSINESS REVIEW
+
+During the six months ended 28 February 2018, the Group continued to execute on our J-curve
+growth and deliver a solid set of operational and financial results. This was driven by the
+successful execution of the quad-play price strategy that delivered comprehensive, integrated and
+high value-for-money services to our customers, which rewarded the Group with higher ARPU at a
+low monthly churn rate in return. Moreover, the enterprise business continued to prosper after the
+integration with NWT last year. As a result, our Group revenue, EBITDA and Adjusted Free Cash
+Flow increased year-on-year by 22%, 23% and 24%, respectively, to $1,868 million, $594 million
+and $237 million.
+
+•    Residential revenue grew by 17% year-on-year to $1,101 million as a result of the successful
+     execution of a revenue market focus strategy that leveraged on our quad-play service offerings
+     to increase ARPU while improving customer stickiness at the same time. Historical full base
+     residential ARPU has increased by 4% year-on-year, from $166 to $173, while our monthly
+     churn rate remained low. Our market share by broadband subscriptions remained at 37% as at
+     31 December 2017 (based on the latest available OFCA statistics).
+
+     Through working closely with our over-the-top (“OTT”) partner, the number of set-top
+     boxes ordered by residential broadband customers has increased by 16% year-on-year to
+     730,000 as at 28 February 2018 (1H2017: 627,000), this represents more than half of our
+     residential broadband customers who have ordered at least one OTT set-top box to fulfil
+     their entertainment needs. This revolutionary entertainment experience provided to customers
+     would not be possible without the collaboration of our trusted OTT partner, which leverages
+     our quality network transmission as well as hi-speed and stable network service.
+
+     The launch of mobile services through partnering with two major mobile network operators
+     (“MVNO partners”) in September 2016 has proven to be a crucial element of our quad-play
+     price strategy, as well as one of the key drivers for residential revenue growth in 1H2018.
+     Together with the strong support from our MVNO partners, our progressive marketing
+     campaigns managed to capture a wider audience at a phenomenal pace. Number of activated
+     subscribers increased to 222,000 as at 28 February 2018.
+
+     Through overlaying OTT and mobile services to our broadband bundle packages, the Group
+     will continue to leverage an integrated quad-play price strategy and deliver unprecedented
+     household savings and service convenience to disrupt the legacy broadband, fixed-voice,
+     content and mobile standalone segments.
+
+•    Enterprise revenue increased by 19% year-on-year to $679 million. During the period, we
+     achieved net additions of 5,000 year-on-year for a total of 56,000 enterprise customers
+     while our enterprise ARPU improved by 4% year-on-year, from $1,467 to $1,526. The fully
+     integrated business increased both our presence and capabilities in the enterprise market,
+     which has enabled us to provide a broader range of products and services at competitive value
+     to different customer segments. This has driven the continuous expansion in customer base
+     as well as securing new projects of larger contract sums with some of the more renowned
+     enterprises in the market. Our market share by broadband subscriptions increased to 19% as
+     at 31 December 2017 (based on the latest available OFCA statistics).
+
+•    Product revenue increased to $87 million, mainly represented by the sale of smartphone
+     products that complements our mobile business.
+
+
+                                                7
+Network costs and costs of sales increased by 80% year-on-year to $545 million mainly due to
+continued expansion in the mobile, OTT and enterprise businesses.
+
+Other operating expenses decreased slightly by 2% year-on-year from $1,033 million to $1,016
+million mainly due to the decrease in Talent costs and advertising and marketing costs for the
+launch of mobile services in prior period.
+
+Finance costs decreased by 77% year-on-year from $117 million to $27 million mainly due to the
+non-cash finance costs of $73 million in relation to the write-off of unamortised transactions cost
+for the bank loan refinanced in prior period.
+
+Income tax increased slightly by 8% year-on-year from $44 million to $47 million. Our finance
+costs were not tax deductible. Income tax as a percentage of profit before taxation and finance
+costs (the “effective tax rate”) was approximately 15% and 21%, respectively, for the six months
+ended 28 February 2018 and 28 February 2017. The effective tax rate for 28 February 2017 was
+higher than the statutory income tax rate as we had not recognised deferred tax assets of the
+acquired NWT business.
+
+As the result of the aforementioned factors, profit attributable to equity shareholders increased to
+$241 million.
+
+Adjusted Net Profit, excluding the impact of amortisation of intangible assets, non-recurring
+finance costs and non-recurring items, increased by 70% year-on-year to $295 million.
+
+EBITDA rose by 23% year-on-year to $594 million mainly driven by the revenue growth while
+managing a stable EBITDA margin at 31.8%.
+
+Adjusted Free Cash Flow rose by 24% year-on-year to $237 million mainly due to an increase in
+EBITDA offsetting with the cash outflow to fund working capital changes.
+
+Additions to property, plant and equipment amounted to $182 million for the six-month period
+ended 28 February 2018, as compared to $173 million for the corresponding period of last year.
+
+OUTLOOK
+
+We will focus on harvesting our substantially invested network and our monthly billing relationship
+by upselling more services through OTT and MVNO partnerships, as well as leverage our
+comprehensive suite of service offerings to drive sustainable growth in revenue, EBITDA and
+Adjusted Free Cash Flow through the following initiatives:
+
+•    Continue to execute our ATM (A for ‘A’/x DSL broadband; T for home ‘T’elephone line; and
+     M for ‘M’obile) growth strategy in order to further expand our market share;
+
+•    To expand our quad-play bundle plans to multi-play to drive APRU and subscription growth
+     and disrupt the legacy broadband, fixed-voice, multimedia content and mobile standalone
+     services;
+
+•    Further penetrate the enterprise market through our broad range of business-imperative
+     services and more network capacity; and
+
+
+
+
+                                                 8
+•    Continue to cultivate our Talent-oriented Co-Ownership culture that aligns risks and rewards
+     with shareholders by enlarging the base of Co-Owners via the new Co-Ownership Plan III to
+     HKBN Talents.
+
+LIQUIDITY AND CAPITAL RESOURCES
+
+As at 28 February 2018, the Group had total cash and cash equivalents of $358 million (31 August
+2017: $385 million) and gross debt (principal amount of outstanding borrowing) of $3,900 million
+(31 August 2017: $3,900 million), which led to a net debt position of $3,542 million (31 August
+2017: $3,515 million).
+
+•    The Group’s gearing ratio, which was expressed as a ratio of the gross debt over total equity,
+     was 3.4x as at 28 February 2018 (31 August 2017: 3.5x).
+
+•    The Group’s net debt to EBITDA ratio, which was expressed as a ratio of the gross debt net
+     of cash and cash equivalents over EBITDA, was 3.1x as at 28 February 2018 (31 August
+     2017: 3.4x).
+
+Cash and cash equivalents consisted of cash at bank and in hand. There was no pledged bank
+deposit as at 28 February 2018 and 31 August 2017. As at 28 February 2018, the Group had an
+undrawn revolving credit facility of $200 million (31 August 2017: $200 million).
+
+Under the liquidity and capital resources condition as at 28 February 2018, the Group can fund its
+capital expenditures and working capital requirements for the period with internal resources and
+the available banking facilities.
+
+HEDGING
+
+The Group’s policy is to partially hedge the interest rate risk arising from the variable interest
+rates of the debt instruments and facilities by entering into interest-rate swaps. The Chief
+Executive Officer and Chief Operating Officer are primarily responsible for overseeing the hedging
+activities. Under their guidance, the Group’s finance team is responsible for planning, executing
+and monitoring the hedging activities. The Group would not enter into hedging arrangements for
+speculative purposes.
+
+In connection with the bank loan, the Group entered into an interest-rate swap arrangement in the
+principal amount of $2,635 million with an international financial institution for a term of 3.5 years
+from 23 February 2015 to 23 August 2018. Benefiting from the hedging arrangement, the Group
+fixed the HIBOR interest rate exposure at 1.453% per annum.
+
+The Group also entered into an interest rate swap arrangement in the principal amount of $2,635
+million with an international financial institution for a term of 1.8 years from 31 August 2018 to
+29 May 2020. Benefiting from the hedging arrangement, the Group fixed the HIBOR interest rate
+exposure at 2.26% per annum.
+
+These interest-rate swap arrangements are recognised initially at fair value and remeasured at the
+end of each reporting period. The interest-rate swaps do not qualify for hedge accounting under
+HKAS 39, Financial instruments: Recognition and measurement, and therefore, they are accounted
+for as held for trading and measured at fair value through profit or loss.
+
+
+
+
+                                                  9
+CHARGE ON GROUP ASSETS
+
+As at 28 February 2018 and 31 August 2017, no assets of the Group were pledged to secure its
+loans and banking facilities.
+
+CONTINGENT LIABILITIES
+
+As at 28 February 2018, the Group had total contingent liabilities of $4 million (31 August 2017: $4
+million) in respect of bank guarantees provided to suppliers and utility vendors in lieu of payment
+of utility deposits.
+
+EXCHANGE RATES
+
+All of the Group’s monetary assets and liabilities are primarily denominated in either Hong Kong
+dollars (“HKD”) or United States dollars (“USD”). Given the exchange rate of the HKD to the USD
+has remained close to the current pegged rate of HKD7.80 = USD1.00 since 1983, management
+does not expect significant foreign exchange gains or losses between the two currencies.
+
+The Group is also exposed to a certain amount of foreign exchange risk based on fluctuations
+between the HKD and the Renminbi arising from its operations. In order to limit this foreign
+currency risk exposure, the Group ensures that the net exposure is kept to an acceptable level of
+buying or selling foreign currencies at spot rates where necessary to address short-term imbalances.
+
+SIGNIFICANT INVESTMENTS, ACQUISITIONS AND DISPOSALS
+
+The Group did not make any significant investments, acquisitions or disposals in relation to its
+subsidiaries and associated companies during the six months ended 28 February 2018.
+
+TALENT REMUNERATION
+
+As at 28 February 2018, the Group had 2,917 permanent full-time Talents (31 August 2017: 2,888
+Talents). The Group provides remuneration package consisting of basic salary, bonus and other
+benefits. Bonus payments are discretionary and dependent on both the Group’s and individual
+performances. The Group also provides comprehensive medical insurance coverage, competitive
+retirement benefits schemes, and Talent training programs.
+
+To attract, retain and motivate skilled and experienced Talents, the Company adopted a
+Co-Ownership Plan II (the “Co-Ownership Plan II”) on 21 February 2015. Co-Ownership is a
+powerful expression of the commitment and belief our Talents have in the Group. Unlike the
+more traditional approach of giving stock options to a very limited group of senior executives, the
+Company’s Co-Ownership is open to all supervisors and above level Talents, spanning the Group’s
+operations across Hong Kong and Guangzhou. Under “Co-Ownership Plan II”, we now have
+over 310 Co-Owners, representing a majority of our supervisors and above level Talents which
+constitutes over 10.9% of our entire workforce. On their own volition, they invested their personal
+savings in the amount of between two to twelve months of salary to acquire the Company’s shares
+at full market price. The shares are then matched with free shares at a certain ratio vested over
+three years.
+
+
+
+
+                                                10
+To provide additional means for the Company to incentivise its Talents and to recognise the
+continual support of the relevant employees to the Group and their effort in promoting the
+Group’s long-term growth and development, the Company adopted a Co-Ownership Plan III (the
+“Co-Ownership Plan III”) on 15 December 2017. For details of the Co-Ownership Plan III, please
+refer to the Company’s announcement dated 2 November 2017 and the circular dated 16 November
+2017. As at the date of this announcement, there are approximately 660 Talents that are eligible
+to participate in Co-Ownership Plan III, representing approximately 22.7% of the total number of
+existing employees of the Group and no invitations or grants under the Co-Ownership Plan III have
+been made.
+
+Please refer to “Share Incentive Scheme” below for a summary of the Co-Ownership Plan II.
+
+SHARE INCENTIVE SCHEME
+
+Under the Co-Ownership Plan II, the Board may, in its absolute discretion, invite participants
+to purchase shares of the Company and agree to grant them a contingent right to receive shares
+(“RSU”) at the relevant matching ratio in respect of any shares purchased, subject to certain terms,
+conditions and undertakings. The total number of shares that may underlie the RSUs granted
+pursuant to the Co-Ownership Plan II shall be (i) 10% of the shares in issue on 12 March 2015 (the
+“Listing Date”), the date on which the Company was listed on The Stock Exchange of Hong Kong
+Limited (the “Stock Exchange”) or (ii) 10% or less of the shares in issue as at the date following
+the date of approval of the renewed limit (as the case may be). The Co-Ownership Plan II shall
+be valid and effective for the period commencing on the Listing Date and expiring on the tenth
+anniversary thereof or such earlier date as it is terminated in accordance with the terms of the
+Co-Ownership Plan II, after which period no further RSUs shall be offered or granted.
+
+In order to enable the Co-Ownership Plan II trustee to release shares to participants upon vesting
+of each RSU, the Company allotted and issued, on the Listing Date, by way of capitalisation issue
+5,666,666 shares to the Co-Ownership Plan II trustee. Such shares represented approximately
+0.56% of the total issued share capital of the Company on the Listing Date. The Co-Ownership
+Plan II trustee will hold such shares on trust until their release to participants upon vesting of the
+RSUs.
+
+
+
+
+                                                 11
+Details of movements of the Co-Ownership Plan II during the six months ended 28 February 2018
+are as follows:
+
+                                                                                            Number of RSUs
+                                                                                                                       To be vested on 24 January/20 June/29 June/
+                                                        As at      Granted     Forfeited        Vested       As at           20 July/18 August/20 November
+                                                 1 September         during       during        during 28 February               (As at 28 February 2018)
+Participants          Date of grant      Granted        2017     the period   the period    the period        2018       2017         2018         2019        2020
+Mr. William Chu       29 June 2015        238,608     119,304            –             –           –         119,304        –      119,304            –              –
+ Kwong YEUNG*
+Mr. Ni Quiaque LAI*   29 June 2015        158,132      79,066            –             –           –          79,066        –       79,066            –              –
+Other Participants    29 June 2015       2,326,246    967,772            –         43,861          –         923,911        –      923,911            –              –
+Other Participants    18 August 2015      273,612     129,936            –             –           –         129,936        –      129,936            –              –
+Other Participants    20 November 2015    158,567      15,736            –          3,236       6,022          6,478        –        6,478            –              –
+Mr. William Chu       20 June 2016        194,556     145,917            –             –           –         145,917        –       48,639       97,278              –
+ Kwong YEUNG*
+Mr. Ni Quiaque LAI*   20 June 2016        134,241     100,681            –             –           –         100,681        –       33,560       67,121              –
+Other Participants    20 June 2016       1,752,685   1,148,412           –         37,214          –      1,111,198         –      370,339      740,859              –
+Other Participants    24 January 2017     400,472     386,871            –             –       96,704        290,167        –            –       96,704     193,463
+Other Participants    20 July 2017        252,635     252,635            –             –           –         252,635        –       63,154       63,154     126,327
+
+
+Total                                    5,889,754   3,346,330           –         84,311     102,726     3,159,293         –    1,774,387    1,065,116     319,790
+
+
+*   Director of the Company
+
+INTERIM DIVIDEND
+
+The Board has resolved to declare an interim dividend of 26 cents (28 February 2017: 22 cents)
+per share for the six months ended 28 February 2018 to the Shareholders whose names appear on
+the register of members of the Company on Tuesday, 8 May 2018. The interim dividend will be
+payable in cash on Wednesday, 16 May 2018.
+
+The dividend policy of the Company is to pay dividends in an amount of not less than 90% of the
+Adjusted Free Cash Flow with an intention to pay 100% of the Adjusted Free Cash Flow in respect
+of the relevant year/period, after adjusting for potential debt repayment, if required. The Company
+has recommended to pay above this range at 110% of the Adjusted Free Cash Flow for this interim
+period due to timing difference of tax payment in 1H2018.
+
+CLOSURE OF REGISTER OF MEMBERS
+
+The register of members of the Company will be closed from Monday, 7 May 2018 to Tuesday,
+8 May 2018, both days inclusive, during which period no transfer of shares will be effected. All
+transfers, accompanied by the relevant share certificates, must be lodged with the Company’s
+Hong Kong branch share registrar, Tricor Investor Services Limited at Level 22, Hopewell Centre,
+183 Queen’s Road East, Hong Kong, no later than 4:30 p.m. on Friday, 4 May 2018 in order to
+establish the identity of the Shareholders who are entitled to qualify for the interim dividend.
+
+
+
+
+                                                                              12
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED SECURITIES
+
+During the six months ended 28 February 2018, neither the Company nor any of its subsidiaries
+purchased, sold or redeemed any of the listed securities of the Company.
+
+REVIEW OF INTERIM FINANCIAL INFORMATION
+
+The Audit Committee has reviewed with the management and the external auditor the unaudited
+interim results of the Group for the six months ended 28 February 2018, the accounting principles
+and practices adopted by the Group, as well as discussion on auditing, internal control, risk
+management and financial reporting matters of the Group.
+
+The unaudited interim financial report of the Group for the six months ended 28 February 2018
+has been reviewed by the Company’s external auditor in accordance with Hong Kong Standard on
+Review Engagements 2410 “Review of interim financial information performed by the independent
+auditor of the entity” issued by the HKICPA and reviewed by the Audit Committee of the
+Company.
+
+CORPORATE GOVERNANCE
+
+The Company has complied with all the code provisions as set out in the “Corporate Governance
+Code and Corporate Governance Report” (the “CG Code”) contained in Appendix 14 to the Rules
+Governing the Listing of Securities (the “Listing Rules”) on the Stock Exchange throughout the six
+months ended 28 February 2018 except for the following deviation:
+
+Code Provision A.5.1 of the CG Code provides that the Nomination Committee should be
+chaired by the Chairman of the Board or an Independent Non-executive Director. However, the
+Nomination Committee of the Company is chaired by Mr. William Chu Kwong YEUNG (“Mr.
+Yeung”), an Executive Director and Chief Executive Officer of the Company. By considering that
+each Independent Non-executive Director of the Company has been appointed as the Chairman
+of the Board, Audit Committee and Remuneration Committee respectively, the Board appointed
+Mr. Yeung as the Chairman of the Nomination Committee to make sure that each Director,
+especially the Independent Non-executive Directors could dedicate sufficient time to perform his
+role. Since Mr. Yeung is involved in the day-to-day management of the Company and can provide
+valuable insight on the suitability of a proposed Director, the Board considers that he is capable of
+assuming the responsibility of the Chairman of Nomination Committee by leading the process of
+identifying suitable candidates and making recommendations to the Board. As at the date of this
+announcement, the Nomination Committee comprises a majority of Independent Non-executive
+Directors, which ensures a balance of power and representation of Independent Non-executive
+Directors.
+
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+
+The Company has adopted the “Model Code for Securities Transactions by Directors of Listed
+Issuers” (the “Model Code”) set out in Appendix 10 to the Listing Rules as its code of conduct
+for dealings in securities of the Company by Directors. Having made specific enquiries with all
+Directors, they confirm that they have complied with the Model Code throughout the six months
+ended 28 February 2018.
+
+
+
+
+                                                 13
+PUBLICATION OF INTERIM RESULTS ON THE WEBSITES OF THE STOCK
+EXCHANGE AND THE COMPANY
+
+This announcement will be published on the websites of the Stock Exchange (www.hkexnews.hk)
+and the Company (www.hkbnltd.net). The interim report of the Company for the six months ended
+28 February 2018 will be despatched to the shareholders of the Company and made available on
+the same websites in due course.
+
+                                                                          By order of the Board
+                                                                               HKBN Ltd.
+                                                                         Bradley Jay HORWITZ
+                                                                                Chairman
+
+Hong Kong, 19 April 2018
+
+As at the date of this announcement, the Board comprises:
+
+Executive Directors                               Independent Non-executive Directors
+Mr. William Chu Kwong YEUNG                       Mr. Bradley Jay HORWITZ (Chairman)
+Mr. Ni Quiaque LAI                                Mr. Stanley CHOW
+                                                  Mr. Quinn Yee Kwan LAW, SBS, JP
+Non-executive Director
+Ms. Deborah Keiko ORIDA
+
+“Where the English and the Chinese texts conflict, the English text prevails.”
+
+
+
+
+                                                 14
+UNAUDITED CONSOLIDATED INTERIM FINANCIAL INFORMATION
+CONSOLIDATED INCOME STATEMENT
+FOR THE SIX MONTHS ENDED 28 FEBRUARY 2018
+
+                                                        Six months ended
+                                                    28 February    28 February
+                                                           2018           2017
+                                             Note         $’000          $’000
+                                                    (Unaudited)    (Unaudited)
+
+Revenue                                       4       1,868,095      1,534,726
+
+Other net income                             5(a)         8,249          6,907
+
+Network costs and costs of sales                       (545,452)      (303,857)
+
+Other operating expenses                     5(d)     (1,015,508)   (1,032,577)
+
+Finance costs                                5(c)       (27,069)      (116,922)
+
+Share of profits of associates                                 –         2,027
+
+Share of losses of joint ventures                          (234)          (461)
+
+Profit before taxation                        5         288,081         89,843
+
+Income tax                                    6         (47,146)       (43,809)
+
+Profit for the period attributable to
+  equity shareholders of the Company                    240,935         46,034
+
+Earnings per share
+
+Basic                                         7       24.1 cents      4.6 cents
+
+Diluted                                       7       24.0 cents      4.6 cents
+
+
+
+
+                                        15
+CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+FOR THE SIX MONTHS ENDED 28 FEBRUARY 2018
+
+                                                                     Six months ended
+                                                                 28 February    28 February
+                                                                        2018           2017
+                                                                       $’000          $’000
+                                                                 (Unaudited)    (Unaudited)
+
+Profit for the period                                                240,935         46,034
+
+Other comprehensive income for the period
+
+Item that may be reclassified subsequently to profit or loss:
+
+Exchange differences on translation of financial statements of
+  subsidiaries outside Hong Kong, with nil tax effect                  5,736         (2,934)
+
+Total comprehensive income for the period attributable to
+  equity shareholders of the Company                                 246,671         43,100
+
+
+
+
+                                                 16
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+AS AT 28 FEBRUARY 2018
+
+                                                                         At          At
+                                                                28 February   31 August
+                                                                       2018        2017
+                                                         Note         $’000       $’000
+                                                                (Unaudited)   (Audited)
+
+Non-current assets
+Goodwill                                                          1,771,969   1,771,969
+Intangible assets                                                 1,522,603   1,612,707
+Property, plant and equipment                                     2,256,400   2,289,790
+Interest in joint ventures                                            8,554       8,788
+Other non-current assets                                             24,558      24,600
+
+                                                                  5,584,084   5,707,854
+
+Current assets
+Inventories                                                          20,676     11,824
+Trade receivables                                         8         231,235    205,167
+Other receivables, deposits and prepayments                         243,889    266,321
+Amount due from a joint venture                                       8,123      9,244
+Cash and cash equivalents                                           358,499    385,052
+
+                                                                    862,422    877,608
+
+Current liabilities
+Trade payables                                            9         100,642     97,658
+Other payables and accrued charges – current portion                322,968    363,181
+Deposits received                                                    60,059     57,221
+Deferred services revenue – current portion                          90,761     81,949
+Obligations under granting of rights – current portion                9,024      9,024
+Amounts due to joint ventures                                        10,000     10,000
+Contingent consideration – current portion                           19,707     27,489
+Tax payable                                                          74,580    115,875
+
+                                                                    687,741    762,397
+
+Net current assets                                                  174,681    115,211
+
+Total assets less current liabilities                             5,758,765   5,823,065
+
+
+
+
+                                                 17
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION (CONTINUED)
+AS AT 28 FEBRUARY 2018
+
+                                                                           At          At
+                                                                  28 February   31 August
+                                                                         2018        2017
+                                                           Note         $’000       $’000
+                                                                  (Unaudited)   (Audited)
+
+Non-current liabilities
+Other payables and accrued charges – long-term portion                232,570     293,748
+Deferred services revenue – long-term portion                          80,319      92,752
+Obligations under granting of rights – long-term portion               29,329      33,843
+Deferred tax liabilities                                              398,552     423,618
+Contingent consideration – long-term portion                            2,701       2,869
+Provision for reinstatement costs                                      18,958      16,015
+Bank loan                                                           3,847,592   3,831,332
+
+                                                                    4,610,021   4,694,177
+
+NET ASSETS                                                          1,148,744   1,128,888
+
+CAPITAL AND RESERVES
+
+Share capital                                                             101         101
+Reserves                                                            1,148,643   1,128,787
+
+TOTAL EQUITY                                                        1,148,744   1,128,888
+
+
+
+
+                                                18
+NOTES TO THE UNAUDITED CONSOLIDATED INTERIM FINANCIAL INFORMATION:
+
+1   BASIS OF PREPARATION
+
+    The unaudited consolidated interim financial information set out in this announcement does not constitute the
+    Group’s unaudited interim financial report for the six months ended 28 February 2018 but is extracted from that
+    unaudited interim report which has been prepared in accordance with the Listing Rules, including compliance
+    with HKAS 34, Interim financial reporting, issued by the HKICPA. It was authorised for issue on 19 April 2018.
+
+    The unaudited interim financial report has been prepared in accordance with the same accounting policies
+    adopted in the annual financial statements of the Group for the year ended 31 August 2017, except for the
+    accounting policy changes that are expected to be reflected in the 2018 annual financial statements. Details of
+    any changes in accounting policies are set out in note 2.
+
+    The preparation of an unaudited interim financial report in conformity with HKAS 34 requires management
+    to make judgements, estimates and assumptions that affect the application of policies and reported amounts
+    of assets and liabilities, income and expenses on a year to date basis. Actual results may differ from these
+    estimates.
+
+    The unaudited interim financial report contains condensed consolidated financial statements and selected
+    explanatory notes. The notes include an explanation of events and transactions that are significant to an
+    understanding of the changes in financial position and performance of the Group since the annual financial
+    statements for the year ended 31 August 2017. The condensed consolidated interim financial statements and
+    notes thereon do not include all of the information required for full set of financial statements prepared in
+    accordance with HKFRSs.
+
+    The interim financial report is unaudited, but has been reviewed by KPMG in accordance with Hong Kong
+    Standard on Review Engagements 2410, Review of interim financial information performed by the independent
+    auditor of the entity, issued by the HKICPA.
+
+2   CHANGES IN ACCOUNTING POLICIES
+
+    The HKICPA has issued several amendments to HKFRSs that are first effective for the current accounting period
+    of the group. None of these developments have had a material effect on how the Group’s results and financial
+    position for the current or prior periods have been prepared or presented.
+
+    The Group has not applied any new standard or interpretation that is not yet effective for the current accounting
+    period.
+
+
+
+
+                                                       19
+3   SEGMENT REPORTING
+
+    Operating segments, and the amounts of each segment item reported in the financial statements, are identified
+    from the financial information provided regularly to the Group’s most senior executive management for the
+    purposes of allocating resources to, and assessing the performance of, the Group’s various lines of business and
+    geographical locations.
+
+    Individually material operating segments are not aggregated for financial reporting purposes unless the segments
+    have similar economic characteristics and are similar in respect of the nature of products and services, the nature
+    of production processes, the type or class of customers, the methods used to distribute the products or provide
+    the services, and the nature of the regulatory environment. Operating segments which are not individually
+    material may be aggregated if they share a majority of these criteria.
+
+    The Group’s management assesses the performance and allocates the resources of the Group as a whole, as
+    all of the Group’s activities are considered to be primarily the operation of fixed telecommunications network
+    services. Therefore, management considers there is only one operating segment under the requirements of
+    HKFRS 8, Operating Segments. In this regard, no segment information is presented.
+
+    No geographic information is shown as the revenue and profit from operations of the Group are primarily
+    derived from its activities in Hong Kong.
+
+4   REVENUE
+
+    The principal activities of the Group are provision of fixed telecommunications network services, international
+    telecommunications services and mobile services to residential and enterprise customers in Hong Kong and
+    product sales.
+
+    Revenue represents revenue from fixed telecommunications network services, international telecommunications
+    services and mobile services to residential and enterprise customers in Hong Kong and product sales.
+
+    The amount of each significant category of revenue recognised during the period is as follows:
+
+                                                                                         Six months ended
+                                                                                     28 February       28 February
+                                                                                            2018              2017
+                                                                                           $’000             $’000
+                                                                                     (Unaudited)       (Unaudited)
+
+    Residential revenue                                                                 1,101,411             941,025
+    Enterprise revenue                                                                    679,200             569,222
+    Product revenue                                                                        87,484              24,479
+
+                                                                                        1,868,095           1,534,726
+
+    The Group’s customer base is diversified and no individual customer with whom transactions have exceeded
+    10% of the Group’s revenue.
+
+
+
+
+                                                        20
+5   PROFIT BEFORE TAXATION
+
+    Profit before taxation is arrived at after charging/(crediting):
+
+                                                                                        Six months ended
+                                                                                    28 February       28 February
+                                                                                           2018              2017
+                                                                                          $’000             $’000
+                                                                                    (Unaudited)       (Unaudited)
+
+    (a)    Other net income
+
+           Interest income                                                                  (704)                (89)
+           Net foreign exchange loss/(gain)                                                4,959              (1,813)
+           Amortisation of obligations under granting of rights                           (4,512)             (4,512)
+           Change in fair value of contingent consideration                                  233                 999
+           Other income                                                                   (8,225)             (1,492)
+
+                                                                                          (8,249)             (6,907)
+
+
+    (b)    Talent costs
+
+           Salaries, wages and other benefits                                            432,490            432,417
+           Contributions to defined contribution retirement plan                          29,066             28,361
+           Equity-settled share-based payment expenses                                     4,488              7,252
+           Cash-settled share-based payment expenses                                         512                328
+
+                                                                                         466,556            468,358
+
+           Less: Talent costs capitalised as property, plant and equipment               (15,803)            (17,043)
+                 Talent costs included in advertising and marketing expenses            (215,857)           (205,251)
+
+                                                                                         234,896            246,064
+
+
+           Talent costs include all compensation and benefits paid to and accrued for all individuals employed by the
+           Group, including directors.
+
+    (c)    Finance costs
+
+           Interest on bank loans                                                         61,150              53,862
+           Interest on interest-rate swaps, net                                            6,297              10,769
+           Fair value gain on interest-rate swaps                                        (40,378)            (21,106)
+           Originating fee for banking facility expired                                        –              73,397
+
+                                                                                          27,069            116,922
+
+
+    (d)    Other items
+
+           Advertising and marketing expenses                                            289,565            294,938
+           Depreciation                                                                  214,686            209,684
+           Loss on disposal of property, plant and equipment, net                             27              1,367
+           Impairment losses on trade receivables                                         24,393             16,921
+           Amortisation of intangible assets                                              90,104             78,601
+           Operating lease charges in respect of land and buildings:
+             minimum lease payments                                                       28,786              23,595
+           Operating lease charges in respect of telecommunications
+             facilities and computer equipment: minimum lease payments                   124,950            108,899
+           Research and development costs                                                 10,014             10,826
+           Cost of inventories                                                            82,228             20,567
+
+
+                                                          21
+6   INCOME TAX
+
+                                                                                      Six months ended
+                                                                                  28 February       28 February
+                                                                                         2018              2017
+                                                                                        $’000             $’000
+                                                                                  (Unaudited)       (Unaudited)
+
+    Current tax – Hong Kong Profits Tax                                                 69,947              67,342
+    Current tax – Outside Hong Kong                                                      2,265               2,042
+    Deferred tax                                                                       (25,066)            (25,575)
+
+                                                                                        47,146              43,809
+
+    The provision for Hong Kong Profits Tax is calculated by applying the estimated annual effective tax rate of
+    16.5% (six months ended 28 February 2017: 16.5%) of the estimated assessable profits for the six months ended
+    28 February 2018.
+
+    Income tax expense for the current taxation outside Hong Kong is mainly related to the income tax in the
+    People’s Republic of China (the “PRC”) and is similarly calculated using the estimated annual effective rate of
+    taxation that is expected to be applicable in the PRC.
+
+7   EARNINGS PER SHARE
+
+    (a)   Basic earnings per share
+
+          The calculation of basic earnings per share is based on the profit attributable to ordinary equity
+          shareholders of the Company of $240,935,000 (six months ended 28 February 2017: $46,034,000) and
+          the weighted average number of ordinary shares in issue less shares held for the Co-Ownership Plan II, of
+          1,001,800,000 ordinary shares (six months ended 28 February 2017: 1,000,689,000 ordinary shares).
+
+    (b)   Diluted earnings per share
+
+          The calculation of diluted earnings per share is based on the profit attributable to ordinary equity
+          shareholders of the Company of $240,935,000 (six months ended 28 February 2017: $46,034,000) and the
+          weighted average number of ordinary shares in issue less shares held for the Co-Ownership Plan II after
+          adjusting for the dilutive effect of the Company’s Co-Ownership Plan II, calculated as follows:
+
+                                                                                      Six months ended
+                                                                                  28 February       28 February
+                                                                                         2018             2017
+                                                                                         ’000              ’000
+                                                                                  (Unaudited)       (Unaudited)
+
+          Weighted average number of ordinary shares less shares held
+            for the Co-Ownership Plan II                                             1,001,800           1,000,689
+          Effect of the Co-Ownership Plan II                                             2,095               2,367
+
+          Weighted average number of ordinary shares (diluted)                       1,003,895           1,003,056
+
+
+
+
+                                                      22
+8   TRADE RECEIVABLES
+
+    As of the end of the reporting period, the ageing analysis of trade receivables, based on the invoice date and net
+    of allowance for doubtful debts, is as follows:
+
+                                                                                             At                   At
+                                                                                    28 February            31 August
+                                                                                           2018                 2017
+                                                                                          $’000                $’000
+                                                                                    (Unaudited)            (Audited)
+
+    Within 30 days                                                                       118,304             100,751
+    31 to 60 days                                                                         52,117              40,343
+    61 to 90 days                                                                         23,992              21,984
+    Over 90 days                                                                          36,822              42,089
+
+                                                                                         231,235             205,167
+
+    The majority of the Group’s trade receivables is due within 30 days from the date of billing. Subscribers with
+    receivable that are more than 3 months overdue are requested to settle all outstanding balances before further
+    credit is granted.
+
+9   TRADE PAYABLES
+
+    As of the end of the reporting period, the ageing analysis of trade payables, based on the invoice date, is as
+    follows:
+
+                                                                                             At                   At
+                                                                                    28 February            31 August
+                                                                                           2018                 2017
+                                                                                          $’000                $’000
+                                                                                    (Unaudited)            (Audited)
+
+    Within 30 days                                                                         53,228              50,179
+    31 to 60 days                                                                          15,894              16,574
+    61 to 90 days                                                                           5,351               6,433
+    Over 90 days                                                                           26,169              24,472
+
+                                                                                         100,642               97,658
+
+
+
+
+                                                        23
+10   DIVIDENDS
+
+     (a)   Dividend payable to equity shareholders of the Company attributable to the interim period
+
+                                                                                         Six months ended
+                                                                                     28 February       28 February
+                                                                                            2018              2017
+                                                                                           $’000             $’000
+                                                                                     (Unaudited)       (Unaudited)
+
+           Interim dividend declared after the interim period
+             of 26 cents per ordinary share (six months ended
+             28 February 2017: 22 cents per ordinary share)                               261,473             221,247
+
+           The interim dividend declared has not been recognised as a liability at the end of the reporting period.
+
+     (b)   Dividends payable to equity shareholders of the Company attributable to the previous financial year,
+           approved and paid during the interim period
+
+                                                                                         Six months ended
+                                                                                     28 February       28 February
+                                                                                            2018              2017
+                                                                                           $’000             $’000
+                                                                                     (Unaudited)       (Unaudited)
+
+           Final dividend in respect of the previous financial year,
+             approved and paid during the following interim period,
+             of 23 cents per ordinary share (six months ended
+             28 February 2017: 20 cents per ordinary share)                               231,303             201,133
+
+11   NON-ADJUSTING EVENTS AFTER THE REPORTING PERIOD
+
+     Subsequent to the end of the reporting period, the Group has committed to extend the term and revolving credit
+     facilities agreement from the original expiry in November 2021 to May 2023 and the interest rate margin shall be
+     improved from the existing 1.35% to 1.05% at the current leverage level (the “refinancing”). Up to the approval
+     date of this interim results, the Company is still in the process of completing the refinancing arrangements with
+     various international banks. The non-cash finance cost in relation to the write-off of unamortised transactions
+     cost for the existing banking facility shall be reflected in the consolidated income statement for the year ending
+     31 August 2018 upon completion of the refinancing.
+
+
+
+
+                                                         24
+

@@ -1,0 +1,2539 @@
+   (A joint stock company incorporated in the People's Republic of China with limited liability)
+                                       Stock Code : 0788
+
+
+
+
+Resource Sharing for an Intelligent Future
+                               Interim Report 2022
+CONTENTS
+ 2   Performance Highlights
+ 3   Chairman’s Statement
+ 8   Financial Overview
+10   Report on Review of Interim Financial Information
+11   Unaudited Interim Condensed Consolidated
+      Statement of Comprehensive Income
+12   Unaudited Interim Condensed Consolidated
+      Balance Sheet
+14   Unaudited Interim Condensed Consolidated
+      Statement of Changes in Equity
+16   Unaudited Interim Condensed Consolidated
+      Statement of Cash Flows
+17   Notes to Unaudited Interim Condensed
+      Financial Information
+40   Other Information
+2   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+    PERFORMANCE HIGHLIGHTS
+
+
+     RMB million                                                               1H 2022                     1H 2021        Change
+
+
+     Operating revenue                                                           45,479                      42,673         6.6%
+     of which
+       TSP business                                                              41,345                      39,808         3.9%
+       Smart Tower business                                                       2,584                       1,853        39.4%
+       Energy business                                                            1,426                         884        61.3%
+     Operating profit                                                             7,089                       6,354        11.6%
+     EBITDA1                                                                     31,958                      31,184         2.5%
+     Profit attributable to owners of the Company                                 4,224                       3,457        22.2%
+     Capital expenditure                                                          9,085                      10,360       -12.3%
+     Net cash generated from operating activities                                31,306                      24,238        29.2%
+     Basic earnings per share (RMB Yuan)                                         0.0242                      0.0198        22.2%
+
+    Note 1:   EBITDA is calculated by operating profit plus depreciation and amortization.
+
+
+
+
+                     Operating revenue                                   Profit attributable to owners of the Company
+                            (RMB million)                                                            (RMB million)
+
+
+                                       45,479
+                      42,673                                                                                      4,224
+
+                                                                                             3,457
+
+
+
+
+                     1H 2021          1H 2022                                           1H 2021                1H 2022
+
+
+
+                               EBITDA                                                 Basic earnings per share
+                            (RMB million)                                                            (RMB Yuan)
+
+                                                                                                                0.0242
+                      31,184           31,958
+                                                                                         0.0198
+
+
+
+
+                     1H 2021          1H 2022                                           1H 2021                1H 2022
+                                                            Interim Report 2022 CHINA TOWER CORPORATION LIMITED    3
+
+
+
+
+                                              CHAIRMAN’
+                                                      S STATEMENT
+
+
+
+
+                                                                     Resource
+                                                                    Sharing for
+                                                                   an Intelligent
+                                                                      Future
+
+
+
+
+                                                      Zhang Zhiyong | Chairman of the Board
+
+
+Dear Shareholders,
+
+In the first half of 2022, China Tower Corporation Limited (the “Company”), upholding its founding
+philosophy of resource sharing, proactively captured opportunities emerging from the development of 5G
+new infrastructure, the “Digital China” initiative and the progress being made towards China’s “dual carbon”
+goals. By furthering our “One Core and Two Wings” strategy, we strove to establish an operating system
+that is professional, intensive, delicate, efficient and digitalized, as well as to build an enterprise centered
+around sharing, service, innovation, technology and value creation. During this period, our business has seen
+satisfactory development on all fronts and our overall performance maintained stable growth.
+
+FINANCIAL PERFORMANCE
+Our revenue maintained healthy growth while profitability continued to improve in the first half of 2022,
+with operating revenue reaching RMB45,479 million, up by 6.6% year-on-year. Our EBITDA amounted to
+RMB31,958 million, an increase of 2.5% over the same period last year, with an EBITDA margin2 of 70.3%.
+Profit attributable to owners of the Company totaled RMB4,224 million, up by 22.2% year-on-year, with a net
+profit margin of 9.3%.
+
+Our cash flow remained strong. In the first half of 2022, net cash generated from operating activities
+amounted to RMB31,306 million, an increase of 29.2% over the same period last year. Capital expenditures
+were RMB9,085 million, a reduction of 12.3% from the same period last year. As a result, our free cash flow3
+reached RMB22,221 million, up by 60.1% year-on-year. Our financial position remained stable and healthy,
+with the Company’s total assets reaching RMB313,523 million as of 30 June 2022. Our interest-bearing
+liabilities stood at RMB92,428 million with a gearing ratio4 of 31.1%, 5.9 percentage points lower than the
+same period last year.
+4   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+    Chairman’s Statement
+
+
+
+
+    BUSINESS PERFORMANCE
+    In the first half of 2022, despite the adverse impact of multiple outbreaks of the epidemic, we orchestrated
+    our Covid-19 containment measures and operating activities under the guidance of established strategy,
+    strengthening our capabilities in resource coordination and sharing. Building on the stable development of
+    our telecommunications service provider (“TSP”) business, our Smart Tower business and Energy business
+    continued to experience rapid growth.
+
+    Dual growth engines of “5G + DAS” enabled stable growth in TSP business
+    Given the increasing coverage and penetration of 5G network in China, we maintained our focus on the
+    latest market trends and evolving customer demands over the first half of 2022 and furthered resource
+    coordination and sharing. As a result, we were able to build large-scale 5G networks in a cost-effective and
+    highly efficient manner through offering innovative service and construction model. The Company undertook
+    318,000 5G base-station demand in the first half of 2022, with the cumulative number reaching 1.544 million
+    as of 30 June 2022, of which 97% were fulfilled by sharing existing resources. Additionally, increasing DAS
+    construction demand promoted even greater growth of DAS business. Given this, “5G + DAS” have emerged
+    as dual growth engines, which secured stable growth of TSP business and cemented our leadership in the
+    construction and operation of telecommunications infrastructure in China.
+
+    As of 30 June 2022, the Company was managing a total of 2.049 million tower sites, representing a net
+    increase of 11,000 sites compared to the end of 2021. During the same period, we gained 42,000 new TSP
+    tenants, bringing the total number to 3.302 million. Our TSP tenancy ratio also grew from 1.60 as at the end
+    of 2021 to 1.62. With regard to our DAS business, we had covered buildings with a cumulative area of 5,970
+    million square meters, up by 35.4% from the same period last year, while the high-speed railway tunnels
+    and subway coverage totaled a cumulative length of 18,276 kilometers, an increase of 26.6% over the same
+    period last year.
+
+    In the first half of 2022, our TSP business revenue reached RMB41,345 million, up by 3.9% from the same
+    period last year, among which tower business revenue accounted for RMB38,592 million while DAS business
+    represented RMB2,753 million, a year-on-year growth of 2.3% and 32.0% respectively.
+                                                            Interim Report 2022 CHINA TOWER CORPORATION LIMITED   5
+
+
+
+
+                                                                                        Chairman’s Statement
+
+
+
+
+Strengthening advantages in resources and capabilities, Two Wings business maintained the
+momentum of growth
+The development of the digital economy and the national “dual carbon” goals have presented ample
+opportunities to our business. We leveraged our resources and strengths to scale up and explore new
+possibilities of sharing, enabling the advancement of digitalization and adoption of new energy applications
+in society. As a result, our Two Wings business continued to experience rapid growth. Over the first half
+of the year, Two Wings business recorded revenue of RMB4,010 million, a year-on-year increase of 46.5%,
+accounting for 8.8% of our overall operating revenue and contributing 45.4% of the incremental operating
+revenue.
+
+Smart Tower business expanded industry applications and sharpened competitive edge. We seized
+new opportunities flowing from the rapid development of the digital economy and sped up the upgrading
+of “telecommunication tower” to “digital tower” by utilizing our existing site resources, localized operations
+and maintenance, and centralized digital platform. For Tower Monitoring service, we increased investment
+on research and development, launching differentiated products to meet customer needs while enhancing
+our digital services, with a focus on key sectors including environmental protection, forestry, agriculture and
+land, etc. In the first half of 2022, Smart Tower business recorded revenue of RMB2,584 million, representing
+a growth of 39.4% from the same period last year. Of this, Tower Monitoring business revenue reached
+RMB1,584 million, accounting for 61.3% of Smart Tower business revenue.
+
+Energy business focused on core segments and continued to scale up. We further strengthened our core
+business segments of battery exchange and power backup to enhance the economies of scale in Energy
+business as well as the quality of delicate management approach. We have deepened our penetration of
+the delivery and courier markets, and consolidated our leadership in the battery exchange market for light
+electric vehicle. In addition, we offered four-in-one comprehensive solutions covering power backup, power
+generation, monitoring and maintenance, to key industries including telecommunications, finance, healthcare
+and education. As of 30 June 2022, we had attained a cumulative 782,000 battery exchange users, an increase
+of 170,000 since the end of 2021. Energy business recorded revenue of RMB1,426 million in the first half of
+2022, representing an increase of 61.3% from the same period last year, among which, revenue from battery
+exchange business accounted for RMB802 million, or 56.2%.
+6   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+    Chairman’s Statement
+
+
+
+
+    CORPORATE GOVERNANCE AND SOCIAL RESPONSIBILITY
+    The Company continued to strictly abide by the rules and regulations governing listed companies,
+    continuously improved governance mechanisms, strengthened the development of compliance systems and
+    enhanced risk management, all to ensure a high level of corporate governance to safeguard the Company’s
+    healthy and sustainable growth.
+
+    We have received wide recognition for our commitment to corporate social responsibility as well as for
+    our efforts in ensuring the harmonious and sustainable development of both the Company and society.
+    Through delicate planning and management, we delivered reliable communications services for the Beijing
+    2022 Winter Olympics and the Beijing 2022 Paralympic Winter Games earlier this year. In addition, we
+    proactively implemented multiple measures to effectively support emergency missions and safeguard related
+    communication services, serving as a lifeline to ensure communications in pandemic prevention and control
+    as well as disaster relief. We also promoted communications infrastructure development in remote areas
+    to narrow the regional digital divide, contributing to the national initiative of rural revitalization. Finally, we
+    practiced the philosophy of sustainable development by advocating energy saving and emissions reductions,
+    as well as green and low-carbon growth.
+
+    OUTLOOK
+    To capture growth opportunities in the second half of 2022, we will set a clear focus on realizing our goal
+    of becoming a “world-class integrated information and communications infrastructure service provider and
+    a highly competitive information and new energy applications provider”. This positioning will drive the
+    development of the Company centering around sharing, service, innovation, technology and value creation,
+    and build upon an operating system that is professional, intensive, delicate, efficient and digitalized. We
+    will strive to sustain stable revenue growth and generate higher value for our shareholders, customers and
+    society as a whole.
+
+    TSP business: Given the strong demand for 5G base stations and DAS construction, we will continue to
+    enhance these dual engines to support the stable growth of TSP business. Adhering to the philosophy of
+    resource sharing, we will consolidate and enhance resource coordination and sharing to explore and satisfy
+    customers’ needs with comprehensive offerings. In addition, we will further promote integrated wireless
+    communications coverage solutions to tackle difficult site setting and network coverage problems. In doing
+    so, we will strengthen the competitive advantages of tower business through professional construction and
+    strong service capabilities. We will also work closely with TSPs to develop a service model centered around
+    resource coordination and collaboration. By enhancing capabilities on market acquisition and professional
+    service, we aim to expand the scale of our DAS business and turn it into the second engine of TSP business.
+                                                                     Interim Report 2022 CHINA TOWER CORPORATION LIMITED           7
+
+
+
+
+                                                                                                     Chairman’s Statement
+
+
+
+
+Smart Tower business: The thriving digital economy and ongoing digital transformation across different
+sectors are presenting ample opportunities to our business. We will make full use of our resources and
+strengths to drive the transformation from “telecommunication tower” to “digital tower”. Focusing on
+eight key sectors of environmental protection, forestry, agriculture, land, water resources, transportation,
+emergency response and digital village, we will develop a variety of vertical industrial applications for
+customers, delivering high quality integrated information solutions and digital governance services. We
+will also step up research and development investment to strengthen our Tower Monitoring platform with
+enhanced algorithms and functions. Meanwhile, we aim to establish an industry application iteration and
+development system to further support the rapid and high-quality growth of Smart Tower business.
+
+Energy business: The national “carbon peaking and carbon neutrality” goals have created a strategic
+opportunity for us to develop our specialty in battery exchange and power backup businesses by leveraging
+our resources. Through increasing research and development investment and deepening technology
+collaboration, we shall promote product optimization and iterative upgrades. In addition, we target to build
+a smart energy operating platform to drive the digital and intelligent transformation of our Energy business.
+The Company is committed to strengthening its intelligent service system to improve its service efficiency
+and enhance its customer experience by drawing on its delicate control and systematic management
+approach. These initiatives will help to scale our Energy business rapidly.
+
+Finally, on behalf of the Board, I would like to take this opportunity to express my heartfelt gratitude to
+Mr. Mai Yanzhou, who recently resigned as a director of the Company, and to his distinguished service
+to the Company during his term of office. Meanwhile, I would like to express my sincere gratitude to our
+shareholders, customers and the general public for your support, and to our employees for your hard work
+and dedication.
+
+
+
+
+Zhang Zhiyong
+Chairman
+
+Beijing, China, 8 August 2022
+
+
+Note 1:   The financial information mentioned in this report is prepared based on the consolidated financial information. The
+          Company and its subsidiaries are collectively referred to as the Group.
+Note 2:   EBITDA margin is calculated by dividing EBITDA by operating revenue, and multiplying the resulting value by 100%.
+Note 3:   Free cash flow is the net cash generated from operating activities minus the capital expenditures.
+Note 4:   Gearing ratio is calculated as net debts divided by the sum of total equity and net debt, then multiplied by 100%. Net
+          debt is calculated as the amount of interest-bearing liabilities minus the amount of cash and cash equivalents.
+8   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+    FINANCIAL OVERVIEW
+    (Expressed in RMB unless otherwise indicated)
+
+
+
+
+    OPERATING REVENUE
+    In the first half of 2022, the Company actively served and integrated into the new development pattern and
+    deepened the implementation of the “One Core and Two Wings” strategy to fuel market development. The
+    Company maintained a positive growth in operating revenue. Operating revenue reached RMB45,479 million,
+    up by 6.6% over the same period last year, of which revenue from TSP business reached RMB41,345 million,
+    up by 3.9% over the same period last year; revenue from Smart Tower business and Energy business reached
+    RMB4,010 million, up by 46.5% over the same period last year, accounting for 8.8% of the operating revenue,
+    which increased from 6.4% for the same period last year.
+
+    OPERATING EXPENSES
+    Relying on the adoption of business accounting on individual site and enhancement of digitalized operation
+    capability, the Company managed and controlled production costs in a reasonable manner, effectively
+    preserved its asset quality, improved the service standard and enhanced momentum for development of the
+    Company. In the first half of 2022, the operating expenses of the Company were RMB38,390 million, up by
+    5.7% over the same period last year. The breakdown is as follows:
+
+    •    Depreciation and amortisation
+         Benefiting from the reusing and life extension of assets in stock, as well as changes in the structure of
+         5G construction demand, the depreciation and amortisation in the first half of 2022 was RMB24,869
+         million, up by 0.2% over the same period last year.
+
+    •    Repairs and maintenance expenses
+         The Company strengthened the development of asset operation capabilities, fully tapped assets
+         potential and improved asset performance to ensure business expansion and service improvement. In
+         the first half of 2022, the repairs and maintenance expenses were RMB3,486 million, up by 20.5% over
+         the same period last year.
+
+    •    Employee benefits and expenses
+         In the first half of 2022, the employee benefits and expenses amounted to RMB3,778 million, up by 5.7%
+         over the same period last year.
+
+    •    Site operation and supporting expenses
+         In the first half of 2022, the site operation and supporting expenses amounted to RMB2,507 million, up
+         by RMB163 million over the same period last year, of which the IT supporting and site planning and
+         management expenses related to site operation increased by RMB202 million over the same period last
+         year.
+
+    •    Other operating expenses
+         In the first half of 2022, other operating expenses amounted to RMB3,750 million, up by RMB1,073
+         million over the same period last year. For Two Wings business, the Company enhanced the
+         development of AI algorithms and product iteration while strengthening marketing efforts, with the
+         technical supporting service fees, sales expenses, and utility fees for business operation increasing by
+         RMB719 million over the same period last year.
+                                                            Interim Report 2022 CHINA TOWER CORPORATION LIMITED           9
+
+
+
+
+                                                                                              Financial Overview
+                                                                          (Expressed in RMB unless otherwise indicated)
+
+
+
+
+FINANCE COSTS
+As the Company enhanced centralized fund management, the interest-bearing liabilities substantially
+decreased as compared to the same period last year. Meanwhile, benefiting from multi-channel financing
+at low costs, the overall finance costs of the Company maintained at a relatively low level. The Company
+recorded net finance costs of RMB1,603 million in the first half of 2022, down by 14.0% over the same period
+last year.
+
+PROFITABILITY
+In the first half of 2022, the Company recorded an operating profit of RMB7,089 million. Profit attributable to
+owners of the Company amounted to RMB4,224 million, up by 22.2% over the same period last year; EBITDA
+reached RMB31,958 million, up by 2.5% over the same period last year, accounting for 70.3% of operating
+revenue.
+
+CAPITAL EXPENDITURES AND CASH FLOW
+In the first half of 2022, the capital expenditure for new site construction and augmentation recorded a
+year-on-year decrease due to structural change in TSPs’ 5G construction demands and the project slowdown
+during the pandemic in certain regions. Meanwhile, the Company increased the proportion of its investment
+on the site replacement and improvement with a view to enhancing their long-term service capacity and
+meeting the needs for business development as well as asset life extension in an orderly manner. In the first
+half of 2022, capital expenditures reached RMB9,085 million. Net cash generated from operating activities
+was RMB31,306 million while free cash flow was RMB22,221 million.
+
+BALANCE SHEET STATUS
+As of 30 June 2022, the Company’s total assets were RMB313,523 million and total liabilities were
+RMB124,495 million, of which the net debts amounted to RMB85,520 million. The liabilities to assets ratio
+decreased from 41.4% at the beginning of the year to 39.7% at the end of the period.
+10   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     REPORT ON REVIEW OF
+     INTERIM FINANCIAL INFORMATION
+
+
+
+
+     To the Board of Directors of China Tower Corporation Limited
+     (A joint stock company incorporated in the People’s Republic of China with limited liability)
+
+     INTRODUCTION
+     We have reviewed the interim financial information set out on pages 11 to 39, which comprises the interim
+     condensed consolidated balance sheet of China Tower Corporation Limited (the “Company”) and its subsidiaries
+     (together, the “Group”) as at 30 June 2022 and the interim condensed consolidated statement of comprehensive
+     income, the interim condensed consolidated statement of changes in equity and the interim condensed
+     consolidated statement of cash flows for the six-month period then ended, and notes, comprising significant
+     accounting policies and other explanatory information. The Rules Governing the Listing of Securities on The
+     Stock Exchange of Hong Kong Limited require the preparation of a report on interim financial information to be
+     in compliance with the relevant provisions thereof and International Accounting Standard 34 “Interim Financial
+     Reporting”. The directors of the Company are responsible for the preparation and presentation of this interim
+     financial information in accordance with International Accounting Standard 34 “Interim Financial Reporting”. Our
+     responsibility is to express a conclusion on this interim financial information based on our review and to report our
+     conclusion solely to you, as a body, in accordance with our agreed terms of engagement and for no other purpose.
+     We do not assume responsibility towards or accept liability to any other person for the contents of this report.
+
+     SCOPE OF REVIEW
+     We conducted our review in accordance with International Standard on Review Engagements 2410, “Review of
+     Interim Financial Information Performed by the Independent Auditor of the Entity”. A review of interim financial
+     information consists of making inquiries, primarily of persons responsible for financial and accounting matters, and
+     applying analytical and other review procedures. A review is substantially less in scope than an audit conducted
+     in accordance with International Standards on Auditing and consequently does not enable us to obtain assurance
+     that we would become aware of all significant matters that might be identified in an audit. Accordingly, we do not
+     express an audit opinion.
+
+     CONCLUSION
+     Based on our review, nothing has come to our attention that causes us to believe that the interim financial
+     information of the Group is not prepared, in all material respects, in accordance with International Accounting
+     Standard 34 “Interim Financial Reporting”.
+
+
+
+
+     PricewaterhouseCoopers
+     Certified Public Accountants
+
+     Hong Kong, 8 August 2022
+                                                               Interim Report 2022 CHINA TOWER CORPORATION LIMITED           11
+
+
+
+
+     UNAUDITED INTERIM CONDENSED CONSOLIDATED
+            STATEMENT OF COMPREHENSIVE INCOME
+                                                                                     For the six months ended 30 June 2022
+                                                                                           (Expressed in Renminbi (“RMB”))
+
+
+                                                                                           Unaudited
+                                                                                    Six months ended 30 June
+                                                                                         2022                 2021
+                                                                        Note        RMB million          RMB million
+
+
+ Operating revenue                                                        5               45,479                42,673
+
+
+ Operating expenses
+ Depreciation and amortisation                                           13              (24,869)              (24,830)
+ Repairs and maintenance                                                                  (3,486)               (2,894)
+ Employee benefits and expenses                                           6               (3,778)               (3,574)
+ Site operation and support expenses                                      7               (2,507)               (2,344)
+ Other operating expenses                                                 8               (3,750)               (2,677)
+
+
+                                                                                         (38,390)              (36,319)
+
+
+ Operating profit                                                                          7,089                  6,354
+
+
+ Other income/gains, net                                                                      76                     69
+ Interest income                                                                               5                     10
+ Finance costs                                                            9               (1,608)                (1,875)
+
+
+ Profit before taxation                                                                    5,562                  4,558
+ Income tax expenses                                                     10               (1,338)                (1,101)
+
+
+ Profit for the period                                                                     4,224                  3,457
+
+
+ Profit attributable to:
+ – Owners of the Company                                                                   4,224                  3,457
+ – Non-controlling interests                                                                   –                      –
+
+
+ Other comprehensive income, net of tax                                                          –                    –
+
+
+ Total comprehensive income for the period                                                 4,224                  3,457
+
+
+ Total comprehensive income attributable to:
+ – Owners of the Company                                                                   4,224                  3,457
+ – Non-controlling interests                                                                   –                      –
+
+
+                                                                                           4,224                  3,457
+
+
+ Basic and diluted earnings per share (in RMB Yuan)
+ Basic/diluted                                                           11               0.0242                0.0198
+
+
+The notes on pages 17 to 39 are an integral part of this interim condensed financial information.
+12   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     UNAUDITED INTERIM CONDENSED CONSOLIDATED
+     BALANCE SHEET
+     As at 30 June 2022
+     (Expressed in RMB)
+
+
+                                                                                      Unaudited                 Audited
+                                                                                   As at 30 June     As at 31 December
+                                                                                            2022                  2021
+                                                                     Note           RMB million             RMB million
+
+
+      Assets
+      Non-current assets
+      Property, plant and equipment                                    12                213,533               221,419
+      Right-of-use assets                                              13                 32,133                32,877
+      Construction in progress                                         12                 11,300                14,709
+      Deferred income tax assets                                                           2,602                 1,892
+      Other non-current assets                                         14                    534                 4,018
+
+
+                                                                                         260,102               274,915
+
+
+      Current assets
+      Trade and other receivables                                      15                  42,256               34,194
+      Prepayments and other current assets                             16                   4,257                7,679
+      Cash and cash equivalents                                        17                   6,908                6,471
+
+
+                                                                                           53,421               48,344
+
+
+      Total assets                                                                       313,523               323,259
+
+
+      Equity and liabilities
+      Equity attributable to owners of the Company
+      Share capital                                                    18                176,008               176,008
+      Reserves                                                                            13,020                13,346
+
+
+      Total equity attributable to owners of the Company                                 189,028               189,354
+      Non-controlling interests                                                                –                     –
+
+
+      Total equity                                                                       189,028               189,354
+
+
+     The notes on pages 17 to 39 are an integral part of this interim condensed financial information.
+                                                               Interim Report 2022 CHINA TOWER CORPORATION LIMITED         13
+
+
+
+
+                                       Unaudited Interim Condensed Consolidated Balance Sheet (Continued)
+                                                                                                      As at 30 June 2022
+                                                                                                     (Expressed in RMB)
+
+
+
+
+                                                                                 Unaudited                 Audited
+                                                                              As at 30 June     As at 31 December
+                                                                                       2022                  2021
+                                                                Note           RMB million             RMB million
+
+
+ Liabilities
+ Non-current liabilities
+ Borrowings                                                      20(a)                35,910                  41,572
+ Lease liabilities                                                13                  15,461                  15,677
+ Deferred government grants                                       21                     424                     436
+ Employee benefit obligations                                                             40                      38
+
+
+                                                                                      51,835                  57,723
+
+
+ Current liabilities
+ Borrowings                                                      20(a)                34,077                  37,142
+ Lease liabilities                                                13                   6,980                   6,913
+ Accounts payable                                                 22                  24,391                  25,264
+ Accrued expenses and other payables                              23                   6,336                   6,342
+ Current income tax payable                                                              876                     521
+
+
+                                                                                      72,660                  76,182
+
+
+ Total liabilities                                                                  124,495                 133,905
+
+
+ Total equity and liabilities                                                       313,523                 323,259
+
+
+The notes on pages 17 to 39 are an integral part of this interim condensed financial information.
+14   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     UNAUDITED INTERIM CONDENSED CONSOLIDATED
+     STATEMENT OF CHANGES IN EQUITY
+     For the six months ended 30 June 2022
+     (Expressed in RMB)
+
+
+                                                                                                         Unaudited
+                                                                          Attributable to owners of the Company
+                                                                              Shares
+                                                                         Held under
+                                                                          Restricted
+                                                                               Share Share-based                                                          Non-
+                                                 Share         Share       Incentive Compensation        Statutory     Retained                     Controlling        Total
+                                               Capital      Premium         Scheme       Reserves        Reserves      Earnings          Total        Interests       Equity
+                                     Note   RMB million   RMB million   RMB million RMB million        RMB million   RMB million    RMB million    RMB million    RMB million
+
+
+      Balance at
+        31 December 2020                        176,008         3,694        (1,954)           285           1,118         7,094        186,245              1        186,246
+
+
+      Profit for the period                           –             –             –              –               –         3,457          3,457              –          3,457
+      Other comprehensive
+        income                                       –             –              –              –               –             –              –              –              –
+
+
+      Total comprehensive
+        income for the period                         –             –             –              –               –         3,457          3,457              –          3,457
+
+
+      Dividends paid                  19              –             –             –              –               –        (3,934)        (3,934)             –         (3,934)
+      Employee share scheme-
+        value of employee services    24             –             –              –             85               –             –            85               –            85
+
+
+      Balance at 30 June 2021                   176,008         3,694        (1,954)           370           1,118         6,617        185,853              1        185,854
+
+
+     The notes on pages 17 to 39 are an integral part of this interim condensed financial information.
+                                                                                                      Interim Report 2022 CHINA TOWER CORPORATION LIMITED                                      15
+
+
+
+
+                                  Unaudited Interim Condensed Consolidated Statement of Changes in Equity (Continued)
+                                                                                                                                           For the six months ended 30 June 2022
+                                                                                                                                                               (Expressed in RMB)
+
+
+
+
+                                                                                                             Unaudited
+                                                                              Attributable to owners of the Company
+                                                                      Shares
+                                                                 Held under
+                                                                  Restricted
+                                                                       Share Share-based                                                                                Non-
+                                         Share         Share       Incentive Compensation            Statutory          Other        Retained                     Controlling        Total
+                                       Capital      Premium          Scheme      Reserves            Reserves         reserves       Earnings          Total        Interests       Equity
+                           Note     RMB million   RMB million   RMB million RMB million            RMB million      RMB million    RMB million    RMB million    RMB million    RMB million
+
+
+ Balance at
+   31 December 2021                    176,008         3,694        (1,954)                  –           1,849               (1)        9,758        189,354               –       189,354
+
+
+ Profit for the period                        –             –            –                   –               –                –         4,224          4,224               –         4,224
+ Other comprehensive
+   income                                     –             –            –                   –               –                –              –              –              –              –
+
+
+ Total comprehensive
+   income for the period                      –             –            –                   –               –                –         4,224          4,224               –         4,224
+
+
+ Dividends paid             19                –             –            –                   –               –                –         (4,550)        (4,550)             –         (4,550)
+
+
+ Balance at 30 June 2022               176,008         3,694        (1,954)                  –           1,849               (1)        9,432        189,028               –       189,028
+
+
+The notes on pages 17 to 39 are an integral part of this interim condensed financial information.
+16   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     UNAUDITED INTERIM CONDENSED CONSOLIDATED
+     STATEMENT OF CASH FLOWS
+     For the six months ended 30 June 2022
+     (Expressed in RMB)
+
+
+                                                                                                Unaudited
+                                                                                         Six months ended 30 June
+                                                                                              2022            2021
+                                                                                         RMB million     RMB million
+
+
+      Cash flows from operating activities
+      Cash generated from operations                                                          32,995          25,771
+      Income tax paid                                                                         (1,694)         (1,543)
+      Interest income received                                                                     5              10
+
+
+      Net cash generated from operating activities                                            31,306          24,238
+
+
+      Cash flows from investing activities
+      Purchase of property and equipment                                                     (11,886)        (18,803)
+      Purchase of land use right and other non-current assets                                    (10)            (16)
+      Proceeds from disposal of property and equipment                                           316             134
+
+
+      Net cash used in investing activities                                                  (11,580)        (18,685)
+
+
+      Cash flows from financing activities
+      Dividends paid to the owners of Company                                                 (4,618)         (3,934)
+      Proceeds from borrowings (excluding short-term commercial papers)                       20,600          34,578
+      Repayments to employees for restricted share incentive scheme                             (367)             (3)
+      Repayments of borrowings (excluding short-term commercial papers)                      (29,128)        (21,568)
+      Repayments of short-term commercial papers                                                   –         (11,000)
+      Interest paid for borrowings                                                            (1,087)         (1,350)
+      Payments of lease liabilities (including principal and interest)                        (4,688)         (2,361)
+
+
+      Net cash used in financing activities                                                  (19,288)         (5,638)
+
+
+      Net increase/(decrease) in cash and cash equivalents                                        438            (85)
+      Cash and cash equivalents at beginning of period                                          6,471          5,042
+      Effect of changes in foreign exchange rates on cash and cash equivalents                     (1)             1
+
+
+      Cash and cash equivalents at end of period                                                6,908          4,958
+
+
+     Significant non-cash transactions:
+     The Group recorded accounts payables of approximately RMB14,487 million to equipment and construction
+     suppliers as at 30 June 2022 (31 December 2021: approximately RMB16,699 million).
+
+     The Group recorded an addition of right-of-use assets with the corresponding of lease liabilities amounting to
+     approximately RMB5,290 million for the six months ended 30 June 2022 (for the six months ended 30 June 2021:
+     approximately RMB4,851 million).
+
+     The notes on pages 17 to 39 are an integral part of this interim condensed financial information.
+                                                             Interim Report 2022 CHINA TOWER CORPORATION LIMITED             17
+
+
+
+
+                NOTES TO UNAUDITED INTERIM CONDENSED
+                               FINANCIAL INFORMATION
+                                                                             (Expressed in RMB unless otherwise indicated)
+
+
+
+1   GENERAL INFORMATION
+    China Tower Corporation Limited (中國鐵塔股份有限公司, the “Company”) was established by China Mobile
+    Communication Company Limited (“China Mobile Company”), China United Network Communications
+    Corporation Limited (“China Unicom Corporation”) and China Telecom Corporation Limited (“China
+    Telecom”) (the three telecommunications service providers in China collectively hereinafter referred to as the
+    “Three TSPs”) on 15 July 2014 as a limited liability company in the People’s Republic of China (the “PRC”),
+    with a total registered capital of RMB10,000 million.
+
+    In 2015, the share capital of the Company was increased to RMB129,345 million, after an acquisition of certain
+    telecommunications towers and related assets (the “Tower Assets”) from the Three TSPs and new shares
+    issuance to a new investor, China Reform Holdings Corporation Ltd. (“China Reform”). On 8 August 2018, the
+    Company completed the global offering of its H shares on the Main Board of The Stock Exchange of Hong
+    Kong Limited.
+
+    The Company and its subsidiaries (together, the “Group”) are principally engaged in constructing and
+    operating telecommunications towers, provision of telecommunications tower site space (the “provision
+    of Site Space”); provision of maintenance services (“Maintenance services”) and power services (“Power
+    services”); provision of indoor distributed antenna systems (“DAS”), other trans-sector site application
+    and information services (“Smart Tower business”) and Energy business. The provision of Site Space,
+    the Maintenance services and the Power services for tower sites are collectively referred to as the “Tower
+    business”. The Company’s headquarter is in Beijing, the PRC, with 31 provincial branches operating across
+    mainland China.
+
+    This unaudited interim condensed financial information is presented in RMB, unless otherwise stated. This
+    unaudited interim condensed financial information was approved by the board of directors (the “Board”) of
+    the Company for issuance on 8 August 2022.
+
+    The Group’s interim condensed financial information for the six months ended 30 June 2022 has been
+    reviewed, not audited.
+18   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     2     BASIS OF PREPARATION
+           This unaudited interim condensed financial information for the six months ended 30 June 2022 has been
+           prepared in accordance with International Accounting Standard (“IAS”) 34, “Interim financial reporting”,
+           issued by the International Accounting Standards Board (“IASB”).
+
+           The unaudited interim condensed financial information does not include all of the information required for
+           a full set of financial statements prepared in accordance with International Financial Reporting Standards
+           (“IFRSs”) issued by IASB, and should be read in conjunction with the audited consolidated financial statements
+           of the Group for the year ended 31 December 2021. The accounting policies adopted are consistent with
+           those of the previous financial year and corresponding interim reporting period. The Group’s policies on
+           financial risk management were set out in the audited financial statements of the Group for the year ended 31
+           December 2021 and there have been no significant changes in the financial risk management policies for the
+           six months ended 30 June 2022.
+
+           Going concern
+           At 30 June 2022, the Group’s current liabilities exceeded its current assets by RMB19,239 million (31 December
+           2021: RMB27,838 million).
+
+           Given the current economic conditions and based on the Group’s future operating plans and the expected
+           levels of capital expenditure, management has comprehensively considered the following available sources of
+           funds:
+
+           •     The Group’s continuous net cash inflows from operating activities;
+
+           •     The available committed, unrestricted and unutilised revolving bank credit facilities of RMB219,507 million
+                 as at 30 June 2022; and
+
+           •     Other available sources of financing from domestic banks and other financial institutions.
+
+           Based on management’s operating and financial plans, the directors of the Company were of the opinion
+           that the Group has adequate funds to continue its operations and to repay its debts when they fall due, and
+           thus concluded that the Group will be able to meet its obligations for the twelve months after 30 June 2022.
+           Accordingly, the unaudited interim condensed financial information has been prepared on the basis that the
+           Group will continue as a going concern.
+                                                                     Interim Report 2022 CHINA TOWER CORPORATION LIMITED             19
+
+
+
+
+                                                    Notes to Unaudited Interim Condensed Financial Information
+                                                                                     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+3   SIGNIFICANT ACCOUNTING POLICIES
+    A number of amended standards became applicable for the current reporting period. The Group did not have
+    to change its accounting policies or make retrospective adjustments as a result of adopting these amended
+    standards.
+
+    Standards and Interpretations in issue but not yet effective and not been early adopted
+    The following new standards and amendments to existing standards have been issued and are mandatory for
+    the Group’s accounting periods beginning on or after 1 January 2023 or later periods, but the Group has not
+    early adopted them:
+
+     New standards, amendments and interpretations                        Published date      Effective date
+
+
+     Amendments to IAS 1          Classification of Liabilities as        January 2020        Annual periods beginning on
+                                    Current or Non-current                                      or after 1 January 2023
+     Amendments to IAS 28         Sale or Contribution of Assets          September 2014      Undetermined
+      and IFRS 10                   between an Investor and
+                                    its Associate or Joint Venture
+     Amendments to IAS 12         Deferred Tax related to Assets          May 2021            Annual periods beginning on
+                                   and Liabilities arising from                                 or after 1 January 2023
+                                   a Single Transaction
+     Amendments to IAS 1 and      Disclosure of Accounting Policies       February 2021       Annual periods beginning on
+      IFRS Practice Statement 2                                                                 or after 1 January 2023
+     Amendments to IAS 8          Definition of Accounting Estimates      February 2021       Annual periods beginning on
+                                                                                                or after 1 January 2023
+
+
+    None of these new or amendments to IFRSs is expected to have a significant effect on the financial
+    information of the Group.
+20   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     4     SEGMENT REPORTING
+           The executive directors and senior management, as a decision-making group has been identified as the
+           Group’s chief operating decision-maker (the “CODM”). The Group has determined the operating segments
+           based on the information reviewed by the CODM for the purposes of allocating resources and assessing
+           performance. The CODM review the performance from revenue stream prospective including Tower business,
+           DAS business, Smart Tower business and Energy business. However, the CODM does not make the decision
+           related to resource allocation or performance evaluation solely based on the revenue generated from the
+           different business. Rather, the CODM review the Group’s performance and budget as a whole. Therefore, the
+           CODM conclude that the Group has one operating segment.
+
+           Substantially, the Group’s long-lived assets are located in the mainland China and substantially all the Group’s
+           revenue and operating profit are mainly derived from the mainland China during the period.
+
+     5     OPERATING REVENUE
+           The table below summarises the Group’s operating revenue by business types:
+
+                                                                                             Unaudited
+                                                                                      Six months ended 30 June
+                                                                                           2022                   2021
+                                                                                      RMB million            RMB million
+
+
+            Tower business (Note (i))                                                       38,592                 37,722
+            DAS business                                                                     2,753                  2,086
+            Smart Tower business                                                             2,584                  1,853
+            Energy business                                                                  1,426                    884
+            Others                                                                             124                    128
+
+
+                                                                                            45,479                 42,673
+                                                                           Interim Report 2022 CHINA TOWER CORPORATION LIMITED                21
+
+
+
+
+                                                            Notes to Unaudited Interim Condensed Financial Information
+                                                                                              (Expressed in RMB unless otherwise indicated)
+
+
+
+
+5   OPERATING REVENUE (Continued)
+    Note:
+
+
+    (i)     The table below summarises the Group’s Tower business revenue by nature:
+
+
+                                                                                                         Unaudited
+                                                                                                  Six months ended 30 June
+
+                                                                                                      2022                        2021
+                                                                                                 RMB million                 RMB million
+
+
+                Revenue from the provision of Site Space                                               32,813                     32,074
+                Revenue from Services*                                                                  5,779                      5,648
+
+
+                                                                                                       38,592                     37,722
+
+
+            *       Revenue from Services primarily comprises Maintenance services revenue and Power services revenue that are accounted
+                    for under IFRS 15.
+
+
+    (ii)    The Group’s revenue are primarily generated from the Three TSPs and their respective parent companies, named as China
+            Mobile Communications Group Co., Ltd. (“CMCC”), China United Network Communications Group Company Limited (“CUC”)
+            and China Telecommunications Corporation (“CTC”), respectively. CMCC together with China Mobile Company and all
+            their subsidiaries are hereinafter referred to as “CMCC Group”; CUC together with China Unicom Corporation and all their
+            subsidiaries are hereinafter referred to as “CUC Group”; and CTC together with China Telecom and all their subsidiaries are
+            hereinafter referred to as “CTC Group”.
+
+
+            The major customers that contribute more than 10% of the total revenue of the Group are listed as below:
+
+
+                                                                                                         Unaudited
+                                                                                                  Six months ended 30 June
+
+                                                                                                      2022                        2021
+                                                                                                 RMB million                 RMB million
+
+
+                CMCC Group                                                                             21,817                     20,988
+                CTC Group                                                                              10,359                      9,931
+                CUC Group                                                                               9,495                      9,170
+
+
+                                                                                                       41,671                     40,089
+
+
+            For the six months ended 30 June 2022, the revenue generated from above Three TSPs accounted for 91.6% of the total
+            revenue (for the six months ended 30 June 2021: 93.9%).
+22   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     6     EMPLOYEE BENEFITS AND EXPENSES
+                                                                                             Unaudited
+                                                                                      Six months ended 30 June
+                                                                                           2022                  2021
+                                                                                      RMB million           RMB million
+
+
+                 Salaries and welfare                                                       2,838                  2,628
+                 Post-employment benefits (Note (i))                                          461                    410
+                 Contributions to medical insurance                                           260                    253
+                 Contributions to housing fund                                                219                    198
+                 Share incentive expenses (Note 24)                                             –                     85
+
+
+                                                                                            3,778                  3,574
+
+
+           Note:
+
+
+           (i)      Post-employment benefits
+
+
+                                                                                               Unaudited
+                                                                                        Six months ended 30 June
+
+                                                                                             2022                  2021
+                                                                                        RMB million           RMB million
+
+
+                      Post-employment benefits
+                        – Defined benefit obligations                                            2                     3
+                        – Defined contribution obligations                                     459                   407
+
+
+                                                                                               461                   410
+
+
+           Defined benefit obligations
+           As stipulated under a new governmental requirement, starting in 2020, the Group has implemented a new
+           post-employment benefit scheme, covering medical and other benefits, for its employee based in mainland
+           China that retired and to be retired before 2023. An employee benefit obligation amounting to RMB40 million
+           was recognised in the consolidated balance sheet. This obligation is calculated using the projected unit credit
+           method. There is no significant change in key assumptions compared with 2021.
+
+     7     SITE OPERATION AND SUPPORT EXPENSES
+                                                                                             Unaudited
+                                                                                      Six months ended 30 June
+                                                                                           2022                  2021
+                                                                                      RMB million           RMB million
+
+
+                 Site usage expenses                                                          765                    802
+                 Costs of site power supply using diesel oil generation                       739                    738
+                 IT service charge                                                            636                    605
+                 Others                                                                       367                    199
+
+
+                                                                                            2,507                  2,344
+                                                                           Interim Report 2022 CHINA TOWER CORPORATION LIMITED                 23
+
+
+
+
+                                                            Notes to Unaudited Interim Condensed Financial Information
+                                                                                               (Expressed in RMB unless otherwise indicated)
+
+
+
+
+8   OTHER OPERATING EXPENSES
+                                                                                                       Unaudited
+                                                                                                Six months ended 30 June
+                                                                                                     2022                       2021
+                                                                                                RMB million                RMB million
+
+
+          Technical support charges (Note (i))                                                          1,170                        661
+          Losses on write-off/disposal of property and equipment                                          852                        672
+          Credit loss allowance                                                                           363                        258
+          Utilities in business operation (Note (ii))                                                     318                        153
+          Property management expenses and utilities                                                      233                        214
+          Marketing expenses                                                                              222                        177
+          Other taxes and surcharges                                                                      141                        101
+          Cost of goods sold                                                                              132                         73
+          Auditors’ remuneration                                                                            2                          2
+          Others                                                                                          317                        366
+
+
+                                                                                                        3,750                      2,677
+
+
+    Note:
+
+
+    (i)      Technical support charges incurred are mainly for building platforms in Smart Tower business and Energy business, and are paid
+             to third-party service providers while the Group is the primary obligator for providing these services.
+
+
+    (ii)     Utilities in business operation incurred are mainly for providing battery exchange services and battery recharge services in
+             Energy business.
+
+
+9   FINANCE COSTS
+                                                                                                       Unaudited
+                                                                                                Six months ended 30 June
+                                                                                                     2022                       2021
+                                                                                                RMB million                RMB million
+
+
+          Interest expense on borrowings                                                                1,069                      1,308
+          Interest expense on lease liabilities (Note 13)                                                 588                        637
+          Less: Amounts capitalised in construction in progress (Note)                                    (49)                       (70)
+
+
+                                                                                                        1,608                      1,875
+
+
+    Note:
+
+
+    The interest rate range for amounts capitalised in construction in progress for the six months ended 30 June 2022 were 2.89%-3.03%
+    per annum (for the six months ended 30 June 2021: 2.93%-3.09% per annum).
+24   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     10 INCOME TAX EXPENSES
+           The Company and its provincial branches file the PRC enterprise income tax on a consolidated basis. The
+           provision for the PRC enterprise income tax is based on the applicable tax rate on the estimated taxable
+           profits determined in accordance with the relevant enterprise income tax rules and regulations of the PRC.
+
+           Taxation in the statement of comprehensive income represents:
+
+                                                                                                             Unaudited
+                                                                                                      Six months ended 30 June
+                                                                                                           2022                       2021
+                                                                                                      RMB million                RMB million
+
+
+            Current tax
+            Current tax on estimated taxable profits for the period                                           2,048                         646
+
+            Deferred tax
+            Origination of temporary differences                                                                (710)                       455
+
+
+            Income tax expenses                                                                               1,338                      1,101
+
+
+           The tax on the Group’s profit before tax differs from the theoretical amount that would arise using the PRC
+           statutory income tax rate applicable to the Group as follows:
+
+                                                                                                             Unaudited
+                                                                                                      Six months ended 30 June
+                                                                                                           2022                       2021
+                                                                                                      RMB million                RMB million
+
+
+            Profit before taxation                                                                            5,562                      4,558
+            Tax at PRC statutory tax rate of 25%                                                              1,391                      1,140
+            Rate differential of certain provincial branches of the Group
+              (Note)                                                                                             (90)                       (67)
+            Tax effect of non-deductible expenses                                                                 39                         28
+            Others                                                                                                (2)                         –
+
+
+            Income tax expenses                                                                               1,338                      1,101
+
+
+           Note:
+
+
+           The Company’s PRC statutory income tax rate is 25%.
+
+
+           According to the circular of “Continuing to Implement Preferential Corporate Income Tax Policies for Western Development” (Ministry
+           of Finance announcement [2020] No. 23) issued by the Ministry of Finance, the State Administration of Taxation and the National
+           Development and Reform Commission and relevant PRC enterprise income tax regulations, branches that are qualified and located
+           in certain western provinces of mainland China are entitled to a preferential income tax rate of 15%. Certain branches of the Group
+           obtained the approval were entitled to this preferential income tax rate of 15% until the end of 2030.
+
+
+           According to the notice of “Concerning Preferential Enterprise Income Tax Policies of Hainan Free Trade Port” (Caishui [2020] No. 31)
+           issued by the Ministry of Finance and the State Administration of Taxation, Hainan Province branch is entitled to a preferential income
+           tax rate of 15% after obtaining the approval until the end of 2024.
+                                                                        Interim Report 2022 CHINA TOWER CORPORATION LIMITED                25
+
+
+
+
+                                                        Notes to Unaudited Interim Condensed Financial Information
+                                                                                           (Expressed in RMB unless otherwise indicated)
+
+
+
+
+10 INCOME TAX EXPENSES (Continued)
+   Note: (Continued)
+
+
+   According to the circular of “Implementation of Preferential Income Tax Policies for High-tech Enterprises” (The State Administration
+   of Taxation [2017] No. 24) issued by the State Administration of Taxation and relevant PRC enterprise income tax regulations, the
+   Company’s subsidiary Smart Tower Corporation Limited is qualified and entitled to a preferential tax rate of 15% for high-tech
+   enterprises. Smart Tower Corporation Limited obtained the certificate of high-tech enterprises which is valid until 17 December 2024.
+
+
+11 BASIC AND DILUTED EARNINGS PER SHARE
+   (a) Basic
+         Basic earnings per share is calculated by dividing the profit attributable to owners of the Company, by
+         the weighted average number of ordinary shares in issue during the period, while the shares purchased
+         for the restricted share incentive scheme excluded.
+
+                                                                                                    Unaudited
+                                                                                             Six months ended 30 June
+                                                                                                     2022                       2021
+
+
+          Profit attributable to owners of the Company
+            (in RMB million)                                                                         4,224                     3,457
+
+
+          Weighted average number of ordinary shares in issue
+           (million)                                                                             174,812                     174,812
+
+
+          Basic earnings per share (in RMB Yuan)                                                   0.0242                     0.0198
+
+
+         Note:
+
+
+         On 18 April 2019, the shareholders of the Company approved the adoption of a restricted share incentive scheme. For the six
+         months ended 30 June 2022, no share was purchased by the trustee authorised by the Group from the secondary market (Note
+         24) (for the six months ended 30 June 2021: nil).
+
+
+   (b) Diluted
+         Diluted earnings per share is calculated by adjusting the weighted average number of ordinary shares
+         outstanding to assume conversion of all dilutive potential ordinary shares.
+
+         The Group only has one category of potential ordinary shares, that is the shares granted to employee
+         under the restricted share incentive scheme.
+
+         Conditions for unlocking of restricted shares granted are subject to achievement of certain performance
+         conditions and treated as contingently issuable shares. As the conditions of contingency are deemed
+         to have not been met, based on the information available, at the end of the reporting period, as if the
+         end of the reporting period was the end of the contingency period, thus the restricted shares granted to
+         employees were not included in the calculation of diluted earnings per share for the six months ended 30
+         June 2022 and 2021, respectively.
+26   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     12 PROPERTY, PLANT AND EQUIPMENT AND CONSTRUCTION IN PROGRESS
+           (a) Acquisition of property, plant and equipment and construction in progress
+                  During the six months ended 30 June 2022, the Group acquired items of property, plant and equipment
+                  and construction in progress with a cost of RMB8,423 million (for the six months ended 30 June 2021:
+                  RMB10,026 million).
+
+           (b) Write-off/disposal of property, plant and equipment
+                  Property, plant and equipment with a net book value of approximately RMB1,168 million were written off/
+                  disposed during the six months ended 30 June 2022 with RMB852 million write-off/disposal losses (Note
+                  8) (for the six months ended 30 June 2021: approximately RMB691 million with RMB672 million write-off/
+                  disposal losses).
+
+     13 LEASE
+           (i)    The interim condensed consolidated balance sheet shows the following amounts relating to leases:
+
+                                                                                       Unaudited               Audited
+                                                                                    As at 30 June   As at 31 December
+                                                                                             2022                2021
+                                                                                     RMB million           RMB million
+
+
+                   Right-of-use assets
+                     – Sites and premises                                                  30,980                31,706
+                     – Land use rights                                                      1,153                 1,171
+
+
+                                                                                           32,133                32,877
+
+
+                   Lease Liabilities
+                     – Current                                                              6,980                 6,913
+                     – Non-current                                                         15,461                15,677
+
+
+                                                                                           22,441                22,590
+
+
+           (ii)   The interim condensed consolidated statement of comprehensive income shows the following amounts
+                  relating to leases:
+
+                                                                                             Unaudited
+                                                                                      Six months ended 30 June
+                                                                                           2022                 2021
+                                                                                      RMB million          RMB million
+
+
+                   Depreciation charge of right-of-use assets                               5,779                 5,422
+                   Interest expense                                                           588                   637
+                   Expense relating to short-term leases and low-value leases                 697                   712
+                                                                          Interim Report 2022 CHINA TOWER CORPORATION LIMITED                 27
+
+
+
+
+                                                           Notes to Unaudited Interim Condensed Financial Information
+                                                                                              (Expressed in RMB unless otherwise indicated)
+
+
+
+
+14 OTHER NON-CURRENT ASSETS
+                                                                                                Unaudited                    Audited
+                                                                                             As at 30 June        As at 31 December
+                                                                                                      2022                     2021
+                                                                                              RMB million                RMB million
+
+
+        Input VAT recoverable – non-current portion (Note (i))                                              –                     3,521
+        Others (Note (ii))                                                                                534                       497
+
+
+                                                                                                          534                     4,018
+
+
+  Note:
+
+
+  (i)      The Group obtained input VAT from its purchase of assets (i.e. towers, equipment and property) and services that were subject
+           to VAT in the PRC. Input VAT recoverable mainly represents the input VAT carried forward from the acquisition of Tower Assets
+           from Three TSPs in 2015 (see Note 1). The input VAT recoverable can be carried forward indefinitely to set-off future output VAT
+           in following periods according to the relevant VAT regulations of the PRC.
+
+
+           According to the circular of “Expanding the industry scope of full refund of the input VAT“ (The State Administration of
+           Taxation [2022] No. 21) issued by the Ministry of Finance and the State Administration of Taxation, during the six months ended
+           30 June 2022, the Company received RMB5,407 million input VAT refund.
+
+
+   (ii)    Others include purchased software, which are recognised at their initial costs and amortised over their estimated useful lives
+           (generally 5-10 years).
+
+
+15 TRADE AND OTHER RECEIVABLES
+                                                                                                Unaudited                    Audited
+                                                                                             As at 30 June        As at 31 December
+                                                                                                      2022                     2021
+                                                                                              RMB million                RMB million
+
+
+        Trade receivables (Note (a))                                                                  38,453                     30,211
+        Less: Credit loss allowance                                                                   (1,586)                    (1,223)
+
+
+        Trade receivables, net                                                                        36,867                     28,988
+
+
+        Payments on behalf of customers (Note (b)(i))                                                  4,228                      3,827
+        Deposits (Note (b)(ii))                                                                        1,092                      1,378
+        Others                                                                                            70                          2
+        Less: Credit loss allowance                                                                       (1)                        (1)
+
+
+        Other receivables, net                                                                         5,389                      5,206
+
+
+        Trade and other receivables                                                                   42,256                     34,194
+
+
+  As at 30 June 2022 and 31 December 2021, trade and other receivables were primarily denominated in RMB
+  and their carrying amounts approximated their fair values.
+
+  For the six months ended 30 June 2022, no write off in trade receivables (for the six months ended 30 June
+  2021: wrote off approximately RMB2 million).
+28   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     15 TRADE AND OTHER RECEIVABLES (Continued)
+           Note:
+
+
+           (a)     Trade receivables
+                   (i)  Aging analysis of the Group’s gross trade receivables based on the billing, at the respective balance sheet dates are as
+                        follows:
+
+
+                                                                                                          Unaudited                    Audited
+                                                                                                       As at 30 June        As at 31 December
+                                                                                                                2022                     2021
+                                                                                                        RMB million                RMB million
+
+
+                           Up to 3 months                                                                     17,322                     14,218
+                           3 to 6 months                                                                      10,321                      7,127
+                           6 months to 1 year                                                                  7,300                      6,368
+                           1 year to 2 years                                                                   2,639                      1,903
+                           Over 2 years                                                                          871                        595
+
+
+                                                                                                              38,453                     30,211
+
+
+                   (ii)   Trade receivables are analysed by customers:
+
+
+                                                                                                          Unaudited                    Audited
+                                                                                                       As at 30 June        As at 31 December
+                                                                                                                2022                     2021
+                                                                                                        RMB million                RMB million
+
+
+                           CMCC Group                                                                         16,052                     15,090
+                           CTC Group                                                                           9,375                      4,952
+                           CUC Group                                                                           8,722                      6,823
+                           Others                                                                              4,304                      3,346
+
+
+                                                                                                              38,453                     30,211
+
+
+                          Trade receivables primarily comprise receivables from the Three TSPs. Other third-party customers include local
+                          government authorities and public institutions, state-owned companies and other customer groups. Trade receivables
+                          from customers are mainly due for payment within 1-3 months from the date of billing. Customers with balances that
+                          are overdue or exceed credit limits are required to settle all outstanding balances before any further services can be
+                          provided.
+
+
+                          The Group applies the IFRS 9 simplified approach to measuring expected credit losses which uses a lifetime expected
+                          loss allowance for all trade receivables. The expected credit loss of certain customers or relevant groups are based on
+                          current conditions as well as reasonable forecasts of future economic conditions from time to time. Additional credit
+                          loss allowance would be immediately recognised in the profit and loss when there has been a significant increase of the
+                          expected credit losses of corresponding receivables from initial recognition.
+                                                                         Interim Report 2022 CHINA TOWER CORPORATION LIMITED                 29
+
+
+
+
+                                                              Notes to Unaudited Interim Condensed Financial Information
+                                                                                             (Expressed in RMB unless otherwise indicated)
+
+
+
+
+15 TRADE AND OTHER RECEIVABLES (Continued)
+   Note: (Continued)
+
+
+   (b)     Other receivables
+           (i)  Payments on behalf of customers mainly represent the payments made by the Group to their suppliers for certain sites
+                electric power supply charges when the Group provides the services of power access to its customers and acting as an
+                agent. Such customers usually make payment to the Group within 1-3 months. They are considered to be of low credit risk
+                and thus the impairment loss allowance to be recognised are deemed not material. Therefore, no credit loss allowance
+                was made for those other receivables for the six months ended 30 June 2022 (for the six months ended 30 June 2021: nil).
+
+
+           (ii)   Deposits primarily include deposits for site ground lease, office premises lease, and equipment purchase. The carrying
+                  amounts of deposits do not differ significantly from their fair values.
+
+
+16 PREPAYMENTS AND OTHER CURRENT ASSETS
+                                                                                              Unaudited                    Audited
+                                                                                           As at 30 June        As at 31 December
+                                                                                                    2022                     2021
+                                                                                            RMB million                RMB million
+
+
+     Input VAT recoverable – Current portion (Note 14(i))                                             2,893                      6,220
+     Advance prepayments (Note (a))                                                                   1,353                      1,455
+     Others (Note (b))                                                                                   11                          4
+
+
+                                                                                                      4,257                      7,679
+
+
+   Note:
+
+
+   (a)     As at 30 June 2022, advance payments mainly represented prepaid rentals to the lessor for short-term leases and low-value
+           leases under IFRS 16, and prepayment of electric powers charges of certain tower sites.
+
+
+   (b)     Others mainly include inventory such as battery.
+30   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     17 CASH AND CASH EQUIVALENTS
+                                                                                  Unaudited               Audited
+                                                                               As at 30 June   As at 31 December
+                                                                                        2022                2021
+                                                                                RMB million           RMB million
+
+
+            Cash at bank and on hand
+              –RMB                                                                     6,847                6,412
+              –HKD                                                                        50                   49
+              –USD                                                                         9                    9
+              –LAK                                                                         2                    1
+
+
+                                                                                       6,908                6,471
+
+
+     18 SHARE CAPITAL
+           Registered, issued and fully paid:
+
+                                                                  Unaudited                     Audited
+                                                             As at 30 June 2022        As at 31 December 2021
+                                                           Number of                   Number of
+                                                             ordinary                    ordinary
+                                                               shares Share capital         shares Share capital
+                                                             (million) (RMB million)      (million) (RMB million)
+
+
+            At beginning of period/year                      176,008        176,008       176,008        176,008
+
+            At end of period/year (RMB1.00, par value)       176,008        176,008       176,008        176,008
+                                                                        Interim Report 2022 CHINA TOWER CORPORATION LIMITED                31
+
+
+
+
+                                                         Notes to Unaudited Interim Condensed Financial Information
+                                                                                           (Expressed in RMB unless otherwise indicated)
+
+
+
+
+19 DIVIDENDS
+   At the annual general meeting on 11 May 2022, the shareholders of the Company approved the payment of a
+   final dividend of RMB0.02624 per share (equivalent to HKD0.03097 per share) (pre-tax) for the year ended 31
+   December 2021 approximately RMB4,618 million in total.
+
+   As at 8 August 2022, the Board has resolved that no interim dividend is declared for the six months ended 30
+   June 2022.
+
+20 BORROWINGS
+   (a) Borrowings
+                                                                                             Unaudited                   Audited
+                                                                                          As at 30 June       As at 31 December
+                                                                                                   2022                    2021
+                                                                                           RMB million               RMB million
+
+
+             Borrowings:
+             Long-term borrowings (Note (i))
+               – General Borrowings                                                               38,806                      36,533
+               – Preferential Borrowings                                                           4,278                       5,150
+               – Medium-term Notes (Note (iii))                                                    4,103                       4,042
+
+
+             Less: Current portion                                                                (11,277)                     (4,153)
+
+
+             Balance presented in non-current liabilities:                                        35,910                      41,572
+
+
+             Short-term borrowings：
+               Short-term loans (Note (ii))                                                       22,800                      32,650
+               Long-term borrowings – Current portion                                             11,277                       4,153
+               Discounted notes                                                                        –                         339
+
+
+             Balance presented in current liabilities:                                            34,077                      37,142
+
+
+       Note:
+
+
+       (i)      In 2015 and 2016, the Group obtained unsecured long-term RMB denominated loans from China Development Bank via
+                China Development Fund Co., Ltd (the “Preferential Borrowings”) at a preferential interest rate, as the government
+                granted a loan interest subsidy to the Group. The Preferential Borrowings mature in 10 years and are mainly used for
+                telecommunications network and broadband infrastructure improvements in certain rural areas of the PRC.
+
+
+                As at 30 June 2022, the carrying amount of the Preferential Borrowings amounted to RMB4,278 million (31 December
+                2021: RMB5,150 million). The Group initially recognised the Preferential Borrowings at fair value based on the then
+                prevailing borrowing interest rates in the PRC. The interest subsidy was recognised as a government grant and recorded
+                in deferred government grant, which was amortised to the consolidated statement of comprehensive income to match
+                with the related interest expenses.
+
+
+                As at 30 June 2022, the unsecured general long-term bank borrowings (the “General Borrowings”) obtained by the
+                Group has a maturity of 3 years (31 December 2021: 2 to 4 years).
+
+
+                For the six months ended 30 June 2022, the effective interest rates of all long-term borrowings were 2.10% to 3.40% per
+                annum (for the six months ended 30 June 2021: 2.35% to 4.41% per annum).
+32   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     20 BORROWINGS (Continued)
+           (a) Borrowings (Continued)
+                 Note: (Continued)
+
+
+                 (ii)    For the six months ended 30 June 2022, all short-term loans were unsecured, which bear interest rates ranging from 2.50%
+                         to 3.48% per annum (for the six months ended 30 June 2021: from 2.80% to 3.70% per annum).
+
+
+                 (iii)   From time to time, the Group issued medium-term Notes in the China’s Interbank Bond Market to finance working capital
+                         needs. The details of which are shown below：
+
+
+                                                                                                                                      Carrying
+                                                         Principal                                                    Annual      amount as at
+                          Issue Date                      Amount     Paper titles                Period         interest rate    30 June 2022
+                                                     (RMB million)                                                               (RMB million)
+
+
+                          27 August 2021                    2,000    Medium-Term Note 001        3 years              3.05%              2,052
+                          30 August 2021                    2,000    Medium-Term Note 002        3 years              3.07%              2,051
+
+
+                          Total                             4,000                                                                        4,103
+
+
+           (b) The repayment schedule of the borrowings
+                 As at 30 June 2022, borrowings were repayable as follows:
+
+                                                                                                       Unaudited                   Audited
+                                                                                                    As at 30 June       As at 31 December
+                                                                                                             2022                    2021
+                                                                                                     RMB million               RMB million
+
+
+                    Within 1 year                                                                           34,077                     37,142
+                    Between 1 and 2 years                                                                   21,090                     28,356
+                    Between 2 and 5 years                                                                   14,820                     13,216
+
+
+                                                                                                            69,987                     78,714
+
+
+           (c) The carrying amounts and fair values of the long-term borrowings
+                 The carrying values of long-term borrowings approximate their fair values, as the impact of discounting
+                 is not significant. The fair values are based on cash flows discounted using the prevailing market interest
+                 rates as at 30 June 2022 and 31 December 2021. They are within level 3 of the fair value hierarchy.
+                                                           Interim Report 2022 CHINA TOWER CORPORATION LIMITED              33
+
+
+
+
+                                              Notes to Unaudited Interim Condensed Financial Information
+                                                                            (Expressed in RMB unless otherwise indicated)
+
+
+
+
+21 DEFERRED GOVERNMENT GRANTS
+  Deferred government grants mainly represent the government grants obtained by the Group including the
+  interest subsidy associated with the Preferential Borrowings (see Note 20 (a)(i)).
+
+22 ACCOUNTS PAYABLE
+  Accounts payable primarily include payables for construction expenditures, repairs and maintenance and
+  other operation expenditures. Accounts payable are unsecured, non-interest bearing and are repayable
+  in accordance with contractual terms. Accounts payable are primarily denominated in RMB. Their carrying
+  amounts approximate their fair values due to their short-term maturities.
+
+  The aging analysis of accounts payable is based on the invoice date as follows:
+
+                                                                              Unaudited                   Audited
+                                                                           As at 30 June       As at 31 December
+                                                                                    2022                    2021
+                                                                            RMB million               RMB million
+
+
+   Less than 6 months                                                               18,894                     18,204
+   6 months to 1 year                                                                2,391                      2,092
+   More than 1 year                                                                  3,106                      4,968
+
+
+                                                                                    24,391                     25,264
+
+
+23 ACCRUED EXPENSES AND OTHER PAYABLES
+                                                                              Unaudited                   Audited
+                                                                           As at 30 June       As at 31 December
+                                                                                    2022                    2021
+                                                                            RMB million               RMB million
+
+
+   Deposits from vendors                                                             1,721                      1,664
+   Salary and welfare payables                                                       1,608                      1,102
+   Contract liabilities                                                              1,556                      1,388
+   Accrued expenses                                                                    874                      1,087
+   Cash received from Scheme Participants under restricted share
+     incentive scheme (Note 24)                                                        360                        727
+   Interest payable                                                                    127                        146
+   Other tax payables                                                                   90                        228
+
+
+                                                                                     6,336                      6,342
+
+
+  Accrued expenses and other payables are all denominated in RMB. Their carrying amounts approximate their
+  fair values due to their short-term maturities.
+34   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     24 RESTRICTED SHARE INCENTIVES SCHEME
+           At the Company’s annual general meeting held on 18 April 2019, the shareholders of the Company approved
+           the adoption of a restricted share incentive scheme (the “Scheme”), with a duration of 10 years. Pursuant to
+           the Scheme, the Company may grant restricted shares to qualified participants (“Scheme Participants”), and
+           subject to the fulfilment of certain performance conditions and service conditions.
+
+           All shares granted are subject to a lock up period of 24 months commencing from the grant date, followed by
+           an unlocking period of up 1 to 3 years (three tranches in proportion of 40%, 30% and 30% for each 12 months).
+           After unlocking, Scheme Participants will entitle to the related shares (including the dividends declared on the
+           underlying shares granted and vested) provided all of the required performance conditions are met and the
+           Scheme Participants are still in employment with the Company.
+
+           Pursuant to the Scheme, the Board approved the initial grant proposal (the “Initial Grant Proposal”) on 18
+           April 2019. The first tranche of 1,112 million restricted shares were granted on 18 April 2019 by the Board
+           (the “First Grant Date”) at the grant price of RMB1.03 per share. On 19 December 2019 (the “Second Grant
+           Date”), additional 93 million restricted shares were granted at the same grant price of RMB1.03 per share. The
+           fair value of the restricted shares granted on the First Grant Date and the Second Grant Date were determined
+           as RMB0.85 per share and RMB0.53 per share, respectively.
+
+           As of 30 June 2022, total 855 million restricted shares were forfeited, including 829 million restricted shares
+           being forfeited as a result of not meeting a non-market performance condition during the unlocking period
+           occurred in 2020 and 2021, and 26 million restricted shares being forfeited due to certain Scheme Participants
+           having resigned from the Company. During the six months ended 30 June 2022 and 2021, 2 million and 5
+           million restricted shares were forfeited, respectively.
+
+           Movements in number of restricted shares granted and related fair value are as follows:
+
+                                                                                   Unaudited
+                                                                            Six months ended 30 June
+                                                                       2022                             2021
+                                                              Weighted      Number of          Weighted      Number of
+                                                               Average      Restricted          Average      Restricted
+                                                              Fair Value       Shares          Fair Value       Shares
+                                                             (per share)      Granted         (per share)      Granted
+                                                            (RMB Yuan)        (Million)      (RMB Yuan)        (Million)
+
+
+            At the beginning of the period                          0.82             352             0.82             713
+            Granted during the period                                  –               –                –               –
+            Forfeited during the period                             0.81              (2)            0.83              (5)
+
+
+            At the end of the period                                0.82             350             0.82             708
+
+
+           For the six months ended 30 June 2022, no share-based compensation expense was recognised as a result
+           of not expecting to meet a non-market performance condition during the future unlocking period stipulated
+           under the Scheme.
+
+           As instructed by the Board, a Trustee is appointed to acquire certain number of H shares from the secondary
+           market for the Scheme, and the purchased shares will be held by the Trustee until such shares are unlocked
+           in accordance with the provisions of the Scheme. Upon unlocking, the Trustee will transfer the shares to the
+           employees. If the performance conditions or service conditions are not fulfilled and the corresponding tranche
+           of shares granted to be vested during the year cannot be unlocked, the grant price paid by the Scheme
+           Participants will be repaid to the Scheme Participants in accordance with relevant laws and regulations.
+                                                               Interim Report 2022 CHINA TOWER CORPORATION LIMITED             35
+
+
+
+
+                                                Notes to Unaudited Interim Condensed Financial Information
+                                                                               (Expressed in RMB unless otherwise indicated)
+
+
+
+
+24 RESTRICTED SHARE INCENTIVES SCHEME (Continued)
+   Shares held by the Trustee under restricted share incentive scheme are shown below:
+
+                                                      Unaudited                                Audited
+                                                As at 30 June 2022                    As at 31 December 2021
+                                                                    Shares                                   Shares
+                                                               held under                               held under
+                                                                restricted                               restricted
+                                              Number of              share            Number of               share
+                                               restricted        incentive             restricted         incentive
+                                                   shares          scheme                  shares           scheme
+                                                 (million)   (RMB million)               (million)    (RMB million)
+
+
+    Shares held under restricted share
+      incentive scheme                                 1,196           1,954                 1,196                 1,954
+
+
+   During the six months ended 30 June 2022, the Company returned the cash of RMB367 million to Scheme
+   Participants (for the six months ended 30 June 2021: RMB3 million). As at 30 June 2022, the Company has
+   received in cash from Scheme Participants under the Scheme with a balance of RMB360 million, which were
+   recorded under “Accrued expenses and other payables” (31 December 2021: RMB727 million).
+
+25 CONTINGENCIES
+   As at 30 June 2022 and 31 December 2021, the Group had no material contingencies.
+
+26 COMMITMENTS
+   (a) Capital commitments
+       As at 30 June 2022 and 31 December 2021, the Group had capital commitments for construction
+       expenditures and acquisition of properties as follows:
+
+                                                                                Unaudited                    Audited
+                                                                             As at 30 June        As at 31 December
+                                                                                      2022                     2021
+                                                                              RMB million                RMB million
+
+
+         Authorised but not contracted for:
+
+         No later than 1 year                                                                 –                         –
+         Later than 1 year and no later than 5 years                                          –                         –
+
+
+                                                                                              –                         –
+
+
+         Authorised and contracted for:
+
+         No later than 1 year                                                           1,654                      1,883
+         Later than 1 year and no later than 5 years                                        –                          –
+
+
+                                                                                        1,654                      1,883
+36   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     26 COMMITMENTS (Continued)
+           (b) Non-cancellable operating leases
+                 As at 30 June 2022, the Group had future aggregate minimum lease receivable under non-cancellable
+                 operating leases (as lessor) during the leasing period (5 years) amounting to approximately RMB33,208
+                 million (31 December 2021: RMB66,968 million).
+
+                 From 1 January 2019, the Group has recognised right-of-use assets for leases, except for short-term
+                 leases and low-value leases. Minimum lease payments under non-cancellable leases related to short-term
+                 and low-value leases not recognised in the financial statements are as follows:
+
+                                                                                     Unaudited                Audited
+                                                                                  As at 30 June    As at 31 December
+                                                                                           2022                 2021
+                                                                                   RMB million            RMB million
+
+
+                   No later than 1 year                                                     626                   647
+
+
+                                                                                            626                   647
+
+
+     27 RELATED PARTY TRANSACTIONS
+           The Company is a joint stock company with limited liability established in the PRC. As at 30 June 2022, the
+           Company’s main shareholders are China Mobile Company, China Unicom Corporation and China Telecom.
+           The parent companies of the Three TSPs are CMCC, CUC and CTC, respectively, which are state-owned
+           enterprises ultimately controlled by the PRC government. As a result, CMCC, CUC and CTC, the Three TSPs
+           and their subsidiaries are all considered as the Group’s related parties.
+                                                                         Interim Report 2022 CHINA TOWER CORPORATION LIMITED                 37
+
+
+
+
+                                                         Notes to Unaudited Interim Condensed Financial Information
+                                                                                             (Expressed in RMB unless otherwise indicated)
+
+
+
+
+27 RELATED PARTY TRANSACTIONS (Continued)
+   (a) Significant transactions with related parties
+                                                                                                     Unaudited
+                                                                                              Six months ended 30 June
+                                                                                                   2022                       2021
+                                                                                              RMB million                RMB million
+
+
+         Provision of Tower business, DAS and other services (i)                                    41,671                      40,089
+         Purchases of various goods and services (ii)                                                2,698                       2,720
+         Rental charges for property and site ground lease (iii)                                       180                         190
+         Payments on behalf of related parties (iv)                                                 13,905                      13,185
+         Short-term borrowings and interests (v)
+           – Principals                                                                                    –                          –
+           – Interests                                                                                    44                         44
+
+
+       Note:
+
+
+       (i)     Provision of Tower business, DAS and other services
+               The provisions of the Tower business, DAS and other services are mainly based on the agreed terms in the Commercial
+               Pricing Agreements and supplemental agreements signed by the Company and the Three TSPs, and set out in the
+               individual site service agreements between the provincial branches of the Company and the provincial subsidiaries/
+               branches of the Three TSPs. The prices are determined on a cost-plus margin basis, adjusted for different elements
+               including tenancy co-sharing discount, area adjustment rate for different provincial standard construction costs and
+               related operation costs.
+
+
+               For the six months ended 30 June 2022, based on the mutual agreement reached with each of the Three TSPs, for the
+               Tower business, the co-location discount policy that had been applied prior to the year of 2022 for the existing sharing
+               parties under the Commercial Pricing Agreements and related supplemental agreements continued to be applied.
+
+
+               Besides, the Group also provides Smart Tower business, Energy business and other services to CMCC Group, CUC Group
+               and CTC Group, respectively.
+
+
+       (ii)    Purchases of various goods and services
+               The Group purchases certain equipment, engineering design services, construction and supervision services, maintenance
+               services, communications and IT services from CMCC Group, CUC Group and CTC Group. The transaction prices are
+               mainly determined in accordance with relevant market price or cost-plus basis if no market price or the market price
+               cannot be properly determined.
+
+
+       (iii)   Rental charges for property and site ground lease
+               The Group leases certain properties, site ground and warehouses from CMCC Group, CUC Group and CTC Group. On
+               the adoption of IFRS 16, the Group recognises right-of-use assets and lease liabilities for leases in the balance sheet,
+               except for short-term leases and low-value leases.
+
+
+               For the six months ended 30 June 2022, rental charges for property and site ground lease include short-term leases and
+               low-value leases charges for use of property and site ground, the depreciation of the right-of-use assets, and the finance
+               cost associated with the lease liabilities in relation to the aforementioned leasing arrangements with CMCC Group, CUC
+               Group and CTC Group.
+
+
+       (iv)    Payments on behalf of related parties
+               As mentioned in Note 15 (b)(i), the Group paid certain sites electric power charges to electricity power companies or third
+               parties, on behalf of the Three TSPs.
+
+
+       (v)     Short-term borrowings and interests
+               The Group obtained the short-term borrowings from China Mobile Group Finance Co., Ltd. (a subsidiary of China Mobile
+               Company). These borrowings are unsecured, with interest rates determined by benchmarking to the financial institution’s
+               one-year lending rate announced by the People’s Bank of China. These short-term borrowings have a maturity of 12
+               months.
+38   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Notes to Unaudited Interim Condensed Financial Information
+     (Expressed in RMB unless otherwise indicated)
+
+
+
+
+     27 RELATED PARTY TRANSACTIONS (Continued)
+           (b) Balances with related parties
+                 (i)   Amount due from related parties
+                                                                                        Unaudited                Audited
+                                                                                     As at 30 June    As at 31 December
+                                                                                              2022                 2021
+                                                                                      RMB million            RMB million
+
+
+                         Trade and other receivables                                        38,376                 30,267
+                         Prepayments and other current assets                                  135                    139
+                         Right-of-use assets                                                   396                    417
+
+
+                 (ii) Amount due to related parties
+                                                                                        Unaudited                Audited
+                                                                                     As at 30 June    As at 31 December
+                                                                                              2022                 2021
+                                                                                      RMB million            RMB million
+
+
+                         Accounts payable                                                     3,307                 3,501
+                         Accrued expenses and other payables                                    372                   350
+                         Lease liabilities                                                      612                   582
+
+
+                       Except for lease liabilities, the balances of amount due from/to related parties are unsecured, non-
+                       interest bearing and repayable on demand.
+
+                 (iii) Short-term borrowings from related parties
+                       The balances of short-term borrowings from related parties (non-trade) was RMB2,500 million at
+                       30 June 2022 (31 December 2021: RMB2,500 million), arising from the short-term borrowings from
+                       certain related parties as described in Note 27 (a)(v).
+
+           (c) Transactions with other state-owned entities in the PRC
+                 The Group operates in an economic regime currently dominated by entities directly or indirectly
+                 controlled by the PRC government through government authorities, agencies, affiliations and other
+                 organization (collectively referred to as “government-related entities”). Apart from transactions with
+                 CMCC Group, CUC Group and CTC Group (Note 27 (a)), the Group has significant transactions with other
+                 government-related entities, which include but not limited to the following:
+
+                 •     provisioning of smart tower services
+                 •     rendering or receiving other services, such as construction services, logistics, transportation and
+                       maintenance services, etc.
+                 •     purchasing of goods and services, including use of public utilities
+                 •     placing of bank deposits, obtaining bank borrowings
+                 •     leasing of office buildings or tower sites
+
+                 These transactions are conducted in the ordinary course of the Group’s business on terms comparable
+                 with the terms of transactions with other entities that are not government-related. The Group prices its
+                 services and products with the counterparties based on commercial negotiations. The Group has also
+                 established its procurement policies and approval processes for purchases of products and services,
+                 which do not depend on whether the counterparties are government-related entities or not.
+                                                             Interim Report 2022 CHINA TOWER CORPORATION LIMITED             39
+
+
+
+
+                                                Notes to Unaudited Interim Condensed Financial Information
+                                                                             (Expressed in RMB unless otherwise indicated)
+
+
+
+
+28 FAIR VALUE ESTIMATION
+   As at 30 June 2022, the Group had no financial assets and financial liabilities measured at fair value. The
+   financial assets and financial liabilities that are not carrying at fair values mainly include trade and other
+   receivables, accounts payable, other payables and borrowings. The Group measures these financial assets
+   and financial liabilities at amortised cost. As at 30 June 2022, the Group considered that their carrying values
+   approximate fair values due to the short maturity of the instruments and/or they are bearing interests at
+   market rates.
+40   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     OTHER INFORMATION
+
+
+     PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S SECURITIES
+     Neither the Company nor any of its subsidiaries purchased, sold or redeemed any of the Company’s listed
+     securities for the six months ended 30 June 2022.
+
+     CHANGE OF INFORMATION OF DIRECTORS AND SUPERVISORS
+     The Company held the 2022 first extraordinary general meeting on 14 January 2022 to elect members of the
+     third session of the board of the Company (the “Board”) and the third session of the supervisory committee
+     of the Company (the “Supervisory Committee”). For members of the Board, Mr. Fan Cheng and Mr. Tse
+     Yung Hoi no longer served as independent non-executive directors of the Company (the “Director(s)”);
+     Mr. Zhang Zhiyong and Mr. Gu Xiaomin were re-elected as executive Directors; Mr. Gao Tongqing and Mr.
+     Mai Yanzhou were re-elected as non-executive Directors; Mr. Deng Shiji was re-elected as an independent
+     non-executive Director; Mr. Liu Guiqing was elected as a non-executive Director; Mr. Zhang Guohou and
+     Mr. Hu Zhanghong were elected as independent non-executive Directors. With regard to members of the
+     Supervisory Committee, Ms. Gao Lingling and Mr. Sui Yixun no longer served as supervisors of the Company
+     (the “Supervisor(s)”); Mr. Li Zhangting and Ms. Li Tienan were re-elected as shareholder representative
+     Supervisors; Mr. Liu Wei and Ms. Han Fang were elected as shareholder representative Supervisors.
+
+     Mr. Zhang Zhiyong and Ms. Fan Xiaoqing were appointed as the chairman of the third session of the Board
+     and the chairman of the third session of the Supervisory Committee on 18 January 2022, respectively.
+     On the same day, the Company also adjusted the composition of Board committees. Please refer to the
+     announcement of the Company dated 18 January 2022 for details on change in the composition of Board
+     committees.
+
+     Mr. Gao Chunlei was elected as an executive Director on 11 May 2022. His term of office will end on the date
+     of the expiration of the third session of the Board. Please refer to the announcements of the Company dated
+     9 March 2022, 19 April 2022 and 11 May 2022 for biographical details of Mr. Gao Chunlei.
+
+     Mr. Mai Yanzhou has resigned from his positions as a non-executive Director, a member of the strategy
+     committee of the Board and the remuneration and appraisal committee of the Board with effect from 30 May
+     2022 due to change in work arrangement.
+
+     Change of information of Directors and Supervisors since the publication of the Company’s 2021 annual
+     report and the announcement of the Company dated 30 May 2022 is set out below:
+
+     •   Mr. Liu Guiqing, a non-executive Director, was appointed as the general counsel of China
+         Telecommunications Corporation, and was also appointed as an executive director and the chairman
+         of China Communications Services Corporation Limited (listed on The Stock Exchange of Hong Kong
+         Limited (the “Hong Kong Stock Exchange”) with the stock code: 0552) on 17 June 2022.
+
+     •   Mr. Hu Zhanghong, an independent non-executive Director, has resigned from his position as an
+         independent non-executive director of Towngas Smart Energy Company Limited (listed on the Hong
+         Kong Stock Exchange with the stock code: 1083, previously known as Towngas China Company Limited)
+         with effect from 9 March 2022.
+
+     Save as stated above, there is no other information of the Directors or Supervisors required to be disclosed
+     pursuant to Rule 13.51B(1) of the Rules Governing the Listing of Securities on The Stock Exchange of Hong
+     Kong Limited (the “Listing Rules”).
+
+     The biographical details of the Directors and Supervisors are available on the website of the Company
+     (www.china-tower.com).
+                                                            Interim Report 2022 CHINA TOWER CORPORATION LIMITED   41
+
+
+
+
+                                                                                            Other Information
+
+
+
+
+RESTRICTED SHARE INCENTIVE SCHEME
+In order to further improve the corporate governance structure of the Company, and to establish and
+develop a long-term incentive mechanism, upon the approval of the Company’s 2018 annual general meeting
+held on 18 April 2019 (the “2018 AGM”), the Company adopted the “China Tower Corporation Limited
+First Phase Restricted Share Incentive Scheme” (the “Restricted Share Incentive Scheme”). The Restricted
+Share Incentive Scheme participants (the “Scheme Participants”) are the Directors, senior management of
+the Company and core technical and management personnel contributing directly to the overall business
+performance and sustainable development of the Company. On 18 April 2019, the Board approved the
+initial grant (the “Initial Grant”) of restricted shares (the “Restricted Shares”) under the Restricted Share
+Incentive Scheme, and approved the first tranche of Initial Grant (the “First Tranche of Grant”) and the
+second tranche of Initial Grant (the “Second Tranche of Grant”) on 18 April 2019 and 19 December 2019,
+respectively. For details, please refer to the announcement and circular of the Company both dated 4 March
+2019, the announcement of the Company on poll results of the 2018 AGM and announcement of the Initial
+Grant under the Restricted Share Incentive Scheme both dated 18 April 2019, and the announcement of the
+Company on the Second Tranche of Grant dated 19 December 2019, in relation to (inter alia) (i) the adoption
+of the Restricted Share Incentive Scheme and the Administrative Measures on the Restricted Share Incentive
+Scheme; (ii) the authorization to the Board to implement the Restricted Share Incentive Scheme and grant
+Restricted Shares under the Restricted Share Incentive Scheme from time to time; and (iii) the Initial Grant
+under the Restricted Share Incentive Scheme, including the First Tranche of Grant and the Second Tranche
+of Grant.
+
+In addition, according to the price adjustment mechanism of the Restricted Share Incentive Scheme, the
+grant price of the Initial Grant shall be adjusted based on the final dividend of RMB0.00225 per Share for the
+year 2018, and rounding to two decimal places, the grant price after such adjustment maintained at RMB1.03
+per Restricted Share.
+
+The Restricted Shares granted under the First Tranche of Grant and the Second Tranche of Grant under the
+Initial Grant entered the first unlocking period in 2021. As the operating revenue of the Group for the year of
+2020 did not reach the target set out in the conditions for unlocking the Restricted Shares, such conditions
+for unlocking were not fulfilled and therefore the relevant Restricted Shares cannot be unlocked according
+to the terms and conditions of the Restricted Share Incentive Scheme. The interests of relevant Scheme
+Participants in such Restricted Shares have been bought out by the trustee or other third parties at the grant
+price in accordance with the terms of the Restricted Share Incentive Scheme and the laws and regulations.
+
+The Restricted Shares granted under the First Tranche of Grant and the Second Tranche of Grant under
+the Initial Grant entered the second unlocking period in 2022. As the operating revenue of the Group for
+the year of 2021 did not reach the target set out in the conditions for unlocking the Restricted Shares, such
+conditions for unlocking were not fulfilled and therefore the relevant Restricted Share cannot be unlocked
+according to the terms and conditions of the Restricted Share Incentive Scheme. The interests of relevant
+Scheme Participants in such Restricted Shares have been bought out by the trustee or other third parties
+at the grant price in accordance with the terms of the Restricted Share Incentive Scheme and the laws and
+regulations. Details of the financial impact of the Restricted Shares are set out in note 24 to the unaudited
+interim condensed financial information.
+
+The Restricted Share Incentive Scheme is a discretionary scheme of the Company and does not constitute a
+share option scheme under Chapter 17 of the Listing Rules.
+42   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Other Information
+
+
+
+
+     DIRECTORS’, SUPERVISORS’ AND CHIEF EXECUTIVE’S INTERESTS AND SHORT
+     POSITIONS IN SHARES, UNDERLYING SHARES AND DEBENTURES OF THE
+     COMPANY
+     Save as described below, as at 30 June 2022, none of the Directors, Supervisors and chief executive of
+     the Company had any interests and/or short positions in the shares, underlying shares or debentures of
+     the Company or its associated corporations (within the meaning of Part XV of the Securities and Futures
+     Ordinance (the “SFO”)) which will have to be notified to the Company and the Hong Kong Stock Exchange
+     pursuant to Divisions 7 and 8 of Part XV of the SFO (including interests or short positions which he or she is
+     taken or deemed to have under such provisions of the SFO) or which will be required, pursuant to Section
+     352 of the SFO, to be entered in the register referred to therein, or will be required, pursuant to the Model
+     Code for Securities Transactions by Directors of Listed Issuers set out in Appendix 10 to the Listing Rules, to
+     be notified to the Company and the Hong Kong Stock Exchange.
+
+                                                                                               Percentage of         Percentage of
+       Name of the                                                                              shares in the          shares in the
+       Directors,                                                                              relevant class           total shares
+       Supervisors and                                     Class of            Number of of shares of the            in issue of the
+       chief executive           Nature of interest        shares          shares held (1) (2)     Company                 Company
+
+
+       Gu Xiaomin                Beneficiary of a trust    H shares              465,000 (L)              0.00%                0.00%
+       Gao Chunlei               Beneficiary of a trust    H shares              465,000 (L)              0.00%                0.00%
+
+     Notes:
+
+     (1)   (L) – Long position
+
+     (2)   These represent the number of the Restricted Shares which were granted to the above-mentioned persons by the Company.
+           Please see “Restricted Share Incentive Scheme” above for details.
+
+           In May 2019, Mr. Gu Xiaomin and Mr. Gao Chunlei both accepted 1,550,000 Restricted Shares, respectively, granted by the
+           Company in April 2019 under the Initial Grant of the Restricted Share Incentive Scheme. In addition, the spouse of Mr. Li
+           Zhangting, a Supervisor, held 550,000 Restricted Shares granted by the Company under the Initial Grant of the Restricted
+           Share Incentive Scheme. The trustee of the Restricted Share Incentive Scheme completed the purchase of shares from the
+           secondary market in May 2020, but these shares cannot be traded in the lock-up period. For details, please refer to the
+           announcement and circular of the Company both dated 4 March 2019, and the announcement of the Company on poll results
+           of the 2018 AGM and announcement of the Initial Grant both dated 18 April 2019, in relation to (inter alia) (i) the adoption
+           of the Restricted Share Incentive Scheme and the Administrative Measures on the Restricted Share Incentive Scheme; (ii)
+           the authorization to the Board to implement the Restricted Share Incentive Scheme and grant Restricted Shares under the
+           Restricted Share Incentive Scheme from time to time; and (iii) the Initial Grant.
+
+           As disclosed above, the Restricted Shares granted under the Initial Grant failed to be unlocked for the first and the second
+           unlocking periods. The interests of relevant Scheme Participants in such Restricted Shares have been bought out by the
+           trustee or other third parties at the grant price in accordance with the terms of the Restricted Share Incentive Scheme and
+           the laws and regulations, including the interests of 70% of the Restricted Shares granted to each of Mr. Gu Xiaomin, Mr. Gao
+           Chunlei and the spouse of Mr. Li Zhangting. As at 30 June 2022, Mr. Gu Xiaomin, Mr. Gao Chunlei and the spouse of Mr. Li
+           Zhangting held 465,000, 465,000 and 165,000 Restricted Shares, respectively.
+
+
+     Save as described above, as at 30 June 2022, the Company has not granted the Directors, the Supervisors
+     or chief executive of the Company, or their respective spouses or children below the age of 18 any rights to
+     subscribe for the shares or debentures of the Company or any of its associated corporations and none of
+     them has ever exercised any such right to subscribe for the shares or debentures of the Company.
+                                                          Interim Report 2022 CHINA TOWER CORPORATION LIMITED      43
+
+
+
+
+                                                                                            Other Information
+
+
+
+
+MATERIAL INTERESTS AND SHORT POSITIONS IN SHARES AND UNDERLYING
+SHARES OF THE COMPANY
+As at 30 June 2022, the interests or short position of persons who are entitled to exercise or control the
+exercise of 5% or more of the voting power at any of the Company’s general meetings (excluding the
+Directors and Supervisors) in the shares or underlying shares of equity derivatives of the Company as
+recorded in the register required to be maintained under Section 336 of the provisions of Division 6 of Part
+XV of the SFO are as follows:
+
+                                                                              Percentage of     Percentage of
+                                                                                shares in the     shares in the
+                                                                              relevant class       total shares
+                           Nature of          Class of         Number of         of shares of        in issue of
+ Name of shareholder       interest           shares         shares held(1)    the Company       the Company
+
+
+ China Mobile              Interest held      Domestic   49,150,953,709 (L)          38.00%             27.93%
+   Communications             by controlled    shares
+   Group Co., Ltd. (中國        corporations
+   移動通信集團有限公司)
+   (“CMCC”)(2)
+
+ China Mobile (Hong Kong) Interest held       Domestic   49,150,953,709 (L)          38.00%             27.93%
+   Group Limited             by controlled     shares
+   (中國移動（香港）集團               corporations
+   有限公司)(2)
+
+ China Mobile Hong Kong    Interest held      Domestic   49,150,953,709 (L)          38.00%             27.93%
+   (BVI) Limited (中國移動        by controlled    shares
+   香港(BVI)有限公司)(2)            corporations
+
+ China Mobile Limited (中 Interest held        Domestic   49,150,953,709 (L)          38.00%             27.93%
+   國移動有限公司) (“China         by controlled      shares
+   Mobile”)(2)              corporations
+
+ China Mobile              Interest held      Domestic   49,150,953,709 (L)          38.00%             27.93%
+   Communication (BVI)        by controlled    shares
+   Limited (中國移動通信            corporations
+   (BVI)有限公司)(2)
+44   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Other Information
+
+
+
+
+                                                                                   Percentage of     Percentage of
+                                                                                     shares in the     shares in the
+                                                                                   relevant class       total shares
+                                Nature of          Class of         Number of         of shares of        in issue of
+      Name of shareholder       interest           shares         shares held(1)    the Company       the Company
+
+
+      China Mobile              Legal and          Domestic   49,150,953,709 (L)          38.00%             27.93%
+        Communication             beneficial        shares
+        Company Limited           owner
+        (中國移動通信
+        有限公司) (“China
+        Mobile Company”)(2)
+
+      China United Network   Interest held         Domestic   36,345,836,822 (L)          28.10%             20.65%
+        Communications Group    by controlled       shares
+        Company Limited         corporations
+        (中國聯合網絡通信集團
+        有限公司) (“CUC”)(3)
+
+      China United Network Interest held           Domestic   36,345,836,822 (L)          28.10%             20.65%
+        Communications        by controlled         shares
+        Limited (中國聯合網絡通      corporations
+        信股份有限公司) (“China
+        Unicom A Share
+        Company”)(3)
+
+      China Unicom Group        Interest held      Domestic   36,345,836,822 (L)          28.10%             20.65%
+        Corporation (BVI)          by controlled    shares
+        Limited (中國聯通集團            corporations
+        (BVI)有限公司)(3)
+
+      China Unicom (BVI)        Interest held      Domestic   36,345,836,822 (L)          28.10%             20.65%
+        Limited (中國聯通(BVI)         by controlled    shares
+        有限公司)(3)                   corporations
+                                                        Interim Report 2022 CHINA TOWER CORPORATION LIMITED      45
+
+
+
+
+                                                                                          Other Information
+
+
+
+
+                                                                            Percentage of     Percentage of
+                                                                              shares in the     shares in the
+                                                                            relevant class       total shares
+                         Nature of          Class of         Number of         of shares of        in issue of
+Name of shareholder      interest           shares         shares held(1)    the Company       the Company
+
+
+China Unicom (Hong       Interest held      Domestic   36,345,836,822 (L)          28.10%             20.65%
+  Kong) Limited (中國         by controlled    shares
+  聯合網絡通信（香港）                corporations
+  股份有限公司) (“China
+  Unicom”)(3)
+
+China United Network     Legal and          Domestic   36,345,836,822 (L)          28.10%             20.65%
+  Communications           beneficial        shares
+  Corporation Limited      owner
+  (中國聯合網絡通信有限
+  公司) (“China Unicom
+  Corporation”)(3)
+
+China                    Interest held      Domestic   36,087,147,592 (L)          27.90%             20.50%
+  Telecommunications        by controlled    shares
+  Corporation               corporations
+  (中國電信集團有限公司)
+  (“CTC”)(4)
+
+China Telecom            Legal and          Domestic   36,087,147,592 (L)          27.90%             20.50%
+  Corporation Limited      beneficial        shares
+  (中國電信股份有限公司)             owner
+  (“China Telecom”)(4)
+
+China Reform Holdings    Legal and          Domestic    7,760,676,901 (L)            6.00%             4.41%
+  Corporation Ltd. (中國     beneficial        shares
+  國新控股有限責任公司)              owner/
+  (“China Reform”)(5)      Interest held
+                           by controlled
+                           corporations
+46   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Other Information
+
+
+
+
+                                                                                                    Percentage of     Percentage of
+                                                                                                      shares in the     shares in the
+                                                                                                    relevant class       total shares
+                                       Nature of             Class of                Number of         of shares of        in issue of
+       Name of shareholder             interest              shares                shares held(1)    the Company       the Company
+
+
+       Citigroup Inc.                  Interest held         H shares           3,879,417,314 (L)            8.31%             2.20%
+                                          by controlled                           115,348,846 (S)            0.24%             0.07%
+                                          corporations/                         3,762,664,887 (P)            8.06%             2.14%
+                                          Approved
+                                          lending agent
+
+       GIC Private Limited             Investment            H shares           3,275,058,000 (L)            7.02%             1.86%
+                                         manager
+
+       BlackRock, Inc.                 Interest held         H shares           2,750,852,649 (L)            5.90%             1.56%
+                                          by controlled                           158,286,000 (S)            0.34%             0.09%
+                                          corporations
+
+     Notes:
+
+     (1)   (L) – Long position; (S) – Short position; (P) – Interest in a lending pool
+
+     (2)   By virtue of the SFO, each of CMCC, China Mobile (Hong Kong) Group Limited, China Mobile Hong Kong (BVI) Limited,
+           China Mobile Communication (BVI) Limited and China Mobile is deemed to have an interest in the Shares held by China
+           Mobile Company.
+
+     (3)   By virtue of the SFO, each of CUC, China Unicom A Share Company, China Unicom (BVI) Limited, China Unicom Group
+           Corporation (BVI) Limited and China Unicom is deemed to have an interest in the shares held by China Unicom Corporation.
+
+     (4)   By virtue of the SFO, CTC is deemed to have an interest in the shares held by China Telecom.
+
+     (5)   China Reform directly holds 4,000,676,901 domestic shares, and 3,760,000,000 domestic shares are held through its wholly-
+           owned subsidiary, Beijing Davo Qihang Management Consulting Services Co., Ltd. (北京達沃啟航管理諮詢服務有限公司).
+
+
+     Save as disclosed above, as at 30 June 2022, in the register required to be maintained under Section 336 of
+     the SFO, no other persons were recorded to hold any interests or short positions in the shares or underlying
+     shares of equity derivatives of the Company.
+
+     AUDIT COMMITTEE
+     The audit committee, together with the Company’s management, reviewed the accounting principles and
+     practices adopted by the Company and discussed financial reporting matters including the review of the
+     Company’s unaudited interim condensed financial information for the six months ended 30 June 2022.
+
+     COMPLIANCE WITH THE CORPORATE GOVERNANCE CODE
+     The Company is committed to maintaining a high standard of corporate governance. For the six months
+     ended 30 June 2022, the Company had complied with the code provisions set out in the Corporate
+     Governance Code (the “Corporate Governance Code”) as contained in Appendix 14 to the Listing Rules.
+                                                          Interim Report 2022 CHINA TOWER CORPORATION LIMITED   47
+
+
+
+
+                                                                                         Other Information
+
+
+
+
+COMPLIANCE WITH THE LISTING RULES
+On 30 September 2021, Mr. Tong Jilu (“Mr. Tong”) has resigned from his positions as an executive Director,
+the chairman of the Board and the chairman of the strategy committee of the Board (the “Strategy
+Committee”) and the nomination committee of the Board (the “Nomination Committee”) by reason of
+age. Following Mr. Tong’s resignation, the Company did not comply with Rule 3.27A of the Listing Rules
+which provides that the nomination committee should be chaired by the chairman of the board or an
+independent non-executive director. On the same date, Mr. Zhang Zhiyong ceased to be a member of the
+audit committee of the Board (the “Audit Committee”). Following Mr. Zhang’s cessation as a member of the
+Audit Committee, the Company did not comply with Rule 3.21 of the Listing Rules which provides that the
+audit committee shall comprise a minimum of three members.
+
+On 14 January 2022, (i) Mr. Fan Cheng (“Mr. Fan”) no longer served as an independent non-executive
+Director, the chairman of Audit Committee and a member of remuneration and appraisal committee of the
+Board (the “Remuneration and Appraisal Committee”) and the Nomination Committee; and (ii) Mr. Tse
+Yung Hoi (“Mr. Tse”) no longer served as an independent non-executive Director and a member of the
+Nomination Committee and the Audit Committee. Following Mr. Fan’s and Mr. Tse’s cessation as directors
+and chairman/members of the relevant Board committees, the Company did not comply with (a) Rule 3.21 of
+the Listing Rules; (b) Rule 3.25 of the Listing Rules which provides that the remuneration committee must be
+chaired by an independent non-executive director and comprising a majority of independent non-executive
+directors; and (c) Rule 3.27A of the Listing Rules which provides that the nomination committee should be
+chaired by the chairman of the board or an independent non-executive director and comprising a majority of
+independent non-executive directors.
+
+On 9 March 2022, Ms. Chu Ka Yee (“Ms. Chu”) has resigned from her positions including the company
+secretary of the Company (the “Company Secretary”). Following Ms. Chu’s cessation as the Company
+Secretary, the Company did not comply with Rule 3.28 of the Listing Rules.
+
+On 30 September 2021, Mr. Zhang Zhiyong was re-designated from a non-executive Director to an executive
+Director and was appointed as the chairman of the Board. On 18 January 2022, the composition of relevant
+Board committees has been adjusted as follows: (i) the Nomination Committee comprises Mr. Zhang Zhiyong
+as chairman and Mr. Gao Tongqing, Mr. Zhang Guohou, Mr. Deng Shiji and Mr. Hu Zhanghong as members;
+(ii) the Audit Committee comprises Mr. Zhang Guohou as chairman and Mr. Liu Guiqing, Mr. Deng Shiji
+and Mr. Hu Zhanghong as members; and (iii) the Remuneration and Appraisal Committee comprises Mr.
+Deng Shiji as chairman and Mr. Mai Yanzhou (resigned on 30 May 2022), Mr. Zhang Guohou, and Mr. Hu
+Zhanghong as members. On 8 August 2022, Ms. Leung Suet Wing has been appointed as the Company
+Secretary. After these adjustments, the Company has re-complied with the relevant requirements under Rules
+3.21, 3.25, 3.27A and 3.28 of the Listing Rules, respectively.
+
+COMPLIANCE WITH THE MODEL CODE
+The Company has adopted the Code of Conduct for Securities Transactions by the Directors, Supervisors
+and Relevant Employees of China Tower Corporation Limited (the “Company Code”) which is substantially
+based on the Model Code for Securities Transactions by Directors of Listed Issuers (the “Model Code”) set
+out in Appendix 10 to the Listing Rules and is on terms no less exacting than those in the Model Code.
+
+The Company has made specific enquiries to all Directors and Supervisors, and all Directors and Supervisors
+have confirmed that they have complied with the Company Code and the Model Code during the six months
+ended 30 June 2022.
+48   CHINA TOWER CORPORATION LIMITED Interim Report 2022
+
+
+
+
+     Other Information
+
+
+
+
+     CONTINGENT LIABILITIES
+     As at 30 June 2022, the Company had no contingent liabilities.
+
+     MATERIAL LEGAL PROCEEDINGS
+     For the six months ended 30 June 2022, the Company was not involved in any material litigation or
+     arbitration, and as far as the Company is aware, no material litigation or claims were pending or threatened
+     or made against the Company.
+
+     COMPLIANCE WITH APPENDIX 16 TO THE LISTING RULES
+     According to paragraph 40 of Appendix 16 to the Listing Rules headed “Disclosure of Financial Information”,
+     save as disclosed herein, the Company confirms that the Company’s current information in relation to those
+     matters set out in paragraph 32 of Appendix 16 has not been changed materially from the information
+     disclosed in the Company’s 2021 annual report.
+
+     FORWARD LOOKING STATEMENTS
+     The performance and the results of the operations of the Company contained in this 2022 interim report are
+     historical in nature, and past performance is no guarantee of the future results of the Company. Any forward-
+     looking statements and opinions contained within this 2022 interim report are based on current plans,
+     estimates and projections, and therefore involve risks and uncertainties. Actual results may differ materially
+     from expectations discussed in such forward-looking statements and opinions. The Company, the Directors
+     and the employees of the Company assume (a) no obligation to correct or update the forward-looking
+     statements or opinions contained in this 2022 interim report; and (b) no liability in the event that any of the
+     forward-looking statements or opinions do not materialise or turn out to be incorrect.
+

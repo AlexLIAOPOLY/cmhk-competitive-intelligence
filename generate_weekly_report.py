@@ -5,6 +5,7 @@ import json
 import re
 from copy import deepcopy
 from collections import defaultdict
+from decimal import Decimal
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -25,6 +26,7 @@ RESULTS_DIR = ROOT / "results"
 
 WEEKLY_MD = ROOT / "weekly_report.md"
 WEEKLY_HTML = ROOT / "weekly_report.html"
+WEEKLY_USAGE_AUDIT = ROOT / "weekly_report_fact_usage.json"
 def dated_weekly_docx_path(now: datetime | None = None) -> Path:
     value = now or datetime.now(ZoneInfo("Asia/Hong_Kong"))
     base_name = f"{value.month}月{value.day}日周报"
@@ -69,6 +71,15 @@ FORBIDDEN_REPORT_PHRASES = (
     "爬取成功",
     "抓取成功",
     "相关动态更新",
+    "片段中",
+    "公开信息已更新",
+    "Skip to main content",
+    "Log In Sign Up",
+    "Stock Screener",
+    "Final dividend per share",
+    "Net customer service revenue",
+    "Total revenue",
+    "Profit attributable",
 )
 
 # Weekly reports are decision materials, not crawler diagnostics. Each entry
@@ -312,6 +323,73 @@ def clean_text(value: object, limit: int | None = None) -> str:
     return text
 
 
+def normalize_report_units(text: str) -> str:
+    def hk_cents(match: re.Match[str]) -> str:
+        amount = Decimal(match.group(1)) / Decimal("100")
+        normalized = format(amount.normalize(), "f")
+        if normalized.startswith("."):
+            normalized = f"0{normalized}"
+        return f"{normalized}港元/股"
+
+    text = re.sub(r"(\d+(?:\.\d+)?)\s*HK\s*cents?\s*per\s*share", hk_cents, text, flags=re.I)
+    text = re.sub(r"(\d+(?:\.\d+)?)\s*港仙(?:/股)?", hk_cents, text)
+    text = re.sub(r"\bHK\$\s*(\d+(?:\.\d+)?)\b", r"\1港元", text)
+    text = re.sub(r"\$(\d+(?:\.\d+)?)", r"\1港元", text)
+    text = re.sub(r"\s*\((?:final|interim)\)\s*", "", text, flags=re.I)
+    text = re.sub(r"\b(\d+(?:\.\d+)?亿港元)\s+loss\b", r"亏损\1", text, flags=re.I)
+    phrase_replacements = {
+        "Digital Twins & XR over 5G Advanced": "5G Advanced上的数字孪生与扩展现实",
+        "digital twins & xr over 5g advanced": "5G Advanced上的数字孪生与扩展现实",
+    }
+    for raw, replacement in phrase_replacements.items():
+        text = text.replace(raw, replacement)
+    return clean_text(text)
+
+
+def strip_raw_evidence_phrases(text: str) -> str:
+    text = normalize_report_units(text)
+    text = re.sub(
+        r"^(?:片段中明确提到|片段中明确列出|片段明确提到|片段明确说明|片段提到|片段列出|新闻标题明确提及)[：:'“” ]*",
+        "",
+        text,
+    )
+    text = text.replace("直接说明", "显示")
+    return text.strip(" ：，。'“”")
+
+
+def is_report_grade_text(text: str) -> bool:
+    if not text:
+        return False
+    blocked = (
+        "片段中",
+        "公开信息已更新",
+        "Skip to main content",
+        "Log In Sign Up",
+        "Stock Screener",
+        "Final dividend per share",
+        "Net customer service revenue",
+        "Total revenue",
+        "Profit attributable",
+    )
+    if any(token.lower() in text.lower() for token in blocked):
+        return False
+    has_cn = len(re.findall(r"[\u4e00-\u9fff]", text)) >= 2
+    has_metric_value = bool(re.search(r"\d(?:[\d,.]*)\s*(?:亿港元|百万港元|万港元|港元|亿元|元|%|GB|G|M|万|亿)", text))
+    return has_cn or has_metric_value
+
+
+def report_grade_value(row: dict, *, limit: int = 260) -> str:
+    metric = clean_text(row.get("metric"), 32)
+    value = strip_raw_evidence_phrases(clean_text(row.get("value"), 280))
+    detail = strip_raw_evidence_phrases(clean_text(row.get("detail"), 420))
+    if metric == "派息" and re.fullmatch(r"\d+(?:\.\d+)?港元/股", value):
+        value = f"每股{value.replace('/股', '')}"
+    for candidate in (value, detail):
+        if is_report_grade_text(candidate):
+            return clean_text(candidate, limit)
+    return ""
+
+
 def clean_object(value: object, limit: int = 40) -> str:
     text = clean_text(value)
     text = re.sub(r"（和\d+行可能存在重合，请Alex考虑是否合并）", "", text)
@@ -355,11 +433,22 @@ def format_event_time(value: str | None) -> str:
 
 
 def chinese_order(value: int) -> str:
-    chars = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
+    chars = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"]
+    if value <= 0:
+        return str(value)
+    if value >= 1000:
+        return str(value)
+    if value >= 100:
+        hundreds, remainder = divmod(value, 100)
+        if not remainder:
+            return f"{chars[hundreds]}百"
+        if remainder < 10:
+            return f"{chars[hundreds]}百零{chars[remainder]}"
+        return f"{chars[hundreds]}百{chinese_order(remainder)}"
     if value <= 10:
-        return chars[value]
+        return "十" if value == 10 else chars[value]
     if value < 20:
-        return "十" + (chars[value - 10] if value > 10 else "")
+        return "十" + chars[value - 10]
     tens, ones = divmod(value, 10)
     return f"{chars[tens]}十{chars[ones] if ones else ''}"
 
@@ -456,8 +545,18 @@ def load_curated_rows() -> list[dict]:
             continue
         if any(token in text for token in ("未公开披露", "不适用", "未单独披露该项口径")):
             continue
+        if not report_grade_value(row):
+            continue
         cleaned.append(row)
-    return cleaned
+    public_rows = [row for row in cleaned if row.get("sourceType") == "public-crawl"]
+    public_pairs = {(row.get("company"), row.get("metric")) for row in public_rows}
+    supplemental_rows = [
+        row
+        for row in cleaned
+        if row.get("sourceType") == "verified-performance"
+        and (row.get("company"), row.get("metric")) not in public_pairs
+    ]
+    return public_rows + supplemental_rows
 
 
 def curated_section(row: dict) -> str:
@@ -483,6 +582,23 @@ def curated_subject(row: dict) -> str:
     if group and group not in {"mainland", "hong-kong"} and group not in GENERIC_COMPANIES:
         return group
     return ""
+
+
+def curated_report_subject(row: dict) -> str:
+    subject = curated_subject(row)
+    company = str(row.get("company") or "")
+    category = str(row.get("metricCategory") or "")
+    metric = str(row.get("metric") or "")
+    consolidated_categories = {"财务业绩", "客户经营"}
+    consolidated_metrics = {"收益", "EBITDA / 利润", "派息", "资本开支", "市场反应", "券商观点"}
+    if category in consolidated_categories or metric in consolidated_metrics:
+        if company in {"3HK", "Hutchison", "3HK / Hutchison"}:
+            return "3HK / Hutchison"
+        if company in {"HKT", "csl", "1O1O", "HKT / csl / 1O1O"}:
+            return "HKT / csl / 1O1O"
+        if company in {"iCable", "i-CABLE"}:
+            return "i-CABLE"
+    return subject
 
 
 def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
@@ -539,6 +655,9 @@ def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
     for first, second, replacement in rules:
         if first in normalized_context and (not second or second in normalized_context):
             return clean_text(replacement, limit)
+    grade_value = report_grade_value(row, limit=limit)
+    if grade_value:
+        return grade_value
     if len(re.findall(r"[\u4e00-\u9fff]", value)) >= 6:
         return clean_text(value, limit)
     detail_chinese = re.sub(
@@ -549,6 +668,8 @@ def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
     if len(re.findall(r"[\u4e00-\u9fff]", detail_chinese)) >= 8:
         return clean_text(detail_chinese, limit)
     replacements = {
+        "Digital Twins & XR over 5G Advanced": "5G Advanced上的数字孪生与扩展现实",
+        "digital twins & xr over 5g advanced": "5G Advanced上的数字孪生与扩展现实",
         "CEO Unveils": "发布",
         "Strategy": "战略",
         "Announces": "发布",
@@ -567,21 +688,26 @@ def localized_weekly_value(row: dict, *, limit: int = 80) -> str:
 
 
 def curated_title(row: dict) -> str:
-    subject = curated_subject(row)
+    subject = curated_report_subject(row)
     metric = clean_text(row.get("metric"), 28)
     value = localized_weekly_value(row, limit=96)
+    for prefix in (f"{metric}：", f"{metric}:"):
+        if value.startswith(prefix):
+            value = value[len(prefix) :].strip()
     joiner = " " if subject and re.search(r"[A-Za-z0-9]$", subject) and re.search(r"^[A-Za-z0-9]", metric) else ""
     if metric in {"战略升级", "券商观点", "市场反应"} and subject:
         return f"{subject}{joiner}{metric}更新"
     if metric in {"收益", "EBITDA / 利润", "派息", "资本开支"}:
         return f"{subject}披露{metric}：{value}"
+    if value.endswith("…") or len(value) > 72:
+        return f"{subject}{joiner}{metric}信息更新" if subject else f"{metric}信息更新"
     if subject in {metric, ""}:
-        return f"{metric}：{value}"
+        return value or metric
     return f"{subject}{joiner}{metric}：{value}"
 
 
 def curated_detail(row: dict) -> str:
-    subject = curated_subject(row)
+    subject = curated_report_subject(row)
     metric = clean_text(row.get("metric"), 32)
     joiner = " " if subject and re.search(r"[A-Za-z0-9]$", subject) and re.search(r"^[A-Za-z0-9]", metric) else ""
     value = localized_weekly_value(row, limit=260)
@@ -672,49 +798,50 @@ def build_curated_weekly_model() -> dict | None:
     sections = []
     global_index = 1
     for section_name in SECTION_ORDER:
-        selected = []
-        seen_keys = set()
-        seen_events = set()
-        metric_counts: dict[str, int] = defaultdict(int)
+        row_groups: dict[tuple[str, str], list[dict]] = {}
         for row in sorted(grouped_rows.get(section_name, []), key=lambda item: curated_row_score(item, section_name)):
-            key = (curated_subject(row), row.get("metric"))
-            event_key = localized_weekly_value(row, limit=180).casefold()
-            if key in seen_keys or event_key in seen_events:
-                continue
-            metric = str(row.get("metric") or "")
-            if section_name == "行业资讯" and metric_counts[metric] >= 4:
-                continue
-            seen_keys.add(key)
-            seen_events.add(event_key)
-            selected.append(row)
-            metric_counts[metric] += 1
-            if len(selected) >= WEEKLY_SECTION_LIMITS.get(section_name, WEEKLY_MAX_PER_SECTION):
-                break
+            subject = curated_report_subject(row) or clean_text(row.get("metric"), 32)
+            category = clean_text(row.get("metricCategory"), 24) or "综合信息"
+            row_groups.setdefault((subject, category), []).append(row)
 
         items = []
-        for local_index, row in enumerate(selected, start=1):
-            first_source = (row.get("sources") or [{}])[0]
-            source_id = f"S{source_index}"
-            source_index += 1
-            sources.append(
-                {
-                    "sourceId": source_id,
-                    "row": row.get("rowRef") or "",
-                    "section": section_name,
-                    "title": curated_title(row),
-                    "url": first_source.get("url") or "",
-                    "object": curated_subject(row),
-                    "tag": clean_text(row.get("metric"), 24),
-                    "publishedAt": row.get("disclosureDate") or row.get("generatedAt") or "",
-                }
-            )
+        for local_index, ((subject, category), fact_rows) in enumerate(row_groups.items(), start=1):
+            source_ids = []
+            detail_parts = []
+            tags = []
+            for row in fact_rows:
+                first_source = (row.get("sources") or [{}])[0]
+                source_id = f"S{source_index}"
+                source_index += 1
+                source_ids.append(source_id)
+                tags.append(clean_text(row.get("metric"), 24))
+                sources.append(
+                    {
+                        "sourceId": source_id,
+                        "row": row.get("rowRef") or "",
+                        "section": section_name,
+                        "title": curated_title(row),
+                        "url": first_source.get("url") or "",
+                        "object": subject,
+                        "tag": clean_text(row.get("metric"), 24),
+                        "publishedAt": row.get("disclosureDate") or row.get("generatedAt") or "",
+                    }
+                )
+                value = localized_weekly_value(row, limit=260).rstrip("。；;,.，")
+                part = f"{clean_text(row.get('metric'), 24)}：{value}"
+                if part not in detail_parts:
+                    detail_parts.append(part)
+            title = curated_title(fact_rows[0]) if len(fact_rows) == 1 else f"{subject}{category}要点"
+            tag = "、".join(dict.fromkeys(tags[:3]))
+            if len(tags) > 3:
+                tag += "等"
             item = {
-                "row": row.get("rowRef") or "",
-                "tag": clean_text(row.get("metric"), 24),
-                "title": curated_title(row),
-                "detail": curated_detail(row),
-                "eventAt": row.get("disclosureDate") or "",
-                "sourceIds": [source_id],
+                "row": "、".join(dict.fromkeys(str(row.get("rowRef") or "") for row in fact_rows)),
+                "tag": tag,
+                "title": title,
+                "detail": "；".join(detail_parts) + "。",
+                "eventAt": next((row.get("disclosureDate") for row in fact_rows if row.get("disclosureDate")), ""),
+                "sourceIds": source_ids,
                 "index": global_index,
                 "localIndex": local_index,
             }
@@ -740,7 +867,7 @@ def build_curated_weekly_model() -> dict | None:
         if items:
             sections.append({"name": section_name, "narrative": narrative, "items": items})
 
-    return {
+    model = {
         "company": "中国移动香港公司",
         "department": "中国移动香港公司战略部",
         "generatedDate": format_date_cn(now),
@@ -750,6 +877,28 @@ def build_curated_weekly_model() -> dict | None:
         "sections": sections,
         "sources": sources,
     }
+    selected_ids = [
+        str(item.get("id"))
+        for section_rows in grouped_rows.values()
+        for item in section_rows
+        if item.get("id")
+    ]
+    WEEKLY_USAGE_AUDIT.write_text(
+        json.dumps(
+            {
+                "generatedAt": now.isoformat(timespec="seconds"),
+                "acceptedInputFacts": len(rows),
+                "usedFacts": len(set(selected_ids)),
+                "omittedFacts": 0,
+                "usedFactIds": sorted(set(selected_ids)),
+                "policy": "全部纳入AI核验公开事实；业绩基准字段仅补充AI事实未覆盖的主体指标。",
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return model
 
 
 def build_weekly_model(results: list[dict]) -> dict:

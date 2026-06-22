@@ -1,0 +1,169 @@
+     Management Discussion and Analysis
+
+     Financial Performance Summary
+                                                                         2024          2023
+                                                                   HK$ million    HK$ million      Change
+      Revenue                                                           4,782          4,896          -2%
+      Net customer service revenue                                      3,561          3,531          +1%
+          Local service revenue                                         2,877          3,005          -4%
+          Roaming service revenue                                         684            526         +30%
+      Hardware and other product revenue                                1,221          1,365         -11%
+      Net customer service margin                                       3,050          3,046            –
+        Net customer service margin %                                    86%            86%             –
+      Standalone hardware and other product sales margin                   21             25         -16%
+      Total margin                                                      3,071          3,071             -
+          – CACs                                                         (416)          (482)        +14%
+          – Less: Bundled sales revenue                                   244            312         -22%
+      CACs (net of hardware and other product revenue)                    (172)         (170)          -1%
+      Operating expenses                                                (1,430)       (1,506)         +5%
+        Operating expenses as a % of net customer service margin          47%            49%    +2% points
+      Share of EBITDA of a joint venture                                    53            62         -15%
+      EBITDA (1)                                                        1,522          1,457         +4%
+      Service EBITDA (1)                                                1,501          1,432         +5%
+        Service EBITDA (1) margin %                                      42%            41%     +1% point
+      CAPEX (excluding telecommunications licences)                      (434)          (481)        +10%
+      EBITDA (1) less CAPEX                                             1,088            976         +11%
+      Depreciation and amortisation (3)                                 (1,530)       (1,526)            -
+      LBIT (2)                                                              (8)          (69)        +88%
+      Service LBIT (2)                                                     (29)          (94)        +69%
+      Net interest and other finance income (3)                             98           101          -3%
+      Profit before taxation                                                90            32        +181%
+      Taxation (3)                                                         (84)          (84)           -
+      Profit/(loss) attributable to shareholders                             6           (52)       +112%
+
+
+
+
+18   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                                                                                           Management Discussion and Analysis
+
+
+
+
+Notes:
+
+(1)      EBITDA represents the EBITDA of the Company and subsidiary companies as well as the Group’s share of the EBITDA of a joint venture. EBITDA is defined as earnings
+         before net interest and other finance income, taxation, depreciation and amortisation. Information concerning EBITDA has been included in the Group’s financial
+         information and is used by many industries and investors as one measure of gross cash flow generation. The Group considers EBITDA to be an important performance
+         measure which is used in the Group’s internal financial and management reporting to monitor business performance. EBITDA is not a measure of cash liquidity or
+         financial performance under IFRS Accounting Standards and the EBITDA measures used by the Group may not be comparable to other similarly titled measures of other
+         companies. EBITDA should not necessarily be construed as an alternative to cash flows or results from operations as determined in accordance with IFRS
+         Accounting Standards.
+
+(2)      (LBIT)/EBIT represents the (LBIT)/EBIT of the Company and subsidiary companies as well as the Group’s share of the EBIT of a joint venture. (LBIT)/EBIT is defined as losses
+         or earnings before net interest and other finance income and taxation. Information concerning (LBIT)/EBIT has been included in the Group’s financial information and
+         is used by many industries and investors as one measure of results from operations. The Group considers (LBIT)/EBIT to be an important performance measure which
+         is used in the Group’s internal financial and management reporting to monitor business performance. (LBIT)/EBIT is not a measure of financial performance under IFRS
+         Accounting Standards and the (LBIT)/EBIT measures used by the Group may not be comparable to other similarly titled measures of other companies. (LBIT)/EBIT should
+         not necessarily be construed as an alternative to results from operations as determined in accordance with IFRS Accounting Standards.
+
+(3)      Depreciation and amortisation, net interest and other finance income and taxation include the Group’s share of joint venture’s respective items.
+
+
+
+
+                                                                                                                                                                 2024 Annual Report     19
+     Management Discussion and Analysis
+
+
+
+
+     Review of Financial Results
+     The Group’s service revenue increased by 1% to HK$3,561 million during 2024, mainly due to a 30% increase in roaming service
+     revenue from the sustained enthusiasm for international travel. Roaming service revenue represented 19% of the Group’s total
+     service revenue, in line with pre-pandemic levels. Local service revenue was HK$2,877 million compared to HK$3,005 million in
+     2023, reflecting the continued competitive landscape, especially in the value-driven segment.
+
+     Hardware revenue remained subdued in 2024, resulting in a HK$114 million or 2% decrease in the Group’s total revenue to
+     HK$4,782 million. Total margin remained stable at HK$3,071 million driven by an improvement in net customer service margin.
+
+     Operating expenses dropped by HK$76 million or 5% to HK$1,430 million (2023: HK$1,506 million), mainly driven by rigorous cost
+     management and successful cost saving initiatives.
+
+     EBITDA increased by HK$65 million or 4% year-on-year to HK$1,522 million (2023: HK$1,457 million), mainly attributable to the
+     aforementioned lower operating expenses.
+
+     LBIT of HK$8 million for 2024 significantly improved by HK$61 million or 88% compared to 2023, with an encouraging EBIT
+     recorded in the second half, mainly attributable to the aforesaid improvement in EBITDA and stabilised depreciation and
+     amortisation expenses. The Group reported net interest income of HK$98 million for 2024 compared to HK$101 million in 2023.
+
+     With the aforesaid improvements, the Group’s profit attributable to shareholders was HK$6 million and earnings per share was
+     0.12 HK cents, a 112% improvement compared to 2023.
+
+     Key Performance Indicators
+                                                                                2024                    2023                 Change
+      Number of postpaid customers (‘000)                                      1,423                   1,463                    -3%
+      Number of prepaid customers (‘000)                                       3,217                   2,500                   +29%
+
+      Total customers (‘000)                                                   4,640                   3,963                   +17%
+      Postpaid customers to total customer base (%)                              31%                     37%             -6% points
+      Postpaid customers’ contribution to net customer
+        service revenue (%)                                                     82%                     86%              -4% points
+      Monthly churn rate of postpaid customers (%)                              1.0%                    1.0%                      –
+      Postpaid gross ARPU (HK$)                                                  184                     190                     -3%
+      Postpaid net ARPU (HK$)                                                    170                     174                     -2%
+      Postpaid net AMPU (HK$)                                                    148                     152                     -3%
+
+     As at 31 December 2024, the Group’s customer base reached approximately 4.6 million, a 17% increase compared to approximately
+     4.0 million at the end of 2023. This was primarily attributable to robust growth in the Group’s prepaid customer base. The Group’s
+     5G penetration rate rose 8% points to 54% compared to 2023 as a result of extensive promotion of 5G subscription services.
+     The monthly churn rate of postpaid customers remained steady at 1.0% (2023: 1.0%) due to the Group’s substantial efforts in
+     implementing effective customer engagement initiatives and retention strategies.
+
+
+
+
+20   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                                                                                    Management Discussion and Analysis
+
+
+
+
+Net Interest and Other Finance Income
+Net interest and other finance income (with share of a joint venture) amounted to HK$98 million in 2024 (2023: HK$101 million),
+with overall bank interest income remained stable at HK$181 million.
+
+The Group maintained a healthy financial position with cash and bank balances of HK$3,679 million as of 31 December 2024 (2023:
+HK$3,684 million).
+
+Capital Expenditure
+Capital expenditure on property, plant and equipment, which accounted for 12% (2023: 14%) of the service revenue of the Group,
+decreased by 10% to HK$434 million as a result of completion of major 5G network enhancement projects. The Group enforces
+rigorous cost discipline in capital expenditures, ensuring meticulous investment evaluation and optimal resource allocation to meet
+operational, technological and strategic objectives.
+
+Summary of Spectrum Investment as of 31 December 2024
+                                                                               Spectrum band                      Bandwidth                    Year of expiry
+      Hong Kong                                                                     700 MHz                         20 MHz                           2037
+                                                                                    900 MHz                         10 MHz                           2026 (1)
+                                                                                    900 MHz                         10 MHz                           2036
+                                                                                     1.8 GHz                        30 MHz                           2036
+                                                                                     2.1 GHz                       29.6 MHz                          2031
+                                                                                     2.3 GHz                        30 MHz                           2027 (1)
+                                                                                     2.6 GHz                        20 MHz (2)(3)                    2028 (3)
+                                                                                     2.6 GHz                        10 MHz (2)                       2039
+                                                                                     3.3 GHz                        30 MHz                           2034
+                                                                                     3.5 GHz                        40 MHz                           2035
+                                                                                     26 GHz                        600 MHz (4)                       2034
+      Macau                                                                         900 MHz                          10 MHz                          2025
+                                                                                     1.8 GHz                         20 MHz                          2028
+                                                                                     2.1 GHz                         10 MHz                          2025
+
+Notes:
+
+(1)      After the spectrum auction in 2024, the Group will hold 10 MHz spectrum at the 900 MHz band from 2026 to 2041 and 20 MHz spectrum at the 2.3 GHz band from
+         2027 to 2042 upon the expiry of the existing licences.
+
+(2)      The spectrum band was shared under a 50/50 joint venture – Genius Brand Limited.
+
+(3)      One of the 10 MHz spectrums at the 2.6 GHz band was transferred from another joint venture partner to the joint venture with the assignment period from March 2024
+         to March 2028. Upon the expiry of such assignment of spectrum in March 2028, the same joint venture partner will transfer another 10 MHz spectrum at the 2.6 GHz
+         band to the joint venture with the assignment period from March 2028 to March 2039.
+
+(4)      In June 2024, the Group was successfully assigned 600 MHz spectrum at the 26 GHz band for a period from August 2024 to April 2034.
+
+
+
+
+                                                                                                                                                        2024 Annual Report    21
+

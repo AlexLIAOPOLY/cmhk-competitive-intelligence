@@ -1,0 +1,1267 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the
+contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability
+whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement.
+
+
+
+
+                                                    HKT Trust
+      (a trust constituted on November 7, 2011 under the laws of Hong Kong and managed by HKT Management Limited)
+
+                                                            and
+                                                  HKT Limited
+                                  (incorporated in the Cayman Islands with limited liability)
+                                                   (Stock Code: 6823)
+
+                   ANNUAL RESULTS ANNOUNCEMENT
+                 FOR THE YEAR ENDED DECEMBER 31, 2017
+The directors of HKT Management Limited (the “Trustee-Manager”, in its capacity as the trustee-manager
+of the HKT Trust) and HKT Limited (the “Company” or “HKT”) are pleased to announce the audited
+consolidated results of the HKT Trust and of the Company together with the Company’s subsidiaries
+(collectively the “Group”) for the year ended December 31, 2017.
+
+
+       Total revenue (excluding Mobile handset sales) increased by 2% to HK$30,898 million; Total
+        revenue decreased by 2% to HK$33,258 million
+
+       Total EBITDA increased by 2% to HK$12,997 million
+
+       Profit attributable to holders of Share Stapled Units increased by 4% to HK$5,097 million;
+        basic earnings per Share Stapled Unit was 67.34 HK cents
+
+       Adjusted funds flow for the year increased by 5% to HK$4,912 million; adjusted funds flow per
+        Share Stapled Unit was 64.87 HK cents
+
+       Final distribution per Share Stapled Unit of 36.75 HK cents
+
+
+
+
+                                                                                                                            1
+MANAGEMENT REVIEW
+
+We are pleased to report that HKT delivered a solid set of financial results for the year ended
+December 31, 2017, reflecting the resilience of all of our lines of business as well as continued operating
+efficiency improvements, despite intense industry competition throughout the year.
+
+Total revenue for the year ended December 31, 2017 decreased by 2% to HK$33,258 million due to the
+lower revenue contribution from Mobile handset sales. Excluding Mobile handset sales, underlying revenue
+for the year increased by 2% to HK$30,898 million, as compared to HK$30,422 million a year earlier.
+
+Total EBITDA for the year was HK$12,997 million, an increase of 2% over the previous year, which was
+underpinned by operating efficiency improvements in both the Mobile and Telecommunications Services
+(“TSS”) businesses.
+
+Profit attributable to holders of Share Stapled Units was HK$5,097 million, an increase of 4% over the
+previous year. Basic earnings per Share Stapled Unit was 67.34 HK cents.
+
+Adjusted funds flow for the year ended December 31, 2017 reached HK$4,912 million, an increase of 5%
+over the previous year. Adjusted funds flow per Share Stapled Unit3 was 64.87 HK cents, rising also by 5%
+over the previous year.
+
+The board of directors of the Trustee-Manager has recommended the payment of a final distribution of
+36.75 HK cents per Share Stapled Unit for the year ended December 31, 2017. This brings the 2017 full-year
+distribution to 64.87 HK cents per Share Stapled Unit (comprising 28.12 HK cents as interim and
+36.75 HK cents as final distribution) representing the full payout of the annual adjusted funds flow per Share
+Stapled Unit.
+
+OUTLOOK
+
+HKT has in the past year clearly demonstrated its operational resilience and ability to fend off aggressive
+price competition. While we will continue to be competitive on price, we will continue to innovate and
+provide the best customer experience, which we believe is the only key to sustainable business growth.
+
+In particular, we will further develop our fiber network advantages for customer acquisition and upgrades,
+and offer mobile communications services, deployed on our fiber backbone, that are second to none. We
+will continue to groom our new businesses such as mobile payment for more organic growth of the
+Company in the future.
+
+We are cognizant that the telecom market is likely to see further bouts of competitive behavior. As the
+leading operator in Hong Kong, and with a team dedicated to delivering the best products and services, we
+are confident that HKT will continue to be regarded by consumers and businesses as their most trustworthy
+telecom partner and we will continue to provide competitive services on a value-for-money basis.
+
+
+
+
+                                                                                                            2
+FINANCIAL REVIEW BY SEGMENT
+
+For the year ended December 31,                     2016                       2017               Better/
+HK$ million                                                                                      (Worse)
+                                                               Full                       Full
+                                              H1       H2     Year       H1       H2     Year      y-o-y
+
+Revenue
+TSS                                        10,308 11,106     21,414   10,324   11,517   21,841        2%
+Mobile                                      6,335  6,728     13,063    5,614    6,404   12,018      (8)%
+ - Mobile Services                          4,558    5,080    9,638    4,587    5,071    9,658         –
+ - Handset Sales                            1,777    1,648    3,425    1,027    1,333    2,360     (31)%
+Other Businesses                              118    119        237      125      124      249        5%
+Eliminations                                (373)  (494)      (867)    (414)    (436)    (850)        2%
+Total revenue                              16,388 17,459     33,847   15,649   17,609   33,258      (2)%
+
+Cost of sales                              (6,973) (7,472) (14,445) (6,508) (7,653) (14,161)         2%
+
+Gross Margin                                 57%     57%       57%      58%      57%      57%
+
+Operating costs before depreciation,
+ amortization, and gain/(loss) on
+ disposal of property, plant and
+ equipment and intangible assets, net      (3,550) (3,168) (6,718) (3,173) (2,927) (6,100)           9%
+
+EBITDA1
+TSS                                         3,681    3,990    7,671    3,720    4,096    7,816       2%
+Mobile                                      2,439    3,074    5,513    2,504    3,253    5,757       4%
+ - Mobile Services                          2,425    3,014    5,439    2,485    3,203    5,688        5%
+ - Handset Sales                               14       60       74       19       50       69      (7)%
+Other Businesses                            (255)    (245)    (500)    (256)    (320)    (576)    (15)%
+Total EBITDA1                               5,865    6,819   12,684    5,968    7,029   12,997       2%
+
+TSS EBITDA1 Margin                           36%     36%       36%      36%      36%      36%
+Mobile EBITDA1 Margin                        39%     46%       42%      45%      51%      48%
+ - Mobile Services EBITDA1 Margin            53%      59%      56%      54%      63%      59%
+ - Handset Sales EBITDA1 Margin               1%       4%       2%       2%       4%       3%
+Total EBITDA1 Margin                         36%     39%       37%      38%      40%      39%
+
+Depreciation and amortization              (2,827) (2,981) (5,808) (2,838) (2,847) (5,685)           2%
+Gain/(loss) on disposal of property,
+ plant and equipment and intangible
+ assets, net                                    2        1       3       (1)        –     (1)       NA
+Other gains/(losses), net                       9     (60)    (51)       (2)    (143)   (145)    (184)%
+Finance costs, net                          (483)    (624) (1,107)     (522)    (554) (1,076)        3%
+Share of results of associates and joint
+ ventures                                     (8)     (15)     (23)       7      (17)     (10)      57%
+
+Profit before income tax                    2,558    3,140    5,698    2,612    3,468    6,080       7%
+
+
+
+
+                                                                                                       3
+ADJUSTED FUNDS FLOW
+For the year ended December 31,                     2016                        2017                Better/
+HK$ million                                                                                        (Worse)
+                                                               Full                         Full
+                                              H1       H2     Year        H1       H2      Year      y-o-y
+
+Total EBITDA1                               5,865    6,819   12,684    5,968     7,029    12,997       2%
+
+Less cash outflows in respect of:
+ Customer acquisition costs and
+   licence fees                           (1,381) (2,078) (3,459) (1,510) (2,200) (3,710)             (7)%
+ Capital expenditures6                    (1,472) (1,363) (2,835) (1,302) (1,300) (2,602)               8%
+
+Adjusted funds flow before tax
+ paid, net finance costs paid and
+ changes in working capital                 3,012    3,378    6,390    3,156     3,529     6,685       5%
+
+Adjusted for:
+ Tax payment                                 (81)    (470)    (551)     (141)    (570)     (711)    (29)%
+ Net finance costs paid                     (414)    (370)    (784)     (418)    (412)     (830)     (6)%
+ Changes in working capital                 (466)       94    (372)     (468)      236     (232)      38%
+
+Adjusted funds flow2                        2,051    2,632    4,683    2,129     2,783     4,912       5%
+
+Annual adjusted funds flow per
+ Share Stapled Unit (HK cents)3                               61.85                        64.87
+
+
+KEY OPERATING DRIVERS4
+                                                                2016               2017          Better/
+                                                                                                (Worse)
+                                                               H1        H2        H1        H2   y-o-y
+
+Exchange lines in service (’000)                             2,650     2,648     2,645     2,638         –
+   Business lines (’000)                                     1,249     1,250     1,250     1,249         –
+   Residential lines (’000)                                  1,401     1,398     1,395     1,389      (1)%
+
+Total broadband access lines (’000)                          1,569     1,567     1,572     1,591       2%
+(Consumer, business and wholesale)
+   Retail consumer broadband access lines (’000)             1,405     1,401     1,407     1,423       2%
+   Retail business broadband access lines (’000)               144       148       149       154       4%
+
+Traditional data (Exit Gbps)                                 4,378     5,171     6,552     7,121      38%
+
+Retail IDD minutes (million minutes)                          283       249       217       199     (22)%
+
+Mobile subscribers (’000)                                    4,445     4,512     4,218     4,407     (2)%
+  Post-paid subscribers (’000)                               3,106     3,130     3,168     3,217       3%
+  Prepaid subscribers (’000)                                 1,339     1,382     1,050     1,190    (14)%
+
+
+
+
+                                                                                                         4
+Note 1   EBITDA represents earnings before interest income, finance costs, income tax, depreciation of
+         property, plant and equipment, amortization of land lease premium and intangible assets,
+         gain/loss on disposal of property, plant and equipment, interests in leasehold land and intangible
+         assets, net other gains/losses, losses on property, plant and equipment, restructuring costs,
+         impairment losses on goodwill, tangible and intangible assets and interests in associates and
+         joint ventures, and the Group’s share of results of associates and joint ventures. While EBITDA
+         is commonly used in the telecommunications industry worldwide as an indicator of operating
+         performance, leverage and liquidity, it is not presented as a measure of operating performance in
+         accordance with the Hong Kong Financial Reporting Standards (“HKFRSs”) and should not be
+         considered as representing net cash flows from operating activities. The computation of the
+         Group’s EBITDA may not be comparable to similarly titled measures of other companies.
+
+Note 2   Adjusted funds flow is defined as EBITDA less capital expenditures, customer acquisition costs
+         and licence fees paid, taxes paid, finance costs and interest expense paid, and adjusted for
+         interest income received and changes in working capital. It is not presented as a measure of
+         leverage or liquidity in accordance with HKFRSs and should not be considered as representing
+         net cash flows or any other similar measures derived in accordance with HKFRSs, or an
+         alternative to cash flow from operations or a measure of liquidity. The Group’s adjusted funds
+         flow is computed in accordance with the above definition using financial information derived
+         from the Group’s audited consolidated financial statements. The adjusted funds flow may be used
+         for debt repayment.
+
+Note 3   Annual adjusted funds flow per Share Stapled Unit is calculated by dividing the adjusted funds
+         flow for the year by the number of Share Stapled Units in issue as at the respective year end.
+
+Note 4   Figures are stated as at the period end, except for International Direct Dial (“IDD”) minutes
+         which is the total for the period.
+
+Note 5   Gross debt refers to the principal amount of short-term borrowings and long-term borrowings.
+
+Note 6   Group capital expenditures represent additions to property, plant and equipment and interests in
+         leasehold land.
+
+
+
+
+                                                                                                         5
+Telecommunications Services
+
+For the year ended December 31,                            2016                     2017              Better/
+HK$ million                                                                                          (Worse)
+                                                                     Full                     Full
+                                                     H1      H2     Year      H1      H2     Year      y-o-y
+
+
+TSS Revenue
+Local Telephony Services                           1,688   1,772   3,460    1,665   1,729    3,394      (2)%
+Local Data Services                                3,478   3,763   7,241    3,539   3,990    7,529        4%
+International Telecommunications Services          3,612   3,772   7,384    3,555   3,827    7,382         –
+Other Services                                     1,530   1,799   3,329    1,565   1,971    3,536        6%
+                                                 －－－－－ －－－－－ －－－－－ －－－－－ －－－－－ －－－－－
+
+Total TSS Revenue                                10,308 11,106 21,414 10,324 11,517         21,841       2%
+
+Cost of sales                                    (4,713) (5,170) (9,883) (4,904) (5,669) (10,573)       (7)%
+Operating costs before depreciation and
+ amortization                                    (1,914) (1,946) (3,860) (1,700) (1,752) (3,452)        11%
+                                                 －－－－－ －－－－－ －－－－－ －－－－－ －－－－－ －－－－－
+Total TSS EBITDA1                                 3,681 3,990 7,671 3,720 4,096           7,816          2%
+                                                 ======= ======= ======= ======= ======= =======
+TSS EBITDA1 margin                                 36%     36%     36%     36%     36%     36%
+                                                 ======= ======= ======= ======= ======= =======
+
+TSS revenue for the year ended December 31, 2017 increased by 2% to HK$21,841 million, and EBITDA
+for the year also increased by 2% to HK$7,816 million, yielding a stable EBITDA margin of 36%.
+
+Local Telephony Services. Local telephony services revenue was HK$3,394 million for the year ended
+December 31, 2017, as compared to HK$3,460 million a year earlier, reflecting the continued gradual
+decline in local fixed lines in service. Total fixed lines in service at the end of December 2017 were
+2.638 million, as compared to 2.648 million a year ago.
+
+Local Data Services. Local data services revenue, comprising broadband network revenue and local data
+revenue, increased by 4% to HK$7,529 million for the year ended December 31, 2017. The broadband
+network business delivered further revenue growth of 3% in 2017 despite prevailing price focused
+competition. The growth in revenue was supported by a healthy number of net broadband customer
+additions and continued subscriptions and upgrades on our leading fiber-to-the-home (“FTTH”) service.
+
+The total number of broadband access lines at the end of December 2017 grew by 2% to 1.591 million from
+1.567 million as at the end of December 2016. Of these broadband access lines, there were 698,000 FTTH
+access lines which represented a net increase of 82,000 or 13% from a year earlier. During the year, HKT
+launched its innovative Multi-Use Broadband Service which we believe will drive further subscriptions and
+upgrades to the FTTH service.
+
+As the leading services provider to the enterprise segment, our local data revenue increased by 6% during
+the year benefitting from the healthy enterprise demand for cross-border connectivity solutions and network
+facility management solutions integrating connectivity, cloud-based applications and ancillary co-location
+services.
+
+
+
+
+                                                                                                          6
+Telecommunications Services (Continued)
+
+International Telecommunications Services. International telecommunications services revenue for the year
+ended December 31, 2017 held steady at HK$7,382 million, as compared to HK$7,384 million a year earlier.
+Supported by the expanding reach of our global infrastructure, the international business is in the process of
+transforming to a comprehensive solutions provider to enterprise customers that integrates data connectivity
+and value added services such as unified communications and managed security under a simple self-ordering
+and auto-provisioning process, in order to offset the anticipated decline in the traditional wholesale voice
+business.
+
+Other Services. Other services revenue primarily comprises revenue from the sales of network equipment
+and customer premises equipment (“CPE”), provision of technical and maintenance subcontracting services
+and contact centre services (“Teleservices”). Other services revenue for the year ended December 31, 2017
+increased by 6% to HK$3,536 million primarily due to increased sales of network equipment arising from
+the joint collaboration between HKT and PCCW Solutions to deliver network and infrastructure solutions to
+their enterprise customers. The increase was partially offset by the revenue slowdown in the Teleservices
+business due to temporary capacity rationalization in the mainland China contact centre market.
+
+
+
+
+                                                                                                            7
+Mobile
+
+For the year ended December 31,                               2016                      2017               Better/
+HK$ million                                                                                               (Worse)
+                                                                        Full                       Full
+                                                        H1       H2    Year       H1       H2     Year      y-o-y
+
+
+Mobile Revenue
+ Mobile Services                                      4,558   5,080    9,638    4,587    5,071   9,658         –
+ Handset Sales                                        1,777   1,648    3,425    1,027    1,333   2,360     (31)%
+                                                    －－－－－ －－－－－ －－－－－ －－－－－ －－－－－ －－－－－
+Total Mobile Revenue                                 6,335 6,728 13,063 5,614 6,404 12,018                   (8)%
+                                                    ======= ======= ======= ======= ======= =======
+Mobile EBITDA1
+ Mobile Services                                      2,425   3,014    5,439    2,485    3,203   5,688         5%
+ Handset Sales                                           14      60       74       19       50      69       (7)%
+                                                    －－－－－ －－－－－ －－－－－ －－－－－ －－－－－ －－－－－
+                         1
+Total Mobile EBITDA                                  2,439 3,074 5,513 2,504 3,253 5,757                      4%
+                                                    ======= ======= ======= ======= ======= =======
+Mobile EBITDA1 margin                                 39%     46%     42%     45%     51%     48%
+ Mobile Services EBITDA1 margin                       53%     59%     56%     54%     63%     59%
+ Handset Sales EBITDA1 margin                           1%      4%      2%      2%      4%      3%
+                                                    ======= ======= ======= ======= ======= =======
+
+Mobile services revenue for the year ended December 31, 2017 improved slightly to HK$9,658 million,
+from HK$9,638 million a year earlier. During the year, Mobile services revenue benefited from continued
+growth in the post-paid customer base, customers upgrading to our premium 1O1O service, as well as
+demand for greater mobile data. However, such growth was moderated by the continued decline in IDD and
+roaming revenue and severe price discounting in the market. For the year ended December 31, 2017, IDD
+and roaming revenue accounted for 13% of Mobile services revenue, as compared to 14% a year earlier.
+
+As such, the post-paid exit average revenue per user (“ARPU”) as at the end of December 2017 held firm at
+HK$232, as compared to HK$233 a year earlier.
+
+As at December 31, 2017, the Mobile business had 3.217 million post-paid customers, an increase of 3%
+from a year earlier. The churn rate for post-paid customers also improved to 1.1% in 2017 from 1.3% a year
+earlier, reflecting the advantages of our multi-brand strategy, network supremacy and innovative service
+offerings such as The Club program.
+
+During the year, the Mobile business witnessed an increase in the proportion of handset bundled plan
+subscriptions as customers took up our attractive offerings, which not only reduced the churn but also helped
+lift new customer acquisitions. The related customer acquisition and retention costs for the year were
+therefore higher.
+
+Revenue from handset sales of HK$2,360 million was recorded during the year, as compared to
+HK$3,425 million a year earlier. This 31% decline reflects the continued elongation of the replacement
+cycle for mobile handsets.
+
+Total Mobile EBITDA for the year increased by 4% to HK$5,757 million, with the margin improving to
+48% from 42% a year earlier partly due to a less significant dilution impact on the reduced contribution of
+handset sales revenue. More importantly, EBITDA for Mobile services increased by 5% to
+HK$5,688 million, with the margin improving to 59% from 56% a year earlier due to the full year impact of
+the cost synergies from the integration of CSL Holdings Limited (“CSL”) which was completed in 2016, in
+particular savings from cell site rental, third-party backhaul and call centre integration, as well as additional
+operational efficiencies achieved during the year.
+                                                                                                                8
+Other Businesses
+
+Other Businesses primarily comprises new business areas such as the Tap & Go mobile payment service and
+The Club program, and corporate support functions. Revenue from Other Businesses was HK$249 million
+for the year ended December 31, 2017, as compared to HK$237 million a year ago. As at
+December 31, 2017, The Club program had approximately 2.303 million activated members.
+
+Eliminations
+
+Eliminations were HK$850 million for the year ended December 31, 2017, as compared to HK$867 million
+a year ago. This reflects the continued collaboration amongst HKT’s various business segments to take
+advantage of our capabilities in offering integrated products and services to retail and enterprise customers.
+
+Cost of Sales
+
+Cost of sales for the year ended December 31, 2017 decreased by 2% to HK$14,161 million, reflecting
+lower Mobile handset sales during the year. Gross margin was steady at 57% during the year.
+
+General and Administrative Expenses
+
+For the year ended December 31, 2017, operating costs before depreciation, amortization, and gain/(loss) on
+disposal of property, plant and equipment and intangible assets, net, (“operating costs”) improved by 9% to
+HK$6,100 million as a result of the full year impact of the cost synergies from the CSL integration and
+sustained improvements in operating efficiencies in both the TSS and Mobile segments. Cost savings were
+successfully achieved in areas such as cell site rental, third-party backhaul, call centre integration, and
+publicity and promotion. Consequently, the operating costs to Mobile services revenue ratio for the Mobile
+business improved to 23.9% from 26.6% a year ago, while the operating costs to revenue ratio for the TSS
+business improved to 15.8% from 18.0% a year ago. Overall operating costs to revenue ratio, therefore,
+improved to 18.3% from 19.8% a year ago.
+
+Depreciation expenses decreased by 4% as a result of the Group’s periodic review of the useful lives of
+network assets, and amortization expenses also decreased by 2% as certain intangible assets arising from the
+CSL acquisition were fully amortized during the year. As a result, total depreciation and amortization
+expenses decreased by 2% to HK$5,685 million for the year ended December 31, 2017.
+
+General and administrative expenses, therefore, decreased by 6% to HK$11,786 million for the year ended
+December 31, 2017.
+
+EBITDA1
+
+As a result of the resilient performance in the TSS and Mobile businesses and the achievement of sustained
+operating efficiencies, overall EBITDA increased by 2% to HK$12,997 million for the year ended
+December 31, 2017. The EBITDA margin improved to 39% from 37% a year ago.
+
+
+
+
+                                                                                                            9
+Finance Costs, Net
+
+Net finance costs for the year ended December 31, 2017 decreased by 3% to HK$1,076 million from
+HK$1,107 million a year ago, reflecting the recognition of certain hedging gains during the year which were
+partially offset by an increase in finance costs as a result of the increase in gross debt.
+
+The average cost of debt increased to 2.6% during the year, as compared to 2.5% a year ago as a result of the
+increased proportion of fixed rated borrowings.
+
+Income Tax
+
+Income tax expense for the year ended December 31, 2017 was HK$971 million, as compared to
+HK$771 million a year ago, representing an effective tax rate of 16.0% for the year versus an effective tax
+rate of 13.5% a year ago. The increase in the income tax expense is due to the increase in taxable profits, the
+full utilization of the tax loss of a company in 2016 resulting from the CSL integration and a one-time non-
+cash charge due to a reassessment of deferred income tax assets associated with the enactment of the 2017
+tax reform legislation in the United States.
+
+Non-controlling Interests
+
+Non-controlling interests of HK$12 million (2016: HK$38 million) primarily comprised the net profit
+attributable to the minority shareholders of Sun Mobile Limited.
+
+Profit Attributable to Holders of Share Stapled Units/Shares of the Company
+
+Profit attributable to holders of Share Stapled Units/shares of the Company for the year ended
+December 31, 2017 increased by 4% to HK$5,097 million (2016: HK$4,889 million).
+
+LIQUIDITY AND CAPITAL RESOURCES
+
+The Group actively and regularly reviews and manages its capital structure to maintain a balance between
+shareholder return and a sound capital position. Adjustments are made, when necessary, to maintain an
+optimal capital structure in light of changes in economic conditions and to reduce the cost of capital.
+
+HKT’s gross debt5 was HK$39,338 million as at December 31, 2017 (December 31, 2016:
+HK$38,798 million). Cash and short-term deposits totaled HK$3,667 million as at December 31, 2017
+(December 31, 2016: HK$3,332 million). HKT’s gross debt5 to total assets was 41% as at
+December 31, 2017 (December 31, 2016: 42%).
+
+As at December 31, 2017, HKT had ample liquidity as evidenced by committed banking facilities totaling
+HK$27,381 million, of which HK$5,698 million remained undrawn.
+
+CREDIT RATINGS OF HONG KONG TELECOMMUNICATIONS (HKT) LIMITED
+
+As at December 31, 2017, Hong Kong Telecommunications (HKT) Limited, an indirect wholly-owned
+subsidiary of the Company, had investment grade ratings with Moody’s Investors Service (Baa2) and
+Standard & Poor’s Ratings Services (BBB).
+
+
+
+
+                                                                                                            10
+CAPITAL EXPENDITURE6
+
+Capital expenditure including capitalized interest for the year ended December 31, 2017 was
+HK$2,655 million (2016: HK$2,878 million). Capital expenditure relative to revenue was 8.0% for the year
+ended December 31, 2017 (2016: 8.5%). Capital expenditures for the Mobile segment declined following
+the completion of the CSL integration in 2016, while capital expenditure for the TSS segment grew to meet
+the continued demand for fiber broadband connectivity and Internet of Things (“IoT”) related services,
+customized solutions for enterprises and continued submarine cable investments.
+
+HKT will continue to invest in its delivery platforms and networks taking into account the prevailing market
+conditions and using assessment criteria including internal rate of return, net present value and payback
+period.
+
+HEDGING
+
+Market risk arises from foreign currency and interest rate exposure related to investments and borrowings.
+As a matter of policy, HKT continues to manage the market risk directly relating to its operations and
+financing and does not undertake any speculative derivative trading activities. The Finance and Management
+Committee, a sub-committee of the Executive Committee of the board of directors of the Company,
+determines appropriate risk management activities with the aim of prudently managing the market risk
+associated with transactions undertaken in the normal course of the Group’s business. All treasury risk
+management activities are carried out in accordance with the policies and guidelines, approved by the
+Finance and Management Committee, which are reviewed on a regular basis.
+
+More than three quarters of HKT’s consolidated revenue and costs are denominated in Hong Kong dollars.
+For those operations with revenues denominated in foreign currencies, the related costs and expenses are
+usually denominated in the same foreign currencies and hence provide a natural hedge against each other.
+Therefore, the Group is not exposed to significant foreign currency fluctuation risk from operations.
+
+As for financing, a significant portion of HKT’s debt is denominated in foreign currencies including United
+States dollars. Accordingly, HKT has entered into forward and swap contracts in order to manage its
+exposure to adverse fluctuations in foreign currency exchange rates and interest rates. These instruments are
+executed with creditworthy financial institutions. As at December 31, 2017, all forward and swap contracts
+were designated as cash flow hedges for the related borrowings of the Company.
+
+As a result, HKT’s operational and financial risks are considered minimal.
+
+CHARGE ON ASSETS
+
+As at December 31, 2017, no assets of the Group (2016: nil) were pledged to secure loans and banking
+facilities of HKT.
+
+
+
+
+                                                                                                          11
+CONTINGENT LIABILITIES
+
+As at December 31,                                                              2016                  2017
+HK$ million
+
+Performance guarantees                                                            513                   237
+Others                                                                             57                    64
+
+                                                                                  570                   301
+
+The Group is subject to certain corporate guarantee obligations to guarantee performance of the Company’s
+subsidiaries in the normal course of their businesses. The amount of liabilities arising from such obligations,
+if any, cannot be ascertained but the directors of the Company are of the opinion that any resulting liability
+would not materially affect the financial position of the Group.
+
+HUMAN RESOURCES
+
+HKT had over 17,600 employees as at December 31, 2017 (2016: 18,900) located in 43 countries and cities.
+About 62% of these employees work in Hong Kong and the others are based mainly in mainland China, the
+United States and the Philippines. HKT has established performance based bonus and incentive schemes
+designed to motivate and reward employees at all levels to achieve business performance targets. Payment
+of performance bonuses is generally based on achievement of revenue, EBITDA and free cash flow targets
+for HKT as a whole and for each of the individual business units and performance ratings of employees.
+
+FINAL DIVIDEND/DISTRIBUTION
+
+The board of directors of the Trustee-Manager has recommended the payment of a final distribution by the
+HKT Trust in respect of the Share Stapled Units, of 36.75 HK cents per Share Stapled Unit (after deduction
+of any operating expenses permissible under the trust deed dated November 7, 2011 constituting the HKT
+Trust (the “Trust Deed”)), in respect of the year ended December 31, 2017 (and in order to enable the HKT
+Trust to pay that distribution, the board of directors of the Company has recommended the payment of a
+final dividend in respect of the ordinary shares in the Company held by the Trustee-Manager, of 36.75 HK
+cents per ordinary share, in respect of the same period), subject to the approval of unitholders of the HKT
+Trust and of shareholders of the Company at the forthcoming annual general meeting of unitholders of the
+HKT Trust and of shareholders of the Company to be held on a combined basis as a single meeting
+characterized as an annual general meeting of registered holders of Share Stapled Units (“AGM”). An
+interim distribution/dividend of 28.12 HK cents per Share Stapled Unit/ordinary share of the Company for
+the six months ended June 30, 2017 was paid to holders of Share Stapled Units/shareholder of the Company
+in September 2017.
+
+The board of directors of the Trustee-Manager has confirmed, in accordance with the Trust Deed, that (i) the
+auditor of the Group has performed limited assurance procedures in accordance with Hong Kong Standard
+on Assurance Engagements 3000 (Revised) “Assurance Engagements Other Than Audits or Reviews of
+Historical Financial Information” issued by the Hong Kong Institute of Certified Public Accountants to
+review and verify the Trustee-Manager’s calculation of the above distribution entitlement per Share Stapled
+Unit and (ii) having made all reasonable enquiries, immediately after making the above distribution to the
+registered unitholders of the HKT Trust, the Trustee-Manager will be able to fulfill, from the Trust Property
+(as defined in the Trust Deed), the liabilities of the HKT Trust as they fall due.
+
+
+
+
+                                                                                                              12
+CLOSURE OF BOOKS
+
+The record date for the proposed final distribution will be Thursday, May 17, 2018. The register of
+registered holders of Share Stapled Units, the register of holders of units, the principal and Hong Kong
+branch registers of members of the Company and the register of beneficial interests as maintained by the
+Trustee-Manager and the Company in accordance with the provisions of the Trust Deed will all be closed
+from Wednesday, May 16, 2018 to Thursday, May 17, 2018 (both days inclusive), in order to determine
+entitlements to the proposed final distribution. During such period, no transfer of Share Stapled Units will be
+effected. In order to qualify for the proposed final distribution, all transfers of Share Stapled Units
+accompanied by the relevant certificates in respect of the Share Stapled Units must be lodged with the Share
+Stapled Units Registrar, Computershare Hong Kong Investor Services Limited, Transfer Office, Shops
+1712-1716, 17th Floor, Hopewell Centre, 183 Queen’s Road East, Wan Chai, Hong Kong (the “Share
+Stapled Units Registrar”), for registration no later than 4:30 p.m. on Tuesday, May 15, 2018. Subject to the
+approval of holders of Share Stapled Units at the AGM, distribution warrants will be despatched to holders
+of Share Stapled Units on or around Thursday, May 31, 2018.
+
+RECORD DATE FOR DETERMINING ELIGIBILITY TO ATTEND AND VOTE AT THE AGM
+
+The record date for determining the entitlement of the holders of Share Stapled Units to attend and vote at
+the AGM, which is to be held on Thursday, May 10, 2018, will be Friday, May 4, 2018. All transfers of
+Share Stapled Units accompanied by the relevant certificates in respect of the Share Stapled Units must be
+lodged with the Share Stapled Units Registrar for registration no later than 4:30 p.m. on Friday, May 4, 2018.
+
+PURCHASE, SALE OR REDEMPTION OF LISTED SECURITIES
+
+Under the Trust Deed and for so long as the Trust Deed remains in effect, the Share Stapled Units cannot be
+repurchased or redeemed by the HKT Trust and the Company unless and until specific regulations which
+expressly permit repurchase or redemption are introduced by the Securities and Futures Commission.
+Therefore, the holders of Share Stapled Units have no right to request the Trustee-Manager to repurchase or
+redeem their Share Stapled Units, and the HKT Trust and the Company are not allowed to repurchase their
+own Share Stapled Units.
+
+During the year ended December 31, 2017, none of the HKT Trust (including the Trustee-Manager), the
+Company or the Company’s subsidiaries purchased, sold or redeemed any Share Stapled Units.
+
+AUDIT COMMITTEE
+
+The Trustee-Manager’s Audit Committee and the Company’s Audit Committee have reviewed the
+accounting policies adopted by the Group and the Trustee-Manager, the audited consolidated financial
+statements of the HKT Trust and HKT Limited for the year ended December 31, 2017 and the audited
+financial statements of the Trustee-Manager for the same period.
+
+
+
+
+                                                                                                            13
+CORPORATE GOVERNANCE CODE
+
+The HKT Trust, the Trustee-Manager and the Company are committed to maintaining a high standard of
+corporate governance, the principles of which serve to uphold a high standard of ethics, transparency,
+responsibility and integrity in all aspects of their businesses, and to ensure that their affairs are conducted in
+accordance with applicable laws and regulations.
+
+The HKT Trust and the Company have applied the principles, and complied with all relevant code provisions
+of the Corporate Governance Code (the “CG Code”) in each case as set out in Appendix 14 to the Rules
+Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited during the year ended
+December 31, 2017, save and except for the code provisions set out below. The requirement to establish a
+separate Remuneration Committee with written terms of reference for the Trustee-Manager under the code
+provision B.1.2 of the CG Code is not relevant to the Trustee-Manager as its directors are not entitled to any
+remuneration under the Trust Deed, and therefore has not been complied with. In addition, given the unique
+circumstances of the HKT Trust i.e., the fact that the Trust Deed requires that the directors of the Company
+and the directors of the Trustee-Manager must always be the same individuals, the establishment of a separate
+Nomination Committee for the Trustee-Manager as required by code provision A.5.1 of the CG Code is not
+relevant to the Trustee-Manager, and therefore has not been complied with.
+
+PUBLICATION OF RESULTS ANNOUNCEMENT AND ANNUAL REPORT
+
+This announcement is published on the websites of the Company (www.hkt.com/ir) and Hong Kong
+Exchanges and Clearing Limited (www.hkexnews.hk). The 2017 annual report will be despatched to holders
+of Share Stapled Units and available on the above websites in due course.
+
+
+                                                                    By order of the boards of
+                                                                  HKT Management Limited
+                                                                              and
+                                                                         HKT Limited
+                                                                     Bernadette M. Lomas
+                                                          Group General Counsel and Company Secretary
+
+Hong Kong, February 6, 2018
+
+
+
+
+                                                                                                               14
+AUDITED CONSOLIDATED INCOME STATEMENT OF HKT TRUST AND OF HKT LIMITED
+For the year ended December 31, 2017
+(In HK$ million except for earnings per Share Stapled Unit/share of the Company)
+
+                                                        Note(s)        2016           2017
+
+
+Revenue                                                   2           33,847        33,258
+Cost of sales                                                        (14,445)      (14,161)
+General and administrative expenses                                  (12,523)      (11,786)
+Other losses, net                                         3              (51)         (145)
+Finance costs, net                                                    (1,107)       (1,076)
+Share of results of joint ventures                                       (10)            2
+Share of results of associates                                           (13)          (12)
+
+Profit before income tax                                 2, 4          5,698         6,080
+Income tax                                                5             (771)         (971)
+
+Profit for the year                                                    4,927         5,109
+
+Attributable to:
+ Holders of Share Stapled Units/shares of the Company                  4,889         5,097
+ Non-controlling interests                                                38            12
+
+Profit for the year                                                    4,927         5,109
+
+Earnings per Share Stapled Unit/share of the Company
+
+ Basic                                                    7       64.62 cents   67.34 cents
+
+ Diluted                                                  7       64.58 cents   67.31 cents
+
+
+
+
+                                                                                              15
+AUDITED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME OF
+HKT TRUST AND OF HKT LIMITED
+For the year ended December 31, 2017
+(In HK$ million)
+
+                                                            2016     2017
+
+
+Profit for the year                                         4,927    5,109
+
+Other comprehensive income/(loss)
+ Items that have been reclassified or may be reclassified
+   subsequently to consolidated income statement:
+   Exchange differences on translating foreign
+     operations                                               (92)    180
+   Available-for-sale financial assets:
+     - changes in fair value                                   (2)      –
+     - transfer to consolidated income statement on
+       impairment                                             49        –
+   Cash flow hedges:
+     - effective portion of changes in fair value            711     (280)
+     - transfer from equity to consolidated income
+       statement                                              48     (332)
+
+Other comprehensive income/(loss) for the year               714     (432)
+
+
+Total comprehensive income for the year                     5,641    4,677
+
+Attributable to:
+ Holders of Share Stapled Units/shares of the Company       5,603    4,665
+ Non-controlling interests                                     38       12
+
+Total comprehensive income for the year                     5,641    4,677
+
+
+
+
+                                                                             16
+AUDITED CONSOLIDATED STATEMENT OF FINANCIAL POSITION OF
+HKT TRUST AND OF HKT LIMITED
+As at December 31, 2017
+(In HK$ million)
+
+                                                        Note(s)    2016     2017
+
+
+ASSETS AND LIABILITIES
+
+Non-current assets
+Property, plant and equipment                                     18,019   19,386
+Interests in leasehold land                                          253      240
+Goodwill                                                          49,787   49,814
+Intangible assets                                                 10,695   10,895
+Interests in joint ventures                                          725      720
+Interests in associates                                              130        –
+Available-for-sale financial assets                                   77       77
+Derivative financial instruments                                     277      223
+Financial assets at fair value through profit or loss                 31       20
+Deferred income tax assets                                           317      466
+Other non-current assets                                             610      692
+
+                                                                  80,921   82,533
+
+Current assets
+Prepayments, deposits and other current assets                     5,226    5,484
+Inventories                                                          707      749
+Trade receivables, net                                    8        3,035    2,787
+Amounts due from related companies                                    96       77
+Financial assets at fair value through profit or loss                 13       17
+Restricted cash                                                       36       51
+Short-term deposits                                                  450      450
+Cash and cash equivalents                                          2,882    3,217
+
+                                                                  12,445   12,832
+
+
+
+
+                                                                                    17
+AUDITED CONSOLIDATED STATEMENT OF FINANCIAL POSITION OF
+HKT TRUST AND OF HKT LIMITED (CONTINUED)
+As at December 31, 2017
+(In HK$ million)
+
+                                                  Note(s)     2016       2017
+
+
+Current liabilities
+Trade payables                                      9        (2,474)    (1,874)
+Accruals and other payables                                  (5,019)    (5,183)
+Carrier licence fee liabilities                                (173)      (173)
+Amount due to a related company                                 (37)         –
+Amounts due to fellow subsidiaries                             (465)      (969)
+Advances from customers                                      (2,126)    (2,326)
+Current income tax liabilities                               (1,008)    (1,138)
+
+                                                            (11,302)   (11,663)
+
+Non-current liabilities
+Long-term borrowings                                        (38,193)   (39,146)
+Derivative financial instruments                                (14)      (150)
+Deferred income tax liabilities                              (2,713)    (2,989)
+Deferred income                                              (1,021)    (1,307)
+Carrier licence fee liabilities                                (544)      (455)
+Other long-term liabilities                                    (420)      (596)
+
+                                                            (42,905)   (44,643)
+
+Net assets                                                  39,159     39,059
+
+CAPITAL AND RESERVES
+
+Share capital                                                    8          8
+Reserves                                                    39,088     39,011
+
+Equity attributable to holders of Share Stapled
+ Units/shares of the Company                                39,096     39,019
+Non-controlling interests                                       63         40
+
+Total equity                                                39,159     39,059
+
+
+
+
+                                                                                  18
+NOTES
+
+1.   BASIS OF PREPARATION
+
+     In accordance with the trust deed, HKT Trust (the “HKT Trust”) and HKT Limited are each required
+     to prepare their own sets of financial statements on a consolidated basis. The HKT Trust
+     consolidated financial statements for the year ended December 31, 2017 comprise the consolidated
+     financial statements of the HKT Trust, HKT Limited (or the “Company”) and its subsidiaries
+     (together the “Group”), and the Group’s interests in associates and joint ventures. The HKT Limited
+     consolidated financial statements for the year ended December 31, 2017 comprise the consolidated
+     financial statements of HKT Limited and its subsidiaries (together the “HKT Limited Group”) and
+     the HKT Limited Group’s interests in associates and joint ventures, and the Company’s statement of
+     financial position.
+
+     The HKT Trust controls HKT Limited and the sole activity of the HKT Trust during the year ended
+     December 31, 2017 was investing in HKT Limited. Therefore, the consolidated results and financial
+     position that would be presented in the consolidated financial statements of the HKT Trust are
+     identical to the consolidated financial results and financial position of HKT Limited with the only
+     differences being disclosures of capital of HKT Limited. The directors of the Trustee-Manager and
+     the directors of the Company believe therefore that it is clearer to present the consolidated financial
+     statements of the HKT Trust and the HKT Limited together. The consolidated financial statements of
+     the HKT Trust and the consolidated financial statements of HKT Limited are presented together to
+     the extent they are identical and are hereinafter referred to as the “HKT Trust and HKT Limited
+     consolidated financial statements”.
+
+     The consolidated income statements, consolidated statements of comprehensive income,
+     consolidated statements of financial position, consolidated statements of changes in equity,
+     consolidated statements of cash flows, significant accounting policies and the related explanatory
+     information are common to the HKT Trust and the Company.
+
+     The Group and the HKT Limited Group are referred to as the “Groups”.
+
+     The HKT Trust and HKT Limited consolidated financial statements have been prepared in
+     accordance with all applicable Hong Kong Financial Reporting Standards, which is a collective term
+     for all individual Hong Kong Financial Reporting Standards (“HKFRSs”), Hong Kong Accounting
+     Standards (“HKASs”) and Interpretations (“Ints”) issued by the Hong Kong Institute of Certified
+     Public Accountants (“HKICPA”), accounting principles generally accepted in Hong Kong and the
+     disclosure requirements of the Hong Kong Companies Ordinance (Cap. 622).
+
+     The following new and amended Hong Kong Financial Reporting Standards are mandatory for the
+     first time for the financial year beginning January 1, 2017, but have no material effect on the Groups’
+     results and financial position for the current and prior accounting periods.
+
+     - HKAS 7 (Amendment), Statement of Cash Flows.
+     - HKAS 12 (Amendment), Income Taxes.
+     - Annual Improvements to HKFRSs 2014-2016 Cycle published in March 2017 by HKICPA.
+
+     The Groups have not adopted any amendments and new or amended standards that are not yet
+     effective for the current accounting period.
+
+
+
+
+                                                                                                         19
+1.   BASIS OF PREPARATION (CONTINUED)
+
+     The financial information of the Trustee-Manager relating to the years ended December 31, 2017 and
+     2016 included in this preliminary announcement of annual results 2017 does not constitute the
+     Trustee-Manager’s statutory annual financial statements for those years but is derived from those
+     financial statements. Further information relating to these statutory financial statements required to
+     be disclosed in accordance with section 436 of the Hong Kong Companies Ordinance (Cap. 622) is
+     as follows:
+
+     - The Trustee-Manager’s financial statements combined with the HKT Trust and HKT Limited
+       consolidated financial statements (collectively the “Combined Financial Statements”) for the year
+       ended December 31, 2016 has been delivered to the Registrar of Companies and the Combined
+       Financial Statements for the year ended December 31, 2017 will be delivered to the Registrar of
+       Companies in due course.
+
+     - The Trustee-Manager’s auditor has reported on the financial statements of the Trustee-Manager
+       for both years. The auditor’s reports were unqualified; did not include a reference to any matters
+       to which the auditor drew attention by way of emphasis without qualifying its reports; and did not
+       contain a statement under sections 406(2), 407(2) or (3) of the Hong Kong Companies Ordinance
+       (Cap. 622).
+
+     Estimates and judgements are continually evaluated and are based on historical experience and other
+     factors, including expectations of future events that are believed to be reasonable under the
+     circumstances.
+
+     The Groups make estimates and assumptions concerning the future. The resulting accounting
+     estimates will, by definition, seldom equal the related actual results. Management has also made
+     judgements in applying the Groups’ accounting policies.
+
+
+
+
+                                                                                                        20
+2.   SEGMENT INFORMATION
+
+     The chief operating decision-maker (the “CODM”) is the Groups’ senior executive management.
+     The CODM reviews the Groups’ internal reporting in order to assess performance and allocate
+     resources and the segment information is reported below in accordance with this internal reporting.
+
+     The CODM considers the business from the product perspective and assesses the performance of the
+     following segments:
+
+     -   Telecommunications Services (“TSS”) is the leading provider of telecommunications and related
+         services which include local telephony, local data and broadband, international
+         telecommunications, and other telecommunications businesses such as customer premises
+         equipment sales, outsourcing, consulting and contact centers. It operates primarily in Hong Kong,
+         and also serves customers in mainland China and other parts of the world.
+
+     -   Mobile includes the Groups’ mobile telecommunications businesses in Hong Kong.
+
+     -   Other businesses of the Groups (“Other Businesses”) primarily comprises new business areas
+         such as Tap & Go mobile payment service and The Club program, and corporate support
+         functions.
+
+     The CODM assesses the performance of the operating segments based on a measure of adjusted
+     earnings before interest, tax, depreciation and amortization (“EBITDA”). EBITDA represents
+     earnings before interest income, finance costs, income tax, depreciation of property, plant and
+     equipment, amortization of land lease premium and intangible assets, gain/loss on disposal of
+     property, plant and equipment, interests in leasehold land and intangible assets, net other gains/losses,
+     losses on property, plant and equipment, restructuring costs, impairment losses on goodwill, tangible
+     and intangible assets and interests in associates and joint ventures and the Groups’ share of results of
+     associates and joint ventures.
+
+     Segment revenue, expense and segment performance include transactions between segments.
+     Inter-segment pricing is based on similar terms to those available to other external parties for similar
+     services. The revenue from external parties reported to the CODM is measured in a manner
+     consistent with that in the consolidated income statements.
+
+
+
+
+                                                                                                           21
+2.   SEGMENT INFORMATION (CONTINUED)
+
+     Information regarding the Groups’ reportable segments as provided to the Groups’ CODM is set out
+     below:
+
+     For the year ended December 31, 2016
+     (In HK$ million)
+
+                                                                  Other
+                                  TSS            Mobile      Businesses       Eliminations   Consolidated
+
+     REVENUE
+     Total Revenue              21,414           13,063            237              (867)           33,847
+
+     RESULTS
+     EBITDA                      7,671            5,513           (500)                 –           12,684
+
+
+     For the year ended December 31, 2017
+     (In HK$ million)
+
+                                                                 Other
+                                  TSS           Mobile       Businesses      Eliminations    Consolidated
+
+     REVENUE
+     Total Revenue              21,841           12,018            249              (850)           33,258
+
+     RESULTS
+     EBITDA                      7,816            5,757           (576)                 –           12,997
+
+     A reconciliation of total segment EBITDA to profit before income tax is provided as follows:
+
+     In HK$ million                                                        2016                     2017
+
+     Total segment EBITDA                                              12,684                   12,997
+     Gain/(loss) on disposal of property, plant and
+      equipment and intangible assets, net                                     3                    (1)
+     Depreciation and amortization                                        (5,808)               (5,685)
+     Other losses, net                                                       (51)                 (145)
+     Finance costs, net                                                   (1,107)               (1,076)
+     Share of results of joint ventures                                      (10)                    2
+     Share of results of associates                                          (13)                  (12)
+
+     Profit before income tax                                             5,698                  6,080
+
+
+
+
+                                                                                                           22
+2.   SEGMENT INFORMATION (CONTINUED)
+
+     The following table sets out information about the geographical location of the Groups’ revenue
+     from external customers. In presenting information on the basis of geographical segments, segment
+     revenue is based on the geographical location that the Groups derives revenue from the customers.
+
+     In HK$ million                                                         2016                 2017
+
+     Hong Kong                                                            28,717                27,884
+     Mainland China, Macau and Taiwan, China                                 743                   579
+     Others                                                                4,387                 4,795
+
+                                                                          33,847                33,258
+
+     The total non-current assets other than financial instruments and deferred income tax assets located
+     in Hong Kong are HK$79,180 million as at December 31, 2017 (2016: HK$77,477 million).
+     The total of these non-current assets located in other countries are HK$2,448 million as at
+     December 31, 2017 (2016: HK$2,604 million).
+
+3.   OTHER LOSSES, NET
+
+     In HK$ million                                                         2016                 2017
+
+     Gain on disposal on an available-for-sale financial asset                  –                   6
+     Provision for impairment on interests in associates                        –                (154)
+     Provision for impairment on an available-for-sale
+      financial asset                                                         (54)                  –
+     Net gain on fair value hedging instruments                                 4                   –
+     Others                                                                    (1)                  3
+
+                                                                              (51)               (145)
+
+4.   PROFIT BEFORE INCOME TAX
+
+     Profit before income tax is stated after charging the following:
+
+     In HK$ million                                                         2016                 2017
+
+      Cost of inventories sold                                              5,032               4,044
+      Cost of sales, excluding inventories sold                             9,413              10,117
+      Depreciation of property, plant and equipment                         1,432               1,381
+      Amortization of intangible assets                                     4,364               4,291
+      Amortization of land lease premium                                       12                  13
+      Finance costs on borrowings                                           1,040               1,068
+
+
+
+
+                                                                                                         23
+5.   INCOME TAX
+
+     In HK$ million                                                           2016                 2017
+
+     Hong Kong profits tax                                                     646                   804
+     Overseas tax                                                               52                    38
+     Movement of deferred income tax                                            73                   129
+
+                                                                               771                   971
+
+     Hong Kong profits tax has been provided at the rate of 16.5% (2016: 16.5%) on the estimated
+     assessable profits for the year. Overseas tax has been calculated on the estimated assessable profits
+     for the year at the rates of taxation prevailing in the respective jurisdictions.
+
+6.   DISTRIBUTIONS/DIVIDENDS
+
+     In HK$ million                                                           2016                 2017
+
+     Interim distribution/dividend declared and paid in respect
+       of current year of 28.12 HK cents (2016: 27.09 HK
+       cents) per Share Stapled Unit/ordinary share of the
+       Company                                                               2,051                 2,129
+     Less: Distribution/dividend for Share Stapled Units/shares
+       held by the Company’s Share Stapled Units award
+       schemes                                                                  (1)                    –
+
+                                                                             2,050                 2,129
+
+     Final distribution/dividend declared in respect of previous
+      financial year, approved and paid during the year of
+      34.76 HK cents (2016: 28.27 HK cents) per Share
+      Stapled Unit/ordinary share of the Company                             2,141                 2,632
+     Less: Distribution/dividend for Share Stapled Units/shares
+      held by the Company’s Share Stapled Units award
+      schemes                                                                   (1)                   (2)
+
+                                                                             2,140                 2,630
+
+                                                                             4,190                 4,759
+
+     For the year ended December 31, 2017, the Company proposed a final dividend of 36.75 HK cents
+     per ordinary share, totaling HK$2,783 million (2016: 34.76 HK cents per ordinary share, totaling
+     HK$2,632 million) to HKT Trust after the end of the reporting period.
+
+     For the year ended December 31, 2017, HKT Trust proposed a final distribution of 36.75 HK cents
+     per Share Stapled Unit, totaling HK$2,783 million (2016: 34.76 HK cents per Share Stapled Unit,
+     totaling HK$2,632 million) to holders of Share Stapled Units after the end of the reporting period.
+
+     The final distribution/dividend proposed after the end of the reporting period, referred to above, have
+     not been recognized as liabilities as at the end of the reporting period.
+
+
+
+
+                                                                                                            24
+7.   EARNINGS PER SHARE STAPLED UNIT/SHARE OF THE COMPANY
+
+     The calculations of basic and diluted earnings per Share Stapled Unit/share of the Company are
+     based on the following data:
+
+                                                                               2016            2017
+
+     Earnings (in HK$ million)
+     Earnings for the purpose of basic and diluted earnings per
+      Share Stapled Unit/share of the Company                                  4,889          5,097
+
+     Number of Share Stapled Units/shares of the Company
+     Weighted average number of Share Stapled Units/ordinary
+      shares of the Company                                           7,571,742,334    7,571,742,334
+     Effect of Share Stapled Units held under the Company’s
+      Share Stapled Units award schemes                                  (6,386,484)      (2,233,258)
+
+     Weighted average number of Share Stapled Units/ordinary
+      shares of the Company for the purpose of basic earnings
+      per Share Stapled Unit/share of the Company                     7,565,355,850    7,569,509,076
+     Effect of Share Stapled Units awarded under the
+      Company’s Share Stapled Units award schemes                         4,884,955       2,832,205
+
+     Weighted average number of Share Stapled Units/ordinary
+      shares of the Company for the purpose of diluted earnings
+      per Share Stapled Unit/share of the Company                     7,570,240,805    7,572,341,281
+
+8.   TRADE RECEIVABLES, NET
+
+     The aging of trade receivables based on the date of invoice is set out below:
+
+     In HK$ million                                                           2016             2017
+
+     1 – 30 days                                                             1,910            2,008
+     31 – 60 days                                                              394              207
+     61 – 90 days                                                              245              170
+     91 – 120 days                                                             137               99
+     Over 120 days                                                             539              486
+
+                                                                             3,225            2,970
+     Less: Impairment loss for doubtful debts                                 (190)            (183)
+
+                                                                             3,035            2,787
+
+     Included in trade receivables, net of the Groups were the amounts due from related parties of
+     HK$36 million (2016: HK$12 million).
+
+
+
+
+                                                                                                        25
+8.   TRADE RECEIVABLES, NET (CONTINUED)
+
+     Trade receivables have a normal credit period ranging up to 30 days from the date of invoice unless
+     there is a separate mutual agreement on extension of the credit period. The Groups maintain a
+     well-defined credit policy and individual credit evaluations are performed on all customers requiring
+     credit over a certain amount. These evaluations focus on the customer’s past history of making
+     payments when due and current ability to pay, and take into account information specific to the
+     customer as well as pertaining to the economic environment in which the customer operates. Debtors
+     who have overdue payable are requested to settle all outstanding balances before any further credit is
+     granted.
+
+9.   TRADE PAYABLES
+
+     The aging of trade payables based on the date of invoice is set out below:
+
+     In HK$ million                                                          2016                 2017
+
+     1 – 30 days                                                            1,557                 1,257
+     31 – 60 days                                                             154                   125
+     61 – 90 days                                                              82                    39
+     91 – 120 days                                                             32                    46
+     Over 120 days                                                            649                   407
+
+                                                                            2,474                 1,874
+
+     Included in trade payables of the Groups were the amounts due to related parties of HK$50 million
+     (2016: HK$58 million).
+
+
+
+
+                                                                                                          26
+AUDITED INCOME STATEMENT OF
+HKT MANAGEMENT LIMITED
+For the year ended December 31, 2017
+
+In HK$’000                                     2016    2017
+
+Management fee income                            48      54
+General and administrative expenses             (48)    (54)
+
+Profit before income tax                          –       –
+
+Income tax                                        –       –
+
+Profit for the year                               –       –
+
+
+AUDITED STATEMENT OF COMPREHENSIVE INCOME OF
+HKT MANAGEMENT LIMITED
+For the year ended December 31, 2017
+
+In HK$’000                                     2016    2017
+
+Profit for the year                               –       –
+
+Other comprehensive income                        –       –
+
+Total comprehensive income for the year           –       –
+
+
+
+
+                                                              27
+AUDITED STATEMENT OF FINANCIAL POSITION OF
+HKT MANAGEMENT LIMITED
+As at December 31, 2017
+
+In HK$’000                                   2016    2017
+
+ASSETS AND LIABILITIES
+
+Current assets
+Amount due from a fellow subsidiary           222     276
+
+                                              222     276
+
+Current liabilities
+Accruals and other payables                  (129)   (131)
+Amount due to a fellow subsidiary             (93)   (145)
+
+                                             (222)   (276)
+
+Net assets                                      –       –
+
+CAPITAL AND RESERVES
+
+Share capital                                   –       –
+Reserves                                        –       –
+
+Total equity                                    –       –
+
+
+
+
+                                                             28
+As at the date of this announcement, the directors of the Trustee-Manager and the Company are as follows:
+
+Executive Directors:
+Li Tzar Kai, Richard (Executive Chairman); Alexander Anthony Arena (Group Managing Director) and
+Hui Hon Hing, Susanna (Group Chief Financial Officer)
+
+Non-Executive Directors:
+Peter Anthony Allen; Chung Cho Yee, Mico; Lu Yimin; Li Fushen and
+Srinivas Bangalore Gangaiah (aka BG Srinivas)
+
+Independent Non-Executive Directors:
+Professor Chang Hsin Kang, FREng, GBS, JP; Sunil Varma; Aman Mehta and Frances Waikwun Wong
+
+Forward-Looking Statements
+
+This announcement may contain certain forward-looking statements. These forward-looking statements
+include, without limitation, statements relating to revenues and earnings. The words “believe”, “intend”,
+“expect”, “anticipate”, “project”, “estimate”, “predict”, “is confident”, “has confidence” and similar
+expressions are also intended to identify forward-looking statements. These forward-looking statements are
+not historical facts. Rather, the forward-looking statements are based on the current beliefs, assumptions,
+expectations, estimates and projections of the directors and management of HKT relating to the business,
+industry and markets in which HKT operates.
+
+
+
+
+                                                                                                        29
+

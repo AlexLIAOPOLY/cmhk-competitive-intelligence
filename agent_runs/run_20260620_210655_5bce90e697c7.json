@@ -1,0 +1,92 @@
+{
+  "run_id": "run_20260620_210655_5bce90e697c7",
+  "started_at": "2026-06-20 21:06:55",
+  "message": "请只使用已选择数据库回答：中国移动 2026Q1 的收入 official_value、verification_count、verification_status 是什么？同时说明上下文预算和检索质量。",
+  "selected_dataset_ids": [
+    "cloud_vendor_database",
+    "cmhk_macro_policy_2026-06-19",
+    "quarterly_competitor_metrics_2026-06-18"
+  ],
+  "selected_skill_ids": [
+    "executive-briefing",
+    "company-core-metrics",
+    "metric-drilldown",
+    "quarterly-competitor-metrics",
+    "cloud-vendor-metrics",
+    "macro-policy-context",
+    "financial-visual-analytics",
+    "trend-forecasting",
+    "source-verification",
+    "anomaly-watch",
+    "verification-watch"
+  ],
+  "web_search_enabled": false,
+  "thinking_enabled": false,
+  "approved_action_ids": [],
+  "input_tokens_estimate": 37,
+  "ended_at": "2026-06-20 21:07:09",
+  "duration_ms": 13375,
+  "answer_preview": "我先检索本地数据来获取答案。检索结果已经包含了完整的上下文预算审计和所需数据。让我读取官方核验文件中的具体行来确认。检索结果非常充分。我现在来回答。\n\n## 中国移动 2026Q1 收入数据\n\n**一句话结论：** 中国移动 2026Q1 营业收入为 **266,478 百万元人民币**，经官方一季报交叉核验通过，标准化表与官方值完全一致，verification_count 为 4（多源核验）。\n\n### 关键字段明细\n\n| 字段 | 值 |\n|---|---|\n| **official_value** | 266,478 百万元人民币 |\n| **standardized_value** | 266,478 百万元人民币 |\n| **verification_count** | 4（>=2，代表已用多个官方页面或披露文件完成复核） |\n| **verification_status** | **official_match**（标准化表与官方值一致，差异 0.000） |\n| **official_source_label** | 中国移动2026年第一季度报告 |\n| **official_source_url** | https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF |\n| **official_evidence** | 合并利润表：营业收入 266,478 百万元 |\n| **grain** | quarter（季度） |\n| **unit** | millions CNY（百万人民币） |\n| **disclosure_frequency** | 季度 |\n\n来源：[1] quarterly_metrics.csv 精确季度指标行\n\n### 上下文预算与检索质量审计\n\n依据 `search_local_reports` 返回的 `contextAudit` 和 `retrievalQuality`：\n\n- **token_budget**: 6,500 tokens\n- **token_estimate**: 6,013 tokens（实际使用占比 92.5%）\n- **headroom**: 1,200 tokens（仍有剩余空间）\n- **retained_chunks**: 10 / 10（全部保留，未压缩或跳过）\n- **compressed_chunks**: 0（无压缩）\n- **skipped_chunks**: 0（无跳过）\n- **retrievalQuality 评分**: 100/100\n- **retrievalQuality 状态**: **strong**（检索质量强）\n- **official_hits**: 10（命中了足够的官方来源）\n- **conflict_hits**: 4（本文涉及的中国移动 2026Q1 收入为 official_match，不冲突）\n- **unique_sources**: 8\n\n**结论：上下文预算充足，检索质量强。所有相关 chunks 均已完整保留，未发生压缩或跳过，数据完整性有保障。中国移动 2026Q1 收入数据的核验状态为 official_match，verification_count=4，数据可靠性高。**\n\n<suggestions>[\"中国移动 2026Q1 的 EBITDA、净利润等核心指标是多少？\", \"中国移动 2026Q1 收入同比变化趋势如何？\", \"中国移动 2025Q4 与 2026Q1 的收入环比变化分析\"]</suggestions>",
+  "answer_tokens_estimate": 717,
+  "tool_calls": [
+    {
+      "type": "tool_call_start",
+      "id": "call_00_923srsp10THy2ZAWNm9U8469",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-20 21:06:57"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_923srsp10THy2ZAWNm9U8469",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国移动 2026Q1 收入 official_value verification\"}",
+      "content_preview": "本地检索完成，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国移动; period=Q1 2026; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=266,478 millions CNY; official_value=266478 millions CNY; verification_status=official_match; verification_count=4; official_source_label=中国移动2026年第一季度报告; official_source_url=https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF; official_evidence=合并利润表：营业收入 266,478 百万元。; verification_note=标准化表与官方值一致，差异 0.000。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/manifest 2.json · 片段 2]\n{\n\"id\": \"quarterly_competitor_metrics_2026-06-18\",\n\"title\": \"竞对主体和重点云厂商季度/半年度经营数据包（2026-06-18）\",\n\"summary\": \"把原年度数据拆到 5 年季度或半年度粒度；覆盖主要运营商竞对和重点云厂商的可用期间数据、来源入口和核验状态。\",\n\"source_type\": \"external_standardized_and_official_public\",\n\"scope\": \"季度/半年度财务表、官方季报/中报/年报/业绩公告；云厂商分部数据需官方 segment/product-line 表核验。\",\n\"tags\": [\n\"quarterly\",\n\"half_year\",\n\"carrier\",\n\"cloud\",\n\"financial_metrics\",\n\"verification\"\n],\n\"keywords\": [\n\"季度\",\n\"半年度\",\n\"Q1\",\n\"Q2\",\n\"Q3\",\n\"Q4\",\n\"H1\",\n\"H2\",\n\"收入\",\n\"净利润\",\n\"毛利率\",\n\"EBITDA\",\n\"资本开支\",\n\"云收入\",\n\"AWS\",\n\"Azure\",\n\"Google Cloud\",\n\"Alibaba Cloud\",\n\"Tencent Cloud\",\n\"Tencent FBS\",\n\"Huawei Cloud\",\n\"Oracle Cloud\",\n\"中国移动\",\n\"中国电信\",\n\"中国联通\",\n\"中国铁塔\",\n\"HKT\",\n\"csl\",\n\"1O1O\",\n\"3HK\",\n\"Hutchison\",\n\"SmarTone\",\n\"HKBN\",\n\"HGC\",\n\"i-CABLE\",\n\"source_gap_confirmed\",\n\"official_source_registered\",\n\"cloud_segment_extraction_status\"\n],\n\"entrypoints\": [\n\"README.md\",\n\"quarterly_metrics_summary.md\",\n\"quarterly_metrics.json\",\n\"quarterly_metrics.csv\",\n\"quarterly_metrics_human_readable.csv\",\n\"sources.json\",\n\"official_verified_metrics_2026-06-18.csv\",\n\"online_verification_2026-06-18.md\",\n\"online_verification_2026-06-18.csv\",\n\"prediction_history_coverage_2026-06-18.md\",\n\"prediction_history_coverage_2026-06-18.csv",
+      "ts": "2026-06-20 21:06:58"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_cZ3dFnKn0PpMplqdhzX76782",
+      "name": "read_local_reference",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-20 21:07:00"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_cZ3dFnKn0PpMplqdhzX76782",
+      "name": "read_local_reference",
+      "args": "{\"source\": \"agent_knowledge/quarterly_competitor_metrics_2026-06-18/official_verified_metrics_2026-06-18.csv\"}",
+      "content_preview": "本地引用读取完成。\n\n具体返回内容：\n[本地引用: agent_knowledge/quarterly_competitor_metrics_2026-06-18/official_verified_metrics_2026-06-18.csv]\nrow_no,subject,category,legal_name,ticker,period,period_end,grain,metric_key,metric_zh,value,unit,disclosure_frequency,quality_status,verification_status,official_value,official_unit,official_source_label,official_source_url,official_evidence,verification_count,verification_method,verification_sources,verification_note\r\n1,AWS,cloud,\"Amazon Web Services segment of Amazon.com, Inc.\",AMZN,Q1 2016,2016-03-31,quarter,revenue,营业收入/收益,2566,millions USD,quarterly_official_segment_table,official_cloud_segment_quarterly,official_match,2566,millions USD,Amazon Q1 2016 Form 10-Q AWS segment table,https://www.sec.gov/Archives/edgar/data/1018724/000101872416000227/amzn-20160331x10q.htm,\"Amazon Q1 2016 Form 10-Q Segment Information table lists AWS net sales 2,566 and operating income 604 million USD for the three months ended March 31, 2016.\",2,official_cloud_segment_table_check,\"[{\"\"label\"\": \"\"Amazon quarterly results and filings\"\", \"\"url\"\": \"\"https://ir.aboutamazon.com/quarterly-results/default.aspx\"\", \"\"evidence\"\": \"\"Amazon official investor relations quarterly results index used to locate quarterly earnings releases.\"\"}, {\"\"label\"\": \"\"Amazon Q1 2016 Form 10-Q AWS segment table\"\", \"\"url\"\": \"\"https://www.sec.gov/Archives/edgar/data/1018724/000101872416000227/amzn-20160331x10q.htm\"\", \"\"type\"\": \"\"official_quarterly_sec_filing\"\", \"\"evidence\"\": \"\"Amazon Q1 2016 Form 10-Q Segment Information table lists AWS net sales 2,566 and operating income 604 million USD for the three months ended March 31, 2016.\"\"}]\",标准化表与官方值一致，差异 0.000。\r\n2,AWS,cloud,\"Amazon Web Services segment of Amazon.com, Inc.\",AMZN,Q1 2016,2016-03-31,quarter,operating_income,经营利润/营业利润,604,millions USD,quarterly_official_segment_table,official_cloud_segment_quarterly,official_match,604,millions USD,Amazon Q1 2016 Form 10-Q AWS segment table,https://www.sec.gov/Archives/edgar/data/1018724/0001018724160",
+      "ts": "2026-06-20 21:07:00"
+    }
+  ],
+  "context_audits": [
+    {
+      "token_budget": 6500,
+      "token_estimate": 6013,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    }
+  ],
+  "retrieval_quality": [
+    {
+      "score": 100,
+      "retained_chunks": 10,
+      "official_hits": 10,
+      "conflict_hits": 4,
+      "source_gap_hits": 7,
+      "query_term_hits": 10,
+      "unique_sources": 8,
+      "status": "strong"
+    }
+  ],
+  "errors": [],
+  "status": "ok"
+}

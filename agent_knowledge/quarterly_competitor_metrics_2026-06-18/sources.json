@@ -1,0 +1,1485 @@
+{
+  "generated_at": "2026-06-19T09:50:20",
+  "sources_by_subject": {
+    "中国移动": [
+      {
+        "label": "中国移动2026年第一季度报告",
+        "url": "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国移动2025年度业绩公告",
+        "url": "https://www.marketscreener.com/news/china-mobile-announces-2025-annual-results-ce7e51dadb88f020",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0941/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "中国电信": [
+      {
+        "label": "中国电信2026年第一季度报告",
+        "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国电信2025年度业绩公告",
+        "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0728/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "中国联通": [
+      {
+        "label": "中国联通2026年一季度FAQ",
+        "url": "https://www.chinaunicom.com.hk/en/ir/faq.php",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国联通2025年度业绩公告",
+        "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0762/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "中国铁塔": [
+      {
+        "label": "中国铁塔2026年第一季度未经审核KPI",
+        "url": "https://ir.china-tower.com/en/global/home.php",
+        "type": "quarterly_results"
+      },
+      {
+        "label": "中国铁塔2025年度业绩演示",
+        "url": "https://ir.china-tower.com/en/ir/presentation/pre260318.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0788/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "HKT / csl / 1O1O": [
+      {
+        "label": "HKT 2025年度业绩演示",
+        "url": "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "HKT 2025年度业绩公告",
+        "url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/6823/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "3HK / Hutchison": [
+      {
+        "label": "和记电讯香港2025年度业绩演示",
+        "url": "https://www.hthkh.com/en/ir/presentation/pre260309.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "和记电讯香港2025年度业绩新闻稿",
+        "url": "https://www.hthkh.com/en/media/press.php?prid=%2Fpress%2Fp260309",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0215/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "SmarTone": [
+      {
+        "label": "SmarTone 2025/26中期业绩",
+        "url": "https://www.smartoneholdings.com/about_us/investor/finance/english/2526/SMT_IR25_eng.pdf",
+        "type": "interim_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/0315/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "HKBN": [
+      {
+        "label": "HKBN 2026财年中期业绩",
+        "url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
+        "type": "interim_results"
+      },
+      {
+        "label": "HKBN 2025财年年度业绩",
+        "url": "https://www.hkbn.net/group/en/press-release/hkbn-announces-fy2025-annual-results-net-profit-soars-with-strong-ebitda-growth-sustained-dividend-distribution/",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/1310/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "HGC": [
+      {
+        "label": "HGC company profile",
+        "url": "https://www.hgc.com.hk/about-hgc/about-us/company-profile",
+        "type": "official_company_profile",
+        "evidence": "HGC官网确认 HGC Global Communications Limited 为综合 ICT / 固网运营商，并说明其于 2017 年成为 I Squared Capital 持有的组合公司。"
+      },
+      {
+        "label": "HGC homepage",
+        "url": "https://www.hgc.com.hk/",
+        "type": "official_company_site",
+        "evidence": "HGC官网主页列示业务入口、新闻、ESG 和公司信息入口，但未提供上市公司式季度/半年度财务报表入口。"
+      }
+    ],
+    "i-CABLE": [
+      {
+        "label": "i-CABLE 2025年度业绩公告",
+        "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+        "type": "annual_results"
+      },
+      {
+        "label": "StockAnalysis quarterly income_statement",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly balance_sheet",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/balance-sheet/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      },
+      {
+        "label": "StockAnalysis quarterly cash_flow",
+        "url": "https://stockanalysis.com/quote/hkg/1097/financials/cash-flow-statement/?p=quarterly",
+        "type": "standardized_quarterly_financials"
+      }
+    ],
+    "AWS": [
+      {
+        "label": "Amazon quarterly results and filings",
+        "url": "https://ir.aboutamazon.com/quarterly-results/default.aspx",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Amazon Q1 2016 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000227/amzn-20160331x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q1 2016 Form 10-Q Segment Information table lists AWS net sales 2,566 and operating income 604 million USD for the three months ended March 31, 2016."
+      },
+      {
+        "label": "Amazon Q2 2016 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000286/amzn-20160630x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q2 2016 Form 10-Q Segment Information table lists AWS net sales 2,886 and operating income 718 million USD for the three months ended June 30, 2016."
+      },
+      {
+        "label": "Amazon Q3 2016 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000324/amzn-20160930x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q3 2016 Form 10-Q Segment Information table lists AWS net sales 3,231 and operating income 861 million USD for the three months ended September 30, 2016."
+      },
+      {
+        "label": "Amazon 2016 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000011/amzn-20161231x10k.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2016 Form 10-K Segment Information table reports AWS full-year net sales 12,219 and operating income 3,108 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 3,536 and operating income 925 million USD."
+      },
+      {
+        "label": "Amazon Q1 2017 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000051/amzn-20170331x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q1 2017 Form 10-Q Segment Information table lists AWS net sales 3,661 and operating income 890 million USD for the three months ended March 31, 2017."
+      },
+      {
+        "label": "Amazon Q2 2017 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000100/amzn-20170630x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q2 2017 Form 10-Q Segment Information table lists AWS net sales 4,100 and operating income 916 million USD for the three months ended June 30, 2017."
+      },
+      {
+        "label": "Amazon Q3 2017 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872417000135/amzn-20170930x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q3 2017 Form 10-Q Segment Information table lists AWS net sales 4,584 and operating income 1,171 million USD for the three months ended September 30, 2017."
+      },
+      {
+        "label": "Amazon 2017 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000005/amzn-20171231x10k.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2017 Form 10-K Segment Information table reports AWS full-year net sales 17,459 and operating income 4,331 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 5,114 and operating income 1,354 million USD."
+      },
+      {
+        "label": "Amazon Q1 2018 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000072/amzn-20180331x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q1 2018 Form 10-Q Segment Information table lists AWS net sales 5,442 and operating income 1,400 million USD for the three months ended March 31, 2018."
+      },
+      {
+        "label": "Amazon Q2 2018 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000108/amzn-20180630x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q2 2018 Form 10-Q Segment Information table lists AWS net sales 6,105 and operating income 1,642 million USD for the three months ended June 30, 2018."
+      },
+      {
+        "label": "Amazon Q3 2018 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872418000159/amzn-20180930x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q3 2018 Form 10-Q Segment Information table lists AWS net sales 6,679 and operating income 2,077 million USD for the three months ended September 30, 2018."
+      },
+      {
+        "label": "Amazon 2018 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000004/amzn-20181231x10k.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2018 Form 10-K Segment Information table reports AWS full-year net sales 25,655 and operating income 7,296 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 7,429 and operating income 2,177 million USD."
+      },
+      {
+        "label": "Amazon Q1 2019 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000043/amzn-2019331x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q1 2019 Form 10-Q Segment Information table lists AWS net sales 7,696 and operating income 2,223 million USD for the three months ended March 31, 2019."
+      },
+      {
+        "label": "Amazon Q2 2019 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000071/amzn-2019630x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q2 2019 Form 10-Q Segment Information table lists AWS net sales 8,381 and operating income 2,121 million USD for the three months ended June 30, 2019."
+      },
+      {
+        "label": "Amazon Q3 2019 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872419000089/amzn-2019930x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q3 2019 Form 10-Q Segment Information table lists AWS net sales 8,995 and operating income 2,261 million USD for the three months ended September 30, 2019."
+      },
+      {
+        "label": "Amazon 2019 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000004/amzn-20191231x10k.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2019 Form 10-K Segment Information table reports AWS full-year net sales 35,026 and operating income 9,201 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 9,954 and operating income 2,596 million USD."
+      },
+      {
+        "label": "Amazon Q1 2020 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000010/amzn-20200331x10q.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q1 2020 Form 10-Q Segment Information table lists AWS net sales 10,219 and operating income 3,075 million USD for the three months ended March 31, 2020."
+      },
+      {
+        "label": "Amazon Q2 2020 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000021/amzn-20200630.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q2 2020 Form 10-Q Segment Information table lists AWS net sales 10,808 and operating income 3,357 million USD for the three months ended June 30, 2020."
+      },
+      {
+        "label": "Amazon Q3 2020 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872420000030/amzn-20200930.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q3 2020 Form 10-Q Segment Information table lists AWS net sales 11,601 and operating income 3,535 million USD for the three months ended September 30, 2020."
+      },
+      {
+        "label": "Amazon 2020 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000004/amzn-20201231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2020 Form 10-K Segment Information table reports AWS full-year net sales 45,370 and operating income 13,531 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 12,742 and operating income 3,564 million USD."
+      },
+      {
+        "label": "Amazon Q1 2021 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000010/amzn-20210331.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q1 2021 Form 10-Q Segment Information table lists AWS net sales 13,503 and operating income 4,163 million USD for the three months ended March 31, 2021."
+      },
+      {
+        "label": "Amazon Q2 2021 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000020/amzn-20210630.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q2 2021 Form 10-Q Segment Information table lists AWS net sales 14,809 and operating income 4,193 million USD for the three months ended June 30, 2021."
+      },
+      {
+        "label": "Amazon Q3 2021 Form 10-Q AWS segment table",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000028/amzn-20210930.htm",
+        "type": "official_quarterly_sec_filing",
+        "evidence": "Amazon Q3 2021 Form 10-Q Segment Information table lists AWS net sales 16,110 and operating income 4,883 million USD for the three months ended September 30, 2021."
+      },
+      {
+        "label": "Amazon 2021 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872422000005/amzn-20211231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2021 Form 10-K Segment Information table reports AWS full-year net sales 62,202 and operating income 18,532 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 17,780 and operating income 5,293 million USD."
+      },
+      {
+        "label": "Amazon 2022 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872423000004/amzn-20221231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2022 Form 10-K Segment Information table reports AWS full-year net sales 80,096 and operating income 22,841 million USD; subtracting official Q2-Q4 trailing table values gives Q1 net sales 18,441 and operating income 6,518 million USD."
+      },
+      {
+        "label": "Amazon Q3 2023 earnings release trailing AWS segment table",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q3/AMZN-Q3-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release_trailing_table",
+        "evidence": "AWS Segment trailing table lists Q2 2022 net sales 19,739 and operating income 5,715 million USD; the trailing twelve months row also ties to 2022 full-year AWS segment totals."
+      },
+      {
+        "label": "Amazon Q4 2023 earnings release trailing AWS segment table",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q4/AMZN-Q4-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release_trailing_table",
+        "evidence": "AWS Segment trailing table lists Q3 2022 net sales 20,538 and operating income 5,403 million USD; the same release reports the 2023 full-year AWS segment comparison."
+      },
+      {
+        "label": "Amazon Q4 2023 earnings release trailing AWS segment table",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q4/AMZN-Q4-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release_trailing_table",
+        "evidence": "AWS Segment trailing table lists Q4 2022 net sales 21,378 and operating income 5,205 million USD; Q3/Q4 2023 trailing tables and the 2022 Form 10-K reconcile to full-year AWS net sales 80,096 and operating income 22,841 million USD."
+      },
+      {
+        "label": "Amazon Q4 2023 earnings release trailing AWS segment table",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q4/AMZN-Q4-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release_trailing_table",
+        "evidence": "AWS Segment trailing table lists Q1 2023 net sales 21,354 and operating income 5,123 million USD; the same release reports full-year AWS net sales 90,757 and operating income 24,631 million USD."
+      },
+      {
+        "label": "Amazon Q4 2023 earnings release trailing AWS segment table",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q4/AMZN-Q4-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release_trailing_table",
+        "evidence": "AWS Segment trailing table lists Q2 2023 net sales 22,140 and operating income 5,365 million USD; the same release reports full-year AWS net sales 90,757 and operating income 24,631 million USD."
+      },
+      {
+        "label": "Amazon Q3 2023 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q3/AMZN-Q3-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "AWS Segment table lists Q3 2023 net sales 23,059 and operating income 6,976 million USD for the three months ended September 30, 2023."
+      },
+      {
+        "label": "Amazon Q4 2023 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2023/q4/AMZN-Q4-2023-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "AWS Segment table lists Q4 2023 net sales 24,204 and operating income 7,167 million USD for the three months ended December 31, 2023; the same release reports full-year AWS net sales 90,757 and operating income 24,631 million USD."
+      },
+      {
+        "label": "Amazon Q1 2024 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q1/AMZN-Q1-2024-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 25,037 and operating income 9,421 million USD for the three months ended March 31, 2024."
+      },
+      {
+        "label": "Amazon Q2 2024 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q2/AMZN-Q2-2024-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 26,281 and operating income 9,334 million USD for the three months ended June 30, 2024."
+      },
+      {
+        "label": "Amazon Q3 2024 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q3/AMZN-Q3-2024-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 27,452 and operating income 10,447 million USD for the three months ended September 30, 2024."
+      },
+      {
+        "label": "Amazon Q4 2024 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/q4/AMZN-Q4-2024-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 28,786 and operating income 10,632 million USD for the three months ended December 31, 2024; the same release reports full-year AWS net sales 107,556 and operating income 39,834 million USD."
+      },
+      {
+        "label": "Amazon Q1 2025 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q1/AMZN-Q1-2025-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 29,267 and operating income 11,547 million USD for the three months ended March 31, 2025."
+      },
+      {
+        "label": "Amazon Q2 2025 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q2/AMZN-Q2-2025-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 30,873 and operating income 10,160 million USD for the three months ended June 30, 2025."
+      },
+      {
+        "label": "Amazon Q3 2025 earnings release",
+        "url": "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q3/AMZN-Q3-2025-Earnings-Release.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Segment Information table: AWS net sales 33,006 and operating income 11,434 million USD for the three months ended September 30, 2025."
+      },
+      {
+        "label": "Amazon 2025 Form 10-K AWS segment reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Amazon 2025 Form 10-K Segment Information table reports AWS full-year net sales 128,725 and operating income 45,606 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 35,579 and operating income 12,465 million USD."
+      }
+    ],
+    "Microsoft Azure / Intelligent Cloud": [
+      {
+        "label": "Microsoft quarterly earnings",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Microsoft FY16 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2016-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312516662209/d187868d10k.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2016: Intelligent Cloud revenue 6,711 and operating income 2,190 million USD, reconciled from FY2016 Intelligent Cloud annual revenue 25,042 and operating income 9,358 minus FY16 first-nine-month revenue 18,331 and operating income 7,168; Azure revenue growth 102%."
+      },
+      {
+        "label": "Microsoft FY17 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q1/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312516742796/d245252d10q.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2016: Intelligent Cloud revenue 6,382 and operating income 2,058 million USD; Azure revenue growth 116%."
+      },
+      {
+        "label": "Microsoft FY17 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q2/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017000654/msft-10q_20161231.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2016: Intelligent Cloud revenue 6,861 and operating income 2,398 million USD; Azure revenue increased 93%."
+      },
+      {
+        "label": "Microsoft FY17 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q3/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017007547/msft-10q_20170331.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2017: Intelligent Cloud revenue 6,763 and operating income 2,181 million USD; Azure revenue growth 93%."
+      },
+      {
+        "label": "Microsoft FY17 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2017-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017014900/msft-10k_20170630.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2017: Intelligent Cloud revenue 7,434 and operating income 2,501 million USD, reconciled from FY2017 Intelligent Cloud annual revenue 27,440 and operating income 9,138 minus FY17 first-nine-month revenue 20,006 and operating income 6,637; Azure revenue growth 97%."
+      },
+      {
+        "label": "Microsoft FY18 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q1/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459017020171/msft-10q_20170930.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2017: Intelligent Cloud revenue 6,922 and operating income 2,137 million USD; Azure revenue growth 90%."
+      },
+      {
+        "label": "Microsoft FY18 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q2/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018001129/msft-10q_20171231.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2017: Intelligent Cloud revenue 7,795 and operating income 2,832 million USD; Azure revenue growth 98%."
+      },
+      {
+        "label": "Microsoft FY18 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q3/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018009307/msft-10q_20180331.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2018: Intelligent Cloud revenue 7,896 and operating income 2,654 million USD; Azure revenue growth 93%."
+      },
+      {
+        "label": "Microsoft FY18 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2018-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018019062/msft-10k_20180630.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2018: Intelligent Cloud revenue 9,606 and operating income 3,901 million USD, reconciled from FY2018 Intelligent Cloud annual revenue 32,219 and operating income 11,524 minus FY18 first-nine-month revenue 22,613 and operating income 7,623; Azure revenue growth 89%."
+      },
+      {
+        "label": "Microsoft FY19 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q1/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459018024893/msft-10q_20180930.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2018: Intelligent Cloud revenue 8,567 and operating income 2,931 million USD; Azure revenue growth 76%."
+      },
+      {
+        "label": "Microsoft FY19 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q2/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019001392/msft-10q_20181231.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2018: Intelligent Cloud revenue 9,378 and operating income 3,279 million USD; Azure revenue growth 76%."
+      },
+      {
+        "label": "Microsoft FY19 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q3/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019012709/msft-10q_20190331.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2019: Intelligent Cloud revenue 9,649 and operating income 3,208 million USD; Azure revenue growth 73%."
+      },
+      {
+        "label": "Microsoft FY19 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2019-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019027952/msft-10k_20190630.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2019: Intelligent Cloud revenue 11,391 and operating income 4,502 million USD, reconciled from FY2019 Intelligent Cloud annual revenue 38,985 and operating income 13,920 minus FY19 first-nine-month revenue 27,594 and operating income 9,418; Azure revenue growth 64%."
+      },
+      {
+        "label": "Microsoft FY20 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q1/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459019037549/msft-10q_20190930.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2019: Intelligent Cloud revenue 10,845 and operating income 3,889 million USD; Azure revenue growth 59%."
+      },
+      {
+        "label": "Microsoft FY20 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q2/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020002450/msft-10q_20191231.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2019: Intelligent Cloud revenue 11,869 and operating income 4,531 million USD; Azure revenue growth 62%."
+      },
+      {
+        "label": "Microsoft FY20 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q3/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020019706/msft-10q_20200331.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2020: Intelligent Cloud revenue 12,281 and operating income 4,560 million USD; Azure revenue growth 59%."
+      },
+      {
+        "label": "Microsoft FY20 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2020-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020034944/msft-10k_20200630.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2020: Intelligent Cloud revenue 13,371 and operating income 5,344 million USD, reconciled from FY2020 Intelligent Cloud annual revenue 48,366 and operating income 18,324 minus FY20 first-nine-month revenue 34,995 and operating income 12,980; Azure revenue growth 47%."
+      },
+      {
+        "label": "Microsoft FY21 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q1/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459020047996/msft-10q_20200930.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2020: Intelligent Cloud revenue 12,986 and operating income 5,422 million USD; Azure revenue growth 48%."
+      },
+      {
+        "label": "Microsoft FY21 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q2/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021002316/msft-10q_20201231.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2020: Intelligent Cloud revenue 14,601 and operating income 6,492 million USD; Azure revenue growth 50%."
+      },
+      {
+        "label": "Microsoft FY21 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q3/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021020891/msft-10q_20210331.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2021: Intelligent Cloud revenue 15,118 and operating income 6,425 million USD; Azure revenue growth 50%."
+      },
+      {
+        "label": "Microsoft FY21 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2021-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021039151/msft-10k_20210630.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2021: Intelligent Cloud revenue 17,375 and operating income 7,787 million USD, reconciled from FY2021 Intelligent Cloud annual revenue 60,080 and operating income 26,126 minus FY21 first-nine-month revenue 42,705 and operating income 18,339; Azure revenue growth 51%."
+      },
+      {
+        "label": "Microsoft FY22 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q1/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459021051992/msft-10q_20210930.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2021: Intelligent Cloud revenue 16,964 and operating income 7,562 million USD from the contemporaneous FY22 Q1 Form 10-Q segment table; Azure and other cloud services revenue growth 50%. Later FY23 comparison tables restated this historical quarter to revenue 16,912 and operating income 7,681, so conclusions should cite this row's chosen contemporaneous SEC filing basis."
+      },
+      {
+        "label": "Microsoft FY22 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q2/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022002324/msft-10q_20211231.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2021: Intelligent Cloud revenue 18,327 and operating income 8,197 million USD; Azure and other cloud services revenue growth 46%."
+      },
+      {
+        "label": "Microsoft FY22 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q3/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022015675/msft-10q_20220331.htm",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2022: Intelligent Cloud revenue 19,051 and operating income 8,281 million USD; Azure and other cloud services revenue growth 46%."
+      },
+      {
+        "label": "Microsoft FY22 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2022-Q4/press-release-webcast",
+        "segment_url": "https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/msft-10k_20220630.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2022: Intelligent Cloud revenue 20,909 and operating income 8,681 million USD, reconciled from FY2022 Intelligent Cloud annual revenue 75,251 and operating income 32,721 minus FY22 first-nine-month revenue 54,342 and operating income 24,040; Azure and other cloud services revenue growth 40%."
+      },
+      {
+        "label": "Microsoft FY23 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q1/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q1/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2022: Intelligent Cloud revenue 20,325 and operating income 8,978 million USD; Azure and other cloud services revenue growth 35%."
+      },
+      {
+        "label": "Microsoft FY23 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q2/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q2/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2022: Intelligent Cloud revenue 21,508 and operating income 8,904 million USD; Azure and other cloud services revenue growth 31%."
+      },
+      {
+        "label": "Microsoft FY23 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q3/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q3/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2023: Intelligent Cloud revenue 22,081 and operating income 9,476 million USD; Azure and other cloud services revenue growth 27%."
+      },
+      {
+        "label": "Microsoft FY23 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q4/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2023-Q4/segment-revenues",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended June 30, 2023: Intelligent Cloud revenue 23,993 and operating income 10,526 million USD, reconciled from FY2023 Intelligent Cloud annual revenue 87,907 and operating income 37,884 minus FY23 first-nine-month revenue 63,914 and operating income 27,358; Azure and other cloud services revenue growth 26%."
+      },
+      {
+        "label": "Microsoft FY24 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q1/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q1/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2023: Intelligent Cloud revenue 24,259 and operating income 11,751 million USD; Azure and other cloud services revenue growth 29%."
+      },
+      {
+        "label": "Microsoft FY24 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q2/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q2/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2023: Intelligent Cloud revenue 25,880 and operating income 12,461 million USD; Azure and other cloud services revenue growth 30%."
+      },
+      {
+        "label": "Microsoft FY24 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q3/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q3/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2024: Intelligent Cloud revenue 26,708 and operating income 12,513 million USD; Azure and other cloud services revenue growth 31%."
+      },
+      {
+        "label": "Microsoft FY24 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q4/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2024-Q4/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended June 30, 2024: Intelligent Cloud revenue 28,515 and operating income 12,859 million USD; Azure and other cloud services revenue growth 29%."
+      },
+      {
+        "label": "Microsoft FY25 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q1/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q1/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2024: Intelligent Cloud revenue 24,092 and operating income 10,503 million USD; Azure and other cloud services revenue growth 33%."
+      },
+      {
+        "label": "Microsoft FY25 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q2/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q2/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2024: Intelligent Cloud revenue 25,544 and operating income 10,851 million USD; Azure and other cloud services revenue growth 31%."
+      },
+      {
+        "label": "Microsoft FY25 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q3/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2025: Intelligent Cloud revenue 26,751 and operating income 11,095 million USD; Azure and other cloud services revenue growth 33%."
+      },
+      {
+        "label": "Microsoft FY25 Q4 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q4/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended June 30, 2025: Intelligent Cloud revenue 29,878 and operating income 12,140 million USD; Azure and other cloud services revenue growth 39%."
+      },
+      {
+        "label": "Microsoft FY26 Q1 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q1/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q1/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended September 30, 2025: Intelligent Cloud revenue 30,897 and operating income 13,391 million USD; Azure and other cloud services revenue growth 40%."
+      },
+      {
+        "label": "Microsoft FY26 Q2 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q2/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q2/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended December 31, 2025: Intelligent Cloud revenue 32,907 and operating income 13,873 million USD; Azure and other cloud services revenue growth 39%."
+      },
+      {
+        "label": "Microsoft FY26 Q3 earnings release",
+        "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/press-release-webcast",
+        "segment_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/segment-revenues",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended March 31, 2026: Intelligent Cloud revenue 34,681 and operating income 13,753 million USD; Azure and other cloud services revenue growth 40%."
+      }
+    ],
+    "Google Cloud": [
+      {
+        "label": "Alphabet quarterly earnings",
+        "url": "https://abc.xyz/investor/",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Alphabet Q1 2020 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000021/goog-20200331.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2020: Google Cloud revenue 2,777 million USD, operating loss 1,730 million USD, and revenue growth 52%."
+      },
+      {
+        "label": "Alphabet Q2 2020 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000032/goog-20200630.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2020: Google Cloud revenue 3,007 million USD, operating loss 1,426 million USD, and revenue growth 43%."
+      },
+      {
+        "label": "Alphabet Q3 2020 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000050/goog-20200930.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2020: Google Cloud revenue 3,444 million USD, operating loss 1,208 million USD, and revenue growth 45%."
+      },
+      {
+        "label": "Alphabet 2020 Form 10-K Google Cloud reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000010/goog-20201231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended December 31, 2020: Google Cloud revenue 3,831 million USD and operating loss 1,243 million USD, reconciled from FY2020 revenue 13,059 and operating loss 5,607 minus Q1-Q3 cumulative revenue 9,228 and operating loss 4,364; revenue growth 47%."
+      },
+      {
+        "label": "Alphabet Q1 2021 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000020/goog-20210331.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000019/goog-20211231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2021: Google Cloud revenue 4,047 million USD, operating loss 974 million USD, and revenue growth 46%."
+      },
+      {
+        "label": "Alphabet Q2 2021 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000047/goog-20210630.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000019/goog-20211231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2021: Google Cloud revenue 4,628 million USD, operating loss 591 million USD, and revenue growth 54%."
+      },
+      {
+        "label": "Alphabet Q3 2021 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204421000057/goog-20210930.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000019/goog-20211231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2021: Google Cloud revenue 4,990 million USD, operating loss 644 million USD, and revenue growth 45%."
+      },
+      {
+        "label": "Alphabet 2021 Form 10-K Google Cloud reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000019/goog-20211231.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000019/goog-20211231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended December 31, 2021: Google Cloud revenue 5,541 million USD and operating loss 890 million USD, reconciled from FY2021 revenue 19,206 and operating loss 3,099 minus Q1-Q3 cumulative revenue 13,665 and operating loss 2,209; revenue growth 45%."
+      },
+      {
+        "label": "Alphabet Q1 2022 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000029/goog-20220331.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000016/goog-20221231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2022: Google Cloud revenue 5,821 million USD, operating loss 931 million USD, and revenue growth 44%."
+      },
+      {
+        "label": "Alphabet Q2 2022 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000071/goog-20220630.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000016/goog-20221231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2022: Google Cloud revenue 6,276 million USD, operating loss 858 million USD, and revenue growth 36%."
+      },
+      {
+        "label": "Alphabet Q3 2022 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204422000090/goog-20220930.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000016/goog-20221231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2022: Google Cloud revenue 6,868 million USD, operating loss 699 million USD, and revenue growth 38%."
+      },
+      {
+        "label": "Alphabet 2022 Form 10-K Google Cloud reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000016/goog-20221231.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000016/goog-20221231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended December 31, 2022: Google Cloud revenue 7,315 million USD and operating loss 480 million USD, reconciled from FY2022 revenue 26,280 and operating loss 2,968 minus Q1-Q3 cumulative revenue 18,965 and operating loss 2,488; revenue growth 32%."
+      },
+      {
+        "label": "Alphabet Q1 2023 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000045/goog-20230331.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2023: Google Cloud revenue 7,454 million USD, operating income 191 million USD, and revenue growth 28%."
+      },
+      {
+        "label": "Alphabet Q2 2023 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000070/goog-20230630.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2023: Google Cloud revenue 8,031 million USD, operating income 395 million USD, and revenue growth 28%."
+      },
+      {
+        "label": "Alphabet Q3 2023 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204423000094/goog-20230930.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2023: Google Cloud revenue 8,411 million USD, operating income 266 million USD, and revenue growth 22%."
+      },
+      {
+        "label": "Alphabet 2023 Form 10-K Google Cloud reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended December 31, 2023: Google Cloud revenue 9,192 million USD and operating income 864 million USD, reconciled from FY2023 revenue 33,088 and operating income 1,716 minus Q1-Q3 cumulative revenue 23,896 and operating income 852; revenue growth 26%."
+      },
+      {
+        "label": "Alphabet Q1 2024 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000053/goog-20240331.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2024: Google Cloud revenue 9,574 million USD, operating income 900 million USD, and revenue growth 28%."
+      },
+      {
+        "label": "Alphabet Q2 2024 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000079/goog-20240630.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2024: Google Cloud revenue 10,347 million USD, operating income 1,172 million USD, and revenue growth 29%."
+      },
+      {
+        "label": "Alphabet Q3 2024 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000118/goog-20240930.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2024: Google Cloud revenue 11,353 million USD, operating income 1,947 million USD, and revenue growth 35%."
+      },
+      {
+        "label": "Alphabet 2024 Form 10-K Google Cloud reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm",
+        "type": "official_annual_report_reconciliation",
+        "evidence": "Quarter ended December 31, 2024: Google Cloud revenue 11,955 million USD and operating income 2,093 million USD, reconciled from FY2024 revenue 43,229 and operating income 6,112 minus Q1-Q3 cumulative revenue 31,274 and operating income 4,019; revenue growth 30%."
+      },
+      {
+        "label": "Alphabet Q1 2025 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000043/goog-20250331.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended March 31, 2025: Google Cloud revenue 12,260 million USD, operating income 2,177 million USD, and revenue growth 28%."
+      },
+      {
+        "label": "Alphabet Q2 2025 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000062/goog-20250630.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended June 30, 2025: Google Cloud revenue 13,624 million USD, operating income 2,826 million USD, and revenue growth 32%."
+      },
+      {
+        "label": "Alphabet Q3 2025 Form 10-Q",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "type": "official_sec_10q_segment_table",
+        "evidence": "Three months ended September 30, 2025: Google Cloud revenue 15,157 million USD, operating income 3,594 million USD, and revenue growth 34%."
+      },
+      {
+        "label": "Alphabet Q4 2025 earnings release exhibit",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm",
+        "annual_url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "type": "official_sec_8k_earnings_exhibit",
+        "evidence": "Quarter ended December 31, 2025: Google Cloud revenue 17,664 million USD, operating income 5,313 million USD, and revenue growth 48%."
+      },
+      {
+        "label": "Alphabet 2020-2025 Form 10-K - Google Cloud segment tables",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "type": "official_annual_report_segment_table",
+        "evidence": "Alphabet SEC annual segment tables for 2020-2025 are used to cross-check Google Cloud annual revenue and operating income totals and to reconcile Q4 as full year minus Q1-Q3 where needed."
+      },
+      {
+        "label": "Alphabet Q4 2019 earnings exhibit - expanded Google Cloud revenue disclosure",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204420000004/googexhibit991q42019.htm",
+        "type": "official_sec_8k_earnings_exhibit",
+        "evidence": "Alphabet Q4 2019 earnings exhibit provides Q4 2018 and Q4 2019 Google Cloud revenue and FY2017-FY2019 annual Google Cloud revenue."
+      }
+    ],
+    "Alibaba Cloud": [
+      {
+        "label": "Alibaba quarterly results",
+        "url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Alibaba September Quarter 2023 results - restated Cloud Intelligence Group reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465923119081/tm2330915d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_sec_6k_restated_segment_reconciliation",
+        "evidence": "Alibaba September quarter 2023 results restated DingTalk from Cloud Intelligence Group to All others and reclassified comparative figures. Restated Cloud Intelligence Group revenue for six months ended September 30, 2022 was RMB51,391 million and September quarter 2022 revenue was RMB27,035 million, so June quarter 2022 revenue is reconciled to RMB24,356 million. Restated Cloud Intelligence Group adjusted EBITA for six months ended September 30, 2022 was RMB1,845 million and September quarter 2022 adjusted EBITA was RMB981 million, so June quarter 2022 adjusted EBITA is reconciled to RMB864 million. No same-basis FY2022 quarterly comparator is retained here, so FY2023 Q1 growth metrics are not estimated."
+      },
+      {
+        "label": "Alibaba September Quarter 2023 results - restated Cloud Intelligence Group comparative",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465923119081/tm2330915d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_sec_6k_restated_segment_comparative",
+        "evidence": "Alibaba September quarter 2023 results restated DingTalk from Cloud Intelligence Group to All others and reclassified comparative figures. The restated comparative table reports September quarter 2022 Cloud Intelligence Group revenue of RMB27,035 million and adjusted EBITA of RMB981 million. No same-basis FY2022 quarterly comparator is retained here, so FY2023 Q2 growth metrics are not estimated."
+      },
+      {
+        "label": "Alibaba December Quarter 2023 results - restated Cloud Intelligence Group comparative",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924011604/tm245446d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1691989841455087616",
+        "type": "official_sec_6k_restated_segment_comparative",
+        "evidence": "Alibaba December quarter 2023 results say DingTalk was reclassified from Cloud Intelligence Group to All others and comparative figures were reclassified. The restated comparative table reports December quarter 2022 Cloud Intelligence Group revenue of RMB27,364 million and adjusted EBITA of RMB1,269 million. No same-basis FY2022 quarterly comparator is retained here, so FY2023 Q3 growth metrics are not estimated."
+      },
+      {
+        "label": "Alibaba March Quarter 2024 and Fiscal Year 2024 results - restated Cloud Intelligence Group comparative",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924061145/tm2414429d1_ex99-1.htm",
+        "document_url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924061145/tm2414429d1_ex99-1.htm",
+        "type": "official_sec_6k_restated_segment_comparative",
+        "evidence": "Alibaba fiscal 2024 results say DingTalk was reclassified from Cloud Intelligence Group to All others and comparative figures were reclassified. The restated comparative table reports March quarter 2023 Cloud Intelligence Group revenue of RMB24,742 million and adjusted EBITA of RMB987 million. No same-basis FY2022 quarterly comparator is retained here, so FY2023 Q4 growth metrics are not estimated."
+      },
+      {
+        "label": "Alibaba September Quarter 2023 results - restated Cloud Intelligence Group reconciliation",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465923119081/tm2330915d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_sec_6k_restated_segment_reconciliation",
+        "evidence": "Alibaba September quarter 2023 results restated DingTalk from Cloud Intelligence Group to All others and reclassified comparative figures. Restated Cloud Intelligence Group revenue for six months ended September 30, 2023 was RMB52,713 million and September quarter 2023 revenue was RMB27,648 million, so June quarter 2023 revenue is reconciled to RMB25,065 million. Restated Cloud Intelligence Group adjusted EBITA for six months ended September 30, 2023 was RMB2,325 million and September quarter 2023 adjusted EBITA was RMB1,409 million, so June quarter 2023 adjusted EBITA is reconciled to RMB916 million. Revenue growth and adjusted EBITA growth are computed against restated FY2023 Q1 comparatives as 2.911% and 6.019%."
+      },
+      {
+        "label": "Alibaba September Quarter 2023 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465923119081/tm2330915d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba September quarter 2023 results report Cloud Intelligence Group revenue of RMB27,648 million, up 2% year-over-year, and adjusted EBITA of RMB1,409 million, up 44% year-over-year."
+      },
+      {
+        "label": "Alibaba December Quarter 2023 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924011604/tm245446d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1691989841455087616",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba December quarter 2023 results report Cloud Intelligence Group revenue of RMB28,066 million, up 3% year-over-year, and adjusted EBITA of RMB2,364 million, up 86% year-over-year."
+      },
+      {
+        "label": "Alibaba March Quarter 2024 and Fiscal Year 2024 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924061145/tm2414429d1_ex99-1.htm",
+        "document_url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924061145/tm2414429d1_ex99-1.htm",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba March quarter 2024 results report Cloud Intelligence Group revenue of RMB25,595 million, up 3% year-over-year, and adjusted EBITA of RMB1,432 million, up 45% year-over-year."
+      },
+      {
+        "label": "Alibaba June Quarter 2024 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924090102/tm2421791d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/document-1761110461375315968",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba June quarter 2024 results report Cloud Intelligence Group revenue of RMB26,549 million, up 6% year-over-year, and adjusted EBITA of RMB2,337 million, up 155% year-over-year."
+      },
+      {
+        "label": "Alibaba September Quarter 2024 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465924119688/tm2428590d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba September quarter 2024 results report Cloud Intelligence Group revenue of RMB29,610 million, up 7% year-over-year, and adjusted EBITA of RMB2,661 million, up 89% year-over-year."
+      },
+      {
+        "label": "Alibaba December Quarter 2024 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465925015648/tm257183d1_ex99-1.htm",
+        "document_url": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba December quarter 2024 results report Cloud Intelligence Group revenue of RMB31,742 million, up 13% year-over-year, and adjusted EBITA of RMB3,138 million, up 33% year-over-year."
+      },
+      {
+        "label": "Alibaba March Quarter 2025 and Fiscal Year 2025 results",
+        "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465925049400/tm2515233d1_ex99-1.htm",
+        "document_url": "https://data.alibabagroup.com/ecms-files/1532295521/83f92d1d-d36f-4ecd-a56c-2d3c59cb251a/Alibaba%20Group%20Announces%20March%20Quarter%202025%20and%20Fiscal%20Year%202025%20Results.pdf",
+        "type": "official_sec_6k_quarterly_results",
+        "evidence": "Alibaba March quarter 2025 results report Cloud Intelligence Group revenue of RMB30,127 million, up 18% year-over-year, and adjusted EBITA of RMB2,420 million, up 69% year-over-year."
+      },
+      {
+        "label": "Alibaba June Quarter 2025 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/d09dd487-1a87-4e17-aa5d-9eb4da7eb56b/Alibaba%20Group%20Announces%20June%20Quarter%202025%20Results.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1897714462505304064",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba June quarter 2025 results report Cloud Intelligence Group revenue of RMB33,398 million, up 26% year-over-year, and adjusted EBITA of RMB2,954 million, up 26% year-over-year."
+      },
+      {
+        "label": "Alibaba September Quarter 2025 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/96ebbe16-9309-479f-b628-48b0ccc31b9c/Alibaba%20Group%20Announces%20September%20Quarter%202025%20Results%20and%20Interim%20Results%20for%20the%20Six%20Months%20Ended%20September%2030%2C%202025.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1929990445136347136",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba September quarter 2025 results report Cloud Intelligence Group revenue of RMB39,824 million, up 34% year-over-year, and adjusted EBITA of RMB3,604 million, up 35% year-over-year."
+      },
+      {
+        "label": "Alibaba December Quarter 2025 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/e48e70a1-e5c8-40ac-bdd2-951ebcb36946/Alibaba%20Group%20Announces%20December%20Quarter%202025%20Results.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1971014025827319808",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba December quarter 2025 results report Cloud Intelligence Group revenue of RMB43,284 million, up 36% year-over-year, and adjusted EBITA of RMB3,911 million, up 25% year-over-year."
+      },
+      {
+        "label": "Alibaba March Quarter 2026 and Fiscal Year 2026 results",
+        "url": "https://data.alibabagroup.com/ecms-files/1532295521/5b1cb883-8d00-4237-a148-6631cc12a5d2/Alibaba%20Group%20Announces%20March%20Quarter%202026%20and%20Fiscal%20Year%202026%20Results.pdf",
+        "document_url": "https://www.alibabagroup.com/en-US/document-1991237455038119936",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Alibaba March quarter 2026 results report Cloud Intelligence Group revenue of RMB41,626 million, up 38% year-over-year, and adjusted EBITA of RMB3,796 million, up 57% year-over-year."
+      }
+    ],
+    "Tencent Cloud / Tencent FBS proxy": [
+      {
+        "label": "Tencent financial reports",
+        "url": "https://www.tencent.com/en-us/investors/financial-reports.html",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Tencent 2019 Q1 earnings release",
+        "url": "https://static.www.tencent.com/storage/uploads/2019/11/09/996a00a688b56c13c220845ed6f63be9.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2019 earnings release reports FinTech and Business Services revenue of RMB21,789 million and 44% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2019 Q2 earnings release",
+        "url": "https://static.www.tencent.com/storage/uploads/2019/11/09/77248c95e2a3295269c2875c8c908f86.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2019 earnings release reports FinTech and Business Services revenue of RMB22,888 million and 37% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2019 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2019/11/13/8b98062831f2f28d9cb4616222a4d3c3.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2019 earnings release reports FinTech and Business Services revenue of RMB26,758 million and 36% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2019 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2020/03/18/7fceaf3d1b264debc61342fc1a27dd18.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2019 earnings release reports FinTech and Business Services revenue of RMB29,920 million and 39% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2020 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2020/05/18/13009f73ecab16501df9062e43e47e67.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2020 earnings release reports FinTech and Business Services revenue of RMB26,475 million and 22% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2020 Q2 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2020/08/12/00e999c23314aa085c0b48c533d4d393.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2020 earnings release reports FinTech and Business Services revenue of RMB29,862 million and 30% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2020 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2020/11/12/4c2090d5f6f00fd90ddc9bbd9a1415d1.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2020 earnings release reports FinTech and Business Services revenue of RMB33,255 million and 24% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2020 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2021/03/24/b83f5784d0579b51cf8515cf560b4256.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2020 earnings release reports FinTech and Business Services revenue of RMB38,494 million and 29% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2021 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2021/05/20/269facaab659f690ab4e262b4c0bd01d.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2021 earnings release reports FinTech and Business Services revenue of RMB39,028 million and 47% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2021 Q2 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2021/08/18/236f212d95d7402bacdbdf904a6b2b65.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2021 earnings release reports FinTech and Business Services revenue of RMB41,892 million and 40% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2021 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2021/11/10/57d32da50c1d7abe221d7f9ca9ec3dcb.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2021 earnings release reports FinTech and Business Services revenue of RMB43,317 million and 30% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2021 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2022/03/23/b107f5a267bf6a7d00fd8373cd841558.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2021 earnings release reports FinTech and Business Services revenue of RMB47,958 million and 25% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2022 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2022/05/18/f403326038a641b20465a17eff3567ce.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2022 earnings release reports FinTech and Business Services revenue of RMB42,768 million and 10% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2022 Q2 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2022/08/17/a1a39b69021bb7e4bf7f8dd238070079.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2022 earnings release reports FinTech and Business Services revenue of RMB42,208 million and 1% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2022 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2022/11/16/33aad36dea97848eb75aa988d785e9f8.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2022 earnings release reports FinTech and Business Services revenue of RMB44,844 million and 4% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2022 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2023/03/22/3b5431187fdc8a053d9fee3a4c031aa6.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2022 earnings release reports FinTech and Business Services revenue of RMB47,244 million and -1% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2023 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2023/05/17/7b07c1a2b0befc1a89a6fc4219ed6cae.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2023 earnings release reports FinTech and Business Services revenue of RMB48,701 million and 14% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2023 Q2 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2023/08/16/f283f2dfd05151ae7659e7a8e3d667ef.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2023 earnings release reports FinTech and Business Services revenue of RMB48,635 million and 15% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2023 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2023/11/15/9e4da3187104bbdf04e2cbe491b75147.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2023 earnings release reports FinTech and Business Services revenue of RMB52,048 million and 16% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2023 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2024/03/20/fe50310bf15caaab4b05dd9e8e49d316.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2023 earnings release reports FinTech and Business Services revenue of RMB54,379 million and 15% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2024 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2024/05/14/207c400f3d6e2d9894c0b9b778507cf1.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2024 earnings release reports FinTech and Business Services revenue of RMB52,302 million and 7% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2024 Q2 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2024/08/14/027889ef78b4ed2b83337dd4a7c2ffef.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2024 earnings release reports FinTech and Business Services revenue of RMB50,440 million and 4% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2024 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2024/11/13/fc23e847ab5be9093587be6b7b01c115.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2024 earnings release reports FinTech and Business Services revenue of RMB53,089 million and 2% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2024 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/03/19/81cb1f36bec218d27d6e0b24eec012b6.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2024 earnings release reports FinTech and Business Services revenue of RMB56,125 million and 3% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2025 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/05/16/2af4e73edd208df236dadd8b9df89fc4.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2025 earnings release reports FinTech and Business Services revenue of RMB54,907 million and 5% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2025 Q2 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/08/13/56af6c5c98acdc7bd757a7bd208d8189.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q2 2025 earnings release reports FinTech and Business Services revenue of RMB55,536 million and 10% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2025 Q3 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2025/11/13/a33b6f19738615834787623f17d20ba3.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q3 2025 earnings release reports FinTech and Business Services revenue of RMB58,174 million and 10% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2025 Q4 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2026/03/18/e6a646796d0d869acc76271c9ee1a6a5.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q4 2025 earnings release reports FinTech and Business Services revenue of RMB60,818 million and 8% year-on-year growth."
+      },
+      {
+        "label": "Tencent 2026 Q1 earnings release",
+        "url": "https://static.www.tencent.com/uploads/2026/05/13/47382ae415a209fd161bc19a1f9b3704.pdf",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Tencent Q1 2026 earnings release reports FinTech and Business Services revenue of RMB59,885 million and 9% year-on-year growth."
+      }
+    ],
+    "Huawei Cloud / Cloud Computing": [
+      {
+        "label": "Huawei annual and interim reports",
+        "url": "https://www.huawei.com/en/annual-report",
+        "type": "official_reports_index"
+      },
+      {
+        "label": "Huawei 2025 Annual Report quick view",
+        "url": "https://www.huawei.com/en/annual-report/2025",
+        "type": "official_annual_report_quick_view",
+        "evidence": "Huawei 2025 Annual Report By Business Segment table reports Cloud Computing revenue of CNY32,161 million for 2025, CNY33,325 million for 2024, and YoY (3.5)%; the note states revenue derived from cloud computing business, including revenue from other Huawei segments, amounted to CNY72,075 million."
+      },
+      {
+        "label": "Huawei annual reports index",
+        "url": "https://www.huawei.com/en/annual-report",
+        "type": "official_annual_reports_index",
+        "evidence": "Huawei annual reports index lists the 2025 Annual Report quick view and PDF, plus past annual reports; no quarterly or interim cloud segment financial report entry is provided on this official annual reports page."
+      }
+    ],
+    "Oracle Cloud": [
+      {
+        "label": "Oracle quarterly results",
+        "url": "https://investor.oracle.com/financials/default.aspx",
+        "type": "official_quarterly_results_index"
+      },
+      {
+        "label": "Oracle FY2022 Q1 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q1fy22-earnings-release-2021-09-13/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2022 Q1 release reports IaaS plus SaaS cloud revenue totaled 2.5 billion USD, or 25% of quarterly revenue. It does not disclose same-table IaaS/SaaS absolute revenue or a total cloud revenue growth percentage for this quarter, so those are not estimated."
+      },
+      {
+        "label": "Oracle FY2022 Q2 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q2fy22-earnings-release-2021-12-09/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2022 Q2 release reports Total Cloud Revenue (IaaS plus SaaS) 2.7 billion USD, up 22%. It does not disclose same-table IaaS/SaaS absolute revenue, so split metrics are not estimated."
+      },
+      {
+        "label": "Oracle FY2022 Q3 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q3fy22-earnings-release-2022-03-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2022 Q3 release reports Total Cloud Revenue (IaaS plus SaaS) 2.8 billion USD, up 24%. It does not disclose same-table IaaS/SaaS absolute revenue, so split metrics are not estimated."
+      },
+      {
+        "label": "Oracle FY2022 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy22-earnings-release-2022-06-13/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2022 Q4 release reports Total Q4 Cloud Revenue (IaaS plus SaaS) 2.9 billion USD, up 19%. It discloses Infrastructure Cloud Revenue growth but not same-table IaaS/SaaS absolute revenue, so split metrics are not estimated."
+      },
+      {
+        "label": "Oracle FY2023 Q1 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q1fy23-earnings-release-2022-09-12/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2023 Q1 release reports Cloud Revenue (IaaS plus SaaS) 3.6 billion USD up 45%, Cloud Infrastructure (IaaS) revenue 0.9 billion USD up 52%, and Cloud Application (SaaS) revenue 2.7 billion USD up 43%. The release also states Cerner contributed 1.4 billion USD to total revenue in the first quarter."
+      },
+      {
+        "label": "Oracle FY2023 Q2 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q2fy23-earnings-release-2022-12-12/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2023 Q2 release reports Cloud Revenue (IaaS plus SaaS) 3.8 billion USD up 43%, Cloud Infrastructure (IaaS) revenue 1.0 billion USD up 53%, and Cloud Application (SaaS) revenue 2.8 billion USD up 40%. The release also states Cerner contributed 1.5 billion USD to total revenue in the second quarter."
+      },
+      {
+        "label": "Oracle FY2023 Q3 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q3fy23-earnings-release-2023-03-09/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2023 Q3 release reports Cloud Revenue (IaaS plus SaaS) 4.1 billion USD up 45%, Cloud Infrastructure (IaaS) revenue 1.2 billion USD up 55%, and Cloud Application (SaaS) revenue 2.9 billion USD up 42%. The release also states Cerner contributed 1.5 billion USD to total revenue in the third quarter."
+      },
+      {
+        "label": "Oracle FY2023 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy23-earnings-release-2023-06-12/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2023 Q4 release reports Cloud Revenue (IaaS plus SaaS) 4.4 billion USD up 54%, Cloud Infrastructure (IaaS) revenue 1.4 billion USD up 76%, and Cloud Application (SaaS) revenue 3.0 billion USD up 45%. The release also states Cerner contributed 1.5 billion USD to total revenue in the fourth quarter."
+      },
+      {
+        "label": "Oracle FY2024 Q1 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q1fy24-earnings-release-2023-09-11/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2024 Q1 release reports Cloud Revenue (IaaS plus SaaS) 4.6 billion USD up 30%, Cloud Infrastructure (IaaS) revenue 1.5 billion USD up 66%, and Cloud Application (SaaS) revenue 3.1 billion USD up 17%."
+      },
+      {
+        "label": "Oracle FY2024 Q2 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q2fy24-earnings-release-2023-12-11/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2024 Q2 release reports Cloud Revenue (IaaS plus SaaS) 4.8 billion USD up 25%, Cloud Infrastructure (IaaS) revenue 1.6 billion USD up 52%, and Cloud Application (SaaS) revenue 3.2 billion USD up 15%."
+      },
+      {
+        "label": "Oracle FY2024 Q3 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q3fy24-earnings-release-2024-03-11/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2024 Q3 release reports Cloud Revenue (IaaS plus SaaS) 5.1 billion USD up 25%, Cloud Infrastructure (IaaS) revenue 1.8 billion USD up 49%, and Cloud Application (SaaS) revenue 3.3 billion USD up 14%."
+      },
+      {
+        "label": "Oracle FY2024 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy24-earnings-release-2024-06-11/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2024 Q4 release reports Cloud Revenue (IaaS plus SaaS) 5.3 billion USD up 20%, Cloud Infrastructure (IaaS) revenue 2.0 billion USD up 42%, and Cloud Application (SaaS) revenue 3.3 billion USD up 10%."
+      },
+      {
+        "label": "Oracle FY2025 Q1 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q1fy25-earnings-release-2024-09-09/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2025 Q1 release reports Cloud Revenue (IaaS plus SaaS) 5.6 billion USD up 21%, Cloud Infrastructure (IaaS) revenue 2.2 billion USD up 45%, and Cloud Application (SaaS) revenue 3.5 billion USD up 10%."
+      },
+      {
+        "label": "Oracle FY2025 Q2 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q2fy25-earnings-release-2024-12-09/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2025 Q2 release reports Cloud Revenue (IaaS plus SaaS) 5.9 billion USD up 24%, Cloud Infrastructure (IaaS) revenue 2.4 billion USD up 52%, and Cloud Application (SaaS) revenue 3.5 billion USD up 10%."
+      },
+      {
+        "label": "Oracle FY2025 Q3 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q3fy25-earnings-release-2025-03-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2025 Q3 release reports Cloud Revenue (IaaS plus SaaS) 6.2 billion USD up 23%, Cloud Infrastructure (IaaS) revenue 2.7 billion USD up 49%, and Cloud Application (SaaS) revenue 3.6 billion USD up 9%."
+      },
+      {
+        "label": "Oracle FY2025 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy25-earnings-release-2025-06-11/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2025 Q4 release reports Cloud Revenue 6.7 billion USD up 27%, Cloud Infrastructure revenue 3.0 billion USD up 52%, and Cloud Application revenue 3.7 billion USD up 12%."
+      },
+      {
+        "label": "Oracle FY2026 Q1 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q1fy26-earnings-release-2025-09-09/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q1 release reports Cloud Revenue 7.2 billion USD up 28%, Cloud Infrastructure revenue 3.3 billion USD up 55%, and Cloud Application revenue 3.8 billion USD up 11%."
+      },
+      {
+        "label": "Oracle FY2026 Q2 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q2fy26-earnings-release-2025-12-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q2 release reports Cloud Revenue 8.0 billion USD up 34%, Cloud Infrastructure revenue 4.1 billion USD up 68%, and Cloud Application revenue 3.9 billion USD up 11%."
+      },
+      {
+        "label": "Oracle FY2026 Q3 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q3fy26-earnings-release-2026-03-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q3 release reports Cloud Revenue 8.9 billion USD up 44%, Cloud Infrastructure revenue 4.9 billion USD up 84%, and Cloud Application revenue 4.0 billion USD up 13%."
+      },
+      {
+        "label": "Oracle FY2026 Q4 earnings release",
+        "url": "https://www.oracle.com/news/announcement/q4fy26-earnings-release-2026-06-10/",
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Oracle FY2026 Q4 release reports Total Cloud Revenues 9.9 billion USD up 47%, Cloud Infrastructure revenue 5.8 billion USD up 93%, and Cloud Applications revenue 4.1 billion USD up 10%."
+      }
+    ]
+  },
+  "quality_notes_by_subject": {
+    "中国移动": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "中国电信": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "中国联通": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "中国铁塔": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "HKT / csl / 1O1O": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "3HK / Hutchison": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "SmarTone": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "HKBN": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "HGC": [
+      "非上市主体，未发现稳定公开季度/半年度完整财务表；本包只记录来源缺口，不估算。",
+      "无可自动抓取的公开标准化季度/半年度表；不得估算。",
+      "已核验 HGC 官网公司简介和主页；仅确认公司身份、业务范围和披露缺口，不写入任何估算财务数。"
+    ],
+    "i-CABLE": [
+      "结构化数值来自 StockAnalysis 在线季度/半年度标准化表；关键结论需用官方季报、业绩公告或年报逐项复核。"
+    ],
+    "AWS": [
+      "AWS 使用 Amazon 官方 earnings release、trailing AWS Segment 表、SEC 10-Q 和 Form 10-K 的 Segment Information 表；数值为 AWS segment net sales 和 operating income，不使用 Amazon 母公司总收入替代。当前已覆盖 2016Q1-2025Q4。",
+      "2016 Q1-Q3、2017 Q1-Q3、2018 Q1-Q3、2019 Q1-Q3、2020 Q1-Q3、2021 Q1-Q3 来自官方 SEC 10-Q，2022 Q2-Q4、2023 Q1-Q4、2024 Q1-Q4 和 2025 Q1-Q3 来自官方季度 earnings release、10-Q 或 trailing AWS Segment 表；2016 Q4、2017 Q4、2018 Q4、2019 Q4、2020 Q4、2021 Q4、2022 Q1 和 2025 Q4 由对应 Form 10-K 全年分部数减已披露季度数复算，均在 verification_method 中标明。"
+    ],
+    "Microsoft Azure / Intelligent Cloud": [
+      "Azure 未单独披露收入；需使用 Intelligent Cloud/Server products and cloud services 代理口径。",
+      "Microsoft 不披露 Azure 绝对收入；本包写入官方 Intelligent Cloud 分部 revenue / operating income 作为代理口径，并单列 Azure and other cloud services 收入同比增速。",
+      "期间按自然季度标注：Q1/Q2/Q3/Q4 2024 分别对应 Microsoft FY24 Q3、FY24 Q4、FY25 Q1、FY25 Q2；Q1/Q2/Q3/Q4 2025 分别对应 FY25 Q3、FY25 Q4、FY26 Q1、FY26 Q2。"
+    ],
+    "Google Cloud": [
+      "Google Cloud 收入和经营利润使用 Alphabet 官方 SEC 10-Q/8-K 季度分部表及 2020-2025 Form 10-K 年度分部表；Q4 2020-Q4 2024 按全年 Google Cloud 分部数减 Q1-Q3 官方季度值复算并在 evidence 中标明。另从 Alphabet Q4 2019 earnings exhibit 保留 Q4 2018 和 Q4 2019 Google Cloud revenue。当前 revenue 有值季度为 Q4 2018、Q4 2019、Q1 2020-Q4 2025；operating_income 仍从 Q1 2020 起。",
+      "Google Cloud revenue_growth_yoy 来自官方季度 10-Q/8-K 管理层讨论或业绩公告；不使用媒体摘要作为逐行核验来源。2016-2019 未发现同等完整的官方季度 Google Cloud revenue 与 operating income 分部序列，除已披露 Q4 2018/Q4 2019 revenue 外不估算。"
+    ],
+    "Alibaba Cloud": [
+      "Alibaba Cloud 使用 Alibaba 官方 Cloud Intelligence Group 分部口径；FY2026 Q4 对应截至 2026-03-31 的 March Quarter 2026。",
+      "本轮先写入官方最新季度的 revenue、revenue_growth_yoy、adjusted_ebita 和 adjusted_ebita_growth_yoy；更早季度仍需继续从官方 PDF 或年报逐项抽取。"
+    ],
+    "Tencent Cloud / Tencent FBS proxy": [
+      "腾讯云未单独披露收入；只能使用 FinTech and Business Services 代理口径并明确说明。",
+      "Tencent 不披露纯 Tencent Cloud 收入；本包使用官方 FinTech and Business Services 分部作为代理口径，需明确包含金融科技、企业服务、云/AI相关服务和电商技术服务等。",
+      "Tencent 自 2019Q1 起开始单独披露 FinTech and Business Services 分部；本包已写入 2019Q1-2026Q1 官方季度 FBS 收入和同比增速。",
+      "2016-2018 未使用旧分部口径替代 FBS；如需 40 季度硬覆盖，应登记 2016Q2-2018Q4 的不可比/source-gap 边界，而不是估算。"
+    ],
+    "Huawei Cloud / Cloud Computing": [
+      "非上市公司；季度云分部收入需从官方季报/半年报/年报手工抽取，不能用估算值。",
+      "Huawei 为非上市公司，官方公开披露以年度报告为主；本包只记录季度披露缺口和年度云分部证据，不写入估算季度数据。"
+    ],
+    "Oracle Cloud": [
+      "Oracle 可披露 Cloud services 产品线收入，但分部利润为 Cloud and license 口径。",
+      "Oracle 披露 Cloud Revenue、Cloud Infrastructure (IaaS) Revenue 和 Cloud Application (SaaS) Revenue；本包不把 Oracle 总收入或 Software revenue 当作云收入。",
+      "Oracle 未披露纯云业务利润；本次只写入官方季度云收入拆分和同比增速。"
+    ]
+  }
+}

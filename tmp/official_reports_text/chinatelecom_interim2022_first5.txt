@@ -1,0 +1,184 @@
+China Telecom Corporation Limited
+HKEx Stock Code: 728
+
+
+
+
+A NEW
+MILESTONE
+Interim Report 2022
+Contents
+
+01   Important Notice
+02   Section I Definitions
+07   Section II Company Profile
+09   Section III Management’s Discussion and Analysis
+35   Section IV Corporate Governance Report
+41   Section V Environmental and Social Responsibilities
+43   Section VI Significant Events
+50   Section VII Changes in Shares and Information on Shareholders
+56   Section VIII Relevant Information on Bonds
+57   Section IX Interim Financial Information
+     57     Report on Review of Interim Financial Information
+     58     Condensed Consolidated Statement of Financial Position (Unaudited)
+     60     Condensed Consolidated Statement of Comprehensive Income (Unaudited)
+     62     Condensed Consolidated Statement of Changes in Equity (Unaudited)
+     63     Condensed Consolidated Statement of Cash Flows (Unaudited)
+     66     Notes to the Unaudited Condensed Consolidated Interim Financial Information
+     88     Differences between Chinese Accounting Standard and IFRSs
+                                                                       IMPORTANT NOTICE
+
+
+
+1.     The unaudited condensed consolidated interim         3.     Risk Statement of Forward-Looking
+       financial information for the six-month period              Statements
+       ended 30 June 2022 of the Company is
+       prepared in accordance with the International        Forward-looking statements, such as development
+       Accounting Standard 34. The condensed                strategies, future business plans and prospects,
+       consolidated interim financial information in this   contained in the 2022 interim report of the Company
+       report is unaudited.                                 do not constitute a commitment of the Company
+                                                            to investors. These forward-looking statements are
+2.     The profit distribution proposal or proposal for     subject to known and unknown risks, uncertainties
+       conversion of capital reserve into share capital     and other factors which may cause the Company’s
+       for the Reporting Period approved by the Board       actual performance, financial condition or results
+                                                            of operations to be materially different from any
+After fully considering the returns to shareholders, the    future performance, financial condition or results
+Company’s profitability, cash flow level and capital        of operations implied by such forward-looking
+needs for future development, the 19th meeting of           statements. In addition, the Company will not update
+the seventh session of the Board of the Company             these forward-looking statements. Investors should be
+decided to distribute the interim dividend for 2022         aware of the investment risks.
+to all shareholders based on 60% of the profit
+attributable to equity holders of the Company in            4.     Significant Risk Warning
+the amount of RMB18.29 billion. Based on the total
+share capital registered on the record date for the         The Company has described in detail the economic
+dividend distribution, and based on the Company’s           and policy environment adaptation risks, business
+total share capital of 91,507,138,699 shares as at 30       operation risks, network and information security risks
+June 2022, a dividend of RMB0.120 per share (pre-           and international operation risks in this report. Please
+tax) was declared and will be paid to all shareholders.     refer to the “Management’s Discussion and Analysis”
+In case of any change in the total number of issued         in this report.
+share capital of the Company before the record date
+for the implementation of the dividend distribution,
+the total distribution amount will remain unchanged,
+and the distribution amount per share will be
+adjusted accordingly with specific adjustments to be
+announced separately.
+
+
+The Board has been authorised by the shareholders’
+meeting to decide on the proposal of interim dividend
+for 2022 and the resolution for the proposed interim
+dividend was passed at the 19th meeting of the
+seventh session of the Board of the Company on 16
+August 2022.
+
+
+
+
+                                                     China Telecom Corporation Limited   Interim Report 2022      1
+SECTION I DEFINITIONS
+
+
+
+In this report, unless the context otherwise requires, the following terms and expressions have the following
+meanings:
+
+
+5G                                         5th generation mobile communication technology
+
+
+5G Messaging                               A new upgrade to the existing standard SMS messaging service. For
+                                           individual users, 5G messaging can effectively integrate text, pictures,
+                                           audio, video, geo-location and other information in terms of content; for
+                                           enterprises, 5G messaging provides a multimedia information interaction
+                                           interface with individual users
+
+
+5G New Calls                               A new calling service which is based on 5G VoNR ultra-definition audio
+                                           and video calls, combined with the audio and video AI processing
+                                           capabilities carried by the cloud and the real-time interaction capabilities
+                                           of multiple types of data brought by the IMS Data Channel, for realising
+                                           the intelligence, interactiveness and accessibility of functions such as
+                                           transliteration and real-time interactive operations during calls
+
+
+A Share(s)                                 Shares of the Company issued in mainland China, listed on domestic
+                                           stock exchanges and subscribed and traded in RMB
+
+
+ADSs                                       Securities issued by the depository bank and traded on the New York
+                                           Stock Exchange. Each ADS of the Company represents 100 H Shares of
+                                           the Company
+
+
+AR                                         Augmented Reality
+
+
+ARPU                                       Monthly average revenue per user
+
+
+Artificial Intelligence/AI                 Technology science that researches and develops theories,
+                                           methodologies, technologies and application systems for simulating,
+                                           extending and expanding human intelligence
+
+
+
+
+2            China Telecom Corporation Limited   Interim Report 2022
+                                                                                  SECTION I DEFINITIONS
+
+
+
+
+Big Data                             Massive, real-time and diversified data information that can be recorded,
+                                     collected, developed and utilised, and big data-based mining and
+                                     processing technology
+
+
+Board/Board of Directors             The board of directors of the Company
+
+
+China Telecom Digital Intelligence   China Telecom Digital Intelligence Technology Co., Ltd, formerly known
+  Technology                         as China Telecom System Integration Co., Limited
+
+
+China Telecom Finance                China Telecom Group Finance Co., Ltd. (中國電信集團財務有限公司)
+
+
+China Telecom Global                 China Telecom Global Limited
+
+
+China Telecommunications             C h i n a T e l e c o m m u n i c a t i o n s C o r p o r a t i o n (中國電信集團有限公司) ,
+                                     formerly known as China Telecommunications Corporation (中國電信集團
+                                     公司), the controlling shareholder of the Company
+
+
+China Telecom/the Company            China Telecom Corporation Limited (中國電信股份有限公司), a joint stock
+                                     limited company incorporated in the People’s Republic of China with
+                                     limited liability, or where the context so requires, refers to China Telecom
+                                     Corporation Limited and its subsidiaries
+
+
+China Tower                          China Tower Corporation Limited (中國鐵塔股份有限公司), formerly
+                                     known as China Communications Facilities Services Corporation Limited
+                                     (中國通信設施服務股份有限公司)
+
+
+Chinese Accounting                   The Basic Standard of the Accounting Standards for Business
+  Standard/CAS                       Enterprises issued by the Ministry of Finance, and the specific accounting
+                                     standards, application guidelines, interpretations and other relevant
+                                     regulations subsequently revised
+
+
+Cloud Computing                      An Internet technology that provides flexible and on-demand services
+                                     to external users through the Internet with pooled cluster computing
+                                     capabilities
+
+
+Computing Power Network              According to the national approval document on the construction plan of
+                                     eight hub nodes of the national integrated Big Data center, its meaning
+                                     includes datacentre infrastructure, computing power, network, cloud,
+                                     and the green and safe attributes among these features
+
+
+                                                    China Telecom Corporation Limited   Interim Report 2022          3
+

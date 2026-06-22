@@ -1,0 +1,216 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the
+contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability
+whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this
+announcement.
+
+
+
+
+                    China Telecom Corporation Limited
+                          中国电信股份有限公司
+              (A joint stock limited company incorporated in the People's Republic of China with limited liability)
+                                                    (Stock Code: 728)
+
+ KEY FINANCIAL AND PERFORMANCE INDICATORS FOR THE FIRST QUARTER OF 2016
+
+ The unaudited financial data of the Group for the first quarter of 2016
+ - Operating revenues were RMB86,426 million, representing an increase of 6.1% over the same period
+    of last year
+ - Service revenues were RMB76,359 million, representing an increase of 5.0% over the same period of
+    last year
+ - EBITDA was RMB23,811 million, representing a decrease of 2.9% over the same period of last year
+ - Profit attributable to equity holders of the Company was RMB5,119 million, representing an increase
+    of 1.4% over the same period of last year
+
+
+ In order to further enhance the transparency of the Group and to enable shareholders, investors and the
+ general public to better appraise the operational performance of the Group, the board of directors
+ (the "Board") of China Telecom Corporation Limited (the "Company", together with its subsidiaries, the
+ "Group") announces certain selected unaudited key financial and performance indicators of the Group
+ for the first quarter of 2016.
+
+
+
+
+                                                                1
+Financial Data (Extracted from financial records prepared in accordance with International
+Financial Reporting Standards)
+
+                                                                        For the period from     For the period from
+                                                                         1 January 2016 to       1 January 2015 to        Increase/
+                                                                            31 March 2016           31 March 2015         (Decrease)
+                                                                             (RMB million)           (RMB million)
+
+Operating revenues                                                                 86,426                  81,453             6.1%
+
+  of which: Service revenues (Note 1)                                              76,359                  72,704             5.0%
+
+Operating expenses
+  Depreciation and amortisation                                                   (16,447)                (16,740)          (1.8%)
+  Network operations and support                                                  (21,053)                (18,082)          16.4%
+  Selling, general and administrative                                             (13,922)                (12,136)          14.7%
+  Personnel expenses                                                              (15,358)                (15,162)           1.3%
+  Other operating expenses                                                        (12,282)                (11,548)           6.4%
+
+     Total operating expenses                                                     (79,062)                (73,668)            7.3%
+
+Operating profit                                                                    7,364                    7,785           (5.4%)
+
+Finance costs and others                                                              (551)                 (1,134)         (51.4%)
+
+Profit before taxation                                                              6,813                    6,651            2.4%
+Income tax                                                                         (1,672)                  (1,596)           4.8%
+Profit for the quarter                                                              5,141                    5,055            1.7%
+
+Profit attributable to:
+   Equity holders of the Company                                                    5,119                     5,046          1.4%
+   Non-controlling interests                                                           22                         9        144.4%
+
+                                                                                     As at                   As at
+                                                                            31 March 2016        31 December 2015
+                                                                            (RMB million)           (RMB million)
+
+Total Assets                                                                     621,801                 629,561             (1.2%)
+Total Liabilities                                                               (312,142)               (324,810)            (3.9%)
+
+Total Equity                                                                      309,659                 304,751              1.6%
+
+
+Note 1: Service revenues were calculated based on operating revenues minus sales of mobile terminals (first quarter of 2016: RMB8,831
+        million; first quarter of 2015: RMB7,721 million) , sales of wireline equipment and other non-service revenues (first quarter of
+        2016: total RMB1,236 million; first quarter of 2015: total RMB1,028 million)
+
+
+
+
+                                                                    2
+Business Data
+                                                                                 As at                    As at                   As at
+                                                                      31 March 2016/        31 December 2015/      30 September 2015/
+                                                                        For the period           For the period          For the period
+                                                                                 from                     from                    from
+                                                                       1 January 2016           1 October 2015             1 July 2015
+                                                                                    to                       to                      to
+                                                                       31 March 2016         31 December 2015       30 September 2015
+
+Mobile Subscribers (Million)                                                  202.64                   197.90                 194.34
+   of which 4G Terminal Users 1 (Million)                                      74.91                    58.46                  43.73
+Net Add of Mobile Subscribers (Million)                                         4.74                     3.56                   2.90
+   of which Net Add of 4G Terminal Users (Million)                             16.45                    14.73                  14.77
+Handset Data Traffic (kTB) 2                                                  228.40                   188.30                 154.20
+Mobile Voice Usage (Billion Minutes)                                          168.58                   170.74                 169.94
+Wireline Broadband Subscribers (Million)                                      116.17                   113.06                 111.09
+Net Add of Wireline Broadband Subscribers (Million)                             3.11                     1.97                   1.53
+Local Access Lines in Service (Million)                                       132.86                   134.32                 136.89
+    including: Household (Million)                                             83.00                    84.17                  85.84
+               Government & Enterprise (Million)                               40.69                    40.80                  40.97
+               Public Telephone (Million)                                       9.17                     9.35                  10.08
+Net Decrease of Local Access Lines in Service (Million)                        (1.46)                   (2.57)                 (2.46)
+Wireline Local Voice Usage (Billion Pulses)                                    23.48                    26.57                  27.93
+Wireline Long Distance Usage (Billion Minutes)                                  5.48                     6.27                   6.71
+
+For the first quarter of 2016, the Group firmly seized the 4G development opportunities and achieved
+rapid growth in 4G users and mobile service revenues. The number of mobile subscribers of the Group
+reached approximately 203 million, representing a net addition of 4.74 million. The number of 4G
+terminal users reached 74.91 million, representing a net addition of 16.45 million. The monthly average
+data traffic per 4G user achieved rapid growth and reached 875MB while the average mobile service
+revenue per user per month (ARPU) in the first quarter of 2016 remained steady with slight increase as
+compared to that for the full year of last year. The fundamentals of the overall wireline services continued
+to remain stable and the revenues from wireline services increased steadily. The wireline broadband
+subscribers reached 116 million, representing a net addition of 3.11 million. The overall wireline data
+services continued its robust growth momentum, which effectively offset the impact of decline in the
+wireline voice services. The number of local access lines in service of the Group declined by 1.46 million
+in the first quarter.
+
+The Group’s operation was on track as planned for the first quarter of 2016. Despite the impact of various
+regulatory policies such as “Speed Upgrade and Tariff Reduction” and “handset data traffic carried
+forward”, the operating revenues for the period of the Group showed robust growth momentum with
+steady enhancement in the net profit. For the first quarter of 2016, the operating revenues of the Group
+were RMB86,426 million, representing an increase of 6.1% over the same period of last year; of which
+the service revenues were RMB76,359 million, representing an increase of 5.0% over the same period of
+last year. Following the disposal of certain telecommunications towers and related assets by the Company
+
+
+Note 1: After the commencement of 4G service nationwide at the beginning of 2015, the Company has been proactively upgrading its
+        2G/3G subscribers to 4G service, optimising the subscriber structure and increasing 4G penetration continuously. To align with the
+        Company’s strategic focus on 4G in its mobile development, and further enhance the essentiality of disclosed information, the
+        Company would only disclose 4G terminal user and mobile subscriber figures and not to disclose 3G/4G subscriber figure.
+     2: Handset data traffic represents the data traffic generated from 3G and 4G handset internet access.
+
+                                                                      3
+to China Tower Corporation Limited (“China Tower”) in last year, the Group incurred tower usage fee
+payable to China Tower. As a result, the network operations and support expenses for the first quarter of
+2016 increased by 16.4% over the same period of last year. The network operations and support expenses
+other than the tower usage fee were effectively controlled. In order to meet the vigorous market demand,
+the Group increased the scale development initiatives in 4G and fibre broadband businesses and promoted
+the robust development of the businesses. The selling, general and administrative expenses of the Group
+for the first quarter of 2016 increased by 14.7% over the same period of last year. The Group will
+continue to enhance the efficiency of marketing resources utilization to achieve the concurrent
+enhancement in business scale and efficiency. The personnel expenses for the first quarter of 2016
+primarily remained stable over the same period of last year. Meanwhile, as a result of the corresponding
+increase in the costs of mobile terminals sold in line with the increase in sales of mobile terminals during
+the period, other operating expenses increased by 6.4% over the same period of last year. During the
+period, the net finance costs decreased as compared with the same period of last year as a result of the
+decline in interest rates while the share of profit of associates increased over the same period of last year.
+Therefore, finance costs and others significantly decreased by 51.4% over the same period of last year.
+The profit attributable to equity holders of the Company was RMB5,119 million, representing an increase
+of 1.4% over the same period of last year. EBITDA was RMB23,811 million, representing a decrease of
+2.9% over the same period of last year. EBITDA margin (EBITDA divided by service revenues) was
+31.2%.
+
+The Group will firmly seize new opportunities and take the initiative to develop through reform and
+innovation, while striving to adapt to the changing regulatory environment and tackle various challenges.
+The Group will persistently strengthen the core competence in network and operation and tightly grasp
+the opportunities from the scale development and value enhancement of 4G and fibre broadband
+businesses to further strengthen the Group’s fundamentals. Meanwhile, the Group will be unwaveringly
+dedicated to speedily achieve a breakthrough in the five emerging areas including “Smart Family”,
+“mobile payment”, “Internet+”, “cloud computing & Big Data” and “Internet of Things” to ignite the new
+growth engine. The Group will further promote the comprehensive in-depth reform, incentivise the
+corporate and employee vitality and deepen the Internet-oriented transformation to upgrade the products
+and services. With increased efforts in open cooperation, the Group will fully mobilise and share the
+social resources to build the “Smart Ecosystem” and offer integrated smart services. The Group will
+endeavor to facilitate the accomplishment of “Cyberpower” and take the lead in the digital ecosystem,
+thereby continually creating value for our shareholders.
+
+The Board wishes to remind investors that the above financial and business data are based on the
+Group's unaudited management accounts. Investors are cautioned not to unduly rely on such data.
+
+In the meantime, investors are advised to exercise caution in dealing in the securities of the
+Company.
+
+                                                                         By Order of the Board
+                                                                  China Telecom Corporation Limited
+                                                                              Yang Jie
+                                                                  Chairman and Chief Executive Officer
+
+Beijing, China, 28 April 2016
+
+
+
+
+                                                       4
+FORWARD-LOOKING STATEMENTS
+
+Certain statements contained in this announcement may be viewed as “forward-looking statements”
+within the meaning of Section 27A of the U.S. Securities Act of 1933 (as amended) and Section 21E of the
+U.S. Securities Exchange Act of 1934 (as amended). Such forward-looking statements are subject to
+known and unknown risks, uncertainties and other factors, which may cause the actual performance,
+financial condition or results of operations of the Company to be materially different from any future
+performance, financial condition or results of operations implied by such forward-looking statements. In
+addition, we do not intend to update these forward-looking statements. Further information regarding
+these risks, uncertainties and other factors is included in the Company’s most recent Annual Report on
+Form 20-F filed with the U.S. Securities and Exchange Commission (the “SEC”) and in the Company’s
+other filings with the SEC.
+
+
+As at the date of this announcement, the Board of Directors of the Company consists of Mr. Yang Jie
+(as the chairman and chief executive officer); Mr. Yang Xiaowei (as the president and chief operating
+officer), Mr. Zhang Jiping, Mr. Sun Kangmin and Mr. Ke Ruiwen (all as the executive vice presidents),
+Mr. Zhu Wei (as the non-executive director), Mr. Tse Hau Yin, Aloysius, Madam Cha May Lung, Laura,
+Mr. Xu Erming and Madam Wang Hsuehming ( all as the independent non-executive directors).
+
+
+
+
+                                                   5
+

@@ -42,12 +42,12 @@
           "status": 200,
           "content_type": "text/html",
           "title": "HKSAR Government Press Releases",
-          "bytes": 12030,
-          "elapsed_seconds": 0.183,
+          "bytes": 11938,
+          "elapsed_seconds": 0.174,
           "method": "httpx",
-          "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Implementation of regulatory enhancements for mediation profession to solidify HK's status as capital of mediation Chinese Culture Festival 2026 to focus on Luoyang by presenting Hong Kong debut of Luoyang Yu Opera Troupe with classic play and excerpts in July (with photos) Red flag hoisted at Hung Shing Yeh Beach Red flags hoisted at several beaches Decision on 2026-27 civil service pay adjustment announced Flag-raising ceremony cancelled Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
-          "evidence_path": "evidence_cache/a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db.txt",
-          "content_hash": "a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db",
+          "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Red flags hoisted at some beaches Red flags hoisted at several beaches People's Bank of China will issue Renminbi Bills through Central Moneymarkets Unit of Hong Kong Monetary Authority Fatal traffic accident in Tsing Yi Flag-raising ceremony cancelled First ever Hong Kong Film Gala Presentation hosted in Saudi Arabia, bridging two cultures and cinematic worlds (with photos) Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
+          "evidence_path": "evidence_cache/aac8b5180956f0fd25917ade8058fc860693f90ea795c021cb0183513db63605.txt",
+          "content_hash": "aac8b5180956f0fd25917ade8058fc860693f90ea795c021cb0183513db63605",
           "error": "",
           "fetch_attempts": [
             {
@@ -55,8 +55,8 @@
               "final_url": "https://www.info.gov.hk/gia/general/today.htm",
               "status": 200,
               "method": "httpx",
-              "bytes": 12030,
-              "text_chars": 767,
+              "bytes": 11938,
+              "text_chars": 701,
               "title": "HKSAR Government Press Releases",
               "error": "",
               "meta_refresh_url": ""
@@ -70,6 +70,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -84,7 +85,7 @@
           "content_type": "text/html",
           "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
           "bytes": 119864,
-          "elapsed_seconds": 1.103,
+          "elapsed_seconds": 0.957,
           "method": "httpx",
           "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
           "evidence_path": "evidence_cache/43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749.txt",
@@ -111,6 +112,7 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -119,7 +121,7 @@
         }
       ],
       "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains '本地生活咨询' and a URL for the Housing Authority press releases, while the source text is entirely in English and contains no such phrase. The source text does not mention '本地生活咨询' or provide that specific URL, indicating the extracted data does not accurately reflect the source text."
+      "verification_reason": "The 'Extracted Data' contains a single key '本地生活咨询' with a value that appears to be a URL snippet from the Housing Authority press release page, but none of this information matches the 'Source Text', which lists government press releases from the HKSAR page. The extracted data is completely unrelated and likely from a different source."
     }
   ],
   "entity_missing": [],
@@ -131,12 +133,12 @@
       "status": 200,
       "content_type": "text/html",
       "title": "HKSAR Government Press Releases",
-      "bytes": 12030,
-      "elapsed_seconds": 0.183,
+      "bytes": 11938,
+      "elapsed_seconds": 0.174,
       "method": "httpx",
-      "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Implementation of regulatory enhancements for mediation profession to solidify HK's status as capital of mediation Chinese Culture Festival 2026 to focus on Luoyang by presenting Hong Kong debut of Luoyang Yu Opera Troupe with classic play and excerpts in July (with photos) Red flag hoisted at Hung Shing Yeh Beach Red flags hoisted at several beaches Decision on 2026-27 civil service pay adjustment announced Flag-raising ceremony cancelled Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
-      "evidence_path": "evidence_cache/a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db.txt",
-      "content_hash": "a10d0c3a96b8d485ee913c23f8f64e6f998a399c1e27653d430f5bade20a35db",
+      "text_sample": "HKSAR Government Press Releases Go to main content Brand HK | Font Size: | Sitemap [REDACTED_PHONE_OR_ID] Red flags hoisted at some beaches Red flags hoisted at several beaches People's Bank of China will issue Renminbi Bills through Central Moneymarkets Unit of Hong Kong Monetary Authority Fatal traffic accident in Tsing Yi Flag-raising ceremony cancelled First ever Hong Kong Film Gala Presentation hosted in Saudi Arabia, bridging two cultures and cinematic worlds (with photos) Press Release (Please click month and year to change the calendar date) Archives Yesterday's Press Releases Back to top Today's Press Releases Press Release (Please click month and year to change the calendar date) Privacy Policy",
+      "evidence_path": "evidence_cache/aac8b5180956f0fd25917ade8058fc860693f90ea795c021cb0183513db63605.txt",
+      "content_hash": "aac8b5180956f0fd25917ade8058fc860693f90ea795c021cb0183513db63605",
       "error": "",
       "fetch_attempts": [
         {
@@ -144,8 +146,8 @@
           "final_url": "https://www.info.gov.hk/gia/general/today.htm",
           "status": 200,
           "method": "httpx",
-          "bytes": 12030,
-          "text_chars": 767,
+          "bytes": 11938,
+          "text_chars": 701,
           "title": "HKSAR Government Press Releases",
           "error": "",
           "meta_refresh_url": ""
@@ -159,6 +161,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -173,7 +176,7 @@
       "content_type": "text/html",
       "title": "Press Releases | Hong Kong Housing Authority and Housing Department",
       "bytes": 119864,
-      "elapsed_seconds": 1.103,
+      "elapsed_seconds": 0.957,
       "method": "httpx",
       "text_sample": "Press Releases | Hong Kong Housing Authority and Housing Department Skip to main content Hong Kong Housing Authority and Housing Department Email Alert Email Email Icon Hidden Share Button Email Facebook Whatsapp Wei Bo We Chat \"Scan QR Code\" in WeChat and tap \"...\" to share. Twitter RSS Print Button Online Form for Enquiries, Comments or Complaints Text Size 繁 简 Other Languages हिन्दी (Hindi) नेपाली (Nepali) اردو (Urdu) Bahasa Indonesia Tagalog ภาษาไทย (Thai) ਪੰਜਾਬੀ (Punjabi) Tiếng Việt (Vietnamese) search Search Section search search_submit Home At A Glance PRH Application Application Guide Eligibility Checker Ordinary Families Elderly Persons Non-elderly One-person under the Quota and Points System (QPS) New Arrivals e-Services for PRH Application Harmonious Families Priority Scheme Families with Newborns Allocation Priority Scheme Express Flat Allocation Scheme Income and Asset Limit",
       "evidence_path": "evidence_cache/43b285edda8b65a9fb8021ab1b41c44d664241ae8794157074f3c6da7fac0749.txt",
@@ -200,6 +203,7 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -213,6 +217,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-16T03:05:13.388195+00:00",
-  "fetched_at_hkt": "2026-06-16T11:05:13.388244+08:00"
+  "fetched_at": "2026-06-17T02:56:10.505679+00:00",
+  "fetched_at_hkt": "2026-06-17T10:56:10.505700+08:00"
 }

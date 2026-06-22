@@ -15,10 +15,10 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.digitalpolicy.gov.hk/en/",
-    "https://www.policyaddress.gov.hk/2025/en/highlight.html",
     "https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm",
-    "https://www.investhk.gov.hk/en/news/"
+    "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+    "https://www.investhk.gov.hk/en/news/",
+    "https://www.digitalpolicy.gov.hk/en/"
   ],
   "attempted_urls": [
     "https://www.digitalpolicy.gov.hk/en/",
@@ -27,11 +27,11 @@
     "https://www.investhk.gov.hk/en/news/"
   ],
   "extracted": {
-    "跨境贸易": "imes for digital asset dealing and custodian service providers Deepen co-operation with carbon markets in the Guangdong-Hong Kong-Macao Greater Bay Area to test out cross-boundary trade settlement Lower the transaction p",
-    "科技创投": "Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Developme",
-    "人工智能": "SOURCE: https://www.digitalpolicy.gov.hk/en/ Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Searc",
+    "跨境贸易": "bonds and incentivise the tokenisation of RWAs to enhance liquidity and accessibility through, among other initiatives, clarifying the stamp duty treatment for tokenised exchange traded funds (ETFs). With that, the Gover",
+    "科技创投": "ernment today (June 26) issued the Policy Statement 2.0 on the Development of Digital Assets in Hong Kong, reinforcing its commitment to establishing Hong Kong as a global hub for innovation in the digital asset (DA) fie",
+    "人工智能": "ia/general/202506/26/P2025062600269.htm Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Go to main content Brand HK | Font Size: | Site",
     "低空经济": "Expedite the development of the third InnoHK research cluster, with the focus on sustainable development, energy, advanced manufacturing and materials Promote the development of a low-altitude economy ecosystem Formulate",
-    "Web3": "Currency Roadmap Introduce a new Renminbi (RMB) Business Facility to support the use of RMB in the real economy Formulate legislative proposals regarding the licensing regimes for digital asset dealing and custodian serv"
+    "Web3": "SOURCE: https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Go to main con"
   },
   "missing_fields": [],
   "entity_results": [
@@ -39,102 +39,20 @@
       "entity": "行业资讯",
       "status": "ok",
       "source_urls": [
-        "https://www.digitalpolicy.gov.hk/en/",
-        "https://www.policyaddress.gov.hk/2025/en/highlight.html",
         "https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm",
-        "https://www.investhk.gov.hk/en/news/"
+        "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+        "https://www.investhk.gov.hk/en/news/",
+        "https://www.digitalpolicy.gov.hk/en/"
       ],
       "extracted": {
-        "跨境贸易": "imes for digital asset dealing and custodian service providers Deepen co-operation with carbon markets in the Guangdong-Hong Kong-Macao Greater Bay Area to test out cross-boundary trade settlement Lower the transaction p",
-        "科技创投": "Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Developme",
-        "人工智能": "SOURCE: https://www.digitalpolicy.gov.hk/en/ Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Searc",
+        "跨境贸易": "bonds and incentivise the tokenisation of RWAs to enhance liquidity and accessibility through, among other initiatives, clarifying the stamp duty treatment for tokenised exchange traded funds (ETFs). With that, the Gover",
+        "科技创投": "ernment today (June 26) issued the Policy Statement 2.0 on the Development of Digital Assets in Hong Kong, reinforcing its commitment to establishing Hong Kong as a global hub for innovation in the digital asset (DA) fie",
+        "人工智能": "ia/general/202506/26/P2025062600269.htm Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Go to main content Brand HK | Font Size: | Site",
         "低空经济": "Expedite the development of the third InnoHK research cluster, with the focus on sustainable development, energy, advanced manufacturing and materials Promote the development of a low-altitude economy ecosystem Formulate",
-        "Web3": "Currency Roadmap Introduce a new Renminbi (RMB) Business Facility to support the use of RMB in the real economy Formulate legislative proposals regarding the licensing regimes for digital asset dealing and custodian serv"
+        "Web3": "SOURCE: https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Go to main con"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 24,
-          "url": "https://www.digitalpolicy.gov.hk/en/",
-          "final_url": "https://www.digitalpolicy.gov.hk/en/",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "Home | Digital Policy Office",
-          "bytes": 131371,
-          "elapsed_seconds": 0.673,
-          "method": "httpx",
-          "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
-          "evidence_path": "evidence_cache/60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de.txt",
-          "content_hash": "60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.digitalpolicy.gov.hk/en/",
-              "final_url": "https://www.digitalpolicy.gov.hk/en/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 131371,
-              "text_chars": 7458,
-              "title": "Home | Digital Policy Office",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "not_found_allow",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "行业资讯"
-          ]
-        },
-        {
-          "row": 24,
-          "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-          "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Highlights | The Chief Executive's 2025 Policy Address",
-          "bytes": 39582,
-          "elapsed_seconds": 0.82,
-          "method": "httpx",
-          "text_sample": "Highlights | The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Highlights Download leaflet (PDF format) Strengthen our governance systems Establish the Heads of Department (HoD) Accountability System Render the accountability in policy formulation and implementation better articulated with each other Drive to establish effective management teams and operating systems Identify deficiencies, clarify responsibilities and take administrative or disciplinary actions as appropriate when issues arise Expand the functions of the Public Service Commission to conduct independent investigation of serious issues, widespread or repetitive systemic problems or matters related to the role of HoDs ",
-          "evidence_path": "evidence_cache/55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709.txt",
-          "content_hash": "55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-              "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 39582,
-              "text_chars": 13081,
-              "title": "Highlights | The Chief Executive's 2025 Policy Address",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_public_info",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "行业资讯"
-          ]
-        },
         {
           "row": 24,
           "url": "https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm",
@@ -143,7 +61,7 @@
           "content_type": "text/html",
           "title": "Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership",
           "bytes": 18092,
-          "elapsed_seconds": 0.92,
+          "elapsed_seconds": 4.112,
           "method": "httpx",
           "text_sample": "Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Go to main content Brand HK | Font Size: | Sitemap Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership ****************************************************************************************** The Government today (June 26) issued the Policy Statement 2.0 on the Development of Digital Assets in Hong Kong, reinforcing its commitment to establishing Hong Kong as a global hub for innovation in the digital asset (DA) field. This new policy statement builds upon the foundational measures outlined in the initial policy statement released in October 202",
           "evidence_path": "evidence_cache/42e380f1a24d62be850cb70534002d8ae7570a53ee2705c806dad960a0bd3e50.txt",
@@ -170,6 +88,49 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 24,
+          "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+          "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Highlights | The Chief Executive's 2025 Policy Address",
+          "bytes": 39582,
+          "elapsed_seconds": 4.38,
+          "method": "httpx",
+          "text_sample": "Highlights | The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Highlights Download leaflet (PDF format) Strengthen our governance systems Establish the Heads of Department (HoD) Accountability System Render the accountability in policy formulation and implementation better articulated with each other Drive to establish effective management teams and operating systems Identify deficiencies, clarify responsibilities and take administrative or disciplinary actions as appropriate when issues arise Expand the functions of the Public Service Commission to conduct independent investigation of serious issues, widespread or repetitive systemic problems or matters related to the role of HoDs ",
+          "evidence_path": "evidence_cache/55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709.txt",
+          "content_hash": "55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+              "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 39582,
+              "text_chars": 13081,
+              "title": "Highlights | The Chief Executive's 2025 Policy Address",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -183,12 +144,12 @@
           "status": 200,
           "content_type": "text/html",
           "title": "News | InvestHK",
-          "bytes": 128934,
-          "elapsed_seconds": 1.306,
+          "bytes": 129017,
+          "elapsed_seconds": 4.443,
           "method": "httpx",
-          "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release Innovation & T",
-          "evidence_path": "evidence_cache/6de0126cf620d27c4c0e252b72fffc7b03519dbfb8e281e7e9688cf91d548ebb.txt",
-          "content_hash": "6de0126cf620d27c4c0e252b72fffc7b03519dbfb8e281e7e9688cf91d548ebb",
+          "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release Life & Health ",
+          "evidence_path": "evidence_cache/5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad.txt",
+          "content_hash": "5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad",
           "error": "",
           "fetch_attempts": [
             {
@@ -196,8 +157,8 @@
               "final_url": "https://www.investhk.gov.hk/en/news/",
               "status": 200,
               "method": "httpx",
-              "bytes": 128934,
-              "text_chars": 7760,
+              "bytes": 129017,
+              "text_chars": 7790,
               "title": "News | InvestHK",
               "error": "",
               "meta_refresh_url": ""
@@ -211,6 +172,49 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
+        },
+        {
+          "row": 24,
+          "url": "https://www.digitalpolicy.gov.hk/en/",
+          "final_url": "https://www.digitalpolicy.gov.hk/en/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Home | Digital Policy Office",
+          "bytes": 131345,
+          "elapsed_seconds": 4.449,
+          "method": "httpx",
+          "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
+          "evidence_path": "evidence_cache/137500010601518ae2fe3c3119905c15065ff81339aa961f90c67c0a755cb648.txt",
+          "content_hash": "137500010601518ae2fe3c3119905c15065ff81339aa961f90c67c0a755cb648",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.digitalpolicy.gov.hk/en/",
+              "final_url": "https://www.digitalpolicy.gov.hk/en/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 131345,
+              "text_chars": 7450,
+              "title": "Home | Digital Policy Office",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_public_info",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -218,94 +222,12 @@
           ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "Verification failed: Expecting ',' delimiter: line 3 column 336 (char 364)"
+      "confidence_score": 0.95,
+      "verification_reason": "All extracted segments are present verbatim in the Source Text, with only minor truncation due to character limits in the extraction fields. The source text contains 'clarifying the stamp duty treatment for tokenised exchange traded funds (ETFs). With that, the Government' matching the '跨境贸易' field, 'ernment today (June 26) issued the Policy Statement 2.0...' matching '科技创投', the URL and header text matching '人工智能', 'Expedite the development... low-altitude economy...' matching '低空经济', and the URL and header matching 'Web3'. The extracted data is accurate and consistent with the source."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 24,
-      "url": "https://www.digitalpolicy.gov.hk/en/",
-      "final_url": "https://www.digitalpolicy.gov.hk/en/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Home | Digital Policy Office",
-      "bytes": 131371,
-      "elapsed_seconds": 0.673,
-      "method": "httpx",
-      "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
-      "evidence_path": "evidence_cache/60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de.txt",
-      "content_hash": "60d0b57190eab211b52d84e714e6c19651cf766a154b5a97e7105c60144f28de",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.digitalpolicy.gov.hk/en/",
-          "final_url": "https://www.digitalpolicy.gov.hk/en/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 131371,
-          "text_chars": 7458,
-          "title": "Home | Digital Policy Office",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "not_found_allow",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "行业资讯"
-      ]
-    },
-    {
-      "row": 24,
-      "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-      "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Highlights | The Chief Executive's 2025 Policy Address",
-      "bytes": 39582,
-      "elapsed_seconds": 0.82,
-      "method": "httpx",
-      "text_sample": "Highlights | The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Highlights Download leaflet (PDF format) Strengthen our governance systems Establish the Heads of Department (HoD) Accountability System Render the accountability in policy formulation and implementation better articulated with each other Drive to establish effective management teams and operating systems Identify deficiencies, clarify responsibilities and take administrative or disciplinary actions as appropriate when issues arise Expand the functions of the Public Service Commission to conduct independent investigation of serious issues, widespread or repetitive systemic problems or matters related to the role of HoDs ",
-      "evidence_path": "evidence_cache/55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709.txt",
-      "content_hash": "55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-          "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 39582,
-          "text_chars": 13081,
-          "title": "Highlights | The Chief Executive's 2025 Policy Address",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "行业资讯"
-      ]
-    },
     {
       "row": 24,
       "url": "https://www.info.gov.hk/gia/general/202506/26/P2025062600269.htm",
@@ -314,7 +236,7 @@
       "content_type": "text/html",
       "title": "Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership",
       "bytes": 18092,
-      "elapsed_seconds": 0.92,
+      "elapsed_seconds": 4.112,
       "method": "httpx",
       "text_sample": "Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Go to main content Brand HK | Font Size: | Sitemap Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership Second policy statement on development of digital assets issued to scale Hong Kong to new heights of global digital asset leadership ****************************************************************************************** The Government today (June 26) issued the Policy Statement 2.0 on the Development of Digital Assets in Hong Kong, reinforcing its commitment to establishing Hong Kong as a global hub for innovation in the digital asset (DA) field. This new policy statement builds upon the foundational measures outlined in the initial policy statement released in October 202",
       "evidence_path": "evidence_cache/42e380f1a24d62be850cb70534002d8ae7570a53ee2705c806dad960a0bd3e50.txt",
@@ -341,6 +263,49 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 24,
+      "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+      "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Highlights | The Chief Executive's 2025 Policy Address",
+      "bytes": 39582,
+      "elapsed_seconds": 4.38,
+      "method": "httpx",
+      "text_sample": "Highlights | The Chief Executive's 2025 Policy Address Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Policy Address Supplement Highlights Webcast Press Releases and Speeches Multimedia Archives Contact Us ENG 繁體 简体 Facebook Instagram Highlights Download leaflet (PDF format) Strengthen our governance systems Establish the Heads of Department (HoD) Accountability System Render the accountability in policy formulation and implementation better articulated with each other Drive to establish effective management teams and operating systems Identify deficiencies, clarify responsibilities and take administrative or disciplinary actions as appropriate when issues arise Expand the functions of the Public Service Commission to conduct independent investigation of serious issues, widespread or repetitive systemic problems or matters related to the role of HoDs ",
+      "evidence_path": "evidence_cache/55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709.txt",
+      "content_hash": "55b2bc268b581055826d608192667746e920f6073b88a41106af834fab67a709",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+          "final_url": "https://www.policyaddress.gov.hk/2025/en/highlight.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 39582,
+          "text_chars": 13081,
+          "title": "Highlights | The Chief Executive's 2025 Policy Address",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -354,12 +319,12 @@
       "status": 200,
       "content_type": "text/html",
       "title": "News | InvestHK",
-      "bytes": 128934,
-      "elapsed_seconds": 1.306,
+      "bytes": 129017,
+      "elapsed_seconds": 4.443,
       "method": "httpx",
-      "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release Innovation & T",
-      "evidence_path": "evidence_cache/6de0126cf620d27c4c0e252b72fffc7b03519dbfb8e281e7e9688cf91d548ebb.txt",
-      "content_hash": "6de0126cf620d27c4c0e252b72fffc7b03519dbfb8e281e7e9688cf91d548ebb",
+      "text_sample": "News | InvestHK EN 繁 简 EN 繁 简 Why Hong Kong Business Friendly Environment Low and Simple Tax System Multicultural Talent Pool Go Global Launchpad Robust Connectivity Vibrant Living Entrepreneurial Spirit Government Funding Schemes Our Clients Client Profiles Client Stories News & Events News Events Key Industries Business & Professional Services Consumer Products Creative Industries, Sports & Entertainment Family Office Financial Services FinTech Innovation & Technology Life & Health Sciences Tourism & Hospitality Transport, Logistics & Industrials Sustainability Setting Up in Hong Kong About Us Contact Us Quick links Resource Centre FAQ Business Opportunities: Government Tender Notices Referral Form Content in Other Languages Careers Affiliate Sites FamilyOfficeHK FintechHK New Capital Investment Entrant Scheme StartmeupHK Invest Hong Kong News & Events News Press Release Life & Health ",
+      "evidence_path": "evidence_cache/5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad.txt",
+      "content_hash": "5b9da1a0c5099c67b71e528f00ad50b93e435da5253aca25653ddefa4f8401ad",
       "error": "",
       "fetch_attempts": [
         {
@@ -367,8 +332,8 @@
           "final_url": "https://www.investhk.gov.hk/en/news/",
           "status": 200,
           "method": "httpx",
-          "bytes": 128934,
-          "text_chars": 7760,
+          "bytes": 129017,
+          "text_chars": 7790,
           "title": "News | InvestHK",
           "error": "",
           "meta_refresh_url": ""
@@ -382,6 +347,49 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
+    },
+    {
+      "row": 24,
+      "url": "https://www.digitalpolicy.gov.hk/en/",
+      "final_url": "https://www.digitalpolicy.gov.hk/en/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Home | Digital Policy Office",
+      "bytes": 131345,
+      "elapsed_seconds": 4.449,
+      "method": "httpx",
+      "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
+      "evidence_path": "evidence_cache/137500010601518ae2fe3c3119905c15065ff81339aa961f90c67c0a755cb648.txt",
+      "content_hash": "137500010601518ae2fe3c3119905c15065ff81339aa961f90c67c0a755cb648",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.digitalpolicy.gov.hk/en/",
+          "final_url": "https://www.digitalpolicy.gov.hk/en/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 131345,
+          "text_chars": 7450,
+          "title": "Home | Digital Policy Office",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -395,6 +403,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-16T03:05:09.821324+00:00",
-  "fetched_at_hkt": "2026-06-16T11:05:09.821341+08:00"
+  "fetched_at": "2026-06-22T02:43:21.936682+00:00",
+  "fetched_at_hkt": "2026-06-22T10:43:21.936904+08:00"
 }

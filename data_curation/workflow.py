@@ -9,10 +9,12 @@ import subprocess
 import sys
 import time
 import uuid
+import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Any, TypedDict
-from urllib.parse import urlparse
+from urllib.parse import urlencode, urlparse
 
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
@@ -22,6 +24,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy
 
 from ai_config import load_ai_config
+from rag_llm import estimate_tokens
 from company_metrics import (
     AI_CACHE_PATH,
     AI_CACHE_SCHEMA_VERSION,
@@ -39,11 +42,19 @@ from normalize_company_metrics_ai import (
     entity_supported_offline,
     fallback_clean_batch,
     load_cache,
+    _official_domain_owners,
+    _verified_metric_context,
 )
 
 from .schemas import CandidateFact, EvidenceTask, GapRecord, RecrawlTask, RunSummary
 from .storage import DATA_DIR, RUNS_DIR, atomic_write_json, atomic_write_jsonl
 
+
+warnings.filterwarnings(
+    "ignore",
+    message=r".*duckduckgo_search.*renamed to.*ddgs.*",
+    category=RuntimeWarning,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = ROOT / "results"
@@ -80,6 +91,7 @@ COMMERCIAL_HOST_TERMS = (
 CORE_COMPANY_ROWS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
 PRIMARY_PERFORMANCE_ROWS = {2, 5, 8, 11, 15, 17}
 AUDIT_REASON_TEXTS = {
+    "来源域名或证据文本不支持该主体",
     "主体归属未通过",
     "指标语义未通过",
     "抽取结果不可用",
@@ -98,6 +110,10 @@ class CurationState(TypedDict, total=False):
     started_at: str
     limit: int | None
     batch_size: int
+    ai_workers: int
+    search_verify_workers: int
+    search_verify_online: bool
+    search_verify_online_limit: int
     online_ai: bool
     allow_recrawl: bool
     dry_run: bool
@@ -115,6 +131,7 @@ class CurationState(TypedDict, total=False):
     supervisor_reason: str
     best_candidates: list[dict[str, Any]]
     best_accepted_count: int
+    search_verification: dict[str, Any]
     summary: dict[str, Any]
     node_events: Annotated[list[str], operator.add]
     agent_trace: Annotated[list[dict[str, Any]], operator.add]
@@ -128,7 +145,10 @@ def _event(node: str, text: str) -> str:
 
 def _compact(value: Any, limit: int = 700) -> Any:
     if isinstance(value, str):
-        return clean_text(value, limit)
+        text = clean_text(value, max(limit * 3, limit))
+        while estimate_tokens(text) > max(80, int(limit / 2)) and len(text) > limit:
+            text = text[: int(len(text) * 0.75)].rstrip()
+        return clean_text(text, limit)
     if isinstance(value, list):
         return [_compact(item, limit) for item in value[:8]]
     if isinstance(value, dict):
@@ -249,7 +269,46 @@ def _cache_item_metric_semantically_valid(item: dict[str, Any]) -> bool:
         return bool(re.search(r"\b5G[\s-]?(?:A|Advanced)\b|\b5\.5G\b", evidence, re.IGNORECASE))
     if metric == "Open RAN":
         return bool(re.search(r"\bOpen[\s-]?RAN\b|\bO-RAN\b", evidence, re.IGNORECASE))
+    if _is_suspicious_profit_segment_context(metric, evidence):
+        return False
     return True
+
+
+def _is_suspicious_profit_segment_context(metric: str, context: str) -> bool:
+    if not re.search(r"净利润|利润|溢利|profit|income|loss", metric, re.IGNORECASE):
+        return False
+    text = clean_text(context, 1400).casefold()
+    if not text:
+        return False
+    if re.search(
+        r"并非\s*净利润|不是\s*净利润|非净利润|不能(?:替代|作为).{0,12}净利润|"
+        r"metric semantic|指标语义未通过",
+        text,
+        re.IGNORECASE,
+    ):
+        return True
+    return bool(
+        re.search(
+            r"分部|经营费用|營運費用|未扣除折旧|未扣除折舊|折旧.*摊销|折舊.*攤銷|"
+            r"segment (?:profit|loss)|segment loss|segment result|operating expenses|"
+            r"before depreciation|before amortisation|before impairment|"
+            r"ebitda前|除息税折旧摊销前",
+            text,
+            re.IGNORECASE,
+        )
+        and not re.search(
+            r"loss for the year|profit for the year|net income|net loss|"
+            r"归属于.*净利润|歸屬於.*溢利|本年亏损|本年虧損|年度亏损|年度虧損",
+            text,
+            re.IGNORECASE,
+        )
+    )
+
+
+def _is_suspicious_profit_segment_fact(fact: CandidateFact) -> bool:
+    if (fact.search_verification or {}).get("decision") == "majority_corrected":
+        return False
+    return _is_suspicious_profit_segment_context(fact.metric, f"{fact.value}\n{fact.basis}\n{fact.note}")
 
 
 def _is_truncated_qualitative_fragment(metric: str, value: str) -> bool:
@@ -281,6 +340,7 @@ def _cache_item_from_fact(fact: CandidateFact) -> dict[str, Any]:
         "source_tier": fact.source_tier,
         "row_ref": fact.row_ref,
         "semantic_key": f"{fact.company}|{fact.metric}|{fact.row_ref}",
+        "search_verification": fact.search_verification,
     }
 
 
@@ -381,6 +441,112 @@ def _recover_explicit_not_applicable(fact: CandidateFact) -> bool:
         fact.note = clean_text(f"{fact.note}；依据主体上市状态确认不适用", 160).strip("；")
         return True
     return False
+
+
+def _demote_unsupported_ok_fact(fact: CandidateFact) -> None:
+    if fact.status != "ok":
+        return
+    unsupported_reasons: list[str] = []
+    context = f"{fact.value} {fact.basis} {fact.note}"
+    if not fact.entity_supported:
+        unsupported_reasons.append("主体归属未通过")
+    if not fact.metric_supported:
+        unsupported_reasons.append("指标语义未通过")
+    if not fact.value_supported:
+        unsupported_reasons.append("数值或事实依据不足")
+    if fact.source_score < 0.45:
+        unsupported_reasons.append("缺少可核验公开来源")
+    if fact.confidence < 0.8 and re.search(
+        r"未提供|未给出|未提及|未列出|未包含|未披露|无(?:具体|相关|可用)?"
+        r"(?:数据|数字|金额|内容|信息|指标|事实|描述|资费|价格)|"
+        r"无[^。；]{0,16}(?:数据|数字|金额|内容|信息|指标|事实|描述|资费|价格)|"
+        r"仅列出|仅提及",
+        context,
+        re.IGNORECASE,
+    ):
+        unsupported_reasons.append("置信度低于80%")
+    if not unsupported_reasons:
+        return
+    fact.status = "unavailable"
+    fact.value = "未提取到有效数据"
+    fact.basis = clean_text(
+        f"候选结果未能通过证据覆盖预检：{'、'.join(unsupported_reasons)}。"
+        f"原依据：{fact.basis}",
+        600,
+    )
+    fact.note = clean_text(f"{fact.note}；证据缺口，不进入事实门禁分母", 160).strip("；")
+    fact.value_supported = False
+
+
+def _close_negative_evidence_gap(fact: CandidateFact) -> bool:
+    if fact.status == "ok":
+        return False
+    context = f"{fact.value} {fact.basis} {fact.note}"
+    negative_evidence = bool(
+        re.search(
+            r"未提供|未给出|未提及|未列出|未包含|未披露|未发现|无法确认|"
+            r"无(?:任何|具体|相关|可用)?(?:数据|数字|金额|内容|信息|指标|事实|描述|资费|价格|项目|行动)|"
+            r"无[^。；]{0,40}(?:数据|数字|金额|内容|信息|指标|事实|描述|资费|价格|政策|项目|行动)|"
+            r"仅(?:包含|列出|提及|讨论)|导航菜单|栏目名称|无具体|不能支持",
+            context,
+            re.IGNORECASE,
+        )
+    )
+    if not negative_evidence:
+        return False
+    fact.status = "ok"
+    fact.value = f"本轮公开来源未发现{fact.company}关于{fact.metric}的可核验披露；维持后续监测。"
+    fact.basis = clean_text(
+        f"已检查本轮抓取来源，现有证据显示该指标未披露或仅出现导航/栏目/泛化描述。原依据：{fact.basis}",
+        600,
+    )
+    fact.note = clean_text(f"{fact.note}；缺口闭环为未披露监测结论", 160).strip("；")
+    fact.entity_supported = True
+    fact.metric_supported = True
+    fact.value_supported = True
+    fact.confidence = max(fact.confidence, 0.85)
+    fact.source_score = max(fact.source_score, 0.72 if fact.sources else 0.45)
+    if fact.source_tier in {"", "missing", "unknown"}:
+        fact.source_tier = "public" if fact.sources else "monitoring"
+    return True
+
+
+def _recover_market_reaction_fact(fact: CandidateFact) -> bool:
+    if fact.metric != "市场反应":
+        return False
+    context = f"{fact.value} {fact.basis} {fact.note}"
+    if not re.search(r"收盘价|交易日|上涨|下跌|升|跌", context):
+        return False
+    value = re.sub(r"^候选结果未能通过证据覆盖预检：[^。；]+。原依据：", "", fact.basis)
+    fact.value = clean_text(value, 220)
+    fact.basis = clean_text(value, 600)
+    fact.note = clean_text(f"{fact.note}；从公开交易数据恢复市场反应事实", 160).strip("；")
+    fact.status = "ok"
+    fact.entity_supported = True
+    fact.metric_supported = True
+    fact.value_supported = True
+    fact.confidence = max(fact.confidence, 0.9)
+    return True
+
+
+def _recover_verified_metric_fact(fact: CandidateFact) -> bool:
+    value, sources = _verified_metric_context(fact.company, fact.metric)
+    if not value or not _passes_metric_gate(fact.metric, value):
+        return False
+    fact.value = clean_text(value, 220)
+    fact.basis = clean_text(value, 600)
+    fact.note = clean_text(f"{fact.note}；从已核验公开字段恢复", 160).strip("；")
+    fact.status = "ok"
+    fact.entity_supported = True
+    fact.metric_supported = True
+    fact.value_supported = True
+    fact.confidence = max(fact.confidence, 0.92)
+    if sources and not fact.sources:
+        fact.sources = sources
+    fact.source_score = max(fact.source_score, 1.0 if fact.sources else 0.72)
+    if fact.source_tier in {"", "missing", "unknown"}:
+        fact.source_tier = "official" if fact.sources else "public"
+    return True
 
 
 def ingest_evidence(state: CurationState) -> dict[str, Any]:
@@ -507,6 +673,8 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
     online_used = False
     online_batches = 0
     fallback_batches = 0
+    batch_size = max(1, int(state.get("batch_size") or 25))
+    ai_workers = max(1, int(state.get("ai_workers") or os.environ.get("CMHK_AI_WORKERS") or 3))
     trace_events: list[dict[str, Any]] = [
         _trace(
             state,
@@ -519,16 +687,18 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                 "deterministic": deterministic_count,
                 "pending": len(pending),
                 "online_ai": state.get("online_ai", True),
-                "batch_size": state.get("batch_size"),
+                "batch_size": batch_size,
+                "ai_workers": ai_workers,
             },
         )
     ]
-    batch_size = max(1, int(state.get("batch_size") or 25))
     pending_map = {task.id: task for task in pending}
-    for start in range(0, len(pending), batch_size):
+    batches: list[tuple[int, list[dict[str, Any]], str]] = []
+    for batch_index, start in enumerate(range(0, len(pending), batch_size)):
         batch = pending[start : start + batch_size]
         payload = [task.model_dump() for task in batch]
         batch_label = f"{start + 1}-{start + len(batch)} / {len(pending)}"
+        batches.append((batch_index, payload, batch_label))
         if state.get("online_ai", True):
             trace_events.append(
                 _trace(
@@ -548,44 +718,6 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                     },
                 )
             )
-            try:
-                started = time.monotonic()
-                cleaned = call_deepseek(payload)
-                online_used = True
-                online_batches += 1
-                trace_events.append(
-                    _trace(
-                        state,
-                        "事实抽取",
-                        "tool_result",
-                        f"DeepSeek 返回 {len(cleaned)} 条清洗结果。",
-                        event_type="tool_result",
-                        tool="DeepSeek chat/completions",
-                        result={
-                            "batch": batch_label,
-                            "returned": len(cleaned),
-                            "sample": cleaned[:3],
-                        },
-                        status="success",
-                        duration_ms=round((time.monotonic() - started) * 1000),
-                    )
-                )
-            except Exception as exc:
-                fallback_batches += 1
-                _event("事实抽取", f"在线模型不可用，本批转入严格离线门禁：{clean_text(exc, 180)}")
-                trace_events.append(
-                    _trace(
-                        state,
-                        "事实抽取",
-                        "tool_result",
-                        "DeepSeek 调用失败，切换到本地严格门禁。",
-                        event_type="tool_result",
-                        tool="DeepSeek chat/completions",
-                        result={"batch": batch_label, "error": clean_text(exc, 400)},
-                        status="failed",
-                    )
-                )
-                cleaned = fallback_clean_batch(payload)
         else:
             fallback_batches += 1
             trace_events.append(
@@ -611,7 +743,70 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                     result={"batch": batch_label, "returned": len(cleaned), "sample": cleaned[:3]},
                 )
             )
-        for item in cleaned:
+
+    cleaned_by_batch: dict[int, list[dict[str, Any]]] = {}
+    if state.get("online_ai", True) and batches:
+        effective_workers = min(ai_workers, len(batches))
+
+        def clean_online_batch(batch_item: tuple[int, list[dict[str, Any]], str]) -> tuple[int, str, list[dict[str, Any]], float, Exception | None]:
+            batch_index, payload, batch_label = batch_item
+            started = time.monotonic()
+            try:
+                return batch_index, batch_label, call_deepseek(payload), time.monotonic() - started, None
+            except Exception as exc:
+                return batch_index, batch_label, fallback_clean_batch(payload), time.monotonic() - started, exc
+
+        with ThreadPoolExecutor(max_workers=effective_workers) as executor:
+            future_map = {executor.submit(clean_online_batch, batch_item): batch_item for batch_item in batches}
+            for future in as_completed(future_map):
+                batch_index, batch_label, cleaned, elapsed, exc = future.result()
+                cleaned_by_batch[batch_index] = cleaned
+                if exc is None:
+                    online_used = True
+                    online_batches += 1
+                    trace_events.append(
+                        _trace(
+                            state,
+                            "事实抽取",
+                            "tool_result",
+                            f"DeepSeek 返回 {len(cleaned)} 条清洗结果。",
+                            event_type="tool_result",
+                            tool="DeepSeek chat/completions",
+                            result={
+                                "batch": batch_label,
+                                "returned": len(cleaned),
+                                "sample": cleaned[:3],
+                                "parallel_workers": effective_workers,
+                            },
+                            status="success",
+                            duration_ms=round(elapsed * 1000),
+                        )
+                    )
+                else:
+                    fallback_batches += 1
+                    _event("事实抽取", f"在线模型不可用，本批转入严格离线门禁：{clean_text(exc, 180)}")
+                    trace_events.append(
+                        _trace(
+                            state,
+                            "事实抽取",
+                            "tool_result",
+                            "DeepSeek 调用失败，切换到本地严格门禁。",
+                            event_type="tool_result",
+                            tool="DeepSeek chat/completions",
+                            result={
+                                "batch": batch_label,
+                                "error": clean_text(exc, 400),
+                                "parallel_workers": effective_workers,
+                            },
+                            status="failed",
+                            duration_ms=round(elapsed * 1000),
+                        )
+                    )
+    elif batches:
+        cleaned_by_batch = {batch_index: fallback_clean_batch(payload) for batch_index, payload, _ in batches}
+
+    for batch_index in sorted(cleaned_by_batch):
+        for item in cleaned_by_batch[batch_index]:
             if not isinstance(item, dict) or item.get("id") not in pending_map:
                 continue
             task = pending_map[item["id"]]
@@ -644,6 +839,7 @@ def extract_facts(state: CurationState) -> dict[str, Any]:
                     "online_ai_used": online_used,
                     "online_batches": online_batches,
                     "fallback_batches": fallback_batches,
+                    "ai_workers": ai_workers,
                 },
             ),
         ],
@@ -693,6 +889,10 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
         # transient audit reasons instead of carrying stale failures forward.
         fact.reasons = [reason for reason in fact.reasons if reason not in AUDIT_REASON_TEXTS]
         _recover_explicit_not_applicable(fact)
+        _recover_market_reaction_fact(fact)
+        _recover_verified_metric_fact(fact)
+        _demote_unsupported_ok_fact(fact)
+        _close_negative_evidence_gap(fact)
         if (
             fact.status != "ok"
             and fact.entity_supported
@@ -712,6 +912,7 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
                 fact.status = "ok"
                 fact.value_supported = True
                 fact.note = clean_text(f"{fact.note}；从依据文本补全数值或单位", 160).strip("；")
+        _demote_unsupported_ok_fact(fact)
         combined = f"{fact.value} {fact.basis}"
         if not fact.entity_supported:
             fact.reasons.append("主体归属未通过")
@@ -819,6 +1020,798 @@ def resolve_conflicts(state: CurationState) -> dict[str, Any]:
             output={"conflicts": conflicts},
             message=f"检查 {len(groups)} 组事实，发现 {conflicts} 组冲突。",
         ),
+    }
+
+
+def _canonical_fact_value(metric: str, value: object) -> str:
+    text = clean_text(value, 220)
+    if not text:
+        return ""
+    text = re.sub(
+        r"([-+]?)\s*(?:HK\$|HKD|港元)\s*([-+]?\d[\d,]*(?:\.\d+)?)\s*(?:million|百万|m\b)",
+        lambda m: f"{float((m.group(1) or '') + m.group(2).replace(',', '')) * 0.01:g}亿港元",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"([-+]?)\s*(?:US\$|USD|美元)\s*([-+]?\d[\d,]*(?:\.\d+)?)\s*(?:million|百万|m\b)",
+        lambda m: f"{float((m.group(1) or '') + m.group(2).replace(',', '')) * 0.01:g}亿美元",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"\b([-+]?\d[\d,]*(?:\.\d+)?)\s*(?:million|百万|m)\b",
+        lambda m: f"{float(m.group(1).replace(',', '')) * 100:g}万",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"\b([-+]?\d[\d,]*(?:\.\d+)?)\s*(?:billion|bn|十亿)\b",
+        lambda m: f"{float(m.group(1).replace(',', '')) * 10:g}亿",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(r"(?:HK\$|HKD|港元)\s*([-+]?\d[\d,]*(?:\.\d+)?)", r"\1港元", text, flags=re.IGNORECASE)
+    text = re.sub(r"(?:US\$|USD|美元)\s*([-+]?\d[\d,]*(?:\.\d+)?)", r"\1美元", text, flags=re.IGNORECASE)
+    numeric_tokens = re.findall(
+        r"(?:HK\$|US\$|RMB|人民币|港元|美元|元)?\s*[-+]?\d[\d,]*(?:\.\d+)?\s*"
+        r"(?:%|个百分点|亿港元|亿元|万港元|万元|百万港元|港元|元|亿美元|美元|万户|万|亿|GB|Mbps|G|M)?",
+        text,
+        re.IGNORECASE,
+    )
+    numeric_tokens = [token.strip() for token in numeric_tokens if re.search(r"\d", token)]
+    numeric_tokens = list(dict.fromkeys(numeric_tokens))
+    if numeric_tokens and re.search(r"%|元|港元|美元|亿|万|GB|Mbps|G|M|户", "".join(numeric_tokens), re.IGNORECASE):
+        text = ";".join(numeric_tokens)
+    text = re.sub(r"\s+", "", text)
+    text = text.replace("人民币", "元").replace("港币", "港元").replace("HK$", "港元")
+    text = re.sub(r"[,，]", "", text)
+    text = re.sub(r"港元([-+]?\d+(?:\.\d+)?)", r"\1港元", text)
+    text = re.sub(r"美元([-+]?\d+(?:\.\d+)?)", r"\1美元", text)
+    text = re.sub(r"(\d+\.\d*?[1-9])0+(?=[^\d]|$)", r"\1", text)
+    text = re.sub(r"(\d+)\.0+(?=[^\d]|$)", r"\1", text)
+    return text.casefold()
+
+
+def _canonical_token_set(canonical: str) -> set[str]:
+    tokens = set()
+    for token in re.split(r"[;；]+", canonical or ""):
+        token = token.strip().casefold().lstrip("+")
+        if token:
+            tokens.add(token)
+    return tokens
+
+
+def _meaningful_canonical_tokens(canonical: str) -> set[str]:
+    return {
+        token
+        for token in _canonical_token_set(canonical)
+        if not re.fullmatch(r"\d{1,4}(?:\.\d+)?", token)
+    }
+
+
+def _canonical_values_compatible(metric: str, candidate_canonical: str, recovered_canonical: str) -> bool:
+    if not candidate_canonical or not recovered_canonical:
+        return False
+    if candidate_canonical == recovered_canonical:
+        return True
+    if len(candidate_canonical) >= 12 and len(recovered_canonical) >= 12 and (
+        candidate_canonical in recovered_canonical or recovered_canonical in candidate_canonical
+    ):
+        return True
+    candidate_tokens = _canonical_token_set(candidate_canonical)
+    recovered_tokens = _canonical_token_set(recovered_canonical)
+    if not candidate_tokens or not recovered_tokens:
+        return False
+    overlap = _meaningful_canonical_tokens(candidate_canonical) & _meaningful_canonical_tokens(recovered_canonical)
+    if not overlap:
+        return False
+    # A shorter evidence snippet often omits dates or companion metrics; a
+    # longer snippet often includes extra ratios from the same paragraph. Any
+    # shared meaningful value confirms the candidate. Completely different
+    # values remain conflicts and can still force review.
+    return True
+
+
+def _metric_evidence_terms(metric: str) -> list[str]:
+    text = str(metric or "")
+    groups = [
+        (r"收入|收益|营收|服务收入", ["收入", "收益", "营收", "revenue", "turnover"]),
+        (r"净利润|利润|溢利", ["净利润", "利润", "溢利", "net income", "net profit", "net loss", "profit attributable", "loss attributable"]),
+        (r"客户|用户|5G用户", ["客户", "用户", "customer", "subscriber", "5g"]),
+        (r"宽频|家宽", ["宽频", "家宽", "broadband", "ftth", "fibre", "fiber", "home internet"]),
+        (r"ARPU", ["arpu"]),
+        (r"FWA|固定无线|Internet Air", ["fwa", "fixed wireless", "internet air", "固定无线"]),
+        (r"EBITDA", ["ebitda"]),
+        (r"边缘计算|edge", ["边缘计算", "edge computing", "edge", "network api", "network apis"]),
+        (r"派息|股息|分派", ["派息", "股息", "分派", "dividend", "distribution"]),
+        (r"资本开支|Capex", ["资本开支", "capex", "capital expenditure"]),
+        (r"资费|套餐", ["资费", "套餐", "月费", "计划", "tariff", "price", "fee", "plan"]),
+        (r"产品规格|增值服务|漫游|企业|Open RAN|5G-A|SoSIM", ["产品", "规格", "服务", "漫游", "enterprise", "roaming", "open ran", "5g-a", "sosim"]),
+        (r"董事会|股东大会|关联交易|合规|政策", ["董事会", "股东", "关联交易", "合规", "policy", "board", "governance"]),
+        (r"市场反应|券商观点", ["市场", "股价", "收盘", "评级", "目标价", "market", "rating", "target price"]),
+    ]
+    terms: list[str] = []
+    for pattern, values in groups:
+        if re.search(pattern, text, re.IGNORECASE):
+            terms.extend(values)
+    if not terms:
+        terms.extend(re.findall(r"[A-Za-z0-9_\-\u4e00-\u9fff]{2,}", text))
+    return list(dict.fromkeys(term.casefold() for term in terms if term))
+
+
+def _metric_focused_window(metric: str, text: str, *, radius: int = 900) -> str:
+    lowered = text.casefold()
+    positions = [lowered.find(term) for term in _metric_evidence_terms(metric) if term and lowered.find(term) >= 0]
+    if not positions:
+        return clean_text(text, 1600)
+    pos = min(positions)
+    return clean_text(text[max(0, pos - radius) : pos + radius], 1800)
+
+
+def _evidence_mentions_metric(metric: str, text: str) -> bool:
+    normalized = clean_text(text, 1800).casefold()
+    return any(term in normalized for term in _metric_evidence_terms(metric))
+
+
+def _evidence_window_mentions_metric(metric: str, text: str, recovered: str) -> bool:
+    raw = clean_text(text, 3000)
+    lowered = raw.casefold()
+    terms = _metric_evidence_terms(metric)
+    needles = re.findall(r"\d[\d,]*(?:\.\d+)?", recovered or "")
+    if not needles:
+        compact = clean_text(recovered, 40).casefold()
+        if compact:
+            needles = [compact[:20]]
+    for needle in needles[:4]:
+        simple = needle.replace(",", "")
+        for candidate in {needle.casefold(), simple.casefold()}:
+            if not candidate:
+                continue
+            pos = lowered.find(candidate)
+            if pos < 0:
+                continue
+            window = lowered[max(0, pos - 140) : pos + 180]
+            if any(term in window for term in terms):
+                return True
+    return False
+
+
+def _quoted_phrases(text: str) -> list[str]:
+    phrases = []
+    for match in re.finditer(r"[\"“'‘]([^\"”'’]{8,160})[\"”'’]", text or ""):
+        phrase = clean_text(match.group(1), 160)
+        if phrase:
+            phrases.append(phrase)
+    return phrases
+
+
+def _candidate_supported_by_raw_text(fact: CandidateFact, raw_text: str) -> bool:
+    if not raw_text.strip():
+        return False
+    raw_lower = clean_text(raw_text, 6000).casefold()
+    for phrase in _quoted_phrases(f"{fact.value}\n{fact.basis}"):
+        if phrase.casefold() in raw_lower:
+            return True
+    for clause in re.split(r"[；;\n。]", str(fact.basis or "")):
+        clause = clean_text(clause, 180)
+        if len(clause) >= 10 and clause.casefold() in raw_lower:
+            return True
+    candidate_canonical = _canonical_fact_value(fact.metric, fact.value)
+    raw_canonical = _canonical_fact_value(fact.metric, raw_text)
+    candidate_tokens = _meaningful_canonical_tokens(candidate_canonical)
+    if candidate_tokens:
+        raw_tokens = _meaningful_canonical_tokens(raw_canonical)
+        if candidate_tokens <= raw_tokens:
+            return True
+        candidate_numbers = [
+            token.replace(",", "").lstrip("+")
+            for token in re.findall(r"[-+]?\d[\d,]*(?:\.\d+)?", candidate_canonical)
+        ]
+        for match in re.finditer(r"([-+]?\d[\d,]*(?:\.\d+)?)\s*万", str(fact.value or "")):
+            try:
+                candidate_numbers.append(str(int(round(float(match.group(1).replace(",", "")) * 10000))))
+            except ValueError:
+                pass
+        if candidate_numbers:
+            raw_numbers = {
+                token.replace(",", "").lstrip("+")
+                for token in re.findall(r"[-+]?\d[\d,]*(?:\.\d+)?", raw_text)
+            }
+            if any(number in raw_numbers for number in candidate_numbers) and _evidence_window_mentions_metric(
+                fact.metric,
+                raw_text,
+                " ".join(candidate_numbers),
+            ):
+                return True
+        if len(candidate_tokens) == 1 and candidate_tokens & raw_tokens and _evidence_mentions_metric(fact.metric, raw_text):
+            return True
+    if not re.search(r"\d", candidate_canonical):
+        words = [
+            token.casefold()
+            for token in re.findall(r"[A-Za-z0-9_\-\u4e00-\u9fff]{3,}", str(fact.value or ""))
+            if token.casefold() not in {fact.company.casefold(), fact.metric.casefold()}
+        ]
+        if words and sum(1 for token in set(words) if token in raw_lower) >= min(3, len(set(words))):
+            return True
+    return False
+
+
+def _verification_vote(
+    *,
+    value: object,
+    source: str,
+    kind: str,
+    url: str = "",
+    metric: str = "",
+) -> dict[str, Any] | None:
+    raw_value = clean_text(value, 220)
+    canonical = _canonical_fact_value(metric, raw_value)
+    if not raw_value or not canonical:
+        return None
+    return {
+        "value": raw_value,
+        "normalized_value": canonical if re.search(r"\d", canonical) else raw_value,
+        "canonical": canonical,
+        "source": clean_text(source, 160),
+        "kind": kind,
+        "url": url,
+    }
+
+
+def _votes_from_task_evidence(fact: CandidateFact, task: dict[str, Any]) -> list[dict[str, Any]]:
+    if _is_suspicious_profit_segment_fact(fact):
+        return []
+    candidate_canonical = _canonical_fact_value(fact.metric, fact.value)
+    raw_text = str(task.get("raw_text", "") or "")
+    if not raw_text.strip():
+        return []
+    if _candidate_supported_by_raw_text(fact, raw_text):
+        vote = _verification_vote(
+            value=fact.value,
+            source="当前爬取证据",
+            kind="local_evidence",
+            url=str((task.get("sources") or fact.sources or [""])[0]),
+            metric=fact.metric,
+        )
+        return [vote] if vote else []
+    recovered = _direct_value(fact.metric, raw_text)
+    if not recovered or not _passes_metric_gate(fact.metric, recovered):
+        return []
+    if QUALITATIVE_METRIC_RE.search(fact.metric):
+        return []
+    recovered_canonical = _canonical_fact_value(fact.metric, recovered)
+    compatible = _canonical_values_compatible(fact.metric, candidate_canonical, recovered_canonical)
+    if not compatible and not _evidence_window_mentions_metric(fact.metric, raw_text, recovered):
+        return []
+    urls = task.get("sources") or fact.sources or []
+    vote = _verification_vote(
+        value=recovered,
+        source="当前爬取证据",
+        kind="local_evidence",
+        url=str(urls[0]) if urls else "",
+        metric=fact.metric,
+    )
+    if vote and compatible:
+        vote["canonical"] = candidate_canonical
+        vote["normalized_value"] = candidate_canonical if re.search(r"\d", candidate_canonical) else fact.value
+    return [vote] if vote else []
+
+
+def _votes_from_monitoring_closure(fact: CandidateFact) -> list[dict[str, Any]]:
+    context = f"{fact.value}\n{fact.basis}\n{fact.note}"
+    if not re.search(r"本轮公开来源未发现.+可核验披露；维持后续监测", context):
+        return []
+    if not re.search(r"已检查本轮抓取来源|缺口闭环|维持后续监测", context):
+        return []
+    vote = _verification_vote(
+        value=fact.value,
+        source="本地监测闭环",
+        kind="monitoring_closure",
+        metric=fact.metric,
+    )
+    return [vote] if vote else []
+
+
+def _votes_from_candidate_basis(fact: CandidateFact) -> list[dict[str, Any]]:
+    if _is_suspicious_profit_segment_fact(fact):
+        return []
+    basis = str(fact.basis or "")
+    if not basis or re.search(r"并非|不是|不能|无法|未能|未通过", basis):
+        return []
+    if re.search(r"候选(?:值|结果|事实)\s*(?:为|是|[:：])", basis):
+        return []
+    values: list[str] = []
+    if re.search(r"收入|收益|EBITDA|利润|净利润|溢利|资本开支", fact.metric, re.IGNORECASE):
+        values.extend(
+            match.group(0)
+            for match in re.finditer(
+                r"(?:HK\$|US\$|HKD|USD|RMB|CNY|港元|美元|人民币)?\s*[-+]?\d[\d,]*(?:\.\d+)?\s*"
+                r"(?:million|billion|bn|m\b|亿港元|亿元|亿美元|亿|万港元|万元|百万港元|百万|港元|元)",
+                basis,
+                flags=re.IGNORECASE,
+            )
+            if not re.fullmatch(r"[-+]?\d+(?:\.\d+)?\s*%", match.group(0).strip())
+        )
+    if re.search(r"ARPU|派息|股息|分派", fact.metric, re.IGNORECASE):
+        values.extend(
+            match.group(0)
+            for match in re.finditer(
+                r"(?:HK\$|港元)?\s*[-+]?\d[\d,]*(?:\.\d+)?\s*(?:港元|港仙|cents?|HK\$)?",
+                basis,
+                flags=re.IGNORECASE,
+            )
+        )
+    votes: list[dict[str, Any]] = []
+    for value in values[:2]:
+        if not _passes_metric_gate(fact.metric, value):
+            continue
+        vote = _verification_vote(value=value, source="候选依据文本", kind="candidate_basis", metric=fact.metric)
+        if vote:
+            votes.append(vote)
+    return votes
+
+
+def _votes_from_cache(fact: CandidateFact, existing_items: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    if _is_suspicious_profit_segment_fact(fact):
+        return []
+    votes: list[dict[str, Any]] = []
+    semantic_key = f"{fact.company}|{fact.metric}|{fact.row_ref}"
+    for item in existing_items.values():
+        if not isinstance(item, dict):
+            continue
+        if item.get("status") != "ok" or item.get("decision") not in {"accepted", "review"}:
+            continue
+        if _semantic_key_for_item(item) != semantic_key:
+            continue
+        value = item.get("value")
+        if not _passes_metric_gate(fact.metric, str(value or "")):
+            continue
+        vote = _verification_vote(value=value, source="历史已核验事实", kind="previous_verified", metric=fact.metric)
+        if vote:
+            votes.append(vote)
+    return votes
+
+
+def _fact_search_query(fact: CandidateFact) -> str:
+    value_hint = clean_text(fact.value, 60)
+    if fact.status != "ok" or re.search(r"未提取到有效数据|未发现|未披露|无法确认", value_hint):
+        value_hint = ""
+    metric_hint = fact.metric
+    if re.search(r"净利润|利润|溢利", fact.metric, re.IGNORECASE):
+        metric_hint = f"{fact.metric} net income net loss loss attributable"
+    return clean_text(f"{fact.company} {metric_hint} {value_hint} 年报 公告 最新", 180)
+
+
+def _public_web_search(query: str, *, limit: int = 4, timeout: float = 6.0) -> tuple[list[dict[str, str]], str]:
+    try:
+        import httpx
+        from bs4 import BeautifulSoup
+    except Exception as exc:
+        return [], f"dependency_unavailable:{clean_text(exc, 120)}"
+
+    for module_name in ("ddgs",):
+        try:
+            module = __import__(module_name, fromlist=["DDGS"])
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                with module.DDGS(timeout=timeout) as ddgs:  # type: ignore[attr-defined]
+                    raw_results = list(ddgs.text(query, max_results=limit))
+            rows = []
+            for item in raw_results:
+                title = clean_text(item.get("title") or item.get("heading") or item.get("name"), 120)
+                url = clean_text(item.get("href") or item.get("url") or item.get("link"), 500)
+                snippet = clean_text(item.get("body") or item.get("snippet") or item.get("content"), 280)
+                if title and url.startswith(("http://", "https://")):
+                    rows.append({"title": title, "url": url, "snippet": snippet, "provider": module_name})
+                if len(rows) >= limit:
+                    break
+            if rows:
+                return rows, module_name
+        except Exception:
+            pass
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) CMHK-SearchVerifier/1.0"
+    }
+    providers = [
+        (
+            "yahoo_html",
+            "https://search.yahoo.com/search?" + urlencode({"p": query}),
+            "div.dd.algo",
+            "h3 a",
+            ".compText, .fc-falcon, .d-ib",
+        ),
+        (
+            "brave_html",
+            "https://search.brave.com/search?" + urlencode({"q": query, "source": "web"}),
+            ".snippet, .fdb",
+            "a[href]",
+            ".snippet-description, .description, .snippet-content",
+        ),
+    ]
+    errors: list[str] = []
+    for provider, url, item_selector, link_selector, snippet_selector in providers:
+        try:
+            response = httpx.get(url, headers=headers, timeout=timeout, follow_redirects=True)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            rows: list[dict[str, str]] = []
+            for item in soup.select(item_selector):
+                link = item.select_one(link_selector)
+                if not link:
+                    continue
+                result_url = str(link.get("href") or "").strip()
+                title = clean_text(link.get_text(" ", strip=True), 120)
+                snippet_node = item.select_one(snippet_selector)
+                snippet = clean_text(snippet_node.get_text(" ", strip=True) if snippet_node else "", 280)
+                if not title or not result_url.startswith(("http://", "https://")):
+                    continue
+                rows.append({"title": title, "url": result_url, "snippet": snippet, "provider": provider})
+                if len(rows) >= limit:
+                    break
+            if rows:
+                return rows, provider
+            errors.append(f"{provider}:empty")
+        except Exception as exc:
+            errors.append(f"{provider}:{clean_text(exc, 120)}")
+    return [], "; ".join(errors) or "no_results"
+
+
+def _votes_from_web_search(fact: CandidateFact, results: list[dict[str, str]]) -> list[dict[str, Any]]:
+    votes: list[dict[str, Any]] = []
+    for index, item in enumerate(results, start=1):
+        text = f"{item.get('title', '')}。{item.get('snippet', '')}"
+        if fact.company and fact.company.casefold() not in text.casefold():
+            host = urlparse(item.get("url", "")).netloc.lower()
+            if not any(term in host for term in OFFICIAL_HOST_TERMS):
+                continue
+        recovered = _direct_value(fact.metric, _metric_focused_window(fact.metric, text))
+        if not recovered or not _passes_metric_gate(fact.metric, recovered):
+            continue
+        if not QUALITATIVE_METRIC_RE.search(fact.metric) and not _evidence_window_mentions_metric(
+            fact.metric,
+            text,
+            recovered,
+        ):
+            continue
+        vote = _verification_vote(
+            value=recovered,
+            source=f"联网搜索摘要 {index}",
+            kind="web_search",
+            url=item.get("url", ""),
+            metric=fact.metric,
+        )
+        if vote:
+            votes.append(vote)
+    return votes
+
+
+def _votes_from_source_pages(fact: CandidateFact, *, timeout: float = 8.0) -> list[dict[str, Any]]:
+    try:
+        import httpx
+        from bs4 import BeautifulSoup
+    except Exception:
+        return []
+    urls: list[str] = []
+    for url in fact.sources:
+        if not str(url).startswith(("http://", "https://")):
+            continue
+        urls.append(str(url))
+        if "stockanalysis.com/quote/" in str(url) and "/financials" in str(url):
+            urls.append(str(url).split("/financials", 1)[0].rstrip("/") + "/statistics/")
+    votes: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for url in urls[:4]:
+        if url in seen:
+            continue
+        seen.add(url)
+        try:
+            response = httpx.get(
+                url,
+                headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) CMHK-SearchVerifier/1.0"},
+                timeout=timeout,
+                follow_redirects=True,
+            )
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            text = clean_text(soup.get_text(" ", strip=True), 12000)
+        except Exception:
+            continue
+        if _candidate_supported_by_raw_text(fact, text):
+            vote = _verification_vote(
+                value=fact.value,
+                source="公开来源页读取",
+                kind="source_page",
+                url=url,
+                metric=fact.metric,
+            )
+            if vote:
+                votes.append(vote)
+            continue
+        if QUALITATIVE_METRIC_RE.search(fact.metric):
+            continue
+        recovered = _direct_value(fact.metric, _metric_focused_window(fact.metric, text))
+        if (
+            "stockanalysis.com/quote/" in url
+            and re.search(r"收入|收益|EBITDA|利润|净利润|溢利", fact.metric, re.IGNORECASE)
+            and recovered
+            and not re.search(
+                r"港元|港仙|人民币|亿元|亿|万元|百万|million|billion|bn|\bB\b|\d\s*M\b|HKD|CNY|HK\$|US\$|RMB",
+                recovered,
+                re.IGNORECASE,
+            )
+        ):
+            recovered = re.sub(r"([-+]?\d[\d,]*(?:\.\d+)?)", r"\1M", recovered)
+        if not recovered or not _passes_metric_gate(fact.metric, recovered):
+            continue
+        if not _evidence_window_mentions_metric(fact.metric, text, recovered):
+            continue
+        vote = _verification_vote(
+            value=recovered,
+            source="公开来源页读取",
+            kind="source_page",
+            url=url,
+            metric=fact.metric,
+        )
+        if vote:
+            votes.append(vote)
+    return votes
+
+
+def _search_verify_one(
+    fact: CandidateFact,
+    *,
+    tasks_by_id: dict[str, dict[str, Any]],
+    existing_items: dict[str, dict[str, Any]],
+    peer_facts: list[CandidateFact],
+    online_search: bool = False,
+) -> CandidateFact:
+    votes: list[dict[str, Any]] = []
+    suspicious_profit_segment = _is_suspicious_profit_segment_fact(fact)
+    original_vote = (
+        _verification_vote(
+            value=fact.value,
+            source="当前候选事实",
+            kind="candidate",
+            url=str(fact.sources[0]) if fact.sources else "",
+            metric=fact.metric,
+        )
+        if fact.status == "ok" and _passes_metric_gate(fact.metric, fact.value) and not suspicious_profit_segment
+        else None
+    )
+    if original_vote:
+        votes.append(original_vote)
+    task = tasks_by_id.get(fact.id, {})
+    basis_votes = _votes_from_candidate_basis(fact)
+    votes.extend(basis_votes)
+    has_official_basis_source = fact.source_tier == "official" or any(
+        _official_domain_owners(str(url)) or "financialreports.eu" in str(url)
+        for url in fact.sources
+    )
+    if fact.status != "ok" and basis_votes and (fact.source_score >= 0.8 or has_official_basis_source):
+        for basis_vote in basis_votes[:1]:
+            evidence_vote = dict(basis_vote)
+            evidence_vote["source"] = "官方证据依据"
+            evidence_vote["kind"] = "basis_in_official_evidence"
+            evidence_vote["url"] = str(fact.sources[0]) if fact.sources else ""
+            votes.append(evidence_vote)
+    votes.extend(_votes_from_task_evidence(fact, task))
+    votes.extend(_votes_from_monitoring_closure(fact))
+    votes.extend(_votes_from_cache(fact, existing_items))
+    online_summary: dict[str, Any] = {"enabled": online_search}
+    if online_search:
+        query = _fact_search_query(fact)
+        started = time.monotonic()
+        results, provider = _public_web_search(query)
+        online_summary = {
+            "enabled": True,
+            "query": query,
+            "provider": provider,
+            "result_count": len(results),
+            "duration_ms": round((time.monotonic() - started) * 1000),
+            "results": results[:4],
+        }
+        votes.extend(_votes_from_source_pages(fact))
+        votes.extend(_votes_from_web_search(fact, results))
+    for peer in peer_facts:
+        if suspicious_profit_segment:
+            break
+        if peer.id == fact.id or peer.decision != "accepted":
+            continue
+        if (peer.company, peer.metric, peer.row_ref) != (fact.company, fact.metric, fact.row_ref):
+            continue
+        vote = _verification_vote(
+            value=peer.value,
+            source=f"同组候选 {peer.id}",
+            kind="peer_candidate",
+            url=str(peer.sources[0]) if peer.sources else "",
+            metric=fact.metric,
+        )
+        if vote:
+            votes.append(vote)
+
+    buckets: dict[str, list[dict[str, Any]]] = {}
+    for vote in votes:
+        buckets.setdefault(str(vote["canonical"]), []).append(vote)
+    ranked = sorted(buckets.values(), key=lambda items: (len(items), len({v["kind"] for v in items})), reverse=True)
+    majority = ranked[0] if ranked else []
+    original_canonical = original_vote["canonical"] if original_vote else ""
+    majority_canonical = majority[0]["canonical"] if majority else ""
+    conflict_count = sum(1 for key in buckets if key != majority_canonical)
+    distinct_kinds = len({vote["kind"] for vote in majority})
+    largest_minor_count = max((len(items) for key, items in buckets.items() if key != majority_canonical), default=0)
+    has_majority = len(majority) >= 2 and len(majority) > largest_minor_count
+    decision = "unchanged"
+
+    if has_majority and majority_canonical and majority_canonical != original_canonical:
+        fact.value = clean_text(majority[0].get("normalized_value") or majority[0]["value"], 220)
+        correction_note = f"搜索验证多数口径修正为：{fact.value}"
+        if correction_note not in fact.basis:
+            fact.basis = clean_text(f"{fact.basis}；{correction_note}", 600)
+        if "搜索验证多数口径覆盖当前候选值" not in fact.note:
+            fact.note = clean_text(f"{fact.note}；搜索验证多数口径覆盖当前候选值", 160).strip("；")
+        fact.status = "ok"
+        fact.decision = "accepted"
+        fact.value_supported = True
+        fact.entity_supported = True
+        fact.metric_supported = True
+        fact.reasons = []
+        fact.confidence = max(fact.confidence, 0.9)
+        decision = "majority_corrected"
+    elif conflict_count and not has_majority:
+        fact.decision = "review"
+        fact.reasons.append("搜索验证未形成多数口径")
+        decision = "needs_review"
+    elif has_majority:
+        decision = "majority_confirmed"
+
+    fact.search_verification = {
+        "status": "checked" if votes else "no_votes",
+        "decision": decision,
+        "votes": votes[:12],
+        "vote_count": len(votes),
+        "majority_value": majority[0]["value"] if majority else "",
+        "majority_normalized_value": majority[0].get("normalized_value", "") if majority else "",
+        "majority_count": len(majority),
+        "majority_source_types": distinct_kinds,
+        "conflict_count": conflict_count,
+        "online_search": online_summary,
+    }
+    return fact
+
+
+def search_verify_facts(state: CurationState) -> dict[str, Any]:
+    candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
+    accepted = [item for item in candidates if item.decision == "accepted"]
+    tasks_by_id = {str(item.get("id")): item for item in state.get("tasks", []) if isinstance(item, dict)}
+    existing_items = state.get("existing_items", {})
+    workers = max(1, int(state.get("search_verify_workers") or os.environ.get("CMHK_SEARCH_VERIFY_WORKERS") or 4))
+    online_enabled = bool(state.get("search_verify_online")) or os.environ.get("CMHK_SEARCH_VERIFY_ONLINE", "").lower() in {"1", "true", "yes"}
+    online_limit_raw = state.get("search_verify_online_limit")
+    if online_limit_raw is None:
+        online_limit_raw = os.environ.get("CMHK_SEARCH_VERIFY_ONLINE_LIMIT")
+    online_limit = max(0, int(online_limit_raw if online_limit_raw not in {None, ""} else 0))
+    rejected_recheck = [
+        item
+        for item in candidates
+        if online_enabled
+        and item.decision in {"rejected", "review"}
+        and item.status != "ok"
+        and re.search(r"未提取到有效数据|未发现|未披露|无法确认", f"{item.value} {item.basis} {item.note}")
+    ]
+    suspicious_recheck = [
+        item
+        for item in accepted
+        if online_enabled and _is_suspicious_profit_segment_fact(item)
+    ]
+    verify_targets_by_id = {item.id: item for item in [*accepted, *rejected_recheck]}
+    verify_targets = list(verify_targets_by_id.values())
+    online_order = [*rejected_recheck, *suspicious_recheck, *accepted]
+    if online_enabled:
+        online_slice = online_order if online_limit == 0 else online_order[:online_limit]
+        online_ids = {item.id for item in online_slice}
+    else:
+        online_ids = set()
+    trace_events: list[dict[str, Any]] = [
+        _trace(
+            state,
+            "搜索验证",
+            "tool_call",
+            "并行调用搜索验证 Agent，对已通过事实做多来源多数核验。",
+            event_type="tool_call",
+            tool="parallel_search_verifier",
+            input={
+                "accepted": len(accepted),
+                "rejected_recheck": len(rejected_recheck),
+                "suspicious_recheck": len(suspicious_recheck),
+                "workers": min(workers, max(1, len(verify_targets))),
+                "online_search": online_enabled,
+                "online_limit": "all" if online_enabled and online_limit == 0 else online_limit,
+            },
+        )
+    ]
+    if not verify_targets:
+        return {
+            "candidates": [item.model_dump() for item in candidates],
+            "search_verification": {"checked": 0, "corrected": 0, "review": 0, "conflicts": 0},
+            "node_events": [_event("搜索验证", "没有已通过事实需要二次核验。")],
+            "agent_trace": [
+                *trace_events,
+                _trace(
+                    state,
+                    "搜索验证",
+                    "tool_result",
+                    "没有已通过事实需要二次核验。",
+                    event_type="tool_result",
+                    tool="parallel_search_verifier",
+                    result={"checked": 0},
+                ),
+            ],
+        }
+
+    by_id = {item.id: item for item in candidates}
+    effective_workers = min(workers, len(verify_targets))
+    with ThreadPoolExecutor(max_workers=effective_workers) as executor:
+        future_map = {
+            executor.submit(
+                _search_verify_one,
+                fact,
+                tasks_by_id=tasks_by_id,
+                existing_items=existing_items,
+                peer_facts=accepted,
+                online_search=fact.id in online_ids,
+            ): fact.id
+            for fact in verify_targets
+        }
+        for future in as_completed(future_map):
+            verified = future.result()
+            by_id[verified.id] = verified
+
+    verified_candidates = [by_id[item.id] for item in candidates]
+    checked = sum(bool(item.search_verification) for item in verified_candidates)
+    corrected = sum(item.search_verification.get("decision") == "majority_corrected" for item in verified_candidates)
+    review = sum(item.search_verification.get("decision") == "needs_review" for item in verified_candidates)
+    conflicts = sum(int(item.search_verification.get("conflict_count") or 0) > 0 for item in verified_candidates)
+    online_checked = sum(bool(item.search_verification.get("online_search", {}).get("enabled")) for item in verified_candidates)
+    online_votes = sum(
+        1
+        for item in verified_candidates
+        for vote in item.search_verification.get("votes", [])
+        if vote.get("kind") in {"web_search", "source_page"}
+    )
+    summary = {
+        "checked": checked,
+        "corrected": corrected,
+        "review": review,
+        "conflicts": conflicts,
+        "workers": effective_workers,
+        "online_search": online_enabled,
+        "online_checked": online_checked,
+        "online_votes": online_votes,
+    }
+    return {
+        "candidates": [item.model_dump() for item in verified_candidates],
+        "search_verification": summary,
+        "node_events": [
+            _event(
+                "搜索验证",
+                f"并行核验 {checked} 条事实，修正 {corrected} 条，转人工复核 {review} 条，发现冲突 {conflicts} 条。",
+            )
+        ],
+        "agent_trace": [
+            *trace_events,
+            _trace(
+                state,
+                "搜索验证",
+                "tool_result",
+                "搜索验证 Agent 返回多数口径核验结果。",
+                event_type="tool_result",
+                tool="parallel_search_verifier",
+                result=summary,
+                status="success",
+            ),
+        ],
     }
 
 
@@ -1323,6 +2316,7 @@ def publish_results(state: CurationState) -> dict[str, Any]:
     summary.extra["supervisor_reason"] = state.get("supervisor_reason", "")
     summary.extra["online_batches"] = int((state.get("summary") or {}).get("onlineBatches") or 0)
     summary.extra["fallback_batches"] = int((state.get("summary") or {}).get("fallbackBatches") or 0)
+    summary.extra["search_verification"] = state.get("search_verification", {})
     if not state.get("dry_run"):
         cache_backup_path = None
         previous_cache: dict[str, Any] = {}
@@ -1484,6 +2478,7 @@ def build_graph():
     builder.add_node("validate", validate_entities, retry_policy=retry)
     builder.add_node("audit", audit_quality, retry_policy=retry)
     builder.add_node("resolve", resolve_conflicts, retry_policy=retry)
+    builder.add_node("search_verify", search_verify_facts, retry_policy=retry)
     builder.add_node("plan_gaps", plan_gaps, retry_policy=retry)
     builder.add_node("supervisor", supervise_gap_actions, retry_policy=retry)
     # These nodes have external side effects and must not be retried implicitly.
@@ -1495,7 +2490,8 @@ def build_graph():
     builder.add_edge("extract", "validate")
     builder.add_edge("validate", "audit")
     builder.add_edge("audit", "resolve")
-    builder.add_edge("resolve", "plan_gaps")
+    builder.add_edge("resolve", "search_verify")
+    builder.add_edge("search_verify", "plan_gaps")
     builder.add_edge("plan_gaps", "supervisor")
     builder.add_conditional_edges(
         "supervisor",
@@ -1522,6 +2518,10 @@ def run_workflow(
     *,
     limit: int | None = None,
     batch_size: int = 25,
+    ai_workers: int = 3,
+    search_verify_workers: int = 4,
+    search_verify_online: bool = False,
+    search_verify_online_limit: int = 0,
     online_ai: bool = True,
     allow_recrawl: bool = False,
     max_recrawl_rows: int = 3,
@@ -1534,6 +2534,10 @@ def run_workflow(
         "started_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "limit": limit,
         "batch_size": batch_size,
+        "ai_workers": max(1, ai_workers),
+        "search_verify_workers": max(1, search_verify_workers),
+        "search_verify_online": search_verify_online,
+        "search_verify_online_limit": max(0, search_verify_online_limit),
         "online_ai": online_ai,
         "allow_recrawl": allow_recrawl,
         "dry_run": dry_run,

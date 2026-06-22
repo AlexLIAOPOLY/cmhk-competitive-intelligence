@@ -1,0 +1,2504 @@
+     1
+ 1
+              10
+10
+         2
+4            1
+              1 0
+
+                 1   Forward-Looking Statements
+                     Certain statements contained in this report may be viewed as “forward-
+                     looking statements” within the meaning of Section 27A of the U.S.
+
+
+
+
+         0
+                     Securities Act of 1933 (as amended) and Section 21E of the U.S.
+                     Securities Exchange Act of 1934 (as amended). Such forward-looking
+                     statements are subject to known and unknown risks, uncertainties and
+                     other factors, which may cause the actual performance, financial
+                     condition or results of operations of China Telecom Corporation Limited
+                     (the “Company”, a joint stock limited company incorporated in the
+                 1   People’s Republic of China with limited liability) to be materially different
+                     from any future performance, financial condition or results of operations
+                     implied by such forward-looking statements. In addition, we do not
+
+
+
+
+              7
+                     intend to update these forward-looking statements. Further information
+                     regarding these risks, uncertainties and other factors is included in the
+                     Company’s most recent Annual Report on Form 20-F filed with the U.S.
+                     Securities and Exchange Commission (the “SEC”) and in the Company’s
+                     other filings with the SEC.
+
+
+
+
+             9
+              1      Contents
+
+
+
+
+1 0
+                     001 Financial Highlights
+                     002 Chairman’s Statement
+                     011 Financial Review
+                     014 Report on Review of Interim Financial Information
+
+0                    015 Condensed Consolidated Statement of
+                                 Financial Position (Unaudited)
+
+
+
+
+  110
+                     017 Condensed Consolidated Statement of
+
+
+
+
+2
+                                 Comprehensive Income (Unaudited)
+
+                     019 Condensed Consolidated Statement of
+                                 Changes in Equity (Unaudited)
+
+                     020 Condensed Consolidated Statement of
+                                 Cash Flows (Unaudited)
+
+                     022 Notes to the Unaudited Condensed Consolidated
+                                 Interim Financial Information
+
+                     043 Other Information
+                                                                                Financial Highlights
+
+                                                                                           Six-month period ended
+                                                                                                  30 June
+                                                                                                2021           2020
+Operating revenues (RMB million)                                                                219,237                   193,803
+
+Service revenues1 (RMB million)                                                                 203,502                   187,110
+
+EBITDA2 (RMB million)                                                                             66,348                    63,154
+
+EBITDA margin3                                                                                    32.6%                     33.8%
+
+Net profit4 (RMB million)                                                                         17,743                    13,949
+
+Earnings per share (RMB)                                                                            0.219                     0.172
+
+Capital expenditure (RMB million)                                                                 27,005                    43,126
+
+
+
+Operating Revenues
+(RMB million)
+
+
+
+    1H2021                                                                                                             219,237
+
+    1H2020                                                                                                               193,803
+
+
+EBITDA2
+(RMB million)
+
+
+
+    1H2021                                                                                                                66,348
+
+    1H2020                                                                                                                 63,154
+
+
+Net Profit4
+(RMB million)
+
+
+
+    1H2021                                                                                                                17,743
+
+    1H2020                                                                                                                 13,949
+
+1
+       Service revenues are calculated based on operating revenues minus sales of mobile terminals, sales of wireline equipment and other
+       non-service revenues.
+2
+       EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+3
+       EBITDA margin is calculated based on EBITDA divided by service revenues.
+4
+       Net profit represents profit attributable to equity holders of the Company.
+
+                                                               China Telecom Corporation Limited Interim Report 2021                001
+Chairman’s Statement
+
+Dear Shareholders,                                                      Overall Results
+In the first half of 2021, the booming of digital                       In the first half of 2021, operating revenues of the
+economy brought the information and                                     Company amounted to RMB219.2 billion, representing
+communications industry with an unprecedented                           an increase of 13.1% year-on-year. Service revenues1
+period of strategic opportunities. The Company seized                   amounted to RMB203.5 billion, representing an
+the new development stage, insisted on the new                          increase of 8.8% year-on-year and surpassing the
+development philosophy and established the new                          industry’s average growth rate2. EBITDA3 amounted to
+development pattern. Taking A-share IPO as an                           RMB66.3 billion, representing an increase of 5.1%
+opportunity, the Company further pushed forward the                     over the same period of last year. Net profit4
+“Cloudification and Digital Transformation” strategy                    amounted to RMB17.7 billion, representing an
+on all fronts. The Company insisted on its customer-
+oriented approach, strengthened its core capabilities
+                                                                        increase of 27.2% over the same period of last year.
+                                                                        Excluding a one-off after-tax gain from the disposals
+                                                                                                                                                  1
+                                                                                                                                                 10
+
+
+
+
+                                                                                                                                                          6
+in sci-tech innovation, and accelerated the promotion                   of subsidiaries5, net profit increased by 17.0% over
+of cloud-network integration. The Company also built                    the same period of last year. Basic earnings per share
+the digitalised platform hub, strengthened the                          were RMB0.219. Capital expenditure was RMB27.0
+foundation of network and information security,                         billion and free cash flow6 was RMB26.8 billion.
+promoted green development and deepened system
+and mechanism reform. The Company expanded the                          Taking shareholders’ return into full consideration,
+cooperation and win-win ecology to create the digital                   alongside the Company’s profitability, cash flow level
+life, propel industrial upgrades and support social                     and capital needs for its future development, the
+governance. The Company made great strides in
+building Digital China, with its development
+momentum continuing to strengthen and its
+                                                                        Board of Directors has decided that the Company’s
+                                                                        profit to be distributed in cash for the year 2021 shall                      0
+development entering into the fast lane. In the first
+                                                                        be no less than 60% of the profit attributable to
+                                                                                                                                                      1
+
+                                                                                                                                                          1
+                                                                        equity holders of the Company for that year. Within
+half of the year, the Company delivered double-digit                    three years after A-share offering and listing, the
+growth in both revenue and profit, with its                             profit to be distributed in cash for each year will
+profitability achieving continuous improvement while                    gradually increase to 70% or above of the profit
+its operating results reaching a new high. The                          attributable to equity holders of the Company for that
+Company continued to create new value for its                           year. At the same time, an interim dividend will be                           1
+customers and shareholders.                                             declared and paid starting from year 2022. The Board                      1       0
+                                                                        of Directors has full confidence in the Company’s
+                                                                        future development and believes that the Company
+                                                                        will continue to create value for its shareholders by
+                                                                        virtue of its good profitability and cash flow
+                                                                        generation capability, as well as its effective capital
+                                                                        expenditure control.
+
+
+1
+      Service revenues are calculated based on operating revenues minus sales of mobile terminals, sales of wireline equipment and other
+      non-service revenues. Of which, mobile service revenues amounted to RMB97.9 billion, representing an increase of 8.2% year-on-year;
+
+
+
+
+                                                                                                                                                  10
+      wireline service revenues amounted to RMB105.6 billion, representing an increase of 9.3% year-on-year.
+2
+      Performance of the communications industry economy in the first half of 2021 released by MIIT: telecommunications revenue grew by
+      8.7% year-on-year from January to June in 2021.
+3
+      EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+4
+      Net profit represents profit attributable to equity holders of the Company.
+5
+      The one-off after-tax gain from the disposals of E-surfing Pay Co., Ltd and China Telecom Leasing Corporation Limited was approximately
+      RMB1.42 billion.
+6
+      Free cash flow is calculated based on EBITDA minus capital expenditure, income tax and depreciation charge for right-of-use assets other
+      than land-use-rights.
+
+                                                                                                                                                  1
+                                                                                                                                                 10
+
+
+
+002       China Telecom Corporation Limited Interim Report 2021
+                                                                                         Chairman’s Statement
+        0 10
+        1
+        0             1
+
+
+
+
+ 72
+    1                                                                                                      Ke Ruiwen
+                                                                                                           Chairman and
+                                                                                                           Chief Executive Officer
+
+
+
+
+               0
+                                                                                                        0
+                                                                                                              8
+        1                                                                                                                            0
+
+ 001
+6
+ 1
+
+1
+               Business Performance
+                                     3                                                                                 0
+                                                                          Dual enhancement of mobile subscriber scale and
+                                                                                                                             9
+                                                                                                                             1
+                                                                                                                                           01
+
+
+
+
+                                                                          value. Led by 5G, the Company continued to deepen
+               In the first half of 2021, the flourishing of a new        co-building and co-sharing, enrich its integrated
+               round of technological revolution and industrial           intelligent information services under converged
+               transformation created huge space for the                  scenes, and establish the individual digital life
+               development of China’s digital economy industry. The       covering entertainment, work and study. The
+               integration of 5G, cloud computing and artificial          Company also forged a high-quality experience for its
+               intelligence (AI), among others, has formed new            5G services, strengthened ecological cooperation, and
+               information infrastructure, while people’s yearning for    comprehensively deployed the application and
+               a better life is giving rise to a variety of scene-based   privilege portfolio for individual customers. Leveraging
+               demands. The integration of digital technologies and       the edge of deepened integration of 5G and
+               the real economy has unleashed the potential of            e-Surfing Cloud, the Company launched various
+               Industrial Digitalisation applications, while the demand   differentiated and innovative applications such as AR/
+               for network security has been increasing day by day.       VR, Ultra HD, e-Surfing Cloud Drive, and cloud games
+               The Company proactively embraced the opportunities         to cultivate users’ 5G usage habits, propel
+               arising from digital transformation, built up the          enhancement in both scale and value of mobile
+               differentiated edges of integrated intelligent             subscribers, and expand the potential value space for
+               information services with innovation, convergence and      future extensive adoption of the technical
+               security, and delivered excellent operating results        characteristics of 5G such as low latency and high
+               across all areas.                                          speed.
+
+
+
+                                                                     China Telecom Corporation Limited Interim Report 2021           003
+Chairman’s Statement
+
+
+In the first half of the year, the Company’s mobile                       increase of 2.9% over the same period of last year.
+communications service revenues amounted to                               Revenue from Smart Family reached RMB7.2 billion,
+RMB93.3 billion, representing an increase of 6.9%                         representing an increase of 32.9% over the same
+over the same period of last year. The total number                       period of last year. The total number of Whole-home
+of mobile subscribers reached 362 million,                                WiFi and e-Surfing Webcam subscribers grew 99.5%
+representing a net addition of 11.47 million. The                         and 231.9% compared to the same period of last
+number of 5G package subscribers reached 131                              year respectively. The number of smart home devices
+million with a penetration rate of 36.2%, which                           managed by the Smart Family platform reached 270
+continued to surpass the industry average level. The                      million, representing an increase of 78.1% over the
+number of 5G feature-app subscribers increased                            same period of last year. The broadband blended
+rapidly, while users upgrading to 5G maintained                           ARPU7 reached RMB46.8, representing an increase of
+sound value growth. Mobile ARPU has reversed its                          5.9% over the same period of last year. The value
+downward trend and continued to increase, which                           contribution from Smart Family has significantly
+amounted to RMB45.7, representing an increase of                          enhanced.
+2.9% over the same period of last year. The growth
+rate further improved over that of the first quarter.                     Thriving Industrial Digitalisation. Firmly seizing the
+                                                                          opportunities emerging from the upgrade demands
+Value contribution from Smart Family                                      for digitalisation of the economy and society, the
+convergence becoming prominent. With a focus on                           Company leveraged its unique edges in cloud-network
+the digital life in all scenes, the Company developed                     integration and its vast reserves in the Industrial
+integrated information services covering Smart Family,                    Digitalisation field to deeply integrate the essential
+smart community and digital village. Based on its                         elements of the digital economy with emerging
+cloud-network integration capabilities, the Company                       information technologies to build a digitalised
+created the high-quality “Triple-Gigabit” ubiquitous                      application platform. The Company repackaged its
+connectivity services, comprising 5G+Fibre                                fundamental capabilities with 5G, e-Surfing Cloud and
+Broadband+WiFi6. The Company built a Smart Family                         security as the core to enable numerous walks of life
+platform that aggregates different industry ecologies                     with intelligence injection and endowment. The
+such as content, applications and smart home devices.                     Company formed an expert team with 36,000 staff to
+The Company also created an engineering team for                          provide localised services, meeting customers’
+Smart Family to provide end-to-end DICT products and                      demands for customisation in various use cases. In the
+services for households, meeting their demands for a                      first half of the year, the growth of the Company’s
+digitalised, network-based and smart digital family life.                 Industrial Digitalisation8 accelerated, with its revenue
+Capitalising on cloud-network integration, secure and                     reaching RMB50.1 billion, representing an increase of
+reliable digital solutions, the Company proactively built                 16.8% over the same period of last year.
+up an informatisation service and governance system
+for smart community, while constructing digital village                   The value of 5G applications became visible, following
+featuring intelligent production, smart life and digital                  an extensive, adoption in various fields such as
+governance.                                                               government administration, finance, industry, society
+                                                                          and livelihood. The Company’s three 5G customised
+In the first half of the year, wireline and Smart Family                  network service modes, namely “Wide-area,”
+service revenues of the Company amounted to                               “Adjacent,” and “Wingspan”, fully demonstrated the
+RMB57.4 billion, representing an increase of 5.2%                         characteristics of standalone (SA) network and
+year-on-year. The total number of wireline broadband                      significantly enhanced its customers’ operation and
+subscribers reached 164 million, while revenue from                       management efficiency through the intelligence
+broadband access reached RMB38.1 billion,                                 injection and endowment to traditional industries. A
+representing a year-on-year growth of 7.9%.                               series of benchmark projects in the areas of smart
+Broadband access ARPU maintained the rebounce                             factories, mines, ports, power grids and cities among
+momentum, reaching RMB39.4 and representing an                            others, have been quickly replicated in many places
+                                                                          across the country, with 5G business models based on
+
+7
+      Broadband blended ARPU is calculated based on the sum of monthly average revenues from broadband access, e-Surfing HD and Smart
+      Family applications and services divided by the average number of broadband subscribers.
+8
+      Industrial Digitalisation mainly includes services such as Industry Cloud, IDC, Network Dedicated Line, Internet of Things (IoT), Digitalised
+      Platform and Big Data.
+
+004       China Telecom Corporation Limited Interim Report 2021
+                                                                          Chairman’s Statement
+
+
+network coverage area, computing resources, platform        Capturing Opportunities from
+management, applications and services becoming              A-Share IPO to Promote
+increasingly diversified. In the first half of the year,    “Cloudification and Digital
+5G applications in the government and enterprise            Transformation” Strategy on All
+area have gradually moved into the harvesting stage,        Fronts
+with the number of 5G use cases being nearly
+doubled compared to the end of 2020. The market             In the first half of the year, the Company deepened
+demand is expanding at an explosive pace.                   the implementation of its “Cloudification and Digital
+                                                            Transformation” strategy. Firmly seizing new
+The edge of e-Surfing Cloud has been reinforced on          opportunities for reforms and development brought
+all fronts, becoming a cornerstone for building             about by A-share IPO, the Company comprehensively
+Cyberpower and Digital China. More than 50 key              strengthened cloud-network integration, digitalised
+core technologies made breakthroughs in areas such          platform and sci-tech innovation capabilities. Along
+as elastic computing, distributive storage, mega-scale      with the innovation and reform of its systems and
+data processing, and content delivery networks (CDN).       mechanisms, the Company’s operating efficiency
+The Company has teamed up with hundreds of                  continued to enhance, while its development impetus
+ecological partners to create more than two hundred         became significantly strengthened. In the future, the
+cloud products in computing, storage, network,              Company will take A-share IPO as an opportunity to
+database, CDN, device, Big Data and AI, while also          step up the implementation of market-oriented
+established the full stack cloud service capabilities       restraint and incentive mechanisms and further
+covering infrastructure-as-a-service (IaaS), platform-as-   consolidate resources such as cloud-network, edge,
+a-service (PaaS), and software-as-a-service (SaaS). Up      subscribers and talents with the aid of capital and
+to now, 50 of the Company’s cloud resource pools            ecology power. The Company will create ecological
+have passed Grade 3 or above in the Network                 cooperation and strengthen strategic collaboration to
+Security Graded Protection Assessment, while 66             jointly expand the ecosphere. The Company will also
+resource pools received the top rating of five stars +.     optimise its organisation, team and workflow to
+This reflects that the Company’s cloud is deeply            enhance operation and servicing capabilities. The
+trusted by customers. e-Surfing Cloud demonstrated          Company will unleash development impetus by
+significant differentiated market advantages in             combining the capital market and customer market
+ubiquitous government administration clouds such as         closely together. The Company will also deepen
+large-scale state-owned enterprise clouds, medical          reform, promote green development and strive to
+clouds and education clouds. In the first half of the       create new development space.
+year, revenue from e-Surfing Cloud amounted to
+RMB14.0 billion, representing a year-on-year increase
+of 109.3% and maintaining the leading market
+position within the industry, of which revenues from
+PaaS and SaaS accounted for around 25%.
+
+
+
+
+                                                      China Telecom Corporation Limited Interim Report 2021   005
+Chairman’s Statement
+
+
+Consolidating cloud-network resources and                   Cloud resource pools and key data centres as well as
+strengthening edges of unified new information              the OTN network for government and enterprise
+infrastructure. In the first half of the year, the          customers. Leveraging its edges in satellite
+Company strengthened its unified deployment of              communications network resources, the Company
+cloud and Internet Data Centre (IDC) resources              continued to integrate its mobile, fibre broadband
+according to the “2+4+31+X+O” layout. The                   and satellite networks to build a unified information
+Company continued to deploy IDC on a large scale            network infrastructure covering land, sea, air and
+around core cities in the four most economically            space. The Company achieved in-depth integration of
+developed regions in China, namely Beijing-Tianjin-         cloud resource pools and network capabilities, with its
+Hebei, Yangtze River Delta, Guangdong-Hong Kong-            end-to-end differentiated cloud-network servicing
+Macau, and Sichuan-Chongqing-Shaanxi. The number            capabilities becoming increasingly significant.
+of data centres exceeded 700, while the number of
+cabinets serving external customers reached 430,000        Aggregating fundamental capabilities through
+units, above 80% of which were deployed in the four        digitalised platform to empower digital
+economically developed regions. The Company has the        transformation. The Company innovated business
+greatest number and widest distribution of IDC             models in light of customers’ diversified scene-based
+resources in China, with prominent data-oriented           digital demands, and built a digitalised platform to
+characteristic and significant efficiently-centralised     integrate its internal and external resources and
+edges. At the same time, leveraging its resources of       capabilities and aggregate its fundamental capabilities
+60,000 exchange buildings and integrated access            in connectivity, security, video, Big Data, and AI, etc.
+offices, the Company built edge nodes to deploy its        Leveraging various top informatisation attributes in
+edge computing capabilities, while establishing its        cloud-network services and construction of digitalised
+servicing capabilities of cloud polymorphism, including    platform, the Company developed integrated
+public cloud, private cloud, dedicated cloud and           collaborative solutions featuring “customised
+hybrid cloud. In this way, the Company formed an           networks, intelligent edge, collaborative clouds, and
+edge in providing integrated digital solutions based on    services and applications on demand”. Through the
+cloud-edge collaboration to satisfy customers’             establishment of technical service and delivery teams,
+demands for low latency, data localisation, security,      comprising around 10,000 staff across the
+and differentiated services.                               headquarters, provincial and municipal levels, the
+                                                           Company offered localised and professional rapid
+The Company continued its cooperation with China           response to service requests and established industry-
+Unicom on co-building and co-sharing of 5G                 leading digitalised delivery and operation capabilities.
+networks. Making full use of the complementary             This empowered the digital transformation in the
+network resources of both parties and the adjacent         fields of government administration, finance, industry,
+spectrums in 3.5GHz/2.1GHz, the Company rapidly            society and livelihood.
+enhanced the construction efficiency and coverage of
+its 5G network. The number of 5G base stations in           The Company pushed forward digital transformation
+use reached 460,000 and 5G network coverage will            of internal operation by leveraging its digitalised
+extend to counties and developed towns within this          platform, while applying Big Data and AI capabilities
+year. Meanwhile, the two parties continued to               to key areas such as sales, operation and investment
+conduct 4G network co-sharing with the total                to improve the utilisation efficiency of various
+number of co-shared 4G base stations reaching               resources. Based on users’ preferences on video-on-
+460,000. This further enhanced the quality of               demand, the Company provided differentiated
+network coverage and saved network operating costs          recommendations for value-added products within the
+and investment. Besides, the Company continued its          e-Surfing HD portfolio to boost the rapid increase in
+deployment of Gigabit fibre broadband in over 300           subscriber value and scale. Through real-time network
+cities, as well as its deployment of overseas network       speed analytics, the Company conducted targeted
+nodes. It completed the construction of an all-fibre        promotion of its Whole-home WiFi service to improve
+transmission ROADM network with the greatest                customers’ network experience. Based on Big Data
+capacity in the world, covering the entire country and      analytics and proprietary algorithm, the Company
+key overseas regions. The Company also completed            implemented AI-driven smart energy saving for its
+the construction of two premium networks, including         mobile base stations. The Company also introduced
+the CN2-DCI network that connects all e-Surfing             social capital and technologies to conduct
+
+006      China Telecom Corporation Limited Interim Report 2021
+                                                                         Chairman’s Statement
+
+
+technological improvement for energy saving and            has provided content distribution service for a number
+e m ission re d u cti o n to i mp ro v e th e energy       of leading Internet companies. The Company
+consumption efficiency of its base stations. As a          conducted proprietary R&D of products such as MEC
+result, the Company’s newly-built 5G base stations         platform, UPF, 5G frequency-shifting MIMO, overcame
+reduced energy consumption by an average of over           roadblocks in key technologies such as cloud-edge
+20%, while 4G base stations reduced energy                 collaboration and low-cost indoor coverage, which
+consumption by an average of 10%. Through energy-          effectively reduced network construction and
+saving measures such as natural cold source, high-         operation costs. The Company developed a
+efficiency power supply and liquid-cooling servers, the    proprietary online and offline omni-channel digitalised
+PUE (power usage effectiveness) value of newly             operation platform, with 95% of its offline businesses
+constructed large-scale data centres was below 1.3.        having been brought online. The Company continued
+The Company has also incorporated Big Data into its        to optimise the planning of its sci-tech innovation and
+investment management and control, integrated              collaborated with partners from the ecosystem to carry
+business operation data with regional population           out research for key technologies as well as
+density when assessing regional priorities for mobile      cooperative innovation among industry, academia,
+network construction. This enabled the precise             R&D institutes and customers, leading to in-depth
+management and control of mobile network                   cooperation in the fields such as cloud and cloud-
+investment.                                                network operating systems, future network, network
+                                                           and information security and business innovation.
+Promoting sci-tech innovation to accelerate the
+shift towards a sci-tech company. The Company              Strengthening the security foundation to
+deepened its research and development (R&D) system         reinforce differentiated edges. Based on its leading
+reforms, innovated incentive mechanism and                 cloud-network operational capabilities, the Company
+stimulated vitality for sci-tech innovation. Focusing on   continued to build its integrated technological
+its technological development objectives, the Company      capabilities of security covering “cloud, network,
+increased its investment intensity in R&D, elevated the    edge, device, and application”, and established a
+input and output efficiency of R&D resources. With         network security protection system covering multiple
+building a sci-tech company as the objective, the          layers of network, application and business, with the
+Company pushed forward corporate development               functionalities including early warning, interim
+driven by sci-tech achievements. The Company               blocking and security event log tracing. The Company
+innovated its R&D mechanism and promoted the chief         also introduced the concept of software-defined
+technician as person in charge system, the “open           s ec uri ty (SD S) and was c ommi tted to t he
+competition” system as well as the “horse racing”          cloudification, pooling and atomisation of security
+mechanism for major R&D projects. The Company              capabilities. The Company provided secure SaaS-based
+strengthened its own problem-tackling efforts for core     products for both internal and external customers
+technologies and reinforced its challenge-confronting      through efficiently-centralised deployment and cloud-
+efforts for core technologies in key areas such as         edge collaboration. The Company’s proprietary
+cloud computing, AI, cloud-network integration, 5G,        cyberattack protection platform, “Cloud Dam”, is
+digitalisation as well as network and information          capable of full-network coverage and global reach
+security. In the first half of the year, the number of     capability, becoming the foundation of network
+newly applied patents increased significantly. The         security capabilities for new infrastructure, meeting
+Company’s proprietary distributive storage of e-Surfing    the security demands of various industries and use
+Cloud obtained ISO27040 certification, making it the       cases, and providing the public, government and
+first cloud storage service provider in China to gain      enterprise customers from all industries with diverse
+this certification. The Company’s proprietary database     security products and services in areas such as cloud-
+has the hyper-scale processing capabilities that can       network security, data security and information
+support the hosting of billions of users and tens of       security.
+millions of concurrent services. e-Surfing Cloud CDN
+
+
+
+
+                                                     China Telecom Corporation Limited Interim Report 2021    007
+Chairman’s Statement
+
+
+The Company has been cultivating the field of                digital life service with an efficiently-centralised
+network and information security services for many           approach. Leveraging the unification of R&D and
+years, with many leading security certifications and a       operation, ecological cooperation and sales and
+highly professional security team. The Company has           services, the Company established an open and
+established a nationwide three-tiered technical service      comprehensive digital life platform and strived to
+system covering the headquarters, provincial and             become a leading sci-tech company in digital life
+municipal levels, providing government and enterprise        operation and services.
+customers from various industries with technical
+services such as information security construction,          The Company implemented the tactics of promoting
+information security consultation, as well as network        corporate strength through talents and created a
+security assessment and testing, helping customers to        talent team with differentiated competitive edges. By
+achieve their targets in terms of network/information        vigorous introduction of leading talents in key areas,
+system security. As demands for network and                  the Company has developed a high-level talent team
+information security are now becoming increasingly           made up of over 10,000 personnel, including China
+pressing, the comprehensive security system and              Telecom’s scientists, chief experts and senior experts.
+professional network security protection platform of         The Company also has tens of thousands of sales and
+the Company have become significant differentiated           service experts for Industrial Digitalisation as well as
+edges.                                                       talents for integrated emerging technologies, forming
+                                                             an organisational system for the support and service
+Deepening reform on all fronts to establish a                of Industrial Digitalisation across the entire country.
+new development pattern for future. In the first             The Company created a market-oriented incentive
+half of the year, focusing on the digital economy and        mechanism, promoted the flexible personal salary and
+digital life, the Company accelerated its market-            steered incentives to experts from key areas and at a
+oriented operation in professional fields. The Company       senior level. The Company carried out the phase II
+comprehensively carried out the second-stage                 incentive scheme for share appreciation rights and
+government and enterprise reforms, coordinated the           implemented medium- and long-term incentives for
+vertical integration of its industry business groups (BG)    key personnel driven by value, development and
+and enhanced the industry-general scene-based                performance. The Company also explored the sharing
+problem-solving capabilities of its headquarters BG.         of excess profit to encourage its subsidiaries to create
+The Company implemented the sharing and reuse of             value. Six of the Company’s subsidiaries have
+fundamental capabilities across the entire network to        implemented the shares and dividend incentives for
+reduce duplicated developments and lower costs, as           state-owned scientific and technological enterprises,
+well as to increase returns from government and              with the Company achieving an industry-leading
+enterprise projects. The Company also strengthened           position in this respect.
+local government and enterprise support teams to
+enhance its project delivery and operational                 The Company further strengthened win-win
+capabilities. The Company established a new cloud            cooperation and created the ecology of high-level
+computing subsidiary, gradually integrating cloud            open cooperation. The Company also promoted the
+business related resources and capabilities across the       prosperity of platform ecology, and leveraged its
+country. The Company has achieved the in-depth               platform to aggregate fundamental and ecological
+integration of high-speed intercloud access with             capabilities to create a huge circulation of ecological
+cloud-network. The Company also created a “multi-AZ          cooperation. The Company also strengthened its
+layout” for its e-Surfing Cloud and enhanced its             capital ecology, optimised the deployment of industry
+comprehensive capabilities such as project                   ecology with a focus on key services, core
+development, integration and delivery. As a result, the      technologies and essential scenes. The Company
+Company’s e-Surfing Cloud service was further                created integration ecology and deepened cooperation
+strengthened, optimised and expanded, laying a               on integration in various professional fields, which
+foundation for the introduction of strategic investors       further strengthened the capabilities and edges of the
+and employee incentives in the future. The Company           Company’s integrated intelligent information services.
+also established a digital life company and carried out
+
+
+
+
+008       China Telecom Corporation Limited Interim Report 2021
+                                                                         Chairman’s Statement
+
+
+Environmental, Social and                                 epidemic prevention and control. The Company
+Governance (ESG) Responsibility                           continued to build out communication networks in
+                                                          rural areas, undertake construction tasks for universal
+As one of the large-scale and leading full-service,       services, and vigorously promote the adoption of
+integrated information services providers in the world,   informatisation applications for agriculture, farmer and
+the Company has long been insisting on integrating        rural areas to enhance the quality, efficiency and
+environmental, social and governance responsibilities     competitiveness of the agricultural sector and support
+into its business operation and management,               rural revitalisation. The Company proactively
+continuously enhancing risk management and internal       responded to China’s “dual-carbon” objectives of
+control systems accordingly. By adhering to excellent,    emission peak and carbon neutrality, extensively
+prudent, and effective corporate governance               applied energy saving technologies, proactively
+principles, the Company insists on compliance with        reduced carbon emission and enhanced efficiency in
+laws and regulations, as well as standardised and         energy usage. The Company accelerated its transition
+green operations. The Company proactively responded       to green and digital operation and promoted energy
+to changes in the external environment to ensure its      saving and emission reduction for the whole society
+healthy and sustainable development and safeguard         by virtue of ICT technologies’ external endowment.
+the long-term interests of the Company and its            Capitalising on its edges in security technologies, the
+shareholders. The Board continuously strengthens its      Company safeguarded network and information
+supervision of ESG matters, identifies key ESG issues,    security, strengthened the protection of personal
+participates in the process of assessing the importance   information, and ensured a clean cyberspace. The
+of the issues, and reviews the progress made in           Company strengthened the accountability
+meeting environmental, social and governance              management of its supply chain, implemented green
+objectives. During the first half of this year, the       procurement, formulated and continued to implement
+Company’s continuous efforts and outstanding              a policy for cleaning up waste and idle supplies, and
+performance have been highly recognised and               carried out the disposal and recycling of hazardous
+acclaimed. The Company was awarded “Most                  and non-hazardous waste effectively. The Company
+Honoured Company in Asia”, for the 11th                   strengthened caring for employees, strived to
+consecutive year by Institutional Investor . The          safeguard employees’ safety and well-being, continued
+Company also ranked second in both “Best                  to promote capability enhancement of employees and
+Environmental, Social and Governance” and “Best           expanded employees’ career development paths. In
+Investor Relations Program” categories for the Asian      July 2021, Henan Province encountered abnormal
+telecommunications industry by Institutional investor .   heavy rainstorms, while Typhoon “Yanhua” landed in
+                                                          Zhejiang. Leveraging its Tiantong satellite
+During the first half of the year, as epidemic            communications system, the Company urgently
+prevention and control became normalised, the             deployed Tiantong satellite phones and data terminals,
+Company leveraged 5G, Big Data, cloud computing           while also deployed drones and vehicle systems to
+and other new technologies to provide informatised        establish an aerial emergency communications
+products and services to various sectors of the society   platform, assisting in disaster relief by leveraging its
+for fighting against the epidemic, facilitating precise   technological capabilities.
+
+
+
+
+                                                     China Telecom Corporation Limited Interim Report 2021    009
+Chairman’s Statement
+
+
+Outlook                                                      Finally, on behalf of the Board of Directors, I would
+                                                             like to take this opportunity to express our sincere
+China’s digital economy is booming in the first year of      appreciation to all our shareholders and customers for
+the “14th Five-Year Plan”. The Company will continue         their support all along. I would also like to express
+to seize the new development stage, insist on the            our sincere thanks to all our employees for their hard
+new development philosophy and establish the new             work and contributions.
+development pattern. Capturing the current important
+period of strategic opportunities, the Company will
+strive to transform its model of development and
+growth to become a service-oriented, technology-
+oriented and secured enterprise. Taking A-share IPO as
+an opportunity, the Company will deepen its
+“Cloudification and Digital Transformation” strategy,
+expand its customer-oriented integrated intelligent
+information services, and pursue breakthroughs in key
+technologies and accumulation for the next
+generation technologies. The Company will also build
+core capabilities for sci-tech innovation, construct the
+green and low-carbon new information infrastructure
+featuring cloud-network integration and leverage its
+digitalised platform to empower the green
+development of numerous walks of life. The Company
+will introduce strategic investors with synergies to
+build the industry and capital ecologies with strong         Ke Ruiwen
+alliance and open cooperation. The Company will also         Chairman and Chief Executive Officer
+carry out system and mechanism reforms to stimulate          Beijing China
+its corporate vitality and intrinsic motivation, reinforce
+the solid foundation of network and information              10 August 2021
+security, and strive to build the cornerstone for the
+development of digital economy. The Company will
+also facilitate the construction of Cyberpower and
+Digital China, safeguard network and information
+security and promote rural revitalisation. The Company
+will create a better digital life for customers and share
+the results of its high-quality development with
+shareholders!
+
+
+
+
+010       China Telecom Corporation Limited Interim Report 2021
+                                                                                          Financial Review
+
+Operating Revenues
+
+In the first half of 2021, the Company firmly seized the opportunities emerging from the upgrade demands for
+digitalisation of the economy and society and further implemented the “Cloudification and Digital
+Transformation” strategy on all fronts. With the focus on customer-oriented approach, the Company
+accelerated the promotion of cloud-network integration, enhanced the expansion in individual, Smart Family
+and Industrial Digitalisation market, which continuously strengthened the Company’s development momentum
+and improved profitability, and helped to achieve new heights in operating results. In the first half of the year,
+operating revenues1 amounted to RMB219,237 million, representing an increase of 13.1% over the same
+period of last year. Service revenues2 amounted to RMB203,502 million, representing an increase of 8.8% over
+the same period of last year. Among the service revenues, mobile communications service revenues 3 amounted
+to RMB93,342 million, increased by 6.9% over the same period of last year; wireline and Smart Family service
+revenues4 amounted to RMB57,350 million, increased by 5.2% over the same period of last year; Industrial
+Digitalisation service revenues5 amounted to RMB50,113 million, increased by 16.8% over the same period of
+last year; and other service revenues6 amounted to RMB2,697 million, increased by 14.9% over the same
+period of last year.
+
+Operating Expenses
+
+The Company firmly seized the opportunities of 5G scale development, comprehensively promoted the
+subscribers’ cloud migration and digital transformation, and continued to increase investment in Industrial
+Digitalisation service and research and development system, which supported the business development.
+Meanwhile, the Company continuously carried out sophisticated management on cost and promoted the
+enhancement of effectiveness. In the first half of 2021, operating expenses amounted to RMB197,986 million,
+representing an increase of 13.2% over the same period of last year. Operating expenses accounted for
+90.3% of operating revenues, representing an increase of 0.1 percentage point over the same period of last
+year.
+
+In the first half of the year, depreciation and amortisation amounted to RMB45,097 million, representing an
+increase of 2.1% over the same period of last year. To mainly support the scale development of 5G network
+and strengthen the competitive advantages on the network, the Company continuously invested in capital
+expenditure. Meanwhile, the Company thoroughly promoted co-building and co-sharing of the network and
+precisely controlled the capital expenditure, which enabled the low single-digit growth in depreciation and
+amortisation.
+
+The Company persistently enhanced the development of network quality and capabilities to improve customer
+perceptions and support the rapid development of 5G and Industrial Digitalisation. In the first half of the year,
+network operations and support expenses amounted to RMB63,909 million, representing an increase of 10.8%
+over the same period of last year.
+
+
+
+
+1
+      As a result of the deepening of the Group’s “Cloudification and Digital Transformation” strategy, the Group re-categorised the
+      presentation of revenues in fiscal year 2021. The new presentation categorises the operating revenues into service revenues and sales
+      of goods and others. Service revenues include mobile communications service revenues, wireline and Smart Family service revenues,
+      Industrial Digitalisation service revenues and other service revenues.
+2
+      Service revenues are calculated based on operating revenues minus sales of mobile terminals (first half of 2021: RMB10,367 million;
+      first half of 2020: RMB3,442 million), sales of wireline equipment (first half of 2021: RMB3,677 million; first half of 2020: RMB1,887
+      million) and other non-service revenues (first half of 2021: RMB1,691 million; first half of 2020: RMB1,364 million).
+3
+      Mobile communications service revenues represent the aggregate amount of mobile communications service fees, mobile Internet access
+      service fees, caller ID service fees and short messaging service fees, etc., charged to customers for the provision of mobile services.
+4
+      Wireline and Smart Family service revenues represent amounts of wireline communications service fees, broadband Internet access service
+      fees, e-Surfing HD service fees and Smart Family applications service fees charged to customers for the provision of wireline services.
+5
+      Industrial Digitalisation service revenues represent primarily the aggregate amount of fees charged to customers for the provision of
+      Internet data centre service fees, cloud service fees, digital platform service fees, dedicated Internet access service fees, etc.
+6
+      Other service revenues represent primarily revenues from property rental and other revenues.
+
+                                                                 China Telecom Corporation Limited Interim Report 2021                  011
+Financial Review
+
+
+Following the ease of epidemic, the Company appropriately increased deployment in marketing resources to
+support the sound development of its business which resulted in an increase in the selling expenses as
+compared to the same period of last year. In the first half of the year, selling, general and administrative
+expenses amounted to RMB28,740 million, representing an increase of 10.6% over the same period of last
+year.
+
+The Company increased incentives for high-tech talents, core talents, frontline employees and
+high-performance teams and implemented a new phase of share appreciation rights scheme in the meantime
+to stimulate the enthusiasm of employees. The investment in the personnel expenses was in line with the
+direction of the Company’s transformation to a sci-tech company. In the first half of the year, personnel
+expenses amounted to RMB39,685 million, representing an increase of 11.8% over the same period of last
+year.
+
+In the first half of the year, other operating expenses amounted to RMB20,555 million, representing an
+increase of 79.6% over the same period of last year, which was mainly due to the substantial increase in the
+scale of 5G mobile terminals sold by the Company.
+
+Net Finance Costs
+
+In the first half of 2021, the Company continued to improve the capability of funds management, carried out
+sophisticated management on financing and effectively controlled the scale of interest-bearing debts. Net
+finance costs amounted to RMB1,079 million, representing a decrease of 31.4% over the same period of last
+year.
+
+Profitability Level
+
+The Company actively embraced the opportunities of digital transformation, deepened reform and innovation
+and continuously promoted the enhancement of effectiveness, resulting in continuous enhancement of
+operating efficiency. The profitability of the Company has been continuously improved. In the first half of the
+year, profit attributable to equity holders of the Company amounted to RMB17,743 million, representing an
+increase of 27.2% over the same period of last year and an increase of 17.0% over the same period of last
+year excluding the one-off after-tax gain from the disposals of the subsidiaries7. EBITDA8 amounted to
+RMB66,348 million, representing an increase of 5.1% over the same period of last year; while EBITDA margin9
+was 32.6%.
+
+Capital Expenditure and Cash Flows
+
+The Company comprehensively promoted co-building and co-sharing of the network, and continued to
+implement precise investments. In the first half of the year, capital expenditure amounted to RMB27,005
+million, representing a decrease of 37.4% over the same period of last year. Due to sound revenue position
+and reduction in capital expenditure in the first half of the year, free cash flow10 substantially increased and
+amounted to RMB26,782 million in the first half of the year, representing an increase of 182.1% over the
+same period of last year.
+
+7
+      The one-off after-tax gain from the disposals of E-surfing Pay Co. Ltd and China Telecom Leasing Corporation Limited was approximately
+      RMB1,416 million.
+8
+      EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and amortisation. As the
+      telecommunications business is a capital intensive industry, capital expenditure, the level of gearing and finance costs may have a
+      significant impact on the net profit of companies with similar operating results. Therefore, we believe EBITDA may be helpful in
+      analysing the operating results of a telecommunications service provider such as the Company. Although EBITDA has been widely
+      applied in the global telecommunications industry as a benchmark to reflect operating performance, debt raising ability and liquidity, it
+      is not regarded as a measure of operating performance and liquidity under International Financial Reporting Standards. It also does not
+      represent net cash from operating activities. In addition, our EBITDA may not be comparable to similar indicators provided by other
+      companies.
+9
+      EBITDA margin is calculated based on EBITDA divided by service revenues.
+10
+      Free cash flow is calculated based on EBITDA minus capital expenditure, income tax and depreciation charge for right-of-use assets other
+      than land-use-rights.
+
+012       China Telecom Corporation Limited Interim Report 2021
+                                                                                                        Financial Review
+
+
+Assets and Liabilities
+
+The Company maintained a solid financial position. As at 30 June 2021, total assets decreased by 1.2% to
+RMB706,478 million from RMB715,096 million at the end of 2020. Total indebtedness11 decreased by 38.8%
+to RMB32,640 million from RMB53,342 million at the end of 2020. The gearing ratio12 decreased to 8.0%
+from 12.8% at the end of 2020.
+
+
+
+
+11
+     Total indebtedness refers to interest-bearing debts excluding lease liabilities.
+12
+     Gearing ratio is calculated based on total indebtedness divided by total capital, while total capital is calculated based on total equity
+     attributable to equity holders of the Company plus total indebtedness.
+
+                                                                China Telecom Corporation Limited Interim Report 2021                    013
+Report on Review of
+Interim Financial Information
+
+
+
+To the Board of Directors of China Telecom Corporation Limited
+(incorporated in the People’s Republic of China with limited liability)
+
+Introduction
+
+We have reviewed the interim financial information set out on pages 15 to 42, which comprises the
+condensed consolidated statement of financial position of China Telecom Corporation Limited (the “Company”)
+and its subsidiaries (together, the “Group”) as at 30 June 2021 and the condensed consolidated statement of
+comprehensive income, the condensed consolidated statement of changes in equity and the condensed
+consolidated statement of cash flows for the six-month period then ended, and a summary of significant
+accounting policies and other explanatory notes. The Rules Governing the Listing of Securities on The Stock
+Exchange of Hong Kong Limited require the preparation of a report on interim financial information to be in
+compliance with the relevant provisions thereof and International Accounting Standard 34 “Interim Financial
+Reporting”. The directors of the Company are responsible for the preparation and presentation of this interim
+financial information in accordance with International Accounting Standard 34 “Interim Financial Reporting”.
+Our responsibility is to express a conclusion on this interim financial information based on our review and to
+report our conclusion solely to you, as a body, in accordance with our agreed terms of engagement and for
+no other purpose. We do not assume responsibility towards or accept liability to any other person for the
+contents of this report.
+
+Scope of Review
+
+We conducted our review in accordance with Hong Kong Standard on Review Engagements 2410, “Review of
+Interim Financial Information Performed by the Independent Auditor of the Entity” issued by the Hong Kong
+Institute of Certified Public Accountants. A review of interim financial information consists of making inquiries,
+primarily of persons responsible for financial and accounting matters, and applying analytical and other review
+procedures. A review is substantially less in scope than an audit conducted in accordance with Hong Kong
+Standards on Auditing and consequently does not enable us to obtain assurance that we would become aware
+of all significant matters that might be identified in an audit. Accordingly, we do not express an audit opinion.
+
+Conclusion
+
+Based on our review, nothing has come to our attention that causes us to believe that the interim financial
+information of the Group is not prepared, in all material respects, in accordance with International Accounting
+Standard 34 “Interim Financial Reporting”.
+
+
+
+
+PricewaterhouseCoopers
+Certified Public Accountants
+
+Hong Kong, 10 August 2021
+
+
+   PricewaterhouseCoopers, 22/F Prince’s Building, Central, Hong Kong
+   T: +852 2289 8888, F: +852 2810 9888, www.pwchk.com
+
+014      China Telecom Corporation Limited Interim Report 2021
+                   Condensed Consolidated Statement of
+                          Financial Position (Unaudited)
+                                                                              At 30 June 2021 (Amounts in million)
+
+                                                                                    30 June        31 December
+                                                                                       2021               2020
+                                                                Notes                  RMB                RMB
+ASSETS
+
+Non-current assets
+  Property, plant and equipment, net                                                401,538              418,605
+  Construction in progress                                                           53,338               48,425
+  Right-of-use assets                                                                55,122               59,457
+  Goodwill                                                                           29,919               29,920
+  Intangible assets                                                                  17,474               18,508
+  Interests in associates                                                            40,310               40,303
+  Financial assets at fair value through profit or loss                                 133                   73
+  Equity instruments at fair value through other
+     comprehensive income                                                             1,072                   1,073
+  Deferred tax assets                                              9                  7,285                   8,164
+  Other assets                                                                        5,453                   6,552
+
+
+     Total non-current assets                                                       611,644              631,080
+
+
+Current assets
+  Inventories                                                                         4,727                   3,317
+  Income tax recoverable                                                                141                     334
+  Accounts receivable, net                                         5                 32,099                  21,502
+  Contract assets                                                                     1,101                     604
+  Prepayments and other current assets                                               19,529                  25,167
+  Short-term bank deposits and restricted cash                                        2,107                   9,408
+  Cash and cash equivalents                                        6                 35,130                  23,684
+
+
+     Total current assets                                                            94,834                  84,016
+
+
+       Total assets                                                                 706,478              715,096
+
+
+
+
+                                                     China Telecom Corporation Limited Interim Report 2021       015
+Condensed Consolidated Statement of Financial Position (Unaudited)
+At 30 June 2021 (Amounts in million)
+
+
+
+                                                                              30 June       31 December
+                                                                                 2021              2020
+                                                                  Notes          RMB               RMB
+LIABILITIES AND EQUITY
+
+Current liabilities
+  Short-term debt                                                  7           14,726             27,994
+  Current portion of long-term debt                                7            6,132              1,126
+  Accounts payable                                                 8          114,496            107,578
+  Accrued expenses and other payables                                          59,043             56,775
+  Contract liabilities                                                         59,782             63,849
+  Income tax payable                                                            1,304                350
+  Current portion of lease liabilities                                         13,185             13,192
+  Current portion of deferred revenues                                            267                278
+
+
+      Total current liabilities                                               268,935            271,142
+
+
+        Net current liabilities                                              (174,101)          (187,126)
+
+
+        Total assets less current liabilities                                 437,543            443,954
+
+
+Non-current liabilities
+  Long-term debt                                                   7           11,782                24,222
+  Lease liabilities                                                            23,219                27,455
+  Deferred revenues                                                               740                   861
+  Deferred tax liabilities                                         9           25,505                24,208
+  Other non-current liabilities                                                   623                 1,033
+
+
+      Total non-current liabilities                                            61,869                77,779
+
+
+        Total liabilities                                                     330,804            348,921
+
+
+Equity
+  Share capital                                                                80,932             80,932
+  Reserves                                                                    292,228            282,524
+
+
+      Total equity attributable to equity holders
+        of the Company                                                        373,160            363,456
+      Non-controlling interests                                                 2,514              2,719
+
+
+        Total equity                                                          375,674            366,175
+
+
+          Total liabilities and equity                                        706,478            715,096
+
+
+
+
+The notes on pages 22 to 42 form part of the condensed consolidated interim financial information.
+
+016       China Telecom Corporation Limited Interim Report 2021
+                   Condensed Consolidated Statement of
+                     Comprehensive Income (Unaudited)
+                             for the six-month period ended 30 June 2021 (Amounts in million except per share data)
+
+                                                                             Six-month period ended 30 June
+                                                                                      2021             2020
+                                                                  Notes               RMB              RMB
+Operating revenues                                                  10                219,237              193,803
+
+Operating expenses
+  Depreciation and amortisation                                                       (45,097)             (44,176)
+  Network operations and support                                    11                (63,909)             (57,698)
+  Selling, general and administrative                                                 (28,740)             (25,997)
+  Personnel expenses                                                12                (39,685)             (35,512)
+  Other operating expenses                                          13                (20,555)             (11,442)
+
+
+     Total operating expenses                                                        (197,986)            (174,825)
+
+
+Operating profit                                                                       21,251                  18,978
+Net finance costs                                                   14                 (1,079)                 (1,572)
+Investment income and others                                                            2,224                      53
+Share of profits of associates                                                          1,019                     787
+
+
+Profit before taxation                                                                 23,415                  18,246
+Income tax                                                          15                 (5,549)                 (4,175)
+
+
+Profit for the period                                                                  17,866                  14,071
+
+
+Other comprehensive income for the period
+Items that will not be reclassified subsequently to profit or
+   loss:
+   Change in fair value of investments in equity
+      instruments at fair value through other
+      comprehensive income                                                                  (6)                  (141)
+   Deferred tax on change in fair value of investments in
+      equity instruments at fair value through other
+      comprehensive income                                                                  10                     36
+
+
+                                                                                             4                   (105)
+
+
+Items that may be reclassified subsequently to profit or
+   loss:
+   Exchange difference on translation of financial
+      statements of subsidiaries outside mainland China                                   (100)                    88
+   Share of other comprehensive income of associates                                        —                      (4)
+
+
+                                                                                          (100)                    84
+
+
+Other comprehensive income for the period,
+  net of tax                                                                               (96)                   (21)
+
+
+Total comprehensive income for the period                                              17,770                  14,050
+
+
+
+
+                                                       China Telecom Corporation Limited Interim Report 2021       017
+Condensed Consolidated Statement of Comprehensive Income (Unaudited)
+for the six-month period ended 30 June 2021 (Amounts in million except per share data)
+
+
+
+                                                                           Six-month period ended 30 June
+                                                                                    2021             2020
+                                                                 Note               RMB              RMB
+Profit attributable to
+  Equity holders of the Company                                                     17,743           13,949
+  Non-controlling interests                                                            123              122
+
+
+Profit for the period                                                               17,866           14,071
+
+
+Total comprehensive income attributable to
+  Equity holders of the Company                                                     17,647           13,928
+  Non-controlling interests                                                            123              122
+
+
+Total comprehensive income for the period                                           17,770           14,050
+
+
+Basic earnings per share                                          17                     0.22          0.17
+
+
+Number of shares (in million)                                     17                80,932           80,932
+
+
+
+
+The notes on pages 22 to 42 form part of the condensed consolidated interim financial information.
+
+018      China Telecom Corporation Limited Interim Report 2021
+                                 Condensed Consolidated Statement of
+                                        Changes in Equity (Unaudited)
+                                                                            for the six-month period ended 30 June 2021 (Amounts in million)
+
+                                                                              Attributable to equity holders of the Company
+                                                                                                 General                                                        Non-
+                                                         Share    Capital    Share     Surplus       risk      Other Exchange      Retained               controlling     Total
+                                                 Note   capital   reserve premium     reserves   reserve    reserves   reserve     earnings      Total      interests    equity
+                                                          RMB        RMB      RMB         RMB       RMB         RMB       RMB          RMB        RMB            RMB       RMB
+Balance as at 1 January 2020                            80,932    17,504     10,746    78,043         23        615       (625)     165,272    352,510         2,530    355,040
+
+Profit for the period                                       —         —          —         —          —          —            —      13,949     13,949           122     14,071
+Other comprehensive income for the period                   —         —          —         —          —        (109)          88         —         (21)           —         (21)
+
+
+Total comprehensive income for the period                   —         —          —         —          —        (109)          88     13,949     13,928           122     14,050
+
+
+Share of associates’ other changes in reserves              —         (6)        —         —          —          —            —          —          (6)           —          (6)
+Dividends                                        16         —         —          —         —          —          —            —      (9,262)    (9,262)           —      (9,262)
+
+
+Balance as at 30 June 2020                              80,932    17,498     10,746    78,043         23        506       (537)     169,959    357,170         2,652    359,822
+
+
+Balance as at 1 January 2021                            80,932    17,468     10,746    79,854         56        321       (937)     175,016    363,456         2,719    366,175
+
+
+Profit for the period                                       —         —          —         —          —          —            —      17,743     17,743           123     17,866
+Other comprehensive income for the period                   —         —          —         —          —           4       (100)          —         (96)           —         (96)
+
+
+Total comprehensive income for the period                   —         —          —         —          —           4       (100)      17,743     17,647           123     17,770
+
+
+Contribution from non-controlling interest                  —        463         —         —          —          —            —          —        463            594      1,057
+Disposal of subsidiaries                                    —         —          —         —          (3)       (28)          —         31         —            (922)      (922)
+Share of associates’ other changes in reserves              —         33         —         —          —          —            —         —           33            —          33
+Dividends                                        16         —         —          —         —          —          —            —      (8,439)    (8,439)           —      (8,439)
+
+
+Balance as at 30 June 2021                              80,932    17,964     10,746    79,854         53        297     (1,037)     184,351    373,160         2,514    375,674
+
+
+
+
+The notes on pages 22 to 42 form part of the condensed consolidated interim financial information.
+
+                                                                                China Telecom Corporation Limited Interim Report 2021                                     019
+Condensed Consolidated Statement of
+Cash Flows (Unaudited)
+for the six-month period ended 30 June 2021 (Amounts in million)
+
+                                                                           Six-month period ended 30 June
+                                                                                    2021             2020
+                                                                   Notes            RMB              RMB
+Net cash from operating activities                                  (a)           67,635           65,286
+
+
+Cash flows used in investing activities
+  Capital expenditure                                                             (26,843)        (31,118)
+  Purchase of investments                                                             (83)            (21)
+  Payments for right-of-use assets                                                     (1)            (82)
+  Proceeds from disposal of property, plant and
+    equipment                                                                        448             264
+  Proceeds from disposal of right-of-use assets                                       26               1
+  Proceeds from disposal of investments                                               37              36
+  Net cash inflow from disposal of subsidiaries                                    3,764              —
+  Payments for equity instruments at fair value through
+    other comprehensive income                                                        (93)             —
+  Purchase of short-term bank deposits                                             (7,235)         (2,712)
+  Maturity of short-term bank deposits                                              8,812           3,988
+
+
+Net cash used in investing activities                                             (21,168)        (29,644)
+
+
+Cash flows used in financing activities
+  Repayments of principal of lease liabilities                                     (5,769)         (4,964)
+  Proceeds from bank and other loans                                               27,403          32,755
+  Repayments of bank and other loans                                              (46,519)        (62,320)
+  Payment of dividends                                                             (8,439)             —
+  Contribution from non-controlling interests                                          79              —
+  Net deposits with Finance Company                                 (b)            (1,472)           204
+  Increase in statutory reserve deposits placed by
+     Finance Company                                                (b)             (237)            (196)
+
+
+Net cash used in financing activities                                             (34,954)        (34,521)
+
+
+Net increase in cash and cash equivalents                                         11,513            1,121
+Cash and cash equivalents at 1 January                                            23,684           20,791
+Effect of changes in foreign exchange rate                                           (67)              31
+
+
+Cash and cash equivalents at 30 June                                              35,130           21,943
+
+
+
+
+020      China Telecom Corporation Limited Interim Report 2021
+ Condensed Consolidated Statement of Cash Flows (Unaudited)
+                                               for the six-month period ended 30 June 2021 (Amounts in million)
+
+
+
+(a) Reconciliation of profit before taxation to net cash from operating activities
+
+                                                                        Six-month period ended 30 June
+                                                                                 2021             2020
+                                                                                 RMB              RMB
+     Profit before taxation                                                       23,415                  18,246
+     Adjustment for:
+       Depreciation and amortisation                                              45,097                  44,176
+       Impairment losses for financial assets and
+          other items, net of reversal                                              1,719                  1,715
+       Write down of inventories, net of reversal                                      12                      2
+       Investment income and others                                                (2,224)                   (53)
+       Share of profits of associates                                              (1,019)                  (787)
+       Interest income                                                               (306)                  (280)
+       Interest expense                                                             1,397                  1,848
+       Net foreign exchange (gain)/loss                                               (12)                     4
+       Net loss on retirement and disposal of long-lived assets                     1,729                  2,112
+
+
+     Operating profit before changes in working capital                           69,808               66,983
+       Increase in accounts receivable                                           (12,923)             (12,672)
+       Increase in contract assets                                                  (508)                (327)
+       Increase in inventories                                                    (1,423)                (183)
+       Decrease in prepayments and other current assets                                7                  593
+       Increase in restricted cash                                                    (9)                  —
+       Decrease in other assets                                                      396                     237
+       Increase in accounts payable                                                6,014                   6,146
+       Increase in accrued expenses and other payables                            13,039                   9,353
+       Decrease in contract liabilities                                           (4,016)                 (2,943)
+       Decrease in deferred revenues                                                 (11)                    (30)
+
+
+     Cash generated from operations                                               70,374                  67,157
+       Interest received                                                             296                     290
+       Interest paid                                                              (1,567)                 (1,972)
+       Investment income received                                                    820                     576
+       Income tax paid                                                            (2,288)                   (765)
+
+
+     Net cash from operating activities                                           67,635                  65,286
+
+
+(b) “Finance Company” refers to China Telecom Group Finance Co., Ltd., a subsidiary of the Company
+     established on 8 January 2019, providing capital and financial management services to the member units
+     of China Telecommunications Corporation.
+
+
+
+
+The notes on pages 22 to 42 form part of the condensed consolidated interim financial information.
+
+
+                                                  China Telecom Corporation Limited Interim Report 2021       021
+Notes to the Unaudited Condensed
+Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+1.    Principal Activities
+
+      China Telecom Corporation Limited (the “Company”) and its subsidiaries (hereinafter, collectively referred
+      to as the “Group”) offers a comprehensive range of wireline and mobile communications services
+      including mobile communications services, wireline and Smart Family services, Industrial Digitalisation
+      services and other related services. The Group provides wireline communications services and related
+      services in Beijing Municipality, Shanghai Municipality, Guangdong Province, Jiangsu Province, Zhejiang
+      Province, Anhui Province, Fujian Province, Jiangxi Province, Guangxi Zhuang Autonomous Region,
+      Chongqing Municipality, Sichuan Province, Hubei Province, Hunan Province, Hainan Province, Guizhou
+      Province, Yunnan Province, Shaanxi Province, Gansu Province, Qinghai Province, Ningxia Hui Autonomous
+      Region and Xinjiang Uygur Autonomous Region of the People’s Republic of China (the “PRC”). The
+      Group also provides mobile communications and related services in the mainland China and Macau
+      Special Administrative Region (“Macau”) of the PRC. The Group also provides international
+      telecommunications services, including network services, Internet access and transit, Internet data centre
+      and mobile virtual network services in certain countries and regions of the Asia Pacific, Europe, Africa,
+      South America and North America. The operations of the Group in the mainland China are subject to
+      the supervision by the PRC government and relevant regulation.
+
+2.    Basis of Preparation
+
+      The condensed consolidated interim financial information has been prepared in accordance with
+      International Accounting Standard 34 (“IAS 34”), “Interim Financial Reporting ” issued by the
+      International Accounting Standards Board (the “IASB”) and the applicable disclosure requirements of
+      Appendix 16 to the Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong
+      Limited (the “Listing Rules”). The condensed consolidated interim financial information, which was
+      authorised for issuance by the Board of Directors on 10 August 2021, reflect the unaudited financial
+      position of the Group as at 30 June 2021 and the unaudited results of operations and cash flows of the
+      Group for the six-month period then ended, which are not necessarily indicative of the results of
+      operations and cash flows expected for the year ending 31 December 2021.
+
+      The preparation of condensed consolidated interim financial information in conformity with IAS 34,
+      “Interim Financial Reporting ” requires management to make judgments, estimates and assumptions that
+      affect the application of policies and reported amounts of assets and liabilities, income and expenses on
+      a year to date basis. Actual results may differ from these estimates.
+
+      The condensed consolidated interim financial information contains condensed consolidated financial
+      statements and selected explanatory notes. The notes include an explanation of events and transactions
+      that are significant to an understanding of the changes in financial position and performance of the
+      Group since the 2020 annual financial statements. The condensed consolidated interim financial
+      information and notes thereon do not include all of the information required for a full set of financial
+      statements prepared in accordance with International Financial Reporting Standards (“IFRSs”). The
+      condensed consolidated interim financial information should be read in conjunction with the Company’s
+      2020 annual financial statements. The Group’s policies on financial risk management were set out in the
+      financial statements included in the Company’s 2020 Annual Report and there have been no significant
+      changes in these policies for the six-month period ended 30 June 2021.
+
+      The condensed consolidated interim financial information is unaudited, but has been reviewed by the
+      Audit Committee of the Company. The condensed consolidated interim financial information has also
+      been reviewed by the Company’s international independent auditor in accordance with Hong Kong
+      Standard on Review Engagements 2410, “Review of Interim Financial Information Performed by the
+      Independent Auditor of the Entity ”, issued by the Hong Kong Institute of Certified Public Accountants.
+
+
+
+022      China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                   for the six-month period ended 30 June 2021
+
+
+
+2.   Basis of Preparation (Continued)
+
+     As at 30 June 2021, current liabilities of the Group exceeded current assets by RMB174,101 million
+     (31 December 2020: RMB187,126 million). Management has comprehensively considered the Group’s
+     available sources of funds as follows: 1) the Group’s continuous net cash inflow from operating
+     activities; 2) the unutilised credit facilities amounting to RMB271,145 million (31 December 2020:
+     RMB244,326 million); 3) the Group’s sources of financing from domestic capital markets, banks and
+     other financial institutions. Based on the above considerations, the Board of Directors is of the opinion
+     that the Group has sufficient funds to meet its working capital commitments, expected capital
+     expenditure and debt obligations. As a result, the condensed consolidated interim financial information
+     of the Group for the six-month period ended 30 June 2021 has been prepared on a going concern
+     basis.
+
+2A. Significant Event in the Current Period
+
+     In order to seize the opportunities of digitalised development, improve the corporate governance and
+     broaden financing channels, accelerate reform and development, promote the implementation of
+     strategies, and achieve high-quality development, the Company applied for the offering and listing of A
+     Shares on the Main Board of the Shanghai Stock Exchange by submitting the application materials in
+     respect of the A Share Offering to China Securities Regulatory Commission (the “CSRC”) in April 2021.
+     On 29 July 2021, the CSRC officially notified the Company in writing that the A Share Offering by the
+     Company has been approved with a valid period of 12 months from the date of approval.
+
+     The Company entered into agreements with China Telecommunications Corporation on 26 March 2021,
+     pursuant to which the Company agreed to sell, and China Telecommunications Corporation agreed to
+     purchase all the share capital in E-surfing Pay Co. Ltd held by the Company for a consideration in the
+     amount of RMB3,897 million (equivalent to approximately HK$4,695 million). The Company and its
+     wholly owned subsidiary, China Telecom Global Limited, entered into agreements with China
+     Telecommunications Corporation and its subsidiary, Guang Hua Properties Limited, on 26 March 2021,
+     pursuant to which, the Company and China Telecom Global Limited respectively agreed to sell, and
+     China Telecommunications Corporation and Guang Hua Properties Limited agreed to purchase, 75% of
+     the share capital in China Telecom Leasing Corporation Limited from the Company and 25% of the
+     share capital in China Telecom Leasing Corporation Limited from China Telecom Global Limited for a
+     consideration in the amount of RMB131 million (equivalent to approximately HK$158 million) and RMB44
+     million (equivalent to approximately HK$53 million), respectively. The disposals of the two subsidiaries
+     were completed in April 2021, upon which E-surfing Pay Co. Ltd and China Telecom Leasing
+     Corporation Limited ceased to be the subsidiaries of the Company. The Group recorded gains from
+     disposal of these two subsidiaries of RMB2,218 million in investment income and others on the
+     condensed consolidated statement of comprehensive income.
+
+
+
+
+                                                  China Telecom Corporation Limited Interim Report 2021   023
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+3.    Significant Accounting Policies
+
+      The condensed consolidated interim financial information is prepared on the historical cost basis as
+      modified by the revaluation of certain financial instruments which are measured at fair values.
+
+      Other than changes in accounting policies resulting from application of amendments to IFRSs, the
+      accounting policies and methods of computation used in the condensed consolidated interim financial
+      information are the same as those followed in the preparation of the 2020 annual financial statements
+      of the Group.
+
+      Application of amendments to IFRSs
+
+      In the current interim period, the Group has applied, for the first time, the following amendments to
+      IFRSs issued by the IASB that are mandatorily effective for the current period:
+
+      Amendments to IFRS 9, IAS 39, IFRS 7, IFRS 4 and IFRS 16
+      “Interest Rate Benchmark Reform — Phase 2”
+
+      In addition, the Group has early applied the Amendment to IFRS 16, “Covid-19-Related Rent Concessions
+      beyond 30 June 2021 ”.
+
+      The application of the above amendments to IFRSs in the current period has had no material effect on
+      the Group’s condensed consolidated interim financial information.
+
+4.    Segment Reporting
+
+      An operating segment is a component of an entity that engages in business activities from which
+      revenues are earned and expenses are incurred, and is identified on the basis of the internal financial
+      reports that are regularly reviewed by the chief operating decision maker in order to allocate resources
+      and assess performance of the segment. For the periods presented, management has determined that
+      the Group has one operating segment as the Group is only engaged in the integrated
+      telecommunications business. The Group’s assets located outside mainland China and operating revenues
+      derived from activities outside mainland China are less than 10% of the Group’s assets and operating
+      revenues, respectively. No geographical area information has been presented as such amount is
+      immaterial. No single external customer accounts for 10% or more of the Group’s operating revenues.
+
+
+
+
+024      China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                                      for the six-month period ended 30 June 2021
+
+
+
+5.   Accounts Receivable, net
+
+     Accounts receivable, net, are analysed as follows:
+
+                                                                                                 30 June             31 December
+                                                                                                    2021                    2020
+                                                                             Notes            RMB million             RMB million
+     Third parties                                                                                   35,993                  23,688
+     China Telecom Group                                                       (i)                    1,499                   1,784
+     China Tower                                                               (ii)                      39                      23
+     Other telecommunications operators in the PRC                                                      694                     441
+
+
+                                                                                                     38,225                  25,936
+     Less: Allowance for credit losses                                                               (6,126)                 (4,434)
+
+
+                                                                                                     32,099                  21,502
+
+     Notes:
+
+
+     (i)      China Telecommunications Corporation together with its subsidiaries other than the Group are referred to as “China Telecom
+              Group”.
+
+
+     (ii)     China Tower Corporation Limited, the Company’s associate, is referred to as “China Tower”.
+
+
+     Ageing analysis of accounts receivable from telephone and Internet subscribers based on the billing dates
+     is as follows:
+
+                                                                                                 30 June             31 December
+                                                                                                    2021                    2020
+                                                                                              RMB million             RMB million
+     Current, within 1 month                                                                           8,685                  7,068
+     1 to 3 months                                                                                     2,991                  1,601
+     4 to 12 months                                                                                    1,894                  1,481
+     More than 12 months                                                                               1,478                    921
+
+
+                                                                                                     15,048                  11,071
+     Less: Allowance for credit losses                                                               (3,499)                 (2,438)
+
+
+                                                                                                     11,549                   8,633
+
+
+
+
+                                                               China Telecom Corporation Limited Interim Report 2021               025
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+5.    Accounts Receivable, net (Continued)
+
+      Ageing analysis of accounts receivable from other telecommunications operators and enterprise customers
+      based on dates of rendering of services is as follows:
+
+                                                                              30 June         31 December
+                                                                                 2021                2020
+                                                                           RMB million         RMB million
+      Current, within 1 month                                                     7,961              5,331
+      1 to 3 months                                                               6,163              2,785
+      4 to 12 months                                                              5,819              3,801
+      More than 12 months                                                         3,234              2,948
+
+
+                                                                                 23,177             14,865
+      Less: Allowance for credit losses                                          (2,627)            (1,996)
+
+
+                                                                                 20,550             12,869
+
+
+6.    Cash and Cash Equivalents
+
+                                                                              30 June         31 December
+                                                                                 2021                2020
+                                                                           RMB million         RMB million
+      Cash at bank and in hand                                                   34,549             23,193
+      Time deposits with original maturity within three months                      581                491
+
+
+                                                                                 35,130             23,684
+
+
+7.    Short-term and Long-term Debt
+
+      Short-term debt comprises:
+
+                                                                              30 June         31 December
+                                                                                 2021                2020
+                                                                           RMB million         RMB million
+      Loans from banks — unsecured                                                4,871              4,831
+      Super short-term commercial papers — unsecured                                 —              11,999
+      Loans from China Telecom Group — unsecured                                  9,855             11,164
+
+
+      Total short-term debt                                                      14,726             27,994
+
+
+      The weighted average interest rate of the Group’s total short-term debt as at 30 June 2021 was 3.3%
+      (31 December 2020: 2.8%) per annum. As at 30 June 2021, the Group’s loans from banks and other
+      loans bear interest at rates ranging from 2.0% to 4.4% (31 December 2020: 3.3% to 4.4%) per
+      annum, and are repayable within one year; the loans from China Telecom Group bear interest at rate of
+      3.1% (31 December 2020: 3.1%) per annum and are repayable within one year.
+
+
+
+
+026      China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                                        for the six-month period ended 30 June 2021
+
+
+
+7.   Short-term and Long-term Debt (Continued)
+
+     Long-term debt comprises:
+
+                                                                                                   30 June              31 December
+                                                                                                      2021                     2020
+                                                                               Notes            RMB million              RMB million
+     Loans from banks — unsecured                                                (i)                     6,916                   7,351
+     Other loans — unsecured                                                                                 1                       1
+     Medium-term notes — unsecured                                              (ii)                     4,997                   4,996
+     Company bonds — unsecured                                                  (iii)                    2,000                   2,000
+     Loans from China Telecom Group — unsecured                                 (iv)                     4,000                  11,000
+
+
+     Total long-term debt                                                                               17,914                  25,348
+     Less: current portion                                                                              (6,132)                 (1,126)
+
+
+     Non-current portion                                                                                11,782                  24,222
+
+     Notes:
+
+
+     (i)      The loans from banks includes long-term RMB denominated government loans with below-market interest rates ranging from
+              1.08% to 1.20% per annum obtained by the Group through banks (the “Low-interest Loans”). The Group recognised the
+              Low-interest Loans at their fair value on initial recognition, and accreted the discount to profit or loss using the effective
+              interest rate method. The difference between the fair value and face value of the Low-interest Loans was recognised as
+              government grants in deferred revenue.
+
+
+              As at 30 June 2021, the loans from banks and other loans bear interest at contractual rates ranging from 1.08% to 2.30%
+              (31 December 2020: 1.08% to 2.30%) per annum with maturity through 2036.
+
+
+     (ii)     On 22 January 2019, the Group issued three-year RMB denominated medium-term note, amounting to RMB3,000 million, with
+              interest rate of 3.42% per annum, and incurred issuing costs of RMB3 million. The medium-term note is unsecured and is
+              repayable on 21 January 2022.
+
+
+              On 19 March 2019, the Group issued three-year RMB denominated medium-term note, amounting to RMB2,000 million, with
+              interest rate of 3.41% per annum and incurred issuing costs of RMB3 million. The medium-term note is unsecured and is
+              repayable on 18 March 2022.
+
+
+     (iii)    On 10 March 2020, the Group issued three-year RMB denominated company bonds, amounting to RMB2,000 million, to qualified
+              investors in Shanghai Stock Exchange, with interest rate of 2.90% per annum. The company bonds are unsecured and are
+              payable on 9 March 2023.
+
+
+     (iv)     On 25 December 2017, the Group obtained long-term RMB denominated loans, amounting to RMB40,000 million, from China
+              Telecommunications Corporation, with the interest rate of 3.80% per annum, which are repayable within 3 to 5 years. The
+              Group partially repaid these loans amounting to RMB3,000 million, RMB13,700 million, RMB12,300 million, and RMB7,000
+              million, respectively, in 2018, 2019, 2020 and the current interim period.
+
+
+     The Group’s short-term and long-term debt do not contain any financial covenants. As at 30 June 2021,
+     the Group had unutilised committed credit facilities amounting to RMB271,145 million (31 December
+     2020: RMB244,326 million).
+
+
+
+
+                                                                China Telecom Corporation Limited Interim Report 2021                  027
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+8.    Accounts Payable
+
+      Accounts payable are analysed as follows:
+
+                                                                             30 June        31 December
+                                                                                2021               2020
+                                                                          RMB million        RMB million
+      Third parties                                                                86,589        83,254
+      China Telecom Group                                                          19,935        19,272
+      China Tower                                                                   7,172         4,344
+      Other telecommunications operators in the PRC                                   800           708
+
+
+                                                                                  114,496       107,578
+
+
+      Amounts due to China Telecom Group and China Tower are payable in accordance with contractual
+      terms which are similar to those terms offered by third parties.
+
+      Ageing analysis of accounts payable based on the due dates is as follows:
+
+                                                                             30 June        31 December
+                                                                                2021               2020
+                                                                          RMB million        RMB million
+      Due within 1 month or on demand                                              21,901        17,261
+      Due after 1 month but within 3 months                                        25,044        24,451
+      Due after 3 months but within 6 months                                       35,263        30,965
+      Due after 6 months                                                           32,288        34,901
+
+
+                                                                                  114,496       107,578
+
+
+
+
+028      China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                                       for the six-month period ended 30 June 2021
+
+
+
+9.   Deferred Tax Assets and Liabilities
+
+     The components of deferred tax assets and deferred tax liabilities recognised in the condensed
+     consolidated statement of financial position and the movements are as follows:
+
+                                                           Assets                     Liabilities                        Net Balance
+                                                    30 June 31 December          30 June 31 December                  30 June 31 December
+                                                       2021          2020           2021           2020                  2021        2020
+                                                 RMB million    RMB million   RMB million     RMB million          RMB million  RMB million
+     Provisions and impairment losses,
+        primarily for credit losses                    2,553         2,069                 —                 —           2,553             2,069
+     Property, plant and equipment and
+        others                                         3,883         5,299            (25,378)        (24,067)         (21,495)          (18,768)
+     Right-of-use assets and lease liabilities           847           791                 —               —               847               791
+     Deferred revenues and installation
+        costs                                              2             5                 (1)               (4)               1               1
+     Equity instruments at fair value
+        through other comprehensive
+        income                                            —              —              (126)              (137)          (126)             (137)
+
+
+                                                       7,285         8,164            (25,505)        (24,208)         (18,220)          (16,044)
+
+
+                                                                                       Recognised in
+                                                                                           condensed
+                                                                                        consolidated
+                                                                                        statement of
+                                                                      Balance at      comprehensive            Disposal of            Balance at
+                                                                 1 January 2021               income          subsidiaries         30 June 2021
+                                                                    RMB million          RMB million          RMB million           RMB million
+     Provisions and impairment losses, primarily
+        for credit losses                                                  2,069                    493                  (9)               2,553
+     Property, plant and equipment and others                            (18,768)                (2,698)                (29)             (21,495)
+     Right-of-use assets and lease liabilities                               791                     56                  —                   847
+     Deferred revenues and installation costs                                  1                     —                   —                     1
+     Equity instruments at fair value through
+        other comprehensive income                                            (137)                 10                    1                (126)
+
+
+                                                                         (16,044)                (2,139)                (37)             (18,220)
+
+
+
+
+                                                                China Telecom Corporation Limited Interim Report 2021                        029
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+10. Operating Revenues
+
+      Previously, the Group presented operating revenues as revenues from contracts with customers and
+      revenues from other sources. Revenues from contracts with customers include revenues derived from
+      voice, internet, information and application services, telecommunications network resource and
+      equipment services and sales of goods and others. As a result of the deepening of the Group’s
+      “Cloudification and Digital Transformation” strategy, the Group re-categorised the presentation of
+      revenues in fiscal year 2021. The new presentation categorises operating revenues into service revenues
+      and sales of goods and others. Service revenues include revenues derived from mobile communications
+      services, wireline and Smart Family services, Industrial Digitalisation services and other services. This
+      change in presentation has no effect on reported operating revenues, operating expenses, net profits or
+      net assets for any of the periods presented. The comparative figures have been reclassified to conform to
+      current period’s presentation.
+
+      Disaggregation of revenue
+
+                                                                          Six-month period ended 30 June
+                                                                                    2021             2020
+                                                                 Notes        RMB million      RMB million
+      Type of goods or services
+
+      Service revenues
+        Mobile communications service revenues                     (i)            93,342              87,326
+        Wireline and Smart Family service revenues                (ii)            57,350              54,525
+        Industrial Digitalisation service revenues                (iii)           50,113              42,911
+        Other service revenues                                    (iv)             2,697               2,348
+      Sales of goods and others                                   (v)             15,735               6,693
+
+
+      Total operating revenues                                                   219,237            193,803
+
+
+      Revenue from customer contracts                                            216,555            191,589
+      Revenue from other sources and others                                        2,682              2,214
+
+
+      Total operating revenues                                                   219,237            193,803
+
+
+      Timing of revenue recognition
+
+        A point in time                                                           14,044              5,329
+        Over time                                                                205,193            188,474
+
+
+      Total operating revenues                                                   219,237            193,803
+
+
+
+
+030      China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                                    for the six-month period ended 30 June 2021
+
+
+
+10. Operating Revenues (Continued)
+
+   Disaggregation of revenue (Continued)
+
+   Notes:
+
+
+   (i)      Represent the aggregate amount of mobile communications service fees, mobile Internet access service fees, caller ID service
+            fees and short messaging service fees, etc., charged to customers for the provision of mobile services.
+
+
+   (ii)     Represent amounts of wireline communications service fees, broadband Internet access service fees, e-Surfing HD service fees
+            and Smart Family applications service fees charged to customers for the provision of wireline services.
+
+
+   (iii)    Represent primarily the aggregate amount of fees charged to customers for the provision of Internet data centre service fees,
+            cloud service fees, digital platform service fees, dedicated Internet access service fees, etc.
+
+
+   (iv)     Represent primarily revenues from property rental and other revenues.
+
+
+   (v)      Represent primarily revenues from sales of mobile terminal equipment as well as wireline communication equipment and
+            government grant.
+
+
+11. Network Operations and Support Expenses
+
+                                                                                        Six-month period ended 30 June
+                                                                                                  2021             2020
+                                                                             Note           RMB million      RMB million
+   Operating and maintenance                                                                         37,848                  33,539
+   Utility                                                                                            8,109                   7,410
+   Network resources usage and related fee                                    (i)                    12,668                  11,473
+   Others                                                                                             5,284                   5,276
+
+
+                                                                                                     63,909                  57,698
+
+   Note:
+
+
+   (i)      Network resources usage and related fee includes the variable lease payments not depending on an index or a rate and fee for
+            non-lease components in respect of communications towers and related assets lease and fee in respect of the short-term leases
+            and leases of low-value assets, variable lease payments not depending on an index or a rate and fee for non-lease
+            components in respect of the usage of network resources provided by third parties.
+
+
+
+
+                                                              China Telecom Corporation Limited Interim Report 2021                 031
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+12. Personnel Expenses
+
+      Personnel expenses are attributable to the following functions:
+
+                                                                                           Six-month period ended 30 June
+                                                                                                     2021             2020
+                                                                                               RMB million      RMB million
+      Network operations and support                                                                   25,255                  23,799
+      Selling, general and administrative                                                              14,430                  11,713
+
+
+                                                                                                       39,685                  35,512
+
+
+13. Other Operating Expenses
+
+                                                                                           Six-month period ended 30 June
+                                                                                                     2021             2020
+                                                                               Notes           RMB million      RMB million
+      Interconnection charges                                                    (i)                    6,059                   5,804
+      Cost of goods sold                                                         (ii)                  13,682                   4,888
+      Donations                                                                                            —                        2
+      Others                                                                     (iii)                     814                    748
+
+
+                                                                                                       20,555                  11,442
+
+      Notes:
+
+
+      (i)       Interconnection charges represent amounts incurred for the use of other domestic and foreign telecommunications operators’
+                networks for delivery of voice and data traffic that originate from the Group’s telecommunications networks.
+
+
+      (ii)      Cost of goods sold primarily represents cost of communications equipment sold.
+
+
+      (iii)     Others mainly include tax and surcharges other than value-added tax and income tax.
+
+
+
+
+032           China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                   for the six-month period ended 30 June 2021
+
+
+
+14. Net Finance Costs
+
+                                                                        Six-month period ended 30 June
+                                                                                  2021             2020
+                                                                            RMB million      RMB million
+   Interest expense on short-term and long-term debts                                 749                 1,162
+   Interest expense on lease liabilities                                              701                   745
+   Less: Interest expense capitalised*                                                (53)                  (59)
+
+
+   Net interest expense                                                            1,397                  1,848
+   Interest income                                                                  (306)                  (280)
+   Foreign exchange losses                                                           325                    525
+   Foreign exchange gains                                                           (337)                  (521)
+
+
+                                                                                   1,079                  1,572
+
+
+   * Interest expense was capitalised in construction in progress at
+        the following rates per annum                                        3.3%–4.4%            3.5%–4.4%
+
+
+15. Income Tax
+
+   Income tax in the profit or loss comprises:
+
+                                                                        Six-month period ended 30 June
+                                                                                  2021             2020
+                                                                            RMB million      RMB million
+   Provision for PRC income tax                                                    3,281                  1,367
+   Provision for income tax in other tax jurisdictions                               119                     88
+   Deferred taxation                                                               2,149                  2,720
+
+
+                                                                                   5,549                  4,175
+
+
+
+
+                                                  China Telecom Corporation Limited Interim Report 2021      033
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+15. Income Tax (Continued)
+
+      A reconciliation of the expected tax expense with the actual tax expense is as follows:
+
+                                                                                               Six-month period ended 30 June
+                                                                                                         2021             2020
+                                                                                  Notes            RMB million      RMB million
+      Profit before taxation                                                                                23,415                   18,246
+
+
+      Expected income tax expense at statutory tax rate
+         of 25%                                                                      (i)                     5,854                     4,562
+      Differential tax rate on mainland China subsidiaries’
+         and branches’ income                                                        (i)                       (334)                    (279)
+      Differential tax rate on other subsidiaries’ income                           (ii)                        (41)                     (37)
+      Non-deductible expenses                                                       (iii)                       695                      273
+      Non-taxable income                                                            (iv)                       (309)                    (205)
+      Others                                                                        (v)                        (316)                    (139)
+
+
+      Income tax expense                                                                                     5,549                     4,175
+
+      Notes:
+
+
+      (i)       Except for certain subsidiaries and branches which are mainly taxed at preferential rate of 15%, the provision for mainland China
+                income tax is based on a statutory rate of 25% of the assessable income of the Company, its mainland China subsidiaries and
+                branches as determined in accordance with the relevant income tax rules and regulations of mainland China.
+
+
+      (ii)      Income tax provisions of the Company’s subsidiaries in Hong Kong and Macau Special Administrative Regions of the PRC, and
+                in other countries are based on the subsidiaries’ assessable income and income tax rates applicable in the respective tax
+                jurisdictions which range from 8% to 35%.
+
+
+      (iii)     Amounts represent miscellaneous expenses in excess of statutory deductible limits for tax purposes.
+
+
+      (iv)      Amounts represent share of profits of associates and miscellaneous income which are not subject to income tax.
+
+
+      (v)       Amounts primarily represent settlement of tax filing differences of prior year annual tax return and other tax benefits such as
+                additional tax deduction on research and development expenses.
+
+
+16. Dividends
+
+      Pursuant to the shareholders’ approval at the Annual General Meeting held on 7 May 2021, a final
+      dividend of RMB0.104269 (equivalent to HK$0.125) per share totaling RMB8,439 million in respect of the
+      year ended 31 December 2020 was declared, and paid on 1 June 2021.
+
+      Pursuant to the shareholders’ approval at the Annual General Meeting held on 26 May 2020, a final
+      dividend of RMB0.114441 (equivalent to HK$0.125) per share totaling RMB9,262 million in respect of the
+      year ended 31 December 2019 was declared, and paid on 31 July 2020.
+
+      The Board of Directors has resolved not to pay an interim dividend.
+
+
+
+
+034           China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                    for the six-month period ended 30 June 2021
+
+
+
+17. Basic Earnings per Share
+
+   The calculation of basic earnings per share for the six-month period ended 30 June 2021 and 2020 is
+   based on the profit attributable to equity holders of the Company of RMB17,743 million and
+   RMB13,949 million, respectively, divided by 80,932,368,321 shares.
+
+   The amount of diluted earnings per share is not presented as there were no potential ordinary shares in
+   existence for the periods presented.
+
+18. Capital Commitments
+
+   As at 30 June 2021 and 31 December 2020, the Group had capital commitments as follows:
+
+                                                                                30 June          31 December
+                                                                                   2021                 2020
+                                                                             RMB million          RMB million
+   Contracted for but not provided
+     Property                                                                       1,519                   1,202
+     Telecommunications network plant and equipment                                18,442                  18,997
+
+
+                                                                                   19,961                  20,199
+
+
+19. Fair Value Measurements of Financial Instruments
+
+   Financial assets of the Group include cash and cash equivalents, bank deposits, equity instruments at fair
+   value through other comprehensive income, accounts receivable, financial assets at fair value through
+   profit or loss and financial assets included in prepayments and other current assets. Financial liabilities of
+   the Group include short-term and long-term debt, accounts payable and financial liabilities included in
+   accrued expenses and other payables.
+
+   Fair Value Measurements
+
+   Based on IFRS 13, “Fair Value Measurement ”, the fair value of each financial instrument is categorised in
+   its entirety based on the lowest level of input that is significant to that fair value measurement. The
+   levels are defined as follows:
+
+   •     Level 1: fair values measured using quoted prices (unadjusted) in active markets for identical financial
+         instruments
+
+   •     Level 2: fair values measured using quoted prices in active markets for similar financial instruments,
+         or using valuation techniques in which all significant inputs are directly or indirectly based on
+         observable market data
+
+   •     Level 3: fair values measured using valuation techniques in which any significant input is not based
+         on observable market data
+
+   The fair values of the Group’s financial instruments (other than long-term debt and financial instruments
+   measured at fair value) approximate their carrying amounts due to the short-term maturity of these
+   instruments.
+
+
+
+
+                                                   China Telecom Corporation Limited Interim Report 2021       035
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+19. Fair Value Measurements of Financial Instruments (Continued)
+
+      Fair Value Measurements (Continued)
+
+      The listed equity securities investments included in the Group’s equity instruments at fair value through
+      other comprehensive income are categorised as level 1 financial instruments. As at 30 June 2021, the
+      fair value of the Group’s listed equity securities investments is RMB800 million (31 December 2020:
+      RMB838 million), based on quoted market price on PRC stock exchanges. The Group’s other equity
+      investments, included in equity instruments at fair value through other comprehensive income, are
+      unlisted equity interests categorised as level 3.
+
+      The fair value of long-term debt is estimated by discounting future cash flows using current market
+      interest rates offered to the Group for debt with substantially the same characteristics and maturities.
+      The fair value measurement of long-term debt is categorised as level 2. The interest rates used by the
+      Group in estimating the fair values of long-term debt, having considered the foreign currency
+      denomination of the debt, ranged from 2.9% to 4.9% (31 December 2020: 2.9% to 4.9%). As at
+      30 June 2021 and 31 December 2020, the carrying amounts and fair values of the Group’s long-term
+      debt were as follows:
+
+                                                             30 June 2021             31 December 2020
+                                                          Carrying                    Carrying
+                                                           amount    Fair value       amount     Fair value
+                                                              RMB          RMB           RMB           RMB
+                                                            million     million        million      million
+      Long-term debt                                         17,914      17,875        25,348          25,294
+
+
+      During both periods, there were no transfers among instruments in level 1, level 2 or level 3.
+
+
+
+
+036      China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                                 for the six-month period ended 30 June 2021
+
+
+
+20. Related Party Transactions
+
+   (a)   Transactions with China Telecom Group
+
+         The Group is a part of companies under China Telecommunications Corporation, a company owned
+         by the PRC government, and has significant transactions and business relationships with members
+         of China Telecom Group.
+
+         The principal transactions with China Telecom Group which were carried out in the ordinary course
+         of business are as follows:
+
+                                                                                     Six-month period ended 30 June
+                                                                                               2021             2020
+                                                                       Notes             RMB million      RMB million
+         Construction and engineering services                            (i)                    5,569                    5,785
+         Receiving ancillary services                                    (ii)                   10,158                    8,769
+         Interconnection revenues                                        (iii)                      24                       28
+         Interconnection charges                                         (iii)                      64                       56
+         Receiving community services                                    (iv)                    1,649                    1,440
+         Net transaction amount of centralised services                  (v)                       533                      181
+         Property lease income                                           (vi)                       17                       17
+         Property lease related expenses                                (vii)                      196                      189
+         Addition to right-of-use assets                                (vii)                      198                      203
+         Interest expense on lease liabilities                          (vii)                       10                        7
+         Provision of IT services                                       (viii)                     434                      235
+         Receiving IT services                                          (viii)                   1,252                      864
+         Purchases of telecommunications equipment
+            and materials                                               (ix)                     1,441                    1,369
+         Sales of telecommunications equipment and
+            materials                                                   (ix)                     1,827                      748
+         Internet applications channel services                         (x)                         32                       38
+         Interest on loans from China Telecom Group*                    (xi)                       310                      501
+         Consideration received from disposal of
+            subsidiaries                                                (xii)                    4,072                        —
+         Payment and digital finance related services                   (xiii)                     207                        —
+         Others*                                                        (xiv)                      120                      113
+         Net deposit by China Telecom Group with
+            Finance Company*                                            (xv)                    (1,472)                     204
+         Interest expense on the deposit by China
+            Telecom Group with Finance Company*                         (xv)                         83                       29
+
+         *    These transactions are conducted on normal commercial terms and are fully exempted from compliance with the reporting,
+              announcement, independent shareholders’ approval and/or annual review requirements under Rules 14A.76 or 14A.90
+              of the Listing Rules.
+
+
+
+
+                                                         China Telecom Corporation Limited Interim Report 2021                 037
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+20. Related Party Transactions (Continued)
+
+      (a)     Transactions with China Telecom Group (Continued)
+
+              Notes:
+
+
+              (i)      Represent construction and engineering as well as design and supervisory services provided by China Telecom Group.
+
+
+              (ii)     Represent amounts paid and payable to China Telecom Group in respect of ancillary services such as repairs and
+                       maintenance of telecommunications equipment and facilities and certain customer services.
+
+
+              (iii)    Represent amounts received and receivable from/paid and payable to China Telecom Group for interconnection of local
+                       and domestic long distance calls.
+
+
+              (iv)     Represent amounts paid and payable to China Telecom Group in respect of cultural, educational, health care and other
+                       community services.
+
+
+              (v)      Represent net amount shared between the Company and China Telecom Group for costs associated with centralised
+                       services. The amount represents amounts received or receivable for the net amount of centralised services.
+
+
+              (vi)     Represent amounts of property lease fee received and receivable from China Telecom Group for leasing of properties.
+
+
+              (vii)    Represent amounts in respect of the leasing of properties from China Telecom Group. Property lease related expenses
+                       include the fee for short-term leases, leases of low-value assets, variable lease payments not depending on an index or
+                       a rate and fee for non-lease components.
+
+
+              (viii)   Represent IT services provided to and received from China Telecom Group.
+
+
+              (ix)     Represent the amount of telecommunications equipment and materials purchased from/sold to China Telecom Group and
+                       commission paid and payable for procurement services provided by China Telecom Group.
+
+
+              (x)      Represent amounts received and receivable from China Telecom Group in respect of Internet applications channel services,
+                       including the provision of communications channel and applications support platform and billing and deduction services,
+                       etc.
+
+
+              (xi)     Represent interest paid and payable to China Telecom Group with respect to the loans from China Telecom Group (Note
+                       7).
+
+
+              (xii)    Represent consideration received in respect of disposal of subsidiaries from China Telecom Group (Note 2).
+
+
+              (xiii)   Represent amounts paid and payable to China Telecom Group in respect of payment and digital finance related services.
+
+
+              (xiv)    Represent amounts paid and payable to China Telecom Group primarily for usage of certain CDMA mobile communications
+                       network (“CDMA network”) facilities located in Xizang Autonomous Region, certain inter-provincial transmission optic
+                       fibres within its service regions and certain land use rights.
+
+
+              (xv)     Represent amounts related to financial services provided by Finance Company to China Telecom Group, including lending
+                       service, deposit service and other financial services.
+
+
+
+
+038         China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                  for the six-month period ended 30 June 2021
+
+
+
+20. Related Party Transactions (Continued)
+
+    (a)   Transactions with China Telecom Group (Continued)
+
+          Amounts due from/to China Telecom Group are summarised as follows:
+
+                                                                              30 June          31 December
+                                                                                 2021                 2020
+                                                                           RMB million          RMB million
+          Accounts receivable                                                     1,499                   1,784
+          Contract assets                                                            88                      49
+          Prepayments and other current assets                                      735                   1,189
+
+
+          Total amounts due from China Telecom Group                              2,322                   3,022
+
+
+          Accounts payable                                                       19,935                  19,272
+          Accrued expenses and other payables                                     9,842                  11,279
+          Contract liabilities                                                      162                     217
+          Lease liabilities                                                         496                     489
+          Short-term debt                                                         9,855                  11,164
+          Long-term debt                                                          4,000                  11,000
+
+
+          Total amounts due to China Telecom Group                               44,290                  53,421
+
+
+          Amounts due from/to China Telecom Group, other than short-term debt, long-term debt and
+          deposit with Finance Company included in accrued expenses and other payables, bear no interest,
+          are unsecured and are repayable in accordance with contractual terms which are similar to those
+          terms offered by third parties. The terms and conditions associated with short-term debt and
+          long-term debt due to China Telecom Group are set out in Note 7.
+
+
+
+
+                                                 China Telecom Corporation Limited Interim Report 2021       039
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+20. Related Party Transactions (Continued)
+
+      (b)     Transactions with China Tower
+
+              The principal transactions with China Tower are as follows:
+
+                                                                                              Six-month period ended 30 June
+                                                                                                        2021             2020
+                                                                                 Notes            RMB million      RMB million
+              Tower assets lease related expenses                                  (i)                      5,982                     5,777
+              Addition to right-of-use assets                                      (i)                      1,435                     1,434
+              Interest expenses on lease liabilities                               (i)                        329                       419
+              Provision of IT services                                             (ii)                        17                        15
+
+              Notes:
+
+
+              (i)      Represent amounts in respect of the lease of tower assets. Tower assets lease related expenses include the variable lease
+                       payments not depending on an index or a rate and fee for non-lease components.
+
+
+              (ii)     Represent IT and other ancillary services provided to China Tower.
+
+
+              Amounts due from/to China Tower are summarised as follows:
+
+                                                                                                      30 June               31 December
+                                                                                                         2021                      2020
+                                                                                                   RMB million               RMB million
+              Accounts receivable                                                                               39                       23
+              Prepayments and other current assets                                                             103                      138
+
+
+              Total amounts due from China Tower                                                               142                      161
+
+
+              Accounts payable                                                                              7,172                    4,344
+              Accrued expenses and other payables                                                           1,646                    1,192
+              Contract liabilities                                                                              5                        3
+              Lease liabilities                                                                            16,951                   19,798
+
+
+              Total amounts due to China Tower                                                             25,774                   25,337
+
+
+              Amounts due from/to China Tower bear no interest, are unsecured and are repayable in
+              accordance with contractual terms which are similar to those terms offered by third parties.
+
+
+
+
+040         China Telecom Corporation Limited Interim Report 2021
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+                                                                    for the six-month period ended 30 June 2021
+
+
+
+20. Related Party Transactions (Continued)
+
+    (c)   Key management personnel compensation
+
+          Key management personnel are those persons having authority and responsibility for planning,
+          directing and controlling the activities of the Group, directly or indirectly, including directors and
+          supervisors of the Group.
+
+          Key management personnel compensation of the Group is summarised as follows:
+
+                                                                         Six-month period ended 30 June
+                                                                                   2021             2020
+                                                                          RMB thousand      RMB thousand
+          Short-term employee benefits                                              3,412                  3,147
+          Post-employment benefits                                                    561                    442
+
+
+                                                                                    3,973                  3,589
+
+
+          The above remuneration is included in personnel expenses.
+
+    (d)   Contributions to post-employment benefit plans
+
+          As stipulated by the regulations of the PRC, the Group participates in various defined contribution
+          retirement plans organised by municipal, autonomous regional and provincial governments for its
+          employees. The Group is required to make contributions to the retirement plans at rates ranging
+          from 14% to 20% of the salaries, bonuses and certain allowances of the employees. A member of
+          the plan is entitled to a pension equal to a fixed proportion of the salary prevailing at the
+          member’s retirement date. Other than the above, the Group also participates in supplementary
+          defined contribution retirement plans managed by independent external parties whereby the Group
+          is required to make contributions to the retirement plans at fixed rates of the employees’ salaries,
+          bonuses and certain allowances. The Group has no other material obligation for the payment of
+          pension benefits associated with these plans beyond the annual contributions described above.
+
+          The Group’s contributions for the above plans for the six-month period ended 30 June 2021 were
+          RMB4,237 million (six-month period ended 30 June 2020: RMB2,981 million).
+
+          The amount payable for contributions to the above defined contribution retirement plans as at
+          30 June 2021 was RMB732 million (31 December 2020: RMB746 million).
+
+
+
+
+                                                   China Telecom Corporation Limited Interim Report 2021      041
+Notes to the Unaudited Condensed Consolidated Interim Financial Information
+for the six-month period ended 30 June 2021
+
+
+
+20. Related Party Transactions (Continued)
+
+      (e)     Transactions with other government-related entities in the PRC
+
+              The Group is a government-related enterprise and operates in an economic regime currently
+              dominated by entities directly or indirectly controlled by the People’s Republic of China through
+              government authorities, agencies, affiliations and other organisations (collectively referred to as
+              “government-related entities”).
+
+              Apart from transactions with parent company and its fellow subsidiaries (Note 20(a)) and China
+              Tower (Note 20(b)), the Group has transactions that are collectively but not individually significant
+              with other government-related entities, which include but not limited to the following:
+
+              •     rendering and receiving services, including but not limited to telecommunications services
+
+              •     sales and purchases of goods, properties and other assets
+
+              •     lease of assets
+
+              •     depositing and borrowing
+
+              •     use of public utilities
+
+              These transactions are conducted in the ordinary course of the Group’s business on terms
+              comparable to the terms of transactions with other entities that are not government-related. The
+              Group prices its telecommunications services and products based on government-regulated tariff
+              rates, where applicable, or based on commercial negotiations. The Group has also established
+              procurement policies and approval processes for purchases of products and services, which do not
+              depend on whether the counterparties are government-related entities or not.
+
+              The directors of the Company believe the above information provides appropriate disclosure of
+              related party transactions.
+
+
+
+
+042         China Telecom Corporation Limited Interim Report 2021
+                                                                    Other Information
+
+Management Discussion and Analysis
+
+According to paragraph 40 of Appendix 16 of the Rules Governing the Listing of Securities on The Stock
+Exchange of Hong Kong Limited (the “Listing Rules”), save as disclosed in this report, the Company confirms
+that the current company information in relation to those matters set out in paragraph 32 of Appendix 16
+has not changed materially from the information disclosed in the Company’s 2020 Annual Report.
+
+Purchase, Sale or Redemption of Listed Securities of the Company
+
+During the six-month period ended 30 June 2021, neither the Company nor any of its subsidiaries has
+purchased, sold or redeemed any of the Company’s listed securities.
+
+Directors’ and Supervisors’ Interests and Short Positions in Shares,
+Underlying Shares and Debentures of the Company
+
+As at 30 June 2021, none of the Directors and Supervisors of the Company had any interests or short
+positions in the shares, underlying shares or debentures of the Company or its associated corporations (as
+defined in Part XV of the Securities and Futures Ordinance (Cap. 571 of the laws of Hong Kong) (the “SFO”))
+as recorded in the register required to be maintained under Section 352 of the SFO or as otherwise notified to
+the Company and The Stock Exchange of Hong Kong Limited pursuant to the Model Code for Securities
+Transactions by Directors of Listed Issuers (the “Model Code”) as set out in Appendix 10 of the Listing Rules.
+
+As at 30 June 2021, the Company has not granted its Directors or Supervisors, or their respective spouses or
+any of their respective minor child (natural or adopted) or on their behalf any rights to subscribe for the
+shares or debentures of the Company or any of its associated corporations and none of them has ever
+exercised any such right to subscribe for the shares or debentures.
+
+A Share Offering of the Company
+
+As disclosed in the announcement of the Company dated 29 July 2021, the CSRC has officially approved the
+A Share Offering of the Company in a written notice on 29 July 2021. Further announcement(s) will be made
+when appropriate to disclose any major updates and developments in respect of the A Share Offering in
+accordance with the Listing Rules, Part XIVA of the SFO (Cap. 571 of the Laws of Hong Kong) and other
+applicable laws and regulations.
+
+NYSE has Completed the Delisting Proceedings of American Depositary
+Shares
+
+As mentioned in the annual report published on 8 April 2021 and the announcement dated 7 May 2021,
+respectively, NYSE Regulation of The New York Stock Exchange LLC (the “NYSE”) had determined to proceed
+the delisting (the “Determination”) of the American Depositary Shares of the Company (NYSE stock ticker:
+CHA, the “ADSs”) and that a Committee of the Board of Directors of the NYSE has affirmed the
+Determination. The delisting of the Company’s ADSs has taken effect on 18 May 2021. The Company will
+continue to pay close attention to the development of related matters and will publish further
+announcement(s) as necessary and when appropriate.
+
+
+
+
+                                                   China Telecom Corporation Limited Interim Report 2021   043
+Other Information
+
+
+Change of Directors, Supervisors and Senior Management since the Date
+of the 2020 Annual Report
+
+The changes in the biographical information relating to the Directors of the Company since the date of the
+Company’s 2020 Annual Report are set out below:
+
+On 23 March 2021, an announcement has been published by China Huarong Asset Management Co., Ltd.
+(“China Huarong”) that Mr. Tse Hau Yin, Aloysius, an Independent Non-Executive Director of the Company,
+has resigned as an Independent Non-Executive Director of China Huarong and the resignation shall be
+effective from the commencement of the term of office of the new Independent Non-Executive Director.
+Meanwhile, with effect from 3 June 2021, Mr. Tse Hau Yin, Aloysius no longer served as an Independent
+Non-Executive Director of OCBC Wing Hang Bank Limited.
+
+In order to satisfy the relevant requirement issued by the CSRC that the term of independent directors should
+not exceed six years, the Company has undertaken to actively seek and select appropriate candidates as
+independent directors after the completion of the A Share Offering, endeavouring to procure the change of
+Independent Non-Executive Directors who have served for more than six years at a shareholders’ meeting by
+15 July 2022 provided that the effective functioning of the Company’s corporate governance mechanism can
+be assured. The Company will publish further announcement(s) as necessary and when appropriate in
+compliance with the Listing Rules and applicable laws and regulations.
+
+Save as stated above, there is no other information of the Directors or Supervisors of the Company required to
+be disclosed pursuant to Rule 13.51B(1) of the Listing Rules. The biographical details of the Directors,
+Supervisors and senior management are available on the website of the Company (www.chinatelecom-h.com ).
+
+Material Interests and Short Positions in Shares and Underlying Shares of
+the Company
+
+As at 30 June 2021, the interests or short position of persons who are entitled to exercise or control the
+exercise of 5% or more of the voting power at the shareholders’ class meetings of the Company (excluding
+the Directors and Supervisors) in the shares and underlying shares of the Company as recorded in the register
+required to be maintained under Section 336 of the SFO are as follows:
+
+                                                                   Approximate Approximate
+                                                                  percentage of percentage of
+                                                                  the respective     the total
+                                                                        class of   number of
+                                   Number of                           shares in     shares in
+Name of Shareholders                  shares      Class of shares          issue         issue Capacity
+China Telecommunications       57,377,053,317     Domestic shares      85.57%         70.89% Beneficial owner
+  Corporation                   (Long position)
+
+Guangdong Rising Holdings       5,614,082,653     Domestic shares       8.37%          6.94% Beneficial owner
+  Group Co., Ltd.               (Long position)
+
+GIC Private Limited             1,560,593,002            H shares      11.25%          1.92% Investment manager
+                                (Long position)
+
+
+Save as disclosed above, as at 30 June 2021, in the register required to be maintained under Section 336 of
+the SFO, no other persons were recorded to hold any interests or short positions in the shares and underlying
+shares of the Company.
+
+
+
+
+044       China Telecom Corporation Limited Interim Report 2021
+                                                                               Other Information
+
+
+Audit Committee
+
+The audit committee has reviewed with management and the Company’s external auditor,
+PricewaterhouseCoopers, the accounting principles and practices adopted by the Group and discussed risk
+management, internal control and financial reporting matters of the Group including the review of the Interim
+Report for the six-month period ended 30 June 2021.
+
+Compliance with the Corporate Governance Code
+
+The Company attaches great importance to corporate governance. We continued to make efforts in improving
+the Company’s internal control mechanisms, strengthening information disclosure and enhancing the
+Company’s transparency, continuously developing corporate governance practices and protecting shareholders’
+interests to the maximum degree.
+
+The roles of Chairman and Chief Executive Officer of the Company were performed by the same individual, for
+the six-month period ended 30 June 2021. In the Company’s opinion, through supervision by the Board of
+Directors and Independent Non-Executive Directors, with effective control of the Company’s internal check and
+balance mechanism, the same individual performing the roles of Chairman and Chief Executive Officer can
+enhance the Company’s efficiency in decision-making and execution and effectively capture business
+opportunities. Many leading international corporations around the world also have similar arrangements.
+
+Save as stated above, the Company has been in compliance with all the code provisions under the Corporate
+Governance Code as set out in Appendix 14 of the Listing Rules throughout the six-month period ended
+30 June 2021.
+
+Compliance with the Model Code for Securities Transactions by Directors
+and Supervisors
+
+The Company has adopted the Model Code as set out in Appendix 10 of the Listing Rules to govern securities
+transactions by Directors and Supervisors. Based on the written confirmations from the Directors and
+Supervisors, they have confirmed their compliance with the Model Code regarding the requirements in
+conducting securities transactions for the period from 1 January 2021 to 30 June 2021.
+
+
+
+
+                                                  China Telecom Corporation Limited Interim Report 2021   045
+

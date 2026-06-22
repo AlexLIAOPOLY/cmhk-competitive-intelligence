@@ -1,0 +1,43 @@
+{
+  "id": "knowledge_integrity_audits",
+  "title": "小竞AI知识库完整性审计",
+  "summary": "统一检查当前竞对/云厂商/宏观政策知识库的 manifest、入口文件、行数、official_value、verification_status、verification_count 和 source-gap 边界。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "小竞AI数据库选择、RAG 检索、预测前数据质量检查和维护验收。",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "knowledge-integrity",
+    "source-integrity",
+    "rag"
+  ],
+  "keywords": [
+    "knowledge_integrity_audits",
+    "verification_count",
+    "official_value",
+    "source_gap_confirmed",
+    "quarterly_competitor_metrics_2026-06-18",
+    "cloud_vendor_metrics_2026-06-17",
+    "cmhk_macro_policy_2026-06-19"
+  ],
+  "entrypoints": [
+    "knowledge_integrity_audit_2026-06-19.md",
+    "knowledge_integrity_audit_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass",
+    "row_count": 9,
+    "datasets_checked": 9,
+    "passed": 9,
+    "failed": 0,
+    "notes": [
+      "审计记录本身是维护证据，不是预测目标数据。",
+      "若 failed > 0，必须先修复对应知识库或登记 source-gap 边界，再用于正式结论。",
+      "当前审计检查 verification_count < 2、official_value 缺失、source-gap 带值、manifest row_count 和 entrypoints。"
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19",
+  "last_audit_path": "agent_knowledge/knowledge_integrity_audits/knowledge_integrity_audit_2026-06-19.md"
+}

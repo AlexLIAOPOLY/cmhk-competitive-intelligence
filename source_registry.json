@@ -454,6 +454,20 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public press releases only."
     },
+    "opengateway.telefonica.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "ES",
+      "tos_status": "requires_periodic_review",
+      "notes": "Telefonica Open Gateway public news pages for network API initiatives."
+    },
+    "www.prnewswire.com": {
+      "policy": "allow",
+      "type": "press_release_distribution",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "notes": "Public press release distribution pages used only when the original company page is blocked and the release clearly identifies the issuer."
+    },
     "commission.europa.eu": {
       "policy": "allow",
       "type": "government_public_info",

@@ -1,0 +1,243 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for
+the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any
+liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this
+announcement.
+
+
+
+
+                  China Telecom Corporation Limited
+                        中国电信股份有限公司
+           (A joint stock limited company incorporated in the People's Republic of China with limited liability)
+                                                  (Stock Code: 728)
+
+
+                       KEY FINANCIAL AND PERFORMANCE INDICATORS
+                           FOR THE FIRST THREE QUARTERS OF 2018
+
+
+ The unaudited financial data of the Group for the first three quarters of 2018
+
+ -    Operating revenues were RMB284,971 million, representing an increase of 3.6% over the same
+      period of last year
+ -    Service revenues were RMB264,934 million, representing an increase of 6.0% over the same
+      period of last year
+ -    EBITDA was RMB80,819 million, representing an increase of 2.5% over the same period of
+      last year
+ -    Profit attributable to equity holders of the Company was RMB19,034 million, representing an
+      increase of 2.7% over the same period of last year
+
+
+In order to further enhance the transparency of the Group and to enable shareholders, investors and
+the general public to better appraise the operational performance of the Group, the board of directors
+(the “Board”) of China Telecom Corporation Limited (the “Company”, together with its subsidiaries,
+the “Group”) announces certain selected unaudited key financial and performance indicators of the
+Group for the first three quarters of 2018.
+
+
+
+
+                                                            1
+Financial Data (Extracted from financial records prepared in accordance with International
+Financial Reporting Standards)
+                                                                             For the period from                For the period from
+                                                                               1 January 2018 to                  1 January 2017 to                     Increase /
+                                                                              30 September 2018                  30 September 2017                     (Decrease)
+                                                                                  (RMB million)                      (RMB million)
+                                                                                                                         (Restated)*
+
+Operating revenues                                                                          284,971                            274,967                       3.6%
+
+     of which: Service revenues1                                                            264,934                            249,927                       6.0%
+
+Operating expenses
+ Depreciation and amortisation                                                              (55,459)                           (52,246)                     6.1%
+ Network operations and support                                                             (81,800)                           (73,355)                    11.5%
+ Selling, general and administrative                                                        (43,128)                           (42,334)                     1.9%
+ Personnel expenses                                                                         (49,788)                           (46,958)                     6.0%
+ Other operating expenses                                                                   (29,436)                           (33,436)                   (12.0%)
+
+       Total operating expenses                                                           (259,611)                          (248,329)                       4.5%
+
+Operating profit                                                                              25,360                             26,638                   (4.8%)
+
+Net finance costs                                                                             (2,107)                            (2,583)                 (18.4%)
+Investment income and share of                                                                 1,923                                708                  171.6%
+  profits of associates
+
+Profit before taxation                                                                        25,176                              24,763                    1.7%
+Income tax                                                                                    (6,045)                            (6,139)                  (1.5%)
+Profit for the first three quarters                                                           19,131                             18,624                     2.7%
+
+Profit attributable to:
+  Equity holders of the Company                                                              19,034                              18,528                      2.7%
+  Non-controlling interests                                                                      97                                  96                      1.0%
+
+                                                                                            As at                               As at
+                                                                               30 September 2018                    31 December 2017
+                                                                                   (RMB million)                       (RMB million)
+
+Total Assets                                                                               669,594                             661,194                       1.3%
+
+Total Liabilities                                                                         (328,394)                          (334,497)                    (1.8%)
+
+Total Equity2                                                                              341,200                             326,697                       4.4%
+
+*    Certain figures for the first three quarters of 2017 were retrospectively restated due to the acquisition of satellite communications business and Shaanxi Zhonghe
+     Hengtai Insurance Agent Limited by the Group in year 2017. Please refer to note 1 to the audited consolidated financial statements in 2017 Annual Report for
+     details.
+
+1.   Service revenues were calculated based on operating revenues minus sales of mobile terminals (first three quarters of 2018: RMB15,380 million; first three
+     quarters of 2017: RMB20,746 million), sales of wireline equipment and other non-service revenues (first three quarters of 2018: total RMB4,657 million; first
+     three quarters of 2017: total RMB4,294 million).
+2.   The Group adopted IFRS 15 “Revenue from Contracts with Customers” and IFRS 9 “Financial Instruments” since 1 January 2018. For IFRS 15 and IFRS 9, the
+     Group applied the limited retrospective method choosing not to restate the comparative information for prior periods in accordance with the requirements under
+     the accounting standards. The adjustments from the adoption of IFRS 15 and IFRS 9 resulted in an increase of the opening balance of equity of the Group as at 1
+     January 2018 by approximately RMB3.0 billion in aggregate.
+
+
+
+
+                                                                                 2
+Business Data
+                                                                                                          As at                             As at
+                                                                                            30 September 2018/                30 September 2017/
+                                                                                            For the period from               For the period from
+                                                                                              1 January 2018 to                1 January 2017 to
+                                                                                             30 September 2018                  30 September 2017
+
+Mobile Subscribers (Million)                                                                               294.03                               240.56
+ of which 4G Users (Million)                                                                               230.45                               167.52
+Net Add of Mobile Subscribers (Million)                                                                     44.07                                25.56
+ of which Net Add of 4G Users (Million)                                                                     48.41                                45.65
+Handset Data Traffic (kTB)3                                                                               9,414.8                              2,020.4
+Mobile Voice Usage (Billion Minutes)                                                                       617.73                               570.23
+Wireline Broadband Subscribers (Million)                                                                   143.84                               131.31
+ of which Fibre-to-the-Home (FTTH) subscribers
+ (Million)                                                                                                 138.62                               121.80
+Net Add of Wireline Broadband Subscribers (Million)                                                          10.31                                 8.19
+ of which Net Add of FTTH subscribers (Million)                                                              12.45                                15.81
+Access Lines in Service (Million)                                                                          118.27                               123.31
+Net Increase/(Decrease) of Access Lines in Service                                                          (3.53)                               (3.55)
+ (Million)
+Wireline Local Voice Usage (Billion Pulses)                                                                  46.19                                57.55
+Wireline Long Distance Usage (Billion Minutes)                                                               10.11                                11.68
+
+For the first three quarters of 2018, facing increasingly intensified market competition coupled with
+complicated and changing industry environments, the Group adhered to established development
+strategy with excellent execution and continued to implement deepened reforms and innovation,
+achieving new breakthrough in scale. With further implementation of the“Speed Upgrade and Tariff
+Reduction” policy, the Group cancelled data roaming fees from 1 July 2018. The number of mobile
+subscribers reached approximately 294 million, representing a net addition of 44.07 million; of
+which the number of 4G users reached 230 million, representing a net addition of 48.41 million and
+maintained good growth momentum. The handset data traffic3 increased by 366% over the same
+period of last year. The monthly average data traffic per 4G user reached 5,219 MB and maintained
+strong growth. The average mobile service revenue per user per month (ARPU) decreased over the
+same period of last year. Facing intensified market competition, wireline broadband subscribers
+achieved favourable growth and reached 144 million, representing a net addition of 10.31 million.
+Despite the decline in the ARPU of broadband access, the growth in wireline broadband subscribers
+vigorously supported the rapid development of Smart Family service. With continuous strengthening
+of the advantages of ecological cooperation of the Company, the number of e-Surfing HD
+subscribers exceeded 100 million while IDC, cloud and Big Data businesses achieved rapid
+development, expediting the growth of Intelligent Applications ecosphere4.
+
+3.   Handset data traffic represents the data traffic generated from 3G and 4G handset internet access.
+4.   Intelligent Applications ecosphere included Smart Family ecosphere, DICT ecosphere, IoT ecosphere and Internet Finance ecosphere. DICT refers to the
+     integrated intelligent applications services based on three major technologies, namely communications technology, information technology, cloud and Big
+     Data technology.
+
+
+
+
+                                                                               3
+For the first three quarters of 2018, the Group proactively adapted to the impacts of cancellation of
+data roaming fees and implementation of new revenue standard with steady promotion of business
+operation as planned. For the first three quarters of 2018, the operating revenues were RMB284,971
+million, representing an increase of 3.6% over the same period of last year, of which the service
+revenues were RMB264,934 million, representing an increase of 6.0% over the same period of last
+year. The operating expenses increased by 4.5% over the same period of last year. Of which, the
+depreciation and amortisation expenses increased by 6.1% over the same period of last year which
+was mainly due to the corresponding increase brought by the investment in 4G and fibre broadband
+construction in recent years. In order to further enhance network capabilities and quality to support
+scale development of business, the network operations and support expenses increased by 11.5%
+over the same period of last year. The selling, general and administrative expenses increased by 1.9%
+over the same period of last year which was well controlled amid rapid growth in the scale of
+subscribers mainly as a result of the continuous optimisation of the Company’s sales and marketing
+model and the implementation of new revenue standard. The personnel expenses increased by 6.0%
+over the same period of last year. During the period, other operating expenses decreased by 12.0%
+over the same period of last year which was mainly attributable to the corresponding decrease in the
+costs of mobile terminals sold in line with the decrease in sales of mobile terminals during the period.
+For the first three quarters of 2018, the investment income and share of profits of associates
+increased by 171.6% over the same period of last year which was mainly due to the change in the
+Group’s shareholding percentage in China Tower Corporation Limited (“China Tower”) resulting in
+an increase in the interests in China Tower being accounted for under equity method after the listing
+of China Tower. During the period, the net finance costs decreased by 18.4% over the same period of
+last year which was mainly due to the Group’s increased efforts in stringent control over capital
+centralisation and decrease in the scale of interest-bearing debts. The profit attributable to equity
+holders of the Company was RMB19,034 million, representing an increase of 2.7% over the same
+period of last year. EBITDA5 was RMB80,819 million, representing an increase of 2.5% over the
+same period of last year. EBITDA margin6 was 30.5%.
+
+In the future, the Group will firmly seize the development opportunities of the communications and
+information industry and proactively respond to market competition and changes with perseverance
+in innovation and integration to promote scale development. With unwavering devotion to promote
+the “three initiatives” 7 transformation and to persistently implement in-depth reforms, the Group will
+reinforce corporate vitality and efficiency as well as promote enhancement of corporate capabilities,
+endeavouring to continuously create new value potential for shareholders.
+
+
+
+
+5.   EBITDA was calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+6.   EBITDA margin was calculated based on EBITDA divided by service revenues.
+7.   “Three initiatives” represents network intelligentisation, service ecologicalisation and operation intellectualisation.
+
+
+
+
+                                                                                 4
+The Board wishes to remind investors that the above financial and business data are based on the
+Group’s unaudited management accounts. Investors are cautioned not to unduly rely on such data.
+
+In the meantime, investors are advised to exercise caution in dealing in the securities of the
+Company.
+
+
+
+                                                                   By Order of the Board
+                                                            China Telecom Corporation Limited
+                                                                        Yang Jie
+                                                            Chairman and Chief Executive Officer
+
+
+
+Beijing, China, 29 October 2018
+
+
+
+
+FORWARD-LOOKING STATEMENTS
+
+Certain statements contained in this announcement may be viewed as “forward-looking statements”
+within the meaning of Section 27A of the U.S. Securities Act of 1933 (as amended) and Section 21E
+of the U.S. Securities Exchange Act of 1934 (as amended). Such forward-looking statements are
+subject to known and unknown risks, uncertainties and other factors, which may cause the actual
+performance, financial condition or results of operations of the Company to be materially different
+from any future performance, financial condition or results of operations implied by such
+forward-looking statements. In addition, we do not intend to update these forward-looking
+statements. Further information regarding these risks, uncertainties and other factors is included in
+the Company’s most recent Annual Report on Form 20-F filed with the U.S. Securities and Exchange
+Commission (the “SEC”) and in the Company’s other filings with the SEC.
+
+As at the date of this announcement, the Board of Directors of the Company consists of Mr. Yang Jie
+(as the chairman and chief executive officer); Mr. Ke Ruiwen (as the president and chief operating
+officer); Mr. Gao Tongqing, Mr. Chen Zhongyue and Madam Zhu Min (as the chief financial officer)
+(all as the executive vice presidents); Mr. Chen Shengguang (as the non-executive director); Mr. Tse
+Hau Yin, Aloysius, Mr. Xu Erming, Madam Wang Hsuehming and Mr. Yeung Chi Wai, Jason (all as
+the independent non-executive directors).
+
+
+
+
+                                                5
+

@@ -11,9 +11,9 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
+    "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
     "https://stockanalysis.com/quote/hkg/1310/",
-    "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-    "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+    "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310"
   ],
   "attempted_urls": [
     "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
@@ -21,7 +21,7 @@
     "https://stockanalysis.com/quote/hkg/1310/"
   ],
   "extracted": {
-    "股价异动": "SOURCE: https://stockanalysis.com/quote/hkg/1310/ HKBN Ltd. (HKG:1310) Stock Price & Overview Skip to main content Log In Sign Up Home Watchlist Stocks Stock Screener Stock Exchanges Comparison Tool Earnings Calendar By "
+    "股价异动": "Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved. SOURCE: https://stockanalysis.com/quote/hkg/1310/ HKBN Ltd. (HKG:1310) Stoc"
   },
   "missing_fields": [],
   "entity_results": [
@@ -29,97 +29,15 @@
       "entity": "HKBN",
       "status": "ok",
       "source_urls": [
+        "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
         "https://stockanalysis.com/quote/hkg/1310/",
-        "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-        "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars"
+        "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310"
       ],
       "extracted": {
-        "股价异动": "SOURCE: https://stockanalysis.com/quote/hkg/1310/ HKBN Ltd. (HKG:1310) Stock Price & Overview Skip to main content Log In Sign Up Home Watchlist Stocks Stock Screener Stock Exchanges Comparison Tool Earnings Calendar By "
+        "股价异动": "Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved. SOURCE: https://stockanalysis.com/quote/hkg/1310/ HKBN Ltd. (HKG:1310) Stoc"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 13,
-          "url": "https://stockanalysis.com/quote/hkg/1310/",
-          "final_url": "https://stockanalysis.com/quote/hkg/1310/",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
-          "bytes": 103560,
-          "elapsed_seconds": 0.93,
-          "method": "httpx",
-          "text_sample": "HKBN Ltd. (HKG:1310) Stock Price & Overview Skip to main content Log In Sign Up Home Watchlist Stocks Stock Screener Stock Exchanges Comparison Tool Earnings Calendar By Industry Stock Lists Top Analysts Top Stocks Corporate Actions IPOs Recent IPOs IPO Calendar IPO Statistics IPO News IPO Screener ETFs ETF Screener Comparison Tool New Launches ETF Providers News Trending Articles Technical Chart Market Movers Top Gainers Top Losers Most Active Premarket After Hours Market Heatmap Market Newsletter Stock Analysis Pro Tools Collapse HKBN Ltd. (HKG:1310) Hong Kong · Delayed Price · Currency is HKD Full Chart Watchlist Alerts Compare 6.19 -0.03 (-0.48%) Jun 16, 2026, 10:41 AM HKT Overview Financials Statistics Dividends History Profile Chart 1D 5D 1M YTD 3M 6M 1Y 5Y Max 24.80% (1Y) 1D 5D 1M YTD 3M 6M 1Y 5Y Max Full Chart Watchlist Alerts Compare Market Cap 9.20B +21.7% Revenue (ttm) 11.42B ",
-          "evidence_path": "evidence_cache/9a0d84b22f07becb5d9c274b5033913b9b75958fb849186d575f4bf4c66f3f81.txt",
-          "content_hash": "9a0d84b22f07becb5d9c274b5033913b9b75958fb849186d575f4bf4c66f3f81",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://stockanalysis.com/quote/hkg/1310/",
-              "final_url": "https://stockanalysis.com/quote/hkg/1310/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 103560,
-              "text_chars": 5991,
-              "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "commercial_data",
-          "jurisdiction": "US",
-          "tos_status": "approved",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKBN"
-          ]
-        },
-        {
-          "row": 13,
-          "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-          "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-          "status": 200,
-          "content_type": "text/html; charset=utf-8",
-          "title": "Detail Quote",
-          "bytes": 210887,
-          "elapsed_seconds": 1.046,
-          "method": "httpx",
-          "text_sample": "Detail Quote 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants Analysis Analysis Technical Analysis In",
-          "evidence_path": "evidence_cache/705f8614e8757fbe35bb5d1a20bb17c90200d77a750a61ea9a98932353c11f75.txt",
-          "content_hash": "705f8614e8757fbe35bb5d1a20bb17c90200d77a750a61ea9a98932353c11f75",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-              "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 210887,
-              "text_chars": 16377,
-              "title": "Detail Quote",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "commercial_data",
-          "jurisdiction": "HK",
-          "tos_status": "approved",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKBN"
-          ]
-        },
         {
           "row": 13,
           "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
@@ -128,8 +46,8 @@
           "content_type": "text/html; charset=utf-8",
           "title": "Announcements & Circulars | HKBN",
           "bytes": 882939,
-          "elapsed_seconds": 1.089,
-          "method": "httpx",
+          "elapsed_seconds": 0.0,
+          "method": "cache:httpx",
           "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May Jun No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
           "evidence_path": "evidence_cache/678941b3941825030ca7e8556a1db9a76a76ee375e083ce0c902e581b867ec95.txt",
           "content_hash": "678941b3941825030ca7e8556a1db9a76a76ee375e083ce0c902e581b867ec95",
@@ -155,6 +73,91 @@
           "robots_allowed": true,
           "skip_reason": "",
           "live_fetch_status": "",
+          "cache_hit": true,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKBN"
+          ]
+        },
+        {
+          "row": 13,
+          "url": "https://stockanalysis.com/quote/hkg/1310/",
+          "final_url": "https://stockanalysis.com/quote/hkg/1310/",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
+          "bytes": 98211,
+          "elapsed_seconds": 0.781,
+          "method": "httpx",
+          "text_sample": "HKBN Ltd. (HKG:1310) Stock Price & Overview Skip to main content Log In Sign Up Home Watchlist Stocks Stock Screener Stock Exchanges Comparison Tool Earnings Calendar By Industry Stock Lists Top Analysts Top Stocks Corporate Actions IPOs Recent IPOs IPO Calendar IPO Statistics IPO News IPO Screener ETFs ETF Screener Comparison Tool New Launches ETF Providers News Trending Articles Technical Chart Market Movers Top Gainers Top Losers Most Active Premarket After Hours Market Heatmap Market Newsletter Stock Analysis Pro Tools Collapse HKBN Ltd. (HKG:1310) Hong Kong · Delayed Price · Currency is HKD Full Chart Watchlist Alerts Compare 6.09 -0.07 (-1.14%) Jun 17, 2026, 10:33 AM HKT Overview Financials Statistics Dividends History Profile Chart 1D 5D 1M YTD 3M 6M 1Y 5Y Max 22.78% (1Y) 1D 5D 1M YTD 3M 6M 1Y 5Y Max Full Chart Watchlist Alerts Compare Market Cap 9.11B +20.3% Revenue (ttm) 11.42B ",
+          "evidence_path": "evidence_cache/8ceb6819aea568ac6194bbe81107147ccfdcfa957b4bb19fe1f35a86884f3090.txt",
+          "content_hash": "8ceb6819aea568ac6194bbe81107147ccfdcfa957b4bb19fe1f35a86884f3090",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://stockanalysis.com/quote/hkg/1310/",
+              "final_url": "https://stockanalysis.com/quote/hkg/1310/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 98211,
+              "text_chars": 5991,
+              "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "commercial_data",
+          "jurisdiction": "US",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKBN"
+          ]
+        },
+        {
+          "row": 13,
+          "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+          "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+          "status": 200,
+          "content_type": "text/html; charset=utf-8",
+          "title": "Detail Quote",
+          "bytes": 210886,
+          "elapsed_seconds": 0.833,
+          "method": "httpx",
+          "text_sample": "Detail Quote 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants Analysis Analysis Technical Analysis In",
+          "evidence_path": "evidence_cache/0d3ba3bcad6ed9f610f2500b7d752fac72deb8ddc2eecd7074af9a532b0a6f26.txt",
+          "content_hash": "0d3ba3bcad6ed9f610f2500b7d752fac72deb8ddc2eecd7074af9a532b0a6f26",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+              "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 210886,
+              "text_chars": 16376,
+              "title": "Detail Quote",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "commercial_data",
+          "jurisdiction": "HK",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
           "evidence_fallback_used": false,
           "fallback_reason": "",
           "entity_hits": [
@@ -163,93 +166,11 @@
         }
       ],
       "confidence_score": 0.0,
-      "verification_reason": "The 'Extracted Data' contains only a URL and a brief line from the source, but the field '股价异动' (stock price movement) is not defined or present in the source text. The source text does not discuss stock price anomalies or the specific term '股价异动'."
+      "verification_reason": "The extracted data field '股价异动' contains a garbled mix of text from various sources, including stock analysis and HKBN's legal disclaimers, but the source text lacks any mention of '股价异动' (stock price movement) or the specific content in the extracted field. The extracted data does not accurately reflect the source text."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 13,
-      "url": "https://stockanalysis.com/quote/hkg/1310/",
-      "final_url": "https://stockanalysis.com/quote/hkg/1310/",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
-      "bytes": 103560,
-      "elapsed_seconds": 0.93,
-      "method": "httpx",
-      "text_sample": "HKBN Ltd. (HKG:1310) Stock Price & Overview Skip to main content Log In Sign Up Home Watchlist Stocks Stock Screener Stock Exchanges Comparison Tool Earnings Calendar By Industry Stock Lists Top Analysts Top Stocks Corporate Actions IPOs Recent IPOs IPO Calendar IPO Statistics IPO News IPO Screener ETFs ETF Screener Comparison Tool New Launches ETF Providers News Trending Articles Technical Chart Market Movers Top Gainers Top Losers Most Active Premarket After Hours Market Heatmap Market Newsletter Stock Analysis Pro Tools Collapse HKBN Ltd. (HKG:1310) Hong Kong · Delayed Price · Currency is HKD Full Chart Watchlist Alerts Compare 6.19 -0.03 (-0.48%) Jun 16, 2026, 10:41 AM HKT Overview Financials Statistics Dividends History Profile Chart 1D 5D 1M YTD 3M 6M 1Y 5Y Max 24.80% (1Y) 1D 5D 1M YTD 3M 6M 1Y 5Y Max Full Chart Watchlist Alerts Compare Market Cap 9.20B +21.7% Revenue (ttm) 11.42B ",
-      "evidence_path": "evidence_cache/9a0d84b22f07becb5d9c274b5033913b9b75958fb849186d575f4bf4c66f3f81.txt",
-      "content_hash": "9a0d84b22f07becb5d9c274b5033913b9b75958fb849186d575f4bf4c66f3f81",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://stockanalysis.com/quote/hkg/1310/",
-          "final_url": "https://stockanalysis.com/quote/hkg/1310/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 103560,
-          "text_chars": 5991,
-          "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "commercial_data",
-      "jurisdiction": "US",
-      "tos_status": "approved",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "HKBN"
-      ]
-    },
-    {
-      "row": 13,
-      "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-      "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "Detail Quote",
-      "bytes": 210887,
-      "elapsed_seconds": 1.046,
-      "method": "httpx",
-      "text_sample": "Detail Quote 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants Analysis Analysis Technical Analysis In",
-      "evidence_path": "evidence_cache/705f8614e8757fbe35bb5d1a20bb17c90200d77a750a61ea9a98932353c11f75.txt",
-      "content_hash": "705f8614e8757fbe35bb5d1a20bb17c90200d77a750a61ea9a98932353c11f75",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-          "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 210887,
-          "text_chars": 16377,
-          "title": "Detail Quote",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "commercial_data",
-      "jurisdiction": "HK",
-      "tos_status": "approved",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "HKBN"
-      ]
-    },
     {
       "row": 13,
       "url": "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
@@ -258,8 +179,8 @@
       "content_type": "text/html; charset=utf-8",
       "title": "Announcements & Circulars | HKBN",
       "bytes": 882939,
-      "elapsed_seconds": 1.089,
-      "method": "httpx",
+      "elapsed_seconds": 0.0,
+      "method": "cache:httpx",
       "text_sample": "Announcements & Circulars | HKBN Home Investor Engagement Announcements & Circulars Announcements & Circulars Filter by [REDACTED_PHONE_OR_ID] [REDACTED_PHONE_OR_ID] All Months Jan Feb Mar Apr May Jun No Records Found 1 2 Follow Us Terms & Conditions Disclaimers Personal Data & Privacy Policy Statement Personal Information Collection Statement © HKBN Ltd. 2026. All Rights Reserved.",
       "evidence_path": "evidence_cache/678941b3941825030ca7e8556a1db9a76a76ee375e083ce0c902e581b867ec95.txt",
       "content_hash": "678941b3941825030ca7e8556a1db9a76a76ee375e083ce0c902e581b867ec95",
@@ -285,6 +206,91 @@
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
+      "cache_hit": true,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "HKBN"
+      ]
+    },
+    {
+      "row": 13,
+      "url": "https://stockanalysis.com/quote/hkg/1310/",
+      "final_url": "https://stockanalysis.com/quote/hkg/1310/",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
+      "bytes": 98211,
+      "elapsed_seconds": 0.781,
+      "method": "httpx",
+      "text_sample": "HKBN Ltd. (HKG:1310) Stock Price & Overview Skip to main content Log In Sign Up Home Watchlist Stocks Stock Screener Stock Exchanges Comparison Tool Earnings Calendar By Industry Stock Lists Top Analysts Top Stocks Corporate Actions IPOs Recent IPOs IPO Calendar IPO Statistics IPO News IPO Screener ETFs ETF Screener Comparison Tool New Launches ETF Providers News Trending Articles Technical Chart Market Movers Top Gainers Top Losers Most Active Premarket After Hours Market Heatmap Market Newsletter Stock Analysis Pro Tools Collapse HKBN Ltd. (HKG:1310) Hong Kong · Delayed Price · Currency is HKD Full Chart Watchlist Alerts Compare 6.09 -0.07 (-1.14%) Jun 17, 2026, 10:33 AM HKT Overview Financials Statistics Dividends History Profile Chart 1D 5D 1M YTD 3M 6M 1Y 5Y Max 22.78% (1Y) 1D 5D 1M YTD 3M 6M 1Y 5Y Max Full Chart Watchlist Alerts Compare Market Cap 9.11B +20.3% Revenue (ttm) 11.42B ",
+      "evidence_path": "evidence_cache/8ceb6819aea568ac6194bbe81107147ccfdcfa957b4bb19fe1f35a86884f3090.txt",
+      "content_hash": "8ceb6819aea568ac6194bbe81107147ccfdcfa957b4bb19fe1f35a86884f3090",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://stockanalysis.com/quote/hkg/1310/",
+          "final_url": "https://stockanalysis.com/quote/hkg/1310/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 98211,
+          "text_chars": 5991,
+          "title": "HKBN Ltd. (HKG:1310) Stock Price & Overview",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "commercial_data",
+      "jurisdiction": "US",
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "HKBN"
+      ]
+    },
+    {
+      "row": 13,
+      "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+      "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "Detail Quote",
+      "bytes": 210886,
+      "elapsed_seconds": 0.833,
+      "method": "httpx",
+      "text_sample": "Detail Quote 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants Analysis Analysis Technical Analysis In",
+      "evidence_path": "evidence_cache/0d3ba3bcad6ed9f610f2500b7d752fac72deb8ddc2eecd7074af9a532b0a6f26.txt",
+      "content_hash": "0d3ba3bcad6ed9f610f2500b7d752fac72deb8ddc2eecd7074af9a532b0a6f26",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+          "final_url": "https://www.aastocks.com/en/stocks/quote/detail-quote.aspx?symbol=01310",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 210886,
+          "text_chars": 16376,
+          "title": "Detail Quote",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "commercial_data",
+      "jurisdiction": "HK",
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
@@ -298,6 +304,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-16T03:02:05.376986+00:00",
-  "fetched_at_hkt": "2026-06-16T11:02:05.377001+08:00"
+  "fetched_at": "2026-06-17T02:55:30.135795+00:00",
+  "fetched_at_hkt": "2026-06-17T10:55:30.135804+08:00"
 }

@@ -1,0 +1,2097 @@
+            中國電信股份有限公司
+China Telecom Corporation Limited
+     HKEx Stock Code 香港交易所股份代碼：728
+  NYSE Stock Code 紐約證券交易所股份代碼：CHA
+
+
+
+
+                                     WE ENGAGE 喚 新
+
+
+                                     WE EVOLVE 換 新
+
+
+                                     WE EXCEL 煥 新
+
+
+
+
+                                      二零一六年中期報告
+                                     Interim Report 2016
+Forward-looking
+Statements
+Certain statements contained in this report may be viewed as “forward-looking statements” within
+the meaning of Section 27A of the U.S. Securities Act of 1933 (as amended) and Section 21E of the
+U.S. Securities Exchange Act of 1934 (as amended). Such forward-looking statements are subject to
+known and unknown risks, uncertainties and other factors, which may cause the actual performance,
+financial condition or results of operations of China Telecom Corporation Limited (the “Company”) to
+be materially different from any future performance, financial condition or results of operations implied
+by such forward-looking statements. In addition, we do not intend to update these forward-looking
+statements. Further information regarding these risks, uncertainties and other factors is included in
+the Company’s most recent Annual Report on Form 20-F filed with the U.S. Securities and Exchange
+Commission (the “SEC”) and in the Company’s other filings with the SEC.
+
+
+
+
+                                                Contents
+
+                                                1     Financial Highlights
+
+                                                2     Chairman’s Statement
+
+                                                8     Report on Review of Interim Financial Statements
+
+                                                9     Unaudited Consolidated Statement of Financial Position
+
+                                                11    Unaudited Consolidated Statement of Comprehensive Income
+
+                                                12    Unaudited Consolidated Statement of Changes in Equity
+
+                                                13    Unaudited Consolidated Statement of Cash Flows
+
+                                                15    Notes to the Unaudited Interim Financial Statements
+
+                                                34    Other Information
+Financial Highlights
+
+
+
+
+                                                                                                        Six-month period ended 30 June
+                                                                                                                 2015                           2016
+
+
+    Operating revenues (RMB millions)                                                                        164,953                     176,828
+    EBITDA1 (RMB millions)                                                                                    50,739                      50,555
+    EBITDA margin2                                                                                            34.5%                       32.6%
+    Net profit3 (RMB millions)                                                                                10,980                      11,673
+    Earnings per share (RMB)                                                                                   0.136                       0.144
+    Capital expenditure (RMB millions)                                                                        36,685                      40,746
+
+
+
+
+                                                              1H2016                                                        176,828
+                  Operating Revenues
+                                      (RMB millions)
+                                                              1H2015                                                      164,953
+
+
+
+
+                                                              1H2016                                                      50,555
+                                          EBITDA1
+                                      (RMB millions)
+                                                              1H2015                                                      50,739
+
+
+
+
+                                                              1H2016                                                    11,673
+                                     Net Profit3
+                                      (RMB millions)
+                                                              1H2015                                                   10,980
+
+
+
+
+1
+      EBITDA was calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+2
+      EBITDA margin was calculated based on EBITDA divided by service revenues.
+3
+      Net profit represented profit attributable to equity holders of the Company.
+
+
+
+                                                                                                           China Telecom Corporation Limited           1
+                                                                                                                          Interim Report 2016
+Chairman’s Statement
+
+
+
+
+In the first half of 2016, with a unitary goal cohering                      5.6% over the same period last year with continual
+as a whole, the Company adhered to the established                           rapid optimisation in revenue structure. EBITDA2 was
+development strategy to persist in excellent execution.                      RMB50.6 billion while EBITDA margin2 was 33%. Profit
+Firmly seizing opportunities and taking steps in reform                      attributable to the equity holders of the Company was
+and innovation, the Company accomplished brilliant                           RMB11.7 billion, representing an increase of 6.3% over
+results. With accelerated expansion of operation scale,                      the same period last year. Basic earnings per share were
+our business structure was continually optimised                             RMB0.14. Capital expenditure was RMB40.7 billion
+while our competitive capabilities were remarkably                           while free cash flow3 was RMB6.1 billion.
+strengthened. The vitality of our employees was fully
+demonstrated. Through proactively grasping the arising                       Taking into consideration the Company’s profitability,
+opportunities and adapting to the changing trends in                         cash flow level and the capital requirements for future
+a timely manner, the Company firmly established a                            development, the Board of Directors has decided not to
+new strategy on transformation and upgrades, aimed                           pay an interim dividend this year in order to maintain
+at providing superb customer experience in an era of                         adequate funding flexibility. The Board of Directors will
+intellectual services and facilitating the Company’s                         proactively consider the expectation of shareholders’
+evolution into a leading integrated intelligent                              return and evaluate the final dividend proposal when
+information services operator.                                               reviewing the full year results and will propose to the
+                                                                             shareholders’ general meeting accordingly.
+Overall results
+                                                                             Scale Breakthrough with Favourable Trends
+In the first half of 2016, the Company had excellent
+performance in its overall results. Operating revenues                       In the first half of the year, the Company comprehensively
+amounted to RMB176.8 billion, representing an increase                       implemented aggressive marketing strategy and
+of 7.2% over the same period last year, achieving                            emphasised the operating focuses, “2+5” 4 . With
+industry-leading growth. Service revenues1 amounted                          persistent promotion of in-depth integration and
+to RMB155.2 billion, representing an increase of                             enhancement in efficiently-centralised operation,
+
+
+1
+    Service revenues were calculated based on operating revenues minus sales of mobile terminals, sales of wireline equipment and other non-service
+    revenues.
+2
+    EBITDA was calculated based on operating revenues minus operating expenses plus depreciation and amortisation while EBITDA margin was calculated
+    based on EBITDA divided by service revenues.
+3
+    Free cash flow was calculated from EBITDA minus capital expenditure and income tax.
+4
+    “2+5” refers to two fundamental businesses namely 4G and fibre broadband plus five emerging areas namely e-Surfing HD, BestPay, Internet of Things,
+    cloud and Big Data and “Internet+”.
+
+
+2       China Telecom Corporation Limited
+        Interim Report 2016
+Chairman’s Statement
+
+
+
+
+                                                                           Sustained expansion of fibre broadband edges
+                                                                           to further strengthen our leading position in
+                                                                           broadband service. The Company proactively
+                                                                           implemented the national strategy of “Broadband
+                                                                           China” and insisted on expediting bandwidth upgrade
+                                                                           in broadband. Persistently driven by 100 Mbps products
+                                                                           with trial run of 1,000 Mbps products, the Company
+                                                                           comprehensively integrated and optimised our services
+                                                                           quality, resulting in remarkable achievements in
+                                                                           development. The wireline broadband service revenue
+                                                                           increased by 3.3% over the same period last year,
+                                                                           driving the wireline service revenues achieved healthy
+                                                                           growth. The net addition of Fibre-to-the-Home (FTTH)
+                                                                           subscribers was 17.35 million, reaching a total of
+                                                                           88.34 million. The net addition of wireline broadband
+                                                                           subscribers was 4.94 million, reaching a total of
+                                                                           approximately 120 million. FTTH subscribers accounted
+                                                                           for 75% of the total wireline broadband subscribers, an
+the Company expanded open cooperation and fully                            increase of 12 percentage points from the end of last
+leveraged the differentiated edges, resulting in notable                   year. The market share of wireline broadband business
+improvements in competitive strengths.                                     within the service area of the Company’s wireline
+                                                                           operations was 62% whereas the market share of
+Comprehensive upgrade in 4G capabilities to                                FTTH subscribers was approximately 66%, continuing
+drive industry-leading growth in mobile business.                          to maintain the leading position in wireline broadband
+By fully leveraging the competitive advantages in 4G                       market.
+network and “multi-mode” handsets, the Company
+increased efforts in integration and the effect of 4G                      Rapid expansion in emerging areas and accelerated
+driving the scale development of mobile business was                       cultivation of new growth engines. Leveraging the
+evident. The net increase of 4G terminal users was 31.64                   e-Surfing HD platform and smart home gateway, and
+million, accounting for 18% market share in industry’s                     riding on our competitive advantages in subscribers
+net additions. The total number of 4G terminal users                       scale, the Company endeavoured to build a “Smart
+reached 90.10 million, accounting for 15.2% market                         Family” system. The net addition of e-Surfing HD
+share. The net increase of mobile subscribers was 9.04                     subscribers was 9.78 million, representing an increase of
+million, accounting for 32% market share in industry’s                     129% as compared with the subscriber growth number
+net additions. The total number of mobile subscribers                      recorded in the same period last year. The total number
+reached approximately 210 million, representing 15.9%                      of e-Surfing HD subscribers exceeded 50 million while
+market share. 4G users accounted for 44% of total                          the revenue increased by 33% over the same period
+mobile subscribers, representing an increase of 14                         last year. The number of active “BestPay” subscribers
+percentage points from the end of last year. The monthly                   exceeded 8 million and “BestPay” positioned the second
+average data traffic per 4G user reached 889 MB while                      in third-party ranking of mobile payment industry apps5,
+the aggregate handset Internet data traffic increased                      while total transaction amount was approximately
+by 135% compared to the same period last year. The                         RMB380 billion. The whole-network efficient-
+mobile handset Internet access revenue increased by                        centralisation of Internet of Things (IoT) business was
+42% over the same period last year, accounting for                         launched in April with a focus on key breakthroughs in
+47% of the mobile service revenues. The mobile service                     areas such as smart transport, smart logistics, wearable
+revenues increased by 8.3% over the same period last                       devices and Internet of vehicles. In the first half of the
+year, outperforming the industry growth.                                   year, the net addition of IoT connections exceeded
+
+
+5
+    Data source: Top 20 mobile payment apps in June 2016 by Analysys.cn.
+
+
+
+                                                                                                  China Telecom Corporation Limited   3
+                                                                                                                Interim Report 2016
+Chairman’s Statement
+
+
+
+
+3 million. The Company will expedite the construction                           co-sharing of telecommunications towers as well as
+of an advanced IoT platform through self-R&D and                                appropriately utilised carrier aggregation technologies.
+cooperation. Fully leveraging the integration of cloud                          The integrated experience of the Company’s 4G
+and network together with the existing data resources                           network has become users’ preferred choice.
+advantages, the Company accelerated efficiently-                                Meanwhile, the Company has been approved to refarm
+centralised development of cloud and Big Data                                   the 800 MHz frequency bandwidth and planned to
+businesses. The revenues from cloud services increased                          build a nationwide high quality 800 MHz LTE network
+by 41% over the same period last year while the                                 in year 2017 at low costs to achieve 4G network
+revenues from Big Data increased by nearly 3 times. We                          coverage in rural areas and in-depth coverage in cities.
+actively explored and developed the “Internet+” market                          We will lay down the foundations for the VoLTE and
+with a focus on three key areas including government                            NB-IoT networks so as to foster rapid accomplishment
+administration, education and healthcare and hence the                          of industry-leading 4G network quality. Through the
+quantity of orders from key government and enterprise                           acceleration of fibre network coverage, end-to-end
+customers increased by nearly 30% over the second                               bandwidth upgrade and interconnection of data centres,
+half of last year. The development trend of emerging                            the Company effectively secured a high speed and high
+areas progressed well with vast potentials in the future                        quality network browsing experience for our customers.
+prospect.                                                                       In the first half of the year, the average bandwidth
+                                                                                of wireline broadband subscribers reached 37 Mbps,
+Excellent execution with notable advantages                                     representing 20% higher than the industry average. This
+In the first half of the year, the Company examined and                         further strengthened the Company’s leading market
+assessed the market trends, planned meticulously and                            position in the fibre broadband industry, where we led
+executed efficiently to establish new and all-rounded                           the high-bandwidth development trends.
+competitive advantages while striving to promote
+changes towards a more favourable direction for the                             Flexible and innovative marketing strategies.
+Company in the competitive landscape.                                           The Company endeavoured to promote “multi-mode”
+                                                                                handsets as market mainstream, effectively expanding
+Extensive in-depth integration. Exploiting the                                  our sales radius and significantly improving our terminal
+competitive strengths in full-service operation,                                competitiveness. Data traffic operations were further
+the Company promoted in-depth integration and                                   promoted and the cooperation with heavy data usage
+innovative development in various areas including                               products such as video content was further reinforced,
+business, network, platform and services, resulting in                          continuously enhancing data traffic scale and value.
+mutual promotion and interactions amongst respective                            The Company continuously implemented the “Speed
+businesses while effectively driving concurrent                                 Upgrade and Tariff Reduction”, gradually cancelled the
+enhancements in scale and value. The high-value users                           long-distance and roaming charges, proactively innovated
+subscribing to 4G, fibre broadband and e-Surfing                                the billing model and became the pioneer in China to
+HD services accounted for 45%6 of total subscribers,                            explore and introduce on trial basis the “All-charge-as-
+facilitating the steady growth in operating revenues.                           data” billing, which effectively simplified customers’
+Integration has become the Company’s strong and                                 choices and profoundly enhanced service attractiveness.
+powerful competitive edge.                                                      The Company actively implemented Internet-orientation
+                                                                                of channels, enhancing high collaborative operations
+Leading superior network. 4G and fibre broadband                                of online and physical channels. The coverage and
+formed and shaped competitive network advantages                                sales capabilities of physical channels were significantly
+featuring broad coverage, fast network speed and                                improved while online channels have become the main
+high stability. In highly profitable 4G service areas, the                      sales channel for services such as data traffic packages
+Company fully leveraged the strengths of international                          and online top-up. The proportion of users derived from
+mainstream FDD technology, spectrum resources and                               online channels continued to increase.
+
+
+
+6
+    Up to the first half of 2016, the total number of users subscribing to access lines in service, mobile, wireline broadband and e-Surfing HD of the Company
+    reached approximately 510 million.
+
+
+4       China Telecom Corporation Limited
+        Interim Report 2016
+Chairman’s Statement
+
+
+
+
+Remarkable achievements in cooperation.                                         to persistently stimulate the vitality of employees,
+The Company took the initiative in innovation                                   resulting in continual enhancement in the morale of
+of development model, extensively consolidated                                  development. The results of frontline performance
+competitive resources, cooperated with strong partners,                         contract units remarkably improved. By strengthening
+resulting in a win-win outcome. Fully leveraging the                            the market-oriented corporate resources allocation,
+co-sharing of telecommunications towers resources,                              together with the establishment and gradual
+the Company has been at the forefront of offering                               optimisation of “top-down” integrated service support
+a superior 4G network experience rapidly. With the                              system and effective collaboration of front-end and
+promotion of in-depth cooperation with other parties                            back-end operations, the efficiency and effectiveness
+in the industry and enhancements in the co-building                             of the Company’s overall operation was significantly
+and co-sharing of networks, the Company successfully                            improved. The “Internet+” talent development
+promoted “multi-mode” handsets as a national                                    programme was established with a focus on nurturing
+standard. In the first half of the year, the proportion of                      a team of new talents including both professional
+“multi-mode” handsets sold in the industry reached                              and technical personnel, hence strengthening the
+34%, enabling the Company to swiftly achieve the                                Company’s ability to attract talents. Vigorously
+decisive breakthrough in developmental bottleneck.                              promoting the transformation of achievements in
+In emerging areas such as “Smart Family”, mobile                                innovation, the Company became the first batch of the
+payment, “Internet+”, cloud and Big Data, and IoT, the                          state’s model in mass entrepreneurship and innovation.
+Company proactively carried out crossover cooperation
+and cultivated a highly efficient and synergetic industrial                     Continual optimisation of operation management.
+ecosystem by focusing on product services, network                              Through precision management and efficiently-
+platforms, sales channels and resource integration. Our                         centralised operations, the quality and efficiency
+differentiated competitive strengths were effectively                           of our operations were significantly improved.
+enhanced.                                                                       The Company persistently promoted automation
+                                                                                of network maintenance and further improved IT
+Convenient and highly-efficient services. The                                   operational efficiency by leveraging support systems
+Company has always persisted in consumer-oriented                               such as MSS, resulting in continuous enhancement in
+focus with continual enhancement of customer                                    efficient centralisation of networks and IT operations.
+experience. In order to achieve the integration of                              Through proactively deploying the co-building and
+marketing and maintenance as a whole, the Company                               co-sharing of networks, continually improving the
+introduced service modes such as “instant installation                          financial management, strengthening the scope and
+process at sales” and “pay after installation”. The                             depth of centralised procurement, and improvement in
+online and physical channels were well coordinated,                             investment and cost efficiency, our corporate value was
+effectively expanding service channels. The Company                             continually enhanced.
+comprehensively promoted premier services and
+the capabilities of the entire process service were                             Comprehensive transformation and upgrades
+continuously improved. In the first half of the year, the                       Starting from the end of 2004, the Company
+Company was ranked first in the industry in customer                            unwaveringly persisted in pursuing strategic
+satisfaction for both mobile Internet and wireline                              transformation and upgrades, and has surmounted
+Internet services.                                                              tough difficulties to pave a new path for promoting
+                                                                                China Telecom’s development through transformation.
+Persistent and unwavering reform. The Company                                   At the end of 2004, the Company first put forth
+adhered to the reforms of mechanism and system, and                             strategic transformation (Transformation 1.0)7, achieving
+continued the in-depth promotion of subdivision of                              a change from telecommunications to information
+performance evaluation units. The Company increased                             services. By the end of 2010, the Company proposed
+efforts in promoting frontline entrepreneurial platform                         in-depth transformation (Transformation 2.0) 8 and
+
+
+7
+    Transformation 1.0 defined the corporate as Telecom Full Service Provider, Internet Applications Aggregator and Leading Enterprise ICT Service Provider.
+8
+    Transformation 2.0 adjusted the corporate’s positioning as the Leader of Intelligent Pipeline, the Provider of Integrated Platforms and the Participant of
+    Content & Application Development.
+
+                                                                                                               China Telecom Corporation Limited            5
+                                                                                                                               Interim Report 2016
+Chairman’s Statement
+
+
+
+
+explicitly defined the clear positioning of “Three New                   combination of development and operations as a whole.
+Roles” in order to adapt to the latest trend of mobile                   The Company will be able to provide customers with
+Internet and to proactively explore emerging business                    state-of-the-art network experience with embedded
+areas. The history has proved and confirmed that                         visible, self-selective and self-served characteristics.
+each and every transformation and upgrade in more                        Service ecologicalisation: The Company will further
+than ten years in the past represented China Telecom                     emphasise the key operating focus, “2+5”. Through
+always accurately grasps the prevailing development                      open cooperation, integrated innovation and promotion
+trends as every transformation and upgrade resulted in                   of business reconstitution, the Company will endeavour
+remarkable achievements. This also demonstrated that                     to build up the five key business ecosystems, namely
+forward-looking strategic planning and trend-leading                     Intelligent Connection, Smart Family, Internet Finance,
+role are both vital to overall corporate development.                    new style ICT applications, and IoT in order to achieve
+                                                                         co-existence, co-innovation and “win-win” outcomes.
+At present, we are about to enter into an advanced                       Operation intellectualisation: Being driven by
+stage of information civilisation of mankind, the era of                 Big Data applications, through enhancement of six
+intellectual service. The Company officially established                 key capabilities in network fundamentals, network
+a comprehensive transformation and upgrades plan                         operations, data operation, channel sales, customer
+(Transformation 3.0) at the end of June 2016 and                         service and talent development in order to promote
+positioned itself as a leading integrated intelligent                    the reconstitution of operations and management to
+information services operator. Intelligent information                   support smart operations.
+services built on digitalisation and networkisation
+as fundamentals; widely used intellectualisation                         Recently, the Company has commenced the
+technologies such as cloud computing, Big Data, Mobile                   implementation of Transformation 3.0. With the
+Internet, IoT, artificial intelligence as main drivers; in-              completion of the top-level design on network
+depth integration between cloud and network including                    reconstitution, the Company published the CTNet2025
+Software-Defined Networking (SDN), Network Functions                     white paper and launched the first series of network
+Virtualisation (NFV), hardware generalisation and                        reconstitution projects encompassing various areas
+platform-based capabilities development as the priority;                 such as network framework, fundamental scientific
+deepened exploration and value realisation of corporate                  R&D, network engineering and product development.
+internal and external data resources as the norm; and                    Surrounding the prevailing “2+5” operating focuses,
+diversified intelligent terminals as the carrier, altogether             ecological alliances in the industry comprising “Smart
+enables the Company to accomplish crossover                              Family”, IoT and Big Data, etc. have been gradually
+development in different areas.                                          formed. The Company launched the system and
+                                                                         evaluation performance index of “Smart Family”. With
+The Company will focus and link through the                              “BestPay” payment system as the core, the Company
+main theme of intelligence and will promote the                          accelerated the development of emerging areas
+reconstitution of network, business, operations and                      including consumer finance and proactively nurtured the
+management based on the three main directions namely                     industry ecosystem. Through an in-depth exploration
+network intelligentisation, service ecologicalisation                    and extensive applications coverage of Big Data,
+and operation intellectualisation. Integrated intelligent                the Company will pragmatically promote operation
+information services featuring connection on demand,                     intellectualisation through precision marketing, precision
+automatic response, realistic virtual experience and                     management, dedicated services and lean operations.
+high price-to-performance ratio will be provided to
+customers. Network intelligentisation: Being guided                      As an excellent corporate citizen
+by CTNet20259, the Company will promote network                          We are committed to maintaining a high level of
+reconstitution, deepen open-source technology                            corporate governance, attaching great importance to
+applications to accomplish the open integration                          risk management and control. We strive to enhance
+of network and IT, moving forward towards the                            corporate transparency and value to ensure our healthy
+
+
+9
+    CTNet2025 refers to China Telecom’s CTNet2025 Network Structure White Paper.
+
+
+
+6       China Telecom Corporation Limited
+        Interim Report 2016
+Chairman’s Statement
+
+
+
+
+and orderly growth. Our persistent efforts in corporate    With reform and innovation as the driving force, the
+governance have been widely recognised by the capital      Company will promote the development strategy
+markets. We have been accredited with a number of          with talent development as the priority, optimise
+awards and recognition for the year to date, including     the market-oriented incentive mechanism, bolster
+being voted as the “Most Honoured Companies in Asia”       vitality and improve efficiency in order to lay down
+by Institutional Investor for six consecutive years. The   a solid foundation for accelerated transformation
+Company was also awarded the Platinum Award – “Best        and upgrades. At the same time, the Company will
+Telecommunications Company in Asia” by FinanceAsia         comprehensively promote reconstitution of four major
+which honoured institutions and corporations in Asia       areas including business, network, operations and
+consistently providing quality, excellent and innovative   management in order to accelerate the implementation
+services to their customers over the past 20 years.        of the new strategy on transformation and upgrades.
+                                                           The Company will strive to become a leading
+We persisted in operating with integrity and proactively   integrated intelligent information services operator,
+fulfilled our corporate social responsibility while        facilitate development towards the national strategy of
+maintaining a fair and orderly environment for market      “Cyberpower” and also serve society and the general
+competition and facilitating the healthy development of    public as a whole, while continuously creating new value
+the entire value chain. Meanwhile, we actively promoted    for shareholders.
+green operations, through further strengthening energy
+conservation and emissions reduction to improve            Finally, on behalf of the Board of Directors, I would
+the efficiency of resource utilisation. We vigorously      like to take this opportunity to express my sincere
+promoted broadband penetration in rural areas in order     appreciation to all our shareholders and customers for
+to bridge the information gap between urban and rural      their support. I would also like to express my sincere
+areas. We received high recognition and appreciation       thanks to all our employees for their hard work and
+from society through our efforts in combating              contributions. Furthermore, I would like to extend my
+catastrophic flooding in Southern China.                   sincere gratitude towards Mr. Zhang Jiping and Mr. Zhu
+                                                           Wei for their excellent contributions during their tenure
+Endeavour to become bigger, better and                     of office as the Directors of the Company.
+stronger
+Currently, the implementation of the national strategy
+of “Cyberpower” coupled with the promotion of
+supply-side structural reform will foster an advanced
+level equilibrium of supply and demand. This positive
+policy environment creates favourable conditions for the
+sustainable and healthy development of the industry.
+The Company will seize new development opportunities
+for transformation and upgrades.
+
+In the second half of the year, the Company will
+proactively respond to the increasingly intensified
+market competition and changes in external
+environment. Oriented by market share dominance,
+the Company will expedite the scale development of         Yang Jie
+two fundamental businesses, effectively collaborate        Chairman and Chief Executive Officer
+on the operations of five major emerging areas while       Beijing, China
+also endeavouring to enhance the six key capabilities in
+order to accelerate the transformation of our resource     23 August 2016
+edges and capabilities into competitive strengths.
+
+
+
+
+                                                                                 China Telecom Corporation Limited   7
+                                                                                               Interim Report 2016
+Report on Review of Interim Financial Statements
+
+
+
+
+To the Board of Directors of China Telecom Corporation Limited
+
+Introduction
+We have reviewed the interim financial statements of China Telecom Corporation Limited (the “Company”) and
+its subsidiaries (collectively referred to as the “Group”) set out on pages 9 to 33, which comprise the consolidated
+statement of financial position as at 30 June 2016 and the related consolidated statement of comprehensive
+income, the consolidated statement of changes in equity and the consolidated statement of cash flows for the
+six-month period then ended, and certain explanatory notes. The Rules Governing the Listing of Securities on The
+Stock Exchange of Hong Kong Limited require the preparation of a report on interim financial information to be
+in compliance with the relevant provisions thereof and International Accounting Standard 34, “Interim Financial
+Reporting” (“IAS 34”) issued by the International Accounting Standards Board. The directors of the Company are
+responsible for the preparation and presentation of these interim financial statements in accordance with IAS 34. Our
+responsibility is to express a conclusion on these interim financial statements based on our review, and to report our
+conclusion solely to you, as a body, in accordance with our agreed terms of engagement, and for no other purpose.
+We do not assume responsibility towards or accept liability to any other person for the contents of this report.
+
+Scope of Review
+We conducted our review in accordance with Hong Kong Standard on Review Engagements 2410, “Review of
+Interim Financial Information Performed by the Independent Auditor of the Entity”, issued by the Hong Kong Institute
+of Certified Public Accountants. A review of these interim financial statements consists of making enquiries, primarily
+of persons responsible for financial and accounting matters, and applying analytical and other review procedures.
+A review is substantially less in scope than an audit conducted in accordance with Hong Kong Standards on Auditing
+and consequently does not enable us to obtain assurance that we would become aware of all significant matters that
+might be identified in an audit. Accordingly, we do not express an audit opinion.
+
+Conclusion
+Based on our review, nothing has come to our attention that causes us to believe that these interim financial
+statements are not prepared, in all material respects, in accordance with IAS 34.
+
+
+
+
+Deloitte Touche Tohmatsu
+Certified Public Accountants
+Hong Kong
+
+23 August 2016
+
+
+
+8      China Telecom Corporation Limited
+       Interim Report 2016
+Consolidated Statement of Financial Position (Unaudited)
+at 30 June 2016
+(Amounts in millions)
+
+
+
+
+                                                                                    30 June             31 December
+                                                                                       2016                    2015
+                                                                  Note                 RMB                     RMB
+
+
+ASSETS
+
+Non-current assets
+ Property, plant and equipment, net                                                 365,571                   373,981
+ Construction in progress                                                            84,206                    69,103
+ Lease prepayments                                                                   23,252                    23,609
+ Goodwill                                                                            29,921                    29,920
+ Intangible assets                                                                   10,337                    10,739
+ Interests in associates                                                             34,559                    34,473
+ Investments                                                                          1,415                     1,624
+ Deferred tax assets                                                8                 4,701                     4,655
+ Other assets                                                                         3,250                     3,349
+
+    Total non-current assets                                                        557,212                   551,453
+
+Current assets
+  Inventories                                                                         5,166                         6,281
+  Income tax recoverable                                                                 18                           105
+  Accounts receivable, net                                          4                29,077                        21,105
+  Prepayments and other current assets                                               18,524                        16,229
+  Short-term bank deposits                                                            2,836                         2,519
+  Cash and cash equivalents                                         5                30,076                        31,869
+
+    Total current assets                                                             85,697                        78,108
+
+       Total assets                                                                 642,909                   629,561
+
+
+
+
+The notes on pages 15 to 33 form part of these interim financial statements.
+
+
+                                                                               China Telecom Corporation Limited       9
+                                                                                             Interim Report 2016
+Consolidated Statement of Financial Position (Unaudited)
+
+at 30 June 2016
+(Amounts in millions)
+
+
+
+
+                                                                               30 June     31 December
+                                                                                  2016            2015
+                                                                  Note            RMB             RMB
+
+
+LIABILITIES AND EQUITY
+
+Current liabilities
+  Short-term debt                                                   6           35,312          51,636
+  Current portion of long-term debt                                 6              153              84
+  Accounts payable                                                  7          126,112         118,055
+  Accrued expenses and other payables                                           92,172          82,934
+  Income tax payable                                                               955           2,154
+  Current portion of finance lease obligations                                      23              38
+  Current portion of deferred revenues                                           1,158           1,028
+
+     Total current liabilities                                                 255,885         255,929
+
+       Net current liabilities                                                 (170,188)      (177,821)
+
+       Total assets less current liabilities                                   387,024         373,632
+
+Non-current liabilities
+ Long-term debt and payable                                         6           70,570          64,830
+ Finance lease obligations                                                          99              81
+ Deferred revenues                                                               2,345           1,454
+ Deferred tax liabilities                                           8            3,741           2,061
+ Other non-current liabilities                                                     469             455
+
+     Total non-current liabilities                                              77,224          68,881
+
+       Total liabilities                                                       333,109         324,810
+
+
+Equity
+  Share capital                                                                 80,932          80,932
+  Reserves                                                                     227,857         222,852
+
+  Total equity attributable to equity holders of
+    the Company                                                                308,789         303,784
+  Non-controlling interests                                                      1,011             967
+
+     Total equity                                                              309,800         304,751
+
+       Total liabilities and equity                                            642,909         629,561
+
+The notes on pages 15 to 33 form part of these interim financial statements.
+
+
+10     China Telecom Corporation Limited
+       Interim Report 2016
+Consolidated Statement of Comprehensive Income (Unaudited)
+for the six-month period ended 30 June 2016
+(Amounts in millions, except per share data)
+
+
+
+
+                                                                               Six-month period ended 30 June
+                                                                                          2016                        2015
+                                                                   Note                   RMB                         RMB
+
+Operating revenues                                                  9                 176,828                   164,953
+Operating expenses
+ Depreciation and amortisation                                                        (33,447)                   (33,585)
+ Network operations and support                                    10                 (43,951)                   (37,224)
+ Selling, general and administrative                                                  (27,319)                   (25,062)
+ Personnel expenses                                                11                 (28,909)                   (28,079)
+ Other operating expenses                                          12                 (26,094)                   (23,849)
+
+     Total operating expenses                                                        (159,720)                 (147,799)
+
+Operating profit                                                                       17,108                        17,154
+Net finance costs                                                  13                   (1,728)                      (2,160)
+Investment income                                                                              9                          6
+Share of profits/(losses) of associates                                                      80                        (456)
+
+Profit before taxation                                                                 15,469                        14,544
+Income tax                                                         14                   (3,747)                      (3,536)
+
+Profit for the period                                                                  11,722                        11,008
+
+Other comprehensive income for the period
+Items that may be reclassified subsequently to profit or loss
+   Change in fair value of available-for-sale equity securities                           (342)                        967
+   Deferred tax on change in fair value of
+     available-for-sale equity securities                                                    86                        (242)
+   Exchange difference on translation of financial statements of
+     subsidiaries outside mainland China                                                     37                         (11)
+   Share of other comprehensive income of associates                                          6                           1
+
+Other comprehensive income for the period, net of tax                                     (213)                        715
+
+Total comprehensive income for the period                                              11,509                        11,723
+
+Profit attributable to
+  Equity holders of the Company                                                        11,673                        10,980
+  Non-controlling interests                                                                49                            28
+
+Profit for the period                                                                  11,722                        11,008
+
+Total comprehensive income attributable to
+  Equity holders of the Company                                                        11,460                        11,695
+  Non-controlling interests                                                                49                            28
+
+Total comprehensive income for the period                                              11,509                        11,723
+
+Basic earnings per share                                           16                      0.14                        0.14
+
+Number of shares (in millions)                                     16                  80,932                        80,932
+
+The notes on pages 15 to 33 form part of these interim financial statements.
+
+                                                                                 China Telecom Corporation Limited      11
+                                                                                               Interim Report 2016
+Consolidated Statement of Changes in Equity (Unaudited)
+for the six-month period ended 30 June 2016
+(Amounts in millions)
+
+
+
+
+                                                                Attributable to equity holders of the Company
+
+                                                                                                                                                    Non-
+                                         Share    Capital       Share     Statutory         Other     Exchange         Retained               controlling      Total
+                                        capital   reserve    premium       reserves      reserves       reserve        earnings      Total      interests     equity
+                               Note       RMB        RMB         RMB           RMB           RMB           RMB             RMB        RMB            RMB        RMB
+
+
+Balance as at 1 January 2015            80,932    17,064       10,746       69,072            384           (941)       111,926    289,183           925     290,108
+Profit for the period                        –         –            –            –              –               –        10,980     10,980            28      11,008
+Other comprehensive income                   –         –            –            –            726             (11)            –        715             –         715
+
+
+Total comprehensive income                   –         –            –             –           726               (11)     10,980     11,695            28      11,723
+
+
+Acquisition of
+  non-controlling interests                  –         (1)          –             –             –                 –           –         (1)            (6)        (7)
+Contribution from
+  non-controlling interests                  –        87            –             –             –                 –           –         87            40         127
+Dividends                          15        –         –            –             –             –                 –      (6,160)    (6,160)            –      (6,160)
+
+
+Balance as at 30 June 2015              80,932    17,150       10,746       69,072          1,110           (952)       116,746    294,804           987     295,791
+
+
+Balance as at 1 January 2016            80,932    17,150       10,746       70,973            876          (812)        123,919    303,784           967     304,751
+Profit for the period                        –         –            –            –              –             –          11,673     11,673            49      11,722
+Other comprehensive income                   –         –            –            –           (250)           37               –       (213)            –        (213)
+
+
+Total comprehensive income                   –         –            –             –          (250)              37       11,673     11,460            49      11,509
+
+
+Contribution from
+  non-controlling interests                  –        34            –             –             –                 –           –         34             (3)        31
+Distribution to
+  non-controlling interests                  –         –            –             –             –                 –           –          –             (2)        (2)
+Dividends                          15        –         –            –             –             –                 –      (6,489)    (6,489)             –     (6,489)
+
+
+Balance as at 30 June 2016              80,932    17,184       10,746       70,973            626          (775)        129,103    308,789         1,011     309,800
+
+
+
+
+The notes on pages 15 to 33 form part of these interim financial statements.
+
+
+12           China Telecom Corporation Limited
+             Interim Report 2016
+Consolidated Statement of Cash Flows (Unaudited)
+for the six-month period ended 30 June 2016
+(Amounts in millions)
+
+
+
+
+                                                                               Six-month period ended 30 June
+                                                                                          2016                         2015
+                                                                  Note                    RMB                          RMB
+
+
+Net cash from operating activities                                 (a)                 46,348                        54,412
+
+
+Cash flows used in investing activities
+  Capital expenditure                                                                 (36,032)                   (37,123)
+  Purchase of investments                                          (b)                 (3,099)                         (1)
+  Lease prepayments                                                                       (19)                        (90)
+  Proceeds from disposal of property, plant and equipment                                 558                         243
+  Proceeds from disposal of lease prepayments                                               1                           –
+  Purchase of short-term bank deposits                                                 (1,552)                     (2,114)
+  Maturity of short-term bank deposits                                                  1,343                       1,325
+
+
+Net cash used in investing activities                                                 (38,800)                   (37,760)
+
+
+Cash flows used in financing activities
+  Principal element of finance lease payments                                             (26)                          –
+  Proceeds from bank and other loans                                                   59,378                     20,568
+  Repayments of bank and other loans                                                  (68,742)                   (36,471)
+  Payment for the acquisition of non-controlling interests                                  –                          (7)
+  Contribution from non-controlling interests                                              31                        127
+  Distribution to non-controlling interests                                                (2)                        (70)
+
+
+Net cash used in financing activities                                                   (9,361)                  (15,853)
+
+
+Net (decrease)/increase in cash and cash equivalents                                   (1,813)                          799
+Cash and cash equivalents at 1 January                                                 31,869                        20,436
+Effect of changes in foreign exchange rate                                                 20                             (7)
+
+
+Cash and cash equivalents at 30 June                                                   30,076                        21,228
+
+
+
+
+The notes on pages 15 to 33 form part of these interim financial statements.
+
+
+                                                                                 China Telecom Corporation Limited       13
+                                                                                               Interim Report 2016
+Consolidated Statement of Cash Flows (Unaudited)
+
+for the six-month period ended 30 June 2016
+(Amounts in millions)
+
+
+
+
+(a) Reconciliation of profit before taxation to net cash from operating activities
+
+                                                                               Six-month period ended 30 June
+                                                                                       2016               2015
+                                                                                       RMB                RMB
+
+
+     Profit before taxation                                                           15,469            14,544
+     Adjustments for:
+       Depreciation and amortisation                                                  33,447            33,585
+       Impairment losses for doubtful debts                                            1,313             1,471
+       Write down of inventories                                                          61                 37
+       Investment income                                                                  (9)                 (6)
+       Share of (profits)/losses of associates                                           (80)              456
+       Interest income                                                                  (170)             (164)
+       Interest expense                                                                1,899             2,362
+       Net foreign exchange gain                                                          (1)               (38)
+       Net loss on retirement and disposal of long-lived assets                          991             1,865
+
+
+     Operating profit before changes in working capital                               52,920            54,112
+      Increase in accounts receivable                                                 (9,235)            (7,567)
+      Decrease in inventories                                                          1,058                625
+      Increase in prepayments and other current assets                                (2,066)            (2,076)
+      Decrease/(increase) in other assets                                                122               (151)
+      Increase in accounts payable                                                     3,070              6,523
+      Increase in accrued expenses and other payables                                  5,614              8,259
+      Decrease in deferred revenues                                                     (245)              (226)
+
+
+     Cash generated from operations                                                   51,238            59,499
+       Interest received                                                                 182                176
+       Interest paid                                                                  (1,934)            (2,385)
+       Investment income received                                                          1                  –
+       Income tax paid                                                                (3,139)            (2,878)
+
+
+     Net cash from operating activities                                               46,348            54,412
+
+
+(b) The Company sold certain telecommunications towers and related assets (“Tower Assets”) to China Tower
+     Corporation Limited (“China Tower”) (hereinafter referred to as “Tower Assets Disposal”) and injected cash
+     amounting to RMB2,966 million (“Cash Consideration”) to China Tower, in return for new shares issued by
+     China Tower. The Tower Assets Disposal was completed on 31 October 2015, and the Cash Consideration was
+     paid in February 2016.
+
+
+The notes on pages 15 to 33 form part of these interim financial statements.
+
+
+14     China Telecom Corporation Limited
+       Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+for the six-month period ended 30 June 2016
+
+
+
+
+1.   Principal Activities
+     China Telecom Corporation Limited (the “Company”) and its subsidiaries (hereinafter, collectively referred to
+     as the “Group”) offers a comprehensive range of wireline and mobile telecommunications services including
+     wireline voice, mobile voice, Internet, telecommunications network resource services and lease of network
+     equipment, value-added services, integrated information application services and other related services. The
+     Group provides wireline telecommunications services and related services in Beijing Municipality, Shanghai
+     Municipality, Guangdong Province, Jiangsu Province, Zhejiang Province, Anhui Province, Fujian Province, Jiangxi
+     Province, Guangxi Zhuang Autonomous Region, Chongqing Municipality, Sichuan Province, Hubei Province,
+     Hunan Province, Hainan Province, Guizhou Province, Yunnan Province, Shaanxi Province, Gansu Province,
+     Qinghai Province, Ningxia Hui Autonomous Region and Xinjiang Uygur Autonomous Region of the People’s
+     Republic of China (the “PRC”). Following the acquisition of Code Division Multiple Access (“CDMA”) mobile
+     telecommunications business in October 2008, the Group also provides mobile telecommunications and related
+     services in the mainland China and Macau Special Administrative Region (“Macau”) of the PRC. The Group
+     also provides international telecommunications services, including lease of network equipment, International
+     Internet access and transit, and Internet data centre service in certain countries of the Asia Pacific, Europe,
+     Africa, South America and North America regions. The operations of the Group in the mainland China are
+     subject to the supervision and regulation by the PRC government.
+
+2.   Basis of Preparation
+     These interim financial statements have been prepared in accordance with International Accounting Standard
+     34, (“IAS 34”) “Interim Financial Reporting” issued by the International Accounting Standards Board and the
+     applicable disclosure requirements of Appendix 16 to the Rules Governing the Listing of Securities on The Stock
+     Exchange of Hong Kong Limited. These interim financial statements, which were authorised for issuance by
+     the Board of Directors on 23 August 2016, reflect the unaudited financial position of the Group as at 30 June
+     2016 and the unaudited results of operations and cash flows of the Group for the six-month period then ended,
+     which are not necessarily indicative of the results of operations and cash flows expected for the year ending 31
+     December 2016.
+
+     These interim financial statements are prepared on the historical cost basis as modified by the revaluation of
+     certain available-for-sale equity securities at fair value.
+
+     Except as described below, these interim financial statements have been prepared in accordance with the same
+     accounting policies adopted in the 2015 annual financial statements of the Group.
+
+
+
+
+                                                                                  China Telecom Corporation Limited   15
+                                                                                                Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+2.   Basis of Preparation (continued)
+     In the current interim period, the Group has applied, for the first time, the following amendments to
+     International Financial Reporting Standards (“IFRSs”) issued by the International Accounting Standards Board
+     that are mandatorily effective for the current period:
+
+     Amendments to IFRS 11, “Accounting for Acquisitions of Interests in Joint Operations”
+     Amendments to IAS 1, “Disclosure Initiative”
+     Amendments to IAS 16 and IAS 38, “Clarification of Acceptable Methods of Depreciation and Amortisation”
+     Amendments to IFRSs, “Annual Improvements to IFRSs 2012-2014 Cycle”
+     Amendments to IAS 16 and IAS 41, “Agriculture: Bearer Plants”
+     Amendments to IFRS 10, IFRS 12 and IAS 28, “Investment Entities: Applying the Consolidation Exception”
+
+     The application of the above amendments to IFRSs has had no material effect on the Group’s interim financial
+     statements.
+
+     The preparation of interim financial statements in conformity with IAS 34, “Interim Financial Reporting”
+     requires management to make judgments, estimates and assumptions that affect the application of policies and
+     reported amounts of assets and liabilities, income and expenses on a year to date basis. Actual results may differ
+     from these estimates.
+
+     These interim financial statements contain consolidated financial statements and selected explanatory notes.
+     The notes include an explanation of events and transactions that are significant to an understanding of the
+     changes in financial position and performance of the Group since the 2015 annual financial statements. The
+     interim financial statements and notes thereon do not include all of the information required for a full set of
+     financial statements prepared in accordance with IFRSs.
+
+     These interim financial statements are unaudited, but have been reviewed by the Audit Committee of the
+     Company. These interim financial statements have also been reviewed by the Company’s international
+     independent auditor in accordance with Hong Kong Standard on Review Engagements 2410, “Review of
+     Interim Financial Information Performed by the Independent Auditor of the Entity”, issued by the Hong Kong
+     Institute of Certified Public Accountants.
+
+     The financial information relating to the financial year ended 31 December 2015 that is included in these
+     interim financial statements as being previously reported does not constitute the Group’s statutory financial
+     statements for that financial year but is derived from those financial statements. The statutory financial
+     statements for the year ended 31 December 2015 are available from the Company’s registered office.
+     The Company’s international independent auditor has expressed an unqualified opinion on those financial
+     statements in the report dated 23 March 2016.
+
+
+
+
+16    China Telecom Corporation Limited
+      Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+3.   Segmental Reporting
+     An operating segment is a component of an entity that engages in business activities from which revenues
+     are earned and expenses are incurred, and is identified on the basis of the internal financial reports that are
+     regularly reviewed by the chief operating decision maker in order to allocate resources and assess performance
+     of the segment. For the periods presented, management has determined that the Group has one operating
+     segment as the Group is only engaged in the integrated telecommunications business. The Group’s assets
+     located outside mainland China and operating revenues derived from activities outside mainland China are less
+     than 10% of the Group’s assets and operating revenues, respectively. No geographical area information has
+     been presented as such amount is immaterial. No single external customer accounts for 10 percent or more of
+     the Group’s operating revenues.
+
+4.   Accounts Receivable, Net
+     Accounts receivable, net, are analysed as follows:
+
+
+                                                                                                            30 June                 31 December
+                                                                                                               2016                        2015
+                                                                                      Note              RMB millions                RMB millions
+
+
+     Third parties                                                                                               31,161                        22,766
+     China Telecom Group                                                                (i)                         905                           492
+     China Tower                                                                                                      6                             –
+     Other telecommunications operators in the PRC                                                                1,204                           782
+
+
+                                                                                                                 33,276                        24,040
+     Less: Allowance for doubtful debts                                                                          (4,199)                        (2,935)
+
+
+                                                                                                                 29,077                        21,105
+
+     Note:
+
+
+     (i)     China Telecommunications Corporation together with its subsidiaries other than the Group are referred to as “China Telecom Group”.
+
+
+
+
+                                                                                                          China Telecom Corporation Limited        17
+                                                                                                                         Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+4.   Accounts Receivable, Net (continued)
+     Ageing analysis of accounts receivable from telephone and Internet subscribers based on the billing dates is as
+     follows:
+
+
+                                                                                    30 June           31 December
+                                                                                       2016                  2015
+                                                                                RMB millions          RMB millions
+
+
+     Current, within 1 month                                                           10,818               10,001
+     1 to 3 months                                                                      3,273                2,181
+     4 to 12 months                                                                     2,279                1,821
+     More than 12 months                                                                1,574                  731
+
+
+                                                                                       17,944               14,734
+     Less: Allowance for doubtful debts                                                (3,548)               (2,393)
+
+
+                                                                                       14,396               12,341
+
+
+     Ageing analysis of accounts receivable from other telecommunications operators and enterprise customers
+     based on dates of rendering of services is as follows:
+
+
+                                                                                    30 June           31 December
+                                                                                       2016                  2015
+                                                                                RMB millions          RMB millions
+
+
+     Current, within 1 month                                                            5,191                 3,648
+     1 to 3 months                                                                      3,962                 1,618
+     4 to 12 months                                                                     4,063                 2,199
+     More than 12 months                                                                2,116                 1,841
+
+
+                                                                                       15,332                 9,306
+     Less: Allowance for doubtful debts                                                  (651)                 (542)
+
+
+                                                                                       14,681                 8,764
+
+
+
+
+18    China Telecom Corporation Limited
+      Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+5.   Cash and Cash Equivalents
+
+                                                                                30 June                31 December
+                                                                                   2016                       2015
+                                                                            RMB millions               RMB millions
+
+
+     Cash at bank and in hand                                                       28,560                        30,916
+     Time deposits with original maturity within three months                        1,516                           953
+
+
+                                                                                    30,076                        31,869
+
+
+6.   Short-term and Long-term Debt and Payable
+     Short-term debt comprises:
+
+
+                                                                                30 June                31 December
+                                                                                   2016                       2015
+                                                                            RMB millions               RMB millions
+
+
+     Loans from banks – unsecured                                                    4,910                         5,361
+     Super short-term commercial papers – unsecured                                 18,197                        33,995
+     Other loans – unsecured                                                           182                           182
+     Loans from China Telecom Group – unsecured                                     12,023                        12,098
+
+
+     Total short-term debt                                                          35,312                        51,636
+
+
+     The weighted average interest rate of the Group’s total short-term debt as at 30 June 2016 was 3.2% (31
+     December 2015: 3.1%) per annum. As at 30 June 2016, the Group’s loans from banks and other loans
+     bear interest at rates ranging from 3.9% to 5.1% (31 December 2015: 3.9% to 5.6%) per annum, and are
+     repayable within one year; super short-term commercial papers bear interest at rates ranging from 2.4% to
+     2.5% (31 December 2015: 2.1% to 3.0%) per annum, and are repayable by September 2016; the loans from
+     China Telecom Group bear interest at rates from 3.5% to 4.5% (31 December 2015: 3.5% to 4.5%) per
+     annum and are repayable within one year.
+
+
+
+
+                                                                              China Telecom Corporation Limited      19
+                                                                                            Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+6.   Short-term and Long-term Debt and Payable (continued)
+     Long-term debt and payable comprises:
+
+
+                                                                                                                    30 June                   31 December
+                                                                                                                       2016                          2015
+                                                                                             Note               RMB millions                  RMB millions
+
+
+     Loans from banks – unsecured                                                              (i)                         9,012                         3,203
+     Other loans – unsecured                                                                   (i)                             1                             1
+     Amounts due to China Telecommunications
+       Corporation – unsecured
+       Deferred consideration of Mobile Network Acquisition                                    (ii)                       61,710                       61,710
+
+
+     Total long-term debt and payable                                                                                     70,723                       64,914
+     Less: current portion                                                                                                  (153)                          (84)
+
+
+     Non-current portion                                                                                                  70,570                       64,830
+
+     Note:
+
+
+     (i)        The loans from banks includes long-term RMB denominated government loans with below-market interest rates ranging from 1.08% to 1.20%
+                per annum obtained by the Group through banks. The Group recognised the loans at their fair value on initial recognition, and accreted
+                the discount to profit or loss using the effective interest rate method. The difference between the fair value and face value of the loans was
+                recognised as government grants in deferred revenue.
+
+
+                As at 30 June 2016, the loans from banks and other loans bear interest at rates ranging from 1.00% to 8.30% (31 December 2015: 1.00% to
+                8.30%) per annum with maturity through 2060.
+
+
+     (ii)       Represents the remaining balance of the deferred consideration payable to China Telecommunications Corporation in respect of the
+                acquisition of certain CDMA network assets and associated liabilities, which were held by China Telecommunications Corporation through
+                network branches located in 30 provinces, municipalities and autonomous regions in the PRC (hereinafter referred to as the “Mobile Network
+                Acquisition”). The Company may, from time to time, pay all or part of the deferred payment at any time after the completion date without
+                penalty until the fifth anniversary of the completion date of the Mobile Network Acquisition. The Company pays interest on the deferred
+                payment to China Telecommunications Corporation at half-yearly intervals and the interest accrues from the day following the completion of
+                the Mobile Network Acquisition. The interest rate is set at a 5 basis points premium to the yield of the 5-year super AAA rated Medium Term
+                Notes most recently published by the National Association of Financial Market Institutional Investors before the completion date of the Mobile
+                Network Acquisition and will be adjusted once a year in accordance with the last yield of the 5-year super AAA rated Medium Term Notes most
+                recently published by the National Association of Financial Market Institutional Investors at the end of each year. The annual interest rates for
+                2015 and 2016 are 5.11% and 4.00%, respectively.
+
+
+                If the amount is not paid when due, the Company is required to pay the liquidated damages on such amount at a daily rate of 0.03% of the
+                amount in arrears from the day following the applicable due date to the date that such amount has actually been paid in full.
+
+
+           The Group’s short-term and long-term debt and payable do not contain any financial covenants. As at 30 June
+           2016, the Group had unutilised committed credit facilities amounting to RMB126,857 million (31 December
+           2015: RMB128,839 million).
+
+
+
+20          China Telecom Corporation Limited
+            Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+7.   Accounts Payable
+     Accounts payable are analysed as follows:
+
+
+                                                                                     30 June               31 December
+                                                                                        2016                      2015
+                                                                                 RMB millions              RMB millions
+
+
+     Third parties                                                                      95,753                        95,305
+     China Telecom Group                                                                19,576                        18,702
+     China Tower                                                                         9,915                         3,272
+     Other telecommunications operators in the PRC                                         868                           776
+
+
+                                                                                       126,112                   118,055
+
+
+     Amounts due to China Telecom Group are payable in accordance with contractual terms which are similar to
+     those terms offered by third parties.
+
+     Ageing analysis of accounts payable based on the due dates is as follows:
+
+
+                                                                                     30 June               31 December
+                                                                                        2016                      2015
+                                                                                 RMB millions              RMB millions
+
+
+     Due within 1 month or on demand                                                    26,964                        21,486
+     Due after 1 month but within 3 months                                              19,991                        18,624
+     Due after 3 months but within 6 months                                             22,667                        19,430
+     Due after 6 months                                                                 56,490                        58,515
+
+
+                                                                                       126,112                   118,055
+
+
+
+
+                                                                                  China Telecom Corporation Limited      21
+                                                                                                Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+8.   Deferred Tax Assets and Liabilities
+     The components of deferred tax assets and deferred tax liabilities recognised in the consolidated statement of
+     financial position and the movements are as follows:
+
+                                                       Assets                      Liabilities                     Net Balance
+                                                30 June    31 December        30 June     31 December          30 June     31 December
+                                                   2016           2015           2016            2015             2016            2015
+                                            RMB millions   RMB millions   RMB millions    RMB millions     RMB millions    RMB millions
+
+
+     Provisions and impairment
+       losses, primarily for
+       doubtful debts                              1,590         1,291                –               –           1,590           1,291
+     Property, plant and equipment
+       and others                                  2,957         3,174          (3,394)          (1,605)           (437)          1,569
+     Deferred revenues and
+       installation costs                           154            190            (107)           (130)              47              60
+     Available-for-sale equity securities             –              –            (240)           (326)            (240)           (326)
+
+
+     Deferred tax assets/(liabilities)             4,701         4,655          (3,741)          (2,061)           960            2,594
+
+
+                                                                                           Recognised in
+                                                                                            consolidated
+                                                                                            statement of
+                                                                      Balance at          comprehensive               Balance at
+                                                                 1 January 2016                  income             30 June 2016
+                                                                   RMB millions             RMB millions            RMB millions
+
+
+     Provisions and impairment losses,
+       primarily for doubtful debts                                          1,291                      299                  1,590
+     Property, plant and equipment and others                                1,569                   (2,006)                  (437)
+     Deferred revenues and installation costs                                   60                      (13)                    47
+     Available-for-sale equity securities                                     (326)                      86                   (240)
+
+
+     Net deferred tax assets                                                 2,594                   (1,634)                     960
+
+
+
+
+22     China Telecom Corporation Limited
+       Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+9.   Operating Revenues
+     Operating revenues represent revenues from the provision of telecommunications services. The components of
+     the Group’s operating revenues are as follows:
+
+                                                                                                          Six-month period ended 30 June
+                                                                                                                   2016                        2015
+                                                                                         Note               RMB millions                 RMB millions
+
+
+     Wireline voice                                                                        (i)                        13,580                       15,268
+     Mobile voice                                                                         (ii)                        22,839                       24,889
+     Internet                                                                             (iii)                       73,017                       62,274
+     Value-added services                                                                 (iv)                        20,839                       20,128
+     Integrated information application services                                          (v)                         13,987                       13,966
+     Telecommunications network resource services and
+        lease of network equipment                                                        (vi)                         8,928                        8,667
+     Others                                                                               (vii)                       23,638                       19,761
+
+
+                                                                                                                    176,828                    164,953
+
+     Note:
+
+
+     (i)     Represent the aggregate amount of monthly fees, local usage fees, domestic long distance usage fees, international, Hong Kong, Macau
+             and Taiwan long distance usage fees, interconnections fees and installation fees charged to customers for the provision of wireline telephony
+             services.
+
+
+     (ii)    Represent the aggregate amount of monthly fees, local usage fees, domestic long distance usage fees, international, Hong Kong, Macau and
+             Taiwan long distance usage fees and interconnections fees charged to customers for the provision of mobile telephony services.
+
+
+     (iii)   Represent amounts charged to customers for the provision of Internet access services.
+
+
+     (iv)    Represent the aggregate amount of fees charged to customers for the provision of value-added services, which comprise primarily caller ID
+             services, short messaging services, Colour Ring Tone, Internet data centre and Virtual Private Network services and etc.
+
+
+     (v)     Represent primarily the aggregate amount of fees charged to customers for Best Tone information services and IT services and applications.
+
+
+     (vi)    Represent primarily the aggregate amount of fees charged to customers for the provision of telecommunications network resource services and
+             lease income from other domestic telecommunications operators and enterprise customers for the usage of the Group’s telecommunications
+             networks and equipment.
+
+
+     (vii)   Represent primarily revenue from sale, and repair and maintenance of equipment as well as the resale of mobile services (MVNO).
+
+
+
+
+                                                                                                              China Telecom Corporation Limited       23
+                                                                                                                             Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+10. Network Operations and Support Expenses
+     Included in the Group’s network operations and support expenses are as follows:
+
+                                                                            Six-month period ended 30 June
+                                                                                    2016              2015
+                                                                             RMB millions       RMB millions
+
+
+     Operating and maintenance                                                         21,768        20,713
+     Utility                                                                            6,454         5,944
+     Property rental and management fee                                                11,669         5,648
+     Others                                                                             4,060         4,919
+
+
+                                                                                       43,951        37,224
+
+
+11. Personnel Expenses
+     Personnel expenses are attributable to the following functions:
+
+                                                                            Six-month period ended 30 June
+                                                                                    2016              2015
+                                                                             RMB millions       RMB millions
+
+
+     Network operations and support                                                    19,273        18,171
+     Selling, general and administrative                                                9,636         9,908
+
+
+                                                                                       28,909        28,079
+
+
+
+
+24    China Telecom Corporation Limited
+      Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+12. Other Operating Expenses
+     Other operating expenses consist of:
+
+                                                                                                     Six-month period ended 30 June
+                                                                                                              2016                        2015
+                                                                                       Note            RMB millions                 RMB millions
+
+
+     Interconnection charges                                                             (i)                     5,726                         6,170
+     Cost of goods sold                                                                  (ii)                   19,816                        16,872
+     Donations                                                                                                       3                             2
+     Others                                                                              (iii)                     549                           805
+
+
+                                                                                                                26,094                        23,849
+
+     Note:
+
+     (i)      Interconnection charges represent amounts incurred for the use of other domestic and foreign telecommunications operators’ networks for
+              delivery of voice and data traffic that originate from the Group’s telecommunications networks.
+
+     (ii)     Cost of goods sold primarily represents cost of telecommunications equipment sold.
+
+     (iii)    Others mainly include other surcharges related to VAT.
+
+
+
+13. Net Finance Costs
+     Net finance costs comprise:
+
+                                                                                                     Six-month period ended 30 June
+                                                                                                              2016                        2015
+                                                                                                       RMB millions                 RMB millions
+
+
+     Interest expense incurred                                                                                    2,110                        2,517
+     Less: Interest expense capitalised*                                                                           (211)                        (155)
+
+
+     Net interest expense                                                                                         1,899                        2,362
+     Interest income                                                                                               (170)                        (164)
+     Foreign exchange losses                                                                                         38                            11
+     Foreign exchange gains                                                                                         (39)                          (49)
+
+
+                                                                                                                  1,728                        2,160
+
+
+     *       Interest expense was capitalised in construction
+                in progress at the following rates per annum                                              3.3%-5.0%                  3.8%-5.7%
+
+
+                                                                                                         China Telecom Corporation Limited        25
+                                                                                                                        Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+14. Income Tax
+     Income tax in the profit or loss comprises:
+
+                                                                                                             Six-month period ended 30 June
+                                                                                                                       2016                          2015
+                                                                                                                RMB millions                   RMB millions
+
+
+     Provision for PRC income tax                                                                                          1,967                         3,922
+     Provision for income tax in other tax jurisdictions                                                                      60                            28
+     Deferred taxation                                                                                                     1,720                          (414)
+
+                                                                                                                           3,747                         3,536
+
+
+     A reconciliation of the expected tax expense with the actual tax expense is as follows:
+
+                                                                                                             Six-month period ended 30 June
+                                                                                                                       2016                          2015
+                                                                                             Note               RMB millions                   RMB millions
+
+     Profit before taxation                                                                                               15,469                       14,544
+
+     Expected income tax expense at statutory tax rate
+       of 25%                                                                                  (i)                         3,867                         3,636
+     Differential tax rate on PRC subsidiaries’
+       and branches’ income                                                                    (i)                           (211)                        (185)
+     Differential tax rate on other subsidiaries’ income                                      (ii)                            (20)                          (16)
+     Non-deductible expenses                                                                  (iii)                           182                          141
+     Non-taxable income                                                                       (iv)                            (36)                          (39)
+     Others                                                                                   (v)                             (35)                            (1)
+
+     Actual income tax expense                                                                                             3,747                         3,536
+
+     Note:
+
+     (i)        Except for certain subsidiaries and branches which are mainly taxed at preferential rate of 15%, the provision for mainland China income tax
+                is based on a statutory rate of 25% of the assessable income of the Company, its mainland China subsidiaries and branches as determined in
+                accordance with the relevant income tax rules and regulations of the PRC.
+
+     (ii)       Income tax provisions of the Company’s subsidiaries in Hong Kong and Macau Special Administrative Regions of the PRC, and in other countries
+                are based on the subsidiaries’ assessable income and income tax rates applicable in the respective tax jurisdictions which range from 12% to 38%.
+
+     (iii)      Amounts represent miscellaneous expenses in excess of statutory deductible limits for tax purposes.
+
+     (iv)       Amounts represent miscellaneous income which are not subject to income tax.
+
+     (v)        Amounts primarily represent tax deduction on prior year research and development expenses, losses on disposal of property, plant and
+                equipment approved by tax authorities and other tax benefits.
+
+
+
+26          China Telecom Corporation Limited
+            Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+15. Dividends
+     Pursuant to the shareholders’ approval at the Annual General Meeting held on 25 May 2016, a final dividend
+     of RMB0.080182 (equivalent to HK$0.095) per share totaling RMB6,489 million in respect of the year ended
+     31 December 2015 was declared and paid on 15 July 2016.
+
+     Pursuant to the shareholders’ approval at the Annual General Meeting held on 27 May 2015, a final dividend
+     of RMB0.076120 (equivalent to HK$0.095) per share totaling RMB6,160 million in respect of the year ended
+     31 December 2014 was declared and paid on 17 July 2015.
+
+     The Board of Directors has resolved not to pay an interim dividend.
+
+16. Basic Earnings per Share
+     The calculation of basic earnings per share for the six-month period ended 30 June 2016 and 2015 is based
+     on the profit attributable to equity holders of the Company of RMB11,673 million and RMB10,980 million,
+     respectively, divided by 80,932,368,321 shares.
+
+     The amount of diluted earnings per share is not presented as there were no dilutive potential ordinary shares in
+     existence for the periods presented.
+
+17. Capital Commitments
+     As at 30 June 2016 and 31 December 2015, the Group had capital commitments as follows:
+
+
+                                                                                     30 June               31 December
+                                                                                        2016                      2015
+                                                                                 RMB millions              RMB millions
+
+
+     Contracted for but not provided
+       Property                                                                             514                          403
+       Telecommunications network plant and equipment                                     9,039                        9,745
+
+
+                                                                                          9,553                       10,148
+
+
+
+
+                                                                                  China Telecom Corporation Limited      27
+                                                                                                Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+18. Fair Value Measurements of Financial Instruments
+     Financial assets of the Group include cash and cash equivalents, bank deposits, investments, accounts
+     receivable, prepayments and other receivables. Financial liabilities of the Group include short-term and long-
+     term debt and payable, other non-current liabilities, accounts payable, accrued expenses and other payables.
+     The Group does not hold nor issue financial instruments for trading purposes.
+
+     Fair Value Measurements
+     Based on IFRS 13, Fair Value Measurement, the fair value of each financial instrument is categorised in its
+     entirety based on the lowest level of input that is significant to that fair value measurement. The levels are
+     defined as follows:
+
+     •       Level 1:          fair values measured using quoted prices (unadjusted) in active markets for identical financial
+                               instruments
+
+     •       Level 2:          fair values measured using quoted prices in active markets for similar financial instruments,
+                               or using valuation techniques in which all significant inputs are directly or indirectly based on
+                               observable market data
+
+     •       Level 3:          fair values measured using valuation techniques in which any significant input is not based on
+                               observable market data
+
+     The fair values of the Group’s financial instruments (other than long-term debt and payable, other non-current
+     liabilities and available-for-sale equity investment securities) approximate their carrying amounts due to the
+     short-term maturity of these instruments.
+
+     The Group’s available-for-sale equity investment securities are categorised as level 1 financial instruments. The
+     fair value of the Group’s available-for-sale equity investment securities is RMB1,255 million as at 30 June 2016
+     (31 December 2015: RMB1,597 million), based on quoted market price on PRC stock exchanges. The Group’s
+     long-term investments, other than the available-for-sale equity investment securities, are unlisted equity
+     interests for which no quoted market prices exist in the PRC and because their fair values cannot be measured
+     reliably, so their fair values were not disclosed.
+
+     The fair values of long-term debt and payable and other non-current liabilities are estimated by discounting
+     future cash flows using current market interest rates offered to the Group for debt with substantially the
+     same characteristics and maturities. The fair value measurement of long-term debt and payable and other
+     non-current liabilities is categorised as level 2. The interest rates used by the Group in estimating the fair
+     values of long-term debt and payable and other non-current liabilities, having considered the foreign currency
+     denomination of the debt, ranged from 1.0% to 4.9% (31 December 2015: 1.0% to 4.9%). As at 30 June
+     2016 and 31 December 2015, the carrying amounts and fair values of the Group’s long-term debt and payable
+     and other non-current liabilities were as follows:
+
+                                                                    30 June 2016                     31 December 2015
+                                                             Carrying                              Carrying
+                                                              amount          Fair value            amount          Fair value
+                                                          RMB millions      RMB millions        RMB millions      RMB millions
+
+     Long-term debt and payable                                  70,723             71,150            64,914            65,156
+     Other non-current liabilities                                  469                434               455               419
+
+     During both periods, there were no transfers among instruments in level 1, level 2 or level 3.
+
+28       China Telecom Corporation Limited
+         Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+19. Related Party Transactions
+     (a) Transactions with China Telecom Group
+          The Group is a part of companies under China Telecommunications Corporation, a company owned by
+          the PRC government, and has significant transactions and business relationships with members of China
+          Telecom Group.
+
+          The principal transactions with China Telecom Group which were carried out in the ordinary course of
+          business are as follows:
+
+                                                                                                   Six-month period ended 30 June
+                                                                                                            2016                         2015
+                                                                                    Note             RMB millions                  RMB millions
+
+
+          Purchases of telecommunications equipment
+             and materials                                                            (i)                        2,385                      2,209
+          Sales of telecommunications equipment
+             and materials                                                            (i)                        1,415                      1,606
+          Construction and engineering services                                      (ii)                        7,742                      7,830
+          Provision of IT services                                                   (iii)                         124                         66
+          Receiving IT services                                                      (iii)                         394                        362
+          Receiving community services                                               (iv)                        1,200                      1,147
+          Receiving ancillary services                                               (v)                         5,985                      5,556
+          Property lease income                                                      (vi)                           15                         15
+          Property lease expenses                                                    (vi)                          197                        297
+          Net transaction amount of centralised services                            (vii)                          264                        224
+          Interconnection revenues                                                  (viii)                          33                         30
+          Interconnection charges                                                   (viii)                         145                        212
+          Internet applications channel services                                     (ix)                          150                        188
+          Interest on amounts due to and
+             loans from China Telecom Group                                          (x)                         1,462                      2,042
+          Lease of CDMA network facilities                                           (xi)                           64                        108
+          Lease of inter-provincial transmission optic fibres                       (xii)                            8                         10
+          Lease of land use rights                                                  (xiii)                           4                          8
+
+          Note:
+
+
+          (i)     Represent the amount of telecommunications equipment and materials purchased from/sold to China Telecom Group and commission
+                  paid and payable for procurement services provided by China Telecom Group.
+
+
+          (ii)    Represent construction and engineering as well as design and supervisory services provided by China Telecom Group.
+
+
+          (iii)   Represent IT services provided to and received from China Telecom Group.
+
+
+
+
+                                                                                                        China Telecom Corporation Limited     29
+                                                                                                                      Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+19. Related Party Transactions (continued)
+     (a) Transactions with China Telecom Group (continued)
+          Note: (continued)
+
+          (iv)     Represent amounts paid and payable to China Telecom Group in respect of cultural, educational, health care and other community
+                   services.
+
+          (v)      Represent amounts paid and payable to China Telecom Group in respect of ancillary services such as repairs and maintenance of
+                   telecommunications equipment and facilities and certain customer services.
+
+          (vi)     Represent amounts of property lease fee received and receivable from/paid and payable to China Telecom Group for mutual leasing of
+                   properties.
+
+          (vii)    Represent net amount shared between the Company and China Telecom Group for costs associated with centralised services. The
+                   amount represents amounts received or receivable for the net amount of centralised services.
+
+          (viii)   Represent amounts received and receivable from/paid and payable to China Telecom Group for interconnection of local and domestic
+                   long distance calls.
+
+          (ix)     Represent amounts received and receivable from China Telecom Group in respect of Internet applications channel services, including the
+                   provision of telecommunications channel and applications support platform and billing and deduction services, etc.
+
+          (x)      Represent interest paid and payable to China Telecom Group with respect to the amounts due to China Telecommunications
+                   Corporation and loans from China Telecom Group (Note 6).
+
+          (xi)     Represent amounts paid and payable to China Telecom Group primarily for lease of certain CDMA mobile telecommunications network
+                   (“CDMA network”) facilities located in Xizang Autonomous Region.
+
+          (xii)    Represent amounts paid and payable to China Telecom Group for lease of certain inter-provincial transmission optic fibres within its
+                   service regions.
+
+          (xiii)   Represent amounts paid and payable to China Telecom Group for leases of land use rights.
+
+
+          Amounts due from/to China Telecom Group are summarised as follows:
+
+
+                                                                                                             30 June                  31 December
+                                                                                                                2016                         2015
+                                                                                                         RMB millions                 RMB millions
+
+
+          Accounts receivable                                                                                          905                         492
+          Prepayments and other current assets                                                                         912                         732
+
+
+          Total amounts due from China Telecom Group                                                                1,817                        1,224
+
+
+          Accounts payable                                                                                        19,576                       18,702
+          Accrued expenses and other payables                                                                      6,179                        1,464
+          Short-term debt                                                                                         12,023                       12,098
+          Long-term debt and payable                                                                              61,710                       61,710
+
+
+          Total amounts due to China Telecom Group                                                                99,488                       93,974
+
+30    China Telecom Corporation Limited
+      Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+19. Related Party Transactions (continued)
+     (a) Transactions with China Telecom Group (continued)
+          Amounts due from/to China Telecom Group, other than short-term debt and long-term debt and payable,
+          bear no interest, are unsecured and are repayable in accordance with contractual terms which are similar
+          to those terms offered by third parties. The terms and conditions associated with short-term debt and
+          long-term debt and payable due to China Telecom Group are set out in Note 6.
+
+          As at 30 June 2016 and 31 December 2015, no material allowance for doubtful debts was recognised in
+          respect of amounts due from China Telecom Group.
+
+     (b) Transactions with China Tower
+          The principal transactions with China Tower are as follows:
+
+                                                                                                    Six-month period ended 30 June
+                                                                                                             2016                          2015
+                                                                                    Note              RMB millions                   RMB millions
+
+
+          Tower assets lease fee                                                      (i)                         6,922                             –
+          Provision of IT services                                                    (ii)                            6                             –
+
+          Note:
+
+
+          (i)     Represent amounts paid and payable to China Tower for the lease of telecommunications towers and related assets.
+
+
+                  Upon completion of the Tower Assets Disposal, the Company and China Tower entered into an agreement on 8 July 2016 to finally
+                  confirm the pricing and related arrangements in relation to the lease of telecommunications towers and related assets (including the
+                  “Tower Assets” and the tower products newly built by China Tower). The respective provincial branches of the Company and China
+                  Tower will enter into provincial service agreements in accordance with the actual demand for services. The service periods of these
+                  respective agreements are five years.
+
+
+          (ii)    Represent IT services provided to China Tower.
+
+
+
+
+                                                                                                         China Telecom Corporation Limited        31
+                                                                                                                        Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+19. Related Party Transactions (continued)
+     (b) Transactions with China Tower (continued)
+          Amounts due from/to China Tower are summarised as follows:
+
+
+                                                                                       30 June            31 December
+                                                                                          2016                   2015
+                                                                                   RMB millions           RMB millions
+
+
+          Accounts Receivable                                                                   6                     –
+          Prepayments and other current assets                                              1,906                 1,789
+
+
+          Total amounts due from China Tower                                                1,912                 1,789
+
+
+          Accounts payable                                                                  9,915                 3,272
+          Accrued expenses and other payables                                                 178                 3,097
+
+
+          Total amounts due to China Tower                                                 10,093                 6,369
+
+
+          Amounts due from/to China Tower bear no interest, are unsecured and are repayable in accordance with
+          contractual terms which are similar to those terms offered by third parties.
+
+          As at 30 June 2016 and 31 December 2015, no material allowance for doubtful debts was recognised in
+          respect of amounts due from China Tower.
+
+     (c) Key management personnel compensation
+          Key management personnel are those persons having authority and responsibility for planning, directing
+          and controlling the activities of the Group, directly or indirectly, including directors and supervisors of the
+          Group.
+
+          Key management personnel compensation of the Group is summarised as follows:
+
+                                                                                 Six-month period ended 30 June
+                                                                                         2016                   2015
+                                                                                RMB thousands           RMB thousands
+
+
+          Short-term employee benefits                                                      3,171                 2,970
+          Post-employment benefits                                                            392                   461
+
+
+                                                                                            3,563                 3,431
+
+
+
+32    China Telecom Corporation Limited
+      Interim Report 2016
+Notes to the Unaudited Interim Financial Statements
+
+for the six-month period ended 30 June 2016
+
+
+
+
+19. Related Party Transactions (continued)
+     (d) Contributions to post-employment benefit plans
+          As stipulated by the regulations of the PRC, the Group participates in various defined contribution
+          retirement plans organised by municipal, autonomous regional and provincial governments for its
+          employees. The Group is required to make contributions to the retirement plans at rates ranging from
+          14% to 21% of the salaries, bonuses and certain allowances of the employees. A member of the plan is
+          entitled to a pension equal to a fixed proportion of the salary prevailing at the member’s retirement date.
+          Other than the above, the Group also participates in supplementary defined contribution retirement plans
+          managed by independent external parties whereby the Group is required to make contributions to the
+          retirement plans at fixed rates of the employees’ salaries, bonuses and certain allowances. The Group has
+          no other material obligation for the payment of pension benefits associated with these plans beyond the
+          annual contributions described above.
+
+          The Group’s contributions for the above plans for the six-month period ended 30 June 2016 were
+          RMB3,198 million (six-month period ended 30 June 2015: RMB2,998 million).
+
+          The amount payable for contributions to the above defined contribution retirement plans as at 30 June
+          2016 was RMB748 million (31 December 2015: RMB791 million).
+
+     (e) Transactions with other government-related entities in the PRC
+          The Group is a government-related enterprise and operates in an economic regime currently dominated
+          by entities directly or indirectly controlled by the People’s Republic of China through government
+          authorities, agencies, affiliations and other organisations (collectively referred to as “government-related
+          entities”).
+
+          Apart from transactions with parent company and its fellow subsidiaries (Note 19(a)), the Group has
+          transactions that are collectively but not individually significant with other government-related entities,
+          which include but not limited to the following:
+
+          –    rendering and receiving services, including but not limited to telecommunications services
+          –    sales and purchases of goods, properties and other assets
+          –    lease of assets
+          –    depositing and borrowing
+          –    use of public utilities
+
+          These transactions are conducted in the ordinary course of the Group’s business on terms comparable
+          to the terms of transactions with other entities that are not government-related. The Group prices its
+          telecommunications services and products based on government-regulated tariff rates, where applicable,
+          or based on commercial negotiations. The Group has also established procurement policies and approval
+          processes for purchases of products and services, which do not depend on whether the counterparties are
+          government-related entities or not.
+
+          The directors of the Company believe the above information provides appropriate disclosure of related
+          party transactions.
+
+                                                                                   China Telecom Corporation Limited   33
+                                                                                                 Interim Report 2016
+Other Information
+
+
+
+
+Management Discussion and Analysis
+According to paragraph 40 of Appendix 16 of the Rules Governing the Listing of Securities on The Stock Exchange of
+Hong Kong Limited (the “Listing Rules”), save as disclosed herein, the Company confirms that the current company
+information in relation to those matters set out in paragraph 32 of Appendix 16 has not changed materially from the
+information disclosed in the Company’s 2015 Annual Report.
+
+Purchase, Sale or Redemption of Securities
+During the six-month period ended 30 June 2016, neither the Company nor any of its subsidiaries has purchased,
+sold or redeemed any of the Company’s listed securities.
+
+Directors’ and Supervisors’ Interests and Short Positions in Shares, Underlying
+Shares and Debentures
+As at 30 June 2016, none of the Directors or Supervisors of the Company had any interests or short positions in
+any shares, underlying shares of equity derivatives or debentures of the Company or its associated corporations (as
+defined in Part XV of the Securities and Futures Ordinance (Chapter 571 of the laws of Hong Kong) (the “SFO”))
+as recorded in the register required to be maintained under Section 352 of the SFO or as otherwise notified to the
+Company and The Stock Exchange of Hong Kong Limited pursuant to the Model Code for Securities Transactions by
+Directors of Listed Issuers (the “Model Code”).
+
+As at 30 June 2016, the Company has not granted its Directors or Supervisors, or their respective spouses or children
+below the age of 18 any rights to subscribe for the shares or debentures of the Company or any of its associated
+corporations and none of them has ever exercised any such right to subscribe for the shares or debentures.
+
+Change of Directors and Supervisors since the Date of the 2015 Annual Report
+The changes in the information relating to the Directors and Supervisors since the date of the Company’s 2015
+Annual Report are set out below:
+
+On 25 April 2016, the Executive Director of the Company, Mr. Yang Jie was appointed as the Chairman and Chief
+Executive Officer of the Company. On the same day, he no longer held the offices of the President and Chief
+Operating Officer of the Company.
+
+On 25 April 2016, the Executive Director of the Company, Mr. Yang Xiaowei was appointed as the President and
+Chief Operating Officer of the Company. On the same day, he no longer held the office of the Executive Vice
+President of the Company.
+
+On 10 May 2016, Mr. Zhu Wei resigned from his position as a Non-Executive Director of the Company due to change
+in work arrangement.
+
+On 19 August 2016, Mr. Zhang Jiping retired from his positions as an Executive Director and Executive Vice President
+of the Company due to his age.
+
+Save as stated above, there is no other information of the Directors or Supervisors of the Company required to be
+disclosed pursuant to Rule 13.51B(1) of the Listing Rules. The updated biographical details of the Directors and
+Supervisors are available on the website of the Company (www.chinatelecom-h.com).
+
+
+
+34     China Telecom Corporation Limited
+       Interim Report 2016
+Other Information
+
+
+
+
+Material Interests and Short Positions in Shares and Underlying Shares of the
+Company
+As at 30 June 2016, the interests or short position of persons who are entitled to exercise or control the exercise of
+5% or more of the voting power at any of the Company’s general meetings (excluding the Directors and Supervisors)
+in the shares and underlying shares of equity derivatives of the Company as recorded in the register required to be
+maintained under Section 336 of the SFO are as follows:
+
+                                                                    Percentage       Percentage
+                                                                          of the           of the
+                                                                     respective    total number
+                                Number of                        type of shares        of shares
+Name of Shareholders           shares held     Type of Shares           in issue         in issue Capacity
+                                                                             (%)              (%)
+
+
+China Telecommunications   57,377,053,317      Domestic shares          85.57%          70.89% Beneficial owner
+  Corporation               (Long position)
+
+
+Guangdong Rising Assets      5,614,082,653     Domestic shares           8.37%           6.94% Beneficial owner
+  Management Co., Ltd.       (Long position)
+
+
+JPMorgan Chase & Co.         1,668,882,703     H shares                 12.02%           2.06% 348,035,935 shares
+                             (Long position)                                                     as beneficial owner;
+                                                                                                 248,602,000 shares as
+                                                                                                 investment manager;
+                                                                                                 10,700 shares as
+                                                                                                 trustee (other than
+                                                                                                 a bare trustee) and
+                                                                                                 1,072,234,068 shares as
+                                                                                                 custodian corporation/
+                                                                                                 approved lending agent
+
+                               54,101,278      H shares                  0.38%           0.07% Beneficial owner
+                            (Short position)
+
+                             1,072,234,068     H shares                  7.72%           1.32% Custodian corporation/
+                           (Shares available                                                     approved lending agent
+                                for lending)
+
+
+BlackRock, Inc.                967,847,607     H shares                  6.97%           1.20% Interest of controlled
+                             (Long position)                                                      corporation
+
+                                2,200,000      H shares                  0.02%           0.00% Interest of controlled
+                            (Short position)                                                      corporation
+
+
+
+
+                                                                                       China Telecom Corporation Limited   35
+                                                                                                     Interim Report 2016
+Other Information
+
+
+
+
+                                                                         Percentage       Percentage
+                                                                               of the           of the
+                                                                          respective    total number
+                                      Number of                       type of shares        of shares
+Name of Shareholders                 shares held     Type of Shares          in issue         in issue Capacity
+                                                                                  (%)              (%)
+
+
+The Bank of New York                834,090,669      H shares                 6.01%           1.03% Interest of controlled
+  Mellon Corporation              (Long position)                                                      corporation
+
+                                    805,835,485      H shares                 5.81%           1.00% Interest of controlled
+                                 (Shares available                                                     corporation
+                                      for lending)
+
+
+Citigroup Inc.                      753,487,404      H shares                 5.42%           0.93% 36,425,608 shares as
+                                  (Long position)                                                     Interest of controlled
+                                                                                                      corporation;
+                                                                                                      717,061,796 shares as
+                                                                                                      custodian corporation/
+                                                                                                      approved lending agent
+
+                                     21,742,064      H shares                 0.15%           0.03% Interest of controlled
+                                  (Short position)                                                     corporation
+
+                                    717,061,796      H shares                 5.16%           0.89% Custodian corporation/
+                                 (Shares available                                                    approved lending agent
+                                      for lending)
+
+
+Save as disclosed above, as at 30 June 2016, in the register required to be maintained under Section 336 of the SFO,
+no other persons were recorded to hold any interests or short positions in the shares or underlying shares of the
+equity derivatives of the Company.
+
+Audit Committee
+The audit committee has reviewed with management and the Company’s international auditor, Deloitte Touche
+Tohmatsu, the accounting principles and practices adopted by the Group and discussed internal control and financial
+reporting matters including the review of the Company’s Interim Report for the six months ended 30 June 2016.
+
+
+
+
+36      China Telecom Corporation Limited
+        Interim Report 2016
+Other Information
+
+
+
+
+Compliance with the Corporate Governance Code
+The Company attaches great importance to corporate governance. We continued to make efforts in improving
+the Company’s internal control mechanisms, strengthening information disclosure and enhancing the Company’s
+transparency, developing corporate governance practices and protecting shareholders’ interests to the maximum
+degree.
+
+The roles of Chairman and Chief Executive Officer of the Company were performed by the same individual, for the
+six-month period ended 30 June 2016. In the Company’s opinion, through supervision of the Board of Directors
+and Independent Non-Executive Directors, and effective control of the Company’s internal check and balance
+mechanism, the same individual performing the roles of Chairman and Chief Executive Officer can achieve the goal of
+improving the Company’s efficiency in decision-making and execution and effectively capture business opportunities.
+Many international leading corporations also have a similar arrangement.
+
+Save as stated above, the Company has been in compliance with all the code provisions under the Corporate
+Governance Code as set out in Appendix 14 of the Listing Rules throughout the six-month period ended 30 June
+2016.
+
+Compliance with the Model Code for Securities Transactions by Directors and
+Supervisors
+The Company has adopted the Model Code as set out in Appendix 10 of the Listing Rules to govern securities
+transactions by Directors and Supervisors. Further to the specific enquiries made by the Company to Directors and
+Supervisors, they have confirmed their compliance with the Model Code throughout the period from 1 January 2016
+to 30 June 2016.
+
+
+
+
+                                                                                 China Telecom Corporation Limited   37
+                                                                                               Interim Report 2016
+China Telecom Corporation Limited
+中國電信股份有限公司
+31 Jinrong Street, Xicheng District, Beijing, PRC 100033
+中國北京市西城區金融大街31號 郵編: 100033
+
+
+
+
+www.chinatelecom-h.com
+

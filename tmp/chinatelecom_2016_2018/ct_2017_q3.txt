@@ -1,0 +1,214 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for
+the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim
+any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents
+of this announcement.
+
+
+
+
+              China Telecom Corporation Limited
+                    中国电信股份有限公司
+        (A joint stock limited company incorporated in the People's Republic of China with limited liability)
+                                               (Stock Code: 728)
+
+
+                    KEY FINANCIAL AND PERFORMANCE INDICATORS
+                       FOR THE FIRST THREE QUARTERS OF 2017
+
+
+
+ The unaudited financial data of the Group for the first three quarters of 2017
+
+ -    Operating revenues were RMB274,702 million, representing an increase of 4.1% over the
+      same period of last year
+ -    Service revenues were RMB249,722 million, representing an increase of 7.0% over the same
+      period of last year
+ -    EBITDA was RMB78,844 million, representing an increase of 3.7% over the same period of
+      last year
+ -    Profit attributable to equity holders of the Company was RMB18,502 million, representing
+      an increase of 5.5% over the same period of last year
+
+
+In order to further enhance the transparency of the Group and to enable shareholders, investors and
+the general public to better appraise the operational performance of the Group, the board of
+directors (the “Board”) of China Telecom Corporation Limited (the “Company”, together with its
+subsidiaries, the “Group”) announces certain selected unaudited key financial and performance
+indicators of the Group for the first three quarters of 2017.
+
+
+
+
+                                                         1
+Financial Data (Extracted from financial records prepared in accordance with International
+Financial Reporting Standards)
+                                                          For the period from For the period from
+                                                            1 January 2017 to  1 January 2016 to                           Increase /
+                                                           30 September 2017 30 September 2016                            (Decrease)
+                                                               (RMB million)       (RMB million)
+
+Operating revenues                                                        274,702                         263,816                4.1%
+
+     of which: Service revenues1                                          249,722                         233,494                7.0%
+
+Operating expenses
+  Depreciation and amortisation                                            (52,241)                       (50,335)              3.8%
+  Network operations and support                                           (73,296)                       (66,774)              9.8%
+  Selling, general and administrative                                      (42,325)                       (39,426)              7.4%
+  Personnel expenses                                                       (46,924)                       (44,350)              5.8%
+  Other operating expenses                                                 (33,313)                       (37,233)            (10.5%)
+
+      Total operating expenses                                           (248,099)                       (238,118)               4.2%
+
+Operating profit                                                            26,603                         25,698                3.5%
+
+Net finance costs                                                            (2,582)                        (2,595)            (0.5%)
+Investment income and share of                                                  708                            236            200.0%
+  profits of associates
+
+Profit before taxation                                                      24,729                         23,339                6.0%
+Income tax                                                                  (6,131)                        (5,727)               7.1%
+Profit for the first three quarters                                         18,598                         17,612                5.6%
+
+Profit attributable to:
+  Equity holders of the Company                                             18,502                         17,543                5.5%
+  Non-controlling interests                                                     96                             69               39.1%
+
+
+                                                                       As at                          As at
+                                                           30 September 2017               31 December 2016
+                                                               (RMB million)                  (RMB million)
+
+Total Assets                                                              664,570                         652,368                1.9%
+
+Total Liabilities                                                        (337,599)                       (336,073)               0.5%
+
+Total Equity                                                              326,971                         316,295                3.4%
+
+
+
+1.    Service revenues were calculated based on operating revenues minus sales of mobile terminals (first three quarters of 2017:
+      RMB20,746 million; first three quarters of 2016: RMB26,151 million), sales of wireline equipment and other non-service revenues (first
+      three quarters of 2017: total RMB4,234 million; first three quarters of 2016: total RMB4,171 million).
+
+
+
+                                                                   2
+Business Data
+                                                                                             As at                      As at
+                                                                               30 September 2017/         30 September 2016/
+                                                                               For the period from        For the period from
+                                                                                 1 January 2017 to         1 January 2016 to
+                                                                                30 September 2017           30 September 2016
+
+Mobile Subscribers (Million)                                                                    240.56                212.49
+ of which 4G Terminal Users (Million)                                                           167.52                107.49
+Net Add of Mobile Subscribers (Million)                                                          25.56                 14.59
+ of which Net Add of 4G Terminal Users (Million)                                                 45.65                 49.03
+Handset Data Traffic (kTB)2                                                                    2,020.4                 833.4
+Mobile Voice Usage (Billion Minutes)                                                            570.23                534.05
+Wireline Broadband Subscribers (Million)                                                        131.31                120.72
+ of which Fibre-to-the-Home (FTTH) subscribers
+ (Million)                                                                                      121.80                 97.68
+Net Add of Wireline Broadband Subscribers (Million)                                               8.19                  7.66
+ of which Net Add of FTTH subscribers (Million)                                                  15.81                 26.69
+Access Lines in Service (Million)                                                               123.31                129.29
+ including: Household (Million)                                                                  75.75                 80.24
+            Government & Enterprise (Million)                                                    40.34                 40.65
+            Public Telephone (Million)                                                            7.22                  8.40
+Net Increase/(Decrease) of Access Lines in Service                                               (3.55)                (5.03)
+ (Million)
+Wireline Local Voice Usage (Billion Pulses)                                                       57.55                71.46
+Wireline Long Distance Usage (Billion Minutes)                                                    11.68                16.12
+
+For the first three quarters of 2017, facing intensified market competition coupled with complicated
+and changing industry environments, the Group unwaveringly promoted transformation with
+continual improvement in overall operation. The Group consolidated competitive strengths and
+deepened data traffic operation, resulting in acceleration of scale development of mobile business.
+With implementation of “Speed Upgrade and Tariff Reduction”, the Group has ceased to charge
+mobile domestic long-distance and roaming fees from 1 September 2017. The number of mobile
+subscribers reached approximately 241 million, representing a net addition of 25.56 million; of which
+the number of 4G terminal users reached 168 million, representing a net addition of 45.65 million.
+The handset data traffic2 grew rapidly and increased by 142% over the same period of last year. The
+monthly average data traffic per 4G user reached 1.5 GB while the average mobile service revenue
+per user per month (ARPU) increased steadily over the same period of last year. Focusing on
+integration and innovation, revenues from wireline services achieved healthy growth momentum. The
+wireline broadband subscribers reached 131 million, representing a net addition of 8.19 million; of
+which Fibre-to-the-Home (FTTH) subscribers reached 122 million, representing a net addition of
+15.81 million and achieving in-depth integration with Smart Family products. With strengthened
+ecological strengths, emerging businesses maintained rapid growth. FTTH strongly supported the
+rapid development of Smart Family business. The net addition of e-Surfing HD subscribers was
+17.14 million, reaching a total of 78.47 million while IDC, cloud and Big Data persistently
+maintained sound growth momentum.
+2. Handset data traffic represents the data traffic generated from 3G and 4G handset internet access.
+                                                                  3
+For the first three quarters of 2017, the Group had solid performance in its overall results with steady
+enhancement in operating revenues and net profits. The operating revenues were RMB274,702
+million, of which the service revenues were RMB249,722 million, representing an increase of 7.0%
+over the same period of last year. The operating expenses increased by 4.2% over the same period of
+last year. Of which, the depreciation and amortisation expenses increased by 3.8% over the same
+period of last year which was mainly due to the corresponding increase brought by the investment in
+4G and fibre broadband in recent years. Following the further expansion in network scale and the
+increase in number of leased tower assets and related expenses, the network operations and support
+expenses increased by 9.8% over the same period of last year with effective control in growth
+magnitude. Meanwhile, with appropriate deployment of marketing initiatives in driving rapid
+expansion of subscribers scale, the selling, general and administrative expenses for the first three
+quarters of 2017 increased by 7.4% over the same period of last year. The personnel expenses
+increased by 5.8% over the same period of last year. The profit attributable to equity holders of the
+Company was RMB18,502 million, representing an increase of 5.5% over the same period of last
+year. EBITDA3 was RMB78,844 million, representing an increase of 3.7% over the same period of
+last year. EBITDA margin4 was 31.6%.
+
+In the future, with unwavering promotion of Transformation 3.0, the Group will focus on the
+enhancement of capabilities, expansion of open cooperation and co-building of “Ecosystem-Tetris”
+with co-operative partners, resulting in continuous reinforcement of ecological strengths and
+facilitating persistent enhancement of scale and effectiveness. The Group will stimulate vitality with
+in-depth reforms and strengthen market consciousness, breaking up the barrier of systems and
+mechanisms which impede productivity and cultivating good atmosphere for work and
+entrepreneurship. With pragmatic implementation and reinforced execution together with the
+strengthening of process management and control by adopting clear and effective systems, the Group
+will strive to attain new achievement in corporate transformation and upgrades as well as create more
+value for shareholders.
+
+The Board wishes to remind investors that the above financial and business data are based on the
+Group’s unaudited management accounts. Investors are cautioned not to unduly rely on such data.
+
+In the meantime, investors are advised to exercise caution in dealing in the securities of the
+Company.
+
+
+                                                                                  By Order of the Board
+                                                                           China Telecom Corporation Limited
+                                                                                       Yang Jie
+                                                                           Chairman and Chief Executive Officer
+
+Beijing, China, 27 October 2017
+
+
+3.   EBITDA was calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+4.   EBITDA margin was calculated based on EBITDA divided by service revenues.
+
+                                                            4
+FORWARD-LOOKING STATEMENTS
+
+Certain statements contained in this announcement may be viewed as “forward-looking statements”
+within the meaning of Section 27A of the U.S. Securities Act of 1933 (as amended) and Section 21E
+of the U.S. Securities Exchange Act of 1934 (as amended). Such forward-looking statements are
+subject to known and unknown risks, uncertainties and other factors, which may cause the actual
+performance, financial condition or results of operations of the Company to be materially different
+from any future performance, financial condition or results of operations implied by such
+forward-looking statements. In addition, we do not intend to update these forward-looking
+statements. Further information regarding these risks, uncertainties and other factors is included in
+the Company’s most recent Annual Report on Form 20-F filed with the U.S. Securities and
+Exchange Commission (the “SEC”) and in the Company’s other filings with the SEC.
+
+As at the date of this announcement, the Board of Directors of the Company consists of Mr. Yang
+Jie (as the chairman and chief executive officer); Mr. Ke Ruiwen, Mr. Sun Kangmin, Mr. Gao
+Tongqing and Mr. Chen Zhongyue (all as the executive vice presidents); Mr. Chen Shengguang (as
+the non-executive director); Mr. Tse Hau Yin, Aloysius, Madam Cha May Lung, Laura, Mr. Xu
+Erming and Madam Wang Hsuehming (all as the independent non-executive directors).
+
+
+
+
+                                               5
+

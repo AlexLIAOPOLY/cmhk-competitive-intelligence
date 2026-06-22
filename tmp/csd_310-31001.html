@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+<title>Web Table</title>
+
+<!--Source San Pro//https://fonts.google.com/selection?selection.family=Source+Sans+Pro-->
+<link href="/css/SourceSansPro.css" rel="stylesheet">
+
+<!--Google Icon//https://google.github.io/material-design-icons-->
+<!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+<link href="/material/material-design-icons.css" rel="stylesheet">
+
+<link rel="icon" href="/apachehaus.ico"><link rel="shortcut icon" href="/apachehaus.ico">
+<link href="/icon/fontawesome/css/all.css" rel="stylesheet">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-touch-fullscreen" content="yes">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="/css/nt_style20130905.css">
+<link rel="stylesheet" href="/css/style_d4.css">
+<!-- <link rel="stylesheet" href="../css/style_d2.css"> -->
+
+<link rel="stylesheet" href="/js/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="/js/assets/owl.theme.default.min.css">
+  
+<link rel="stylesheet" href="/css/video.css">
+<link rel="stylesheet" href="/css/menu.css">
+<link rel="stylesheet" href="/css/search.css">
+
+</head>
+
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+  <div id="header"></div>
+
+  <div class="box_center">
+    <div id="breadcrumb">
+    </div>
+  </div>
+	<script src="/js/jquery-3.5.1.min.js"></script>
+
+	<div id="print_content">
+	
+
+<h1 class="HL1" id="w_content">Web Table</h1><div class="top_section row box_center"><script src="/js/jquery-ui.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+	
+<link rel="stylesheet" href="/css/style_d4_1.css">
+<link rel="stylesheet" type="text/css" href="/css/cnsd_cdm.css">
+<link rel="stylesheet" href="/css/table_chart.css" />
+<link rel="stylesheet" href="/css/print.css">
+<link rel="stylesheet" href="/css/tooltips.css">
+<script type="text/javascript">
+	var table_id_list = [];
+</script>
+<script src="/js/es6-promise.auto.min.js"></script> 
+<script src="/js/subject_common.js"></script>
+<script src="/js/jquery.csv.min.js"></script>
+<script src="/SheetJS/shim.min.js" async ></script>
+<script src="/SheetJS/xlsx.full.min.js" async ></script>
+<script src="/js/lz-string.min.js"></script>
+<script src="/js/jszip.min.js"></script>
+<script src="/js/FileSaver.js"></script>
+<script src="/js/api_host.js"></script>
+<script src="/js/highcharts.js"></script>
+<script src="/js/highcharts-more.js"></script>
+<script src="/js/cnds_cdm.js"></script>
+<script src="/js/tooltips.js"></script>
+
+	<div class="content-li-full webtable">
+		<div style="max-width: 1200px; margin-left: auto; margin-right: auto;">
+			<div class="non-printable cdm_titlebar">
+				<div class="subject_right_title cdm_buttons_div">
+					<a class="expand_more_less" href="#cdm_buttons" data-bs-toggle="collapse" id="cdm_buttons_toggle_2" aria-expanded="true">
+						<h2 class="h5" data-bs-toggle="collapse" data-bs-target="#cdm_buttons" id="cdm_buttons_toggle_1">Settings
+							<i aria-hidden="true" class="material-icons" >
+								<span class="dummy_collapse">Settings Toggle Collapse Expand</span>
+							</i>
+						</h2>
+					</a>
+				</div>
+				<div class="nav-scroller py-1 collapse show" id="cdm_buttons">
+				    <nav class="nav d-flex">
+
+
+					<div class="popu_time2_sma2">
+						<a href="#" class="popu_time3_sma popu_time3_1 icon_full_series" id="full_series_button">
+							<img src="/icon_set/table_icon_table_off.png" class="web_table_icon" alt="Full Series"/>
+							<img src="/icon_set/table_icon_table_on.png" class="web_table_icon hover" alt="Full Series"/>
+							Full Series
+						</a>
+							
+						<a href="#" class="popu_time3_sma popu_time3_1 icon_default_series" id="default_series_button" style="display:none;">
+							<img src="/icon_set/table_icon_table_off.png" class="web_table_icon" alt="Default Series"/>
+							<img src="/icon_set/table_icon_table_on.png" class="web_table_icon hover" alt="Default Series"/>
+							Default Series
+						</a>
+					</div>
+
+					<div class="popu_time2_sma1">
+						<a href="#" class="popu_time3_sma popu_time3_1 icon_bookmark">
+							<img src="/icon_set/table_icon_bookmark_off.png" class="web_table_icon" alt="Bookmark"/>
+							<img src="/icon_set/table_icon_bookmark_White.png" class="web_table_icon hover" alt="Bookmark"/>
+							Bookmark
+						</a>
+					</div>
+
+					<div class="popu_time2_sma1">
+						<a href="#" class="popu_time3_sma popu_time3_1 icon_api">
+							<!-- <i class="material-icons" >code</i> | <span class="icon_margin_top">API</span> -->
+							<img src="/icon_set/table_icon_table_off.png" class="web_table_icon" alt="API"/>
+							<img src="/icon_set/table_icon_table_on.png" class="web_table_icon hover" alt="API"/>
+							API
+						</a>
+					</div>
+
+					<div class="popu_time2_sma2">
+						<button type="button" class="popu_time3_sma popu_time3_1 dropdown-toggle dropdown_button  " data-bs-toggle="dropdown">
+							<img src="/icon_set/table_download_off.png" class="web_table_icon" alt="Download"/>
+							<img src="/icon_set/table_download_white.png" class="web_table_icon hover" alt="Download"/>
+							Download
+						</button>
+						<div class="dropdown-menu statistic_result_report_download" style="padding:0; margin:0;">
+							<div tabindex="0" class="popu_time3_sma popu_time3_1 excel">
+								XLSX
+							</div>
+							<div tabindex="0" class="popu_time3_sma popu_time3_1 excel_no_sd">
+								XLSX (excluding symbols in data cells)
+							</div>
+							<div tabindex="0" class="popu_time3_sma popu_time3_1 csv">
+								CSV
+							</div>
+							<div tabindex="0" class="popu_time3_sma popu_time3_1 csv_no_sd">
+								CSV (excluding symbols in data cells)
+							</div>
+							<div tabindex="0" class="popu_time3_sma popu_time3_1 csv_tabular">
+								CSV (Tabular format)
+							</div>
+							<div tabindex="0" class="popu_time3_sma popu_time3_1 xml">
+								XML
+							</div>
+							<div tabindex="0" id="download_sdmx" class="popu_time3_sma popu_time3_1 sdmx" style="display: none">
+								SDMX (English only)
+							</div>
+						</div>
+					</div>
+
+					<div class="popu_time2_sma table_chart_div">
+						<a href="#" class="popu_time3_sma icon_table" style="display: none">
+							<img src="/icon_set/table_icon_table_off.png" class="web_table_icon" alt="Table"/>
+							<img src="/icon_set/table_icon_table_on.png" class="web_table_icon hover" alt="Table"/>
+							Table
+						</a>
+						<a href="#" class="popu_time3_sma icon_chart" id="show_chart_button">
+							<img src="/icon_set/table_icon_chart_off.png" class="web_table_icon" alt="Chart"/>
+							<img src="/icon_set/table_icon_chart_on.png" class="web_table_icon hover" alt="Chart"/>
+							Chart
+						</a>
+						<!-- <a class="popu_time3_sma icon_data_dictionary"> -->
+							<!-- Data Dictionary -->
+						<!-- </a> -->
+					</div>
+					
+					
+					<div class="popu_cust_sma1">
+						<a href="#" class="popu_time3_sma popu_time3_1 icon_cust">
+							<!-- <i class="material-icons" >code</i> | <span class="icon_margin_top">API</span> -->
+							Customise Table / More Data
+						</a>
+					</div>
+					
+				    </nav>
+				  </div>
+			</div>
+		</div>
+	</div>
+
+	<div class="cnsd_body">
+
+		<!-- box start -->
+		<div class="subject_right_title">
+			<a class="expand_more_less" href="#details" data-bs-toggle="collapse" aria-expanded="true">
+				<h2 class="h5" data-bs-toggle="collapse" data-bs-target="#details">Statistics
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">Statistics Toggle Collapse Expand</span>
+					</i>
+				</h2>
+			</a>
+		</div>
+
+		<div id="details" class="collapse show">
+			<div class="table_show margin_top_20">
+
+				<table id="default_table" class="default_table_fixed"></table>
+
+			</div>
+
+			<div class="chart_show margin_top_20">
+
+				<div id="overview1" class="collapse show">
+					
+					<div id="default_chart" class="cnsd_chart"></div>
+
+				</div>
+			</div>
+			
+			<div class="icon_data_dictionary margin_top_20">
+
+			</div>
+		
+		</div>
+
+		<!-- box start -->
+		<div id="notes_header" class="subject_right_title">
+			<a class="expand_more_less" href="#notes" data-bs-toggle="collapse" aria-expanded="true">
+				<h2 class="h5" data-bs-toggle="collapse" data-bs-target="#notes">Notes
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">Notes Toggle Collapse Expand</span>
+					</i>
+				</h2>
+			</a>
+		</div>
+		
+		<div id="notes" class="collapse show">
+			<div class="statistic_result_2">
+				<div id="table_notes" class="table_notes">
+				</div>
+				<!-- <table id="table_notes" class="table_notes no_min_width"> -->
+				<!-- <tbody> -->
+				<!-- <tr> -->
+				<!-- <td></td> -->
+				<!-- </tr> -->
+				<!-- </tbody> -->
+				<!-- </table> -->
+			</div>
+		</div>
+		<!-- box end -->
+		
+		<!-- box start -->
+		<div class="subject_right_title">
+			<a class="expand_more_less" href="#tableSource" data-bs-toggle="collapse" aria-expanded="true">
+				<h2 class="h5" data-bs-toggle="collapse" data-bs-target="#tableSource">Source
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">Source Toggle Collapse Expand</span>
+					</i>
+				</h2>
+			</a>
+		</div>
+
+
+		<div id="tableSource" class="collapse show">
+			<div class="statistic_result_2">
+				<div id="table_source" class="table_source">
+				</div>
+				<!-- <table id="table_source" class="table_notes no_min_width"> -->
+				<!-- <tbody> -->
+				<!-- <tr> -->
+				<!-- <td></td> -->
+				<!-- </tr> -->
+				<!-- </tbody> -->
+				<!-- </table> -->
+				
+			</div>
+		</div>
+		<!-- box end -->
+
+
+		<!-- box start -->
+		<div id="conceptsMethods_header" class="subject_right_title margin_top_30" style='display: none;'>
+			<a class="expand_more_less" href="#conceptsMethods" data-bs-toggle="collapse" aria-expanded="true">
+				<h2 class="h5" data-bs-toggle="collapse" data-bs-target="#conceptsMethods">Concepts and Methods
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">Concepts and Methods Toggle Collapse Expand</span>
+					</i>
+				</h2>
+			</a>
+		</div>
+
+
+		<div id="conceptsMethods" class="collapse show" style='display: none;'>
+			<div class="statistic_result_2">
+
+				
+			</div>
+		</div>
+		<!-- box end -->
+		
+		<div class='last_revision_date_div'>Release Date: <span id='last_revision_date'></span></div>
+		
+	</div>
+
+	<div class="fix_position">
+	    <div id='cdm_cust_side' class="sidenav non-printable" style="display: none;">
+	      <a><span class="open_cust_nav" onclick="openCust()">Customise Table / More Data</span></a>
+	      <a><span class="open_cust_nav_sma" onclick="openCust_sma()">Customise table / More Data</span></a>
+	    </div>
+
+	    <div id="cust_menu" class="open_cust">
+			<div id="cust_panel">
+				<a href="javascript:void(0)" class="open_closebtn" onclick="closeCust()" title="Close">&times;</a>
+				<!-- <span class="cust_header">Statistics</span> -->
+				<div id="statisticsCheckBoxes"></div>			
+				<div id="classificationCheckBoxes"></div>
+			</div>
+			<hr/>
+			<div id="cust_control" class="table_control">
+				<input type="button" id="submitButton" value="Submit" onclick="displaySelectedData()" class="buttonload">
+				
+				<input type="button" id="selectButton" value="Select All" onclick="selectAll(true, true)" class="buttonload">
+
+				<input type="button" id="deselectButton" value="Deselect All" onclick="selectAll(false, true)" class="buttonload">
+
+				<input type="button" id="resetButton" value="Default" onclick="resetDefaultData()" class="buttonload">
+			</div>
+			
+	    </div>
+	</div>
+
+	<div id="bookmark-message" style="display:none;height:650px; overflow:auto;">
+	    <div><p>By copying the URL here, users can save and share your customised statistical table for future use.</p></div>
+		<div class="subject_right_title margin_top_30">
+			Web Address
+		</div>
+		<div id="section_en_url" class="collapse show">
+			<p class="api_code">
+				<code>
+					<a id="bookmark_url"></a>
+				</code>
+			</p>
+		</div>
+		<div>
+			<input type="button" id="copyButton" value="Copy" onclick="copyToClipboard()" class="buttonload">
+		</div>
+	</div>
+	
+	<div id="api-message" style="display:none;height:650px; overflow:auto;">
+         <div>This Application Programming Interface (API) is developed by the C&amp;SD team with the purpose to facilitate software and application developers in extracting statistics from C&amp;SD website. Users can refer to the API Example and Data Dictionary below to build your own data request, or directly copy the provided API Example which is dynamically updated based on your current customised settings.</div>
+		<div class="subject_right_title margin_top_30">
+			<a class="expand_more_less" href="#section_api_url" data-bs-toggle="collapse" aria-expanded="true">
+				<div data-bs-toggle="collapse" data-bs-target="#section_api_url">API Example: HTTP GET Request
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">API Example: HTTP GET Request Toggle Collapse Expand</span>
+					</i>
+				</div>
+			</a>
+		</div>
+		<div id="section_api_url" class="collapse show">
+			<p class="api_code">
+				<code>
+					<a id="api_url"></a>
+				</code>
+			</p>
+		</div>
+		<div class="subject_right_title margin_top_30">
+			<a class="expand_more_less" href="#section_python_sample" data-bs-toggle="collapse" aria-expanded="true">
+				<div data-bs-toggle="collapse" data-bs-target="#section_python_sample">API Example: Python HTTP GET Request
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">API Example: Python HTTP GET Request Toggle Collapse Expand</span>
+					</i>
+				</div>
+			</a>
+		</div>
+		<div id="section_python_sample" class="collapse show">
+			<pre class="api_code" id="python_sample">
+			</pre>
+		</div>
+		<div class="subject_right_title margin_top_30">
+			<a class="expand_more_less" href="#section_api_sample" data-bs-toggle="collapse" aria-expanded="true">
+				<div data-bs-toggle="collapse" data-bs-target="#section_api_sample">API Example: HTTP POST Request
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">API Example: HTTP POST Request Toggle Collapse Expand</span>
+					</i>
+				</div>
+			</a>
+		</div>
+		<div id="section_api_sample" class="collapse show">
+			<pre class="api_code" id="api_sample">
+			</pre>
+		</div>
+		
+		<div class="subject_right_title margin_top_30">
+			<a class="expand_more_less" href="#section_jquery_sample" data-bs-toggle="collapse" aria-expanded="true">
+				<div data-bs-toggle="collapse" data-bs-target="#section_jquery_sample">API Example: jQuery HTTP POST Request
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">API Example: jQuery HTTP POST Request Toggle Collapse Expand</span>
+					</i>
+				</div>
+			</a>
+		</div>
+		<div id="section_jquery_sample" class="collapse show">
+			<pre class="api_code" id="jquery_sample">
+			</pre>
+		</div>
+		
+		<div class="subject_right_title margin_top_30">
+			<a class="expand_more_less" href="#data_dictionary" data-bs-toggle="collapse" aria-expanded="true">
+				<div data-bs-toggle="collapse" data-bs-target="#data_dictionary">Data Dictionary
+					<i aria-hidden="true" class="material-icons" >
+						<span class="dummy_collapse">Data Dictionary Toggle Collapse Expand</span>
+					</i>
+				</div>
+			</a>
+		</div>
+		<div>
+		<table id="data_dictionary" class="no_min_width collapse show">
+		<thead>
+			<tr>
+				<th class="titledictcol">Parameter</th>
+				<th class="titledictcol">Description</th>
+				<th class="titledictcol">Type</th>
+				<th class="titledictcol">Values</th>
+				<th class="titledictcol">Remark</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="dictcol">id</td>
+				<td class="dictcol">Table number</td>
+				<td class="dictcol">
+				mandatory<br/>
+				(one only)
+				</td>
+				<td id='data_dictionary_id' class="dictcol">
+				</td>
+				<td class="dictcol">
+				</td>
+			</tr>
+			<tr>
+				<td class="dictcol">lang</td>
+				<td class="dictcol">Language for the descriptions in the Data Response (JSON)</td>
+				<td class="dictcol">
+				mandatory<br/>
+				(one only)
+				</td>
+				<td class="dictcol">
+				EN : English<br/>
+				TC : Traditional Chinese<br/>
+				SC : Simplified Chinese
+				</td>
+				<td class="dictcol">
+				Specify the language of textual description in the data response JSON
+				</td>
+			</tr>
+			<tr>
+				<td class="dictcol">period</td>
+				<td class="dictcol">Period</td>
+				<td class="dictcol">mandatory<br/>
+				(in range)</td>
+				<td class="dictcol">in range<br/>
+				Year: YYYY,YYYY<br/>
+				Quarter: YYYYXX,YYYYXX XX=03,06,09 or 12<br/>
+				Month: YYYYMM,YYYYMM MM=01 to 12<br/>
+				</td>
+				<td class="dictcol">Examples<br/>
+Year: 2015,2017 refers to year 2015-2017<br/>
+Quarter: <br/>
+201706,201712 refers to Q2-Q4 2017<br/>
+201703,201703 refers to Q1 2017<br/>
+Month: 201701,201712 refers to Jan-Dec 2017
+
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		</div>
+		
+	</div><script>var published_at="1762099200";</script></div></div>
+
+<div class="footer_map" id="footer_map"></div>
+
+<div id="footer"></div>
+
+	<!-- <script src="../static/js/jquery-ui-1.11.4.js"></script> -->
+	<!-- <script src="/static/js/jquery.cover.js"></script> -->
+	<!-- <script src="/static/js/swiper.js"></script> -->
+	<!-- <script src="/static/js/swiper-slider.js"></script> -->
+	<!-- <script src="/static/js/govhk.js"></script> -->
+
+	<script src="/js/header.js"></script>
+	<script src="/js/footer.js"></script>
+	<script src="/js/menu.js"></script>
+	<script src="/js/search_ajax.js"></script>
+	<script src="/js/owl.carousel.min.js"></script>
+
+	<script src="/js/umd/popper.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>  
+	<script src="/js/common.js"></script>
+	<script src="/js/owl_slider.js"></script>
+    <script src="/js/Print.js"></script>
+</body>
+</html>
+

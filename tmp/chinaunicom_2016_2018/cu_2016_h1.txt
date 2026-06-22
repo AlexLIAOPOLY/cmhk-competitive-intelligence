@@ -1,0 +1,3718 @@
+中國聯合網絡通信(香港)股份有限公司
+
+CHINA UNICOM (HONG KONG) LIMITED
+
+香港皇后大道中
+
+電話
+
+號中環中心
+
+樓
+
+傳真
+
+中期報告 2016 INTERIM REPORT
+
+中國聯合網絡通信 ( 香港 ) 股份有限公司
+
+中期報告 INTERIM REPORT
+
+2016
+中國聯合網絡通信(香港)股份有限公司
+CHINA UNICOM (HONG KONG) LIMITED
+HKEx : 0762
+
+NYSE : CHU
+
+FORWARD-LOOKING STATEMENTS
+Certain statements contained in this report may be viewed as “forward-looking statements” within the
+meaning of Section 27A of the U.S. Securities Act of 1933 (as amended) and Section 21E of the U.S.
+Securities Exchange Act of 1934 (as amended). Such forward-looking statements are subject to known
+and unknown risks, uncertainties and other factors, which may cause the actual performance, financial
+condition or results of operations of the Company to be materially different from any future performance,
+financial condition or results of operations implied by such forward-looking statements. In addition, we
+do not intend to update these forward-looking statements. Further information regarding these risks,
+uncertainties and other factors is included in the Company’s most recent Annual Report on Form 20-F
+and other filings with the U.S. Securities and Exchange Commission.
+
+CONTENTS
+2
+
+Chairman’s Statement
+
+8
+
+Financial Overview
+
+10
+
+Unaudited Condensed Consolidated Interim Statement of Income
+
+11
+
+Unaudited Condensed Consolidated Interim Statement of Comprehensive Income
+
+12
+
+Unaudited Condensed Consolidated Interim Statement of Financial Position
+
+14
+
+Unaudited Condensed Consolidated Interim Statement of Changes in Equity
+
+15
+
+Unaudited Condensed Consolidated Interim Statement of Cash Flows
+
+16
+
+Notes to Unaudited Condensed Consolidated Interim Financial Information
+
+42
+
+Independent Review Report
+
+43
+
+Other Information
+
+Mbps
+C
+ID
+
+CHAIRMAN’S STATEMENT
+
+WANG XIAOCHU
+
+Chairman and Chief Executive Officer
+
+Big Data
+
+t
+In
+t+
+ne
+er
+
+Mbps
+
+DEAR SHAREHOLDERS,
+
+OVERALL RESULTS
+
+g
+din
+uil
+-b
+C0
+
+In the first half of 2016, the Company endeavoured to attain long-term sustainable development, actively promoted the
+implementation of the new development strategy centered on “Focus, Cooperation and Innovation” and strived to mitigate the
+underlying shortcomings, such as network, terminals, channels, services, IT, systems and mechanisms. The Company achieved
+initial success in turning around the unfavorable conditions in business development and saw the emergence of positive business
+momentum. A more solid foundation has been built for healthy development in the future with stronger growth momentum.
+
+In the first half of 2016, service revenue of the Company bottomed out and reached RMB121.91 billion, up by 1.4% year-on-year
+and 6.0% half-on-half. Revenues from non-voice services accounted for 73.1% of the service revenue, representing a year-onyear increase of 4.8 percentage points, evidencing further optimisation of the revenue structure.
+To promote long-term sustainable development, the Company braved short-term profit pressure, strengthened its fundamental
+capabilities, and increased cost initiatives as appropriate to strive for a gradual turnaround. During the first half of the year, the
+Company’s EBITDA amounted to RMB41.28 billion, down by 18.2% year-on-year and up by 11.5% half-on-half, and accounted
+for 33.9% of the service revenue. Net profit of the Company was RMB1.43 billion, down by 79.6% year-on-year. The year-on-
+
+2
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+Chairman’s Statement
+
+year decline in EBITDA and net profit was mainly because sales and marketing expenses increased significantly year-on-year
+during the period, and tower usage fee kick-in, higher energy charges and property rentals, etc. led to a substantial increase
+year-on-year in network, operation and support expenses. Compared to the loss attributable to equity shareholders of the
+Company (excluding the gain on disposal of tower assets) of approximately RMB3.36 billion in the second half of last year, net
+profit for the first half of this year showed substantial improvement.
+.
+Leveraging our own resources and strengths and through “Focus Strategy” and cooperation, the Company swiftly enhanced
+its network capabilities despite decline of capital expenditure by 39% year-on-year to RMB18.10 billion in the first half of the
+year. Benefitted from the gradual improvement in service revenue and the substantial decline in capital expenditure, free cash
+flow of the Company improved significantly and reached RMB23.83 billion; liabilities-to-assets ratio dropped by 0.2 percentage
+point to 61.9%.
+Taking into account the Company’s profitability, debt obligations and cash flows, capital required for future development, etc., the
+Board of Directors does not recommend the payment of interim dividend for the current year. The Board will submit a proposal
+for final dividend payment based on our overall results for the year for consideration at the shareholders’ general meeting.
+
+BUSINESS DEVELOPMENT
+Mobile Service Sets to Accelerate as 4G Gaining Edge
+In the first half of 2016, the Company achieved initial success in overcoming operational challenges. Mobile service revenue
+reached RMB73.04 billion, the decline of which narrowed from -8.0% last year to -0.6% during the period. The number of mobile
+billing subscribers turned around the downward trend for consecutive months last year, registering a net addition of 8.39 million
+and reaching a total of 260.70 million mobile billing subscribers. During the first half of the year, the Company expedited the 4G
+network construction with a focus on key areas and capitalised on the abundant handset line-up to drive subscriber upgrade.
+The Company also sped up the migration of 2G/3G users to 4G, and strengthened the integrated development of 4G, fixed-line
+broadband, video and applications, etc. to enhance customer experience and value. Sales capability was fully enhanced through
+target marketing, improved services and innovative business models. With the improvement in 4G network quality, terminal
+market share and competitiveness, the number of 4G subscribers of the Company witnessed a rapid growth with a net increase
+of 28.26 million in the first half of the year to a total of 72.42 million. Improvement in the mobile subscriber mix accelerated with
+the proportion of 4G subscribers to mobile billing subscribers increasing to 28% from 18% as at the end of last year. Mobile
+billing subscribers ARPU steadily improved. The mobile service growth is set to accelerate.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+3
+
+Chairman’s Statement
+
+Sustained Growth in Fixed-lined Service Amid Fierce Competition, Leveraging High-Bandwidth and
+Video Offerings
+The Company actively leveraged its advantages in fibre network and informatisation to accelerate the development of its highgrowth businesses such as Internet Date Centre (IDC), Information and Communications Technology (ICT), value-added and
+integrated information services, mitigating the risk of revenue decline in fixed-line voice. The Company continued to strengthen
+its integrated services offering including fixed-line, mobile and informatisation, and promoted the synergetic developments across
+various services. In the first half of the year, the fixed-line service revenue increased by 4.4% year-on-year to RMB48.23 billion,
+of which fixed-line voice revenue accounted for 14%, further lowering the impact of decline in fixed-line voice.
+Faced with fierce market competition in the fixed-line broadband, the Company proactively strengthened and enhanced its
+differentiated competitive edge of “quality plus service” in the broadband service, upgraded network speed for subscribers,
+enriched offerings of high-bandwidth content and applications including 4K high-definition videos, improved end-to-end network
+user perception and service experience, and leveraged “Smart WO Family” to accelerate growth in innovative service for home
+Internet. In the first half of the year, the Company’s fixed-line broadband access revenue amounted RMB22.23 billion, flat yearon-year, and fixed-line broadband subscribers increased by 4.7% year-on-year to 73.94 million, of which 62% were Fibre-tothe-home (FTTH) subscribers. “Smart WO Family” subscribers accounted for 21% of the fixed-line broadband subscribers, up
+by 8 percentage points compared to the end of last year.
+
+Foster Scale Development in Key Innovative Services
+The Company actively created new growth engines in innovative service, focusing on platform-based services and industrial
+Internet, and pushed forward development of innovative service including Internet of Things, IDC and cloud computing, Big Data,
+industry applications, payment/finance and so on. The Company expedited the informatisation deployment in key industries by
+setting up 7 industrial Internet bases and 9 incubators centered on 8 major areas, and won a number of large scale Internet+
+projects. The Company accelerated overseas extension of IDC and cloud platform, enhancing business expansion capability.
+In the first half of the year, the Company’s IDC and cloud computing revenue reached RMB4.76 billion, up 39% year-on-year.
+ICT revenue reached RMB3.28 billion, up 34% year-on-year.
+The Company continued to innovate on data traffic operation, actively promoted its WO+ open capabilities, and facilitated the
+scale operation of dedicated and backward data traffic monetisation. In the first half of the year, the mobile handset data usage
+of the Company increased by 102% year-on-year; the monthly average DOU per 4G subscriber reached 1,246MB.
+
+NETWORK DEPLOYMENT
+Focusing on key areas and key services such as 4G and fixed-line broadband, the Company deepened cooperation and resources
+sharing to effectively deploy premium network. In the first half of the year, the proportion of investment in 4G network of the
+Company increased from 25% last year to 48%, with a net increase of 189,000 4G base stations to a total of 588,000. Leading
+advantage in network coverage, quality and speed in core areas gradually emerged, and user perception of network improved
+rapidly, building up foundation capabilities for accelerated development in the mobile service. As a result of an accelerated push
+in fibre broadband network upgrade, eight provinces in Northern China achieved “all fibre network”, and city areas basically
+have access capability to 100Mbps connection. The Company continued to enhance its basic network capabilities such as
+transmission and carrying network.
+
+4
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+Chairman’s Statement
+
+DEEPENED COOPERATION AND INNOVATIVE TRANSFORMATION
+The Company actively promoted open cooperation in various aspects. It pushed forward comprehensive and strategic cooperation
+with China Telecom to facilitate resources sharing within the industry, promote cost-effectiveness, efficiency and rapid improvement
+in the network capability. In the meantime, the Company also promoted 6-mode all-access terminals together with China Telecom
+and unified the standards for 4K smart set-top box and broadband service to further enhance service quality.
+.
+The Company deepened innovation in its systems and mechanisms. For the fundamental services, the Company promoted
+simplification of administration and pushed forward appropriate delegation and empowerment. For the innovative services, it will
+promote the innovation of corporate governance mechanism, systems and organisational structure of its professional subsidiaries.
+The Company also improved the service capability of its IT systems; optimised the staff promotion and incentive system and
+the staff structure; initiated internal innovation incubation projects; facilitated cost control and efficiency enhancement, and
+continuously lifted management efficiency and operational vibrancy.
+
+CORPORATE GOVERNANCE AND SOCIAL RESPONSIBILITY
+The Company insists on its aim of high standard in corporate governance. It continued to improve internal control and risk
+management, strengthen execution, and increase corporate transparency, leading to wide-spread recognition in the capital
+market for its efforts in management and corporate governance. This year, the Company was awarded a number of accolades,
+including “Asia’s No.1 Best Managed Company – TMT Sector” by FinanceAsia, and “Asia’s No. 1 Most Honored Telecom
+Company” by Institutional Investor.
+The Company has long been dedicated to fulfilling its social responsibility. It actively supported the construction of smart cities
+and development of information technologies that benefit the livelihood of the general public, facilitating the progress of national
+informatisation and the transformation and upgrade of traditional industries. The Company innovated its service model, and built
+a green and secure network environment to provide reliable and convenient services to customers. Through energy conservation,
+emission reduction, resources co-building and co-sharing and deepened cooperation across the value chain, the Company
+strived to become a green and environmental-friendly enterprise. The Company also promoted fairness and harmony, cared
+about the career development and all-round growth of its employees, continued to engage in targeted poverty relief, donation
+and scholarship activities to contribute to society and establish a positive social image of the Company.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+5
+
+Chairman’s Statement
+
+OUTLOOK
+Currently, the Company is undergoing a new stage of transformation, and facing both opportunities and challenges. As the
+government is vigorously promoting the integration of information technology and traditional industries to accelerate the
+development of new economy and nurture new driving forces, enormous market potential for the Internet of Things, cloud computing
+and Big Data, etc. are opening up. There is still room for mobile service consumption upgrade. In particular, businesses with
+significant growth prospects including data traffic, video service, smart applications, will become the key growth drivers. All of
+them provide major market opportunities for the Company’s development. In the meantime, the traditional telecommunications
+sector is becoming saturated, and commoditised competition within the domestic telecommunications industry is intensifying.
+Cross-industry integration under new industry dynamics is exerting ever increasing pressure on the telecommunications industry.
+Policies such as “Speed Upgrade and Tariff Reduction” are also imposing certain challenges on the Company’s business
+development and financial results improvement. The Company needs to firmly grasp favorable window of opportunity to swiftly
+overcome the difficulties.
+We are more than confident in our future development. The Company will persist in its strategic focus and further deepen
+implementation of Focus Strategy, step up the improvement of capabilities in marketing, network support, operations and
+management. The Company aims to drive continuous improvement in operational performance with continuous enhancement
+in its basic capabilities, and speed up the turnaround in financial performance. The Company will deploy premium network
+with craftsmanship spirit, accelerate the development of selective advantages for its mobile network in key areas, proceed with
+fibre upgrade of its fixed-line broadband network steadily, and fully enhance its service support capability. The Company will
+pragmatically lay a solid foundation for its operation, expedite 4G development to drive mobile service growth, enhance the
+value of broadband products with high-quality applications to drive stable growth in fixed-line service, and create new growth
+engines with scale development in key innovative service. The Company will speed up implementation of cooperation projects,
+extend the width and depth of cooperation, expand the scale of social cooperation to realise solid achievement in cooperation.
+We will also deepen reform in systems and mechanisms, strengthen corporate culture establishment, lift corporate vibrancy,
+deepen quality and efficiency improvement, and enhance refined management capability of the Company to continuously
+enhance shareholder value.
+
+6
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+Chairman’s Statement
+
+Lastly, on behalf of the Board of Directors of the Company, I would like to express my sincere gratitude to all shareholders,
+customers and friends across the society for their support to the Company, and to all employees for their dedication and
+contribution along the way!
+
+.
+
+Wang Xiaochu
+Chairman and Chief Executive Officer
+Hong Kong, 17 August 2016
+Note 1: EBITDA represents profit for the period before finance costs, interest income, share of net losses of associates, share of net profit/(loss)
+of joint ventures, other income-net, income tax, depreciation and amortisation. As the telecommunications business is a capital intensive
+industry, capital expenditure and finance costs may have a significant impact on the net profit of the companies with similar operating
+results. Therefore, the Company believes that EBITDA may be helpful in analysing the operating results of a telecommunications service
+operator like the Group.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+7
+
+FINANCIAL OVERVIEW
+
+REVENUE
+In the first half of 2016, total revenue was RMB140.26 billion, down by 3.1% as compared to the same period of last year. The
+Company continued to push forward the implementation of “Focus Strategy”, operating results improved progressively. Service
+revenue was RMB121.91 billion in the first half of 2016, which turned around from negative growth to positive growth, up by 1.4%
+as compared to the same period of last year. The rapid decline trend of mobile service has been restrained, service revenue
+from the mobile service was RMB73.04 billion, down by 0.6% as compared to the same period of last year. Service revenue
+from the fixed-line service sustained stable growth, and service revenue from the fixed-line service was RMB48.23 billion, up
+by 4.4% as compared to the same period of last year.
+As a result of the rapid development in the Internet service and continuous optimisation in the Company’s business structure,
+revenue from non-voice service as a percentage of service revenue further improved from 68.3% in the first half of 2015 to
+73.1% in the first half of 2016.
+
+COSTS AND EXPENSES1
+In the first half of 2016, total costs and expenses were RMB138.43 billion, up by 2.0% as compared to the same period of last year.
+By the impact of increase in telecommunications towers usage fee on one hand and expansion of its network scale and increase
+in utilities charges and properties rental expenses on the other hand, network, operation and support expenses were RMB25.62
+billion in the first half of 2016, increase by RMB6.47 billion and up by 33.8% as compared to the same period of last year.
+As depreciation charge saving was benefited from the disposal of telecommunications towers related assets, depreciation and
+amortisation charge were RMB37.92 billion in the first half of 2016, decrease by RMB0.63 billion and down by 1.6% as compared
+to the same period of last year.
+The Company accelerated market expansion and increased market investment. As a result, selling and marketing expenses
+were RMB17.13 billion in the first half of 2016, increase by RMB2.50 billion and up by 17.1% as compared to the same period
+of last year.
+As a result from decrease in volume of interconnection voice calls, interconnection charges were RMB6.37 billion in the first
+half of 2016, down by 2.9% as compared to the same period of last year.
+Costs of telecommunications products sold were RMB20.22 billion, down by 19.4% as compared to the same period of last year.
+It is primarily due to decrease in sales of mobile handsets. Loss on the sales of telecommunications products was RMB1.88
+billion, of which terminal subsidy cost accounted to RMB1.76 billion, up by 43.5% as compared to the same period of last year.
+The Company continued to deepen the reform in recruitment and remuneration as well as resources allocation. Employee benefit
+expenses were RMB18.27 billion in the first half of 2016, up by 1.9% as compared to the same period of last year.
+General, administrative and other expenses were RMB11.36 billion, increased by RMB0.49 billion and up by 4.5% as compared
+to the same period of last year.
+Benefited from the change of exchange gain/loss by RMB0.93 billion, finance costs, net of interest income, was RMB2.03 billion,
+decrease by RMB1.04 billion and down by 34.0% as compared to the same period of last year.
+
+8
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+Financial Overview
+
+EARNINGS
+In the first half of 2016, profit before income tax was RMB1.82 billion, down by 79.6% as compared to the same period of last
+year. Profit for the period was RMB1.43 billion. Basic earnings per share was RMB0.06 in the first half of 2016. EBITDA2 was
+RMB41.28 billion in the first half of 2016, and EBITDA as a percentage of the service revenue was 33.9%. Decrease in EBITDA
+and profit for the period as compared to the same period of last year was primarily due to the significant increase as compared.
+to the same period of last year in selling and marketing expenses and the significant increase as compared to the same period
+of last year in network, operation and support expenses resulted from increase in telecommunications towers usage fee and
+increase in utilities charges and properties rental expenses.
+
+OPERATING CASH FLOW AND CAPITAL EXPENDITURE
+In the first half of 2016, the Company’s net cash flow from operating activities was RMB41.93 billion, up by 9.5% as compared
+to the same period of last year. Capital expenditure was RMB18.10 billion in the first half of 2016.
+
+STATEMENT OF FINANCIAL POSITION
+Liabilities-to-assets ratio decreased from 62.1% as at 31 December 2015 to 61.9% as at 30 June 2016. Debt-to-capitalisation
+ratio changed from 39.2% as at 31 December 2015 to 40.4% as at 30 June 2016.
+Note 1: Including interconnection charges, depreciation and amortisation, network, operation and support expenses, employee benefit expenses,
+selling and marketing expenses, costs of telecommunications products sold, general, administrative and other expenses, finance costs,
+interest income, share of net losses of associates, share of net profit/(loss) of joint ventures and other income-net.
+Note 2: EBITDA represents profit for the period before finance costs, interest income, share of net losses of associates, share of net profit/(loss)
+of joint ventures, other income-net, income tax, depreciation and amortisation. As the telecommunications business is a capital intensive
+industry, capital expenditure and finance costs may have a significant impact on the net profit of the companies with similar operating
+results. Therefore, the Company believes that EBITDA may be helpful in analysing the operating results of a telecommunications service
+operator like the Group.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+9
+
+UNAUDITED CONDENSED CONSOLIDATED
+INTERIM STATEMENT OF INCOME
+FOR THE SIX MONTHS ENDED 30 JUNE 2016
+(All amounts in Renminbi (“RMB”) millions, except per share data)
+
+Six months ended 30 June
+Note
+Revenue
+
+5
+
+2016
+
+2015
+
+140,255
+
+144,685
+(6,558)
+(38,543)
+(19,154)
+(17,925)
+(25,080)
+(25,504)
+(3,230)
+160
+(460)
+(9)
+550
+
+Interconnection charges
+Depreciation and amortisation
+Network, operation and support expenses
+Employee benefit expenses
+Costs of telecommunications products sold
+Other operating expenses
+Finance costs
+Interest income
+Share of net losses of associates
+Share of net profit/(loss) of joint ventures
+Other income – net
+
+11
+
+(6,366)
+(37,915)
+(25,624)
+(18,271)
+(20,217)
+(28,493)
+(2,468)
+441
+(150)
+56
+576
+
+Profit before income tax
+Income tax expenses
+
+12
+
+1,824
+(395)
+
+8,932
+(1,942)
+
+Profit for the period
+
+1,429
+
+6,990
+
+Profit attributable to:
+Equity shareholders of the Company
+
+1,429
+
+6,990
+
+6
+7
+8
+9
+10
+
+Earnings per share for profit attributable to
+equity shareholders of the Company during the period:
+Basic earnings per share (RMB)
+
+13
+
+0.06
+
+0.29
+
+Diluted earnings per share (RMB)
+
+13
+
+0.06
+
+0.28
+
+The notes on pages 16 to 41 are an integral part of this unaudited condensed consolidated interim financial information.
+
+10
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+UNAUDITED CONDENSED CONSOLIDATED
+INTERIM STATEMENT OF COMPREHENSIVE INCOME
+FOR THE SIX MONTHS ENDED 30 JUNE 2016
+(All amounts in RMB millions)
+
+Six months ended 30 June
+2016
+
+2015
+
+Profit for the period
+
+1,429
+
+6,990
+
+Other comprehensive income
+Items that will not be reclassified to statement of income:
+Changes in fair value of financial assets through other comprehensive income
+Tax effect on changes in fair value of financial assets through
+   other comprehensive income
+
+(679)
+
+(45)
+
+5
+
+11
+
+(674)
+3
+
+(34)
+3
+
+(671)
+
+(31)
+
+73
+
+(7)
+
+Other comprehensive income for the period, net of tax
+
+(598)
+
+(38)
+
+Total comprehensive income for the period
+
+831
+
+6,952
+
+Total comprehensive income attributable to:
+Equity shareholders of the Company
+
+831
+
+6,952
+
+Changes in fair value of financial assets through
+   other comprehensive income, net of tax
+Remeasurement of net defined benefit liability, net of tax
+
+Item that may be reclassified subsequently to statement of income:
+Currency translation differences
+
+The notes on pages 16 to 41 are an integral part of this unaudited condensed consolidated interim financial information.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+11
+
+UNAUDITED CONDENSED CONSOLIDATED
+INTERIM STATEMENT OF FINANCIAL POSITION
+AS AT 30 JUNE 2016
+(All amounts in RMB millions)
+
+30 June
+2016
+
+31 December
+2015
+
+435,111
+9,353
+2,771
+31,892
+1,097
+18,322
+5,266
+4,191
+28,445
+
+454,631
+9,148
+2,771
+31,997
+978
+18,322
+5,642
+4,852
+25,335
+
+536,448
+
+553,676
+
+3,497
+16,974
+11,521
+3,517
+5,113
+135
+77
+21,137
+
+3,946
+14,957
+10,864
+2,846
+1,994
+106
+202
+21,755
+
+61,971
+
+56,670
+
+598,419
+
+610,346
+
+20
+
+179,102
+(21,332)
+
+179,102
+(20,734)
+
+21
+
+–
+70,206
+
+4,071
+68,777
+
+227,976
+
+231,216
+
+Note
+ASSETS
+Non-current assets
+Property, plant and equipment
+Lease prepayments
+Goodwill
+Interest in associates
+Interest in joint ventures
+Amounts due from related parties
+Deferred income tax assets
+Financial assets at fair value through other comprehensive income
+Other assets
+
+Current assets
+Inventories and consumables
+Accounts receivable
+Prepayments and other current assets
+Amounts due from related parties
+Amounts due from domestic carriers
+Financial assets at fair value through profit and loss
+Short-term bank deposits
+Cash and cash equivalents
+
+14
+
+31
+12
+15
+16
+
+17
+18
+19
+31
+
+Total assets
+EQUITY
+Equity attributable to equity shareholders of the Company
+Share capital
+Reserves
+Retained profits
+   – Proposed 2015 final dividend
+  – Others
+Total equity
+
+12
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+UNAUDITED CONDENSED CONSOLIDATED INTERIM STATEMENT
+OF FINANCIAL POSITION
+AS AT 30 JUNE 2016
+(All amounts in RMB millions)
+
+30 June
+2016
+
+31 December
+2015
+
+4,435
+27,841
+7,984
+16
+2,683
+219
+
+1,748
+36,928
+2,000
+18
+2,005
+357
+
+43,178
+
+43,056
+
+48,741
+49,964
+127
+11,497
+2,000
+145,802
+938
+1,553
+14,692
+2,634
+1,254
+226
+2,792
+45,045
+
+83,852
+19,945
+84
+2,499
+–
+167,396
+3,163
+1,437
+3,930
+1,300
+920
+394
+2,797
+48,357
+
+327,265
+
+336,074
+
+Total liabilities
+
+370,443
+
+379,130
+
+Total equity and liabilities
+
+598,419
+
+610,346
+
+Net current liabilities
+
+(265,294)
+
+(279,404)
+
+Total assets less current liabilities
+
+271,154
+
+274,272
+
+Note
+LIABILITIES
+Non-current liabilities
+Long-term bank loans
+Promissory notes
+Corporate bonds
+Deferred income tax liabilities
+Deferred revenue
+Other obligations
+
+Current liabilities
+Short-term bank loans
+Commercial papers
+Current portion of long-term bank loans
+Current portion of promissory notes
+Current portion of corporate bonds
+Accounts payable and accrued liabilities
+Taxes payable
+Amounts due to ultimate holding company
+Amounts due to related parties
+Amounts due to domestic carriers
+Dividend payable
+Current portion of deferred revenue
+Current portion of other obligations
+Advances from customers
+
+22
+23
+24
+12
+
+25
+26
+22
+23
+24
+27
+31
+31
+21
+
+The notes on pages 16 to 41 are an integral part of this unaudited condensed consolidated interim financial information.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+13
+
+UNAUDITED CONDENSED CONSOLIDATED
+INTERIM STATEMENT OF CHANGES IN EQUITY
+FOR THE SIX MONTHS ENDED 30 JUNE 2016
+(All amounts in RMB millions)
+
+Attributable to equity shareholders of the Company
+Employee
+share-based
+Share compensation
+capital
+reserve
+
+Investment
+revaluation
+reserve
+
+Statutory
+reserves
+
+Convertible
+bonds
+reserve
+
+Other
+reserve
+
+Retained
+profits
+
+Total
+equity
+
+Balance at 1 January 2015
+Total comprehensive income for the period
+Equity-settled share option schemes:
+– Issuance of shares upon exercise of options
+– Transfer between reserves upon
+   lapsing of options
+Dividends relating to 2014 (Note 21)
+
+179,101
+–
+
+29
+–
+
+(4,227)
+(34)
+
+27,906
+–
+
+572
+–
+
+(43,762)
+(4)
+
+67,922
+6,990
+
+227,541
+6,952
+
+1
+
+–
+
+–
+
+–
+
+–
+
+–
+
+–
+
+1
+
+–
+–
+
+(29)
+–
+
+–
+–
+
+–
+–
+
+–
+–
+
+–
+–
+
+29
+(4,789)
+
+–
+(4,789)
+
+Balance at 30 June 2015
+
+179,102
+
+–
+
+(4,261)
+
+27,906
+
+572
+
+(43,766)
+
+70,152
+
+229,705
+
+Balance at 1 January 2016
+Total comprehensive income for the period
+Dividends relating to 2015 (Note 21)
+
+179,102
+–
+–
+
+–
+–
+–
+
+(6,406)
+(674)
+–
+
+28,780
+–
+–
+
+–
+–
+–
+
+(43,108)
+76
+–
+
+72,848
+1,429
+(4,071)
+
+231,216
+831
+(4,071)
+
+Balance at 30 June 2016
+
+179,102
+
+–
+
+(7,080)
+
+28,780
+
+–
+
+(43,032)
+
+70,206
+
+227,976
+
+The notes on pages 16 to 41 are an integral part of this unaudited condensed consolidated interim financial information.
+
+14
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+UNAUDITED CONDENSED CONSOLIDATED
+INTERIM STATEMENT OF CASH FLOWS
+FOR THE SIX MONTHS ENDED 30 JUNE 2016
+(All amounts in RMB millions)
+
+Six months ended 30 June
+2016
+
+2015
+
+43,337
+(1,407)
+
+39,668
+(1,388)
+
+41,930
+
+38,280
+
+(46,650)
+3,000
+(1,109)
+
+(39,796)
+–
+(1,625)
+
+(44,759)
+
+(41,421)
+
+(3,737)
+5,906
+
+(4,643)
+(1,207)
+
+Net cash inflow/(outflow) from financing activities
+
+2,169
+
+(5,850)
+
+Net decrease in cash and cash equivalents
+Cash and cash equivalents, beginning of period
+Effect of changes in foreign exchange rate
+
+(660)
+21,755
+42
+
+(8,991)
+25,308
+(5)
+
+Cash and cash equivalents, end of period
+
+21,137
+
+16,312
+
+Analysis of the balances of cash and cash equivalents:
+Cash balances
+Bank balances
+
+2
+21,135
+
+2
+16,310
+
+21,137
+
+16,312
+
+Note
+Cash flows from operating activities
+Cash generated from operations
+Income tax paid
+Net cash inflow from operating activities
+Cash flows from investing activities
+Purchase of property, plant and equipment
+Proceeds from Tower Assets Disposal
+Other cash flows arising from investing activities
+
+31
+
+Net cash outflow from investing activities
+Cash flows from financing activities
+Dividend paid to equity shareholder of the Company
+Other cash flows arising from financing activities
+
+21
+
+The notes on pages 16 to 41 are an integral part of this unaudited condensed consolidated interim financial information.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+15
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+1.
+
+ORGANISATION AND PRINCIPAL ACTIVITIES
+China Unicom (Hong Kong) Limited (the “Company”) was incorporated as a limited liability company in the Hong Kong
+Special Administrative Region (“Hong Kong”), the People’s Republic of China (the “PRC”) on 8 February 2000. The principal
+activity of the Company is investment holding. The principal activities of the Company’s subsidiaries are the provision of
+cellular and fixed-line voice and related value-added services, broadband and other Internet-related services, information
+communications technology services, and business and data communications services in the PRC. The GSM cellular voice,
+WCDMA cellular voice, TD-LTE cellular voice, LTE FDD cellular voice and related value-added services are referred to
+as the “mobile service”, the services aforementioned other than the mobile service are hereinafter collectively referred to
+as the “fixed-line service”. The Company and its subsidiaries are hereinafter referred to as the “Group”. The address of
+the Company’s registered office is 75th Floor, The Center, 99 Queen’s Road Central, Hong Kong.
+The shares of the Company were listed on The Stock Exchange of Hong Kong Limited on 22 June 2000 and the American
+Depositary Shares of the Company were listed on the New York Stock Exchange on 21 June 2000.
+The substantial shareholders of the Company are China Unicom (BVI) Limited (“Unicom BVI”) and China Unicom Group
+Corporation (BVI) Limited (“Unicom Group BVI”). The majority of equity interests in Unicom BVI is owned by China United
+Network Communications Limited (“A Share Company”, a joint stock company incorporated in the PRC on 31 December
+2001, with its A shares listed on the Shanghai Stock Exchange on 9 October 2002). The majority of the equity interest in
+A Share Company is owned by China United Network Communications Group Company Limited (a state-owned enterprise
+established in the PRC, hereinafter referred to as “Unicom Group”). Unicom Group BVI is a wholly-owned subsidiary of
+Unicom Group. As a result, the directors of the Company consider Unicom Group to be the ultimate holding company.
+
+2.
+
+BASIS OF PREPARATION
+This unaudited condensed consolidated interim financial information for the six months ended 30 June 2016 has been
+prepared in accordance with the applicable disclosure requirements of the Rules Governing the Listing of Securities on
+The Stock Exchange of Hong Kong Limited and International Accounting Standard (“IAS”) 34 “Interim financial reporting”
+issued by the International Accounting Standards Board (“IASB”). IAS 34 is consistent with Hong Kong Accounting Standard
+(“HKAS”) 34 “Interim financial reporting” issued by the Hong Kong Institute of Certified Public Accountants (“HKICPA”)
+and accordingly this unaudited condensed consolidated interim financial information is also prepared in accordance with
+HKAS 34.
+The unaudited condensed consolidated interim financial information has not been audited, but has been reviewed by
+the Company’s Audit Committee. It has also been reviewed by the Company’s auditor in accordance with Hong Kong
+Standard on Review Engagements 2410, “Review of interim financial information performed by the independent auditor
+of the entity”, issued by the HKICPA.
+The unaudited condensed consolidated interim financial information should be read in conjunction with the Group’s annual
+financial statements for the year ended 31 December 2015. The Group’s policies on financial risk management, including
+management of market risk, credit risk and liquidity risk, as well as capital risk management, were set out in the financial
+statements included in the Company’s 2015 Annual Report and there have been no significant changes in any financial
+risk management policies for the six months ended 30 June 2016.
+
+16
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+2.
+
+BASIS OF PREPARATION (CONTINUED)
+The financial information relating to the financial year ended 31 December 2015 that is included in this interim financial report
+of 2016 as comparative information does not constitute the Company’s statutory annual consolidated financial statements
+for that financial year but is derived from those financial statements. Further information relating to these statutory financial
+statements disclosed in accordance with section 436 of the Hong Kong Companies Ordinance (Cap. 622) is as follows:
+The Company has delivered the financial statements for the year ended 31 December 2015 to the Registrar of Companies
+in accordance with section 662(3) of, and Part 3 of Schedule 6 to, the Hong Kong Companies Ordinance (Cap 622).
+The Company’s auditor has reported on those financial statements. The auditor’s report was unqualified; did not include
+a reference to any matters to which the auditor drew attention by way of emphasis without qualifying its report; and did
+not contain a statement under section 406(2), 407(2) or (3) of the Hong Kong Companies Ordinance (Cap 622).
+
+(a)
+
+Going Concern Assumption
+As at 30 June 2016, current liabilities of the Group exceeded current assets by approximately RMB265.3 billion
+(31 December 2015: approximately RMB279.4 billion). Given the Group’s expected capital expenditures in the
+foreseeable future, management has comprehensively considered the Group’s available sources of funds as follows:
+•
+
+The Group’s continuous net cash inflow from operating activities;
+
+•
+
+Approximately RMB328.6 billion of revolving banking facilities and registered quota of corporate bonds, of
+which approximately RMB262.9 billion was unutilised as at 30 June 2016; and
+
+•
+
+Other available sources of financing from domestic banks and other financial institutions given the Group’s
+credit history.
+
+In addition, the Group believes it has the ability to raise funds from the short, medium and long-term perspectives
+and maintain reasonable financing costs through appropriate financing portfolio.
+Based on the above considerations, the Board of Directors is of the opinion that the Group has sufficient funds
+to meet its working capital requirements and debt obligations. As a result, the unaudited condensed consolidated
+interim financial information of the Group for the six months ended 30 June 2016 have been prepared on a going
+concern basis.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+17
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+3.
+
+SIGNIFICANT ACCOUNTING POLICIES
+Except as described below, the accounting policies applied in the preparation of this unaudited condensed consolidated
+interim financial information are consistent with those used in the preparation of the annual financial statements for the
+year ended 31 December 2015.
+The following amendments to standards are mandatory for the first time for the financial year beginning 1 January 2016
+and are applicable to the Group:
+•
+
+Annual Improvements to IFRSs/HKFRSs 2012-2014 Cycle
+
+•
+
+Amendments to IAS/HKAS 1, “Disclosure initiative”
+
+•
+
+Amendments to IAS/HKAS 27, “Equity method in separate financial statements”
+
+None of these amendments have had a material effect on how the Group’s results and financial position for the current
+or prior periods have been prepared or presented.
+In addition, the IASB and HKICPA also published a number of new standards, amendments to standards and interpretations
+which are effective for the financial year beginning after 1 January 2016 and have not been early adopted by the Group
+except IFRS/HKFRS 9 “Financial instruments”. Management is assessing the impact of such new standards, amendments
+to standards and interpretations and will adopt the relevant standards, amendments to standards and interpretations in
+the subsequent periods as required.
+
+4.
+
+SEGMENT INFORMATION
+The Executive Directors of the Company have been identified as the Chief Operating Decision Maker (the “CODM”).
+Operating segments are identified on the basis of internal reports that the CODM reviews regularly in allocating resources
+to segments and in assessing their performances.
+The CODM make resources allocation decisions based on internal management functions and assess the Group’s business
+performance as one integrated business instead of by separate business lines or geographical regions. Accordingly, the
+Group has only one operating segment and therefore, no segment information is presented.
+The Group primarily operates in Mainland China and accordingly, no geographic information is presented. No single
+external customer accounted for 10 percent or more of the Group’s revenue in all periods presented.
+
+18
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+5.
+
+REVENUE
+After June 2014, revenue from telecommunications services are subject to value-added tax (“VAT”) and VAT rates
+applicable to various telecommunications services. The VAT rate for basic telecommunications services is 11%; the
+VAT rate for value-added telecommunications services is 6% and the VAT rate for sales of telecommunications products
+remains at 17%. Basic telecommunications services include business activities for the provision of voice services, as
+well as business activities in relation to rental or sales of bandwidth, wavelength and other network elements etc; valueadded telecommunications services include business activities for the provision of Short Message Service and Multimedia
+Message Service, electronic data and information transmission and application services, Internet access service etc. VAT
+is excluded from the revenue.
+The major components of revenue are as follows:
+Six months ended 30 June
+2016
+
+2015
+
+Mobile service
+– Usage and monthly fees
+– Value-added services revenue
+– Interconnection fees
+– Other mobile service revenue
+
+20,237
+46,214
+5,760
+829
+
+24,535
+42,450
+5,933
+546
+
+Total service revenue from mobile service
+
+73,040
+
+73,464
+
+Fixed-line service
+– Usage and monthly fees
+– Broadband, data and other Internet-related services revenue
+– Interconnection fees
+– Value-added services revenue
+– Leased line income
+– Information communications technology services revenue
+– Other fixed-line service revenue
+
+5,003
+30,176
+1,701
+2,438
+5,214
+3,279
+419
+
+5,780
+28,258
+1,814
+2,600
+4,834
+2,443
+458
+
+Total service revenue from fixed-line service
+
+48,230
+
+46,187
+
+643
+
+616
+
+121,913
+18,342
+
+120,267
+24,418
+
+140,255
+
+144,685
+
+Other service revenue
+Total service revenue
+Sales of telecommunications products
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+19
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+6.
+
+NETWORK, OPERATION AND SUPPORT EXPENSES
+Six months ended 30 June
+
+Repairs and maintenance
+Power and water charges
+Operating lease charges for network, premises, equipment and facilities
+Charges for the use of telecommunications towers
+and related assets (Note 31.2)
+Others
+
+7.
+
+2016
+
+2015
+
+5,570
+6,777
+4,824
+
+6,220
+6,325
+5,868
+
+7,723
+730
+
+–
+741
+
+25,624
+
+19,154
+
+EMPLOYEE BENEFIT EXPENSES
+Six months ended 30 June
+
+Salaries and wages
+Contributions to defined contribution pension schemes
+Contributions to medical insurance
+Contributions to housing fund
+Other housing benefits
+
+8.
+
+2016
+
+2015
+
+13,598
+2,559
+877
+1,227
+10
+
+13,585
+2,426
+810
+1,095
+9
+
+18,271
+
+17,925
+
+COSTS OF TELECOMMUNICATIONS PRODUCTS SOLD
+Six months ended 30 June
+
+Handsets and other customer end products
+Telephone cards
+Others
+
+20
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+2016
+
+2015
+
+20,015
+159
+43
+
+24,840
+163
+77
+
+20,217
+
+25,080
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+9.
+
+OTHER OPERATING EXPENSES
+Six months ended 30 June
+
+Impairment losses for doubtful debts and write-down of inventories
+Cost in relation to information communications technology services
+Commission expenses
+Customer acquisition cost and advertising and promotion expenses
+Customer installation cost
+Customer retention cost
+Property management fee
+Office and administrative expenses
+Transportation expense
+Miscellaneous taxes and fees
+Technical support expenses
+Repairs and maintenance expenses
+Losses on disposal of property, plant and equipment
+Others
+
+2016
+
+2015
+
+2,069
+2,742
+12,107
+1,407
+1,983
+1,633
+1,067
+807
+769
+448
+858
+351
+798
+1,454
+
+2,373
+2,176
+10,071
+1,401
+1,848
+1,313
+1,114
+883
+828
+464
+752
+386
+223
+1,672
+
+28,493
+
+25,504
+
+10. FINANCE COSTS
+Six months ended 30 June
+
+Finance costs:
+– Interest on bank loans repayable within 5 years
+– Interest on corporate bonds, promissory notes and
+    commercial papers repayable within 5 years
+– Interest on convertible bonds repayable within 5 years
+– Interest on related party loans repayable within 5 years
+– Interest on bank loans repayable over 5 years
+– Less: Amounts capitalised in CIP
+Total interest expense
+– Exchange (gain)/loss, net
+– Others
+
+2016
+
+2015
+
+1,369
+
+1,581
+
+1,333
+–
+30
+26
+(394)
+
+907
+105
+33
+2
+(404)
+
+2,364
+(78)
+182
+
+2,224
+855
+151
+
+2,468
+
+3,230
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+21
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+11. OTHER INCOME – NET
+Six months ended 30 June
+
+Dividend income from financial assets at fair value
+through other comprehensive income
+Others
+
+2016
+
+2015
+
+188
+388
+
+180
+370
+
+576
+
+550
+
+12. TAXATION
+Hong Kong profits tax has been provided at the rate of 16.5% (for the six months ended 30 June 2015: 16.5%) on the
+estimated assessable profits for the six months ended 30 June 2016. Taxation on profits outside Hong Kong has been
+calculated on the estimated assessable profits for the six months ended 30 June 2016 at the rates of taxation prevailing
+in the countries in which the Group operates. The Company’s subsidiaries operate mainly in the PRC and the applicable
+statutory enterprise income tax rate is 25% (for the six months ended 30 June 2015: 25%). Taxation for certain subsidiaries
+in PRC was calculated at a preferential tax rate of 15% (for the six months ended 30 June 2015: 15%).
+Six months ended 30 June
+
+Current tax – Hong Kong profits tax
+Current tax – Mainland China and other countries
+Deferred taxation
+Income tax expenses
+
+22
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+2016
+
+2015
+
+35
+1,285
+(925)
+
+14
+1,771
+157
+
+395
+
+1,942
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+12. TAXATION (CONTINUED)
+The movement of the net deferred tax assets/(liabilities) is as follows:
+Six months ended 30 June
+
+Net deferred income tax assets after offsetting:
+– Beginning of period
+– Deferred tax credited/(charged) to the statement of income
+– Deferred tax credited to other comprehensive income
+– Reclassified from current taxes payable
+– End of period
+
+Note
+
+2016
+
+2015
+
+(i)
+
+5,642
+923
+5
+(1,304)
+
+6,215
+(156)
+11
+–
+
+5,266
+
+6,070
+
+(18)
+2
+
+(17)
+(1)
+
+(16)
+
+(18)
+
+Net deferred income tax liabilities after offsetting:
+– Beginning of period
+– Deferred tax credited/(charged) to the statement of income
+– End of period
+(i)
+
+On 14 October 2015, the Group disposed of certain telecommunications towers and related assets (“Tower Assets Disposal”) to
+China Tower Corporation Limited (“Tower Company”) in exchange for cash and shares issued by Tower Company (see Note 31.2).
+According to the applicable tax laws issued by the Ministry of Finance and the State Administration of Taxation (“SAT”) of the PRC,
+the gain from Tower Assets Disposal in exchange for investment in Tower Company (“Qualified Income”) is, upon fulfilling the filing
+requirement with in-charge tax bureau, eligible to be deferred and treated as taxable income on a straight-line basis over a period
+not exceeding five years. Before completing the filing, the Group accrued current taxes payable based on the total gain from Tower
+Asset Disposal. During the six months ended ended 30 June 2016, the Group successfully completed the filing requirement with
+in-charge tax bureau with respect to the Qualified Income and since then has become eligible for deferring part of tax liability with
+respect to the Qualified Income, which will be reversed in the four years from 2016 to 2019. Accordingly, a balance of RMB1,304
+million was reclassified from current taxes payable to net deferred income tax assets at 30 June 2016.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+23
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+13. EARNINGS PER SHARE
+Basic earnings per share for the six months ended 30 June 2016 and 2015 were computed by dividing the profit attributable
+to equity shareholders of the Company by the weighted average number of ordinary shares outstanding during the periods.
+Diluted earnings per share for the six months ended 30 June 2016 and 2015 were computed by dividing the profit
+attributable to equity shareholders of the Company by the weighted average number of ordinary shares outstanding
+during the periods, after adjusting for the effects of dilutive potential ordinary shares. No dilutive potential ordinary shares
+existed for the six months ended 30 June 2016. All dilutive potential ordinary shares for the six months ended 30 June
+2015 arose from the convertible bonds.
+The following table sets forth the computation of basic and diluted earnings per share:
+Six months ended 30 June
+
+24
+
+2016
+
+2015
+
+Numerator (in RMB millions):
+Profit attributable to equity shareholders of the Company used in
+computing basic earnings per share
+Imputed finance cost on the liability component of convertible bonds
+
+1,429
+–
+
+6,990
+105
+
+Profit attributable to equity shareholders of the Company used in
+computing diluted earnings per share
+
+1,429
+
+7,095
+
+Denominator (in millions):
+Weighted average number of ordinary shares outstanding used in
+computing basic earnings per share
+Dilutive equivalent shares arising from convertible bonds
+
+23,947
+–
+
+23,947
+953
+
+Shares used in computing diluted earnings per share
+
+23,947
+
+24,900
+
+Basic earnings per share (in RMB)
+
+0.06
+
+0.29
+
+Diluted earnings per share (in RMB)
+
+0.06
+
+0.28
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+14. PROPERTY, PLANT AND EQUIPMENT
+The movements of property, plant and equipment for the six months ended 30 June 2016 and 2015 are as follows:
+
+Buildings
+Cost:
+Beginning of period
+Additions
+Transfer from CIP
+Transfer to other assets
+Disposals
+
+Six months ended 30 June 2016
+Office
+furniture,
+fixtures,
+motor
+Televehicles
+communications
+and other
+Leasehold
+equipment
+equipment improvements
+
+Constructionin-progress
+(“CIP”)
+
+Total
+
+62,969
+45
+1,165
+–
+(24)
+
+838,995
+165
+31,192
+–
+(19,830)
+
+19,464
+89
+253
+–
+(295)
+
+3,878
+97
+208
+–
+(111)
+
+97,601
+16,914
+(32,818)
+(1,630)
+(1)
+
+1,022,907
+17,310
+–
+(1,630)
+(20,261)
+
+64,155
+
+850,522
+
+19,511
+
+4,072
+
+80,066
+
+1,018,326
+
+(26,612)
+(1,311)
+24
+
+(525,244)
+(31,133)
+18,215
+
+(14,059)
+(752)
+274
+
+(2,256)
+(344)
+87
+
+(105)
+–
+1
+
+(568,276)
+(33,540)
+18,601
+
+End of period
+
+(27,899)
+
+(538,162)
+
+(14,537)
+
+(2,513)
+
+(104)
+
+(583,215)
+
+Net book value:
+End of period
+
+36,256
+
+312,360
+
+4,974
+
+1,559
+
+79,962
+
+435,111
+
+36,357
+
+313,751
+
+5,405
+
+1,622
+
+97,496
+
+454,631
+
+End of period
+Accumulated depreciation
+and impairment:
+Beginning of period
+Charge for the period
+Disposals
+
+Beginning of period
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+25
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+14. PROPERTY, PLANT AND EQUIPMENT (CONTINUED)
+
+Buildings
+Cost:
+Beginning of period
+
+Six months ended 30 June 2015
+Office
+furniture,
+fixtures,
+motor
+Televehicles
+communications
+and other
+Leasehold
+equipment
+equipment
+improvements
+
+CIP
+
+Total
+
+Additions
+Transfer from CIP
+Transfer to other assets
+Disposals
+
+68,768
+3
+713
+–
+(13)
+
+882,834
+187
+12,938
+–
+(10,521)
+
+19,108
+92
+277
+–
+(265)
+
+4,429
+95
+116
+–
+(95)
+
+58,739
+29,556
+(14,044)
+(1,217)
+–
+
+1,033,878
+29,933
+–
+(1,217)
+(10,894)
+
+End of period
+
+69,471
+
+885,438
+
+19,212
+
+4,545
+
+73,034
+
+1,051,700
+
+(27,339)
+(1,644)
+–
+13
+
+(552,294)
+(32,269)
+(58)
+9,803
+
+(13,411)
+(789)
+–
+226
+
+(2,339)
+(434)
+–
+86
+
+(174)
+–
+(10)
+–
+
+(595,557)
+(35,136)
+(68)
+10,128
+
+End of period
+
+(28,970)
+
+(574,818)
+
+(13,974)
+
+(2,687)
+
+(184)
+
+(620,633)
+
+Net book value:
+End of period
+
+40,501
+
+310,620
+
+5,238
+
+1,858
+
+72,850
+
+431,067
+
+41,429
+
+330,540
+
+5,697
+
+2,090
+
+58,565
+
+438,321
+
+Accumulated depreciation
+and impairment:
+Beginning of period
+Charge for the period
+Impairment loss
+Disposals
+
+Beginning of period
+
+For the six months ended 30 June 2016, the Group recognised a loss on disposal of property, plant and equipment of
+approximately RMB798 million (for the six months ended 30 June 2015: loss of approximately RMB223 million).
+
+26
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+15. FINANCIAL ASSETS AT FAIR VALUE THROUGH OTHER COMPREHENSIVE INCOME
+
+Listed in the PRC
+Listed outside the PRC
+Unlisted
+
+30 June
+2016
+
+31 December
+2015
+
+144
+4,006
+41
+
+164
+4,665
+23
+
+4,191
+
+4,852
+
+For the six months ended 30 June 2016, decrease in fair value of financial assets at fair value through other comprehensive
+income amounted to approximately RMB679 million (for the six months ended 30 June 2015: decrease of approximately
+RMB45 million). The decrease, net of tax impact, of approximately RMB674 million (for the six months ended 30 June
+2015: decrease, net of tax impact, of approximately RMB34 million) were recorded in the unaudited condensed consolidated
+interim statement of comprehensive income.
+
+16. OTHER ASSETS
+Note
+Purchased software
+Prepaid rental for premises, leased lines and electricity cables
+Installation costs
+Direct incremental costs for activating broadband subscribers
+Receivable for the sales of mobile handsets
+VAT recoverable
+Others
+
+(i)
+
+(i)
+(ii)
+
+30 June
+2016
+
+31 December
+2015
+
+10,205
+3,783
+419
+7,599
+1,884
+3,114
+1,441
+
+10,714
+4,071
+478
+7,340
+1,273
+–
+1,459
+
+28,445
+
+25,335
+
+The amount represents receivable for the sales of mobile handsets that are recoverable during the contract period, which will be
+gradually recovered beyond one year. Receivables to be gradually recovered within one year are included in prepayments and other
+current assets (see Note 19(i)).
+
+(ii)
+
+VAT recoverable includes input VAT and prepaid VAT which will likely be deducted beyond one year. VAT recoverable which will
+be deducted within one year are included in prepayments and other current assets (see Note 19(ii)).
+
+17. INVENTORIES AND CONSUMABLES
+
+Handsets and other customer end products
+Telephone cards
+Consumables
+Others
+
+30 June
+2016
+
+31 December
+2015
+
+3,029
+192
+157
+119
+
+3,453
+185
+188
+120
+
+3,497
+
+3,946
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+27
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+18. ACCOUNTS RECEIVABLE
+
+Accounts receivable
+Less: Allowance for doubtful debts
+
+30 June
+2016
+
+31 December
+2015
+
+23,860
+(6,886)
+
+19,867
+(4,910)
+
+16,974
+
+14,957
+
+The aging analysis of accounts receivable, based on the billing date and net of allowance for doubtful debts, is as follows:
+
+Current and within one month
+More than one month and within three months
+More than three months and within one year
+More than one year
+
+30 June
+2016
+
+31 December
+2015
+
+11,687
+2,524
+1,572
+1,191
+
+11,679
+1,805
+655
+818
+
+16,974
+
+14,957
+
+The normal credit period granted by the Group to individual subscribers is 30 days from the date of billing unless they
+meet certain specified credit assessment criteria. For corporate customers, the credit period granted by the Group is
+based on the service contract terms, normally around 1 year.
+There is no significant concentration of credit risk with respect to customers receivables, as the Group has a large number
+of customers.
+
+19. PREPAYMENTS AND OTHER CURRENT ASSETS
+The nature of prepayments and other current assets, net of allowance for doubtful debts, are as follows:
+
+Note
+Receivable for the sales of mobile handsets
+Prepaid rental
+Deposits and prepayments
+Advances to employees
+VAT recoverable
+Prepaid enterprise income tax
+Others
+
+28
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+(i)
+
+(ii)
+
+30 June
+2016
+
+31 December
+2015
+
+2,860
+2,145
+2,036
+40
+3,055
+32
+1,353
+
+2,328
+2,098
+1,824
+50
+3,125
+33
+1,406
+
+11,521
+
+10,864
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+19. PREPAYMENTS AND OTHER CURRENT ASSETS (CONTINUED)
+(i)
+
+The Group offers preferential packages to the customers which include the bundle sale of mobile handset and provision of service.
+The total contract consideration of such preferential packages is allocated to service revenue and sales of handsets based on their
+relative fair values. For those contractual preferential packages with guarantees by third parties, the revenue relating to the sale of
+the handsets is recognised when the titles are passed to the customers and are calculated under the aforementioned relative fair
+value method, which results in the corresponding receivable for the sales of mobile handsets. The receivable for the sales of mobile
+handsets is gradually recovered during the contract period when the customers pay the monthly package fee. Receivables to be
+gradually recovered beyond one year amounted to RMB1,884 million (31 December 2015: RMB1,273 million), and are included in
+long term other assets (see Note 16(i)).
+
+(ii)
+
+VAT recoverable includes input VAT and prepaid VAT which will be deducted within one year.
+
+The aging analysis of prepayments and other current assets is as follows:
+
+Within one year
+More than one year
+
+30 June
+2016
+
+31 December
+2015
+
+11,250
+271
+
+10,700
+164
+
+11,521
+
+10,864
+
+As at 30 June 2016, there was no significant impairment for the prepayments and other current assets.
+
+20. SHARE CAPITAL
+Number of shares
+millions
+
+Share
+capital
+
+Total
+
+At 1 January 2015
+Issuance of shares upon exercise of options
+
+23,947
+–
+
+179,101
+1
+
+179,101
+1
+
+At 31 December 2015 and at 30 June 2016
+
+23,947
+
+179,102
+
+179,102
+
+Issued and fully paid:
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+29
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+21. DIVIDENDS
+At the annual general meeting held on 12 May 2016, the shareholders of the Company approved the payment of a final
+dividend of RMB0.17 per ordinary share for the year ended 31 December 2015 totaling approximately RMB4,071 million
+(for the year ended 31 December 2014: final dividend of RMB0.20 per ordinary share, totaling approximately RMB4,789
+million) which has been reflected as a reduction of retained profits for the six months ended 30 June 2016. Among the
+dividend payable of approximately RMB1,216 million was due to Unicom BVI as at 30 June 2016.
+Pursuant to the PRC enterprise income tax law, a 10% withholding income tax is levied on dividends declared on or after
+1 January 2008 by foreign investment enterprises to their foreign enterprise shareholders unless the enterprise investor
+is deemed as a PRC Tax Resident Enterprise (“TRE”). On 11 November 2010, the Company obtained an approval from
+SAT, pursuant to which the Company qualifies as a PRC TRE from 1 January 2008. Therefore, as at 30 June 2016 and
+31 December 2015, the Company’s subsidiaries in the PRC did not accrue for withholding tax on dividends distributed
+to the Company and there has been no deferred tax liability accrued in the Group’s unaudited condensed consolidated
+financial information for the undistributed profits of the Company’s subsidiaries in the PRC.
+For the Company’s non-PRC TRE enterprise shareholders (including HKSCC Nominees Limited), the Company would
+distribute dividends after deducting the amount of enterprise income tax payable by these non-PRC TRE enterprise
+shareholders thereon and reclassify the related dividend payable to withholding tax payable upon the declaration of such
+dividends. The requirement to withhold tax does not apply to the Company’s shareholders appearing as individuals in its
+share register.
+
+22. LONG-TERM BANK LOANS
+30 June
+
+31 December
+
+Interest rates and final maturity
+
+2016
+
+2015
+
+RMB denominated
+bank loans
+
+Fixed interest rates ranging from 1.08% to 1.20%
+(31 December 2015: 1.08%) per annum with maturity
+through 2036 (31 December 2015: maturity through 2030)
+
+4,142
+
+1,399
+
+USD denominated
+bank loans
+
+Fixed interest rates ranging from Nil to 1.55%
+(31 December 2015: Nil to 1.55%) per annum with maturity
+through 2039 (31 December 2015: maturity through 2039)
+
+319
+
+325
+
+Euro denominated
+bank loans
+
+Fixed interest rates ranging from 1.10% to 2.50%
+(31 December 2015: 1.10% to 2.50%) per annum with
+maturity through 2034 (31 December 2015: maturity
+through 2034)
+
+101
+
+108
+
+4,562
+(127)
+
+1,832
+(84)
+
+4,435
+
+1,748
+
+Sub-total
+Less: Current portion
+
+30
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+22. LONG-TERM BANK LOANS (CONTINUED)
+As at 30 June 2016, long-term bank loans of approximately RMB69 million (31 December 2015: approximately RMB88
+million) were guaranteed by third parties.
+The repayment schedule of the long-term bank loans is as follows:
+30 June
+2016
+
+31 December
+2015
+
+Balances due:
+– not later than one year
+– later than one year and not later than two years
+– later than two years and not later than five years
+– later than five years
+
+127
+262
+1,032
+3,141
+
+84
+88
+302
+1,358
+
+Less: Portion classified as current liabilities
+
+4,562
+(127)
+
+1,832
+(84)
+
+4,435
+
+1,748
+
+23. PROMISSORY NOTES
+On 3 April 2014, the Company established a Medium Term Note Programme (the “MTN Programme”), under which
+the Company could offer and issue notes of aggregate principal amount of up to RMB10 billion. Notes under the MTN
+Programme will be denominated in RMB and are to be issued to professional investors outside the United States. On 16
+April 2014, the Company completed the issue of notes in an aggregate nominal amount of RMB4 billion pursuant to the
+MTN Programme, with a maturity of 3 years and at an interest rate of 4.00% per annum. On 24 July 2014, the Company
+completed the issue of notes in an aggregate nominal amount of RMB2.5 billion with a maturity period of 2 years and at
+an interest rate of 3.80% per annum.
+On 16 April 2014, China United Network Communications Corporation Limited (“CUCL”) issued tranche one of 2014
+promissory notes in the amount of RMB5 billion, with a maturity period of 3 years from the date of issue and which carries
+interests at 5.35% per annum.
+On 14 July 2014, CUCL issued tranche two of 2014 promissory notes in an amount of RMB5 billion, with a maturity period
+of 3 years from the date of issue and which carries interest at 4.84% per annum.
+On 28 November 2014, CUCL issued tranche three of 2014 promissory notes in an amount of RMB5 billion, with a maturity
+period of 3 years from the date of issue and which carries interest at 4.20% per annum.
+On 15 June 2015, CUCL issued tranche one of 2015 promissory notes in an amount of RMB4 billion, with a maturity
+period of 3 years from the date of issue and which carries interest at 3.85% per annum.
+On 18 June 2015, CUCL issued tranche two of 2015 promissory notes in an amount of RMB4 billion, with a maturity
+period of 3 years from the date of issue and which carries interest at 3.85% per annum.
+On 30 November 2015, CUCL issued tranche three of 2015 promissory notes in an amount of RMB3.5 billion, tranche
+four of 2015 promissory notes in an amount of RMB3.5 billion and tranche five of 2015 promissory notes in an amount of
+RMB3 billion, all with a maturity period of 3 years from the date of issue and which carries interest at 3.30% per annum.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+31
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+24. CORPORATE BONDS
+On 8 June 2007, the Group issued RMB2 billion 10-year corporate bonds, bearing interest at 4.50% per annum. The
+corporate bonds are secured by a corporate guarantee granted by Bank of China Limited.
+On 7 June 2016, the Group issued RMB7 billion 3-year corporate bonds and RMB1 billion 5-year corporate bond, bearing
+interest at 3.07% and 3.43% per annum respectively.
+
+25. SHORT-TERM BANK LOANS
+Interest rates and final maturity
+RMB denominated
+bank loans
+
+Fixed interest rates ranging from 2.35% to 3.92%
+(31 December 2015: 2.35% to 3.92%) per annum with maturity
+through 2017 (31 December 2015: maturity through 2016)
+
+30 June
+2016
+
+31 December
+2015
+
+48,741
+
+83,852
+
+48,741
+
+83,852
+
+26. COMMERCIAL PAPERS
+On 20 November 2015, CUCL issued tranche two of 2015 super short term commercial papers in an amount of RMB10
+billion, with a maturity period of 270 days from the date of issue and which carries interest at 3.15% per annum.
+On 27 November 2015, CUCL issued tranche one of 2015 short term commercial papers in an amount of RMB10 billion,
+with a maturity period of 366 days from the date of issue and which carries interest at 3.15% per annum.
+On 8 April 2016, CUCL issued tranche one of 2016 super short term commercial papers in an amount of RMB12 billion,
+with a maturity period of 90 days from the date of issue and which carries interest at 2.47% per annum.
+On 26 April 2016, CUCL issued tranche two of 2016 super short term commercial papers in an amount of RMB12 billion,
+with a maturity period of 90 days from the date of issue and which carries interest at 2.70% per annum.
+On 3 June 2016, CUCL issued tranche three of 2016 super short term commercial papers in an amount of RMB6 billion,
+with a maturity period of 270 days from the date of issue and which carries interest at 2.72% per annum.
+
+32
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+27. ACCOUNTS PAYABLE AND ACCRUED LIABILITIES
+
+Payables to contractors and equipment suppliers
+Payables to telecommunications products suppliers
+Customer/contractor deposits
+Repair and maintenance expense payables
+Salary and welfare payables
+Interest payables
+Amounts due to service providers/content providers
+Accrued expenses
+Others
+
+30 June
+2016
+
+31 December
+2015
+
+105,524
+4,812
+4,715
+5,363
+5,083
+1,321
+1,282
+13,381
+4,321
+
+131,202
+5,045
+4,564
+5,003
+3,283
+926
+1,175
+12,006
+4,192
+
+145,802
+
+167,396
+
+The aging analysis of accounts payable and accrued liabilities based on the invoice date is as follows:
+
+Less than six months
+Six months to one year
+More than one year
+
+30 June
+2016
+
+31 December
+2015
+
+117,861
+18,959
+8,982
+
+146,336
+9,772
+11,288
+
+145,802
+
+167,396
+
+28. MUTUAL INVESTMENT OF THE COMPANY AND TELEFÓNICA S.A. (“TELEFÓNICA”)
+IN EACH OTHER
+On 6 September 2009, the Company announced that in order to strengthen the cooperation between the Company and
+Telefónica, the parties entered into a strategic alliance agreement and a subscription agreement, pursuant to which each
+party conditionally agreed to invest an equivalent of USD1 billion in each other through an acquisition of each other’s shares.
+On 23 January 2011, the Company entered into an agreement to enhance the strategic alliance with Telefónica that: (a)
+Telefónica would purchase ordinary shares of the Company for a consideration of USD500 million through acquisition
+from third parties; and (b) the Company would acquire from Telefónica 21,827,499 ordinary shares of Telefónica held in
+treasury (“Telefónica Treasury Shares”) for an aggregate purchase price of Euro374,559,882.84. On 25 January 2011,
+the Company completed the purchase of Telefónica Treasury Shares in accordance with the strategic agreement. During
+2011, Telefónica completed its investment of USD500 million in the Company.
+On 14 May 2012, Telefónica declared a dividend. The Company chose to implement it by means of a scrip dividend and
+received 1,646,269 ordinary shares of approximately RMB146 million.
+As at 30 June 2016, the related financial assets at fair value through other comprehensive income amounted to approximately
+RMB4,006 million (31 December 2015: approximately RMB4,665 million). For the six months ended 30 June 2016, the
+decrease in fair value of the financial assets through other comprehensive income was approximately RMB659 million
+(for the six months ended 30 June 2015: decrease of approximately RMB82 million). The decrease, net of tax impact, of
+approximately RMB659 million (for the six months ended 30 June 2015: decrease, net of tax impact, of approximately
+RMB62 million) has been recorded in the unaudited condensed consolidated interim statement of comprehensive income.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+33
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+29. EQUITY-SETTLED SHARE OPTION SCHEMES
+On 16 April 2014, the Company adopted a new share option scheme (“the 2014 Share Option Scheme”). The 2014 Share
+Option Scheme is valid and effective for a period of 10 years commencing on 22 April 2014 and will expire on 22 April
+2024. No share options had been granted since adoption of the 2014 Share Option Scheme.
+Movements in the number of share options outstanding and their related weighted average exercise prices are as follows:
+Six months ended 30 June
+2016
+Average
+exercise
+Number of
+price in HKD
+share options
+per share
+involved
+
+2015
+Average
+exercise
+Number of
+price in HKD
+share options
+per share
+involved
+
+Balance, beginning of period
+Lapsed
+Exercised
+
+–
+–
+–
+
+–
+–
+–
+
+6.35
+6.35
+6.35
+
+3,540,000
+(3,432,000)
+(108,000)
+
+Balance, end of period
+
+–
+
+–
+
+–
+
+–
+
+Exercise of share options during the six months ended 30 June 2015 resulted in 108,000 shares being issued, with
+exercise proceeds of approximately RMB1 million.
+No options outstanding as at 30 June 2016 and 2015.
+
+30. FAIR VALUE ESTIMATION
+Financial assets of the Group mainly include cash and cash equivalents, short-term bank deposits, financial assets at
+fair value through other comprehensive income, financial asset at fair value through profit and loss, accounts receivable,
+receivable for the sales of mobile handsets, amounts due from related parties and domestic carriers. Financial liabilities of
+the Group mainly include accounts payable and accrued liabilities, short-term bank loans, commercial papers, corporate
+bonds, promissory notes, long-term bank loans, other obligations and amounts due to ultimate holding company, related
+parties and domestic carriers.
+
+34
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+30. FAIR VALUE ESTIMATION (CONTINUED)
+(a)
+
+Financial assets and liabilities measured at fair value
+The table below analyses financial instruments carried at fair value, by valuation method. The different levels have
+been defined as follows:
+•
+
+Level 1 valuation: unadjusted quoted prices in active markets for identical assets or liabilities at the measurement
+date
+
+•
+
+Level 2 valuation: observable inputs which fail to meet level 1, and not using significant unobservable inputs.
+Unobservable inputs for which market data are not available
+
+•
+
+Level 3 valuation: fair value measured using significant unobservable inputs
+
+The following table presents the Group’s assets that are measured at fair value at 30 June 2016:
+
+Recurring fair value measurement
+Financial assets at fair value through
+other comprehensive income
+– Equity securities
+  – Listed
+  – Unlisted
+
+Financial assets at fair value
+through profit and loss
+– Equity securities
+  – Unlisted
+Total
+
+Level 1
+
+Level 2
+
+Level 3
+
+Total
+
+4,150
+–
+
+–
+–
+
+–
+41
+
+4,150
+41
+
+4,150
+
+–
+
+41
+
+4,191
+
+–
+
+–
+
+135
+
+135
+
+4,150
+
+–
+
+176
+
+4,326
+
+The following table presents the Group’s assets that are measured at fair value at 31 December 2015:
+
+Recurring fair value measurement
+Financial assets at fair value
+through other comprehensive income
+– Equity securities
+  – Listed
+  – Unlisted
+
+Financial assets at fair value through
+profit and loss
+– Equity securities
+  – Unlisted
+Total
+
+Level 1
+
+Level 2
+
+Level 3
+
+Total
+
+4,829
+–
+
+–
+–
+
+–
+23
+
+4,829
+23
+
+4,829
+
+–
+
+23
+
+4,852
+
+–
+
+–
+
+106
+
+106
+
+4,829
+
+–
+
+129
+
+4,958
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+35
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+30. FAIR VALUE ESTIMATION (CONTINUED)
+(a)
+
+Financial assets and liabilities measured at fair value (continued)
+The fair value of financial instruments traded in active markets is based on quoted market prices at the statement
+of financial position date. A market is regarded as active if quoted prices are readily and regularly available from an
+exchange, dealer, broker, industry group, pricing service, or regulatory agency, and those prices represent actual and
+regularly occurring market transactions on an arm’s length basis. The quoted market price used for financial assets
+held by the Group is the current bid price. These instruments are included in level 1 and comprise primarily equity
+securities of Telefónica which are classified as financial assets at fair value through other comprehensive income.
+During the six months ended 30 June 2016 and 2015, there was no transfer between Level 1 and Level 2, or transfer
+into or out of Level 3. The Group’s policy is to recognise transfers between levels of fair value hierarchy as at the
+end of the reporting period in which they occur.
+
+(b)
+
+Fair value of financial assets and liabilities carried at other than fair value
+The carrying amounts of the Group’s financial instruments carried at amortised cost are not materially different from
+their fair values as at 30 June 2016 and 31 December 2015. Their carrying amounts and fair values and the level
+of fair values hierarchy are disclosed below:
+
+Non-current portion of
+long-term bank loans
+Non-current portion of
+promissory notes
+Non-current portion of
+corporate bonds
+
+Carrying
+amount
+as at 31
+December
+2015
+
+Fair value
+as at 31
+December
+2015
+
+4,506
+
+1,748
+
+1,752
+
+28,913
+
+–
+
+36,928
+
+38,141
+
+8,012
+
+–
+
+2,000
+
+2,111
+
+Carrying
+amount
+as at 30 June
+2016
+
+Fair value
+as at 30 June
+2016
+
+4,435
+
+4,506
+
+–
+
+–
+
+27,841
+
+28,913
+
+–
+
+7,984
+
+8,012
+
+–
+
+Fair value measurement as at
+30 June 2016 categorised into
+Level 1
+Level 2
+Level 3
+
+The fair value of the non-current portion of long-term bank loans is based on the expected cash flows of principal
+and interests payment discounted at market rates ranging from 1.51% to 4.15% (31 December 2015: 1.81% to
+4.08%) per annum.
+The fair value of the non-current portion of promissory notes is based on the expected cash flows of principal and
+interests payment discounted at market rates ranging from 2.81% to 3.26% (31 December 2015: 2.84% to 5.62%)
+per annum.
+The fair value of the non-current portion of corporate bonds is based on the expected cash flows of principal and
+interests payment discounted at market rates ranging from 2.69% to 3.14% (31 December 2015: 2.35%) per annum.
+Besides, the carrying amounts of the Group’s other financial assets and liabilities carried at amortised cost
+approximated their fair values as at 30 June 2016 and 31 December 2015 due to the nature or short maturity of
+those instruments.
+
+36
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+31. RELATED PARTY TRANSACTIONS
+Unicom Group is a state-owned enterprise directly controlled by the PRC government. The PRC government is the
+Company’s ultimate controlling party. Neither Unicom Group nor the PRC government publishes financial statements
+available for public use.
+The PRC government controls a significant portion of the productive assets and entities in the PRC. The Group provides
+telecommunications services as part of its retail transactions, thus, is likely to have extensive transactions with the
+employees of other state-controlled entities, including their key management personnel and their close family members.
+These transactions are carried out on commercial terms that are consistently applied to all customers.
+Management considers certain state-owned enterprises have material transactions with the Group in its ordinary course of
+business, which include but not limited to 1) rendering and receiving telecommunications services, including interconnection
+revenue/charges; 2) purchasing of goods, including use of public utilities; and 3) placing of bank deposits and borrowing
+money. The Group’s telecommunications network depends, in large part, on interconnection with the network and on
+transmission lines leased from other domestic carriers. These transactions are mainly carried out on terms comparable to
+those conducted with third parties or standards promulgated by relevant government authorities and have been reflected
+in the financial statements.
+Management believes that meaningful information relating to related party transactions has been disclosed.
+
+31.1 Connected transactions with Unicom Group and its subsidiaries
+(a)
+
+Recurring transactions
+The following is a summary of significant recurring transactions carried out by the Group with Unicom Group
+and its subsidiaries. In the directors’ opinion, these transactions were carried out in the ordinary course of
+business.
+Six months ended 30 June
+2016
+
+2015
+
+18
+490
+116
+1,938
+52
+40
+1,272
+745
+3
+
+22
+463
+136
+1,363
+53
+38
+1,231
+570
+3
+
+Transactions with Unicom Group and its subsidiaries:
+Charges for value-added telecommunications services
+Rental charges for property leasing
+Charges for lease of telecommunications resources
+Charges for engineering design and construction services
+Charges for shared services
+Charges for equipment procurement services
+Charges for ancillary telecommunications services
+Charges for comprehensive support services
+Income from comprehensive support services
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+37
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+31. RELATED PARTY TRANSACTIONS (CONTINUED)
+31.1 Connected transactions with Unicom Group and its subsidiaries (continued)
+(a)
+
+Recurring transactions (continued)
+On 24 October 2013, CUCL entered into the agreement, “2013 Comprehensive Services Agreement” with
+Unicom Group to renew certain continuing connected transactions. 2013 Comprehensive Services Agreement
+has a term of three years commencing on 1 January 2014 and expiring on 31 December 2016, and the service
+fees payable shall be calculated on the same basis as under previous agreements. Annual caps for certain
+transactions have changed under the agreement. On 21 August 2015, CUCL and Unicom Group entered
+into the supplemental agreement to revise the annual cap for the total charges payable by CUCL to Unicom
+Group for comprehensive support services under the 2013 Comprehensive Services Agreement for each of
+the two years of 2015 and 2016.
+
+(b)
+
+Amounts due from and to Unicom Group and its subsidiaries
+Amount due to Unicom Group as at 30 June 2016 and 31 December 2015 included the unsecured entrusted
+loan from Unicom Group of RMB1,344 million with interest rate at 4.37% per annum.
+Apart from the unsecured entrusted loan as aforementioned, amounts due from and to Unicom Group and its
+subsidiaries are unsecured, interest-free, repayable on demand/on contract terms and arise in the ordinary
+course of business in respect of transactions with Unicom Group and its subsidiaries as described in (a) above.
+
+(c)
+
+Commitments to Unicom Group and its subsidiaries
+As at 30 June 2016 and 31 December 2015, the Group had total future aggregate minimum operating lease
+payments to Unicom Group and its subsidiaries under non-cancellable operating leases as follows:
+
+Unicom Group and its subsidiaries
+
+38
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+30 June
+2016
+
+31 December
+2015
+
+977
+
+926
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+31. RELATED PARTY TRANSACTIONS (CONTINUED)
+31.2 Related party transactions with Tower Company
+(a)
+
+Related party transactions
+Six months ended 30 June
+Note
+
+2016
+
+2015
+
+(i)
+
+337
+
+–
+
+(ii)
+
+7,723
+
+–
+
+(iii)
+
+57
+
+–
+
+Transactions with Tower Company:
+Interest income from Cash Consideration
+Charges for the use of telecommunications towers
+and related assets
+Income from engineering design
+and construction services
+(i)
+
+On 14 October 2015, CUCL and Unicom New Horizon Telecommunications Company Limited (“Unicom New Horizon”,
+a wholly-owned subsidiary of CUCL and an indirectly wholly-owned subsidiary of the Company) entered into a
+transfer agreement (the “Transfer Agreement”) , amongst China Mobile Communications Company Limited and its
+related subsidiaries (“China Mobile”), China Telecom Corporation Limited (“China Telecom”), China Reform Holdings
+Corporation Limited (“CRHC”) and Tower Company. Pursuant to the Transfer Agreement, the Group, China Mobile
+and China Telecom sold certain of their telecommunications towers and related assets (the “Tower Assets”) to Tower
+Company (hereinafter referred to as the “Tower Assets Disposal”) in exchange for shares issued by Tower Company
+and cash consideration. In addition, CRHC made a cash subscription for shares of Tower Company.
+The final consideration amount for the Tower Assets Disposal attributed to the Group was determined as RMB54,658
+million. Tower Company issued 33,335,836,822 shares (“Consideration Shares”) to CUCL at an issue price of
+RMB1.00 per share and the balance of the consideration of approximately RMB21,322 million payable in cash (“Cash
+Consideration”).
+Upon the issuance of new shares by Tower Company, the Group, China Mobile, China Telecom and CRHC own
+28.1%, 38.0%, 27.9% and 6.0% of Tower Company respectively. As at 30 June 2016, interest in Tower Company is
+RMB31,787 million.
+As at 30 June 2016, the first tranche of the Cash Consideration of RMB3,000 million was settled. The remaining
+balance of the Cash Consideration of RMB18,322 million will be settled before 31 December 2017. The outstanding
+Cash Consideration carries interest at 3.92% per annum. For the six months ended 30 June 2016, interest income
+arisen from outstanding Cash Consideration was approximately RMB337 million.
+
+(ii)
+
+As at 30 June 2016, the Group was in the process of negotiating with Tower Company to finalise the framework and
+other detailed agreements which cover the usage of certain telecommunications towers and related assets. On the
+basis of the latest terms under negotiation, the Group’s management has estimated and recognised an usage fee for
+the six months ended 30 June 2016 of approximately RMB7,723 million in connection with its usage of the relevant
+assets during the period.
+
+(iii)
+
+The Group provide engineering design and construction services, including system integration and engineering design
+services to Tower Company.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+39
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+31. RELATED PARTY TRANSACTIONS (CONTINUED)
+31.2 Related party transactions with Tower Company (continued)
+(b)
+
+Amounts due from and to Tower Company
+Amount due from Tower Company as at 30 June 2016 and 31 December 2015 included outstanding Cash
+Consideration from Tower Company of RMB18,322 million, which carries interest at 3.92% per annum, with
+the principal to be settled before 31 December 2017.
+Apart from the outstanding Cash Consideration as aforementioned, amounts due from and to Tower Company
+are unsecured, interest-free, repayable on demand/on contract terms and arise in the ordinary course of
+business in respect of transactions with Tower Company as described in (a) above.
+
+32. CONTINGENCIES AND COMMITMENTS
+32.1 Capital commitments
+As at 30 June 2016 and 31 December 2015, the Group had capital commitments, mainly in relation to the construction
+of telecommunications network, as follows:
+31 December
+2015
+
+30 June 2016
+
+Authorised and contracted for
+Authorised but not contracted for
+
+Land and
+buildings
+
+Equipment
+
+Total
+
+Total
+
+239
+13,132
+
+13,705
+16,420
+
+13,944
+29,552
+
+18,129
+21,851
+
+13,371
+
+30,125
+
+43,496
+
+39,980
+
+32.2 Operating lease commitments
+As at 30 June 2016 and 31 December 2015, the Group had total future aggregate minimum operating lease payments
+under non-cancellable operating leases as follows:
+31 December
+2015
+
+30 June 2016
+
+Leases expiring:
+– not later than one year
+– later than one year and
+    not later than five years
+– later than five years
+
+40
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+Land and
+buildings
+
+Equipment
+
+Total
+
+Total
+
+2,088
+
+2,895
+
+4,983
+
+4,838
+
+1,581
+271
+
+4,124
+771
+
+5,705
+1,042
+
+7,572
+1,731
+
+3,940
+
+7,790
+
+11,730
+
+14,141
+
+NOTES TO UNAUDITED CONDENSED CONSOLIDATED
+INTERIM FINANCIAL INFORMATION
+(All amounts in RMB millions unless otherwise stated)
+
+32. CONTINGENCIES AND COMMITMENTS (CONTINUED)
+32.3 Contingent liabilities
+As at 30 June 2016, the Group had no material contingent liabilities and no material financial guarantees issued.
+
+33. EVENT AFTER REPORTING PERIOD
+On 8 July 2016, CUCL and Tower Company entered into a framework agreement in relation to the usage of certain
+telecommunications towers and related assets (the “Agreement”). The Agreement stipulated specific terms including
+assets categories, pricing basis for usage charges, and relevant service period etc. Provincial service agreements will
+be formed between respective provincial companies of CUCL and Tower Company according to the Agreement and their
+negotiation subsequently.
+
+34. APPROVAL OF FINANCIAL INFORMATION
+This unaudited condensed consolidated interim financial information was approved by the Board of Directors on 17 August
+2016.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+41
+
+INDEPENDENT REVIEW REPORT
+
+To the Board of Directors of China Unicom (Hong Kong) Limited
+(Incorporated in Hong Kong with limited liability)
+
+INTRODUCTION
+We have reviewed the interim financial information set out on pages 10 to 41 which comprises the unaudited condensed
+consolidated interim statement of financial position of China Unicom (Hong Kong) Limited (the “Company”) and its subsidiaries
+(together, the “Group”) as of 30 June 2016 and the related unaudited condensed consolidated interim statement of income,
+statement of comprehensive income, statement of changes in equity and statement of cash flows for the six-month period then
+ended and explanatory notes. The Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited require
+the preparation of an interim financial report to be in compliance with the relevant provisions thereof, and to be in compliance
+with either International Accounting Standard 34 “Interim Financial Reporting” issued by the International Accounting Standards
+Board or Hong Kong Accounting Standard 34 “Interim Financial Reporting” issued by the Hong Kong Institute of Certified Public
+Accountants, depending on whether the issuer’s annual financial statements are prepared in accordance with International
+Financial Reporting Standards (“IFRSs”) or Hong Kong Financial Reporting Standards (“HKFRSs”) respectively. As the annual
+financial statements of the Group are prepared in accordance with both IFRSs and HKFRSs, the directors are responsible for
+the preparation and presentation of the interim financial information in accordance with both International Accounting Standard
+34 and Hong Kong Accounting Standard 34.
+Our responsibility is to form a conclusion, based on our review, on the interim financial information and to report our conclusion
+solely to you, as a body, in accordance with our agreed terms of engagement, and for no other purpose. We do not assume
+responsibility towards or accept liability to any other person for the contents of this report.
+
+SCOPE OF REVIEW
+We conducted our review in accordance with Hong Kong Standard on Review Engagements 2410, “Review of interim financial
+information performed by the independent auditor of the entity”, issued by the Hong Kong Institute of Certified Public Accountants.
+A review of the interim financial information consists of making enquiries, primarily of persons responsible for financial and
+accounting matters, and applying analytical and other review procedures. A review is substantially less in scope than an audit
+conducted in accordance with Hong Kong Standards on Auditing and consequently does not enable us to obtain assurance
+that we would become aware of all significant matters that might be identified in an audit. Accordingly we do not express an
+audit opinion.
+
+CONCLUSION
+Based on our review, nothing has come to our attention that causes us to believe that the interim financial information as at 30
+June 2016 is not prepared, in all material respects, in accordance with International Accounting Standard 34 “Interim Financial
+Reporting” and Hong Kong Accounting Standard 34 “Interim Financial Reporting”.
+KPMG
+Certified Public Accountants
+8th Floor, Prince’s Building
+10 Chater Road
+Central, Hong Kong
+17 August 2016
+
+42
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+OTHER INFORMATION
+
+SHARE OPTION SCHEME OF THE COMPANY
+2014 Share Option Scheme
+Pursuant to a resolution passed at the annual general meeting held on 16 April 2014, the Company adopted a new share option
+scheme (the “2014 Share Option Scheme”). The purpose of the 2014 Share Option Scheme was to recognise the contribution.
+that certain individuals have made to the Company, to attract and retain the best available personnel and to promote the success
+of the Company. The 2014 Share Option Scheme is valid and effective for a period of 10 years commencing on 22 April 2014
+and will expire on 22 April 2024. Following the expiry of the 2014 Share Option Scheme, no further share option can be granted
+under the 2014 Share Option Scheme, but the provisions of the 2014 Share Option Scheme will remain in full force and effect
+to the extent necessary to give effect to the exercise of any share options granted prior thereto or otherwise as may be required
+in accordance with the provisions of the 2014 Share Option Scheme.
+No share options had been granted since adoption of the 2014 Share Option Scheme and up to and including 30 June 2016.
+
+Directors’, Chief Executives’ and Employees’ Interests Under the Share Option Scheme of the Company
+During the six months ended and as at 30 June 2016, none of the directors of the Company (the “Directors”) or chief executives
+or employees of the Company had any interests under any share option scheme of the Company.
+
+DIRECTORS’ AND CHIEF EXECUTIVES’ INTERESTS AND SHORT POSITIONS IN SHARES,
+UNDERLYING SHARES AND DEBENTURES
+As at 30 June 2016, the interests and short positions of Directors and chief executives of the Company and their respective
+close associates in any shares, underlying shares and debentures of the Company or any of its associated corporations (as
+defined in Part XV of the Hong Kong Securities and Futures Ordinance (the “SFO”)) as recorded in the register required to be
+kept under Section 352 of the SFO or as otherwise notified to the Company and the Stock Exchange of Hong Kong Limited
+(the “Hong Kong Stock Exchange”) pursuant to the Model Code for Securities Transactions by Directors of Listed Issuers (the
+“Model Code”) as set out in Appendix 10 of the Rules Governing the Listing of Securities on the Hong Kong Stock Exchange
+(the “Listing Rules”), were as follows:
+
+Name of Director
+
+Capacity
+
+Cheung Wing Lam Linus
+Chung Shui Ming Timpson
+
+Beneficial owner (Personal)
+Beneficial owner (Personal)
+
+Ordinary Shares
+Held
+
+Percentage
+of Issued Shares
+
+200,000
+6,000
+
+0.0008%
+0.0000%
+
+Save as disclosed in the foregoing, as at 30 June 2016, none of the Directors or chief executives of the Company or their respective
+close associates had any interests or short positions in any shares, underlying shares, or debentures of the Company or any of
+its associated corporations (as defined in Part XV of the SFO) as recorded in the register required to be kept pursuant to Section
+352 of the SFO or as otherwise notified to the Company and the Hong Kong Stock Exchange pursuant to the Model Code.
+Furthermore, save as disclosed in the foregoing, during the six months ended 30 June 2016, none of the Directors or chief
+executives (including their spouses and children under the age of 18) of the Company had any interests in or was granted any
+right to subscribe in any shares, underlying shares, or debentures of the Company or any of its associated corporations, or had
+exercised any such rights.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+43
+
+Other Information
+
+MATERIAL INTERESTS AND SHORT POSITIONS OF SUBSTANTIAL SHAREHOLDERS
+IN SHARES AND UNDERLYING SHARES OF THE COMPANY
+As at 30 June 2016, the following persons (other than disclosed under the section headed “Directors’ and Chief Executives’
+Interests and Short Positions in Shares, Underlying Shares and Debentures”) had the following interests and short positions
+in the shares or underlying shares of the Company as recorded in the register required to be kept pursuant to Section 336 of
+Part XV of the SFO:
+Ordinary Shares Held
+Directly
+Indirectly
+
+Name of Shareholder
+(i)
+
+Percentage of
+Issued Shares
+
+China United Network Communications Group Company
+Limited (“Unicom Group”)1,2
+
+–
+
+18,032,853,047
+
+75.30%
+
+(ii) China United Network Communications Limited (“Unicom A
+Share Company”)1
+
+–
+
+9,725,000,020
+
+40.61%
+
+(iii) China Unicom (BVI) Limited (“Unicom BVI”)1
+
+9,725,000,020
+
+–
+
+40.61%
+
+(iv) China Unicom Group Corporation (BVI) Limited (“Unicom
+Group BVI”)2,3
+
+8,082,130,236
+
+225,722,791
+
+34.69%
+
+Notes:
+1.
+
+Unicom Group and Unicom A Share Company directly or indirectly control one-third or more of the voting rights in the shareholders’
+meetings of Unicom BVI, and in accordance with the SFO, the interests of Unicom BVI are deemed to be, and have therefore been
+included in, the respective interests of Unicom Group and Unicom A Share Company.
+
+2.
+
+Unicom Group BVI is a wholly-owned subsidiary of Unicom Group. In accordance with the SFO, the interests of Unicom Group BVI are
+deemed to be, and have therefore been included in, the interests of Unicom Group.
+
+3.
+
+Unicom Group BVI holds 8,082,130,236 shares (representing 33.75% of the issued shares) of the Company directly. In addition, Unicom
+Group BVI is also deemed under the SFO to be interested in 225,722,791 shares (representing 0.94% of the issued shares) of the
+Company held as trustee on behalf of a PRC shareholder.
+
+Apart from the foregoing, as at 30 June 2016, no person had any interests or short position in the shares or underlying shares
+of the Company as recorded in the register required to be kept under Section 336 of the SFO.
+Please also refer to Note 20 to unaudited condensed consolidated interim financial information for details of the share capital
+of the Company.
+
+44
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+Other Information
+
+REPURCHASE, SALE OR REDEMPTION OF LISTED SECURITIES OF THE COMPANY
+For the six months ended 30 June 2016, neither the Company nor any of its subsidiaries had repurchased, sold or redeemed
+any of the Company’s listed securities.
+.
+
+CHANGES OF DIRECTORS’ INFORMATION
+Changes of Directors’ information since the publication of the Company’s 2015 annual report are set out below:
+•
+
+Mr. Cesareo Alierta Izuel resigned as Executive Chairman of Telefónica, S.A. with effect from 8 April 2016. He remained
+as a member of the Board of Directors of Telefónica, S.A., and maintained as Executive Chairman of Fundación
+Telefónica. He was appointed as a director of DTS, Distribuidora de Televisión Digital, S.A.U. with effect from 12 April
+2016. In addition, he resigned as a member of the Board of Directors of International Consolidated Airlines Group with
+effect from 16 June 2016.
+
+•
+
+Mr. Cheung Wing Lam Linus resigned as Chairman of the Council of Centennial College of the University of Hong Kong
+and remained as a member of the Board of Governors of Centennial College, with effect from 1 July 2016.
+
+•
+
+Mr. Chung Shui Ming Timpson resigned as an Independent Non-executive Director of Henderson Land Development
+Company Limited with effect from 2 June 2016 and appointed as the Pro-Chancellor of the City University of Hong Kong
+with effect from 1 August 2016.
+
+Save as stated above, no other information on the Directors of the Company is required to be disclosed pursuant to Rule
+13.51B(1) of the Listing Rules. The updated biographical details of the Directors are available on the website of the Company
+(www.chinaunicom.com.hk).
+
+AUDIT COMMITTEE
+The Audit Committee, together with the management and the auditor of the Company, KPMG, has reviewed the accounting
+principles and practices adopted by the Company, and discussed internal control and financial reporting matters, including the
+review of interim financial information for the six months ended 30 June 2016.
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+45
+
+Other Information
+
+COMPLIANCE WITH CORPORATE GOVERNANCE CODE
+The Company is committed to maintaining high standards of corporate governance. The Company has complied with the code
+provisions in the Corporate Governance Code (the “Code Provisions”) as set out in Appendix 14 of the Listing Rules for the six
+months ended 30 June 2016 except the following:
+The roles and responsibilities of chairman and chief executive of the Company were performed by the same individual for the
+six months ended 30 June 2016. Mr. Wang Xiaochu serves as Chairman and Chief Executive Officer of the Company. Mr. Lu
+Yimin serves as President of the Company. Mr. Wang Xiaochu is responsible for chairing the Board and for all material affairs,
+including development, business strategy, operation and management, of the Company. Mr. Lu Yimin is responsible for the
+daily operation and management of the Company. The Board believes that at the present stage, Mr. Wang Xiaochu and Mr.
+Lu Yimin have achieved the aforesaid principle of separation of responsibilities, and to ensure balance of power and authority.
+These arrangements also facilitate the formulation and implementation of the Company’s strategies in a more effective manner
+so as to support the effective development of the Company’s business.
+Non-executive directors of the Company should be appointed for a specific term, subject to re-election. The Company’s nonexecutive directors are not appointed for a specific term but are subject to retirement by rotation at general meetings of the
+shareholders and re-election by shareholders pursuant to the Company’s articles of association. All Directors are subject to
+retirement by rotation at least once every three years.
+
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+The Company has adopted the Model Code as set out in Appendix 10 of the Listing Rules to govern securities transactions by
+Directors. Further to the specific enquiries made by the Company to Directors, all directors have confirmed their compliance
+with the Model Code for the six months ended 30 June 2016.
+
+COMPLIANCE WITH APPENDIX 16 OF THE LISTING RULES
+According to paragraph 40 of Appendix 16 of the Listing Rules, save as disclosed herein, the Company confirmed that the
+current company information in relation to those matters set out in paragraph 32 of Appendix 16 has not changed materially
+from the information disclosed in the Company’s 2015 annual report.
+
+46
+
+China Unicom (Hong Kong) Limited
+
+Interim Report 2016
+
+.
+
+http://www.chinaunicom.com.hk
+
+中國聯合網絡通信(香港)股份有限公司
+
+CHINA UNICOM (HONG KONG) LIMITED
+
+香港皇后大道中
+
+電話
+
+號中環中心
+
+樓
+
+傳真
+
+中期報告 2016 INTERIM REPORT
+
+中國聯合網絡通信 ( 香港 ) 股份有限公司
+
+中期報告 INTERIM REPORT
+
+2016
+中國聯合網絡通信(香港)股份有限公司
+CHINA UNICOM (HONG KONG) LIMITED
+HKEx : 0762
+
+NYSE : CHU
+
+

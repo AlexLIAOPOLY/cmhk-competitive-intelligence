@@ -1,0 +1,41 @@
+{
+  "id": "source_url_reachability_audits",
+  "title": "小竞AI来源URL可达性审计",
+  "summary": "去重检查三类主数据包中 official_source_url、primary_source_url 和 verification_sources 的唯一 URL 当前是否可访问或返回受限状态。",
+  "source_type": "live_url_audit",
+  "visibility": "hidden",
+  "scope": "official/public source URL reachability for preserved evidence links.",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "source-url",
+    "reachability",
+    "evidence"
+  ],
+  "keywords": [
+    "source_url_reachability_audits",
+    "official_source_url",
+    "primary_source_url",
+    "verification_sources",
+    "reachable_restricted"
+  ],
+  "entrypoints": [
+    "source_url_reachability_2026-06-19.md",
+    "source_url_reachability_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass_with_external_warnings",
+    "row_count": 705,
+    "unique_urls_checked": 705,
+    "ok": 571,
+    "reachable_restricted": 133,
+    "hard_failures": 1,
+    "notes": [
+      "网络审计结果会随外部网站访问策略变化；新增数据仍需逐条打开来源人工核实。",
+      "reachable_restricted 表示 URL 主机响应但限制自动请求，不等同于来源失效。",
+      "hard_failures 需要后续复核是否为临时网络问题、迁移链接或来源失效。"
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19"
+}

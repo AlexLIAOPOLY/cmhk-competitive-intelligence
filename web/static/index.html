@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=91" />
+    <link rel="stylesheet" href="/static/styles.css?v=108" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -147,7 +147,7 @@
           <div class="chat-header">
             <div>
               <h2>小竞AI</h2>
-              <p>智能 Agent：支持联网搜索、RAG 检索、触发定向爬虫，以及飞书表格协同。</p>
+              <p>智能 Agent：支持联网搜索、RAG 检索、趋势判断、来源核验和数据协同。</p>
             </div>
             <button class="quiet-button small" id="aiSettingsButton" type="button">设置</button>
             <button class="quiet-button small" id="clearChatButton" type="button">清空</button>
@@ -156,7 +156,7 @@
           <div class="messages" id="messages">
             <div class="message assistant">
               <span class="avatar">竞</span>
-              <div class="message-body">您好！我是小竞AI，一个不仅能分析信息，还能主动执行任务的 AI 智能体 (Agent)。我可以帮您：<br>1. <b>联网搜索</b>：按需检索公开网页并保留来源引用。<br>2. <b>深度查阅</b>：运用 RAG 随时翻阅底层爬取数据、历史周报与审计日志。<br>3. <b>精准抓取</b>：一键触发定向爬虫，自动去前线获取最新情报。<br>4. <b>飞书互通</b>：通过指令直连飞书，无缝同步与更新云端表格记录。<br>请问今天有什么我可以帮您的？</div>
+              <div class="message-body">您好！我是小竞AI，面向 CMHK 竞对、云厂商和宏观政策数据的分析型 Agent。我可以帮您：<br>1. <b>查数据</b>：检索本地三类数据库，说明覆盖主体、期间、指标口径和来源。<br>2. <b>核来源</b>：优先使用官方值，标明 verification_count、source-gap 和冲突状态。<br>3. <b>看趋势</b>：基于季度、半年度和年度历史数据做趋势判断与预测边界说明。<br>4. <b>找外部信息</b>：需要时联网检索公开网页，并把来源带回回答。<br>请问今天需要分析什么？</div>
             </div>
           </div>
           <form class="chat-form" id="chatForm">
@@ -174,10 +174,33 @@
                     <path d="M4 12h16"></path>
                     <path d="M4 18h16"></path>
                   </svg>
-                  <span>能力</span>
+                  <span class="sr-only">能力</span>
                 </button>
                 <div class="skill-menu" id="skillMenu" hidden></div>
               </div>
+              <div class="database-picker">
+                <button
+                  class="database-toggle"
+                  id="databaseToggle"
+                  type="button"
+                  aria-expanded="false"
+                  title="选择发送给 AI 的数据库"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <ellipse cx="12" cy="5" rx="8" ry="3"></ellipse>
+                    <path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path>
+                    <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path>
+                  </svg>
+                  <span class="sr-only">数据库</span>
+                </button>
+                <div class="database-menu" id="databaseMenu" hidden></div>
+              </div>
+              <input
+                class="sr-only"
+                id="knowledgeUploadInput"
+                type="file"
+                accept=".txt,.md,.csv,.tsv,.json,.docx,.pdf,text/plain,text/markdown,text/csv,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              />
               <button
                 class="thinking-toggle"
                 id="thinkingToggle"
@@ -190,7 +213,7 @@
                   <path d="M10 22h4"></path>
                   <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.7.6-1.1 1.4-1.2 2.3h-4.6c-.1-.9-.5-1.7-1.2-2.3z"></path>
                 </svg>
-                <span>思考</span>
+                <span class="sr-only">思考</span>
               </button>
               <button
                 class="web-search-toggle"
@@ -205,7 +228,7 @@
                   <path d="M12 2a15.3 15.3 0 0 1 0 20"></path>
                   <path d="M12 2a15.3 15.3 0 0 0 0 20"></path>
                 </svg>
-                <span>搜索</span>
+                <span class="sr-only">联网搜索</span>
               </button>
               <textarea id="chatInput" rows="1" autocomplete="off" placeholder="问周报重点、风险建议，或输入：重新生成周报"></textarea>
             </div>
@@ -273,6 +296,14 @@
             <span>API Key</span>
             <input id="aiApiKey" type="password" autocomplete="off" placeholder="已保存则可留空" />
           </label>
+          <section class="agent-memory-panel">
+            <div>
+              <h3>长期记忆</h3>
+              <p>只保存明确要求记住的偏好和生产规则。</p>
+            </div>
+            <button class="quiet-button small" id="refreshAgentMemory" type="button">刷新</button>
+            <div class="agent-memory-list" id="agentMemoryList">尚未加载。</div>
+          </section>
           <div class="modal-status" id="aiConfigStatus">默认 DeepSeek：api.deepseek.com / deepseek-v4-flash</div>
           <footer>
             <button class="quiet-button" id="testAiConfig" type="button">测试连接</button>
@@ -336,6 +367,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=94"></script>
+    <script src="/static/app.js?v=112"></script>
   </body>
 </html>

@@ -7,6 +7,7 @@
 - `core_metrics_summary.md`：人工可读摘要，按公司列出 FY2023-FY2025 主要数据、趋势和来源。
 - `core_metrics_2023_2025.json`：结构化数据，适合 Agent 做趋势分析、同业比较和口径检查。
 - `core_metrics_2023_2025.csv`：长表格式，适合表格分析。
+- `core_metrics_human_readable.csv`：面向 Excel/人工查看的精简宽表，只保留主体、指标、FY2023-FY2025、单位、口径说明和来源。
 - `sources.json`：所有官方/标准化财务表来源链接和数据质量说明。
 
 ## Agent 使用要求

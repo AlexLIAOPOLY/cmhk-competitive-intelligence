@@ -1,0 +1,63 @@
+{
+  "id": "external_dataset_assessment_2026-06-19",
+  "title": "外部可下载数据集替换/增强评估",
+  "summary": "评估可下载外部数据集是否能替代或增强当前竞对、云厂商和 CMHK 宏观政策数据包；结论是政府数据门户和官方公司披露可作为来源，SEC companyfacts 可作为美国上市公司 filing 辅助入口，但未发现能直接替代现有逐行核验季度/半年度主数据包的完整外部数据集。",
+  "source_type": "dataset_assessment",
+  "scope": "竞对主体、云厂商、CMHK 宏观政策与机构指标的外部数据集可替代性、增强价值和审计限制",
+  "tags": [
+    "external datasets",
+    "dataset assessment",
+    "SEC companyfacts",
+    "data.gov.hk",
+    "Kaggle",
+    "cloud vendors",
+    "telecom operators",
+    "source integrity"
+  ],
+  "keywords": [
+    "外部数据集",
+    "下载数据",
+    "替换数据包",
+    "增强数据",
+    "SEC companyfacts",
+    "Kaggle",
+    "MacroMicro",
+    "Synergy Research",
+    "Statista",
+    "Dataxis",
+    "data.gov.hk",
+    "OFCA",
+    "C&SD",
+    "AWS",
+    "Microsoft",
+    "Google Cloud",
+    "Oracle",
+    "Alibaba Cloud",
+    "Tencent Cloud",
+    "运营商数据集",
+    "云厂商数据集"
+  ],
+  "entrypoints": [
+    "README.md",
+    "candidate_datasets.csv",
+    "sources.json",
+    "search_audit_2026-06-19.md",
+    "completion_audit_2026-06-19.md"
+  ],
+  "updated_at": "2026-06-19T13:20:00",
+  "quality": {
+    "status": "assessment_complete_no_external_replacement_found",
+    "notes": [
+      "SEC companyfacts official JSON files were downloaded for AMZN, MSFT, GOOGL and ORCL under data/external_dataset_candidates/sec_companyfacts/.",
+      "Companyfacts does not expose a complete comparable cloud-segment quarterly series for the target cloud vendors; it is an auxiliary filing index, not a replacement source.",
+      "Government/public institution datasets from data.gov.hk are already adapted in cmhk_macro_policy_2026-06-19 and remain the preferred macro-policy source.",
+      "Kaggle and commercial/market-share pages are not accepted as replacement sources because they lack official row-level evidence, require account/paywall access, or do not preserve verification_count/source-gap controls.",
+      "Current quarterly_competitor_metrics_2026-06-18 remains the formal competitor/cloud operating metrics package.",
+      "Additional candidates assessed: SEC Financial Statement Data Sets, HKEX Historical Data Products, FinancialReports.eu filing index/API, and commercial fundamentals APIs; none replaces the audited quarterly package."
+    ]
+  },
+  "visibility": "hidden",
+  "version": "2026-06-19T13:20:00",
+  "built_at": "2026-06-19T13:20:00",
+  "last_audit_path": "agent_knowledge/external_dataset_assessment_2026-06-19/search_audit_2026-06-19.md"
+}

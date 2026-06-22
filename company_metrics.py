@@ -216,7 +216,13 @@ def _focused_match(metric: str, text: str) -> str:
         ("收入|收益|revenue", r"(?:Revenue|Total revenue|annual revenue|收益|总收益|收入)[^\d]{0,36}([A-Z$HKDRMB\s]*\d[\d,]*(?:\.\d+)?\s*(?:B\s*HKD|B\s*USD|亿港元|亿元|亿美元|亿|HKD|CNY|RMB|million|billion|bn|B|%|港元|元)?)"),
         ("服务收入|service", r"(?:service revenue|services revenue|服务收入|主营业务收入)[^\d]{0,42}([A-Z$HKDRMB\s]*\d[\d,]*(?:\.\d+)?\s*(?:B\s*HKD|B\s*USD|亿港元|亿元|亿美元|亿|HKD|CNY|RMB|million|billion|bn|B|%|港元|元)?)"),
         ("ebitda", r"EBITDA[^\d]{0,36}([A-Z$HKDRMB\s]*\d[\d,]*(?:\.\d+)?\s*(?:B\s*HKD|B\s*USD|亿港元|亿元|亿美元|亿|HKD|CNY|RMB|million|billion|bn|B|%|港元|元)?)"),
-        ("净利润|profit|溢利", r"(?:净利润|归母净利润|net profit|profit attributable|股东应占溢利)[^\d]{0,42}([A-Z$HKDRMB\s]*\d[\d,]*(?:\.\d+)?\s*(?:B\s*HKD|B\s*USD|亿港元|亿元|亿美元|亿|HKD|CNY|RMB|million|billion|bn|B|%|港元|元)?)"),
+        (
+            "净利润|profit|溢利",
+            r"(?:净利润|归母净利润|net profit|net income|net loss|profit attributable|loss attributable|"
+            r"股东应占溢利|本公司拥有人应占(?:溢利|亏损)|本公司擁有人應佔(?:溢利|虧損))"
+            r"[^\d-]{0,42}([-+]?\s*[A-Z$HKDRMB\s]*\d[\d,]*(?:\.\d+)?\s*"
+            r"(?:B\s*HKD|B\s*USD|亿港元|亿元|亿美元|亿|HKD|CNY|RMB|million|billion|bn|m|M|B|%|港元|元)?)",
+        ),
         ("资本开支|capex|capital expenditure", r"(?:资本开支|capital expenditure|capex)[^\d]{0,42}([A-Z$HKDRMB\s]*\d[\d,]*(?:\.\d+)?\s*(?:B\s*HKD|B\s*USD|亿港元|亿元|亿美元|亿|HKD|CNY|RMB|million|billion|bn|B|%|港元|元|美元)?)"),
         ("派息|股息|dividend|分派", r"(?:派息|股息|分派|dividend)[^\d]{0,42}([A-Z$HKRMB\s]*\d[\d,]*(?:\.\d+)?\s*(?:港元|港仙|元|%|cents|cent)?)"),
         ("用户|客户|customer|subscriber", r"(?:用户|客户|customer|subscriber|base)[^\d]{0,42}(\d[\d,]*(?:\.\d+)?\s*(?:million|M|m|亿户|万户|户|%))"),
@@ -229,6 +235,13 @@ def _focused_match(metric: str, text: str) -> str:
             continue
         for match in re.finditer(pattern, text, flags=re.IGNORECASE):
             full = _clean_text(match.group(0), 90)
+            if re.search(r"\b(?:net loss|loss attributable)\b|(?:亏损|虧損)", full, re.IGNORECASE):
+                full = re.sub(
+                    r"((?:HK\$|US\$|HKD|USD|RMB|CNY)?\s*)(\d[\d,]*(?:\.\d+)?)",
+                    lambda m: f"{m.group(1)}-{m.group(2)}",
+                    full,
+                    count=1,
+                )
             if full and full not in values:
                 values.append(full)
             if len(values) >= 3:
@@ -479,6 +492,8 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         return False
     if any(term.lower() in value_text.lower() for term in DIRTY_SOURCE_LABEL_TERMS):
         return False
+    if re.search(r"本轮公开来源未发现.+可核验披露；维持后续监测", value_text):
+        return True
     if re.search(r"不适用（?(?:非上市主体|品牌非独立上市主体)）?", value_text):
         return bool(re.search(r"派息|股息|分派|券商观点|市场反应", metric_text, re.IGNORECASE))
     if re.search(r"市场反应", metric_text, re.IGNORECASE):
@@ -535,6 +550,14 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
             )
             and not bool(re.search(r"折旧|摊销", value_text))
         )
+    if re.search(r"GDPR|DSA|AI与数据监管|数据监管", metric_text, re.IGNORECASE):
+        return len(value_text.strip()) >= 6 and bool(
+            re.search(
+                r"GDPR|DSA|Data Act|AI Act|数据|监管|合规|compliant|protection|rules",
+                value_text,
+                re.IGNORECASE,
+            )
+        )
     if re.search(r"收入|收益|EBITDA|利润|ARPU|用户|客户|宽频|家宽|套餐|资费|频谱|GDP|CPI", metric_text, re.IGNORECASE):
         if not re.search(r"\d", value_text):
             return False
@@ -543,7 +566,7 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         if re.search(r"收入|收益|EBITDA|利润", metric_text, re.IGNORECASE):
             return bool(
                 re.search(
-                    r"港元|港仙|人民币|亿元|亿|万元|百万|million|billion|bn|\bB\b|HKD|CNY|HK\$|US\$|RMB|"
+                    r"港元|港仙|人民币|亿元|亿|万元|百万|million|billion|bn|\bB\b|\d\s*M\b|HKD|CNY|HK\$|US\$|RMB|"
                     r"增长|下降|上升|减少|同比|按年",
                     value_text,
                     re.IGNORECASE,
@@ -552,7 +575,13 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         if re.search(r"套餐|资费", metric_text, re.IGNORECASE):
             return bool(re.search(r"\d", value_text))
         if re.search(r"用户|客户|宽频|家宽", metric_text, re.IGNORECASE):
-            return bool(re.search(r"户|人|用户|客户|million|\bM\b|万|亿|%", value_text, re.IGNORECASE))
+            return bool(
+                re.search(
+                    r"户|人|用户|客户|million|\bM\b|万|亿|%|月费|港元|HK\$|Mbps|Gbps|Wi-?Fi",
+                    value_text,
+                    re.IGNORECASE,
+                )
+            )
         return True
     return True
 

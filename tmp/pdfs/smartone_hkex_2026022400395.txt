@@ -1,0 +1,979 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited
+take no responsibility for the contents of this document, make no representation as to its
+accuracy or completeness and expressly disclaim any liability whatsoever for any loss
+howsoever arising from or in reliance upon the whole or any part of the contents of this
+document.
+
+SmarTone Telecommunications Holdings Limited
+                      (Incorporated in Bermuda with limited liability)
+                                   (Stock code: 315)
+
+          2025 / 2026 INTERIM RESULTS ANNOUNCEMENT
+                   (All references to “$” are to the Hong Kong dollars)
+
+
+
+    •   Profit attributable to equity holders was $278 million, an 8% increase over the prior
+        year
+
+    •   Revenues increased by 2% year-on-year to $3,561 million
+
+    •   Local service revenue, compared with 2H’25, grew 3% to $1,871 million
+
+    •   Consumer outbound data roaming revenue increased by 7%
+
+    •   Strong momentum continued in the 5G Home Broadband’s product offerings, with
+        revenue growing at 12%, and EBIT growing by 36%
+
+    •   Structural efficiency gains achieved with higher AI adoption and platform
+        simplification, resulting in a reduction in operating costs of 6% year-on-year by $52
+        million
+
+    •   The Board declared an interim dividend of 14.5 cents per share, the same as last
+        year
+
+
+
+CHAIRMAN’S STATEMENT
+
+Business review
+
+During the first half of FY25/26, SmarTone delivered solid results, with a profit attributable to
+equity holders of $278 million, representing an 8% year-on-year growth. Competing on
+consistent network quality, expanding a premium and loyal customer base, scaling high-return
+growth segments, and embedding AI at the core of operations have together created durable
+value — even in a highly competitive market.
+
+Our mobile post-paid customer base grew by 2% year-over-year, with churn remaining low at
+0.7%. Mobile post-paid APRU has remained stable. Roaming usage among the consumer base
+has continued to grow, with consumer roamer penetration increasing to 70%.
+
+The 5G home broadband business delivered robust and sustained growth gaining traction with
+both existing mobile users and new customers. The business delivered a 36% EBIT growth
+YoY, driven by scaling efficiencies and a healthy growth trajectory.
+
+Growth in our new customer base, stronger retention among our premium customers, continued
+momentum in 5GHBB and enterprise solutions have together contributed to a steady uplift in
+local service revenue reaching $1,871 million, representing a 3% gain over the second half of
+FY24/25.
+
+
+                                              -1-
+The company has consistently maintained tight cost discipline and delivered continuous,
+structural efficiency gains. Increased adoption of AI, continued platform simplification and
+streamlining of operations has resulted in operating cost savings of 6% year-on-year. Service
+EBITDA margin remained steady at a healthy level of 54%.
+
+Delivering superior network to a wider area of new developments
+
+To support emerging developments across Hong Kong, including the new Kai Tak Sports Park
+and adjacent residential zones, SmarTone has continued to invest in its network to deliver the
+highest quality and most reliable customer experience. As demand patterns evolve, we remain
+committed to delivering superior network performance where it matters most to our customers.
+
+Following the renewal of our 2600 MHz spectrum and the accelerated deployment of our “5G
+Golden Spectrum” at strategic locations, we are well-positioned to meet the ever-increasing
+expectations for network stability and consistent performance. The Golden Spectrum will be
+deployed to at least 24 major MTR stations and new transportation hubs such as the East
+Kowloon Corridor, in direct response to customer feedback that seamless connectivity is most
+valued while on the move.
+
+When measuring network performance, we understand that it is not only the technical metrics
+such as maximum speed that matter. We go further by simulating and regularly measuring real-
+life, user-generated performance patterns. Our true differentiation in our network performance
+lies in the consistency of customer experience, especially during peak hours, as validated by
+multiple independent third parties and media outlets.
+
+In support of the Government’s long-term development plan for the Northern Metropolis, we are
+investing our latest technology to build out the next generation of digital infrastructure in the
+area. We are piloting advanced 5G network architecture, designed to support a highly
+connected ecosystem enabling a wide range of smart applications, including robotics, low
+altitude economy services and smart logistics. These investments reflect our long-term
+commitment to position Hong Kong as the global leading hub for talent and innovation.
+
+Expanding new services to cater to the demand of different segments
+
+Over the past six months, we have introduced a broad range of new service developments
+aimed at enhancing the customer experience, addressing everyday pain points, and enabling
+access to emerging technologies. These include solutions tailored for our premium customers,
+as well as new tools that help families stay connected and safe, and services that unlock the
+potential of technologies such as AI and network slicing.
+
+“SmarTone PRIORITY” was launched and reserved for our most premium customers that
+value the highest network quality anytime, anywhere. This is one of industry’s first applications
+of network slicing technology whereby customer experience is guaranteed to be among the
+best no matter how crowded data traffic is in a given location and at a given time. It serves as
+the “fast lane” and offers a faster, consistent and seamless experience. Feedback from
+customers has been very positive.
+
+“Kids CARE” the first-of-its-kind parental control application in the industry, was developed
+specifically for the busy and demanding lives of families in Hong Kong. The ability to stay
+connected, communicate seamlessly among family members and know their whereabout are
+among the most essential and valued functions of mobile technology. With rising cybersecurity
+threats, increased exposure to social media among the young population, and the addictive
+nature of online content, we believe it is our responsibility to support families in protecting the
+younger generation. We recognize the dilemma facing our community and it was with this in
+mind that we developed “Kids Care” designed to address these concerns. It is now in its beta
+version and has been rolled out to customers to gather user feedback as we continue to improve
+the product.
+
+
+
+                                               -2-
+“AI Connect” was launched to provide seamless, one-click access to a wide range of global
+AI tools. We believe that improving AI literacy and expanding access to advanced technologies
+is essential to maintaining Hong Kong’s long-term competitiveness. It is with this objective that
+SmarTone launched “AI Connect” - a seamless, one-click gateway for users to access AI tools
+anywhere in the world. In conjunction with the numerous AI workshops and AI one-on-one
+consultation services offered to our customers, we aim to bring AI to the doorsteps and make
+it easy for everyday use.
+
+“AI-assisted servicing” At the core of SmarTone’s experience is our service excellence
+across all touch points. We see the adoption of AI as an assistive tool to enable our staff to
+deliver a faster and more reliable service to our customers, be it at our stores or through digital
+channels. We are proud that we have received outstanding recognition in the industry, winning
+nine prestigious accolades in the 2025 Service and Courtesy Awards from the Hong Kong Retail
+Management Association. We are the only telecommunication operator winning the 2025
+Quality Service Retailer of the Year.
+
+Driving synergies across SHKP group
+
+SmarTone has continued to work closely with all divisions within the SHKP group to deliver
+services that enhance the overall customer experience. We have partnered with new
+developments at Go Park, Sierra Sea, Cullinan Sea and Cullinan Sky to deliver best-in-class
+network performance whenever our customers visit these locations. This collaboration also
+extends to Smart Home solutions which has become a substantial growth driver for our
+business. The offering has won numerous international accolades, including the “Best Smart
+Home Customer Experience” award by Network X Awards 2025 in Europe.
+
+We are also collaborating with SHKP to capture opportunities arising from the new mainland
+talent schemes. These initiatives span across residential, retail, hospitality and transportation
+sectors. SmarTone aims to become the mobile network provider of choice for new arrivals
+moving to Hong Kong, leveraging on SHKP’s strong presence and brand in Hong Kong and
+major Mainland cities, and a shared commitment to deliver exceptional customer satisfaction.
+
+Dividend
+
+The Board declared an interim dividend of 14.5 cents per share, consistent with last year.
+
+Outlook
+
+We remain firmly committed to investing in our superior network and excellent service, in
+addition to broadening our products and services to cater for the evolving needs of customers
+in the digital world.
+
+Looking ahead, we see new talent and immigrants to Hong Kong as an important pillar of
+growth. The further integration of Greater Bay Area and accelerated technology innovation in
+the ecosystem will support Hong Kong’s economic and macro developments over the next
+decades. As a technology arm of SHKP group, SmarTone’s mission is to be the trusted digital
+infrastructure provider for Hong Kong and a technology enabler for all our customers.
+
+
+
+
+                                               -3-
+Appreciation
+
+I would like to extend my heartfelt gratitude to our customers and shareholders for their
+support and trust, as well as my fellow directors for their continued guidance. To our
+staff, I would like to express my sincere thanks for their unwavering commitment and
+hard work, which are the cornerstones of our success.
+
+
+                                                         Kwok Ping-luen, Raymond
+                                                                    Chairman
+
+Hong Kong, 24 February 2026
+
+
+
+
+                                          -4-
+MANAGEMENT DISCUSSION AND ANALYSIS
+
+Review of financial results
+
+During the period under review, the Group’s profit attributable to shareholders was $278 million
+(first half of 2024/25: $257 million), representing an 8% increase over prior year.
+
+The Group's total revenue was $3,561 million, a 2% increase from $3,492 million for the same
+period last year. This growth was primarily driven by higher handset and accessory sales.
+
+The Group has continued to rigorously enhance cost control measures and operational
+efficiency during the period. Consequently, our staff costs and other operating expenses were
+reduced by 5% and 7% year-on-year, to $340 million and $432 million, respectively.
+
+Depreciation, amortization, and loss on disposal decreased by $31 million or 4%, resulting in a
+total of $828 million (first half of 2024/25: $859 million). This reduction is primarily attributable
+to lower depreciation charges on fixed assets due to our prudent capital expenditure
+management and reduced depreciation charges on right-of-use assets following rental
+negotiations in recent years.
+
+Finance income is $40 million, increased by $1 million or 3% year-on-year, reflecting the strong
+cash position of the Group. Finance cost primarily represents accretion expenses on spectrum
+utilization fees, lease liabilities and asset retirement obligation. It has decreased by $2 million
+or 4% year-on-year, amid the reduction of accretion expenses on spectrum utilization fees.
+
+Income tax expense amounted to $101 million (first half of 2024/25: $97 million), reflecting an
+effective tax rate of 26.7% (first half of 2024/25: 27.5%). In light of the uncertainty of the tax
+deductibility of the spectrum utilization fee, certain related payments have been treated as non-
+deductible in calculating the tax provision, which contributes to the Group effective tax rate
+being higher than the standard tax rate. The Group will continue to vigorously defend its
+position and pursue tax deduction of the spectrum utilization fee from the Inland Revenue
+Department. As at 31 December 2025, the Group’s current income tax liabilities of $834 million
+(30 June 2025: $740 million) includes a provision of $665 million (30 June 2025: $633 million)
+which has been made on the assumption that certain spectrum utilization fee payments were
+not tax deductible. At the same time, tax reserve certificates of $399 million (30 June 2025:
+$399 million) have been purchased by the Group in this regard.
+
+
+
+
+                                                -5-
+Capital structure, liquidity and financial resources
+
+The Group maintained a strong balance sheet for the period under review. During the period,
+the Group was mainly financed by share capital and internally generated funds. As at 31
+December 2025, the Group had a total equity of $5,391 million (30 June 2025: $5,305 million),
+including share capital and reserves of $110 million (30 June 2025: $110 million) and $5,281
+million (30 June 2025: $5,195 million), respectively.
+
+The Group’s cash resources remained robust with cash and bank balances including short-
+term bank deposits of $2,435 million as at 31 December 2025, increased by $407 million or
+20% when compared with the position as at 30 June 2025. Total borrowings of the Group was
+$59 million as at 31 December 2025, as compared to $62 million as at 30 June 2025.
+
+The Group has generated net cash from operating activities of $1,350 million during the period,
+increased by $382 million or 39% year-on-year when compared with last year. The Group’s
+major outflows of funds during the period were payments for purchase of fixed assets, spectrum
+utilization fee, leases and dividends. The Group maintains a strong and healthy cash flow as a
+result of refined cost control, prudent capital expenditure as well as stringent fund management.
+
+The directors are of the opinion that the Group can fund its capital expenditures and working
+capital requirements for the financial year ending 30 June 2026 with internal cash resources.
+
+Treasury policy
+
+The Group invests its surplus funds in accordance with a treasury policy approved by the board
+of directors. Surplus funds are placed in bank deposits and invested in financial assets at
+amortized cost. Bank deposits and financial assets at amortized cost are predominantly
+maintained in Hong Kong dollars and US dollars.
+
+The Group arranges for banks to issue performance bonds and letters of credit.
+
+Charges on assets
+
+The Group’s bank borrowings were secured by certain assets of the Group and the carrying
+amount of the pledged assets amounted to $59 million as at 31 December 2025 (30 June 2025:
+$61 million).
+
+Interest rate exposure
+
+As at 31 December 2025, the Group’s total borrowing of $59 million is subject to floating interest
+rate. Management considers the corresponding interest rate exposure will not have any
+material impact to the Group given the low level of borrowing. The Group does not currently
+undertake any interest rate hedging.
+
+Functional currency and foreign exchange exposure
+
+The functional currency of the Company is the Hong Kong dollar. The Group is exposed to
+other currency movements, principally in terms of certain trade receivables, bank deposits,
+financial asset at fair value through other comprehensive income, financial assets at amortized
+cost and trade payables denominated in United States dollars. The trade payables
+denominated in United States dollars is partially hedged with our deposits in United States
+dollars.
+
+
+
+
+                                              -6-
+Contingent liabilities
+
+As at 31 December 2025, the Group provided performance guarantees of $878 million (30 June
+2025: $718 million).
+
+Employees, share award scheme and share option scheme
+
+The Group had 1,553 full-time employees as at 31 December 2025 (30 June 2025: 1,656), with
+the majority of them based in Hong Kong. Total staff costs were $340 million for the period
+ended 31 December 2025 (first half of 2024/25: $357 million).
+
+Employees receive a remuneration package consisting of basic salary, bonus and other
+benefits. Bonus payments are discretionary and depend, inter-alia, on both the Group’s
+performance and the individual employee’s performance. Benefits include retirement schemes,
+medical and dental care insurance. Employees are provided with both internal and external
+training appropriate to each individual’s requirements.
+
+A share award scheme was adopted by the Group as an incentive arrangement to recognize
+the contributions by certain employees and to attract and retain suitable personnel for the
+development of the Group. During the period under review, no unvested shares (30 June 2025:
+Nil) were outstanding as at 31 December 2025.
+
+The Group has share option scheme under which the Company may grant options to
+participants, including directors and employees, to subscribe for shares of the Company. As at
+31 December 2025, 4,000,000 share options were outstanding (30 June 2025: 4,000,000).
+
+
+
+
+                                             -7-
+RESULTS
+
+The Board of Directors of SmarTone Telecommunications Holdings Limited (the “Company”) is
+pleased to present the consolidated profit and loss account and the consolidated statement of
+comprehensive income for the six months ended 31 December 2025 and the consolidated
+balance sheet as at 31 December 2025 of the Company and its subsidiaries (the “Group”), all
+of which are unaudited and condensed, along with selected explanatory notes.
+
+Condensed Consolidated Profit and Loss Account
+For the six months ended 31 December 2025
+
+                                                                     Unaudited six months
+                                                                     ended 31 December
+                                                                       2025            2024
+                                                      Notes            $000            $000
+
+
+ Service revenue and other related service                         2,182,339        2,303,422
+ Handset and accessory sales                                       1,378,949        1,188,116
+                                                                  ────────         ────────
+ Revenues                                                 3        3,561,288        3,491,538
+ Cost of inventories sold                                        (1,331,371)      (1,162,159)
+ Cost of services provided                                         (238,648)        (227,014)
+ Staff costs                                                       (339,583)        (356,941)
+ Other operating expenses, net                                     (432,086)        (466,638)
+ Depreciation, amortization and loss on disposal          6        (828,002)        (859,274)
+                                                                  ────────         ────────
+ Operating profit                                                    391,598          419,512
+ Expected credit loss on financial assets at
+  amortized cost                                          6                -        (50,000)
+ Finance income                                           4           39,604          38,325
+ Finance costs                                            5         (51,608)        (53,976)
+                                                                  ────────        ────────
+ Profit before income tax                                 6          379,594        353,861
+ Income tax expense                                       7        (101,269)        (97,203)
+                                                                  ────────        ────────
+ Profit after income tax                                             278,325        256,658
+                                                                  ════════        ════════
+ Profit attributable to
+ Company’s shareholders                                             278,325         256,658
+                                                                  ════════        ════════
+ Earnings per share for profit attributable to
+  Company’s shareholders during the period
+  (expressed in cents per share)                          8
+  Basic                                                                25.3            23.3
+  Diluted                                                              25.3            23.3
+                                                                  ════════        ════════
+
+
+
+
+                                               -8-
+Condensed Consolidated Statement of Comprehensive Income
+For the six months ended 31 December 2025
+
+                                                                       Unaudited six months
+                                                                       ended 31 December
+                                                                        2025            2024
+                                                                        $000            $000
+
+
+ Profit for the period                                                 278,325      256,658
+                                                                     ────────     ────────
+ Other comprehensive income/(loss)
+ Item that may be reclassified subsequently to profit and loss:
+   Currency translation differences                                         55         (224)
+ Item that will not be reclassified subsequently to profit and
+   loss:
+   Fair value gain/(loss) on financial asset at fair value through
+     other comprehensive income                                           101         (483)
+                                                                     ────────     ────────
+ Other comprehensive income/(loss) for the period                         156          (707)
+                                                                     ────────     ────────
+ Total comprehensive income for the period attributable to
+  Company’s shareholders                                               278,481      255,951
+                                                                     ════════     ════════
+
+
+
+
+                                               -9-
+Condensed Consolidated Balance Sheet
+As at 31 December 2025 and 30 June 2025
+
+                                                              Unaudited     Audited
+                                                           31 December      30 June
+                                                                  2025         2025
+                                                   Notes          $000         $000
+
+
+ Non-current assets
+ Fixed assets                                                 2,987,414   3,067,242
+ Customer acquisition costs                                      92,120      93,244
+ Contract assets                                                 46,061      41,298
+ Right-of-use assets                                            724,787     805,416
+ Interest in an associate                                             3           3
+ Financial asset at fair value through other
+   comprehensive income                                           4,963        4,862
+ Financial assets at amortized cost                               2,321        2,321
+ Intangible assets                                            3,462,160    3,696,376
+ Deposits and prepayments and other receivables                 150,261      142,031
+ Deferred income tax assets                                       7,491        7,640
+                                                             ────────     ────────
+ Total non-current assets                                     7,477,581    7,860,433
+                                                             ────────     ────────
+ Current assets
+ Cash and cash equivalents                                    2,435,049    2,028,081
+ Contract assets                                                 95,996       98,638
+ Trade receivables                                   10         420,421      414,066
+ Deposits and prepayments                                       225,780      278,327
+ Other receivables                                              110,442      138,002
+ Inventories                                                    182,393       87,217
+ Tax reserve certificate                                        402,764      402,764
+                                                             ────────     ────────
+ Total current assets                                         3,872,845    3,447,095
+                                                             ────────     ────────
+ Current liabilities
+ Trade payables                                      11         547,470      351,855
+ Other payables and accruals                                    607,618      675,383
+ Contract liabilities                                           415,188      468,019
+ Lease liabilities                                              466,750      485,400
+ Current income tax liabilities                                 834,267      739,864
+ Bank borrowings                                                  3,957        4,718
+ Spectrum utilization fee liabilities                           251,069      248,060
+                                                             ────────     ────────
+ Total current liabilities                                    3,126,319    2,973,299
+                                                             ────────     ────────
+
+
+
+
+                                          - 10 -
+Condensed Consolidated Balance Sheet
+As at 31 December 2025 and 30 June 2025
+                                                      Unaudited     Audited
+                                                   31 December      30 June
+                                                          2025         2025
+                                                          $000        $000
+
+
+ Non-current liabilities
+ Asset retirement obligations                            45,341       45,901
+ Contract liabilities                                     6,493        8,698
+ Lease liabilities                                      271,834      330,588
+ Bank borrowings                                         54,810       56,882
+ Spectrum utilization fee liabilities                 2,282,015    2,421,198
+ Deferred income tax liabilities                        172,380      165,708
+                                                     ────────     ────────
+ Total non-current liabilities                        2,832,873    3,028,975
+                                                     ────────     ────────
+ Net assets                                           5,391,234    5,305,254
+                                                     ════════     ════════
+
+ Capital and reserves
+ Share capital                                          110,095      110,095
+ Reserves                                             5,281,139    5,195,159
+                                                     ────────     ────────
+ Total equity                                         5,391,234    5,305,254
+                                                     ════════     ════════
+
+
+
+
+                                          - 11 -
+Notes to the Condensed Consolidated Interim Financial Information
+
+1      General information
+
+       SmarTone Telecommunications Holdings Limited (the “Company”) and its subsidiaries
+       (together, the “Group”) are principally engaged in the provision of telecommunications
+       services and the sale of handsets and accessories in Hong Kong.
+
+       The Company is a limited liability company incorporated in Bermuda. The address of
+       its head office and principal place of business is 31/F, Millennium City 2, 378 Kwun
+       Tong Road, Kwun Tong, Hong Kong.
+
+       The Company has its listing on The Stock Exchange of Hong Kong Limited (the
+       “SEHK”).
+
+       This unaudited condensed consolidated interim financial information (“Interim financial
+       information”) is presented in Hong Kong dollars, unless otherwise stated. This Interim
+       financial information has been approved for issue by the board of directors on 24
+       February 2026.
+
+2      Basis of preparation
+
+       This Interim financial information for the six months ended 31 December 2025 has been
+       prepared in accordance with Hong Kong Accounting Standard (“HKAS”) 34, “Interim
+       Financial Reporting”. This Interim financial information should be read in conjunction
+       with the annual financial statements for the year ended 30 June 2025, which have been
+       prepared in accordance with Hong Kong Financial Reporting Standards (“HKFRSs”).
+       This Interim financial information has been prepared on a historical cost basis, except
+       for the financial asset at fair value through other comprehensive income, measured at
+       fair value, and on a going concern basis.
+
+       The accounting policies applied are consistent with those of the annual financial
+       statements for the year ended 30 June 2025, as described in those annual financial
+       statements except for the adoption of the amendment to standards as set out below.
+
+       (a)   Amendment to standard adopted by the Group
+
+             The Group has applied the following amendment to standard for the first time for
+             their annual reporting commencing 1 July 2025.
+
+             HKAS 21 and HKFRS 1                    Lack of Exchangeability
+              (Amendments)
+
+             The adoption of the amendment to standard has no significant impact on this
+             Interim financial information.
+
+
+
+
+                                           - 12 -
+2   Basis of preparation (continued)
+
+    (b)   New standards and amendments to standards and interpretations not yet
+          adopted
+
+          Certain new standards and amendments to standards have been published that
+          are not mandatory for 30 June 2026 reporting period and have not been early
+          adopted by the Group.
+
+          HKFRS 10 and HKAS 28                   Sale or Contribution of Assets between an
+           (Amendments)                           Investor and its Associate or Joint
+                                                  Venture1
+          HKFRS Amendments                       Annual Improvements to HKFRS
+                                                  Accounting Standards – volume II2
+          HKFRS 9 and HKFRS 7                    Amendments to the Classification
+           (Amendments)                           and Measurement of Financial
+                                                  Instruments2
+          HKFRS 9 and HKFRS 7                    Contracts Referencing Nature-dependent
+           (Amendments)                           Electricity2
+          HKFRS 18                               Presentation and Disclosure in Financial
+                                                  Statements3
+          HKFRS 19                               Subsidiaries without Public Accountability:
+                                                  Disclosures3
+          HK-Interpretation 5                    Presentation of Financial Statements –
+           (Amendments)                           Classification by the Borrower of a Term
+                                                  Loan that Contains a Repayment on
+                                                  Demand Clause3
+
+          1
+              To be determined
+          2
+              Effective for annual periods beginning on or after 1 January 2026.
+          3
+              Effective for annual periods beginning on or after 1 January 2027.
+
+
+
+
+                                        - 13 -
+3   Revenues
+
+    Revenues include income generated from the provision of mobile telecommunications
+    services, and the sales of handsets and accessories. An analysis of revenues is as
+    follows:
+
+                                                                  Unaudited six months
+                                                                  ended 31 December
+                                                                   2025           2024
+                                                                   $000           $000
+
+
+    Mobile telecommunications services                         2,182,339       2,303,422
+    Handsets and accessories sales                             1,378,949       1,188,116
+                                                              ────────        ────────
+                                                               3,561,288       3,491,538
+                                                              ════════        ════════
+
+
+    The Group’s revenues from the provisions of services and delivery of goods by timing
+    of satisfaction of performance obligations are as follows:
+                                                                 Unaudited six months
+                                                                  ended 31 December
+                                                                   2025            2024
+                                                                   $000            $000
+
+
+    Timing of revenue recognition:
+    Over time                                                  2,182,339       2,303,422
+    At a point in time                                         1,378,949       1,188,116
+                                                              ────────        ────────
+                                                               3,561,288       3,491,538
+                                                              ════════        ════════
+
+
+    In a manner consistent with the way in which information is reported internally to the
+    Group’s chief operating decision-maker for the purpose of resource allocation and
+    performance assessment, the Group has identified only one reportable segment, which
+    is mobile telecommunications business.
+
+4   Finance income
+
+                                                                  Unaudited six months
+                                                                  ended 31 December
+                                                                   2025           2024
+                                                                   $000           $000
+
+
+    Interest income from bank deposits                            39,604          36,811
+    Interest income from financial assets at amortized
+     cost                                                             -            1,514
+                                                                ──────           ──────
+                                                                 39,604           38,325
+                                                                ══════           ══════
+
+
+
+
+                                        - 14 -
+5   Finance costs
+
+                                                                     Unaudited six months
+                                                                     ended 31 December
+                                                                      2025           2024
+                                                                      $000           $000
+
+
+    Interest expense on bank and other borrowings                       921            1,085
+    Accretion expenses
+      Spectrum utilization fee liabilities                           29,072          31,144
+      Lease liabilities                                              21,355          21,469
+      Asset retirement obligations                                      260             262
+    Net exchange loss on financing activities                             -              16
+                                                                    ──────          ──────
+                                                                     51,608          53,976
+                                                                    ══════          ══════
+
+
+    Accretion expenses represent changes in the spectrum utilization fee liabilities, lease
+    liabilities and asset retirement obligations due to passage of time calculated by applying
+    an effective interest rate method of allocation to the amount of the liabilities at the
+    beginning of the period.
+
+6   Profit before income tax
+
+    Profit before income tax is stated after charging/(crediting) the following:
+
+                                                                     Unaudited six months
+                                                                     ended 31 December
+                                                                      2025           2024
+                                                                      $000           $000
+
+
+    Other operating expenses, net
+     - Network costs                                               252,612          271,393
+     - Short-term and low-value leases                              16,957           22,324
+     - Impairment loss of trade receivables (note 10)                2,756            2,020
+     - Net exchange (gain)/loss                                       (134)             296
+     - Others                                                      159,895          170,605
+    Loss on disposal of fixed assets                                 2,443            3,109
+    Gain on derecognition of right-of-use assets                         -            (412)
+    Depreciation of fixed assets                                   253,656          268,307
+    Depreciation of right-of-use assets                            295,409          309,840
+    Amortization of spectrum utilization fee                       236,666          236,666
+    Amortization of customer acquisition costs                      39,828           41,764
+    Share-based payments                                               166              358
+    Expected credit loss on financial assets at
+     amortized cost                                                      -           50,000
+                                                                    ══════          ══════
+
+
+
+
+                                          - 15 -
+7   Income tax expense
+
+                                                                    Unaudited six months
+                                                                    ended 31 December
+                                                                     2025           2024
+                                                                     $000           $000
+
+
+    Current income tax
+     Hong Kong profits tax                                          93,281        90,365
+     Non-Hong Kong tax                                               1,167         1,099
+                                                                   ──────        ──────
+    Total current income tax expense                                94,448        91,464
+
+    Total deferred income tax expense                                6,821         5,739
+                                                                   ──────        ──────
+    Income tax expense                                             101,269        97,203
+                                                                   ══════        ══════
+
+
+    Income tax expense is recognized based on management’s estimate of the weighted
+    average annual income tax rate expected for the full financial year.
+
+8   Earnings per share
+
+    (a)   Basic earnings per share
+
+          Basic earnings per share is calculated by dividing:
+
+          •    the profit attributable to Company’s shareholders
+
+          •    by the weighted average number of ordinary shares outstanding during the
+               period and excluding shares held for share award scheme.
+
+                                                                    Unaudited six months
+                                                                    ended 31 December
+                                                                     2025             2024
+                                                                    Cents            Cents
+
+
+          Basic earnings per share attributable to
+           Company’s shareholders                                 25.3               23.3
+                                                          ═══════════        ═══════════
+
+
+
+
+                                        - 16 -
+8   Earnings per share (continued)
+
+    (b)   Diluted earnings per share
+
+          Diluted earnings per share adjusts the figures used in the determination of basic
+          earnings per share to take into account:
+
+          •    the weighted average number of additional ordinary shares that would have
+               been outstanding assuming the conversion of all dilutive potential ordinary
+               shares.
+
+                                                                   Unaudited six months
+                                                                   ended 31 December
+                                                                    2025             2024
+                                                                   Cents            Cents
+
+
+          Diluted earnings per share attributable to
+           Company’s shareholders                                 25.3              23.3
+                                                          ═══════════       ═══════════
+
+
+
+                                                                   Unaudited six months
+                                                                   ended 31 December
+                                                                    2025             2024
+                                                                    $000             $000
+
+
+           Profit attributable to Company’s
+            shareholders used in calculating basic
+            earnings per share and diluted earnings
+            per share                                          278,325           256,658
+                                                          ═══════════       ═══════════
+
+
+
+
+                                        - 17 -
+8   Earnings per share (continued)
+
+    (c)   Weighted average number of shares used as the denominator
+
+                                                                    Unaudited six months
+                                                                    ended 31 December
+                                                                     2025             2024
+                                                                  Number           Number
+
+
+          Weighted average number of ordinary
+           shares used as the denominator in
+           calculating basic earnings per share and
+           diluted earnings per share                      1,100,951,601      1,102,126,623
+                                                           ═══════════        ═══════════
+
+
+9   Dividends
+
+    (a)   In respect of the period
+
+                                                                     Unaudited six months
+                                                                     ended 31 December
+                                                                      2025           2024
+                                                                      $000           $000
+
+
+          Interim dividend declared of 14.5 cents
+            (2024: 14.5 cents) per fully paid share               159,638          159,778
+                                                                  ══════           ══════
+
+
+          At a meeting held on 24 February 2026, the directors declared an interim
+          dividend of 14.5 cents per fully paid share for the year ending 30 June 2026. The
+          interim dividend declared is not reflected as a dividend payable in this Interim
+          financial information, but will be reflected as an appropriation of retained profits
+          for the year ending 30 June 2026.
+
+          The interim dividend declared is calculated based on the number of shares in
+          issue at the date of approval of this Interim financial information.
+
+
+
+
+                                         - 18 -
+9    Dividends (continued)
+
+     (b)   Attributable to prior year paid in the period
+
+                                                                   Unaudited six months
+                                                                   ended 31 December
+                                                                    2025           2024
+                                                                    $000           $000
+
+
+           Final dividend of 17.5 cents (2024: 17.5
+            cents) per fully paid share                          192,667         192,860
+                                                                 ══════          ══════
+
+
+10   Trade receivables
+
+     The credit periods granted by the Group to its customers generally range from 15 days
+     to 45 days from the date of invoice. An ageing analysis of trade receivables, net of
+     provision, based on invoice date is as follows:
+
+                                                              Unaudited           Audited
+                                                           31 December            30 June
+                                                                  2025               2025
+                                                                  $000               $000
+
+
+     Current to 30 days                                        296,669            302,753
+     31 - 60 days                                               19,950             17,618
+     61 - 90 days                                                9,333              5,090
+     Over 90 days                                               94,469             88,605
+                                                              ───────            ───────
+                                                               420,421            414,066
+                                                              ═══════            ═══════
+
+
+     The Group applies the HKFRS 9 simplified approach to measuring expected credit
+     losses which uses a lifetime expected loss allowance for all trade receivables and
+     contract assets. This resulted in a loss of $2,756,000 (2024: $2,020,000) for the
+     impairment of its trade receivables during the six months ended 31 December 2025.
+
+11   Trade payables
+
+     An ageing analysis of trade payables based on invoice date is as follows:
+
+                                                              Unaudited           Audited
+                                                           31 December            30 June
+                                                                  2025               2025
+                                                                  $000               $000
+
+
+     Current to 30 days                                        296,989            175,680
+     31 - 60 days                                              163,678             47,362
+     61 - 90 days                                               27,258             38,176
+     Over 90 days                                               59,545             90,637
+                                                              ───────            ───────
+                                                               547,470            351,855
+                                                              ═══════            ═══════
+
+
+
+                                          - 19 -
+INTERIM DIVIDEND
+
+The Directors declared an interim dividend of 14.5 cents per share for the six months ended 31
+December 2025 (2024: 14.5 cents). The interim dividend will be paid in cash on or about
+Thursday, 19 March 2026 to shareholders whose names appear on the Register of Members
+of the Company on Tuesday, 10 March 2026.
+
+CLOSURE OF REGISTER OF MEMBERS
+
+The record date for entitlement to the interim dividend is Tuesday, 10 March 2026. For
+determining the entitlement to the interim dividend, the Register of Members of the Company
+will be closed for one day on Tuesday, 10 March 2026 during which no transfer of shares will
+be effected. In order to qualify for the interim dividend, all transfers accompanied by the
+relevant share certificates must be lodged with the Company’s Share Registrar in Hong Kong,
+Computershare Hong Kong Investor Services Limited at Shops 1712-1716, 17th Floor,
+Hopewell Centre, 183 Queen’s Road East, Hong Kong for registration no later than 4:30 p.m.
+on Monday, 9 March 2026.
+
+PURCHASE, SALE OR REDEMPTION OF SHARES
+
+At no time during the six months ended 31 December 2025 was there any purchase, sale or
+redemption by the Company, or any of its subsidiaries, of the Company’s shares.
+
+REVIEW OF INTERIM RESULTS
+
+The Audit Committee of the Company has reviewed the interim financial statements of the
+Group for the six months ended 31 December 2025 as well as the report of the Risk
+Management Committee and the report of Internal Audit. The Committee was satisfied that the
+accounting policies and methods of computation adopted by the Group are appropriate and in
+line with the market participants in Hong Kong. The Committee found no unusual items that
+were omitted from the financial statements and was satisfied with the disclosures of data and
+explanations shown in the financial statements. The Committee was also satisfied with the risk
+management and internal control measures adopted by the Group.
+
+The interim financial statements for the six months ended 31 December 2025 have not been
+audited but have been reviewed by the Company’s external auditor.
+
+The financial information disclosed above complies with the disclosure requirements of
+Appendix D2 to the Rules Governing the Listing of Securities on The Stock Exchange of Hong
+Kong Limited (the “Listing Rules”).
+
+CORPORATE GOVERNANCE
+
+The Company is committed to building and maintaining high standards of corporate
+governance. Throughout the six months ended 31 December 2025, the Company has applied
+the principles and complied with the requirements set out in the Corporate Governance Code
+(the “CG Code”) contained in Appendix C1 to the Listing Rules, except for the following
+deviation:
+
+Code Provision C.1.6 of the CG Code provides that independent non-executive directors and
+other non-executive directors should attend general meetings to gain and develop a balanced
+understanding of the views of shareholders. Mr. Lam Kwok-fung, Kenny, Independent Non-
+Executive Director, was unable to attend the annual general meeting of the Company held on
+4 November 2025 due to other prior engagements. The remaining ten Independent Non-
+Executive Directors and Non-Executive Directors (representing 91% of all independent non-
+executive and non-executive members of the Board at the time) attended the said meeting in
+person or through electronic means to listen to the views expressed by the shareholders.
+
+
+
+
+                                            - 20 -
+The Board will continue to monitor and review the Company’s corporate governance practices
+to ensure compliance with the CG Code.
+
+DEFINITIONS
+
+In this announcement, unless the context otherwise requires, the following expressions have
+the following meanings:
+
+“EBIT”                  earnings before finance income, finance costs and taxation
+
+“EBITDA”                earnings before finance income, finance costs, taxation, depreciation
+                        and amortization
+
+“service EBITDA /       EBITDA / EBIT excluding handset and accessory sales margin
+EBIT”
+
+
+                                                                   By order of the Board
+                                                                   Mak Yau-hing, Alvin
+                                                                   Company Secretary
+
+Hong Kong, 24 February 2026
+
+
+As at the date of this announcement, the Executive Directors of the Company are Mr. FUNG
+Yuk-lun, Allen (Deputy Chairman), Ms. LAU Yeuk-hung, Fiona (Chief Executive Officer) and Mr.
+CHAU Kam-kun, Stephen; Non-Executive Directors are Mr. KWOK Ping-luen, Raymond
+(Chairman), Mr. CHEUNG Wing-yui (Deputy Chairman), Mr. David Norman PRINCE, Mr. SIU
+Hon-wah, Thomas, Dr. POON Sun-cheong, Patrick and Mr. WONG Hong-kit; Independent Non-
+Executive Directors are Dr. LI Ka-cheung, Eric, JP, Mr. NG Leung-sing, JP, Mr. GAN Fock-kin,
+Eric, Mr. LAM Kwok-fung, Kenny, Mr. LEE Yau-tat, Samuel and Mr. Peter KUNG.
+
+
+
+
+                                           - 21 -
+

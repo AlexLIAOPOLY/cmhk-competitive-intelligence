@@ -1,0 +1,660 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility
+for the contents of this announcement, make no representation as to its accuracy or completeness and expressly
+disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of
+the contents of this announcement.
+
+
+
+
+             China Telecom Corporation Limited
+                   中國電信股份有限公司
+      (A joint stock limited company incorporated in the People’s Republic of China with limited liability)
+                                             (Stock Code: 728)
+
+
+                       THE THIRD QUARTER REPORT OF 2021
+
+The board of directors (the “Board”) of China Telecom Corporation Limited (the “Company”,
+together with its subsidiaries, the “Group”) hereby announces the results of the Group for the
+nine months ended 30 September 2021. This announcement is made pursuant to Rule 13.09 of
+the Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited
+(the “Listing Rules”) and Part XIVA of the Securities and Futures Ordinance (Cap. 571 of the
+Laws of Hong Kong).
+
+IMPORTANT NOTICE
+
+The Board, the Supervisory Committee, Directors, Supervisors and senior management
+personnel of the Company warrant that the information in this quarterly report is true, accurate,
+complete and contains no false record, misleading statement or material omission, and assume
+several and joint liabilities for the information contained herein.
+
+The Company’s person-in-charge, the principal-in-charge of accounting and the person-in-
+charge of accounting department of the Company (the principal officer of accounting), hereby
+warrant that the financial statements contained in this quarterly report are true, accurate and
+complete.
+
+Whether the Third Quarter Report of 2021 of the Company is audited
+
+□Yes      ✔ No
+
+
+
+
+                                                     –1–
+I.   KEY FINANCIAL DATA
+
+     Financial information set out in this announcement has been prepared in accordance with
+     the International Financial Reporting Standards.
+
+                                                       Amounts expressed in RMB million unless otherwise specified.
+
+                                                                                                       The year-on-
+                                                        For the                                       year increase/
+                                                  three months                          From the      decrease from
+                                                         ended     The year-on-      beginning of     the beginning
+                                                  30 September    year increase/      the year to      of the year to
+                                                           2021      decrease in       the end of          the end of
+                                                (the “reporting    the reporting    the reporting      the reporting
+     Item                                              period”)      period (%)            period         period (%)
+
+     Operating revenues                                110,004              11.3         329,241                12.5
+     Profit attributable to equity holders of
+       the Company                                       5,584              17.4           23,327               24.7
+     Basic earnings per share
+       (RMB per share)                                    0.06               0.0             0.28               21.7
+
+                                                                                                         Increase/
+                                                                                                      decrease as
+                                                                                                     at the end of
+                                                                                                    the reporting
+                                                                  As at                                  period as
+                                                             the end of                 As at        compared to
+                                                          the reporting            the end of           the end of
+                                                                 period             last year       last year (%)
+
+     Total assets                                                 763,268            715,096                     6.7
+     Equity attributable to equity holders of
+      the Company                                                 426,206            363,456                   17.3
+
+
+
+
+                                                       –2–
+II.   SHAREHOLDER INFORMATION
+
+      As of the end of the reporting period, total number of the Company’s shareholders was
+      1,097,933 (including 1,096,291 A shareholders and 1,642 H shareholders) and there were
+      no holders of preference shares with voting rights restored.
+
+      The top 10 shareholders as of the end of the reporting period are as follows:
+
+                                                                                                                                                     Unit: Share
+                                                                                                                                       Status of shares pledged,
+                                                                                                       Shareholding     Number of        marked or locked up
+                                                           Nature of                      Number of      percentage      restricted   Status of
+      Name of Shareholder                                  shareholder                   shares held            (%)    shares held    shares             Number
+
+      China Telecommunications Corporation                 State-owned legal person   57,377,053,317         62.70 57,377,053,317     None                    –
+      HKSCC Nominees Limited                               Foreign legal person       13,849,246,623         15.13              0     Unknown                 –
+      Guangdong Rising Holdings Group Co., Ltd.            State-owned legal person    5,614,082,653          6.14 5,614,082,653      Unknown                 –
+      Zhejiang Provincial Financial Development Co., Ltd   State-owned legal person    2,137,473,626          2.34 2,137,473,626      Unknown                 –
+      Fujian Investment & Development Group Co., Ltd       State-owned legal person      969,317,182          1.06    969,317,182     Unknown                 –
+      Jiangsu Guoxin Group Limited                         State-owned legal person      957,031,543          1.05    957,031,543     Unknown                 –
+      Suzhou High Speed Rail New Town Economic             Unknown                       662,251,000          0.72    662,251,000     Unknown                 –
+        Development Co., Ltd
+      Chengdu Vanguard Capital Management Limited –        Unknown                      662,251,000           0.72     662,251,000    Unknown                 –
+        Chengdu Major Industrialisation Project Phase I
+        Equity Investment Fund Limited
+      China State-owned Enterprises Structural             Unknown                      551,876,000           0.60     551,876,000    Unknown                 –
+        Adjustment Fund Co., Ltd
+      Yingda International Holdings Group Co., Ltd.        Unknown                      441,501,000           0.48     441,501,000    Unknown                 –
+
+      Note 1:         The HKSCC Nominees Limited is the nominee shareholder of the H shares of the Company held
+                      by the non-registered shareholders.
+
+      Note 2:         The Company is not aware of any connected relationship among the aforementioned shareholders
+                      or whether they act in concert.
+
+
+
+
+                                                                               –3–
+The top 10 shareholders of unrestricted tradable shares as of the end of the reporting
+period are as follows:
+
+                                                                                         Unit: Share
+                                          Number of
+                                        unrestricted
+                                            tradable         Type and number of shares
+Name of Shareholder                      shares held     Type of shares           Number
+
+HKSCC Nominees Limited               13,849,246,623      Overseas listed     13,849,246,623
+                                                          foreign shares
+Zhang Ting                                17,364,400     RMB ordinary shares     17,364,400
+Kong Fan Xing                             17,000,000     RMB ordinary shares     17,000,000
+China Merchants Bank Co.,Ltd.             15,690,600     RMB ordinary shares     15,690,600
+  – Hong De Rui Xing
+  Three-Year Investment Fund
+Gu Li Ming                                15,224,700     RMB ordinary shares             15,224,700
+Gu Jia Wei                                15,205,700     RMB ordinary shares             15,205,700
+Hua Rong Rong Da Futures –                 8,810,700     RMB ordinary shares              8,810,700
+  ICBC – Hua Xin Ying Xin
+  No. 9 Asset Management Plan
+Industrial and Commercial                  5,919,000     RMB ordinary shares              5,919,000
+  Bank of China Limited
+  – Rong Tong Domestic
+  Demand Driven Equity Fund
+Liu Hui Hua                                5,600,000     RMB ordinary shares              5,600,000
+Li Ting Hu                                 5,003,500     RMB ordinary shares              5,003,500
+
+Note 1:   The HKSCC Nominees Limited is the nominee shareholder of the H shares of the Company held
+          by the non-registered shareholders.
+
+Note 2:   The Company is not aware of any connected relationship among the aforementioned shareholders
+          or whether they act in concert.
+
+Note 3:   As of the end of the reporting period, shareholder Kong Fan Xing (孔繁興) held 17,000,000
+          shares of the Company, all of which were held through credit securities accounts.
+
+
+
+
+                                             –4–
+III. OTHER IMPORTANT INFORMATION
+
+   Other important information in relation to the operation of the Company of which
+   investors should be aware
+
+   ✔ Applicable      □ Not applicable
+
+                                                                    As at                        As at
+                                                     30 September 2021/           30 September 2020/
+                                                     For the period from          For the period from
+                                                       1 January 2021 to            1 January 2020 to
+                                                      30 September 2021            30 September 2020
+
+   Mobile Subscribers (Million)                                      369.66                        349.35
+   Net Add of Mobile Subscribers (Million)                            18.64                         13.78
+   5G Package Subscribers (Million)                                  155.54                         64.80
+   Net Add of 5G Package Subscribers
+     (Million)                                                        69.04                        60.19
+   Handset Data Traffic (kTB)                                      33,977.2                     24,392.5
+   Wireline Broadband Subscribers
+     (Million)                                                       167.64                        156.75
+   Net Add of Wireline Broadband
+     Subscribers (Million)                                             9.11                          3.62
+   Access Lines in Service (Million)                                 107.09                        108.35
+   Net Increase/(Decrease) of Access Lines
+     in Service (Million)                                              (0.79)                       (2.50)
+
+   Note: Mobile subscribers and net add of mobile subscribers include 5G package subscribers and net add of
+         5G package subscribers.
+
+
+   In the first three quarters of 2021, the Company captured the period of strategic
+   opportunities brought by the booming digital economy. Taking A-share IPO as an
+   opportunity, the Company comprehensively deepened its “Cloudification and Digital
+   Transformation” strategy, expanded integrated intelligent information services with
+   customer-oriented approach, built core capabilities for sci-tech innovation, and
+   constructed new information infrastructure featuring cloud-network integration. The
+   Company also expanded the industry and capital ecologies with open cooperation,
+   speeded up system and mechanism reforms, and reinforced the solid foundation of
+   network and information security so as to advance its green development and achieve
+   rapid growth of operating results.
+
+
+                                                –5–
+    For the first three quarters of 2021, operating revenues were RMB329,241 million,
+    representing an increase of 12.5% over the same period of last year, of which service
+    revenues 1 were RMB304,271 million, representing an increase of 8.3% over the same
+    period of last year. The profit attributable to equity holders of the Company was
+    RMB23,327 million, representing an increase of 24.7% over the same period of last year
+    and an increase of 17.1% over the same period of last year excluding the one-off after-tax
+    gain from the disposals of E-surfing Pay Co. Ltd and China Telecom Leasing Corporation
+    Limited of RMB1,416 million. Basic earnings per share was RMB0.28, representing an
+    increase of 21.7% over the same period of last year. EBITDA2 was RMB96,348 million,
+    representing an increase of 4.5% over the same period of last year. EBITDA margin3 was
+    31.7%, and free cash flow was RMB23,168 million, representing an increase of 19.6%
+    over the same period of last year.
+
+    In the field of personal communication and information service, the Company continued
+    to deepen co-building and co-sharing, leveraged the edge of deepened integration
+    of 5G and e-Surfing Cloud to forge a high-quality service experience, while also
+    comprehensively deployed the application and privilege portfolio for individual
+    customers with an aim to establish the individual digital life covering entertainment,
+    work and study, expand the potential value space for 5G, and propel enhancement in both
+    scale and value of mobile subscribers. In the first three quarters of 2021, the revenues
+    from mobile communications service amounted to RMB140,528 million, representing an
+    increase of 6.3% over the same period of last year. The total number of mobile subscribers
+    reached approximately 370 million with a net addition of 18.64 million, which continued
+    to maintain an industry-leading position. The number of 5G package subscribers reached
+    approximately 156 million with a net addition of 69.04 million, while the penetration
+    rate reached 42.1%. The total handset data traffic increased by 39.3% year-on-year, and
+    mobile ARPU amounted to RMB45.4, which continued to increase over the same period
+    of last year.
+
+    In the field of home communication and information services, with a focus on the digital
+    life in all scenes, and leveraging the strengths in cloud-network integration, the Company
+    created the high-quality “Triple-Gigabit” ubiquitous connectivity services, comprising
+    5G+Fibre Broadband+WiFi6. It also established E-surfing Digital Life Technology Co.,
+    Ltd. (天翼數字生活科技有限公司) to build a Smart Family platform that aggregates
+    different industry ecologies such as content, applications and smart home devices, and
+    to develop integrated information services covering Smart Family, smart community and
+
+
+1
+    Service revenues are calculated based on operating revenues minus sales of mobile terminals, sales of
+    wireline equipment and other non-service revenues.
+2
+    EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and
+    amortisation.
+3
+    EBITDA margin is calculated based on EBITDA divided by service revenues.
+
+                                                –6–
+digital village. For the first three quarters of 2021, wireline and Smart Family service
+revenues of the Company amounted to RMB85,498 million, representing an increase
+of 4.7% year-on-year. The total number of wireline broadband subscribers reached
+approximately 168 million with a net increase of 9.11 million, while revenue from
+broadband access reached RMB56,896 million, representing a year-on-year growth of
+6.8%. Broadband access ARPU reached RMB38.8, maintained the rebounce momentum
+over the same period of last year. Revenue from Smart Family increased by 30.3% year-
+on-year, driving the broadband blended ARPU to RMB46.1, representing an increase of
+4.5% year-on-year.
+
+In the field of government and enterprise communication and information services,
+the Company deeply integrated the essential elements of the digital economy with
+emerging information technologies and repackaged its fundamental capabilities with
+5G, e-Surfing Cloud and security as the core to foster the vigorous market demand. 5G
+business model had been evolving continuously with a series of benchmark projects
+widely replicated. E-surfing Cloud Technology Limited Company (天翼雲科技有限公
+司) was set up officially and e-Surfing Cloud kept its industry leading position leveraging
+on its servicing capabilities of cloud polymorphism, including public cloud, private
+cloud, dedicated cloud and hybrid cloud, as well as its IDC resources, which are the
+greatest in number and widest in distribution in China. In the first three quarters of 2021,
+the Company’s Industrial Digitalisation service maintained rapid growth and recorded
+revenue of RMB74,090 million, representing an increase of 16.8% over the same period
+of last year, maintaining the industry-leading position in terms of revenue and market
+share.
+
+From January to September 2021, the Group’s operating expenses were RMB300,987
+million, representing an increase of 12.7% over the same period of last year. Depreciation
+and amortisation were RMB68,094 million, representing an increase of 2.3% over the
+same period of last year. Network operations and support expenses were RMB96,718
+million, representing an increase of 12.7% over the same period of last year, mainly due
+to the Company’s continuous improvement of network quality and capabilities to support
+the rapid development of 5G, government and enterprise business, and other emerging
+businesses. Selling, general and administrative expenses were RMB42,966 million,
+representing an increase of 6.7% over the same period of last year, mainly because
+the Company increased its investment in research and development while maintaining
+the necessary deployment in marketing resources to firmly seize the 5G development
+opportunity. Personnel expenses were RMB60,507 million, representing an increase of
+10.5% over the same period of last year, mainly due to the appropriate increase in the
+introduction of technological talents and the incentives for high-performance teams.
+Other operating expenses were RMB32,702 million, representing an increase of 67.5%
+
+                                        –7–
+   over the same period of last year, mainly due to the substantial increase in sales of mobile
+   terminal products such as 5G mobile phones. Net finance costs were RMB1,309 million,
+   representing a decrease of 44.8% from the same period of last year. With the sound
+   operating performance and cash flow, the issuance of A shares effectively guaranteed
+   the capital needs of key investment projects while the scale of interest-bearing debts was
+   effectively reduced.
+
+   Looking forward, while capturing the current important period of strategic opportunities,
+   the Company will strive to transform its model of development and growth to become
+   a service-oriented, technology-oriented and security-oriented enterprise. Taking
+   A-share IPO as an opportunity, the Company will deepen its “Cloudification and
+   Digital Transformation” strategy, expand its customer-oriented integrated intelligent
+   information services, and pursue breakthroughs in key technologies and accumulation
+   for the next generation technologies. The Company will also build core capabilities for
+   sci-tech innovation, construct the green and low-carbon new information infrastructure
+   featuring cloud-network integration and leverage its digitalised platform to empower the
+   green development of numerous walks of life. Leveraging the synergies with strategic
+   investors, the Company will build industry and capital ecologies with strong alliance and
+   open cooperation. Through the implementation of system and mechanism reforms, the
+   Company will stimulate corporate vitality and intrinsic motivation and reinforce the solid
+   foundation of network and information security, striving to build the cornerstone for the
+   development of digital economy. The Company will also facilitate the construction of
+   Cyberpower and Digital China, safeguard network and information security and promote
+   rural revitalisation, so as to create a better digital life for customers and share the results
+   of high-quality development with shareholders.
+
+IV. QUARTERLY FINANCIAL STATEMENTS
+
+   (1)   Type of audit opinion
+
+         □ Applicable     ✔ Not applicable
+
+   (2)   Financial statements
+
+         Financial statements prepared in accordance with International Financial Reporting
+         Standards are set out in Appendix to this announcement.
+
+   (3)   Adjustment to financial statements at the beginning of the year since 2021 due
+         to application of the new lease accounting standard for the first time
+
+         □ Applicable     ✔ Not applicable
+
+
+                                             –8–
+This announcement has been prepared in Chinese and English. In case of discrepancy, the
+Chinese version shall prevail.
+
+                                                             By Order of the Board
+                                                      China Telecom Corporation Limited
+                                                                  Ke Ruiwen
+                                                      Chairman and Chief Executive Officer
+
+Beijing, China, 22 October 2021
+
+FORWARD-LOOKING STATEMENTS
+
+Certain statements contained in this announcement may be viewed as “forward-looking
+statements” within the meaning of Section 27A of the U.S. Securities Act of 1933 (as amended)
+and Section 21E of the U.S. Securities Exchange Act of 1934 (as amended). Such forward-
+looking statements are subject to known and unknown risks, uncertainties and other factors,
+which may cause the actual performance, financial condition or results of operations of
+the Company to be materially different from any future performance, financial condition
+or results of operations implied by such forward-looking statements. In addition, we do not
+intend to update these forward-looking statements. Further information regarding these risks,
+uncertainties and other factors is included in the Company’s most recent Annual Report on
+Form 20-F filed with the U.S. Securities and Exchange Commission (the “SEC”) and in the
+Company’s other filings with the SEC.
+
+As at the date of this announcement, the Board of Directors of the Company consists of
+Mr. Ke Ruiwen (as the Chairman and Chief Executive Officer); Mr. Li Zhengmao (as
+the President and Chief Operating Officer); Mr. Shao Guanglu; Mr. Liu Guiqing and
+Madam Zhu Min (as the Chief Financial Officer) (all as the Executive Vice Presidents);
+Mr. Chen Shengguang (as the Non-Executive Director); Mr. Tse Hau Yin, Aloysius,
+Mr. Xu Erming, Madam Wang Hsuehming and Mr. Yeung Chi Wai, Jason (all as the
+Independent Non-Executive Directors).
+
+
+
+
+                                            –9–
+APPENDIX – FINANCIAL STATEMENTS PREPARED IN ACCORDANCE WITH
+INTERNATIONAL FINANCIAL REPORTING STANDARDS
+
+CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+(UNAUDITED)
+at 30 September 2021
+(Amounts in million)
+
+                                                         30 September   31 December
+                                                                 2021          2020
+                                                                 RMB           RMB
+
+ASSETS
+
+Non-current assets
+ Property, plant and equipment, net                           395,308       418,605
+ Construction in progress                                      64,822        48,425
+ Right-of-use assets                                           52,415        59,457
+ Goodwill                                                      29,919        29,920
+ Intangible assets                                             17,117        18,508
+ Interests in associates                                       40,612        40,303
+ Financial assets at fair value through profit or loss            141            73
+ Equity instruments at fair value through other
+   comprehensive income                                           912         1,073
+ Deferred tax assets                                            7,142         8,164
+ Other assets                                                   5,860         6,552
+
+Total non-current assets                                      614,248       631,080
+
+Current assets
+ Inventories                                                    5,264         3,317
+ Income tax recoverable                                            58           334
+ Accounts receivable, net                                      32,868        21,502
+ Contract assets                                                1,257           604
+ Prepayments and other current assets                          21,685        25,167
+ Short-term bank deposits and restricted cash                   2,244         9,408
+ Cash and cash equivalents                                     85,644        23,684
+
+Total current assets                                          149,020        84,016
+
+Total assets                                                  763,268       715,096
+
+
+
+
+                                             – 10 –
+CONDENSED CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+(UNAUDITED) (Continued)
+at 30 September 2021
+(Amounts in million)
+
+                                                             30 September    31 December
+                                                                     2021           2020
+                                                                     RMB            RMB
+
+LIABILITIES AND EQUITY
+
+Current liabilities
+ Short-term debt                                                    4,883         27,994
+ Current portion of long-term debt                                  6,133          1,126
+ Accounts payable                                                 125,019        107,578
+ Accrued expenses and other payables                               62,406         57,053
+ Contract liabilities                                              61,198         63,849
+ Income tax payable                                                 5,181            350
+ Current portion of lease liabilities                              11,505         13,192
+
+Total current liabilities                                         276,325        271,142
+
+Net current liabilities                                          (127,305)      (187,126)
+
+Total assets less current liabilities                             486,943        443,954
+
+Non-current liabilities
+ Long-term debt                                                     7,362         24,222
+ Lease liabilities                                                 22,793         27,455
+ Deferred tax liabilities                                          24,842         24,208
+ Other non-current liabilities                                      3,272          1,894
+
+Total non-current liabilities                                      58,269         77,779
+
+Total liabilities                                                 334,594        348,921
+
+Equity
+ Share capital                                                     91,507         80,932
+ Reserves                                                         334,699        282,524
+
+Total equity attributable to equity holders of the Company        426,206        363,456
+Non-controlling interests                                           2,468          2,719
+
+Total equity                                                      428,674        366,175
+
+Total liabilities and equity                                      763,268        715,096
+
+
+                                         – 11 –
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+(UNAUDITED)
+for the nine-month period ended 30 September 2021
+(Amounts in million except per share data)
+
+                                                                  Nine-month period ended
+                                                                       30 September
+                                                                        2021          2020
+                                                                       RMB            RMB
+
+Operating revenues                                                   329,241       292,614
+
+Operating expenses
+ Depreciation and amortisation                                       (68,094)      (66,574)
+ Network operations and support                                      (96,718)      (85,847)
+ Selling, general and administrative                                 (42,966)      (40,251)
+ Personnel expenses                                                  (60,507)      (54,782)
+ Other operating expenses                                            (32,702)      (19,524)
+
+Total operating expenses                                            (300,987)     (266,978)
+
+Operating profit                                                      28,254        25,636
+ Net finance costs                                                    (1,309)       (2,370)
+ Investment income and others                                          2,238            58
+ Share of profits of associates                                        1,304         1,148
+
+Profit before taxation                                                30,487        24,472
+Income tax                                                            (7,051)       (5,580)
+
+Profit for the period                                                 23,436        18,892
+
+Other comprehensive income for the period
+Items that will not be reclassified subsequently to profit or
+  loss:
+  Change in fair value of investments in equity instruments at
+    fair value through other comprehensive income                       (128)         (304)
+  Deferred tax on change in fair value of investments in equity
+    instruments at fair value through other comprehensive
+    income                                                                36            76
+
+                                                                         (92)         (228)
+
+
+
+
+                                            – 12 –
+CONDENSED CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+(UNAUDITED) (Continued)
+for the nine-month period ended 30 September 2021
+(Amounts in million except per share data)
+
+                                                                  Nine-month period ended
+                                                                       30 September
+                                                                        2021          2020
+                                                                       RMB            RMB
+
+Items that may be reclassified subsequently to profit or loss:
+  Exchange difference on translation of financial statements of
+   subsidiaries outside mainland China                                   (60)          (37)
+  Share of other comprehensive income of associates                        –            (4)
+
+                                                                         (60)          (41)
+
+Other comprehensive income
+ for the period, net of tax                                             (152)         (269)
+
+Total comprehensive income
+ for the period                                                       23,284        18,623
+
+Profit attributable to
+ Equity holders of the Company                                        23,327        18,706
+ Non-controlling interests                                               109           186
+
+Profit for the period                                                 23,436        18,892
+
+Total comprehensive income attributable to
+ Equity holders of the Company                                        23,175        18,437
+ Non-controlling interests                                               109           186
+
+Total comprehensive income
+ for the period                                                       23,284        18,623
+
+Basic earnings per share                                                0.28          0.23
+
+Number of shares (in million)                                         91,507        80,932
+
+
+
+
+                                            – 13 –
+CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS (UNAUDITED)
+for the nine-month period ended 30 September 2021
+(Amounts in million)
+
+                                                                 Nine-month period ended
+                                                                      30 September
+                                                         Notes         2021          2020
+                                                                      RMB            RMB
+
+Net cash from operating activities                        (a)       119,930        98,153
+
+Cash flows used in investing activities
+ Capital expenditure                                                (57,105)      (45,172)
+ Purchase of investments                                               (106)          (74)
+ Payments for right-of-use assets                                       (12)         (110)
+ Proceeds from disposal of property, plant and
+  equipment                                                             501          296
+ Proceeds from disposal of right-of-use assets                           48           10
+ Proceeds from disposal of investments                                   37           36
+ Net cash inflow from disposal of subsidiaries                        3,764            –
+ Payments for equity instruments at fair value through
+  other comprehensive income                                            (93)            –
+ Purchase of short-term bank deposits                                (7,844)       (4,713)
+ Maturity of short-term bank deposits                                 9,135         4,003
+
+Net cash used in investing activities                               (51,675)      (45,724)
+
+Cash flows used in financing activities
+ Proceeds from A Shares Offering,
+   net of issuing expenses                                           47,518             –
+ Repayments of principal of lease liabilities                        (8,607)       (8,215)
+ Proceeds from bank and other loans                                  30,583        43,285
+ Repayments of bank and other loans                                 (64,031)      (66,988)
+ Payment of dividends                                                (8,439)       (9,262)
+ Distribution to non-controlling interests                                –            (5)
+ Contribution from non-controlling interests                             79             –
+ Net deposits with Finance Company                                   (3,131)           36
+ Increase in statutory reserve deposits placed by
+   Finance Company                                                     (220)         (655)
+
+Net cash used in financing activities                                (6,248)      (41,804)
+
+Net increase in cash and cash equivalents                            62,007        10,625
+Cash and cash equivalents at 1 January                               23,684        20,791
+Effect of changes in foreign exchange rate                              (47)          (38)
+
+Cash and cash equivalents at 30 September                            85,644        31,378
+
+                                            – 14 –
+CONDENSED CONSOLIDATED STATEMENT OF CASH FLOWS (UNAUDITED)
+(Continued)
+for the nine-month period ended 30 September 2021
+(Amounts in million)
+
+(a)   Reconciliation of profit before taxation to net cash from operating activities
+
+                                                                  Nine-month period ended
+                                                                       30 September
+                                                                        2021          2020
+                                                                       RMB            RMB
+
+      Profit before taxation                                          30,487            24,472
+
+      Adjustment for:
+       Depreciation and amortisation                                  68,094            66,574
+       Impairment losses for financial assets and other items,
+         net of reversal                                               2,316             2,229
+       Write down of inventories, net of reversal                         30               (10)
+       Investment income and others                                   (2,238)              (58)
+       Share of profits of associates                                 (1,304)           (1,148)
+       Interest income                                                  (579)             (386)
+       Interest expense                                                1,938             2,633
+       Net foreign exchange (gain)/loss                                  (50)              123
+       Net loss on retirement and disposal of long-lived assets        3,812             2,691
+
+      Operating profit before changes in working capital             102,506            97,120
+
+       Increase in accounts receivable                               (14,262)          (13,141)
+       Increase in contract assets                                      (662)             (392)
+       Increase in inventories                                        (1,978)             (724)
+       Increase in prepayments and other current assets                 (248)           (1,086)
+       Decrease in restricted cash                                       123               390
+       (Increase)/Decrease in other assets                              (631)              850
+       Increase in accounts payable                                   21,100             7,807
+       Increase in accrued expenses and other payables                19,316            10,034
+       Decrease in contract liabilities                               (2,620)             (302)
+       (Decrease)/Increase in deferred revenues                          (22)              236
+
+      Cash generated from operations                                 122,622           100,792
+       Interest received                                                 634               391
+       Interest paid                                                  (1,745)           (2,737)
+       Investment income received                                        860               582
+       Income tax paid                                                (2,441)             (875)
+
+      Net cash from operating activities                             119,930            98,153
+
+
+                                            – 15 –
+

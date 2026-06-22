@@ -9,6 +9,7 @@ import shutil
 import socket
 import subprocess
 import tempfile
+import threading
 import time
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
@@ -36,6 +37,8 @@ PER_URL_TIMEOUT_SECONDS = 35.0
 CURL_TIMEOUT_SECONDS = 45
 CURL_PROCESS_TIMEOUT_SECONDS = 55
 MAX_RUN_SECONDS = int(os.environ.get("CMHK_CRAWL_MAX_SECONDS", "900"))
+ROW_WORKERS = max(1, int(os.environ.get("CMHK_ROW_WORKERS", "3")))
+URL_WORKERS = max(1, int(os.environ.get("CMHK_URL_WORKERS", "5")))
 CMHK_USER_AGENT = os.environ.get(
     "CMHK_CRAWLER_USER_AGENT",
     "CMHK-Internal-ResearchBot/1.0 (+internal competitive intelligence; contact: legal-review-required)",
@@ -53,6 +56,10 @@ MAIN_SHEET_ID = "9c638d"
 LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
 SOURCE_REGISTRY_CACHE: Dict[str, Any] | None = None
 ROBOTS_CACHE: Dict[str, Dict[str, Any]] = {}
+ROBOTS_CACHE_LOCK = threading.Lock()
+FETCH_CACHE: Dict[str, Dict[str, Any]] = {}
+FETCH_LOCKS: Dict[str, threading.Lock] = {}
+FETCH_CACHE_LOCK = threading.Lock()
 
 
 RECOVERABLE_URL_REWRITES: Dict[str, str] = {
@@ -198,6 +205,7 @@ COVERAGE_FALLBACKS: Dict[tuple[int, str, str], str] = {
     (20, "TIM", "边缘计算"): "本轮官方公开来源未发现 TIM 对该字段的独立可量化披露；维持后续监测。",
     (20, "TIM", "FWA"): "本轮官方公开来源未发现 TIM 对该字段的独立可量化披露；维持后续监测。",
     (20, "Verizon", "边缘计算"): "本轮官方公开来源未发现 Verizon 对该字段的独立可量化披露；维持后续监测。",
+    (20, "T-Mobile US", "FWA"): "Deutsche Telekom 2025年报美国业务章节披露，T-Mobile US 5G broadband（原 High Speed Internet）2025年净增客户170万、2024年净增客户150万。",
     (21, "e&", "5G-A"): "本轮官方公开来源未发现 e& 对该字段的独立可量化披露；维持后续监测。",
     (21, "stc", "5G-A"): "本轮官方公开来源未发现 stc 对该字段的独立可量化披露；维持后续监测。",
     (33, "政治新闻", "经济"): "本轮官方新闻源未形成可独立发布的经济主题事实；本行以地缘政治和重大政策声明为主，经济主题维持后续监测。",
@@ -587,12 +595,13 @@ ENTITY_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
             "https://www.verizon.com/5g/home/",
         ],
         "AT&T": [
-            "https://www.ericsson.com/en/press-releases/2024/9/global-telecom-leaders-join-forces-to-redefine-the-industry-with-network-apis",
-            "https://www.ericsson.com/en/press-releases/2023/12/att-to-accelerate-open-and-interoperable-radio-access-networks-ran-in-the-united-states-through-new-collaboration-with-ericsson",
+            "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+            "https://investors.att.com/~/media/Files/A/ATT-IR-V2/reports-and-presentations/transcript-2024-12-03.pdf",
+            "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_8_K_Earnings_801.pdf",
         ],
         "T-Mobile US": [
-            "https://www.ericsson.com/en/press-releases/2024/9/global-telecom-leaders-join-forces-to-redefine-the-industry-with-network-apis",
-            "https://www.ericsson.com/en/press-releases/6/2026/t-mobile-ericsson-ai-ran",
+            "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+            "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
             "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
         ],
     },
@@ -812,22 +821,22 @@ def source_policy(url: str) -> Dict[str, Any]:
 def robots_policy(client: httpx.Client, url: str) -> Dict[str, Any]:
     parsed = urlparse(url)
     origin = f"{parsed.scheme}://{parsed.netloc.lower()}"
-    if origin in ROBOTS_CACHE:
-        robots = ROBOTS_CACHE[origin]
-    else:
+    with ROBOTS_CACHE_LOCK:
+        robots = ROBOTS_CACHE.get(origin)
+    if robots is None:
         robots_url = f"{origin}/robots.txt"
-        robots = {"robots_url": robots_url, "status": "unchecked", "allowed": False, "error": ""}
+        loaded = {"robots_url": robots_url, "status": "unchecked", "allowed": False, "error": ""}
         try:
             response = client.get(robots_url, timeout=httpx.Timeout(8.0, connect=5.0))
-            robots["http_status"] = response.status_code
+            loaded["http_status"] = response.status_code
             if response.status_code == 404:
-                robots.update({"status": "not_found_allow", "allowed": True})
+                loaded.update({"status": "not_found_allow", "allowed": True})
             elif 200 <= response.status_code < 300:
                 parser = RobotFileParser()
                 parser.set_url(robots_url)
                 lines = response.text.splitlines()
                 parser.parse(lines)
-                robots.update(
+                loaded.update(
                     {
                         "status": "checked",
                         "robots_txt_lines": lines,
@@ -835,10 +844,11 @@ def robots_policy(client: httpx.Client, url: str) -> Dict[str, Any]:
                     }
                 )
             else:
-                robots.update({"status": "robots_unavailable", "allowed": not CMHK_REQUIRE_ROBOTS})
+                loaded.update({"status": "robots_unavailable", "allowed": not CMHK_REQUIRE_ROBOTS})
         except Exception as exc:
-            robots.update({"status": "robots_error", "allowed": not CMHK_REQUIRE_ROBOTS, "error": repr(exc)})
-        ROBOTS_CACHE[origin] = robots
+            loaded.update({"status": "robots_error", "allowed": not CMHK_REQUIRE_ROBOTS, "error": repr(exc)})
+        with ROBOTS_CACHE_LOCK:
+            robots = ROBOTS_CACHE.setdefault(origin, loaded)
 
     result = dict(robots)
     if result.get("status") == "checked" and "robots_txt_lines" in result:
@@ -1192,8 +1202,39 @@ def is_dns_failure(result: Dict[str, Any] | None) -> bool:
     )
 
 
+def _cached_fetch_result(url: str, started: float) -> Dict[str, Any] | None:
+    with FETCH_CACHE_LOCK:
+        cached = FETCH_CACHE.get(url)
+    if not cached:
+        return None
+    result = dict(cached)
+    result["elapsed_seconds"] = round(time.monotonic() - started, 3)
+    result["method"] = f"cache:{cached.get('method', 'unknown')}"
+    result["cache_hit"] = True
+    return result
+
+
 def fetch_url(client: httpx.Client, url: str) -> Dict[str, Any]:
     started = time.monotonic()
+    cached = _cached_fetch_result(url, started)
+    if cached is not None:
+        return cached
+
+    with FETCH_CACHE_LOCK:
+        url_lock = FETCH_LOCKS.setdefault(url, threading.Lock())
+    with url_lock:
+        cached = _cached_fetch_result(url, started)
+        if cached is not None:
+            return cached
+        result = fetch_url_uncached(client, url, started)
+        with FETCH_CACHE_LOCK:
+            FETCH_CACHE[url] = dict(result)
+        return result
+
+
+def fetch_url_uncached(client: httpx.Client, url: str, started: float | None = None) -> Dict[str, Any]:
+    if started is None:
+        started = time.monotonic()
     compliance = compliance_decision(client, url)
     if not compliance.get("compliance_allowed"):
         return {
@@ -1478,6 +1519,7 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
         "robots_allowed": result.get("robots_allowed", False),
         "skip_reason": result.get("skip_reason", ""),
         "live_fetch_status": result.get("live_fetch_status", ""),
+        "cache_hit": bool(result.get("cache_hit")),
         "evidence_fallback_used": bool(result.get("evidence_fallback_used")),
         "fallback_reason": result.get("fallback_reason", ""),
     }
@@ -1720,7 +1762,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_urls: Dict[str, List[str]] = {entity: [] for entity in entities}
     entity_records: Dict[str, List[Dict[str, Any]]] = {entity: [] for entity in entities}
     
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=URL_WORKERS) as executor:
         future_to_target = {
             executor.submit(fetch_url, client, url): (url, expected_entities)
             for url, expected_entities in targets
@@ -2148,6 +2190,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
                     "tos_status": rec.get("tos_status", ""),
                     "robots_status": rec.get("robots_status", ""),
                     "robots_allowed": rec.get("robots_allowed", ""),
+                    "cache_hit": rec.get("cache_hit", False),
                     "skip_reason": rec.get("skip_reason", ""),
                     "error": rec.get("error", ""),
                     "live_fetch_status": rec.get("live_fetch_status", "")
@@ -2200,6 +2243,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
                 "tos_status",
                 "robots_status",
                 "robots_allowed",
+                "cache_hit",
                 "skip_reason",
                 "error",
                 "live_fetch_status",
@@ -2216,6 +2260,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     failed = sum(1 for r in row_results if r["status"] not in {"ok", "partial"})
     skipped = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("method") == "skipped")
     crawled = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("method") != "skipped")
+    cache_hits = sum(1 for r in row_results for rec in r.get("raw_records", []) if rec.get("cache_hit"))
     fulfilled = ok + partial
     coverage_rate = (fulfilled / len(row_results) * 100) if row_results else 0.0
     fallback_rows = sum(1 for r in row_results if r.get("fallback_used"))
@@ -2254,6 +2299,8 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         f"- Information requirements fulfilled: {fulfilled}/{len(row_results)} ({coverage_rate:.1f}%)",
         f"- Rows fulfilled by verified fallback: {fallback_rows}",
         f"- URLs fetched after compliance checks: {crawled}",
+        f"- Same-run URL cache hits: {cache_hits}",
+        f"- Network fetches after cache reuse: {crawled - cache_hits}",
         f"- URLs skipped by compliance policy: {skipped}",
         f"- Live URL success: {live_success_urls}/{live_total_urls} ({live_success_rate:.1f}%)",
         f"- Live URL failures: {live_failed_urls}",
@@ -2267,6 +2314,55 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     (ROOT / "final_audit.md").write_text("\n".join(audit) + "\n", encoding="utf-8")
 
 
+def crawl_rows(client: httpx.Client, rows: List[Dict[str, Any]], deadline: float) -> List[Dict[str, Any]]:
+    if ROW_WORKERS <= 1:
+        results = []
+        for source_row in rows:
+            if time.monotonic() > deadline:
+                print(f"global crawl deadline reached after {MAX_RUN_SECONDS}s; stopping before row {source_row['row']}")
+                break
+            print(f"crawl row {source_row['row']}: {source_row['package']}", flush=True)
+            results.append(crawl_row(client, source_row, deadline))
+        return results
+
+    results: List[Dict[str, Any]] = []
+    print(
+        f"parallel crawl enabled: row_workers={ROW_WORKERS}, url_workers={URL_WORKERS}",
+        flush=True,
+    )
+    with ThreadPoolExecutor(max_workers=ROW_WORKERS) as executor:
+        future_to_row = {}
+        row_iter = iter(rows)
+
+        def submit_next() -> bool:
+            if time.monotonic() > deadline:
+                return False
+            try:
+                source_row = next(row_iter)
+            except StopIteration:
+                return False
+            print(f"crawl row {source_row['row']}: {source_row['package']}", flush=True)
+            future = executor.submit(crawl_row, client, source_row, deadline)
+            future_to_row[future] = source_row
+            return True
+
+        for _ in range(ROW_WORKERS):
+            if not submit_next():
+                break
+
+        while future_to_row:
+            for future in as_completed(list(future_to_row)):
+                source_row = future_to_row.pop(future)
+                try:
+                    results.append(future.result())
+                except Exception as exc:
+                    print(f"row {source_row['row']} failed with exception: {exc}", flush=True)
+                submit_next()
+                break
+
+    return sorted(results, key=lambda item: int(item.get("row") or 0))
+
+
 def main() -> None:
     RAW_DIR.mkdir(exist_ok=True)
     RESULTS_DIR.mkdir(exist_ok=True)
@@ -2278,6 +2374,7 @@ def main() -> None:
     rows = apply_crawl_settings(apply_row_filter(parse_latest_sheet()))
     (ROOT / "sources.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
     deadline = time.monotonic() + MAX_RUN_SECONDS
+    max_connections = max(20, ROW_WORKERS * URL_WORKERS * 2)
     client = httpx.Client(
         follow_redirects=True,
         timeout=httpx.Timeout(PER_URL_TIMEOUT_SECONDS, connect=12.0),
@@ -2285,15 +2382,11 @@ def main() -> None:
             "User-Agent": CMHK_USER_AGENT,
             "Accept-Language": "en,zh-CN;q=0.9,zh;q=0.8",
         },
+        limits=httpx.Limits(max_connections=max_connections, max_keepalive_connections=max_connections),
         trust_env=True,
     )
-    results = []
-    for source_row in rows:
-        if time.monotonic() > deadline:
-            print(f"global crawl deadline reached after {MAX_RUN_SECONDS}s; stopping before row {source_row['row']}")
-            break
-        print(f"crawl row {source_row['row']}: {source_row['package']}", flush=True)
-        results.append(crawl_row(client, source_row, deadline))
+    results = crawl_rows(client, rows, deadline)
+    client.close()
     write_outputs(results)
     print(f"wrote {ROOT / 'write_payload.json'}")
     print(f"wrote {ROOT / 'coverage_report.tsv'}")

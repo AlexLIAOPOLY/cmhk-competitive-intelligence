@@ -1,0 +1,57 @@
+      Consolidated Statement of Financial Position
+      At 31 December 2023
+
+
+
+
+                                                                                       Note         2023         2022
+                                                                                              HK$ million   HK$ million
+       Non-current assets
+       Property, plant and equipment                                                   13          2,983         3,007
+       Goodwill                                                                        14          2,155         2,155
+       Telecommunications licences                                                     15          3,284         3,663
+       Right-of-use assets                                                             16            512           491
+       Customer acquisition and retention costs                                        17            168           189
+       Contract assets                                                                 18            149           152
+       Other non-current assets                                                        19            354           361
+       Deferred tax assets                                                             20              1             4
+       Investment in a joint venture                                                   21            109           157
+       Total non-current assets                                                                    9,715        10,179
+
+       Current assets
+       Cash and cash equivalents                                                       22          1,910         3,087
+       Short-term bank deposits with original maturity beyond 3 months                 22          1,774           613
+       Trade receivables and other current assets                                      23            889           784
+       Contract assets                                                                 18            169           193
+       Inventories                                                                     24            103           100
+       Total current assets                                                                        4,845         4,777
+
+       Current liabilities
+       Trade and other payables                                                        25          1,637         1,649
+       Contract liabilities                                                            26            212           162
+       Lease liabilities                                                               27            312           305
+       Current income tax liabilities                                                                  2             1
+       Total current liabilities                                                                   2,163         2,117
+
+       Non-current liabilities
+       Lease liabilities                                                               27            170           151
+       Deferred tax liabilities                                                        20            120            48
+       Other non-current liabilities                                                   28          2,249         2,371
+       Total non-current liabilities                                                               2,539         2,570
+
+       Net assets                                                                                  9,858        10,269
+       Capital and reserves
+       Share capital                                                                   29          1,205         1,205
+       Reserves                                                                        30          8,653         9,064
+       Total equity                                                                                9,858        10,269
+
+
+      The accompanying notes are an integral part of these financial statements.
+
+
+
+
+      LUI Dennis Pok Man                                                KOO Sing Fai
+      Director                                                          Director
+144   Hutchison Telecommunications Hong Kong Holdings Limited
+

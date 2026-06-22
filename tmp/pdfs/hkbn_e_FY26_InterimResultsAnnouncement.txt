@@ -1,0 +1,1321 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong
+Limited take no responsibility for the contents of this announcement, make no
+representation as to its accuracy or completeness and expressly disclaim any liability
+whatsoever for any loss howsoever arising from or in reliance upon the whole or any
+part of the contents of this announcement.
+
+
+
+
+                                   HKBN Ltd.
+                                 香港寬頻有限公司
+                       (Incorporated in the Cayman Islands with limited liability)
+                                        (Stock Code: 1310)
+
+                INTERIM RESULTS ANNOUNCEMENT
+           FOR THE SIX MONTHS ENDED 28 FEBRUARY 2026
+     (Unless otherwise stated, all monetary figures in this announcement are in Hong Kong dollars.)
+
+The board (the “Board”) of directors (the “Director(s)”) of HKBN Ltd. (the “Company”)
+is pleased to announce the unaudited consolidated results of the Company and its
+subsidiaries (the “Group”) for the six months ended 28 February 2026. These results were
+based on the unaudited consolidated interim financial statements for the six months ended
+28 February 2026, which were prepared in accordance with the Hong Kong Accounting
+Standard (“HKAS”) 34, Interim financial reporting, issued by the Hong Kong Institute
+of Certified Public Accountants (“HKICPA”).
+
+ ANNOUNCEMENT HIGHLIGHTS
+
+ •     Total revenue showed a strong performance, increasing by 5% to $6,029 million.
+       Notably, after excluding handsets and other products sales, core service revenue
+       grew by 8%.
+
+ •     EBITDA increased by 4% to $1,257 million, attributable to strategic initiatives
+       aimed at driving growth and benefiting from strong operational performance.
+
+ •     Adjusted free cash flow (“AFF”) grew by 24% to $157 million, attributable to
+       improved EBITDA and reduced bank loan interest payments.
+
+ •     Net profit amounted to $108 million. During the period, the financing structure
+       was optimised. Although the early retirement of banking facilities incurred a one
+       off expense, interest expenses were significantly reduced, while the core business
+       remained resilient with strong profitability.
+
+ •     In consideration of the Company’s dividend policy and anticipated capital
+       expenditure needs to drive long-term shareholder value, the Board has resolved
+       to declare an interim dividend of 15.5 cents per share (28 February 2025: 15.5
+       cents per share).
+
+
+                                                 –1–
+SHAREHOLDER LETTER
+
+Dear Shareholders,
+
+                 Strategy in Action: From Challenging the Market
+                              to Reaching the World
+
+I am pleased to write to you once again with unwavering confidence. Over the past six
+months, HKBN has made significant progress under our new strategic direction, and the
+value of our post-acquisition integration is steadily coming through.
+
+We continue to run both our residential and enterprise businesses side by side. This dual-
+track approach has delivered steady growth and sustained improvements in profitability.
+Our strategic collaboration with China Mobile is now fully underway, taking shape across
+five key areas — customers, business, services, resources, and procurement — giving
+our Group powerful new momentum.
+
+Residential Business: Deepening “Infinite-Play” Strategy, Bringing AI into Daily Life
+
+The success of our “Infinite-Play” strategy speaks for itself. By consistently integrating
+premium content partners and value-added services, we have strengthened our customer
+engagement and steadily grown average revenue per household. At the same time, our
+“Fibre In, Copper Out” network upgrade initiative is in full swing. Built on ultra-fast
+GigaFast broadband, it has significantly improved customer satisfaction and loyalty.
+
+We are now embedding AI into personalised services — from smart customer support
+and content recommendations to home management — making technology truly useful in
+everyday life. Looking ahead, “Infinite-Play” will expand further into gerontechnology,
+insurance, healthcare, and smart living, using AI to create smarter, more convenient
+living experiences.
+
+Enterprise Business: Leading Digital Transformation, Empowering Customers to Win
+in the AI Era
+
+We are becoming the digital partner of choice for businesses expanding into overseas
+markets. Our MetroNet (Metro Ethernet) service has been upgraded tenfold to 100Gbps,
+ready to handle the massive data demands of AI, cloud computing and high-volume
+transactions.
+
+AI is redefining how businesses operate. We offer end-to-end AI solutions — spanning
+smart customer service, data analytics, content generation, and industry-specific
+applications — helping clients in government, finance, healthcare, logistics, and other
+sectors embrace AI and drive digital transformation.
+
+
+
+
+                                          –2–
+To navigate the competitive landscape of the intelligent era, we are proactively positioning
+ourselves with a forward-looking vision. Through the HKBN InnoTech Ecosystem
+Alliance (iTEA), we bring together leading technology providers alongside our proprietary
+management platforms and GigaFast Business broadband solutions — building a strong
+foundation to drive sustainable growth for our enterprise business.
+
+AI at the Core — Powering Smarter Operations, Driving Sustainable Growth
+
+AI is not just for our customers — it is also playing a vital role within HKBN. We are
+integrating AI into network management and customer service, delivering improvements
+in both efficiency and service quality.
+
+From building computing infrastructure to deploying smart applications, and from
+empowering our people to elevating customer experiences, AI is injecting fresh momentum
+into HKBN — creating sustainable, long-term competitive advantages.
+
+Three Growth Strategies
+
+Today, HKBN is more confident and capable than ever in becoming a leading force in
+digital services — fully supporting the development of digital infrastructure in Hong
+Kong and across the Greater Bay Area. Our direction is clear, and our three growth
+strategies are steadily being delivered:
+
+•   Strengthening Network Capabilities: with greater resources and more proactive
+    investment, we are actively expanding our network footprint across Hong Kong
+
+•   Enhancing Customer Service: driving the “Fibre In, Copper Out” initiative and
+    upgrading fibre equipment to enhance service quality and improve the user experience
+
+•   Enriching smart services: deepening our system integration capabilities and
+    embedding AI into more scenarios, delivering smarter, more efficient digital solutions
+    for both enterprise and residential customers
+
+These strategic initiatives all share a single goal: creating long-term value for our
+stakeholders.
+
+
+
+
+                                           –3–
+Rooted in Hong Kong, Reaching the World
+
+The National 15th Five-Year Plan and the accelerating integration of the Greater Bay
+Area present real opportunities for us.
+
+“Rooted in Hong Kong, Connected to the Greater Bay Area, Reaching the World” is
+our strategic compass — the principle guiding every action we take. We will continue
+to bring in world-leading technologies, deepen our synergies, accelerate the integration
+of AI into our core business, and help Hong Kong enterprises expand globally.
+
+With more resources and a more proactive approach, we are committed to delivering
+sustainable, long-term returns for all our stakeholders.
+
+
+
+
+Sincerely yours,
+
+LING Hao
+Chairman and Executive Director
+
+Hong Kong, 24 April 2026
+
+
+
+
+                                         –4–
+KEY FINANCIAL AND OPERATIONAL SUMMARY
+
+Table 1: Financial highlights
+
+                                               For the six months ended
+                                              28 February 28 February       Change
+                                                      2026          2025      YoY
+
+Key financials ($’000)
+Revenue                                           6,029,202    5,734,269      +5%
+– Enterprise Solutions                            2,807,608    2,549,534     +10%
+– Enterprise Solutions related products           1,012,202      892,191     +13%
+– Residential Solutions                           1,158,200    1,165,568      -1%
+– Handsets and other products                     1,051,192    1,126,976      -7%
+Profit for the period                               107,672      107,560      +0%
+EBITDA 1,2                                        1,256,500    1,206,122      +4%
+Adjusted Free Cash Flow 1,3                         157,078      126,186     +24%
+
+Reconciliation of EBITDA & Adjusted Free
+  Cash Flow 1,2,3
+
+Profit for the period                              107,672      107,560       +0%
+Amortisation of customer acquisition and
+   retention costs                                 144,566      142,259       +2%
+Amortisation of intangible assets                  170,701      177,859       -4%
+Depreciation                                       388,760      411,210       -5%
+Finance costs                                      378,831      366,024       +3%
+Income tax expense                                  72,396        5,506     >100%
+Interest income                                     (6,426)      (4,296)     +50%
+
+EBITDA                                            1,256,500    1,206,122      +4%
+Capital expenditure                                (269,744)    (238,513)    +13%
+Changes in working capital                         (209,093)    (100,391)   >100%
+Customer acquisition and retention costs           (133,601)    (130,493)     +2%
+Income tax paid                                    (151,033)    (162,603)     -7%
+Lease payment in relation to right-of-use
+   assets                                          (85,219)     (91,603)       -7%
+Net interest paid                                 (250,732)    (356,333)      -30%
+
+Adjusted Free Cash Flow                            157,078      126,186      +24%
+
+
+
+
+                                            –5–
+KEY FINANCIAL AND OPERATIONAL SUMMARY (CONTINUED)
+
+Table 2: Operational highlights
+
+                                               For the six months ended
+                                        28 February     31 August 28 February                     Change
+                                               2026         2025        2025                        YoY
+
+Enterprise business
+
+Commercial building coverage                     8,266            8,220            8,183              +1%
+
+Subscriptions (’000)
+  – Broadband                                      107              107               109              -2%
+  – Voice                                          326              335               347              -6%
+
+Residential business
+
+Residential homes passed (’000)                  2,659            2,646            2,614              +2%
+
+Subscriptions (’000)
+  – Broadband                                      916              907               900             +2%
+  – Voice                                          275              290               314            -12%
+
+Mobile business
+
+Subscriptions (’000)                               169              181               197            -14%
+
+Total full-time permanent staff                  3,636            3,670            3,741               -3%
+
+Notes:
+
+(1)   EBITDA and AFF are not measures of performance under HKFRS Accounting Standards. These
+      measures do not represent, and should not be used as substitutes for, net income or cash flows from
+      operations as determined in accordance with HKFRS Accounting Standards. These measures are not
+      necessarily an indication of whether cash flow will be sufficient to fund our cash requirements. In
+      addition, our definitions of these measures may not be comparable to other similarly titled measures
+      used by other companies.
+
+(2)   EBITDA means profit for the period plus amortisation of customer acquisition and retention costs,
+      amortisation of intangible assets (net of direct cost incurred in corresponding period), depreciation,
+      finance costs, and income tax expense, less interest income.
+
+(3)   AFF means EBITDA less capital expenditure, customer acquisition and retention costs, income tax
+      paid, lease payments in relation to right-of-use assets, net interest paid and changes in working
+      capital. Working capital includes other non-current assets, inventories, trade receivables, other
+      receivables, deposits and prepayments, contract assets, amount due from/to a joint venture, trade
+      payables (including amount utilised for supply chain financing), other payables and accrued charges
+      (trade related only), contract liabilities, and deposits received.
+
+
+
+                                                   –6–
+MANAGEMENT DISCUSSION AND ANALYSIS
+
+BUSINESS REVIEW
+
+In the first half of FY26, our Group demonstrated exceptional business resilience
+and strategic execution. Despite ongoing geopolitical uncertainties and a challenging
+macroeconomic environment, total revenue grew steadily at 5%, underscoring the
+competitive strength of our business model.
+
+Enterprise Solutions
+
+Our Enterprise Solutions business continued to serve as the core growth engine, with
+revenue rising significantly by 11% to $3,820 million, reflecting strong market demand
+for our solutions. Within this segment, the international direct dialling wholesale business
+was a key contributor, generating approximately $730 million in revenue. As enterprises
+accelerate their digital transformation, our expertise in AI is delivering substantial value
+and further strengthening our market leadership.
+
+Following the strategic launch of our GigaFast broadband services last year — offering
+high-speed connectivity ranging from 2.5Gbps to 25Gbps, the number of enterprise
+customers using GigaFast broadband services exceeded 18,000, representing a 2.1-fold
+increase year-on-year. Residential customers using GigaFast broadband services grew
+by 43% year-on-year to nearly 114,000. This flagship service has not only positioned
+Hong Kong at the forefront of the multi-gigabit era but also laid a solid foundation for
+its smart city development.
+
+Building on this momentum, a key enabler has been the HKBN InnoTech Ecosystem
+Alliance (iTEA). Since its establishment in January 2025, iTEA has become a strategic
+pillar of our business development. By bringing together top-tier technology providers
+on this powerful platform to drive innovation, iTEA strengthens our position in the
+Guangdong-Hong Kong-Macao Greater Bay Area (GBA), while providing comprehensive
+support for enterprises in their cross-border expansion and digital transformation. Looking
+ahead, we will continue to deepen strategic partnerships with industry leaders to enhance
+service value and market competitiveness.
+
+A recent illustration of our partnerships in action is a strategic cooperation framework
+agreement signed with the Beijing Research Institute of Telemetry (BRIT). By combining
+BRIT’s cutting-edge aerospace telemetry capabilities with our superior network resources,
+extensive customer base, and digital solutions, we are jointly exploring commercial
+applications in the low-altitude economy, smart cities, and the Internet of Things. This
+aligns with the national “Aerospace-Land-Sea Integration Strategy” and supports the
+digital infrastructure development of the GBA.
+
+
+
+
+                                           –7–
+Residential Solutions
+
+Turning to our Residential Solutions business, this segment maintained steady growth,
+with revenue stable at $1,158 million. Total residential broadband subscriptions reached
+916,000, while network coverage expanded by 2% to 2.66 million households across
+Hong Kong, reinforcing our leadership position in the city’s residential broadband market.
+
+This stable performance was underpinned by our unique “Infinite-Play” strategy, which
+focuses on premium content partnerships and value-added services to deepen customer
+engagement. As Hong Kong’s network provider offering the widest selection of OTT
+streaming platforms, HKBN brings together leading services such as Netflix, Disney+,
+myTV SUPER, iQIYI, HBO Max, and WeTV, as well as music platforms JOOX and
+KKBOX, to create a comprehensive entertainment ecosystem. This enhances user
+engagement and loyalty, driving a 3% increase in average revenue per household to $218.
+
+Beyond content, the “Infinite-Play” strategy has now extended into healthcare to address
+holistic customer needs. This year, in partnership with the Pain Management Centre
+under EC Healthcare — Hong Kong’s largest non-hospital medical service provider —
+we launched a “Comprehensive Pain Management Service Plan”. Combining advanced
+equipment with professional team support, this plan offers relief solutions for common
+urban pain conditions, contributing to improved health and quality of life.
+
+Alongside healthcare, we are also promoting technology adoption at the individual user
+level. In line with this, we launched Hong Kong’s first OpenClaw AI application solution,
+guided by the principle of “Education First, Widespread Application”. This offering
+provides individual users with professional installation, skills training, and security
+protection, helping them take their first confident steps into AI adoption.
+
+Financial Performance
+
+Against this operational backdrop, network costs and cost of sales increased by 7% to
+$3,974 million, consistent with revenue growth. Other operating expenses decreased
+by 3% to $1,499 million, primarily due to a $27 million reduction in depreciation and
+amortisation, together with other cost-saving measures.
+
+Finance costs increased by 3% to $379 million, mainly reflecting non-recurring refinancing-
+related items, including a $129 million loss from the write-off of unamortised transaction
+fees arising from early retirement of banking facilities, and a $24 million decrease in
+the fair value gain on interest rate swap contracts. This impact was partially offset by a
+$137 million reduction in interests and finance charges on bank loans, benefiting from
+lower HIBOR and interest rate spread.
+
+
+
+
+                                          –8–
+Income tax increased from $6 million to $72 million, primarily attributable to a reduction
+in the recognition of deferred tax assets arising from unused tax losses of the Group’s
+subsidiary.
+
+As a result of the above factors, profit attributable to equity shareholders remained stable.
+EBITDA increased by 4% to $1,257 million, attributable to strategic initiatives aimed
+at driving growth and benefiting from strong operational performance.
+
+Adjusted free cash flow increased by 24% to $157 million, primarily due to a $50
+million increase in EBITDA, a $106 million reduction in net interest paid, and a $12
+million decrease in income tax paid, partially offset by a $31 million increase in capital
+expenditure and a $109 million increase in working capital outflow.
+
+OUTLOOK
+
+Over the past six months, the Group delivered solid performance, reaffirming HKBN’s
+competitive advantage anchored in our unique network infrastructure. With AI becoming
+increasingly prevalent in both personal and enterprise applications, we stand at the
+forefront of technology and are confident in our future business development. We will
+continue to strengthen our dual-growth engine model of “Network + AI” to capture
+market opportunities presented by AI.
+
+In terms of infrastructure development, we will fully leverage our network infrastructure
+and service capabilities — including GigaFast broadband services of up to 25Gbps and
+MetroNet services of up to 100Gbps — to provide a robust technical support platform
+for the digital transformation of enterprise and residential customers.
+
+In FY26, we will focus on driving adoption of GigaFast high-speed broadband services in
+the household and SME markets, continuing to expand our GigaFast subscriber base. At
+the same time, we will advance our “Fibre In, Copper out” network experience upgrade
+programme, prioritising customer upgrades to 2.5Gbps fibre networks. This will not
+only significantly enhance customer satisfaction but also effectively reduce network
+maintenance costs.
+
+Turning to our Enterprise business, through the HKBN iTEA, we are deeply integrating core
+network connectivity services with cutting-edge cybersecurity, cloud, and AI solutions.
+This enables us to provide enterprise customers with end-to-end digital transformation
+services that support their business growth. As more enterprises expand overseas, demand
+is notably increasing in areas such as cross-border network connectivity, data centre
+hosting, and system integration services. Leveraging the over 60 years of industry
+experience accumulated by JOS, which we acquired in 2019, HKBN has built robust
+enterprise-grade system integration capabilities that are highly recognised by our core
+customer base. We will address key challenges enterprises face during overseas expansion
+— including network infrastructure deployment and cross-border business coordination
+— by offering one-stop solutions to fully support their global market expansion.
+
+
+                                           –9–
+In our Residential business, we will continue to deepen our “Infinite-Play” strategy,
+integrating technological innovation with lifestyle and entertainment to create smarter,
+more convenient living experiences for residential customers. The “Infinite-Play” offering
+will continue to expand into new areas such as gerontechnology, insurance, healthcare,
+and smart living, further embedding itself into customers’ daily lives and enhancing
+user loyalty.
+
+Finally, through our strong and complementary partnership with China Mobile, we are
+committed to delivering an even better network experience, superior customer service,
+and a richer product portfolio, thereby strengthening our market leadership and creating
+greater customer value.
+
+We will continue to solidify our operational foundation and build a more resilient business
+model, combining steady progress with innovative momentum to lead the Company
+towards sustainable long-term growth.
+
+LIQUIDITY AND CAPITAL RESOURCES
+
+As at 28 February 2026, the Group had total cash and cash equivalents of $995 million
+(31 August 2025: $1,192 million) and gross debt of $11,271 million (31 August 2025:
+$11,416 million), which led to a net debt position of $10,276 million (31 August 2025:
+$10,224 million). Lease liabilities of $329 million (31 August 2025: $392 million) was
+included as debt as at 28 February 2026 in accordance with the term of the Group’s
+various loan facilities. The Group’s gearing ratio, which was expressed as a ratio of the
+gross debt over total equity, was 5.3x as at 28 February 2026 (31 August 2025: 5.0x).
+
+The Group’s net debt to EBITDA ratio as computed in accordance with the term of the
+Group’s various loan facilities was approximately 4.6x as at 28 February 2026 (31 August
+2025: 4.7x). The average finance cost calculated as the interest and coupon charges over
+the average borrowing balance was 5.1% (31 August 2025: 6.2%). The average weighted
+maturity of the Group’s borrowings was 4.7 years as at 28 February 2026 (31 August
+2025: 3.0 years).
+
+Cash and cash equivalents consisted of cash at bank and in hand. There was no pledged
+bank deposit as at 28 February 2026 and 31 August 2025. As at 28 February 2026, the
+Group had an undrawn revolving credit facility of $1,574 million (31 August 2025:
+$1,470 million).
+
+Under the liquidity and capital resources condition as at 28 February 2026, the Group
+can fund its capital expenditures and working capital requirements for the year with
+internal resources and the available banking facilities.
+
+
+
+
+                                          – 10 –
+HEDGING
+
+The Group’s policy is to partially hedge the interest rate risk arising from the variable
+interest rates of the debt instruments and facilities by entering into interest-rate swaps.
+The Group Chief Executive Officer and Chief Financial Officer are primarily responsible
+for overseeing the hedging activities. Under their guidance, the Group’s finance team is
+responsible for planning, executing and monitoring the hedging activities.
+
+The Group would not enter into hedging arrangements for speculative purposes. The
+Group entered into an interest-rate swap arrangement in the principal amount of $5,250
+million with an international financial institution for a term of 2.5 years from 1 June
+2023 to 24 November 2025. Benefiting from the hedging arrangement, the Group fixed
+the HIBOR interest rate exposure at 3.95% per annum up to November 2025. As at 28
+February 2026, the Group had not entered into any new hedging arrangements.
+
+The interest-rate swap arrangement is recognised initially at fair value and remeasured at
+the end of each reporting period. Neither of the financial instruments qualify for hedge
+accounting under HKFRS 9, Financial instruments, and therefore, it is accounted for as
+held for trading and measured at fair value through profit or loss.
+
+CHARGE ON GROUP ASSETS
+
+As at 28 February 2026, the Group pledged assets to secure the other borrowings of $66
+million (31 August 2025: $38 million).
+
+CONTINGENT LIABILITIES
+
+As at 28 February 2026, the Group had total contingent liabilities of $279 million (31
+August 2025: $271 million) in respect of bank guarantees provided to suppliers and
+customers and utility vendors in lieu of payment of utility deposits. The increase of $8
+million was mainly due to an increase in performance guarantee issued to the Group’s
+suppliers and customers.
+
+EXCHANGE RATES
+
+All the Group’s monetary assets and liabilities are primarily denominated in either
+Hong Kong dollars (“HKD”) or United States dollars (“USD”). Given the exchange rate
+of the HKD to the USD has remained close to the current pegged rate of HKD7.80 =
+USD1.00 since 1983, management does not expect significant foreign exchange gains
+or losses between the two currencies. The Group is also exposed to a certain amount of
+foreign exchange risk based on fluctuations between HKD and Renminbi arising from its
+operations. In order to limit this foreign currency risk exposure, the Group ensures that
+the net exposure is kept to an acceptable level of buying or selling foreign currencies at
+spot rates where necessary to address it.
+
+
+
+                                          – 11 –
+SIGNIFICANT INVESTMENTS, ACQUISITIONS AND DISPOSALS
+
+The Group did not make any significant investments, acquisitions or disposals in relation
+to its subsidiaries and associated companies during the six months ended 28 February
+2026.
+
+STAFF REMUNERATION
+
+As at 28 February 2026, the Group had 3,636 permanent full-time staff (31 August 2025:
+3,670 staff). The Group provides a remuneration package consisting of basic salary, bonus
+and other benefits. Bonus payments are discretionary and dependent on both the Group’s
+and individual performances. The Group also provides comprehensive medical insurance
+coverage, competitive retirement benefits schemes, and staff training programmes.
+
+INTERIM DIVIDEND
+
+The Company seeks to provide stable and sustainable returns to the shareholders of
+the Company (the “Shareholders”). In determining the dividend amount, the Board
+will follow the Company’s dividend policy and take into account the Group’s financial
+performance, investment and funding requirements, early debt repayment, prevailing
+economic and market conditions, and other factors that the Board may consider relevant
+and appropriate. In general, the Company targets to pay dividends in an amount of not
+less than 75% of the adjusted free cash flow. The Board will review the dividend policy
+and payout ratio as appropriate from time to time.
+
+Consistent with the Company’s dividend policy stated above, the Board has resolved to
+declare the payment of an interim dividend of 15.5 cents per share for the six months
+ended 28 February 2026 (28 February 2025: 15.5 cents per share) to the Shareholders
+whose names appear on the register of members of the Company on Tuesday, 2 June 2026.
+The interim dividend will be payable in cash on or around Wednesday, 10 June 2026.
+
+CLOSURE OF REGISTER OF MEMBERS
+
+For determining the entitlement to the interim dividend, the register of members of the
+Company will be closed from Friday, 29 May 2026 to Tuesday, 2 June 2026, both days
+inclusive, during which period no transfer of shares will be effected. In order to qualify
+for the interim dividend, all transfers accompanied by the relevant share certificates must
+be lodged with the Company’s Hong Kong branch share registrar, Computershare Hong
+Kong Investor Services Limited at Shops 1712-1716, 17th Floor, Hopewell Centre, 183
+Queen’s Road East, Wanchai, Hong Kong, for registration no later than 4:30 p.m. on
+Thursday, 28 May 2026.
+
+
+
+
+                                          – 12 –
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED SECURITIES
+
+During the six months ended 28 February 2026, neither the Company nor any of its
+subsidiaries purchased, sold or redeemed any of the Company’s listed securities (including
+sale of treasury shares, if any).
+
+REVIEW OF INTERIM FINANCIAL INFORMATION
+
+The Audit Committee of the Company has reviewed with the management and the
+external auditor the unaudited interim results of the Group for the six months ended 28
+February 2026, the accounting principles and practices adopted by the Group, as well
+as discussion on auditing, internal control and financial reporting matters of the Group.
+
+The unaudited interim financial information of the Group for the six months ended 28
+February 2026 has been reviewed by the Company’s external auditor in accordance
+with Hong Kong Standard on Review Engagements 2410 “Review of interim financial
+information performed by the independent auditor of the entity” issued by the HKICPA
+and reviewed by the Audit Committee of the Company.
+
+CORPORATE GOVERNANCE
+
+The Company has complied with all the code provisions contained in the “Corporate
+Governance Code” set out in Appendix C1 to the Rules Governing the Listing of
+Securities (the “Listing Rules”) on The Stock Exchange of Hong Kong Limited (the
+“Stock Exchange”) during the six months ended 28 February 2026.
+
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+
+The Company has adopted the “Model Code for Securities Transactions by Directors of
+Listed Issuers” (the “Model Code”) set out in Appendix C3 to the Listing Rules as its
+code of conduct regarding securities transactions by the Directors.
+
+Having made specific enquiries with the Directors, they confirmed that they had complied
+with the Model Code throughout the six months ended 28 February 2026.
+
+SUBSEQUENT EVENT
+
+No significant events occurred after the end of the reporting period.
+
+
+
+
+                                         – 13 –
+PUBLICATION OF INTERIM RESULTS ON THE WEBSITES OF THE STOCK
+EXCHANGE AND THE COMPANY
+
+This announcement is published on the websites of the Stock Exchange (www.hkexnews.hk)
+and the Company (www.hkbnltd.net). The interim report of the Company for the six
+months ended 28 February 2026 will be despatched to the Shareholders and made available
+on the same websites in due course.
+
+                                                                By order of the Board
+                                                                    HKBN Ltd.
+                                                                     LING Hao
+                                                                     Chairman
+
+Hong Kong, 24 April 2026
+
+As at the date of this announcement, the Board comprises:
+
+Executive Directors                   Independent Non-executive Directors
+Mr. LING Hao (Chairman)               Ms. CHEUNG Ming Ming Anna
+Mr. LI Xin                            Ms. CHUNG Cordelia
+Mr. LEI Liqun                         Ms. CHUNG Kit Yi Kitty
+
+Non-executive Director
+Mr. LUO Weimin
+
+Where the English and the Chinese texts conflict, the English text prevails.
+
+
+
+
+                                        – 14 –
+CONSOLIDATED INCOME STATEMENT
+FOR THE SIX MONTHS ENDED 28 FEBRUARY 2026
+
+                                                            Six months ended
+                                                        28 February     28 February
+                                                               2026            2025
+                                                 Note         $’000           $’000
+
+Revenue                                           3       6,029,202       5,734,269
+
+Other net income                                 4(a)         2,149           5,801
+
+Network costs and costs of sales                          (3,973,896)    (3,719,688)
+
+Other operating expenses                         4(b)     (1,498,556)    (1,541,292)
+
+Finance costs                                    4(d)      (378,831)       (366,024)
+
+Profit before taxation                            4         180,068        113,066
+
+Income tax expense                                5         (72,396)         (5,506)
+
+Profit for the period attributable to
+  equity shareholders of the Company                        107,672        107,560
+
+
+Earnings per share
+
+Basic                                             6        7.3 cents       8.2 cents
+
+
+Diluted                                           6        7.3 cents       7.3 cents
+
+
+
+
+                                        – 15 –
+CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+FOR THE SIX MONTHS ENDED 28 FEBRUARY 2026
+
+                                                       Six months ended
+                                                   28 February     28 February
+                                                          2026            2025
+                                                         $’000           $’000
+
+Profit for the period                                  107,672        107,560
+
+Other comprehensive income for the period
+
+Item that may be reclassified subsequently to
+   profit or loss:
+
+Exchange differences on translation of financial
+  statements of subsidiaries outside Hong Kong,
+  with nil tax effect                                    3,615         (11,716)
+
+Other comprehensive income for the period                3,615         (11,716)
+
+Total comprehensive income for the period
+  attributable to equity shareholders
+  of the Company                                       111,287         95,844
+
+
+
+
+                                         – 16 –
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+AT 28 FEBRUARY 2026
+
+                                                                    At           At
+                                                           28 February    31 August
+                                                                  2026         2025
+                                                    Note         $’000        $’000
+
+Non-current assets
+Goodwill                                                     7,816,507     7,816,507
+Intangible assets                                            1,861,244     2,012,209
+Property, plant and equipment                                3,092,998     3,154,104
+Right-of-use assets                                            472,672       534,464
+Customer acquisition and retention costs                       423,954       434,919
+Deferred tax assets                                            127,875       181,437
+Other non-current assets                                        52,803        52,585
+
+                                                            13,848,053    14,186,225
+
+Current assets
+Inventories                                                    134,782        92,861
+Trade receivables                                    7       1,048,552       976,438
+Other receivables, deposits and prepayments                    442,993       440,253
+Contract assets                                                381,928       364,580
+Amount due from a joint venture                                    255           230
+Cash and cash equivalents                                      994,698     1,192,160
+
+                                                             3,003,208     3,066,522
+
+Current liabilities
+Trade payables, other payables and accrued
+   charges                                           8       2,029,853     2,078,745
+Contract liabilities                                           572,886       583,301
+Deposits received                                              138,298       136,796
+Amount due to a joint venture                                    6,074        15,744
+Bank and other borrowings                                      151,175     4,239,769
+Lease liabilities                                              144,896       144,813
+Tax payable                                                     41,333       124,942
+Financial liabilities at fair value through
+   profit or loss                                                    –       14,071
+
+                                                             3,084,515     7,338,181
+
+Net current liabilities                                        (81,307)   (4,271,659)
+
+Total assets less current liabilities                       13,766,746     9,914,566
+
+
+
+
+                                           – 17 –
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION (CONTINUED)
+AT 28 FEBRUARY 2026
+
+                                                             At          At
+                                                    28 February   31 August
+                                                           2026        2025
+                                             Note         $’000       $’000
+
+Non-current liabilities
+Contract liabilities                                    157,670     153,583
+Deferred tax liabilities                                465,806     514,418
+Lease liabilities                                       184,240     246,897
+Provision for reinstatement costs                        67,148      67,997
+Bank and other borrowings                            10,774,360   6,645,920
+
+                                                     11,649,224   7,628,815
+
+NET ASSETS                                            2,117,522   2,285,751
+
+
+CAPITAL AND RESERVES
+Share capital                                               149         149
+Reserves                                              2,117,373   2,285,602
+
+TOTAL EQUITY                                          2,117,522   2,285,751
+
+
+
+
+                                    – 18 –
+NOTES TO THE UNAUDITED CONSOLIDATED INTERIM FINANCIAL
+INFORMATION:
+
+1   BASIS OF PREPARATION
+
+    The unaudited consolidated interim financial information set out in this announcement does not
+    constitute the Group’s interim financial report for the six months ended 28 February 2026 but is
+    extracted from that interim financial report which has been prepared in accordance with the applicable
+    disclosure provisions of the Rules Governing the Listing of Securities on The Stock Exchange of
+    Hong Kong Limited, including compliance with Hong Kong Accounting Standard (“HKAS”) 34,
+    Interim financial reporting , issued by the Hong Kong Institute of Certified Public Accountants
+    (“HKICPA”). It was authorised for issue on 24 April 2026.
+
+    The interim financial report has been prepared in accordance with the same accounting policies
+    adopted in the annual financial statements of the Group for the year ended 31 August 2025, except
+    for the accounting policy changes that are expected to be reflected in the 2026 annual financial
+    statements. Details of any changes in accounting policies are set out in note 2.
+
+    The preparation of an interim financial report in conformity with HKAS 34 requires management
+    to make judgements, estimates and assumptions that affect the application of policies and reported
+    amounts of assets and liabilities, income and expenses on a year to date basis. Actual results may
+    differ from these estimates.
+
+    This interim financial report contains condensed consolidated financial statements and selected
+    explanatory notes. The notes include an explanation of events and transactions that are significant
+    to an understanding of the changes in financial position and performance of the Group since the
+    annual financial statements for the year ended 31 August 2025. The condensed consolidated interim
+    financial statements and notes thereon do not include all of the information required for full set of
+    financial statements prepared in accordance with HKFRS Accounting Standards.
+
+    The interim financial report is unaudited, but has been reviewed by KPMG in accordance with Hong
+    Kong Standard on Review Engagements 2410, Review of interim financial information performed
+    by the independent auditor of the entity , issued by the HKICPA.
+
+
+
+
+                                                – 19 –
+2   CHANGES IN ACCOUNTING POLICIES
+
+    The Group has applied the amendments to HKAS 21, The effects of changes in foreign exchange
+    rates — Lack of exchangeability , issued by the HKICPA to these financial statements for the current
+    accounting period. The amendments do not have a material impact on these financial statements
+    as the Group has not entered into any foreign currency transactions in which the foreign currency
+    is not exchangeable into another currency.
+
+    The Group has not applied any new standard or interpretation that is not yet effective for the
+    current accounting period.
+
+3   REVENUE AND SEGMENT REPORTING
+
+    The principal activities of the Group are (i) provision of fixed telecommunications network services,
+    international telecommunications services and mobile services to residential and enterprise customers
+    in Hong Kong, (ii) system integration services, (iii) product sales and (iv) marketing and distribution
+    of computer hardware and software, telecommunication products, office automation products and
+    the provision of related services.
+
+    (a)   Disaggregation of revenue
+
+          Revenue represents revenue from (i) fixed telecommunications network services, international
+          telecommunications services and mobile services to residential and enterprise customers
+          in Hong Kong, (ii) system integration services, (iii) product sales and (iv) marketing and
+          distribution of computer hardware and software, telecommunication products, office automation
+          products and the provision of related services.
+
+          Disaggregation of revenue from contracts with customers by major categories is as follows:
+
+                                                                                Six months ended
+                                                                            28 February    28 February
+                                                                                   2026           2025
+                                                                                  $’000          $’000
+
+          Disaggregated by major products or service lines:
+          Fixed telecommunications network services                             2,368,365        2,321,022
+          International telecommunications services                               755,767          590,071
+          Other services                                                          141,046          155,168
+
+
+          Fees from provision of telecommunications services                    3,265,178        3,066,261
+          Product revenue                                                       2,063,394        2,019,167
+          Technology solution and consultancy services                            700,630          648,841
+
+
+          Revenue from contracts with customers within
+            the scope of HKFRS 15                                               6,029,202        5,734,269
+
+
+
+
+                                                 – 20 –
+3   REVENUE AND SEGMENT REPORTING (CONTINUED)
+
+    (a)   Disaggregation of revenue (Continued)
+
+                                                                              Six months ended
+                                                                          28 February    28 February
+                                                                                 2026           2025
+                                                                                $’000          $’000
+
+          Disaggregated by major categories:
+          Residential Solutions revenue                                       1,158,200       1,165,568
+          Enterprise Solutions revenue                                        2,807,608       2,549,534
+          Enterprise Solutions related products revenue                       1,012,202         892,191
+          Handsets and other products revenue                                 1,051,192       1,126,976
+
+
+                                                                              6,029,202       5,734,269
+
+
+          During the six months ended 28 February 2026 and 28 February 2025, product revenue is
+          recognised at a point in time and revenue from the provision of telecommunications services
+          is substantially recognised over time.
+
+          One customer of the Group contributed 16.0% of the Group’s total revenue for the six months
+          ended 28 February 2026 (six months ended 28 February 2025: 19.0%).
+
+    (b)   Segment reporting
+
+          The Group’s most senior executive management reviews the Group’s internal reporting for the
+          purposes of assessing the performance and allocates the resources of the Group by geographical
+          location. In a manner consistent with the way in which information is reported internally to
+          the Group’s most senior executive management for the purpose of resources allocation and
+          performance assessment, the Group has presented the following two reportable segments. No
+          operating segments have been aggregated to form the following reportable segments.
+
+          (i)   Telecom and technology solutions (Hong Kong)
+
+                Include provision of fixed telecommunications network services, international
+                telecommunications services, mobile services to residential and enterprise customers
+                and technology-related services in Hong Kong.
+
+          (ii) Telecom and technology solutions (non-Hong Kong)
+
+                Include the provision of telecommunications and technology solutions and consultancy
+                services in Chinese Mainland and Macau.
+
+
+
+
+                                                 – 21 –
+3   REVENUE AND SEGMENT REPORTING (CONTINUED)
+
+    (b)   Segment reporting (Continued)
+
+          (iii) Segment results, assets and liabilities
+
+               The Group’s senior executive management monitors the performance attributable to each
+               reportable segment on the following basis:
+
+               The segment revenue of the Group is based on geographical location of customers.
+               Income and expenses are allocated to the reportable segments with reference to revenue
+               generated by those segments and expenses incurred by those segments or which otherwise
+               arisen from the depreciation or amortisation of assets attributable to those segments. The
+               inter-segment transactions are conducted on normal commercial terms and are priced with
+               reference to prevailing market prices and in the ordinary course of business.
+
+               The performance measure used for reporting segment profit is earnings before finance
+               costs, interest income, income tax, depreciation, amortisation of intangible assets (net
+               of direct cost incurred) and amortisation of customer acquisition and retention costs.
+
+               In addition to receiving segment information concerning the reportable segment profit,
+               management is provided with segment information concerning inter-segment sales,
+               interest income and expense from cash balances and borrowings managed directly by the
+               segments, depreciation, amortisation, capital expenditures and income tax.
+
+               Inter-segment sales are priced with reference to prices charged to external parties for
+               similar orders.
+
+               Segment assets and liabilities of the Group are not reported to the Group’s chief operating
+               decision makers regularly. As a result, reportable assets and liabilities have not been
+               presented in the financial statements.
+
+
+
+
+                                                 – 22 –
+3   REVENUE AND SEGMENT REPORTING (CONTINUED)
+
+    (b)   Segment reporting (Continued)
+
+          (iii) Segment results, assets and liabilities (Continued)
+
+               Disaggregation of revenue from contracts with customers by timing of revenue recognition,
+               as well as information regarding the Group’s reportable segments as provided to the
+               Group’s most senior executive management for the purposes of resource allocation and
+               assessment of segment performance for the period is set out below.
+
+                                                   Telecom and technology    Telecom and technology
+                                                    solutions (Hong Kong)   solutions (non-Hong Kong)      Total
+                                                 28 February 28 February 28 February 28 February 28 February 28 February
+               For the six months ended                  2026          2025         2026          2025  2026        2025
+                                                        $’000         $’000        $’000         $’000 $’000       $’000
+
+               Reportable segment revenue          5,481,217    5,229,561     689,828       639,487    6,171,045       5,869,048
+               Inter-segment revenue                 (19,363)     (15,937)   (122,480)     (118,842)    (141,843)       (134,779)
+
+
+               Revenue from external customers     5,461,854    5,213,624    567,348       520,645     6,029,202       5,734,269
+
+
+               Disaggregated by timing of
+                 revenue recognition
+               Point in time                       1,616,787    1,604,198    446,607       414,969     2,063,394       2,019,167
+               Over time                           3,845,067    3,609,426    120,741       105,676     3,965,808       3,715,102
+
+
+               Revenue from external customers     5,461,854    5,213,624    567,348       520,645     6,029,202       5,734,269
+
+
+               Reportable segment profit           1,217,419    1,169,223     39,081        36,899     1,256,500       1,206,122
+
+
+          (iv) Reconciliation between segment profit derived from Group’s external customers and
+               consolidated profit before taxation for the period
+
+                                                                                             Six months ended
+                                                                                         28 February    28 February
+                                                                                                2026           2025
+                                                                                               $’000          $’000
+
+               Reportable segment profit derived from Group’s
+                  external customers                                                       1,256,500                1,206,122
+               Finance costs                                                                (378,831)                (366,024)
+               Interest income                                                                 6,426                    4,296
+               Depreciation                                                                 (388,760)                (411,210)
+               Amortisation of intangible assets                                            (170,701)                (177,859)
+               Amortisation of customer acquisition and retention costs                     (144,566)                (142,259)
+
+
+               Consolidated profit before taxation                                            180,068                113,066
+
+
+
+
+                                                      – 23 –
+4   PROFIT BEFORE TAXATION
+
+    Profit before taxation is arrived at after (crediting)/charging:
+
+                                                                           Six months ended
+                                                                       28 February    28 February
+                                                                              2026           2025
+                                                                             $’000          $’000
+    (a)   Other net income
+
+          Interest income                                                   (6,426)        (4,296)
+          Net foreign exchange loss                                         11,585          2,788
+          Gain on disposal of property, plant and equipment, net            (6,251)          (887)
+          Gain on disposal of right-of-use assets, net                        (154)           (77)
+          Other income                                                        (903)        (3,329)
+
+
+                                                                            (2,149)        (5,801)
+
+
+    (b)   Other operating expenses
+
+          Advertising and marketing expenses                                19,002         16,132
+          Depreciation
+             – Property, plant and equipment                               313,842        331,200
+             – Right-of-use assets                                          74,918         79,936
+          Recognition of loss allowance on trade receivables
+             and contract assets                                            30,205         27,618
+          Staff costs (note 4(c))                                          499,248        491,095
+          Amortisation of intangible assets                                170,701        177,859
+          Amortisation of customer acquisition and retention costs         144,566        142,259
+          Others                                                           246,074        275,193
+             – Rental and utilities                                         23,957         30,713
+             – Site expenses                                                43,332         43,655
+             – Bank handling charges                                        19,240         17,661
+             – Maintenance                                                  35,739         32,319
+             – Subscription and license fees                                49,928         51,157
+             – Legal and professional fees                                   9,309         41,058
+             – Printing, telecommunication and logistics expenses           17,249         18,092
+             – Others                                                       47,320         40,538
+
+
+                                                                         1,498,556      1,541,292
+
+
+
+
+                                                 – 24 –
+4   PROFIT BEFORE TAXATION (CONTINUED)
+
+    Profit before taxation is arrived at after (crediting)/charging: (Continued)
+
+    (c)   Staff costs
+
+                                                                               Six months ended
+                                                                           28 February    28 February
+                                                                                  2026           2025
+                                                                                 $’000          $’000
+
+          Salaries, wages and other benefits                                       681,307    670,893
+          Contributions to defined contribution retirement plan                     64,962     56,845
+
+
+                                                                                   746,269    727,738
+
+          Less: Staff costs capitalised as property, plant and equipment           (36,812)    (40,896)
+                Staff costs capitalised as intangible assets                       (19,732)          –
+                Staff costs capitalised as customer acquisition and
+                   retention costs                                                 (92,743)    (89,797)
+                Staff costs included in network costs and cost of sales            (97,734)   (105,950)
+
+
+                                                                                   499,248    491,095
+
+
+          Staff costs include all compensation and benefits paid to and accrued for all individuals
+          employed by the Group, including directors.
+
+    (d)   Finance costs
+
+                                                                               Six months ended
+                                                                           28 February    28 February
+                                                                                  2026           2025
+                                                                                 $’000          $’000
+
+          Interest and finance charges on bank loans                               245,019    382,501
+          Interest on other borrowings                                                 469        515
+          Interest on lease liabilities                                              9,858     12,260
+          Interest on other liabilities                                                  –         95
+          Fair value gain on interest-rate swap                                     (5,252)   (29,347)
+          Loss on early retirement of banking facilities                           128,737          –
+
+
+                                                                                   378,831    366,024
+
+
+
+
+                                                  – 25 –
+4   PROFIT BEFORE TAXATION (CONTINUED)
+
+    Profit before taxation is arrived at after (crediting)/charging: (Continued)
+
+    (e)   Other items
+
+                                                                               Six months ended
+                                                                           28 February    28 February
+                                                                                  2026           2025
+                                                                                 $’000          $’000
+
+          Amortisation of intangible assets#                                       170,701       198,899
+          Depreciation
+            – Property, plant and equipment#                                       313,842       331,200
+            – Right-of-use assets#                                                  74,918        80,010
+          Rental charges on telecommunications facilities and
+            computer equipment                                                     301,143       291,709
+          Expenses relating to short-term leases and leases of
+            low-value assets                                                         5,380         3,965
+          Recognition of loss allowance on trade receivables
+            and contract assets#                                                 30,205           27,618
+          Cost of inventories                                                 1,944,438        1,938,433
+          Write-down of inventories                                                 906            4,060
+
+          #
+               Include amounts disclosed separately in note 4(b) above.
+
+5   INCOME TAX EXPENSE
+
+    (a)   Taxation in the consolidated income statement represents:
+
+                                                                               Six months ended
+                                                                           28 February    28 February
+                                                                                  2026           2025
+                                                                                 $’000          $’000
+
+          Current tax — Hong Kong Profits Tax                                      (62,270)      (69,500)
+          Current tax — Outside Hong Kong                                           (5,136)       (5,205)
+          Deferred tax                                                              (4,990)       69,199
+
+
+                                                                                   (72,396)       (5,506)
+
+
+          The provision for Hong Kong Profits Tax is calculated at 16.5% for the six months ended
+          28 February 2026 (six months ended 28 February 2025: 16.5%) of the estimated assessable
+          profits for the period.
+
+          During the six months ended 28 February 2025, one subsidiary of the Group which was
+          qualifying corporation under the two tiered profit tax rate regime. For this subsidiary, the
+          first $2 million of assessable profits were taxed at 8.25% and the remaining assessable profits
+          were taxed at 16.5%.
+
+          Taxation for subsidiaries outside Hong Kong is similarly calculated using the annual effective
+          rates of taxation that are expected to be applicable in the relevant jurisdictions.
+
+                                                 – 26 –
+5   INCOME TAX EXPENSE (CONTINUED)
+
+    (b)   Pillar Two income tax
+
+          The Group is subject to the Global Anti-Base Erosion Model Rules (“Pillar Two model rules”)
+          published by the Organisation for Economic Co-operation and Development.
+
+          The Group is liable to Pillar Two income taxes under the Hong Kong Inland Revenue
+          (Amendment) (Minimum Tax for Multinational Enterprise Groups) Ordinance 2025 for its
+          earnings in the Hong Kong and certain other jurisdictions. Management assessed that the
+          exposure arising from top-up tax to be immaterial.
+
+          The Group has applied the temporary mandatory exception from deferred tax accounting for
+          the top-up tax and accounted for the tax as current tax when incurred.
+
+6   EARNINGS PER SHARE
+
+    (a)   Basic earnings per share
+
+          The calculation of basic earnings per share is based on the profit attributable to ordinary
+          equity shareholders of the Company of $107,672,000 (six months ended 28 February 2025:
+          $107,560,000) and the weighted average number of ordinary shares in issue calculated as
+          follows:
+
+                                                                               Six months ended
+                                                                           28 February    28 February
+                                                                                  2026          2025
+                                                                                  ’000           ’000
+
+          Issued ordinary shares at 1 September                              1,478,921      1,311,599
+          Less: lapsed/unvested shares held for the Co-Ownership Plan II
+                  Restricted Share Units                                          (760)          (760)
+
+
+          Weighted average number of ordinary shares in issue
+            during the period                                                1,478,161      1,310,839
+
+
+
+
+                                                – 27 –
+6   EARNINGS PER SHARE (CONTINUED)
+
+    (b)   Diluted earnings per share
+
+          During the six months ended 28 February 2026, diluted earnings per share is calculated on
+          the same basis as basic earnings per share as there is no dilutive potential ordinary shares in
+          existence.
+
+          During the six months ended 28 February 2025, the calculation of diluted earnings per share
+          was based on the profit attributable to ordinary equity shareholders of the Company of
+          $107,560,000 and the weighted average number of ordinary shares in issue less shares held
+          for the Co-Ownership Plan II after adjusting for the dilutive effect of the Vendor Loan Notes,
+          calculated as follows:
+
+                                                                                       Six months ended
+                                                                                            28 February
+                                                                                                   2025
+                                                                                                    ’000
+
+          Weighted average number of ordinary shares less shares held
+            for the Co-Ownership Plan II                                                       1,310,839
+          Add: effect of the Vendor Loan Notes                                                   167,322
+
+
+          Weighted average number of ordinary shares (diluted)                                 1,478,161
+
+
+7   TRADE RECEIVABLES
+
+    As of the end of the reporting period, the ageing analysis of trade receivables, based on the invoice
+    date and net of loss allowance, is as follows:
+
+                                                                                    At               At
+                                                                           28 February        31 August
+                                                                                  2026             2025
+                                                                                 $’000            $’000
+
+    Within 30 days                                                              434,131          425,766
+    31 to 60 days                                                               237,584          229,529
+    61 to 90 days                                                               134,363           98,551
+    Over 90 days                                                                242,474          222,592
+
+
+                                                                              1,048,552          976,438
+
+
+    The majority of the Group’s trade receivables is due within 30-90 days from the date of billing.
+
+
+
+
+                                                – 28 –
+8   TRADE PAYABLES, OTHER PAYABLES AND ACCRUED CHARGES
+
+                                                                                  At               At
+                                                                         28 February        31 August
+                                                                                2026             2025
+                                                                               $’000            $’000
+
+    Trade payables and related accruals                                     1,414,430       1,364,638
+    Other payables and accrued charges                                        615,423         714,107
+
+
+                                                                            2,029,853       2,078,745
+
+
+    As of the end of the reporting period, the ageing analysis of trade payables and related accruals,
+    based on the invoice date, is as follows:
+
+                                                                                  At               At
+                                                                         28 February        31 August
+                                                                                2026             2025
+                                                                               $’000            $’000
+
+    Within 30 days                                                            980,635         857,152
+    31 to 60 days                                                             195,293         184,870
+    61 to 90 days                                                             118,892         145,713
+    Over 90 days                                                              119,610         176,903
+
+
+                                                                            1,414,430       1,364,638
+
+
+
+
+                                              – 29 –
+9   DIVIDENDS
+
+    (a)   Dividend payable to equity shareholders of the Company attributable to the interim period
+
+                                                                                  Six months ended
+                                                                              28 February    28 February
+                                                                                     2026           2025
+                                                                                    $’000          $’000
+
+          Interim dividend declared after the interim period of 15.5 cents
+             per ordinary share (six months ended 28 February 2025:
+             15.5 cents per ordinary share) (Note)                                 229,233          229,233
+
+
+          Note:   The amount of 2026 proposed interim dividend is based on the 1,478,921,568 (2025:
+                  1,478,921,568) ordinary shares in issue as at the date of this interim result announcement.
+
+          The proposed interim dividend declared has not been recognised as a liability at the end of
+          the reporting period.
+
+    (b)   Dividend payable to equity shareholders of the Company attributable to the previous financial
+          year, approved and paid during the interim period
+
+                                                                                  Six months ended
+                                                                              28 February    28 February
+                                                                                     2026           2025
+                                                                                    $’000          $’000
+
+          Final dividend in respect of the previous financial year,
+             approved and paid during the following interim period,
+             of 18.9 cents per ordinary share (six months ended
+             28 February 2025: 16.5 cents per ordinary share)                      279,516          216,414
+
+
+
+
+                                                  – 30 –
+

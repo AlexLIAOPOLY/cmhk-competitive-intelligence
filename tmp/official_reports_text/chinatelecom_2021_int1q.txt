@@ -1,0 +1,241 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the
+contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability
+whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this
+announcement.
+
+
+
+
+                    China Telecom Corporation Limited
+                          中国电信股份有限公司
+              (A joint stock limited company incorporated in the People's Republic of China with limited liability)
+                                                    (Stock Code: 728)
+
+                         KEY FINANCIAL AND PERFORMANCE INDICATORS
+                                FOR THE FIRST QUARTER OF 2021
+
+
+ The unaudited financial data of the Group for the first quarter of 2021
+ - Operating revenues were RMB106,873 million, representing an increase of 12.7% over the same period of last
+    year; of which service revenues were RMB100,078 million, representing an increase of 8.6% over the same
+    period of last year
+ - EBITDA was RMB31,052 million, representing an increase of 3.0% over the same period of last year
+ - Profit attributable to equity holders of the Company was RMB6,441 million, representing an increase of
+    10.6% over the same period of last year
+
+
+
+ In order to further enhance the transparency of the Group and to enable shareholders, investors and the general
+ public to better appraise the operational performance of the Group, the board of directors (the “Board”) of China
+ Telecom Corporation Limited (the “Company”, together with its subsidiaries, the “Group”) announces certain
+ selected unaudited key financial and performance indicators of the Group for the first quarter of 2021.
+
+
+
+
+                                                                1
+     Financial Data (Extracted from financial records prepared in accordance with International
+     Financial Reporting Standards)
+                                                                                    For the period from         For the period from
+                                                                                     1 January 2021 to           1 January 2020 to               Increase/
+                                                                                        31 March 2021               31 March 2020              (Decrease)
+                                                                                         (RMB million)               (RMB million)
+
+ Operating revenues                                                                              106,873                      94,793                   12.7%
+
+       of which: Service revenues1                                                               100,078                      92,137                    8.6%
+
+ Operating expenses
+   Depreciation and amortisation                                                                (22,516)                    (21,952)                    2.6%
+   Network operations and support                                                               (30,973)                    (27,262)                   13.6%
+   Selling, general and administrative                                                          (14,131)                    (12,571)                   12.4%
+   Personnel expenses                                                                           (21,465)                    (19,845)                    8.2%
+   Other operating expenses                                                                      (9,252)                     (4,954)                   86.8%
+
+         Total operating expenses                                                               (98,337)                    (86,584)                   13.6%
+
+
+ Operating profit                                                                                   8,536                       8,209                  4.0%
+ Net finance costs                                                                                  (546)                       (871)               (37.3%)
+ Investment income and share of profits of associates                                                 403                         408                (1.2%)
+
+ Profit before taxation                                                                             8,393                       7,746                   8.4%
+ Income tax                                                                                       (1,889)                     (1,859)                   1.6%
+ Profit for the quarter                                                                             6,504                       5,887                  10.5%
+
+ Profit attributable to:
+    Equity holders of the Company                                                                   6,441                       5,822                 10.6%
+    Non-controlling interests                                                                          63                          65                 (3.1%)
+
+
+                                                                                                  As at                      As at
+                                                                                         31 March 2021           31 December 2020
+                                                                                         (RMB million)              (RMB million)
+
+
+
+ Total Assets                                                                                    713,721                     715,096                  (0.2%)
+ Total Liabilities                                                                             (341,101)                   (348,921)                  (2.2%)
+
+ Total Equity                                                                                   372,620                      366,175                    1.8%
+
+
+
+
+1.     Service revenues are calculated based on operating revenues minus sales of mobile terminals (first quarter of 2021: RMB4,577 million; first quarter of
+       2020: RMB1,441 million), sales of wireline equipment and other non-service revenues (first quarter of 2021: total RMB2,218 million; first quarter of
+       2020: total RMB1,215 million).
+
+
+
+
+                                                                                2
+Business Data
+
+                                                                                               As at                         As at                          As at
+                                                                                    31 March 2021/             31 December 2020/             30 September 2020/
+                                                                                      For the period                For the period                 For the period
+                                                                                               from                          from                           from
+                                                                                     1 January 2021                1 October 2020                    1 July 2020
+                                                                                                  to                            to                             to
+                                                                                     31 March 2021              31 December 2020              30 September 2020
+
+Mobile Subscribers (Million)                                                                  356.25                           351.02                        349.35
+   of which 5G Package Subscribers (Million)                                                  111.23                            86.50                         64.80
+Net Add of Mobile Subscribers (Million)                                                         5.23                             1.67                          5.88
+   of which Net Add of 5G Package Subscribers                                                  24.73                            21.70                         26.96
+   (Million)
+Handset Data Traffic (kTB)2                                                                10,318.8                         10,297.5                        9,273.5
+Mobile Voice Usage (Billion Minutes)                                                         148.02                           337.26                         162.98
+Wireline Broadband Subscribers (Million)                                                     161.55                           158.53                         156.75
+Net Add of Wireline Broadband Subscribers (Million)                                             3.02                             1.78                           2.61
+Access Lines in Service (Million)                                                            107.53                           107.88                         108.35
+Net Increase/(Decrease) of Access Lines in Service                                            (0.35)                           (0.47)                         (0.75)
+  (Million)
+Wireline Local Voice Usage (Billion Pulses)                                                       9.05                          10.45                          11.34
+Wireline Long Distance Usage (Billion Minutes)                                                    1.86                           2.16                           2.34
+
+For the first quarter of 2021, the Company firmly seized opportunities emerging from the digital transformation of
+the economy and society and promoted the “Cloudification and Digital Transformation” strategy on all fronts,
+achieving apparent enhancement in operating results. Operating revenues were RMB106,873 million, representing an
+increase of 12.7% over the same period of last year. Service revenues were RMB100,078 million, representing an
+increase of 8.6% over the same period of last year with the growth rate continuously surpassing the industry average.
+
+For the first quarter of 2021, mobile service revenues of the Group amounted to RMB48,417 million, representing an
+increase of 8.1% over the same period of last year. Wireline service revenues amounted to RMB51,661 million,
+representing an increase of 9.1% over the same period of last year. The Company persisted in achieving a valuable
+scale expansion in the mobile subscriber market. With continuous and rapid penetration of 5G, the number of 5G
+package subscribers reached approximately 111 million with a penetration rate of 31.2% while the number of mobile
+subscribers was approximately 356 million with a net addition of 5.23 million. The handset data traffic2 increased by
+43.9% over the same period of last year. Mobile ARPU was RMB45.6, representing an increase of 2.7% over the
+same period of last year and becoming stabilised with an upward trend. The Company continuously promoted the
+integration and upgrade of family informatisation services, achieving enhancement of the overall value of Smart
+Family. Revenues from wireline broadband access amounted to RMB18,915 million, representing an increase of
+9.8% over the same period of last year. Broadband access ARPU amounted to RMB39.4, representing an increase of
+4.8% over the same period of last year. Revenue from Smart Family maintained rapid growth and its value
+contribution became increasingly prominent. Broadband blended ARPU3 amounted to RMB46.3, representing an
+increase of 6.9% over the same period of last year. The Company strengthened informatisation expansion capabilities
+as well as operational vitality in government and enterprise market. Revenues from Industrial Digitalisation4 grew
+rapidly and reached RMB23,872 million, representing an increase of 13.4% over the same period of last year and
+maintaining the industry-leading position in terms of revenue size and market share.
+
+
+
+2. Handset data traffic represents the data traffic generated from 3G, 4G and 5G handset internet access.
+3. Broadband blended ARPU is calculated based on the sum of monthly average revenues from broadband access, e-Surfing HD and Smart Family applications and
+   services divided by the average number of broadband subscribers.
+4. Industrial Digitalisation includes Industry Cloud, IDC, Network Dedicated Line, Internet of Things (IoT), Internet Finance, digitalised platform and Big Data services.
+
+
+                                                                                  3
+For the first quarter of 2021, the operating expenses of the Group increased by 13.6% over the same period of last
+year. Benefiting from the Company’s focus on demand orientation together with the full efforts in promoting
+network co-building and co-sharing as well as precision control over capital expenditure, the depreciation and
+amortisation expenses increased by 2.6% over the same period of last year. In order to support the development of
+5G and Industrial Digitalisation services, the Company continuously optimised network quality and capabilities
+while improving user perception. The network operations and support expenses increased by 13.6% over the same
+period of last year while the Company will take effective measures to control the increase in the relevant costs. The
+selling, general and administrative expenses increased by 12.4% over the same period of last year which was mainly
+attributable to the increase in selling expenses for the period while there was a decline in marketing activities in the
+same period in year 2020 as a result of the epidemic. In 2021, the Company will continuously endeavour to control
+the increase in selling expenses while maintaining the necessary deployment in marketing resources to firmly seize
+the 5G development opportunity. The personnel expenses increased by 8.2% over the same period of last year,
+which was mainly due to the Company’s increased recruitment of high-tech talents to strengthen the corporate sci-
+tech innovation capabilities and increased incentives for frontline employees and high performance teams so as to
+enhance employees’ vitality. Other operating expenses increased by 86.8% over the same period of last year which
+was mainly attributable to the significant increase in the scale of mobile terminals sold as a result of the rapid
+popularisation of 5G. The Company continued to enhance capital management capabilities and implemented
+financing precision management, which effectively controlled the level of indebtedness. As a result, the net finance
+costs decreased by 37.3% over the same period of last year. The investment income and share of profits of associates
+decreased by 1.2% over the same period of last year. The profit attributable to equity holders of the Company was
+RMB6,441 million, representing an increase of 10.6% over the same period of last year. EBITDA5was RMB31,052
+million, representing an increase of 3.0% over the same period of last year. EBITDA margin6 was 31.0%.
+
+In the future, the Company will stand on a new development stage to implement new development philosophy and
+establish new development pattern while seizing the opportunities brought by the robust development of digital
+economy as well as the accelerated digital transformation of the society, endeavouring to comprehensively and
+deeply promote the “Cloudification and Digital Transformation” strategy. Persisting in carrying out deepened
+reforms, the Company strives to proceed the plan for the offering and listing of A Shares. Through innovative
+systems and mechanisms, corporate and employees’ vitality are enhanced while sustainable development capabilities
+are strengthened resulting from the expansion in ecological cooperation. The Company will strengthen the sci-tech
+innovation centred around problem-tackling of core technologies and accelerate the integration of 5G, cloud and AI
+to develop new information infrastructure. Driven and stimulated by converged scenarios, the informatisation
+demands from the society are continuously ever-migrating and evolving so as to build digitalised platform and to
+proactively empower internal and external digital transformation. The Company will also take the initiative to
+shoulder the social responsibility to promote rural revitalisation and facilitate the construction of Cyberpower, digital
+China and smart society, striving to share the results of high-quality development with shareholders and customers
+and concurrently continuing to create value for the society.
+
+The Board wishes to remind investors that the above financial and business data are based on the Group’s
+unaudited management accounts. Investors are cautioned not to unduly rely on such data.
+
+
+
+
+5.   EBITDA is calculated based on operating revenues minus operating expenses plus depreciation and amortisation.
+6.   EBITDA margin is calculated based on EBITDA divided by service revenues.
+
+
+
+
+                                                                               4
+In the meantime, investors are advised to exercise caution in dealing in the securities of the
+Company.
+
+
+
+
+                                                                       By Order of the Board
+                                                                China Telecom Corporation Limited
+                                                                           Ke Ruiwen
+                                                                Chairman and Chief Executive Officer
+
+Beijing, China, 28 April 2021
+
+
+FORWARD-LOOKING STATEMENTS
+
+Certain statements contained in this announcement may be viewed as “forward-looking statements” within
+the meaning of Section 27A of the U.S. Securities Act of 1933 (as amended) and Section 21E of the U.S.
+Securities Exchange Act of 1934 (as amended). Such forward-looking statements are subject to known and
+unknown risks, uncertainties and other factors, which may cause the actual performance, financial
+condition or results of operations of the Company to be materially different from any future performance,
+financial condition or results of operations implied by such forward-looking statements. In addition, we do
+not intend to update these forward-looking statements. Further information regarding these risks,
+uncertainties and other factors is included in the Company’s most recent Annual Report on Form 20-F
+filed with the U.S. Securities and Exchange Commission (the “SEC”) and in the Company’s other filings
+with the SEC.
+
+
+As at the date of this announcement, the Board of Directors of the Company consists of Mr. Ke Ruiwen
+(as the Chairman and Chief Executive Officer); Mr. Li Zhengmao (as the President and Chief Operating
+Officer); Mr. Shao Guanglu; Mr. Liu Guiqing and Madam Zhu Min (as the Chief Financial Officer) (all
+as the Executive Vice Presidents); Mr. Chen Shengguang (as the Non-Executive Director); Mr. Tse Hau
+Yin, Aloysius, Mr. Xu Erming, Madam Wang Hsuehming and Mr. Yeung Chi Wai, Jason (all as the
+Independent Non-Executive Directors).
+
+
+
+
+                                                    5
+

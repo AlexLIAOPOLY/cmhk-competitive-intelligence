@@ -1,0 +1,1671 @@
+2024 Interim Report
+Corporate Information
+
+Board of Directors                                                                          Audit Committee
+                                                                                            IP Yuk Keung (Chairman)
+Chairman and Non-executive Director                                                         CHAN Tze Leung (2)
+FOK Kin Ning, Canning, BA, DFM, FCA (ANZ)                                                   IM Man Ieng (2)
+                                                                                            LAN Hong Tsung, David (1)
+Co-Deputy Chairmen and Non-executive Directors
+                                                                                            WONG Yick Ming, Rosanna (1)
+LUI Dennis Pok Man, BSc
+WOO Chiu Man, Cliff, BSc
+                                                                                            Nomination Committee
+                                                                                            CHAN Tze Leung (Chairman) (2)
+Executive Director
+                                                                                            WONG Yick Ming, Rosanna (Chairman) (1)
+KOO Sing Fai, BSc
+ Chief Executive Officer                                                                    Edith SHIH
+                                                                                            IP Yuk Keung
+Non-executive Directors
+LAI Kai Ming, Dominic, BSc, MBA                                                             Remuneration Committee
+ (also Alternate to FOK Kin Ning, Canning and
+                                                                                            IP Yuk Keung (Chairman) (3)
+ Edith SHIH)
+                                                                                            LAN Hong Tsung, David (Chairman) (1)
+Edith SHIH, BSE, MA, MA, EdM, Solicitor,
+      FCG(CS, CGP), HKFCG(CS, CGP)(PE)                                                      FOK Kin Ning, Canning
+MA Lai Chee, Gerald, BCom, MA                                                               CHOW Ching Yee, Cynthia (2)
+ (Alternate to LAI Kai Ming, Dominic)
+
+                                                                                            Sustainability Committee
+Independent Non-executive Directors
+                                                                                            Edith SHIH (Chairman)
+CHAN Tze Leung (2), BSc(Econ), MBA, FHKIOD
+                                                                                            KOO Sing Fai
+CHOW Ching Yee, Cynthia, BA, MBA
+                                                                                            CHOW Ching Yee, Cynthia (2)
+IM Man Ieng (2), BCom, MBus(Acc), CPA
+                                                                                            WONG Yick Ming, Rosanna (1)
+IP Yuk Keung, BSc, MSc, MSc
+LAN Hong Tsung, David (1), GBS, ISO, JP                                                     Company Secretary
+                                            (1)
+WONG Yick Ming, Rosanna , PhD, DBE, JP                                                      CHOW Yan Hing, Agnes
+
+
+                                                                                            Auditor
+                                                                                            PricewaterhouseCoopers
+                                                                                              Certified Public Accountants
+                                                                                              Registered Public Interest Entity Auditor
+Notes:
+
+(1)       Retired at the conclusion of the annual general meeting held on 9 May 2024 (the “AGM”)
+
+(2)       Appointed with effect from the conclusion of the AGM
+
+(3)       Appointed as chairman with effect from the conclusion of the AGM
+Contents
+
+
+
+
+           •    Corporate Information
+            2   Financial Highlights
+            3   Chairman’s Statement
+            5   Management Discussion and Analysis
+            8   Group Capital Resources and Liquidity
+           11   Disclosure of Interests
+           16   Corporate Governance
+           17   Changes in Information of Directors
+           18   Report on Review of Condensed Consolidated Interim
+                Financial Statements
+           19   Condensed Consolidated Income Statement
+           20   Condensed Consolidated Statement of Comprehensive Income
+           21   Condensed Consolidated Statement of Financial Position
+           22   Condensed Consolidated Statement of Changes in Equity
+           23   Condensed Consolidated Statement of Cash Flows
+           24   Notes to the Condensed Consolidated Interim Financial Statements
+           34   Supplementary Financial Information
+           35   Glossary
+           •    Information for Shareholders
+    Financial Highlights
+
+                                                                                                                         1H 2024                   1H 2023
+                                                                                                                      HK$ million                HK$ million              Change
+
+          Total revenue                                                                                                         2,058                     2,328               -12%
+          Service revenue                                                                                                       1,760                     1,793                -2%
+          Total EBITDA (1)                                                                                                         728                      727                  –
+          Total LBIT (2)                                                                                                           (30)                      (35)             +14%
+          Loss attributable to shareholders                                                                                        (12)                      (19)             +37%
+          Loss per share (in HK cents)                                                                                           (0.25)                    (0.39)             +37%
+          Interim dividend per share (in HK cents)                                                                                2.28                      2.28                 –
+
+
+
+
+    Notes:
+
+    (1)      EBITDA represents the EBITDA of the Company and subsidiary companies as well as the Group’s share of the EBITDA of a joint venture. EBITDA is defined as earnings before
+             net interest and other finance income, taxation, depreciation and amortisation. Information concerning EBITDA has been included in the Group’s financial information and is
+             used by many industries and investors as one measure of gross cash flow generation. The Group considers EBITDA to be an important performance measure which is used
+             in the Group’s internal financial and management reporting to monitor business performance. EBITDA is not a measure of cash liquidity or financial performance under
+             IFRS Accounting Standards and the EBITDA measures used by the Group may not be comparable to other similarly titled measures of other companies. EBITDA should not
+             necessarily be construed as an alternative to cash flows or results from operations as determined in accordance with IFRS Accounting Standards.
+
+    (2)      (LBIT)/EBIT represents the (LBIT)/EBIT of the Company and subsidiary companies as well as the Group’s share of the EBIT of a joint venture. (LBIT)/EBIT is defined as losses or
+             earnings before net interest and other finance income and taxation. Information concerning (LBIT)/EBIT has been included in the Group’s financial information and is used
+             by many industries and investors as one measure of results from operations. The Group considers (LBIT)/EBIT to be an important performance measure which is used in
+             the Group’s internal financial and management reporting to monitor business performance. (LBIT)/EBIT is not a measure of financial performance under IFRS Accounting
+             Standards and the (LBIT)/EBIT measures used by the Group may not be comparable to other similarly titled measures of other companies. (LBIT)/EBIT should not necessarily
+             be construed as an alternative to results from operations as determined in accordance with IFRS Accounting Standards.
+
+
+
+2   Hutchison Telecommunications Hong Kong Holdings Limited
+Chairman’s Statement
+
+The Hong Kong economy recorded modest growth in the first half of 2024, which was partly driven by the rebound in the tourism
+sector. However, the business environment and retail sales performance faced headwinds and the Group continued to experience
+challenges with changes in consumer spending behaviour as a result of living cost pressures, which softened the Group’s
+total revenue.
+
+Loss attributable to shareholders and loss per share narrowed to HK$12 million and 0.25 HK cents respectively, a 37%
+improvement compared to the same period last year.
+
+Dividend
+The Board declared an interim dividend of 2.28 HK cents (2023 interim dividend: 2.28 HK cents) per share for the six months
+ended 30 June 2024, in line with the same period last year, payable on Friday, 6 September 2024, to shareholders (except for the
+holders of treasury shares, if any) whose names appear on the Register of Members of the Company at the close of business on
+Wednesday, 28 August 2024, being the record date for determining shareholders’ entitlement to the interim dividend. Currently,
+there are no treasury shares held by the Company (whether held or deposited in the Central Clearing and Settlement System,
+or otherwise).
+
+Business Highlights
+Strong outbound tourism supported solid growth in the Group’s roaming service revenue which increased considerably by
+HK$73 million or 31% year-on-year to HK$308 million in the first half of 2024, leveraging its exceptional international connectivity and
+services. This growth was restrained by a 44% lower hardware revenue as a result of prudent market sentiment and prolonged
+mobile phone replacement cycle. The Group’s total revenue for the first six months of 2024 decreased by HK$270 million or 12%
+to HK$2,058 million compared to the same period last year. Despite a decline in total revenue, total margin remained stable at
+HK$1,523 million, primarily driven by revenue mix with an increase in roaming service revenue.
+
+EBITDA remained steady at HK$728 million in the first six months of 2024, mainly attributable to lower operating expenses driven
+by effective cost saving initiatives, which was partially offset by higher CACs.
+
+LBIT of HK$30 million slightly improved by HK$5 million or 14% compared to the same period last year, mainly attributable to
+the lower depreciation and amortisation expenses. With the continued high interest rate environment, the Group’s bank interest
+income increased by 11% to HK$93 million in the first half of 2024, resulting in an increase in net interest income of HK$6 million
+for the first six months of 2024 compared to the same period last year.
+
+During the first half of 2024, the customer base of the Group continued to grow and reached approximately 4.3 million as at
+30 June 2024, a 25% increase compared to approximately 3.4 million for the same period last year. The substantial increase
+was primarily attributable to an increase in the prepaid customer base including SoSIM customers. The Group’s 5G penetration
+rate rose 13% points to 51% compared to the same period last year, evidencing positive traction in 5G service subscriptions. The
+monthly churn rate of postpaid customers increased marginally to 1.0% (1H 2023: 0.9%), mainly due to movements related to
+corporate customers. With the Group’s effective customer value management initiatives and retention programmes, the churn
+rate of postpaid customers in the mass market remained stable.
+
+
+
+
+                                                                                                                         2024 Interim Report   3
+    Chairman’s Statement
+
+
+
+
+    Outlook
+    With the ongoing external macroeconomic uncertainties, the Hong Kong economy is anticipated to continue to face challenges
+    for the remainder of 2024. The Group remains agile and is proactively monitoring demand uncertainty and other key indicators
+    to dynamically adjust operating plans and capital investments as needed, to steer towards further growth in the second half
+    of 2024.
+
+    Alongside the focus on achieving a more robust financial performance, the Group continues to embrace sustainability as one of its
+    core values. On the path to decarbonisation, the Group remains devoted to exploring and investing in energy-saving and energy
+    efficient technologies to create a more sustainable future. By continuing to prioritise employee’s welfare, the Group strives to
+    maintain a supportive and productive corporate culture.
+
+    Looking forward, the Board retains an optimistic outlook regarding the Group's business prospects, while continuing to stay
+    vigilant amidst global economic volatility. The Group will continue to explore value-enhancing opportunities for shareholders
+    and is dedicated to strengthening its overall financial profile for shareholder value maximisation. The Group is committed to
+    delivering a further enhanced financial performance and targets to achieve a turnaround in profitability for the year.
+
+    I would like to thank the Board and all staff members for their continued dedication, diligence, professionalism and valuable
+    contributions to the Group.
+
+
+
+
+    FOK Kin Ning, Canning
+    Chairman
+
+    Hong Kong, 30 July 2024
+
+
+
+
+4   Hutchison Telecommunications Hong Kong Holdings Limited
+Management Discussion and Analysis
+
+Financial Performance Summary
+
+                                                                                                               1H 2024                   1H 2023
+                                                                                                            HK$ million                HK$ million                    Change
+
+      Revenue                                                                                                         2,058                    2,328                      -12%
+      Net customer service revenue                                                                                    1,760                    1,793                       -2%
+        • Local service revenue                                                                                       1,452                    1,558                       -7%
+        • Roaming service revenue                                                                                       308                      235                      +31%
+      Hardware and other product revenue                                                                                298                      535                      -44%
+
+      Net customer service margin                                                                                     1,521                    1,516                      –
+        Net customer service margin %                                                                                  86%                      85%               +1% point
+      Standalone hardware and other product sales margin                                                                  2                       12                   -83%
+
+      Total margin                                                                                                    1,523                    1,528                             –
+
+         - CACs                                                                                                         (208)                    (221)                      +6%
+         - Less: Bundled sales revenue                                                                                   116                      138                      -16%
+
+      CACs (net of hardware and other product revenue)                                                                   (92)                      (83)                -11%
+      Operating expenses                                                                                                (731)                    (749)                  +2%
+        Operating expenses as a % of net customer service margin                                                        48%                       49%             +1% point
+      Share of EBITDA of a joint venture                                                                                  28                        31                 -10%
+
+      EBITDA (1)                                                                                                        728                      727                      –
+      Service EBITDA (1)                                                                                                726                      715                   +2%
+        Service EBITDA (1) margin %                                                                                     41%                      40%              +1% point
+
+      CAPEX (excluding telecommunications licences)                                                                     (166)                    (163)                       -2%
+      EBITDA (1) less CAPEX                                                                                              562                      564                          –
+
+      Depreciation and amortisation (3)                                                                                 (758)                    (762)                      +1%
+
+      LBIT (2)                                                                                                            (30)                    (35)                    +14%
+      Service LBIT (2)                                                                                                    (32)                    (47)                    +32%
+      Net interest and other finance income (3)                                                                            52                      46                     +13%
+
+      Profit before taxation                                                                                               22                      11                   +100%
+      Taxation (3)                                                                                                        (34)                    (30)                   -13%
+
+      Loss attributable to shareholders                                                                                   (12)                    (19)                    +37%
+
+
+Notes:
+
+(1)      EBITDA represents the EBITDA of the Company and subsidiary companies as well as the Group’s share of the EBITDA of a joint venture. EBITDA is defined as earnings before
+         net interest and other finance income, taxation, depreciation and amortisation. Information concerning EBITDA has been included in the Group’s financial information and is
+         used by many industries and investors as one measure of gross cash flow generation. The Group considers EBITDA to be an important performance measure which is used
+         in the Group’s internal financial and management reporting to monitor business performance. EBITDA is not a measure of cash liquidity or financial performance under
+         IFRS Accounting Standards and the EBITDA measures used by the Group may not be comparable to other similarly titled measures of other companies. EBITDA should not
+         necessarily be construed as an alternative to cash flows or results from operations as determined in accordance with IFRS Accounting Standards.
+
+(2)      (LBIT)/EBIT represents the (LBIT)/EBIT of the Company and subsidiary companies as well as the Group’s share of the EBIT of a joint venture. (LBIT)/EBIT is defined as losses or
+         earnings before net interest and other finance income and taxation. Information concerning (LBIT)/EBIT has been included in the Group’s financial information and is used
+         by many industries and investors as one measure of results from operations. The Group considers (LBIT)/EBIT to be an important performance measure which is used in
+         the Group’s internal financial and management reporting to monitor business performance. (LBIT)/EBIT is not a measure of financial performance under IFRS Accounting
+         Standards and the (LBIT)/EBIT measures used by the Group may not be comparable to other similarly titled measures of other companies. (LBIT)/EBIT should not necessarily
+         be construed as an alternative to results from operations as determined in accordance with IFRS Accounting Standards.
+
+(3)      Depreciation and amortisation, net interest and other finance income and taxation include the Group’s share of joint venture’s respective items.
+
+
+
+                                                                                                                                                                    2024 Interim Report    5
+    Management Discussion and Analysis
+
+
+
+
+    Review of Financial Results
+    The Group’s service revenue slightly dropped by 2% to HK$1,760 million (1H 2023: HK$1,793 million) during the first half of
+    2024. Strong outbound tourism supported solid growth in the Group’s roaming service revenue which increased considerably by
+    HK$73 million or 31% year-on-year to HK$308 million in the first half of 2024, offset by decrease in local service revenue due to
+    changes in consumer spending behaviour.
+
+    The Group’s total revenue for the first six months of 2024 decreased by HK$270 million or 12% to HK$2,058 million compared
+    to the same period last year (1H 2023: HK$2,328 million), as the growth in roaming service revenue was offset by low-margin
+    hardware revenue as a result of prudent market sentiment and prolonged mobile phone replacement cycle. Total margin
+    remained stable at HK$1,523 million, mainly driven by favourable margin mix.
+
+    Operating expenses decreased by HK$18 million or 2% to HK$731 million (1H 2023: HK$749 million), primarily from effective
+    cost saving initiatives.
+
+    EBITDA maintained at HK$728 million in the first six months of 2024, primarily driven by lower operating expenses as aforesaid,
+    which was partially offset by higher CACs.
+
+    LBIT of HK$30 million slightly improved by HK$5 million or 14% compared to the same period last year, mainly attributable to
+    the lower depreciation and amortisation expenses. With the continued high interest rate environment, the Group’s bank interest
+    income increased by 11% to HK$93 million in the first half of 2024, resulting in an increase in net interest income of HK$6 million
+    for the first six months of 2024 compared to the same period last year.
+
+    Loss attributable to shareholders and loss per share narrowed to HK$12 million (1H 2023: HK$19 million) and 0.25 HK cents
+    (1H 2023: 0.39 HK cents) respectively, both a 37% improvement compared to the same period last year, primarily driven by the
+    decrease in the Group’s depreciation and amortisation expenses, together with the increase in bank interest income resulting
+    from high interest rate environment as aforementioned.
+
+    Key Performance Indicators
+
+                                                                                     1H 2024           1H 2023            Change
+
+        Number of postpaid customers (‘000)                                             1,444             1,467               -2%
+        Number of prepaid customers (‘000)                                              2,827             1,940              +46%
+
+        Total customers (‘000)                                                          4,271             3,407              +25%
+
+        Postpaid customers to total customer base (%)                                    34%               43%         -9% points
+        Postpaid customers’ contribution to net customer service revenue (%)             83%               88%         -5% points
+        Monthly churn rate of postpaid customers (%)                                     1.0%              0.9%       -0.1% point
+
+        Postpaid gross ARPU (HK$)                                                         184               197                -7%
+        Postpaid net ARPU (HK$)                                                           168               180                -7%
+        Postpaid net AMPU (HK$)                                                           148               154                -4%
+
+
+
+
+6   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                                                  Management Discussion and Analysis
+
+
+
+
+During the first half of 2024, the customer base of the Group continued to grow and reached approximately 4.3 million as at
+30 June 2024, a 25% increase compared to approximately 3.4 million for the same period last year. The substantial increase
+was primarily attributable to an increase in the prepaid customer base including SoSIM customers. The Group’s 5G penetration
+rate rose 13% points to 51% compared to the same period last year, evidencing positive traction in 5G service subscriptions. The
+monthly churn rate of postpaid customers increased marginally to 1.0% (1H 2023: 0.9%), mainly due to movements related to
+corporate customers. With the Group’s effective customer value management initiatives and retention programmes, the churn
+rate of postpaid customers in the mass market remained stable.
+
+Net Interest and Other Finance Income
+Net interest and other finance income (with share of a joint venture) was HK$52 million in the first half of 2024 (1H 2023:
+HK$46 million). The improvement was primarily due to a 11% increase in bank interest income under the environment of high deposit
+interest rate from an average of 4.60% in the first half of 2023 to an average of 5.03% in the first half of 2024.
+
+The Group continued to maintain a healthy financial position with cash and bank balances of HK$3,630 million as of
+30 June 2024 (31 December 2023: HK$3,684 million).
+
+Capital Expenditure
+Capital expenditure on property, plant and equipment, which accounted for 9% (1H 2023: 9%) of the service revenue of the Group,
+increased by 2% to HK$166 million. The Group continues to improve operating efficiency and remains disciplined on reducing
+cost by examining its projects with care and discretion to ensure that resources are adequately utilised to meet operational and
+technological demands.
+
+
+
+                                         Summary of Spectrum Investment
+                                                         as of 30 June 2024
+    Spectrum band       Bandwidth        Year of expiry                  Spectrum band              Bandwidth            Year of expiry
+
+      Hong Kong                                                          Macau
+        700 MHz          20 MHz               2037                              900 MHz                10 MHz                   2025
+        900 MHz          10 MHz               2026                             1800 MHz                20 MHz                   2028
+        900 MHz          10 MHz               2036                             2100 MHz                10 MHz                   2025
+       1800 MHz          30 MHz               2036
+                                                                         Notes:
+       2100 MHz         29.6 MHz              2031
+       2300 MHz          30 MHz               2027                       (1)      The spectrum band was shared under a 50/50 joint venture -
+       2600 MHz          20 MHz (1)(2)        2028 (2)                            Genius Brand Limited.
+       2600 MHz          10 MHz (1)           2039
+       3300 MHz          30 MHz               2034                       (2)      One of the 10 MHz spectrums in the 2600 MHz spectrum band
+                                                                                  was transferred from another joint venture partner to the
+       3500 MHz          40 MHz               2035
+                                                                                  joint venture with the assignment period from March 2024 to
+                                                                                  March 2028. Upon the expiry of such assignment of spectrum
+                                                                                  in March 2028, the same joint venture partner will transfer
+                                                                                  another 10 MHz spectrum in the 2600 MHz spectrum band to
+                                                                                  the joint venture with the assignment period from March 2028
+                                                                                  to March 2039.
+
+
+
+
+                                                                                                                                  2024 Interim Report   7
+    Group Capital Resources and Liquidity
+
+    Treasury Management
+    The Group’s treasury function sets financial risk management policies in accordance with policies and procedures that are
+    approved by the Executive Director, and which are also subject to periodic review by the Group’s internal audit function. Its
+    treasury policies are designed to mitigate the impact of fluctuations in interest rates and exchange rates on the Group’s overall
+    financial position and to minimise the Group’s financial risks. The Group’s treasury function operates as a centralised service for
+    managing financial risks, including interest rate and foreign exchange risks, and for providing cost-efficient funding to the Group
+    and its companies. It manages the majority of the Group’s funding needs, interest rate, foreign currency and credit risk exposures.
+    The Group uses interest rate and foreign currency swaps and forward contracts as appropriate for risk management purposes
+    only, for hedging transactions and for managing its assets and liabilities’ exposure to interest rate and foreign exchange rate
+    fluctuations. It is the Group’s policy not to enter into derivative transactions for speculative purposes. It is also the Group’s policy
+    not to invest liquidity in financial products, including hedge funds or similar vehicles.
+
+    Cash management and funding
+
+    The Group operates a central cash management system for all of its subsidiaries. Its financing is generally derived from operating
+    income of its subsidiaries, which is mainly used to meet funding requirements. The Group regularly and closely monitors its
+    overall cash position and determines when external source of finance is needed.
+
+    Foreign currency exposure
+
+    The Group operates mobile telecommunications business principally in Hong Kong, with transactions denominated in
+    Hong Kong dollars. It is exposed to other currency movements, primarily in terms of certain trade and other receivables, trade
+    and other payables, and bank deposits denominated in United States dollars, Macau Patacas, Euros and British pounds. The Group
+    does not currently undertake any foreign currency hedging.
+
+    Credit exposure
+
+    The Group’s holdings of surplus funds with financial institutions expose the Group to credit risk of counterparties. It controls its
+    credit risk to non-performance by its counterparties through monitoring their share price movements and credit ratings as well as
+    setting approved counterparty credit limits that are regularly reviewed.
+
+    Capital and Net Cash
+    As at 30 June 2024, the Group recorded share capital of HK$1,205 million and total equity of HK$9,595 million.
+
+    As at 30 June 2024, the net cash of the Group was HK$3,630 million (31 December 2023: HK$3,684 million), 88% of which was
+    denominated in Hong Kong dollars with remaining in various other currencies.
+
+    Charges on Group Assets
+    As at 30 June 2024 and 31 December 2023, except for all of the shares of a joint venture owned by the Group which were
+    pledged as security in favour of the joint venture partner under a cross share pledge arrangement, no material asset of the Group
+    was under any charge.
+
+    Borrowing Facilities Available
+    The Group has no committed borrowing facilities as at 30 June 2024 (31 December 2023: Nil).
+
+
+
+
+8   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                                                Group Capital Resources and Liquidity
+
+
+
+
+Contingent Liabilities
+As at 30 June 2024, the Group provided performance, financial and other guarantees of HK$1,761 million (31 December 2023:
+HK$1,227 million), including the related performance bonds on new and renewed spectrums. The increase in performance,
+financial and other guarantees was mainly due to a standby letter of credit of HK$600 million for the application of 600 MHz
+spectrum at the 26 GHz band being issued in favour of the Communications Authority of Hong Kong.
+
+Capital Commitments
+As at 30 June 2024, the Group had total capital commitments on property, plant and equipment of HK$197 million
+(31 December 2023: HK$121 million).
+
+Corporate Strategy
+The principal objective of the Group is to enhance long-term total return for all its stakeholders. To achieve this objective and
+continue to be a leading responsible business, the Group continues to focus on achieving recurring and sustainable earnings, cash
+flow, dividend growth without compromising the financial strength and stability of the Group and also makes contributions to the
+society. The Group executes disciplined management of revenue growth, margin and costs, capital and investments to return ratio
+targets, earnings and cash flow accretive merger and acquisition activities, as well as organic growth in sectors or geographies
+where the Group has management experience and resources. The Group continues to focus on sustainability in delivering
+business solutions that support social and environmental challenges by continuing to act on key issues including climate change,
+such as committing the transition to a net-zero economy, promoting diversity, inclusion and wellbeing initiatives, digital inclusion
+and continuous community investment. Further information on the sustainability initiatives of the Group and its key relationships
+with stakeholders can be found in the sustainability report of the Group contained in the 2023 Annual Report. The Chairman’s
+Statement, and Management Discussion and Analysis contained in this interim report include discussions and analyses of the
+performance of the Group and the basis on which the Group generates or preserves value in the longer term and delivers the
+objectives of the Group.
+
+Past Performance and Forward-looking Statements
+The performance and the results of operations of the Group contained in this interim report are historical in nature, and past
+performance does not guarantee future results of the Group. Any forward-looking statements and opinions contained in this
+interim report are based on current plans, estimates and projections, and therefore involve risks and uncertainties. Actual results
+may differ materially from expectations discussed in such forward-looking statements and opinions. The Group, the Directors,
+employees and agents of the Group assume (a) no obligation to correct or update the forward-looking statements or opinions
+contained in this interim report; and (b) no liability in the event that any of the forward-looking statements or opinions do not
+materialise or turn out to be incorrect.
+
+Human Resources
+As at 30 June 2024, the Group employed 1,229 (31 December 2023: 1,240) staff members (full-time and part-time) and on
+average 1,212 (1H 2023: 1,146) staff members during the six months ended 30 June 2024. Staff costs during the six months
+ended June 2024, including directors’ emoluments, totalled HK$195 million (1H 2023: HK$175 million).
+
+The Group fully recognises the importance of high-quality human resources in sustaining market leadership. Salary and benefits
+are kept at competitive levels, while individual performance is rewarded within the general framework of the salary, bonus and
+incentive system of the Group, which is reviewed annually. Employees are provided with a wide range of benefits that include
+medical coverage, provident funds and retirement plans, and long-service awards. The Group stresses the importance of staff
+development and provides training programmes on an ongoing basis. Employees are also encouraged to play an active role in
+community care activities.
+
+
+                                                                                                                     2024 Interim Report   9
+     Group Capital Resources and Liquidity
+
+
+
+
+     Sustainability
+     The key sustainability mission of the Group is to create long-term value for all its stakeholders by aligning the sustainability
+     objectives of the Group to the strategic development of its businesses. The collaborative approach of the Group combined with its
+     supreme network and advanced technology enables the delivery of secure, seamless and innovative solutions. This accordingly
+     supports the United Nations Sustainable Development Goals in building sustainable, inclusive and digitally-enabled societies
+     while engaging in responsible and ethical business actions with all its stakeholders.
+
+     The sustainability governance structure of the Group has laid a sturdy foundation for fulfilling its sustainability commitment. This
+     structure is deeply integrated throughout the Group, including the Board, the Sustainability Committee, the Audit Committee,
+     the Security Committee, working groups and business units. It provides the Group with comprehensive guidance on executing
+     sustainability strategies, establishing goals, setting targets and implementing reporting processes. Moreover, it fosters robust
+     stakeholder relationships and ensures accountability across all business operations.
+
+     Currently, the Group identified eight Group-wide sustainability goals, being arranged into four sustainability pillars – Governance,
+     Sustainable Business Model & Innovation, Environment and Social, and mapped to the United Nations Sustainable Development
+     Goals, with three priority focus areas.
+
+     Review of Interim Financial Statements
+     The interim financial statements of the Group for the six months ended 30 June 2024 have been reviewed by the auditor of
+     the Company, PricewaterhouseCoopers, in accordance with International Standard on Review Engagements 2410 - “Review of
+     Interim Financial Information Performed by the Independent Auditor of the Entity” issued by the International Auditing and
+     Assurance Standards Board. The independent review report of the auditor is set out on page 18 in this interim report. The interim
+     financial statements of the Group for the six months ended 30 June 2024 have also been reviewed by the Audit Committee of
+     the Company.
+
+     Record Date for Interim Dividend
+     The record date for determining the entitlement of shareholders (except for the holders of treasury shares, if any) to the interim
+     dividend is Wednesday, 28 August 2024. In order to qualify for the interim dividend payable on Friday, 6 September 2024, all
+     transfers, accompanied by the relevant share certificates, must be lodged with the Hong Kong Share Registrar of the Company
+     (Computershare Hong Kong Investor Services Limited at Rooms 1712-1716, 17th Floor, Hopewell Centre, 183 Queen’s Road East,
+     Wanchai, Hong Kong) for registration no later than 4:30 pm on Wednesday, 28 August 2024.
+
+     Purchase, Sale or Redemption of Listed Securities
+     During the six months ended 30 June 2024, neither the Company nor any of its subsidiaries had purchased, sold or redeemed any
+     of the listed securities (including treasury shares) of the Company.
+
+
+
+
+10   Hutchison Telecommunications Hong Kong Holdings Limited
+Disclosure of Interests
+
+Directors’ and Chief Executive’s Interests and Short Positions in Shares, Underlying Shares and
+Debentures
+As at 30 June 2024, the interests and short positions of the Directors and chief executive of the Company in the shares, underlying
+shares and debentures of the Company or any of its associated corporations (within the meaning of Part XV of the SFO) which
+had been notified to the Company and the Stock Exchange pursuant to Divisions 7 and 8 of Part XV of the SFO (including interests
+and short positions which they were taken or deemed to have under such provisions of the SFO), or which were recorded in the
+register required to be kept by the Company pursuant to Section 352 of the SFO, or as otherwise notified to the Company and the
+Stock Exchange pursuant to the HTHKH Securities Code were as follows:
+
+(I)   Interests and short positions in the shares, underlying shares and debentures of the Company
+
+      Long positions in the shares and underlying shares of the Company
+
+                                                                                               Nature of            Number of            Approximate %
+        Directors                                                 Capacity                     interests           shares held          of shareholding
+
+        Fok Kin Ning, Canning                             Interest of a              Corporate interest              1,202,380 (Note)            0.0249%
+                                                controlled corporation
+
+        Lui Dennis Pok Man                              Beneficial owner              Personal interest              9,100,000                   0.1888%
+
+        Woo Chiu Man, Cliff                             Beneficial owner              Personal interest              2,001,333                   0.0415%
+
+        Koo Sing Fai                                  Interest of spouse                 Family interest                20,000                   0.0004%
+
+
+
+      Note:
+
+      Such shares were held by a company which is equally controlled by Mr Fok Kin Ning, Canning and his spouse.
+
+
+
+
+                                                                                                                                             2024 Interim Report   11
+     Disclosure of Interests
+
+
+
+
+     (II) Interests and short positions in the shares, underlying shares and debentures of the associated
+          corporations of the Company
+
+             Long positions in the shares, underlying shares and debentures of the associated corporations of
+             the Company
+
+             Mr Fok Kin Ning, Canning had, as at 30 June 2024, the following interests:
+
+             (i)     corporate interests in 6,011,438 ordinary shares, representing approximately 0.15% of the issued voting shares, in
+                     CKHH; and
+
+             (ii)    5,100,000 ordinary shares, representing approximately 0.03% of the issued voting shares, in Hutchison
+                     Telecommunications (Australia) Limited comprising personal and corporate interests in 4,100,000 ordinary shares
+                     and 1,000,000 ordinary shares respectively.
+
+             Mr Fok Kin Ning, Canning held the above personal interests in his capacity as a beneficial owner and held the above
+             corporate interests through a company which is equally controlled by Mr Fok and his spouse.
+
+             Mr Woo Chiu Man, Cliff had, as at 30 June 2024, 8,892 ordinary shares, representing approximately 0.0002% of the issued
+             voting shares, in CKHH, comprising personal interests in 3,420 ordinary shares held in his capacity as a beneficial owner and
+             family interests in 5,472 ordinary shares held by his spouse.
+
+             Mr Lai Kai Ming, Dominic in his capacity as a beneficial owner had, as at 30 June 2024, personal interests in 34,200 ordinary
+             shares, representing approximately 0.0008% of the issued voting shares, in CKHH.
+
+             Ms Edith Shih had, as at 30 June 2024, 192,187 ordinary shares, representing approximately 0.0050% of the issued voting
+             shares, in CKHH, comprising personal interests in 187,125 ordinary shares held in her capacity as a beneficial owner and
+             family interests in 5,062 ordinary shares held by her spouse.
+
+             Mr Ip Yuk Keung had, as at 30 June 2024, other interest in the following interests held jointly with another person:
+
+             (i)     177,000 ordinary shares, representing approximately 0.0046% of the issued voting shares, in CKHH; and
+
+             (ii)    a nominal amount of US$250,000 in the 3.5% Notes due 2027 issued by CK Hutchison International (17) Limited.
+
+             Save as disclosed above, as at 30 June 2024, none of the Directors or chief executive of the Company and their respective
+             associates had any interests or short positions in the shares, underlying shares and debentures of the Company or any of
+             its associated corporations (within the meaning of Part XV of the SFO) as recorded in the register required to be kept by
+             the Company pursuant to Section 352 of the SFO, or as otherwise notified to the Company and the Stock Exchange pursuant
+             to the HTHKH Securities Code.
+
+
+
+
+12   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                                                                  Disclosure of Interests
+
+
+
+
+Interests and Short Positions of Shareholders Discloseable under the SFO
+So far as the Directors and chief executive of the Company are aware, as at 30 June 2024, other than the interests and short
+positions of the Directors and chief executive of the Company as disclosed above, the following persons had interests or short
+positions in the shares or underlying shares of the Company which would fall to be disclosed to the Company under the provisions
+of Divisions 2 and 3 of Part XV of the SFO, or which were recorded in the register required to be kept by the Company under
+Section 336 of the SFO, or as otherwise notified to the Company and the Stock Exchange:
+
+(I)   Interests and short positions of substantial shareholders in the shares and underlying shares of
+      the Company
+
+      Long positions in the shares of the Company
+
+                                                                                                               Approximate
+                                                                         Number of                                     % of
+       Names                                            Capacity        shares held                    Total   shareholding
+
+       Hutchison Telecommunications                  Interest of a       23,689,889 (1) )
+         Investment Holdings Limited       controlled corporation                       )
+         (“HTIHL”)                                                                      )
+                                                 Beneficial owner     3,161,292,951 (2) )    3,184,982,840              66.09%
+
+       Gensis Lake Limited (“GLL”)                     Interest of    3,184,982,840 (1)(2)   3,184,982,840              66.09%
+                                          controlled corporations
+       Dynamic Zamia Limited (“DZL”)                   Interest of    3,184,982,840 (1)(2)   3,184,982,840              66.09%
+                                          controlled corporations
+       CK Hutchison Group Telecom                      Interest of    3,184,982,840 (1)(2)   3,184,982,840              66.09%
+         Holdings Limited (“CKHGT”)       controlled corporations
+       Barusley Limited (“BL”)                         Interest of    3,184,982,840 (1)(2)   3,184,982,840              66.09%
+                                          controlled corporations
+       Askern Peak Limited (“APL”)                     Interest of    3,184,982,840 (1)(2)   3,184,982,840              66.09%
+                                          controlled corporations
+       CK Hutchison Global Investments              Interest of       3,184,982,840 (1)(2)   3,184,982,840              66.09%
+         Limited (“CKHGI”)             controlled corporations
+       CKHH                                            Interest of    3,184,982,840 (1)(2)   3,184,982,840              66.09%
+                                          controlled corporations
+
+
+
+
+                                                                                                                  2024 Interim Report   13
+     Disclosure of Interests
+
+
+
+
+     (II) Interests and short positions of other persons in the shares and underlying shares of the Company
+
+             Long positions in the shares of the Company
+
+                                                                                                                                                                      Approximate
+                                                                                                             Number of                                                        % of
+               Names                                                                 Capacity               shares held                                   Total       shareholding
+
+               Li Ka-shing                                                      Founder of                    53,604,826 (3)            )
+                                                                       discretionary trusts                                             )
+                                                                                                                                        )
+                                                                              Interest of                   350,527,953 (4)             )
+                                                                 controlled corporations                                                )      404,132,779                         8.38%
+               Li Tzar Kuoi, Victor                                          Discretionary                    53,604,826 (3)            )
+                                                                            beneficiary of                                              )
+                                                                       discretionary trusts                                             )
+                                                                                                                                        )
+                                                                              Interest of                   353,047,203 (4)(5)          )
+                                                                 controlled corporations                                                )
+                                                                                                                                        )
+                                                                            Interest of child                     192,000 (6)           )      406,844,029                         8.44%
+               Li Ka Shing Foundation Limited                             Beneficial owner                  350,527,953 (4)                    350,527,953                         7.27%
+                  (“LKSF”)
+
+
+
+             Notes:
+
+             (1)      Cheung Kong Enterprises Limited (“Cheung Kong Enterprises”, a direct wholly-owned subsidiary of HTIHL) holds 23,689,889 shares of the Company. By virtue of the
+                      SFO, HTIHL was deemed to be interested in the 23,689,889 shares of the Company held by Cheung Kong Enterprises.
+
+             (2)      HTIHL is a direct wholly-owned subsidiary of GLL. GLL in turn is a direct wholly-owned subsidiary of DZL. DZL in turn is a direct wholly-owned subsidiary of CKHGT.
+                      CKHGT in turn is a direct wholly-owned subsidiary of BL. BL in turn is a direct wholly-owned subsidiary of APL. APL in turn is a direct wholly-owned subsidiary of
+                      CKHGI. CKHGI in turn is a direct wholly-owned subsidiary of CKHH. By virtue of the SFO, each of CKHH, CKHGI, APL, BL, CKHGT, DZL and GLL was deemed to be interested
+                      in the 3,161,292,951 shares of the Company held by HTIHL and the 23,689,889 shares of the Company held by Cheung Kong Enterprises.
+
+             (3)      The 53,604,826 shares of the Company comprise:
+
+                      (a)     53,451,546 shares held by Li Ka-Shing Unity Trustee Company Limited (“TUT1”) as trustee of The Li Ka-Shing Unity Trust (“UT1”) and its related company
+                              in which TUT1 as trustee of UT1 is entitled to exercise or control the exercise of one-third or more of the voting power at its general meetings (“TUT1
+                              related company”). Mr Li Ka-shing is the settlor of each of The Li Ka-Shing Unity Discretionary Trust (“DT1”) and another discretionary trust (“DT2”). Each of
+                              Li Ka-Shing Unity Trustee Corporation Limited (“TDT1”, which is the trustee of DT1) and Li Ka-Shing Unity Trustcorp Limited (“TDT2”, which is the trustee
+                              of DT2) holds units in UT1 but is not entitled to any interest or share in any particular property comprising the trust assets of the said unit trust. The
+                              discretionary beneficiaries of each of DT1 and DT2 are, inter alia, Mr Li Tzar Kuoi, Victor, his wife and children, and Mr Li Tzar Kai, Richard.
+
+                              The entire issued share capital of TUT1, TDT1 and TDT2 are owned by Li Ka-Shing Unity Holdings Limited (“Unity Holdco”). Mr Li Ka-shing and Mr Li Tzar
+                              Kuoi, Victor are respectively interested in one-third and two-thirds of the entire issued share capital of Unity Holdco. TUT1 is only interested in the shares of
+                              the Company by reason only of its obligation and power to hold interests in those shares in its ordinary course of business as trustee and, when performing
+                              its functions as trustee, exercises its power to hold interests in the shares of the Company independently without any reference to Unity Holdco or any of
+                              Mr Li Ka-shing and Mr Li Tzar Kuoi, Victor as a holder of the shares of Unity Holdco as aforesaid.
+
+                              As Mr Li Ka-shing may be regarded as a founder of each of DT1 and DT2 for the purpose of the SFO, and by virtue of the above, Mr Li Ka-shing and
+                              Mr Li Tzar Kuoi, Victor are taken to have a duty of disclosure in relation to the 53,451,546 shares of the Company held by TUT1 as trustee of UT1 and TUT1
+                              related company under the SFO as substantial shareholders of the Company.
+
+
+
+
+14   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                                                                                                         Disclosure of Interests
+
+
+
+            (b)     153,280 shares held by Li Ka-Shing Castle Trustee Company Limited (“TUT3”) as trustee of The Li Ka-Shing Castle Trust (“UT3”). Mr Li Ka-shing is the settlor
+                    of each of the two discretionary trusts (“DT3” and “DT4”). Each of Li Ka-Shing Castle Trustee Corporation Limited (“TDT3”, which is the trustee of DT3) and
+                    Li Ka-Shing Castle Trustcorp Limited (“TDT4”, which is the trustee of DT4) holds units in UT3 but is not entitled to any interest or share in any particular
+                    property comprising the trust assets of the said unit trust. The discretionary beneficiaries of each of DT3 and DT4 are, inter alia, Mr Li Tzar Kuoi, Victor, his
+                    wife and children, and Mr Li Tzar Kai, Richard.
+
+                    The entire issued share capital of TUT3, TDT3 and TDT4 are owned by Li Ka-Shing Castle Holdings Limited (“Castle Holdco”). Mr Li Ka-shing and Mr Li Tzar Kuoi,
+                    Victor are respectively interested in one-third and two-thirds of the entire issued share capital of Castle Holdco. TUT3 is only interested in the shares of
+                    the Company by reason only of its obligation and power to hold interests in those shares in its ordinary course of business as trustee and, when performing
+                    its functions as trustee, exercises its power to hold interests in the shares of the Company independently without any reference to Castle Holdco or any of
+                    Mr Li Ka-shing and Mr Li Tzar Kuoi, Victor as a holder of the shares of Castle Holdco as aforesaid.
+
+                    As Mr Li Ka-shing may be regarded as a founder of each of DT3 and DT4 for the purpose of the SFO, and by virtue of the above, Mr Li Ka-shing and
+                    Mr Li Tzar Kuoi, Victor are taken to have a duty of disclosure in relation to the 153,280 shares of the Company held by TUT3 as trustee of UT3 under the SFO
+                    as substantial shareholders of the Company.
+
+      (4)   The 350,527,953 shares are held by LKSF. By virtue of the terms of the constituent documents of LKSF, each of Mr Li Ka-shing and Mr Li Tzar Kuoi, Victor may be
+            regarded as having the ability to exercise or control the exercise of one-third or more of the voting power at general meetings of LKSF.
+
+      (5)   Among those shares, 2,519,250 shares are held by certain companies of which Mr Li Tzar Kuoi, Victor is entitled to exercise or control the exercise of one-third or
+            more of the voting power at their general meetings.
+
+      (6)   Such shares are held by a company in which a child of Mr Li Tzar Kuoi, Victor is entitled to exercise or control the exercise of one-third or more of the voting power
+            at its general meetings.
+
+
+Save as disclosed above, as at 30 June 2024, no other person (other than the Directors and chief executive of the Company) had
+any interest or short position in the shares or underlying shares of the Company as recorded in the register required to be kept
+by the Company under Section 336 of the SFO, or as otherwise notified to the Company and the Stock Exchange.
+
+Share Option Scheme
+The Company’s share option scheme expired on 20 May 2019 and there are no outstanding share options under the scheme.
+The Group has no other share option scheme.
+
+
+
+
+                                                                                                                                                                2024 Interim Report     15
+     Corporate Governance
+
+     The Company strives to attain and maintain high standards of corporate governance best suited the needs and interests of
+     the Group as it believes that an effective corporate governance framework is fundamental to promoting and safeguarding the
+     interests of shareholders and other stakeholders and enhancing shareholder value. Accordingly, the Company has adopted
+     and applied corporate governance principles and practices that emphasise a quality Board, effective risk management and
+     internal control systems, stringent disclosure practices, transparency and accountability as well as effective communication and
+     engagement with shareholders and other stakeholders. It is, in addition, committed to continuously enhancing these standards
+     and practices in light of current and emerging corporate governance development of relevance to the Group to reflect market
+     practice, expectations and regulatory changes as appropriate, inculcating a robust culture of compliance and accountability across
+     the businesses of the Group.
+
+     Compliance with the Corporate Governance Code
+     The Company has complied throughout the six months ended 30 June 2024 with all applicable code provisions of the Corporate
+     Governance Code contained in Appendix C1 of the Listing Rules.
+
+     Compliance with the Model Code for Securities Transactions by Directors
+     The Board has adopted its own HTHKH Securities Code regulating Directors’ dealings in securities (Group and otherwise), on
+     terms no less exacting than the required standard of the Model Code for Securities Transactions by Directors of Listed Issuers
+     set out in Appendix C3 of the Listing Rules. In response to specific enquiries made, all Directors have confirmed that they have
+     complied with the HTHKH Securities Code in their securities transactions throughout their tenure during the six months ended
+     30 June 2024.
+
+
+
+
+16   Hutchison Telecommunications Hong Kong Holdings Limited
+Changes in Information of Directors
+
+Pursuant to Rule 13.51B(1) of the Listing Rules, changes in information of the Directors, as notified to the Company, subsequent
+to the date of the 2023 Annual Report are set out below:
+
+  Directors                                         Details of changes
+
+  Edith Shih                                        Appointed as member of the remuneration committee of HUTCHMED (China) Limited (Note)
+                                                    on 17 May 2024
+
+
+  Chan Tze Leung                                    Appointed as chairman of the nomination committee and member of the audit
+                                                    committee of the Company with effect from the conclusion of the annual general
+                                                    meeting of the Company held on 9 May 2024 (the “AGM”)
+
+
+  Chow Ching Yee, Cynthia                           Appointed as:
+                                                    –    member of the remuneration committee and the sustainability committee of the
+                                                         Company with effect from the conclusion of the AGM
+                                                    –    member of the remuneration committee of CKHH with effect from the conclusion
+                                                         of its annual general meeting held on 23 May 2024
+
+
+  Im Man Ieng                                       Appointed as member of the audit committee of the Company with effect from the
+                                                    conclusion of the AGM
+
+
+  Ip Yuk Keung                                      Appointed as chairman of the remuneration committee of the Company with effect from
+                                                    the conclusion of the AGM
+
+
+
+Note:
+
+A company the shares of which are listed on the Main Board of the Stock Exchange, the AIM market of the London Stock Exchange and in the form of American depositary shares on
+the NASDAQ Global Select Market.
+
+
+
+
+                                                                                                                                                           2024 Interim Report   17
+     Report on Review of Condensed Consolidated Interim
+     Financial Statements
+
+     To the Board of Directors of Hutchison Telecommunications Hong Kong Holdings Limited
+     (incorporated in the Cayman Islands with limited liability)
+
+     Introduction
+     We have reviewed the condensed consolidated interim financial statements set out on pages 19 to 33, which comprises
+     the condensed consolidated statement of financial position of Hutchison Telecommunications Hong Kong Holdings Limited
+     (the “Company”) and its subsidiaries (together, the “Group”) as at 30 June 2024 and the condensed consolidated income
+     statement, the condensed consolidated statement of comprehensive income, the condensed consolidated statement of changes
+     in equity and the condensed consolidated statement of cash flows for the six-month period then ended, and selected explanatory
+     notes. The Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited require the preparation of
+     a report on condensed consolidated interim financial statements to be in compliance with the relevant provisions thereof
+     and International Accounting Standard 34 “Interim Financial Reporting”. The directors of the Company are responsible for the
+     preparation and presentation of these condensed consolidated interim financial statements in accordance with International
+     Accounting Standard 34 “Interim Financial Reporting”. Our responsibility is to express a conclusion on these condensed
+     consolidated interim financial statements based on our review and to report our conclusion solely to you, as a body, in
+     accordance with our agreed terms of engagement, and for no other purpose. We do not assume responsibility towards or accept
+     liability to any other person for the contents of this report.
+
+     Scope of Review
+     We conducted our review in accordance with International Standard on Review Engagements 2410, “Review of Interim Financial
+     Information Performed by the Independent Auditor of the Entity”. A review of condensed consolidated interim financial
+     statements consists of making inquiries, primarily of persons responsible for financial and accounting matters, and applying
+     analytical and other review procedures. A review is substantially less in scope than an audit conducted in accordance with
+     International Standards on Auditing and consequently does not enable us to obtain assurance that we would become aware of
+     all significant matters that might be identified in an audit. Accordingly, we do not express an audit opinion.
+
+     Conclusion
+     Based on our review, nothing has come to our attention that causes us to believe that the condensed consolidated interim
+     financial statements of the Group are not prepared, in all material respects, in accordance with International Accounting Standard
+     34 “Interim Financial Reporting”.
+
+
+
+
+     PricewaterhouseCoopers
+     Certified Public Accountants
+
+     Hong Kong, 30 July 2024
+
+
+
+
+18   Hutchison Telecommunications Hong Kong Holdings Limited
+Condensed Consolidated Income Statement
+For the six months ended 30 June 2024
+
+
+                                                                                  Unaudited              Unaudited
+                                                               Note                    2024                  2023
+                                                                                 HK$ million            HK$ million
+
+ Revenue                                                        4                       2,058                  2,328
+ Cost of inventories sold                                                                (296)                  (523)
+ Staff costs                                                                             (195)                  (175)
+ Expensed customer acquisition and retention costs                                        (37)                   (29)
+ Depreciation and amortisation                                                           (737)                  (739)
+ Other operating expenses                                       6                        (830)                  (905)
+                                                                                          (37)                     (43)
+ Interest and other finance income                              7                          99                       91
+ Interest and other finance costs                               7                         (41)                     (38)
+ Share of result of a joint venture                                                        (2)                      (2)
+ Profit before taxation                                                                    19                        8
+ Taxation                                                       8                         (31)                     (27)
+ Loss for the period                                                                      (12)                     (19)
+ Loss per share attributable to shareholders of
+   the Company (expressed in HK cents per share):
+   – basic and diluted                                          9                       (0.25)                  (0.39)
+
+
+Details of interim dividend payable to shareholders of the Company are set out in Note 10. The accompanying notes are an
+integral part of these condensed consolidated interim financial statements.
+
+
+
+
+                                                                                                           2024 Interim Report   19
+     Condensed Consolidated Statement of Comprehensive Income
+     For the six months ended 30 June 2024
+
+
+                                                                                           Unaudited              Unaudited
+                                                                                                2024                  2023
+                                                                                          HK$ million            HK$ million
+
+       Loss for the period                                                                         (12)                 (19)
+
+       Other comprehensive loss
+       Item that may be reclassified subsequently to income statement
+          in subsequent periods:
+          – Cumulative translation adjustments released upon de-registration of
+             a subsidiary                                                                            –                    (1)
+       Total comprehensive loss for the period attributable to
+         shareholders of the Company, net of tax                                                   (12)                 (20)
+
+
+     The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+
+
+
+20   Hutchison Telecommunications Hong Kong Holdings Limited
+Condensed Consolidated Statement of Financial Position
+At 30 June 2024
+
+
+                                                                                      Unaudited                  Audited
+                                                                                        30 June             31 December
+                                                                 Note                      2024                    2023
+                                                                                     HK$ million             HK$ million
+
+ Non-current assets
+ Property, plant and equipment                                    11                        2,889                  2,983
+ Goodwill                                                                                   2,155                  2,155
+ Telecommunications licences                                                                3,095                  3,284
+ Right-of-use assets                                                                          525                    512
+ Customer acquisition and retention costs                                                     152                    168
+ Contract assets                                                                              115                    149
+ Other non-current assets                                         12                          355                    354
+ Deferred tax assets                                                                            1                      1
+ Investment in a joint venture                                                                102                    109
+ Total non-current assets                                                                   9,389                  9,715
+ Current assets
+ Cash and cash equivalents                                        13                          844                  1,910
+ Short-term bank deposits with original maturity
+    beyond 3 months                                               13                        2,786                  1,774
+ Trade receivables and other current assets                       14                          976                    889
+ Contract assets                                                                              161                    169
+ Inventories                                                                                   72                    103
+ Total current assets                                                                       4,839                  4,845
+ Current liabilities
+ Trade and other payables                                         15                        1,533                  1,637
+ Contract liabilities                                                                         232                    212
+ Lease liabilities                                                                            334                    312
+ Current income tax liabilities                                                                 3                      2
+ Total current liabilities                                                                  2,102                  2,163
+ Non-current liabilities
+ Lease liabilities                                                                            168                    170
+ Deferred tax liabilities                                                                     150                    120
+ Other non-current liabilities                                    16                        2,213                  2,249
+ Total non-current liabilities                                                              2,531                  2,539
+
+ Net assets                                                                                 9,595                  9,858
+ Capital and reserves
+ Share capital                                                    17                        1,205                  1,205
+ Reserves                                                                                   8,390                  8,653
+ Total equity                                                                               9,595                  9,858
+
+
+The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+
+
+
+                                                                                                               2024 Interim Report   21
+     Condensed Consolidated Statement of Changes in Equity
+     For the six months ended 30 June 2024
+
+
+                                                                                                                 Unaudited
+
+                                                           Share       Share Accumulated    Exchange     Pension       Other
+                                                          capital   premium       losses      reserve    reserve    reserves (i)   Total
+                                                      HK$ million HK$ million HK$ million HK$ million HK$ million HK$ million HK$ million
+
+           At 1 January 2024                                  1,205            11,185              (2,483)                     –              241               (290)            9,858
+           Loss for the period                                    –                 –                 (12)                     –                –                  –               (12)
+           Dividend relating to 2023 paid
+             in 2024 (Note 10)                                       –                  –             (251)                    –                  –                  –             (251)
+           At 30 June 2024                                    1,205            11,185              (2,746)                     –              241               (290)            9,595
+           At 1 January 2023                                  1,205            11,185              (2,071)                    1               238               (289)           10,269
+           Loss for the period                                    –                 –                 (19)                    –                 –                  –               (19)
+           Other comprehensive loss:
+           Cumulative translation
+             adjustments released
+             upon de-registration of
+             a subsidiary                                            –                  –                  –                 (1)                  –                  –                 (1)
+           Total comprehensive loss,
+             net of tax                                              –                  –               (19)                 (1)                  –                  –               (20)
+           Dividend relating to 2022 paid
+              in 2023 (Note 10)                                      –                  –             (251)                    –                  –                  –             (251)
+           Transfer between reserves                                 –                  –                1                     –                  –                 (1)               –
+           At 30 June 2023                                    1,205            11,185              (2,340)                     –              238               (290)             9,998
+
+
+     (i)       In prior years, the Group acquired the interests in certain subsidiaries held by the non-controlling shareholders. The other reserves mainly represent the difference between
+               the consideration paid for the additional interests acquired by the Group and the proportionate share of the carrying amount of net assets of these subsidiaries.
+
+
+     The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+
+
+
+22   Hutchison Telecommunications Hong Kong Holdings Limited
+Condensed Consolidated Statement of Cash Flows
+For the six months ended 30 June 2024
+
+
+                                                                                      Unaudited              Unaudited
+                                                                 Note                      2024                  2023
+                                                                                     HK$ million            HK$ million
+
+ Cash flows from operating activities
+ Cash generated from operations                                   18                          543                    623
+ Interest and other finance costs paid                                                        (14)                   (10)
+ Net cash from operating activities                                                           529                    613
+ Cash flows from investing activities
+ Purchases of property, plant and equipment                                                  (166)                  (163)
+ Payments for short-term bank deposits with original
+    maturity beyond 3 months                                                               (2,242)               (2,291)
+ Proceeds from maturity of short-term bank deposits with
+    original maturity beyond 3 months                                                       1,230                       –
+ Interest received                                                                             77                      57
+ Loan to a joint venture                                                                      (45)                    (34)
+ Net cash used in investing activities                                                     (1,146)               (2,431)
+ Cash flows from financing activities
+ Principal elements of lease payments                                                        (198)                  (204)
+ Dividend paid                                                    10                         (251)                  (251)
+ Net cash used in financing activities                                                       (449)                  (455)
+
+ Decrease in cash and cash equivalents                                                     (1,066)               (2,273)
+ Cash and cash equivalents at 1 January                                                     1,910                 3,087
+ Cash and cash equivalents at 30 June                             13                          844                    814
+
+
+The accompanying notes are an integral part of these condensed consolidated interim financial statements.
+
+
+
+
+                                                                                                              2024 Interim Report   23
+     Notes to the Condensed Consolidated Interim Financial
+     Statements
+     1       General Information
+             Hutchison Telecommunications Hong Kong Holdings Limited (the “Company”) was incorporated in the Cayman Islands on
+             3 August 2007 as a company with limited liability. Its registered office address is P.O. Box 31119 Grand Pavilion, Hibiscus
+             Way, 802 West Bay Road, Grand Cayman, KY1-1205 Cayman Islands.
+
+             The Company and its subsidiaries (together the “Group”) are engaged in mobile telecommunications business in Hong Kong
+             and Macau.
+
+             The shares of the Company are listed on the Main Board of The Stock Exchange of Hong Kong Limited.
+
+             These unaudited condensed consolidated interim financial statements (the “interim financial statements”) are presented in
+             Hong Kong dollars (“HK$”), unless otherwise stated. These interim financial statements were approved for issuance by
+             the Board of Directors on 30 July 2024.
+
+     2       Basis of Preparation
+             These interim financial statements for the six months ended 30 June 2024 have been prepared in accordance with
+             International Accounting Standard 34 “Interim Financial Reporting”. These interim financial statements should be read in
+             conjunction with the annual financial statements for the year ended 31 December 2023, which have been prepared in
+             accordance with IFRS Accounting Standards.
+
+             These interim financial statements have been prepared under the historical cost convention, except that defined benefit
+             plans plan assets are measured at fair values, and on a going concern basis.
+
+
+
+
+24   Hutchison Telecommunications Hong Kong Holdings Limited
+                                              Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+3   Material Accounting Policies
+    The material accounting policies applied and methods of computation used in the preparation of these interim financial
+    statements are consistent with those used in the 2023 annual financial statements except as described in (a) below.
+
+    (a) Amendments to existing standards adopted by the Group
+
+          During the six months ended 30 June 2024, the Group has adopted the following amendments to existing
+          standards which are relevant to the Group’s operations and are mandatory for accounting periods beginning on
+          1 January 2024:
+
+          IAS 1 (Amendments)                                        Classification of Liabilities as Current or Non-Current
+          IAS 1 (Amendments)                                        Non-current Liabilities with Covenants
+          IAS 7 and IFRS 7 (Amendments)                             Supplier Finance Arrangements
+          IFRS 16 (Amendments)                                      Lease Liability in a Sale and Leaseback
+
+          The adoption of these amendments to existing standards does not have a material impact to the Group’s results of
+          operations or financial position.
+
+    (b) New standards and amendments to existing standards that are not yet effective and have not
+        been early adopted by the Group
+
+          The following new standards and amendments to existing standards have been issued but are not yet effective for
+          the six months ended 30 June 2024:
+
+          Annual Improvement Projects (ii)                          Annual Improvements – Volume 11
+          IAS 21 (Amendments) (i)                                   Lack of Exchangeability
+          IFRS 7 and IFRS 9 (Amendments) (ii)                       Classification and Measurement of Financial Instruments
+          IFRS 10 and IAS 28 (Amendments) (iv)                      Sale or Contribution of Assets between an Investor and its Associate or
+                                                                       Joint Venture
+          IFRS 18 (iii)                                             Presentation and Disclosures in Financial Statements
+          IFRS 19 (iii)                                             Subsidiaries without Public Accountability: Disclosures
+
+          (i)     Effective for annual periods beginning on or after 1 January 2025
+
+          (ii)    Effective for annual periods beginning on or after 1 January 2026
+
+          (iii)   Effective for annual periods beginning on or after 1 January 2027
+
+          (iv)    The original effective date of 1 January 2016 has been postponed until future announcement by the International Accounting Standards Board
+
+
+          The Group is in the process of making an assessment of the impact of these new standards and amendments to
+          existing standards upon initial application.
+
+
+
+
+                                                                                                                                                   2024 Interim Report   25
+     Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+     4       Revenue
+             Revenue comprises revenues from the provisions of mobile telecommunications and other related services and the sales of
+             telecommunications hardware and other products. An analysis of revenue is as follows:
+
+                                                                                               Six months ended 30 June
+                                                                                                  2024                   2023
+                                                                                            HK$ million             HK$ million
+
+               Mobile telecommunications and other related services                                1,760                 1,793
+               Telecommunications hardware and other products                                        298                   535
+                                                                                                   2,058                 2,328
+
+
+             Disaggregation of revenue
+
+             The Group’s revenue from the provisions of services and delivery of goods by timing of satisfaction of performance
+             obligations is as follows:
+
+                                                                                               Six months ended 30 June
+                                                                                                  2024                   2023
+                                                                                            HK$ million             HK$ million
+
+               Timing of revenue recognition:
+                 Over time                                                                         1,760                 1,793
+                 At a point in time                                                                  298                   535
+                                                                                                   2,058                 2,328
+
+
+     5       Segment Information
+             In a manner consistent with the way in which information is reported internally to the Group’s chief operating decision
+             maker for the purpose of resources allocation and performance assessment, the Group has identified only one reporting
+             segment, which is mobile telecommunications business.
+
+
+
+
+26   Hutchison Telecommunications Hong Kong Holdings Limited
+                                                     Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+6   Other Operating Expenses
+                                                                                                                                  Six months ended 30 June
+                                                                                                                                   2024                                2023
+                                                                                                                             HK$ million                          HK$ million
+
+          Cost of services provided (i)                                                                                                    767                                829
+          General administrative and distribution costs                                                                                     46                                 50
+          Expenses for short-term leases                                                                                                    16                                 15
+          Auditors’ remuneration                                                                                                             4                                  3
+          Loss allowance provision                                                                                                           –                                 13
+          Employment and other subsidies (ii)                                                                                               (3)                                (5)
+          Total                                                                                                                            830                                905
+
+
+    (i)       Include interconnection charges, roaming costs and other network operating costs.
+
+    (ii)      Benefits received from governments and other companies under employment and other support schemes.
+
+
+
+7   Interest and Other Finance Income, Net
+                                                                                                                                  Six months ended 30 June
+                                                                                                                                   2024                                2023
+                                                                                                                             HK$ million                          HK$ million
+
+          Interest and other finance income:
+             Bank interest income                                                                                                            93                                 84
+             Interest income from a joint venture                                                                                             6                                  7
+                                                                                                                                             99                                 91
+          Interest and other finance costs:
+             Notional interest accretion (i)                                                                                                (36)                               (34)
+             Guarantee and other finance fees                                                                                                (5)                                (4)
+                                                                                                                                            (41)                               (38)
+
+          Interest and other finance income, net                                                                                             58                                 53
+
+
+    (i)       Notional interest accretion represents the notional adjustments to accrete the carrying amount of certain obligations recognised in the condensed consolidated
+              statement of financial position such as lease liabilities, licence fees liabilities and assets retirement obligations to the present value of the estimated future cash flows
+              expected to be required for their settlement in the future.
+
+
+
+
+                                                                                                                                                                      2024 Interim Report     27
+     Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+     8       Taxation
+                                                                             Six months ended 30 June
+                                                                 2024                                        2023
+                                              Current            Deferred                       Current      Deferred
+                                            taxation             taxation         Total        taxation       taxation           Total
+                                          HK$ million          HK$ million   HK$ million    HK$ million    HK$ million      HK$ million
+
+               Hong Kong                                 1              30           31              2              25                 27
+
+
+             Hong Kong profits tax has been provided at the rate of 16.5% (30 June 2023: 16.5%) on the estimated assessable profits
+             less available tax losses. Taxation outside Hong Kong has been provided at the applicable current rates of taxation ruling in
+             the relevant countries on the estimated assessable profits less available tax losses.
+
+             The Group is in the process of assessing its exposure to the Pillar Two model rules when it comes into effect. It is not
+             expected to have material impacts to the Group.
+
+     9       Loss per Share
+             The calculation of basic loss per share is based on loss attributable to shareholders of the Company of HK$12 million
+             (30 June 2023: HK$19 million) and on the weighted average number of 4,819,096,208 (30 June 2023: Same)
+             ordinary shares in issue during the period.
+
+             The diluted loss per share for the six months ended 30 June 2024 is the same as basic loss per share as there were no
+             potential dilutive shares during the period (30 June 2023: Same).
+
+     10 Dividends
+                                                                                                    Six months ended 30 June
+                                                                                                        2024               2023
+
+               Interim dividend (HK$ million)                                                             110                    110
+               Interim dividend per share (HK cents)                                                      2.28                  2.28
+
+
+             In addition, final dividend in respect of year 2023 of 5.21 HK cents per share (year 2022: 5.21 HK cents per share) totalling
+             HK$251 million (30 June 2023: HK$251 million) was approved and paid during the six months ended 30 June 2024.
+
+
+
+
+28   Hutchison Telecommunications Hong Kong Holdings Limited
+                                    Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+11 Property, Plant and Equipment
+    During the period, the Group acquired property, plant and equipment with a cost of HK$166 million (30 June 2023:
+    HK$163 million). Property, plant and equipment with a net book value of HK$0.1 million (30 June 2023: HK$0.4 million)
+    was disposed of during the period, resulting in an insignificant gain (30 June 2023: insignificant loss).
+
+12 Other Non-Current Assets
+                                                                                      30 June          31 December
+                                                                                         2024                 2023
+                                                                                   HK$ million          HK$ million
+
+     Prepayments                                                                          278                     274
+     Non-current deposits                                                                  31                      34
+     Pension assets                                                                        46                      46
+                                                                                          355                     354
+
+
+13 Cash and Bank Balances
+                                                                                      30 June          31 December
+                                                                                         2024                 2023
+                                                                                   HK$ million          HK$ million
+
+     Cash at banks and in hand                                                            150                     87
+     Short-term bank deposits with original maturity within 3 months                      694                  1,823
+     Cash and cash equivalents                                                            844                  1,910
+     Short-term bank deposits with original maturity beyond 3 months                    2,786                  1,774
+                                                                                        3,630                  3,684
+
+
+    The carrying values of cash and bank balances approximate their fair values.
+
+
+
+
+                                                                                                           2024 Interim Report   29
+     Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+     14 Trade Receivables and Other Current Assets
+                                                                                                 30 June             31 December
+                                                                                                    2024                    2023
+                                                                                              HK$ million             HK$ million
+
+               Trade receivables (a)                                                                   465                    433
+               Less: Loss allowance provision                                                          (61)                   (56)
+               Trade receivables, net of provision                                                     404                    377
+               Other receivables                                                                       118                    104
+               Prepayments and deposits                                                                454                    408
+                                                                                                       976                    889
+
+
+             The carrying values of trade receivables, other receivables and deposits approximate their fair values. The Group has
+             established credit policies for customers. The credit periods granted for trade receivables range from 14 to 45 days, or a
+             longer period for corporate or carrier customers based on the individual commercial terms. There is no concentration of
+             credit risk with respect to trade receivables as the Group has a large number of customers.
+
+             (a) Trade receivables
+
+                                                                                                 30 June             31 December
+                                                                                                    2024                    2023
+                                                                                              HK$ million             HK$ million
+
+                       The ageing analysis of trade receivables presented based
+                         on invoice date is as follows:
+
+                       0 – 30 days                                                                     192                    213
+                       31 – 60 days                                                                     77                     68
+                       61 – 180 days                                                                    84                     65
+                       Over 180 days                                                                   112                     87
+                                                                                                       465                    433
+
+
+
+
+30   Hutchison Telecommunications Hong Kong Holdings Limited
+                                      Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+15 Trade and Other Payables
+                                                                                        30 June        31 December
+                                                                                           2024               2023
+                                                                                     HK$ million        HK$ million
+
+     Trade payables (a)                                                                     142                  174
+     Other payables and accruals (b)                                                      1,035                1,114
+     Receipts in advance                                                                    170                  165
+     Current portion of licence fees liabilities                                            186                  184
+                                                                                          1,533                1,637
+
+
+    The carrying values of trade and other payables approximate their fair values.
+
+    (a) Trade payables
+
+                                                                                        30 June        31 December
+                                                                                           2024               2023
+                                                                                     HK$ million        HK$ million
+
+           The ageing analysis of trade payables is as follows:
+
+           0 – 30 days                                                                       67                     94
+           31 – 60 days                                                                      19                     13
+           61 – 90 days                                                                       7                      3
+           Over 90 days                                                                      49                     64
+                                                                                            142                   174
+
+
+    (b) Other payables and accruals
+
+          Other payables and accruals mainly represent payables and accruals for capital expenditures and network-related
+          cost payables.
+
+16 Other Non-Current Liabilities
+                                                                                        30 June        31 December
+                                                                                           2024               2023
+                                                                                     HK$ million        HK$ million
+
+     Non-current licence fees liabilities                                                 1,945                1,982
+     Assets retirement obligations                                                          266                  265
+     Long service payments liabilities                                                        2                    2
+                                                                                          2,213                2,249
+
+
+
+
+                                                                                                           2024 Interim Report   31
+     Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+     17 Share Capital
+             (a) Authorised share capital of the Company
+
+                     The authorised share capital of the Company comprises 10 billion shares of HK$0.25 each (31 December 2023: Same).
+
+             (b) Issued share capital of the Company
+
+                                                                                                       Ordinary share of
+                                                                                                        HK$0.25 each
+                                                                                                 Number of              Issued and
+                                                                                                    shares                fully paid
+                                                                                                                       HK$ million
+
+                       At 1 January 2023, 31 December 2023, 1 January 2024 and
+                          30 June 2024                                                      4,819,096,208                    1,205
+
+
+     18 Cash Generated from Operations
+                                                                                                 Six months ended 30 June
+                                                                                                    2024                    2023
+                                                                                              HK$ million              HK$ million
+
+               Cash flows from operating activities
+               Profit before taxation                                                                    19                       8
+               Adjustments for:
+                 – Interest and other finance income                                                   (99)                    (91)
+                 – Interest and other finance costs                                                     41                      38
+                 – Depreciation and amortisation                                                       737                     739
+                 – Capitalisation of customer acquisition and retention costs                          (67)                    (86)
+                 – Share of result of a joint venture                                                    2                       2
+                 – Increase in trade receivables and other assets                                      (30)                    (19)
+                 – Decrease in inventories                                                              31                      31
+                 – Decrease in trade and other payables, and licence fees liabilities                  (91)                      –
+                 – Decrease in pension assets                                                            –                       1
+               Cash generated from operations                                                          543                     623
+
+
+             Non-cash transactions from investing activities
+
+             Save as disclosed in elsewhere in the interim financial statements, the non-cash transactions during the six months ended
+             30 June 2024 include (i) the network access fee payable to a joint venture of HK$56 million (30 June 2023: HK$61 million)
+             and (ii) the interest income from the loan to a joint venture of HK$6 million (30 June 2023: HK$7 million), which have been
+             settled by offsetting the loan to a joint venture.
+
+
+
+
+32   Hutchison Telecommunications Hong Kong Holdings Limited
+                                     Notes to the Condensed Consolidated Interim Financial Statements
+
+
+
+
+19 Contingent Liabilities
+    The Group had contingent liabilities in respect of the following:
+
+                                                                                          30 June              31 December
+                                                                                             2024                     2023
+                                                                                       HK$ million              HK$ million
+
+     Performance guarantees                                                                      134                     134
+     Financial guarantees (a)                                                                  1,625                   1,091
+     Others                                                                                        2                       2
+                                                                                               1,761                   1,227
+
+
+    The contingent liabilities mainly comprise of the performance guarantees and financial guarantees provided to the
+    Communications Authority of Hong Kong (“CA”). The Group is required to lodge a performance bond with the CA to
+    guarantee (i) the network and service rollout requirement and (ii) to maintain at all times throughout the whole
+    assignment term for payment of the Spectrum Utilisation Fee (“SUF”) payable in the ensuing five years, or the SUF payable
+    for the remaining duration of the assignment term if it is less than five years, in respect of those spectrums which the Group
+    elected to pay annually in 15 instalments.
+
+    (a)   In June 2024, a subsidiary of the Group was successfully assigned 600 MHz spectrum at the 26 GHz band for a period
+          of about 10 years from August 2024 to April 2034 (the “26 GHz Spectrum”). SUF for the 26 GHz Spectrum will not be
+          charged by the CA until 75% or more of the spectrum at the 26 GHz or 28 GHz bands is assigned or occupied.
+
+          As at 30 June 2024, less than 75% of the spectrum at the 26 GHz or 28 GHz bands was assigned or occupied. A
+          standby letter of credit of HK$600 million for the application of the 26 GHz Spectrum was issued in favour of the CA
+          and the amount has been included in the contingent liabilities. In July 2024, a performance bond of HK$400 million
+          was provided to the CA to guarantee the network and service rollout requirement for the 26 GHz Spectrum and the
+          standby letter of credit will be released subsequently.
+
+20 Capital Commitments
+    The Group had capital commitments contracted but not provided for as follows:
+
+                                                                                          30 June              31 December
+                                                                                             2024                     2023
+                                                                                       HK$ million              HK$ million
+
+     Property, plant and equipment                                                               197                      121
+
+
+21 Related Parties Transactions
+    Transactions between the Company and its subsidiaries have been eliminated on consolidation. Save as disclosed
+    elsewhere in the interim financial statements, transactions between the Group and other related parties during the period
+    are not significant to the Group.
+
+    No transaction has been entered with the directors of the Company (being the key management personnel) during the
+    period other than the emoluments paid to them (being the key management personnel remuneration).
+
+
+
+                                                                                                                   2024 Interim Report   33
+     Supplementary Financial Information
+
+     Reconciliation of Key Financial Information between Condensed Consolidated Income
+     Statement and Management Discussion and Analysis Section
+                                                                                                  Six months ended 30 June
+                                                                                 2024                                                                  2023
+                                                Company and         Joint                                                 Company and                  Joint
+                                                 Subsidiaries    Venture                             Total                  Subsidiaries             Venture             Total
+                                                  HK$ million HK$ million                       HK$ million                 HK$ million           HK$ million       HK$ million
+
+           EBITDA (i)                                           700                    28                    728                        696                 31             727
+           Depreciation and
+             amortisation                                      (737)                  (21)                  (758)                      (739)               (23)           (762)
+           (LBIT)/EBIT (ii)                                      (37)                    7                    (30)                       (43)                 8            (35)
+           Interest and other finance
+              income                                              99                      –                    99                         91                   –            91
+           Interest and other finance
+              costs                                              (41)                   (6)                   (47)                       (38)                (7)           (45)
+           Share of result of a joint
+              venture                                              (2)                   2                       –                         (2)                2               –
+           Profit before taxation                                 19                     3                     22                          8                  3             11
+           Taxation                                              (31)                   (3)                   (34)                       (27)                (3)           (30)
+           Loss attributable to
+             shareholders of
+             the Company                                         (12)                     –                   (12)                       (19)                  –           (19)
+
+
+     (i)       EBITDA is defined as earnings before interest and other finance income, interest and other finance costs, taxation, and depreciation and amortisation.
+
+     (ii)      (LBIT)/EBIT is defined as (losses)/earnings before interest and other finance income, interest and other finance costs, and taxation.
+
+
+
+
+34   Hutchison Telecommunications Hong Kong Holdings Limited
+Glossary
+
+In this interim report, unless the context otherwise requires, the following expressions have the following meanings:
+
+ Terms                                  Definitions
+
+ “Board”                                the Board of Directors
+
+ “CACs”                                 expensed customer acquisition and retention costs plus the related staff costs, rental
+                                        and other expenses
+
+ “CKHH”                                 CK Hutchison Holdings Limited, a company incorporated in the Cayman Islands with
+                                        limited liability, whose shares are listed on the Main Board of the Stock Exchange
+                                        (Stock Code: 1)
+
+ “Company” or “HTHKH”                   Hutchison Telecommunications Hong Kong Holdings Limited, a company incorporated
+                                        in the Cayman Islands with limited liability, whose shares are listed on the Main Board
+                                        of the Stock Exchange (Stock Code: 215)
+
+ “Director(s)”                          director(s) of the Company
+
+ “EBIT/LBIT”                            earnings or losses before net interest and other finance income, taxation, adjusted to
+                                        include the Group’s proportionate share of joint venture’s EBIT
+
+ “EBITDA”                               earnings before net interest and other finance income, taxation, depreciation and
+                                        amortisation, adjusted to include the Group’s proportionate share of joint venture’s
+                                        EBITDA
+
+ “Group”                                the Company and its subsidiaries
+
+ “HK$”                                  Hong Kong dollars, the lawful currency of Hong Kong
+
+ “HK” or “Hong Kong”                    the Hong Kong Special Administrative Region of the People’s Republic of China
+
+ “HTHKH Securities Code”                Model Code for Securities Transactions by Directors
+
+ “IAS”                                  International Accounting Standards
+
+ “interim financial statements”         unaudited condensed consolidated interim financial statements
+
+ “Listing Rules”                        the Rules Governing the Listing of Securities on the Stock Exchange
+
+ “net customer service margin”          net customer service revenue less direct variable costs (including interconnection
+                                        charges and roaming costs)
+
+ “Postpaid gross ARPU”                  monthly average spending per postpaid user including a customer’s contribution to
+                                        mobile devices and other products in a bundled plan
+
+ “Postpaid net AMPU”                    average net margin per postpaid user; postpaid net AMPU equals postpaid net ARPU
+                                        less direct variable costs (including interconnection charges and roaming costs)
+
+
+
+
+                                                                                                                   2024 Interim Report   35
+     Glossary
+
+
+
+
+       Terms                                              Definitions
+
+       “Postpaid net ARPU”                                monthly average spending per postpaid user excluding revenue related to hardware
+                                                          and other product under the non-subsidised hardware and other product business
+                                                          model
+
+       “service EBITDA/LBIT”                              EBITDA/LBIT excluding standalone hardware and other product sales margin
+
+       “SFO”                                              Securities and Futures Ordinance (Chapter 571 of Laws of Hong Kong) as amended,
+                                                          supplemented or otherwise modified from time to time
+
+       “Stock Exchange”                                   The Stock Exchange of Hong Kong Limited
+
+
+
+
+36   Hutchison Telecommunications Hong Kong Holdings Limited
+Information for Shareholders
+
+Listing                                                   Cayman Islands Share Registrar and Transfer Office
+The ordinary shares of the Company are listed on the      Suntera (Cayman) Limited
+Main Board of The Stock Exchange of Hong Kong Limited     Suite 3204, Unit 2A, Block 3, Building D
+                                                          P.O. Box 1586, Gardenia Court
+Stock Code                                                Camana Bay, Grand Cayman
+                                                          KY1-1100, Cayman Islands
+215                                                       Telephone:      +1 345 949 9107
+                                                          Facsimile:      +1 345 949 5777
+Financial Calendar
+                                                          Hong Kong Share Registrar and Transfer Office
+Record Date for 2024 Interim Dividend: 28 August 2024
+Payment of 2024 Interim Dividend:      6 September 2024   Computershare Hong Kong Investor Services Limited
+                                                          Rooms 1712-1716, 17th Floor, Hopewell Centre
+Registered Office                                         183 Queen’s Road East, Wanchai, Hong Kong
+                                                          Telephone:    +852 2862 8628
+P.O. Box 31119 Grand Pavilion, Hibiscus Way               Facsimile:    +852 2865 0990
+802 West Bay Road, Grand Cayman
+KY1-1205 Cayman Islands                                   Investor Information
+Head Office and Principal Place of Business               Corporate press releases, financial reports and other investor
+                                                          information are available on the website of the Company
+48th Floor, Cheung Kong Center
+2 Queen’s Road Central, Hong Kong                         Investor Relations Contact
+Telephone:     +852 2128 1188
+Facsimile:     +852 2128 1705                             Please direct enquiries to:
+                                                          Telephone:      +852 2128 6828
+Principal Executive Office                                Facsimile:      +852 3909 0966
+                                                          Email:          ir@hthkh.com
+19th Floor, Hutchison Telecom Tower
+99 Cheung Fai Road, Tsing Yi, Hong Kong                   Website Address
+Telephone:     +852 2128 2828
+Facsimile:     +852 2128 3388                             www.hthkh.com
+

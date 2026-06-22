@@ -1,0 +1,145 @@
+[
+  {
+    "id": "ofca_telecom_indicators",
+    "title": "OFCA Telecommunications Indicators in Hong Kong",
+    "url": "https://www.ofca.gov.hk/filemanager/ofca/en/content_297/hktelecom-indicators_summary.htm",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_public_html_table",
+    "notes": "Historical annual telecommunications indicators for fiscal years 2005/06 to 2024/25."
+  },
+  {
+    "id": "ofca_indicators_index",
+    "title": "OFCA Hong Kong Telecommunications Indicators",
+    "url": "https://www.ofca.gov.hk/en/news_info/data_statistics/indicators/index.html",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_index_page",
+    "notes": "Current annual indicator page and definition link."
+  },
+  {
+    "id": "ofca_key_stats",
+    "title": "OFCA Key Communications Statistics",
+    "url": "https://www.ofca.gov.hk/en/news_info/data_statistics/key_stat/index.html",
+    "csv_url": "https://www.ofca.gov.hk/filemanager/ofca/common/datagovhk/key_com_stat.csv",
+    "data_dictionary_url": "https://www.ofca.gov.hk/filemanager/ofca/common/datagovhk/data_dict/Data_Dictionary_for_Key_Comms_Stat_EN.pdf",
+    "dataset_url": "https://data.gov.hk/en-data/dataset/hk-ofca-ofca-ofca-dataset-10",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_datagovhk_csv_and_statistics_page",
+    "notes": "Historical point-in-time communications statistics from OFCA/data.gov.hk CSV, crosschecked with the official data dictionary and OFCA statistics page."
+  },
+  {
+    "id": "ofca_consumer_complaints",
+    "title": "OFCA Consumer Complaint Statistics",
+    "url": "https://www.ofca.gov.hk/en/news_info/data_statistics/complaint_stat/index.html",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_quarterly_statistics_table",
+    "notes": "Current official complaint table retained for service-quality context; older history remains backlog until official archived tables are found."
+  },
+  {
+    "id": "ofca_internet_service_subscriptions",
+    "title": "OFCA Statistics on Internet Service Subscriptions in Hong Kong",
+    "url": "https://www.ofca.gov.hk/en/news_info/data_statistics/internet/statistics_on_internet_service_subscriptions/index.html",
+    "pdf_url": "https://www.ofca.gov.hk/filemanager/ofca/en/content_293/cus_isp_en.pdf",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_statistics_pdf_and_index_page",
+    "notes": "Access-line series from 2019 onward and pre-2019 customer-account snapshots are kept as separate source families because OFCA changed methodology in January 2019."
+  },
+  {
+    "id": "ofca_wireless_services",
+    "title": "OFCA Key Statistics for Telecommunications in Hong Kong - Wireless Services",
+    "url": "https://www.ofca.gov.hk/en/news_info/data_statistics/mobile_services/wireless_services/index.html",
+    "pdf_url": "https://www.ofca.gov.hk/filemanager/ofca/en/content_108/wireless_en.pdf",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_statistics_pdf_and_index_page",
+    "notes": "Annual December wireless services snapshots retained for the latest official 10-year window; 4G/5G split columns are excluded until a safer structured source is available."
+  },
+  {
+    "id": "ofca_spectrum_management",
+    "title": "OFCA Spectrum Management",
+    "url": "https://www.ofca.gov.hk/en/industry_focus/radio_spectrum/management/index.html",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_policy_index",
+    "notes": "Spectrum management, allocation, release plan and policy framework entry point."
+  },
+  {
+    "id": "ofca_trade_fund_report_2024_25",
+    "title": "OFCA Trade Fund Report 2024/25 - Telecommunications Market",
+    "url": "https://www.ofca.gov.hk/trade_fund_report/2425/en-chapter3.html",
+    "institution": "Office of the Communications Authority",
+    "source_type": "official_market_report",
+    "notes": "Provides 5G launch, coverage and assigned spectrum context."
+  },
+  {
+    "id": "csd_household_income_130_06102",
+    "title": "C&SD Statistics on domestic households",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=130-06102",
+    "component_metadata_url": "https://www.censtatd.gov.hk/data/table_130-06102_comp.json",
+    "language_metadata_url": "https://www.censtatd.gov.hk/data/en/table_130-06102_lang.json",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_mdt_csv_and_web_table",
+    "notes": "Official annual and moving-three-month domestic household, household-size, income and owner-occupier indicators retained for the latest available 10-year window."
+  },
+  {
+    "id": "csd_population_110_01001",
+    "title": "C&SD Population by sex and age group",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=110-01001",
+    "component_metadata_url": "https://www.censtatd.gov.hk/data/table_110-01001_comp.json",
+    "language_metadata_url": "https://www.censtatd.gov.hk/data/en/table_110-01001_lang.json",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_mdt_csv_and_web_table",
+    "notes": "Official mid-year and year-end population by sex and age group retained in a compact CMHK macro package cut: total population, sex totals and all-sex age groups."
+  },
+  {
+    "id": "csd_cpi_510_60001",
+    "title": "C&SD Consumer Price Indices (October 2019 - September 2020 = 100)",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=510-60001",
+    "api_url": "https://www.censtatd.gov.hk/api/get.php?id=510-60001&lang=en&param=N4KABGBEDGBukC4zAL4BpxQM7yaCEkAwkQPpECypAjAJwBMADImANqYFQBKAhgO40AJgAdSAS0EAPUgDtIGToQoB7KtRGkApKSzyOBSAE1lhoaO279AXQUGAQuTUNmSdou78z4qbL3vIKmoaFn6KRiZeIda2hGSUNM4sbmG8AuqiEtJyMQaBkTqhnOGm6VoF0fqQAIKOCUxJ+oSpXpm+OUqq+brtUMYlweWcVpjomJDCAKYATmLKgiz4BlgALjxTyyyQdADsACyM25AjtpASmwCs1IwAtABsjA-UoZAANjwyAOabE3IgKEA",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_api_and_web_table",
+    "notes": "Consumer prices series retained for the latest available 10-year macro context window."
+  },
+  {
+    "id": "csd_pce_310_31012",
+    "title": "C&SD Private consumption expenditure by component in chained (2024) dollars",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=310-31012",
+    "api_url": "https://www.censtatd.gov.hk/api/get.php?id=310-31012&lang=en&param=N4KABGBEDGBukC4yghSBxAIgBQPoGEB5AWW0IDkBRcgFUTAG1xU1t9LIAaZlyfADUzEuPVJABKlAIIiWacoOHc5UAUIBisuX0XotvNcQDK+sYcym0h8hdEBdZgF9lUAM7wkKMxXpMVEgEMAd1xiXAALAGsAE1xoyygATQB7RNwARmiAB1wAUlxXSHsnF0gsgFMAJwBLZPjPUUhXABcAyub6SHSATgB2AGYABnSiiGdmSGr6qH70wYBaWeGAJi1IABsAgDsAc07yraLHIA",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_api_and_web_table",
+    "notes": "Private consumption expenditure series retained for the latest available 10-year macro context window."
+  },
+  {
+    "id": "csd_retail_620_67001",
+    "title": "C&SD Total retail sales",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=620-67001",
+    "api_url": "https://www.censtatd.gov.hk/api/get.php?id=620-67001&lang=en&param=N4KABGBEDGBukC4zAL4BpxQM7yaCEkAagIIAyA+gEoDKiYA2pgVFQIYDuFAshQBYBrACYUhkZmAC6GFsQDylAJIARABrU6SJi0LsuARiEAHCgEshADwoA7SDJ2QAmgHtHFQyYCkFLOJbSJYnIKFXVaem0HPXdjM0sbOwlCFzcPCm9fCUlMdExIIwBTACdTZzE8QKwAFzYiqvpIACYABmaAFn1mvzBcwnMGgDYWgFoBgHZW-UTCABs2awBzBoLbEBQgA",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_api_and_web_table",
+    "notes": "Retail sales series retained for the latest available 10-year macro context window."
+  },
+  {
+    "id": "csd_internet_access_720_90001",
+    "title": "C&SD Households with Internet access at home",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=720-90001",
+    "api_url": "https://www.censtatd.gov.hk/api/get.php?id=720-90001&lang=en&param=N4KABGBEDGBukC4yghSAVAmgBQKIH0BJdfAVQGUBBAcV0TAG1xU0B1ASwBcALIgO04BTAE59BnfAEMAzpGYQAuswC+AGmaRp8JClSRi+ABKH6TFmgBKkgO74A0vgCMAEwAO+brz6R15qNmEAe3cXdwBSfG95MCUINQ1XEXZA53pdNGlOSWFOekgAJgAGRwAOOTjfKHZUpEgAdiKAWgBOQrbHHw0AG0k+AHM8wSjlIA",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_api_and_web_table",
+    "notes": "Household internet access series retained for the latest available 10-year macro context window."
+  },
+  {
+    "id": "csd_gdp_growth_310_30001",
+    "title": "C&SD Percentage change of Gross Domestic Product (GDP) and selected major expenditure components in real terms",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=310-30001",
+    "api_url": "https://www.censtatd.gov.hk/api/post.php",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_post_api_and_web_table",
+    "notes": "GDP and demand growth series retained for the latest available 10-year macro context window."
+  },
+  {
+    "id": "csd_labour_210_06101",
+    "title": "C&SD Statistics on labour force, employment, unemployment and underemployment",
+    "url": "https://www.censtatd.gov.hk/en/web_table.html?id=210-06101",
+    "api_url": "https://www.censtatd.gov.hk/api/post.php",
+    "institution": "Census and Statistics Department",
+    "source_type": "official_public_post_api_and_web_table",
+    "notes": "Labour market series retained for the latest available 10-year macro context window."
+  }
+]

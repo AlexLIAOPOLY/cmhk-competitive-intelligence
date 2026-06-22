@@ -1,0 +1,2743 @@
+ABOUT US
+
+
+
+SmarTone Telecommunications Holdings Limited (0315.HK), listed in Hong Kong since 1996
+and a subsidiary of Sun Hung Kai Properties Limited, is a leading telecommunications provider
+with operating subsidiaries in Hong Kong and Macau, offering voice, multimedia and mobile
+broadband services, as well as fixed fibre broadband services for both consumer and corporate
+markets. SmarTone spearheaded 5G development in Hong Kong since May 2020, with the
+launch of its territory-wide 5G services.
+
+SmarTone is your smart partner that delivers a trusted and connected experience through our
+high-quality network, people-driven products and services combined with innovation, passion
+and understanding of customer needs.
+
+SmarTone differentiates our content, excellent customer service, business and consumer
+products for all our Hong Kong customers, allowing them to live and feel smarter everyday. This
+strong presence is also backed by expert technical know-how, over 30 stores across Hong Kong,
+our 5 core brands and our innovative business strategies arm.
+CONTENTS
+
+
+
+About Us
+Business Highlights                                        2
+Chairman’s Statement                                       6
+Management Discussion and Analysis                         8
+Directors Profile                                          11
+Staff Engagement                                           19
+Community Initiatives                                      20
+Report on Review of Interim Financial Information          23
+Condensed Consolidated Profit and Loss Account             24
+Condensed Consolidated Statement of Comprehensive Income   25
+Condensed Consolidated Balance Sheet                       26
+Condensed Consolidated Statement of Cash Flows             28
+Condensed Consolidated Statement of Changes in Equity      29
+Notes to the Condensed Consolidated Interim                31
+Financial Statements
+Other Information                                          47
+
+
+
+
+                                                                INTERIM REPORT 2023/24
+
+
+
+                                                                    1
+                                               BUSINESS HIGHLIGHTS
+
+
+                                               Leveraging new technologies and 5G, we aspire to be our
+                                               customers’ “trusted partner in digital life”.
+
+                                               1. Technology Leadership
+                                                 SmarTone’s 5G network covers the airport, major ports, all MTR stations, and all 23 road tunnels in Hong Kong.
+                                                 We have further upgraded the existing 5G network that already covers Hong Kong International Airport by
+                                                 adding the 3.5GHz “5G golden frequency band”. We have also exclusively deployed the 850MHz frequency
+                                                 band within MTR stations and added small cells at various event venues in the city, bringing the best network
+                                                 experience to our customers.
+
+
+
+
+                                                                                                       Road tunnels
+
+
+
+
+                                                                            Major ports
+                                                                                                                                MTR stations
+
+
+
+
+                                                                    Major routes
+                                                                                                                                    Event hot spots
+
+
+
+
+                                                                                          Shopping malls
+                                                                                                                      Airport
+
+
+
+                                                 SmarTone’s 5G network quality leads the market. In the inaugural “Kantar BrandZ Top 30 Hong Kong Brands”
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                 report, SmarTone was the only mobile operator crowned the “Strongest Communications Brand in Hong Kong”.
+                                                 Additionally, SmarTone received the “Best 5G Mobile Network Operator” from a credible industry organization.
+
+
+
+
+  2
+                                                                BUSINESS HIGHLIGHTS
+
+
+2. Empowering Innovation
+  SmarTone’s enterprise solutions arm, SmarTone Solutions, empowers businesses to integrate emerging
+  technologies that drive digital transformation, pushing Hong Kong’s smart city development. SmarTone’s
+  SmarTransport Solution was shortlisted in the top 5 of “Best Mobile Innovation for Digital Life” at the
+  internationally acclaimed Global Mobile Awards.
+
+
+
+               Smart Construction                                      SmarTransport
+
+
+
+
+          SmartHome                                                               SmartMall
+
+
+
+
+                   SmartHotel                                           SmartHealth
+
+
+
+
+3. Customer-Centric Strategy
+  SmarTone’s high-quality services have been widely recognized by the industry and we are the only mobile
+  operator to win two gold awards in the “2023 Service Talent Award” organized by the Hong Kong Retail
+  Management Association.
+
+
+
+
+                                                                                                            INTERIM REPORT 2023/24
+
+
+
+                                                                                                                3
+                                               BUSINESS HIGHLIGHTS
+
+
+                                                 SmarTone understands that each customer has unique needs and expectations, and we provide tailored
+                                                 products and services based on different customer segments such as families and travelers. We regularly send
+                                                 representatives to popular overseas travel destinations to conduct testing and ensure excellent network
+                                                 performance.
+
+
+
+
+                                                 SmarTone Home 5G Broadband successfully redefined the home broadband market and addressed the needs of
+                                                 village houses and Chinese mansion households enduring slow speed narrowband connections. We are the first
+                                                 operator to launch a mobile app for the best user experience at home.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                 SmarTone has always placed a strong emphasis on network security. We offer a variety of network protection
+                                                 services to our customers, including “Data Guard“, “Call Guard”, and “Add-On Number”, ensuring
+                                                 comprehensive privacy, network, and call security for our customers. Since its launch, “Call Guard” has
+                                                 successfully blocked over 300 million nuisance calls.
+
+
+
+
+  4
+                                                                       BUSINESS HIGHLIGHTS
+
+
+   The SmarTone Plus membership program offers superior privileges to customers, including a range of specially
+   curated celebrations, year-round rewards, and remarkable experiences.
+
+
+
+
+4. Digitalization
+   Our full digital brand “Birdie” actively promoted its youthful brand image and customer loyalty by launching
+   traveler experiential campaign for university’s student, inviting amateur users to share their travel experiences.
+
+
+
+
+   SmarTone provides customers with a comprehensive range of services and a high-quality customer experience
+   through its website, mobile application, and WhatsApp hotline. The newly upgraded version of the CARE App
+   features a personalized interface, allowing customers to easily access their account overview and information on
+   rewards and promotions. SmarTone’s online store has also been honored with the “Top 10 Quality Trusted
+   E-Shops” award by the Hong Kong Retail Management Association.
+
+
+
+
+                                                                                                                        INTERIM REPORT 2023/24
+
+
+
+                                                                                                                            5
+                                               CHAIRMAN’S STATEMENT
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+                                               Business review
+                                               During the period under review, the market experienced strong price competition and a challenging economic
+                                               environment. Despite this competitive landscape, SmarTone’s mobile postpaid Average Revenue Per User (ARPU) and
+                                               customer base saw an improvement by 1% to $224 and 2.65 million, respectively. 5G customers now represent 38%
+                                               of our customer base, with an increase of 5% since December 2022. Service revenue, with the exclusion of Mobile
+                                               Virtual Network Operator (MVNO), SMS, and prepaid services, rose by 3%. There are clear headwinds as well:
+                                               aggressive price competition has put pressure on the lower-tier market segments, particularly MVNOs; SMS revenue
+                                               has also significantly declined as COVID-related messaging went away. For this period, the profit attributable to equity
+                                               holders amounted to $246 million.
+
+                                               During the period there was a resurgence in outbound travel resulting in a strong recovery in roaming revenues which
+                                               grew by 64% year on year. By December, roaming revenue had reached 86% of its pre-pandemic levels, marking a
+                                               consistent quarter over quarter increase since the resumption of travel. This uptrend was driven by a strong demand
+                                               for SmarTone’s data roaming products among our premium customers. The proportion of SmarTone customers opting
+                                               for our roaming services over third-party alternatives has more than doubled compared to the period before the
+                                               pandemic. Our observation indicates that customers are willing to spend on a roaming service that provides reliability,
+                                               convenience, and quality while traveling. SmarTone remains dedicated to meeting these expectations and will
+                                               continue to invest to further stimulate growth in this sector.
+
+                                               Since its launch in 2020, SmarTone’s 5G Home Broadband service has emerged as a material driver of growth for the
+                                               Company. It offers an advantageous alternative for households lacking fiber connectivity, providing a faster, more
+                                               affordable, and convenient service. Additionally, an increasing number of individuals, together with small to medium-
+                                               sized enterprises (SMEs), are subscribing to this service, as they are attracted by the service’s flexibility, ease of
+                                               installation, and cost-effectiveness.
+
+                                               Throughout the review period, SmarTone’s Enterprise Solutions division continued to deliver solid growth. The
+                                               SmartHome solution was introduced in partnership with the SHKP Group in December 2023. This innovative offering
+                                               leverages SmarTone’s pre-installed estate-wide 5G network, coupled with a smart home platform and an in-wall Wi-Fi
+                                               6 network system, to enable homeowners to effortlessly connect devices for an unmatched smart living experience.
+                                               Looking ahead, we are committed to pioneering new ideas, investing in our platform and product development, and
+                                               expanding this emerging market in collaboration with the SHKP Group.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               Persistently high inflation and a demanding macroeconomic landscape have exerted pressure on operating costs.
+                                               Although our spectrum costs remain substantial, such expenses have peaked and are expected to gradually decrease
+                                               moving forward. Management is dedicated to maintaining stable operating expenses by enhancing efficiency and
+                                               productivity. Upholding a rigorous cost discipline without compromising quality remains a critical strategy for ensuring
+                                               the Company’s enduring resilience and allocation of resources towards future expansion.
+
+                                               SmarTone has solidified its leadership in the premium consumer market, earning widespread recognition for its
+                                               exceptional network quality, outstanding customer service, and status as a leading brand. In December 2023, the
+                                               Company was awarded the “Best 5G Mobile Network Operator” by the Communications Association of Hong Kong
+                                               (CAHK). Additionally, in January 2024, it received the prestigious gold award in the “2023 Service Talent Award”,
+                                               organized by the Hong Kong Retail Management Association (HKRMA), for excellent service performance at both
+                                               supervisory and junior frontline levels – a unique achievement for a telecommunications service provider in both
+                                               categories. Moreover, SmarTone’s online store was distinguished with the HKRMA’s annual “Top 10 Quality Trusted
+                                               E-Shops” award. These accolades affirm the Company’s enduring commitment to excellence and service, underscoring
+  6                                            its reputation for delivering superior value to its customers.
+                                                                       CHAIRMAN’S STATEMENT
+                                                              (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+Dividend
+The Board declared an interim dividend of 14.5 cents per share, consistent with last year. With a strong net cash
+position of $1 billion, SmarTone stands to benefit from the high interest rate environment.
+
+
+Outlook
+In the short to medium term, the operating landscape is anticipated to remain challenging, influenced by the intensely
+competitive mobile sector and sluggish economic conditions. SmarTone’s direction is clear with a focus on reinforcing
+its commitment to unparalleled customer service and outstanding network reliability.
+
+At SmarTone, we have the aspiration to enable our customers to enjoy the benefits of new technologies and digital
+applications. These days everyone talks about digitization and artificial intelligence (AI), but in reality for the average
+user, these trends may feel remote and have little relevance to daily lives. This is not surprising — many of our users
+do not have the expertise to select the most useful applications, and some fear they will be exposed to cyber-security
+threats if they try new applications. We aspire to bridge that gap. In the coming year, we are excited to roll out a
+series of initiatives designed to enhance our customers’ ability to use their mobile devices more effectively and safely.
+We will also offer valuable tips and tools aimed at encouraging them to embrace a broader range of technology in
+their daily lives. This will enhance their productivity, personal enjoyment and privacy, no matter which life stage our
+customer is at. At the end of the day, we aspire to be more than a network provider — we want to be our customers’
+“trusted partner in digital life”.
+
+SmarTone has invested heavily in building a state-of-the-art 5G network in Hong Kong. We believe this is not just
+important for our customers, but is also a critical digital infrastructure for Hong Kong to be a technology hub. By
+general recognition, our 5G network is world-class in terms of speed, coverage and reliability. On top of the network
+investment, SmarTone pays heavy spectrum fees to the Government. For the past half year alone, the Group paid
+approximately $270 million in spectrum fees to the Government; this amount actually exceeded the Group’s overall
+net profit for the period. We appreciate the Financial Secretary’s proposal to allow tax deductions for future spectrum
+costs, yet we disagree with the decision to exclude current spectrum expenses from this proposal, given that spectrum
+costs represent a critical operational expense vital for maintaining network operations — and historically have been
+eligible for tax deductions. The absence of tax deductibility on the spectrum held by SmarTone until December 2023
+results in a significant fiscal impact, amounting to $538 million on a cumulative basis. Consequently, SmarTone
+strongly advocates for the Government to restore tax deductibility to all spectrum costs, ensuring a conducive
+environment for investment and development.
+
+
+Appreciation
+I would like to take this opportunity to express my gratitude to our customers and shareholders for their continuing
+support, and to my fellow directors for their guidance. To our staff, I would like to thank them for their commitment
+and professionalism as well as their dedication and hard work during the period.
+
+
+
+
+                                                                                                                              INTERIM REPORT 2023/24
+Kwok Ping-luen, Raymond
+Chairman
+                                                                                                                                  7
+Hong Kong, 22 February 2024
+                                               MANAGEMENT DISCUSSION AND ANALYSIS
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+                                               Review of financial results
+                                               During the period under review, the Group’s profit attributable to shareholders was $246 million (first half of 2022/23:
+                                               $256 million).
+
+                                               The total revenue of the Group was $3,390 million, a drop by 11% as compared to $3,809 million for the same
+                                               period last year. The decline was mainly driven by the reduced handset and accessory sales during the period, while
+                                               the gross profit from these sales was $17 million, remaining stable when compared with last year. Our total service
+                                               revenue was down marginally by 1% year-on-year, while our service revenue excluding revenue from prepaid, MVNO
+                                               and SMS businesses has shown a high level of resilience with a growth of 3% over the period. This was mainly driven
+                                               by the strong recovery of roaming business together with the continuous growth of our 5G Home Broadband
+                                               products and enterprise solutions, which has compensated the pressure from the fierce competition landscape in the
+                                               Hong Kong mobile market.
+
+                                               Cost of services provided for the six months ended 31 December 2023 increased by $32 million or 15% to $240
+                                               million (first half of 2022/23: $208 million), which was in line with the corresponding increase in revenue from
+                                               roaming and enterprise solutions businesses.
+
+                                               The Group has continued to devote significant effort in tightening cost discipline and improving operation efficiency
+                                               during the period. Accordingly, our staff costs and other operating expenses were reduced by 2% and 3% year-on-
+                                               year, to $353 million and $487 million, respectively.
+
+                                               Depreciation, amortization and loss on disposal decreased by $7 million or 1% to $881 million (first half of 2022/23:
+                                               $888 million), mainly due to reduced depreciation charges of network equipment given our cautious control over
+                                               capital expenditure in recent years.
+
+                                               At the back of the Group’s strong net cash position, our net finance costs (including accretion expenses on spectrum
+                                               utilization fee and lease liabilities) was reduced from $35 million for the first half of 2022/23 to $16 million in this
+                                               period, amid the full repayment of a guarantee note of $1.4 billion during the second half of last financial year.
+
+                                               Income tax expense amounted to $99 million (first half of 2022/23: $100 million), reflecting an effective tax rate of
+                                               28.7% (first half of 2022/23: 28.1%). In light of the uncertainty of the tax deductibility of the spectrum utilization fee,
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               certain related payments have been treated as non-deductible in calculating the tax provision, which contributes to
+                                               the Group effective tax rate being higher than 16.5%. The Group will continue to vigorously defend its position and
+                                               pursue tax deduction of the spectrum utilization fee from the Inland Revenue Department.
+
+
+
+
+  8
+                                   MANAGEMENT DISCUSSION AND ANALYSIS
+                                                             (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+Capital structure, liquidity and financial resources
+The Group maintained a strong balance sheet for the period under review. During the period, the Group was mainly
+financed by share capital and internally generated funds. As at 31 December 2023, the Group had a total equity of
+$5,128 million, including share capital and reserves of $110 million and $5,018 million, respectively.
+
+The Group’s cash resources remained robust with cash and bank balances including short-term bank deposits of
+$1,048 million as at 31 December 2023 (30 June 2023: $1,155 million). Total borrowings of the Group was
+$64 million as at 31 December 2023, as compared to $66 million as at 30 June 2023.
+
+The Group has generated net cash from operating activities of $848 million during the period ended 31 December
+2023. The Group’s major outflows of funds during the period were payments for purchase of fixed assets, spectrum
+utilization fee, leases, taxation and dividends.
+
+The directors are of the opinion that the Group can fund its capital expenditures and working capital requirements for
+the financial year ending 30 June 2024 with internal cash resources.
+
+
+Treasury policy
+The Group invests its surplus funds in accordance with a treasury policy approved by the board of directors. Surplus
+funds are placed in bank deposits and invested in financial assets at amortized cost. Bank deposits and financial assets
+at amortized cost are predominantly maintained in Hong Kong dollars and US dollars.
+
+The Group is required to arrange for banks to issue performance bonds and letters of credit on its behalf.
+
+
+Charges on assets
+The Group’s bank borrowings were secured by certain assets of the Group and the carrying amount of the pledged
+assets amounted to $64 million as at 31 December 2023 (30 June 2023: $65 million).
+
+
+Interest rate exposure
+As at 31 December 2023, the Group’s total borrowing of $64 million is subject to floating interest rate. Management
+considers the corresponding interest rate exposure will not have any material impact to the Group given the low level
+of borrowing. The Group does not currently undertake any interest rate hedging.
+
+
+Functional currency and foreign exchange exposure
+The functional currency of the Company is the Hong Kong dollar. The Group is exposed to other currency movements,
+principally in terms of certain trade receivables, bank deposits, financial asset at fair value through other
+
+
+
+
+                                                                                                                           INTERIM REPORT 2023/24
+comprehensive income, financial assets at amortized cost and trade payables denominated in United States dollars.
+The trade payables denominated in United States dollars is partially hedged with our deposits in United States dollars.
+
+
+
+
+                                                                                                                               9
+                                               MANAGEMENT DISCUSSION AND ANALYSIS
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+                                               Contingent liabilities
+                                               As at 31 December 2023, the Group provided performance guarantees of $623 million (30 June 2023: $623 million).
+
+
+                                               Employees, share award scheme and share option scheme
+                                               The Group had 1,783 full-time employees as at 31 December 2023 (30 June 2023: 1,830), with the majority of them
+                                               based in Hong Kong. Total staff costs were $353 million for the period ended 31 December 2023 (first half of
+                                               2022/23: $361 million).
+
+                                               Employees receive a remuneration package consisting of basic salary, bonus and other benefits. Bonus payments are
+                                               discretionary and depend, inter-alia, on both the Group’s performance and the individual employee’s performance.
+                                               Benefits include retirement schemes, medical and dental care insurance. Employees are provided with both internal
+                                               and external training appropriate to each individual’s requirements.
+
+                                               A share award scheme was adopted by the Group as an incentive arrangement to recognize the contributions by
+                                               certain employees and to attract and retain suitable personnel for the development of the Group. During the period
+                                               under review, no unvested shares (30 June 2023: Nil) were outstanding as at 31 December 2023.
+
+                                               The Group has share option scheme under which the Company may grant options to participants, including directors
+                                               and employees, to subscribe for shares of the Company. As at 31 December 2023, 4,000,000 share options were
+                                               outstanding (30 June 2023: 4,000,000).
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+
+
+
+
+10
+                                                                               DIRECTORS PROFILE
+
+
+
+KWOK Ping-luen, Raymond Chairman & Non-Executive Director
+Mr. Raymond Kwok has been with the Group since April 1992 and was appointed Director of the Company in
+October 1996. He holds a Master of Arts degree in Law from Cambridge University, a Master’s degree in Business
+Administration from Harvard University, an Honorary Doctorate degree in Business Administration from Hong Kong
+Metropolitan University and an Honorary Doctorate degree in Laws from The Chinese University of Hong Kong.
+
+Mr. Kwok is the chairman and managing director of Sun Hung Kai Properties Limited (“SHKP”). He is also a director
+of Cellular 8 Holdings Limited (“Cellular 8”) and TFS Development Company Limited (“TFS”). SHKP, Cellular 8 and TFS
+are the substantial shareholders of the Company within the meaning of Part XV of the Securities and Futures
+Ordinance. Mr. Kwok is also the chairman and an executive director of SUNeVision Holdings Ltd., and a non-executive
+director of Transport International Holdings Limited and Wing Tai Properties Limited.
+
+In civic activities, Mr. Kwok is a director of The Real Estate Developers Association of Hong Kong.
+
+Mr. Kwok is also a director of certain subsidiaries of the Company.
+
+For the financial year ended 30 June 2023, Mr. Kwok received a fee of HK$180,000. Except the above fee, Mr. Kwok
+did not receive any other emoluments during the said financial year.
+
+
+CHEUNG Wing-yui Deputy Chairman & Non-Executive Director
+Mr. Cheung Wing-yui was appointed Director of the Company in March 2003. Mr. Cheung received a Bachelor of
+Commerce degree in accountancy from The University of New South Wales, Australia and is a member of the CPA
+Australia. He has been a practicing solicitor in Hong Kong since 1979 and is a consultant of the law firm Woo Kwan
+Lee & Lo. Mr. Cheung was also admitted as a solicitor in the United Kingdom and as an advocate and solicitor in
+Singapore.
+
+Mr. Cheung is a vice chairman and a non-executive director of SUNeVision Holdings Ltd. He is also a non-executive
+director of Tai Sang Land Development Limited and Transport International Holdings Limited. He is a non-executive
+director of Sun Hung Kai Properties Insurance Limited, which is a wholly-owned subsidiary of Sun Hung Kai Properties
+Limited. Mr. Cheung was a non-executive director of Tianjin Development Holdings Limited.
+
+Mr. Cheung is currently a member of the Sponsorship & Development Fund Committee and a court member of Hong
+Kong Metropolitan University, a director of the Community Chest of Hong Kong Limited, and an honorary council
+member of The Hong Kong Institute of Directors Limited. He had held the positions of deputy chairman of the council
+of Hong Kong Metropolitan University, the deputy chairman of The Hong Kong Institute of Directors Limited, a
+director of Po Leung Kuk, the vice chairman of the Mainland Legal Affairs Committee of The Law Society of Hong
+Kong and a member of the Board of Review (Inland Revenue Ordinance).
+
+Mr. Cheung was awarded the Bronze Bauhinia Star (BBS) in 2013.
+
+
+
+
+                                                                                                                       INTERIM REPORT 2023/24
+Mr. Cheung was awarded an honorary degree of Doctor of Business Administration from Hong Kong Metropolitan
+University in 2016.
+
+For the financial year ended 30 June 2023, Mr. Cheung received a fee of HK$162,000. Except the above fee, Mr.
+Cheung did not receive any other emoluments during the said financial year.
+
+                                                                                                                       11
+                                               DIRECTORS PROFILE
+
+
+
+                                               FUNG Yuk-lun, Allen Deputy Chairman & Executive Director
+                                               Mr. Allen Fung was appointed Non-Executive Director of the Company in December 2013 and was re-designated as
+                                               Executive Director in August 2020. Mr. Fung obtained an undergraduate degree (Modern History) from Oxford
+                                               University and holds a doctoral degree in History and East Asian Languages from Harvard University. He was a
+                                               recipient of a Guggenheim Fellowship in 1996. Mr. Fung was a Teaching Fellow at Harvard University in 1993 to 1994
+                                               and a visiting Assistant Professor of History at Brown University in 1996 to 1997. From 1997 to 2013, Mr. Fung
+                                               worked in McKinsey & Company (“McKinsey”), a global management consulting company. He was the managing
+                                               partner of McKinsey Hong Kong from 2004 to 2010. In 2011, he became a director of McKinsey globally.
+
+                                               Mr. Fung is an executive director and a member of the executive committee of Sun Hung Kai Properties Limited
+                                               (“SHKP”), as well as the chief executive officer of the SHKP group’s non-property related portfolio investments. He is
+                                               also a director of certain subsidiaries of SHKP. Mr. Fung is a vice chairman and an executive director of SUNeVision
+                                               Holdings Ltd., and a non-executive director of Transport International Holdings Limited.
+
+                                               Mr. Fung is a member of the General Committee of the Hong Kong General Chamber of Commerce, the vice
+                                               president of The Hong Kong Federation of Youth Groups, and has been elected a Professor of Practice at The Hong
+                                               Kong Management Association, and the vice chairman of the board of The Hong Kong Philharmonic Society Limited.
+                                               Mr. Fung is a board member of the Hong Kong Tourism Board, and a member of the Museum Advisory Committee of
+                                               the Leisure and Cultural Services Department of the Government of the Hong Kong Special Administrative Region.
+
+                                               Mr. Fung is also a member of the Remuneration Committee of the Company, and a director of certain subsidiaries of
+                                               the Company.
+
+                                               For the financial year ended 30 June 2023, Mr. Fung received a fee of HK$162,000. Except the above fee, Mr. Fung
+                                               did not receive any other emoluments during the said financial year.
+
+
+                                               LAU Yeuk-hung, Fiona Executive Director & Chief Executive Officer
+                                               Ms. Fiona Lau was appointed Executive Director and Chief Executive Officer of the Company in February 2023.
+
+                                               Prior to joining SmarTone, Ms. Lau was an executive director and the chief commercial officer of SUNeVision Holdings
+                                               Ltd. (“SUNeVision”). Since 2017, she has taken up various sales and business development roles in SUNeVision,
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               spearheading the transformation of the company into a customer-centric organization. Ms. Lau is currently a non-
+                                               executive director of SUNeVision.
+
+                                               Prior to joining Sun Hung Kai Properties Limited in 2017 and taking up various leadership roles at SUNeVision, Ms. Lau
+                                               was a director at BlackRock Asset Management (North Asia), where she held a number of senior positions across the
+                                               chairman’s office, corporate strategy, and retail and private banking functions from 2010 to 2017. Between 2005 and
+                                               2010 she worked in McKinsey & Company and held the position of engagement manager.
+
+                                               A graduate of The University of Chicago, Ms. Lau holds a Bachelor of Arts degree in Philosophy.
+
+                                               Ms. Lau is also a director of certain subsidiaries of the Company.
+
+                                               For the period from 15 February 2023 (date of appointment as a director of the Company) to 30 June 2023, Ms. Lau
+                                               received salaries (including allowances and retirement scheme contributions), share-based payment and director’s fee
+                                               of HK$2,174,000, HK$248,000 and HK$54,000 respectively.
+12
+                                                                              DIRECTORS PROFILE
+
+
+
+CHAU Kam-kun, Stephen Executive Director
+Mr. Stephen Chau was appointed Executive Director of the Company in April 2015. He has been with the Company
+since 1993. He joined the Company as Head of Operations and was made Chief Technology Officer since 1999. He
+has been responsible for the Company’s information and communications technology strategy, roadmap and
+deployment; he has also led the Company in a number of commercial initiatives.
+
+Mr. Chau’s leadership has shaped the Company’s technological innovations, impacting all areas of business operations
+and establishing sustainable competitive advantages. He is responsible for the Company’s high performance network,
+which is widely recognized for its superior voice and data experience. He is the architect of the Company’s advanced
+service platform which enables its many proprietary services, offering differentiation in the marketplace and real value
+to customers. Mr. Chau also oversees the evolution of the Company’s industry leading customer management and
+support systems enabling frontline staff to provide award-winning customer care.
+
+Mr. Chau has held various senior management positions in telecommunications companies. He is a member of The
+Institution of Engineering and Technology (IET), UK and a Chartered Engineer of the Institute of Electrical Engineers,
+UK.
+
+Mr. Chau is a Board Director of the Hong Kong Applied Science and Technology Research Institute Company Limited
+(ASTRI) and a member of its Technology Review Panel. He is a member of the Executive Committee of the
+Communications Association of Hong Kong (CAHK).
+
+Mr. Chau is also a member of the Advisory Committee of the Department of Electronic Engineering of The Chinese
+University of Hong Kong and the Departmental Advisory Committee of the Department of Electrical Engineering of
+City University of Hong Kong.
+
+Mr. Chau is a director of certain subsidiaries of the Company.
+
+For the financial year ended 30 June 2023, Mr. Chau received salaries (including allowances, retirement scheme
+contributions and estimated money value of other benefits), bonus and director’s fee of HK$7,023,000,
+HK$1,800,000 and HK$144,000 respectively.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2023/24
+
+
+
+                                                                                                                           13
+                                               DIRECTORS PROFILE
+
+
+
+                                               David Norman PRINCE Non-Executive Director
+                                               Mr. David Prince was appointed Director of the Company in July 2005. Mr. Prince has over 20 years’ experience of
+                                               operating at board level in an international environment. Mr. Prince is a member of the Chartered Institute of
+                                               Management Accountants (UK) and the Chartered Institute of Purchasing and Supply (UK). He is a non-executive
+                                               director of SUNeVision Holdings Ltd. He is also a director of Wilson Group Limited and a consultant of Sun Hung Kai
+                                               Real Estate Agency Limited, both are wholly-owned subsidiaries of Sun Hung Kai Properties Limited.
+
+                                               Mr. Prince is currently a non-executive director and a member of the audit committee of Adecco SA which is the
+                                               global leader in human resources services.
+
+                                               Mr. Prince was group finance director of Cable and Wireless plc. until December 2003 and prior to this, spent some
+                                               12 years working in the telecommunications industry in Hong Kong, Mainland China and Asia. From 1994 to 2000 he
+                                               was finance director and latterly deputy chief executive officer of Hong Kong Telecommunications Limited until it was
+                                               acquired by PCCW in 2000. He went on to join PCCW plc. as group chief financial officer. In 2002, he left PCCW to
+                                               join Cable and Wireless as group finance director. Prior to his time in Hong Kong he held senior management roles for
+                                               Cable and Wireless. His early career was spent in the gas, oil and electronic industries within Europe and the USA.
+
+                                               Mr. Prince is also a member of the Nomination Committee of the Company.
+
+                                               For the financial year ended 30 June 2023, Mr. Prince received a fee of HK$144,000. Except the above fee, Mr. Prince
+                                               did not receive any other emoluments during the said financial year.
+
+
+                                               SIU Hon-wah, Thomas Non-Executive Director
+                                               Mr. Thomas Siu was appointed Director of the Company in July 2008. Mr. Siu was the managing director of Wilson
+                                               Group, which is a major transport infrastructure services provider in Hong Kong and is wholly-owned by Sun Hung Kai
+                                               Properties Limited, and is currently a consultant of Wilson Group. Prior to joining Wilson Group, Mr. Siu had more
+                                               than 25 years of experience in telecommunications and IT sectors. His experience covers finance, business operations
+                                               and development. Mr. Siu is also a non-executive director of SUNeVision Holdings Ltd.
+
+                                               Mr. Siu holds a MPhil degree from the University of Cambridge and a PhD degree in Information Systems. He is a
+                                               Certified Public Accountant and is a member of the British Computer Society.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               For the financial year ended 30 June 2023, Mr. Siu received a fee of HK$144,000. Except the above fee, Mr. Siu did
+                                               not receive any other emoluments during the said financial year.
+
+
+
+
+14
+                                                                             DIRECTORS PROFILE
+
+
+
+LI Ka-cheung, Eric, JP Independent Non-Executive Director
+Dr. Eric Li, GBS, OBE, JP, LLD, DSocSc., HonDSocSc (EdUHK), B.A., FCPA, FCA, FCPA (Aust.), was appointed Director
+of the Company in October 1996. Dr. Li is the honorary chairman of SHINEWING (HK) CPA Limited.
+
+Dr. Li is an independent non-executive director of Sun Hung Kai Properties Limited, Transport International Holdings
+Limited, Wong’s International Holdings Limited and China Resources Beer (Holdings) Company Limited. Dr. Li was an
+independent non-executive director of Hang Seng Bank Limited.
+
+Dr. Li is a member of the 10th, 11th, 12th and 13th National Committee of the Chinese People’s Political Consultative
+Conference. He was a former member of the Legislative Council of Hong Kong and chairman of its Public Accounts
+Committee, a past president of the Hong Kong Institute of Certified Public Accountants and a former convenor-cum-
+member of the Financial Reporting Review Panel.
+
+Dr. Li is also chairman of the Remuneration Committee and the Audit Committee of the Company.
+
+For the financial year ended 30 June 2023, Dr. Li received a fee of HK$288,000 including the fee for acting as the
+chairman of the Audit Committee of the Company. Except the above fee, Dr. Li did not receive any other emoluments
+during the said financial year.
+
+
+NG Leung-sing, JP Independent Non-Executive Director
+Mr. Ng Leung-sing was appointed Director of the Company in June 1997. Mr. Ng is chairman of Bank of China (Hong
+Kong) Trustees Limited and a director of BOCHK Charitable Foundation. He is also an independent non-executive
+director of Nine Dragons Paper (Holdings) Limited and Grand Brilliance Group Holdings Limited.
+
+Mr. Ng is a Hong Kong Deputy to the 10th, 11th, 12th and 13th National People’s Congress of the People’s Republic
+of China.
+
+Mr. Ng was the vice-chairman of Chiyu Banking Corporation Limited from 2002 to 2017, general manager of the
+Bank-wide Operation Department of Bank of China (Hong Kong) Limited from 2005 to 2009, and executive director
+and general manager of The China and South Sea Bank Limited, Hong Kong from 1990 to 1998. He was the Chinese
+Representative of the Sino-British Land Commission and the trustee of the Hong Kong Government Land Fund from
+1988 to 1997, a member of the Corporate Contribution Program Organization Committee of The Community Chest
+of Hong Kong from 1992 to 1996, a member of the Legislative Council of Hong Kong from 1996 to 2004 and from
+2012 to 2016, a member of the Hong Kong Housing Authority from 1996 to 2004, a member of the Court of
+Lingnan University from 1999 to 2011, a member of the managing board of the Kowloon-Canton Railway
+Corporation from 2004 to 2007, and a member of the board of management of the Chinese Permanent Cemeteries
+from 2009 to 2015. Mr. Ng was also an independent non-executive director of MTR Corporation Limited from 2007
+to 2017, a director of The Hong Kong Mortgage Corporation Limited from 2014 to 2018 and an independent non-
+executive director of Hanhua Financial Holding Co., Ltd. from 2013 to 2022.
+
+
+
+
+                                                                                                                        INTERIM REPORT 2023/24
+Mr. Ng was appointed as the Justice of the Peace in 2001, and was awarded the Silver Bauhinia Star by the HKSAR
+government in 2004.
+
+Mr. Ng is also a member of the Remuneration Committee, the Nomination Committee and the Audit Committee of
+the Company.
+
+For the financial year ended 30 June 2023, Mr. Ng received a fee of HK$288,000 including the fee for acting as
+member of the Audit Committee of the Company. Except the above fee, Mr. Ng did not receive any other
+                                                                                                                        15
+emoluments during the said financial year.
+                                               DIRECTORS PROFILE
+
+
+
+                                               GAN Fock-kin, Eric Independent Non-Executive Director
+                                               Mr. Eric Gan was appointed Director of the Company in December 2005. Mr. Gan is the Chief Executive Officer of
+                                               Cybereason Inc., a provider of endpoint detection and response software used to detect anomalous activity on
+                                               networks and systems.
+
+                                               Mr. Gan was the founder and president of eAccess Ltd., the fourth mobile operator (EMOBILE brand) in Japan which
+                                               became a wholly-owned subsidiary of SoftBank Corp. in 2013. Mr. Gan was an executive vice president of Softbank
+                                               Corp. until he joined Cybereason in April 2023.
+
+                                               Mr. Gan was born in Hong Kong and graduated from Imperial College, University of London.
+
+                                               Mr. Gan is also chairman of the Nomination Committee and a member of the Audit Committee of the Company.
+
+                                               For the financial year ended 30 June 2023, Mr. Gan received a fee of HK$288,000 including the fee for acting as
+                                               member of the Audit Committee of the Company. Except the above fee, Mr. Gan did not receive any other
+                                               emoluments during the said financial year.
+
+
+                                               LAM Kwok-fung, Kenny Independent Non-Executive Director
+                                               Mr. Kenny Lam was appointed Director of the Company in March 2017.
+
+                                               Mr. Lam is currently chief executive officer of Two Sigma Asia Pacific, Limited and head of the Asia Pacific region of
+                                               Two Sigma. Mr. Lam is also an independent non-executive director of Bank of East Asia (China) Limited and Shui On
+                                               Xintiandi Limited.
+
+                                               Mr. Lam was group president of Noah Holdings Limited (listed on the New York Stock Exchange) until March 2019.
+                                               Prior to Noah, Mr. Lam was a global partner at McKinsey & Company based in Hong Kong, a co-Leader of the firm’s
+                                               Asia Financial Institutions Practice, and head of its Asia Private Banking and Asset Management Practice. Before
+                                               McKinsey, Mr. Lam was with American law firm Shearman & Sterling in New York and Hong Kong.
+
+                                               Mr. Lam is a member of the Asia Business Leaders Advisory Council for the Government of Canada (under the Asia
+                                               Pacific Foundation), and a member of the Executive Board for Asia of the Wharton School of the University of
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               Pennsylvania.
+
+                                               Mr. Lam graduated with a MA (Honours) in Law from Oxford University and magna cum laude with a BS in Finance
+                                               from the Wharton School of the University of Pennsylvania, where he was a Joseph Wharton Scholar and a Benjamin
+                                               Franklin Scholar.
+
+                                               For the financial year ended 30 June 2023, Mr. Lam received a fee of HK$144,000. Except the above fee, Mr. Lam did
+                                               not receive any other emoluments during the said financial year.
+
+
+
+
+16
+                                                                               DIRECTORS PROFILE
+
+
+
+LEE Yau-tat, Samuel Independent Non-Executive Director
+Mr. Samuel Lee was appointed Director of the Company in April 2021.
+
+Mr. Lee is the chief executive officer of Digital Edge DC. He co-founded the company in 2020 with an aim in
+transforming the data center business and building digital infrastructure platforms for businesses in Asia-Pacific. With
+more than 25 years of experiences in the IT and telecom industry, Mr. Lee is widely recognized as a dynamic and
+forward-looking business leader, with proven track record in driving business growth and expanding the data center
+business footprint in the Asia-Pacific region.
+
+Prior to joining Digital Edge DC, Mr. Lee was the President of Equinix Asia-Pacific, overseeing the company’s
+management, strategy and growth in the region. In this role, he successfully led the growth and expansion of the
+company’s business, including its acquisitions of Asia Tone, Bit-isle and Metronode, and the ongoing integration of
+the company’s regional operations into its global business. Under his leadership, Equinix’s business in Asia-Pacific had
+undergone rapid expansion to become one of the market leaders in the region with more than 40 data centers in 12
+markets, and with its revenue to reach US$1 billion. Mr. Lee also held senior management positions at various leading
+technology companies, including Pacific Gateway Exchange, Teleglobe International, Intel and Sprint. In addition, he
+was the founder of a consulting firm offering strategic consultation services to network providers in Asia. Mr. Lee has
+been a senior advisor for Sun Hung Kai Real Estate Agency Limited since September 2019.
+
+Mr. Lee holds a Bachelor of Arts degree in International Business from the City University of Hong Kong.
+
+For the financial year ended 30 June 2023, Mr. Lee received a fee of HK$144,000. Except the above fee, Mr. Lee did
+not receive any other emoluments during the said financial year.
+
+
+Peter KUNG Independent Non-Executive Director
+Mr. Peter Kung was appointed Director of the Company in March 2022.
+
+Mr. Kung is a member of the 13th and 14th National Committee of the Chinese People’s Political Consultative
+Conference. He is currently Vice President of Guangdong’s Association For Promotion of Cooperation between
+Guangdong, Hong Kong & Macao and Guangdong-HK-Macao Bay Area Entrepreneurs Union. He is also a member of
+the Chief Executive’s Policy Unit Expert Group (Economic Advancement) of the Government of the Hong Kong Special
+Administrative Region. Mr. Kung has been appointed as a member of the Council of The Chinese University of Hong
+Kong with effect from 14 December 2023.
+
+Mr. Kung graduated from the University of Liverpool in 1984. He is Associate Member of the Institute of Chartered
+Accountants in England and Wales and Fellow of the Hong Kong Institute of Certified Public Accountants. He is also
+Fellow of the Taxation Institute of Hong Kong and served as its president from 2007 to 2009.
+
+Mr. Kung became a partner of KPMG in 1997, Head of China Tax in Hong Kong and Southern China in 2001, Senior
+Partner of KPMG’s Shenzhen office in 2006 and Senior Partner of KPMG’s Southern China region in 2010. He was
+Vice Chairman of KPMG China from 2013 to 2017 and Senior Advisor to KPMG China from 2018 to 2019.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2023/24
+Mr. Kung is an independent non-executive director and chairman of the audit committee of ORIX Asia Limited and
+Kingboard Laminates Holdings Limited, a company listed on The Stock Exchange of Hong Kong Limited. He is also an
+independent non-executive director and chairman of the audit committee of CCB International (Holdings) Limited. Mr.
+Kung is a member of the board and chairman of the audit committee of eBRAM. He has been a China Tax Advisor to
+Sun Hung Kai Real Estate Agency Limited since October 2019.
+
+Mr. Kung is also a member of the Audit Committee of the Company.
+                                                                                                                           17
+For the financial year ended 30 June 2023, Mr. Kung received a fee of HK$144,000. Except the above fee, Mr. Kung
+did not receive any other emoluments during the said financial year.
+                                               DIRECTORS PROFILE
+
+
+
+                                               Notes:
+
+                                               Saved as disclosed in the Directors’ respective biographical details under this section, the Directors (1) have not held any directorships
+                                               in other public listed companies, whether in Hong Kong or overseas, during the last three years; (2) do not hold any other positions
+                                               in the Company and its subsidiaries; and (3) do not have any other relationship with any Directors, senior management or substantial
+                                               or controlling shareholders of the Company.
+
+                                               No service contracts have been signed between the Company and the Directors (except Ms. Lau Yeuk-hung, Fiona and Mr. Chau
+                                               Kam-kun, Stephen) and there is no fixed term of their service with the Company. Their appointments are subject to retirement by
+                                               rotation and re-election by shareholders at annual general meetings in accordance with the Bye-laws of the Company and the Listing
+                                               Rules. They are entitled to directors’ fees which are determined by the Board under the authority granted by shareholders at annual
+                                               general meetings. The fees are subject to annual assessment based on prevailing market rate of directors’ fees for companies listed
+                                               in Hong Kong.
+
+                                               Ms. Lau Yeuk-hung, Fiona, Executive Director, entered into an agreement with the Group for her serving as an Executive Director
+                                               and the Chief Executive Officer of the Company, with no fixed term of service. Ms. Lau is entitled to a basic salary which is subject to
+                                               review by the Board from time to time with reference to her responsibility and performance. She is also entitled to a discretionary
+                                               performance bonus, the computation of which is based on her performance and contributions to the Group. Ms. Lau’s appointment
+                                               as a director of the Company is subject to retirement by rotation and re-election by shareholders at annual general meetings in
+                                               accordance with the Bye-laws of the Company and the Listing Rules. Ms. Lau is entitled to a director’s fee which is determined by
+                                               the Board under the authority granted by shareholders at annual general meetings. The fee is subject to annual assessment based on
+                                               prevailing market rate of directors’ fees for companies listed in Hong Kong.
+
+                                               There is an employment contract entered into between Mr. Chau Kam-kun, Stephen, Executive Director, and a subsidiary of the
+                                               Company for his serving as the Company’s Chief Technology Officer. As the Chief Technology Officer, Mr. Chau is entitled to a basic
+                                               salary which is subject to review by the Board from time to time with reference to his responsibility and performance. He is also
+                                               entitled to a discretionary bonus, the computation of which is based on his performance and profitability of the Group. Mr. Chau
+                                               has no fixed term of service with the Company for acting as a director of the Company. Mr. Chau’s appointment as a director of the
+                                               Company is subject to retirement by rotation and re-election by shareholders at annual general meetings in accordance with the Bye-
+                                               laws of the Company and the Listing Rules. Mr. Chau is entitled to a director’s fee which is determined by the Board under the
+                                               authority granted by shareholders at annual general meetings. The fee is subject to annual assessment based on prevailing market
+                                               rate of directors’ fees for companies listed in Hong Kong.
+
+                                               The Directors’ interests in shares of the Company or any of its associated corporations, if any, within the meaning of Part XV of the
+                                               Securities and Futures Ordinance as at 31 December 2023 are disclosed in the “Directors’ and chief executive’s interests” section on
+                                               pages 47 to 50 of this Interim Report.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+
+
+
+
+18
+                                                                        STAFF ENGAGEMENT
+
+
+1. Grooming Talents
+   We provide our employees with diverse training and career development opportunities, including cross-
+   departmental exchanges, skills training, and lunchtime learning sessions. Together, these foster the full
+   realization of individuals’ potential and professional capabilities for comprehensive development.
+
+
+
+
+2. Caring for Staff
+   We promote work-life balance and create a relaxed working environment. We organize a series of holiday
+   celebrations and health-related activities, allowing employees to make the most of their free time and pursue
+   personal interests.
+
+
+
+
+                                                                                                                   INTERIM REPORT 2023/24
+
+
+
+                                                                                                                   19
+                                               COMMUNITY INITIATIVES
+
+
+                                               1. Green 5G Network
+                                                 SmarTone has successfully improved its energy efficiency by deploying the latest technologies in its mobile
+                                                 network. By modernizing base station hardware and software, we achieved a 25% energy efficiency
+                                                 improvement. Additionally, SmarTone utilized an AI-based solution to dynamically adjust power consumption
+                                                 based on the traffic pattern, resulting in a further 11% energy efficiency gain without compromising network
+                                                 performance. These combined efforts have led to an impressive overall energy efficiency improvement of 36%,
+                                                 demonstrating SmarTone’s commitment to sustainability and minimizing energy consumption.
+
+
+                                                                                                             Traffic Forecasting &
+                                                           New Equipment                                     Power Adjustment
+
+
+
+
+                                                                       Energy Efficiency                             Energy Efficiency
+
+
+                                                                            25%                                         11%
+                                                                                         Overall Network Energy Saving
+                                                            Energy Saving
+
+
+
+                                                                                                       36%
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                                    With Energy Saving                                                         Time
+
+                                                                    Without Energy Saving
+
+
+
+
+20
+                                                                    COMMUNITY INITIATIVES
+
+
+2. Raising Awareness of Cybersecurity
+  SmarTone has always placed great importance on network security, striving to protect our customers. We have
+  introduced Hong Kong’s first “Staff Verification Code” to further protecting customers and minimizing the risk
+  associated with phone scams.
+
+  SmarTone safeguards customers comprehensively. We also actively provide up-to-date anti-scam tips through
+  the “5 Tips for Security”, regularly reminding customers to stay vigilant and enhance their awareness of network
+  security. This helps them identify and respond to increasingly sophisticated fraudulent messages, calls, and links,
+  staying safe amid the rising number of fraud cases.
+
+
+
+
+                                                                                                                        INTERIM REPORT 2023/24
+
+
+
+                                                                                                                        21
+                                               COMMUNITY INITIATIVES
+
+
+                                               3. Caring for the Community
+                                                 Through collaborations with social welfare organizations such as Gingko House and Hong Kong Sheng Kung Hui
+                                                 Lok Man Kwok Fung Hin Integrated Service Center, we organize various community activities. These include the
+                                                 SMART Elderly Academy, Autumn Warm Meals Distribution, and Elderly-Friendly Mobile Consultation Station.
+
+
+
+
+                                                 In recent times, Hong Kong has experienced severe black rainstorms. In support of affected residents in Shek O,
+                                                 SmarTone provided free Home 5G Broadband routers and services to local users.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+
+
+
+
+22
+                                                             REPORT ON REVIEW OF
+                                                   INTERIM FINANCIAL INFORMATION
+
+
+
+
+TO THE BOARD OF DIRECTORS OF
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+(Incorporated in Bermuda with limited liability)
+
+
+Introduction
+We have reviewed the interim financial information set out on pages 24 to 46, which comprises the condensed
+consolidated balance sheet of SmarTone Telecommunications Holdings Limited (the “Company”) and its subsidiaries
+(together, the “Group”) as at 31 December 2023 and the condensed consolidated profit and loss account, the
+condensed consolidated statement of comprehensive income, the condensed consolidated statement of cash flows
+and the condensed consolidated statement of changes in equity for the six-month period then ended, and selected
+explanatory notes. The Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited require
+the preparation of a report on interim financial information to be in compliance with the relevant provisions thereof
+and Hong Kong Accounting Standard 34 “Interim Financial Reporting” issued by the Hong Kong Institute of Certified
+Public Accountants. The directors of the Company are responsible for the preparation and presentation of this interim
+financial information in accordance with Hong Kong Accounting Standard 34 “Interim Financial Reporting”. Our
+responsibility is to express a conclusion on this interim financial information based on our review and to report our
+conclusion solely to you, as a body, in accordance with our agreed terms of engagement and for no other purpose.
+We do not assume responsibility towards or accept liability to any other person for the contents of this report.
+
+
+Scope of Review
+We conducted our review in accordance with Hong Kong Standard on Review Engagements 2410, “Review of Interim
+Financial Information Performed by the Independent Auditor of the Entity” issued by the Hong Kong Institute of
+Certified Public Accountants. A review of interim financial information consists of making inquiries, primarily of
+persons responsible for financial and accounting matters, and applying analytical and other review procedures. A
+review is substantially less in scope than an audit conducted in accordance with Hong Kong Standards on Auditing
+and consequently does not enable us to obtain assurance that we would become aware of all significant matters that
+might be identified in an audit. Accordingly, we do not express an audit opinion.
+
+
+Conclusion
+Based on our review, nothing has come to our attention that causes us to believe that the interim financial
+information of the Group is not prepared, in all material respects, in accordance with Hong Kong Accounting
+Standard 34 “Interim Financial Reporting”.
+
+
+
+
+                                                                                                                        INTERIM REPORT 2023/24
+PricewaterhouseCoopers
+Certified Public Accountants
+                                                                                                                        23
+Hong Kong, 22 February 2024
+                                               CONDENSED CONSOLIDATED
+                                               PROFIT AND LOSS ACCOUNT
+                                               For the six months ended 31 December 2023
+                                               (Expressed in Hong Kong dollars)
+
+
+                                                                                                                            Unaudited six months ended
+                                                                                                                                   31 December
+                                                                                                                                   2023             2022
+                                                                                                                 Notes             $000             $000
+
+                                               Service revenue and other related service                                       2,303,463        2,333,030
+                                               Handset and accessory sales                                                     1,087,032        1,475,981
+
+
+                                               Revenues                                                            4           3,390,495        3,809,011
+                                               Cost of inventories sold                                                       (1,069,686)      (1,457,910)
+                                               Cost of services provided                                                        (239,811)        (207,803)
+                                               Staff costs                                                                      (352,678)        (360,871)
+                                               Other operating expenses, net                                       7            (487,141)        (503,362)
+                                               Depreciation, amortization and loss on disposal                     7            (880,344)        (887,692)
+
+
+                                               Operating profit                                                                 360,835          391,373
+                                               Finance income                                                      5             35,071            41,968
+                                               Finance costs                                                       6            (51,365)          (77,376)
+
+
+                                               Profit before income tax                                            7            344,541           355,965
+                                               Income tax expense                                                  8            (98,749)         (100,133)
+
+
+                                               Profit after income tax                                                          245,792          255,832
+
+
+                                               Profit attributable to
+                                               Company’s shareholders                                                           245,792          255,832
+
+
+                                               Earnings per share for profit attributable to Company’s
+                                                 shareholders during the period (expressed in cents per share)    10
+                                                 Basic                                                                              22.2             23.1
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                 Diluted                                                                            22.2             23.1
+
+
+
+
+                                               The above condensed consolidated profit and loss account should be read in conjunction with the accompanying
+24                                             notes.
+                                CONDENSED CONSOLIDATED STATEMENT OF
+                                              COMPREHENSIVE INCOME
+                                                                           For the six months ended 31 December 2023
+                                                                                        (Expressed in Hong Kong dollars)
+
+
+                                                                                          Unaudited six months ended
+                                                                                                 31 December
+                                                                                                 2023             2022
+                                                                                                 $000             $000
+
+Profit for the period                                                                         245,792         255,832
+
+
+Other comprehensive income/(loss)
+Item that may be reclassified subsequently to profit and loss:
+   Currency translation differences                                                               164             (664)
+Item that will not be reclassified subsequently to profit and loss:
+   Fair value gain/(loss) on financial asset at fair value through other
+     comprehensive income                                                                       2,147           (8,221)
+
+
+Other comprehensive income/(loss) for the period                                                2,311           (8,885)
+
+
+Total comprehensive income for the period attributable to
+  Company’s shareholders                                                                      248,103         246,947
+
+
+
+
+                                                                                                                           INTERIM REPORT 2023/24
+
+The above condensed consolidated statement of comprehensive income should be read in conjunction with the
+accompanying notes.                                                                                                        25
+                                               CONDENSED CONSOLIDATED BALANCE SHEET
+                                               As at 31 December 2023 and 30 June 2023
+                                               (Expressed in Hong Kong dollars)
+
+
+                                                                                                                            Unaudited     Audited
+                                                                                                                          31 December     30 June
+                                                                                                                                 2023       2023
+                                                                                                                  Notes          $000       $000
+
+                                               Non-current assets
+                                               Fixed assets                                                        12       2,898,385   2,925,297
+                                               Customer acquisition costs                                                      96,637     101,702
+                                               Contract assets                                                                 27,205      32,241
+                                               Right-of-use assets                                                            746,921     764,873
+                                               Interest in an associate                                                             3           3
+                                               Financial asset at fair value through other comprehensive income                 9,438       7,291
+                                               Financial assets at amortized cost                                                   –     147,832
+                                               Intangible assets                                                   13       4,194,743   4,431,409
+                                               Deposits and prepayments                                                        94,307      79,326
+                                               Deferred income tax assets                                                       5,064       6,447
+
+
+                                               Total non-current assets                                                     8,072,703   8,496,421
+
+
+                                               Current assets
+                                               Cash and cash equivalents                                                    1,047,761   1,155,152
+                                               Contract assets                                                                100,163      93,287
+                                               Trade receivables                                                   14         459,826     351,339
+                                               Deposits and prepayments                                                       237,023     252,548
+                                               Other receivables                                                               92,537      62,565
+                                               Financial assets at amortized cost                                             129,260      21,749
+                                               Inventories                                                                    197,708     106,333
+                                               Tax reserve certificate                                                        384,709     359,549
+
+
+                                               Total current assets                                                         2,648,987   2,402,522
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               Current liabilities
+                                               Trade payables                                                      15         310,710    317,302
+                                               Other payables and accruals                                                    602,241    660,926
+                                               Contract liabilities                                                           393,252    357,568
+                                               Lease liabilities                                                              487,882    532,088
+                                               Current income tax liabilities                                                 570,204    611,198
+                                               Bank borrowings                                                     16           2,200      2,200
+                                               Spectrum utilization fee liabilities                                           225,623    222,922
+
+
+                                               Total current liabilities                                                    2,592,112   2,704,204
+
+
+
+
+26
+                                CONDENSED CONSOLIDATED BALANCE SHEET
+                                                                  As at 31 December 2023 and 30 June 2023
+                                                                            (Expressed in Hong Kong dollars)
+
+
+                                                                                 Unaudited             Audited
+                                                                               31 December             30 June
+                                                                                      2023               2023
+                                                                     Notes            $000               $000
+
+Non-current liabilities
+Asset retirement obligations                                                          64,285           63,309
+Contract liabilities                                                                   9,246            6,940
+Lease liabilities                                                                    263,152          254,906
+Bank borrowings                                                       16              61,600           63,800
+Spectrum utilization fee liabilities                                               2,448,797        2,578,218
+Deferred income tax liabilities                                                      154,317          143,079
+
+
+Total non-current liabilities                                                      3,001,397        3,110,252
+
+
+Net assets                                                                         5,128,181        5,084,487
+
+
+Capital and reserves
+Share capital                                                         17             110,348          110,646
+Reserves                                                                           5,017,833        4,973,841
+
+
+Total equity                                                                       5,128,181        5,084,487
+
+
+
+
+                                                                                                                 INTERIM REPORT 2023/24
+
+
+
+The above condensed consolidated balance sheet should be read in conjunction with the accompanying notes.        27
+                                               CONDENSED CONSOLIDATED
+                                               STATEMENT OF CASH FLOWS
+                                               For the six months ended 31 December 2023
+                                               (Expressed in Hong Kong dollars)
+
+
+                                                                                                                            Unaudited six months ended
+                                                                                                                                   31 December
+                                                                                                                                   2023             2022
+                                                                                                                                   $000             $000
+
+                                               Cash flows from operating activities                                              999,892        1,251,181
+                                                 Income tax paid                                                                (127,127)          (8,669)
+                                                 (Purchase)/redemption of tax reserve certificate                                (25,159)           2,500
+
+
+                                               Net cash inflow from operating activities                                        847,606         1,245,012
+
+
+                                               Cash flows from investing activities
+                                                 Payment for purchase of fixed assets                                           (315,988)        (344,459)
+                                                 Payment of spectrum utilization fee                                            (159,821)        (156,024)
+                                                 Decrease in short-term deposits                                                       –          159,033
+                                                 Proceeds from early redemption of financial assets at amortized cost             36,835                –
+                                                 Other investing activities                                                       36,454           24,078
+
+
+                                               Net cash outflow from investing activities                                       (402,520)        (317,372)
+
+
+                                               Cash flows from financing activities
+                                                 Payment for repurchase of shares                                                (12,038)          (1,463)
+                                                 Repayment of bank borrowings                                                     (2,200)          (9,614)
+                                                 Principal elements of lease payments                                           (345,127)        (314,916)
+                                                 Dividends paid to the Company’s shareholders                                   (193,117)        (171,325)
+
+
+                                               Net cash outflow from financing activities                                       (552,482)        (497,318)
+
+
+                                               Net (decrease)/increase in cash and cash equivalents                             (107,396)        430,322
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               Effect of foreign exchange rate change                                                  5             (139)
+
+                                               Cash and cash equivalents at 1 July                                             1,155,152         385,467
+
+
+                                               Cash and cash equivalents at 31 December                                        1,047,761         815,650
+
+
+
+
+                                               The above condensed consolidated statement of cash flows should be read in conjunction with the accompanying
+                                               notes.
+28
+                                                                               CONDENSED CONSOLIDATED
+                                                                          STATEMENT OF CHANGES IN EQUITY
+                                                                                                        For the six months ended 31 December 2023
+                                                                                                                     (Expressed in Hong Kong dollars)
+
+
+                                                                                                          Unaudited
+                                                                                         Attributable to the Company’s shareholders
+                                                                                                                           Employee
+                                                                                            Capital                      share-based
+                                                     Share        Share   Revaluation   redemption    Contributed      compensation       Exchange     Retained
+                                                    capital    premium        reserve       reserve       surplus             reserve       reserve      profits       Total
+                                                     $000         $000          $000          $000          $000                $000          $000        $000         $000
+
+At 1 July 2022                                     110,579    1,640,986       14,296        17,466            926              1,705        (1,475)   3,369,301    5,153,784
+
+
+Comprehensive income
+Profit for the period                                    –           –             –             –               –                    –          –     255,832      255,832
+Other comprehensive loss
+Fair value loss on financial asset at fair value
+  through other comprehensive income                     –           –        (8,221)            –               –                    –          –            –       (8,221)
+Currency translation differences                         –           –             –             –               –                    –       (664)           –         (664)
+
+
+Total comprehensive income for the period
+  ended 31 December 2022                                 –           –        (8,221)            –               –                    –       (664)    255,832      246,947
+
+
+Transactions with owners
+Share-based payments                                     –           –             –             –               –             1,733             –            –        1,733
+Lapse of share award                                     –           –             –             –               –              (105)            –          105            –
+Repurchase of shares                                   (53)          –             –            53               –                 –             –       (1,463)      (1,463)
+Payment of 2022 final dividend                           –           –             –             –               –                 –             –     (171,325)    (171,325)
+
+
+Total transactions with owners                         (53)          –             –            53               –             1,628             –     (172,683)    (171,055)
+
+
+At 31 December 2022                                110,526    1,640,986        6,075        17,519            926              3,333        (2,139)   3,452,450    5,229,676
+
+
+
+
+                                                                                                                                                                                INTERIM REPORT 2023/24
+
+
+
+                                                                                                                                                                                29
+                                               CONDENSED CONSOLIDATED
+                                               STATEMENT OF CHANGES IN EQUITY
+                                               For the six months ended 31 December 2023
+                                               (Expressed in Hong Kong dollars)
+
+
+                                                                                                                                                    Unaudited
+                                                                                                                                   Attributable to the Company’s shareholders
+                                                                                                                                                                   Employee
+                                                                                                                                      Capital                    share-based
+                                                                                                   Share        Share Revaluation redemption Contributed       compensation     Exchange     Retained
+                                                                                                  Capital    premium      reserve     reserve    surplus             reserve      reserve      profits        Total
+                                                                                                    $000         $000        $000        $000       $000                $000         $000        $000         $000
+
+                                               At 1 July 2023                                     110,646    1,647,004     5,393       17,519         1,127              248       (2,613)   3,305,163    5,084,487
+
+
+                                               Comprehensive income
+                                               Profit for the period                                    –           –          –            –             –                –            –     245,792      245,792
+                                               Other comprehensive income
+                                               Fair value gain on financial asset at fair value
+                                                 through other comprehensive income                     –           –      2,147            –             –                –           –             –        2,147
+                                               Currency translation differences                         –           –          –            –             –                –         164             –          164
+
+
+                                               Total comprehensive income for the period
+                                                 ended 31 December 2023                                 –           –      2,147            –             –                –         164      245,792      248,103
+
+
+                                               Transactions with owners
+                                               Share-based payments                                     –           –          –           –              –              746            –            –          746
+                                               Repurchase of shares (note 17(a))                     (298)          –          –         298              –                –            –      (12,038)     (12,038)
+                                               Payment of 2023 final dividend                           –           –          –           –              –                –            –     (193,117)    (193,117)
+
+
+                                               Total transactions with owners                        (298)          –          –         298              –              746            –     (205,155)    (204,409)
+
+
+                                               At 31 December 2023                                110,348    1,647,004     7,540       17,817         1,127              994       (2,449)   3,345,800    5,128,181
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+
+
+
+
+                                               The above condensed consolidated statement of changes in equity should be read in conjunction with the
+30                                             accompanying notes.
+                             NOTES TO THE CONDENSED CONSOLIDATED
+                                      INTERIM FINANCIAL STATEMENTS
+                                                                                (Expressed in Hong Kong dollars)
+
+
+
+
+1 General information
+  SmarTone Telecommunications Holdings Limited (the “Company”) and its subsidiaries (together, the “Group”)
+  are principally engaged in the provision of telecommunications services and the sale of handsets and accessories
+  in Hong Kong and Macau.
+
+  The Company is a limited liability company incorporated in Bermuda. The address of its head office and principal
+  place of business is 31/F, Millennium City 2, 378 Kwun Tong Road, Kwun Tong, Hong Kong.
+
+  The Company has its listing on The Stock Exchange of Hong Kong Limited (the “SEHK”).
+
+  These unaudited condensed consolidated interim financial statements (“Interim Financial Statements”) are
+  presented in Hong Kong dollars, unless otherwise stated. These Interim Financial Statements have been approved
+  for issue by the board of directors on 22 February 2024.
+
+
+2 Basis of preparation
+  These Interim Financial Statements for the six months ended 31 December 2023 have been prepared in
+  accordance with Hong Kong Accounting Standard (“HKAS”) 34, “Interim Financial Reporting”. These Interim
+  Financial Statements should be read in conjunction with the annual financial statements for the year ended 30
+  June 2023, which have been prepared in accordance with Hong Kong Financial Reporting Standards (“HKFRSs”).
+  These Interim Financial Statements have been prepared on a historical cost basis, except for the financial asset at
+  fair value through other comprehensive income, measured at fair value, and on a going concern basis.
+
+  The accounting policies applied are consistent with those of the annual financial statements for the year ended
+  30 June 2023, as described in those annual financial statements except for the adoption of the amendments to
+  standards as set out below.
+
+
+  (a) Amendments to standards adopted by the Group
+       The Group has applied the following amendments to standards for the first time for their annual reporting
+       commencing 1 July 2023.
+
+       HKAS 1 and HKFRS Practice                  Disclosure of Accounting Policies
+         Statement 2 (Amendments)
+       HKAS 8 (Amendments)                        Definition of Account Estimates
+       HKAS 12 (Amendments)                       Deferred Tax related to Assets and Liabilities arising from a Single
+                                                     Transaction
+       Amendment to HKAS 12                       International Tax Reform – Pillar Two Model Rules
+       HKFRS 17                                   Insurance Contracts
+
+
+
+
+                                                                                                                         INTERIM REPORT 2023/24
+       The adoption of these amendments to standards has no significant impact on these Interim Financial
+       Statements.
+
+       Taxes on income in the interim periods are accrued using the tax rate that would be applicable to expected
+       total annual earnings.
+
+
+                                                                                                                         31
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               2 Basis of preparation (continued)
+                                                   (b) Amendments to standards and interpretations to existing standards
+                                                       not yet adopted
+                                                        Certain amendments to standards and interpretations to existing standards have been published that are
+                                                        not mandatory for 30 June 2024 reporting periods and have not been early adopted by the Group.
+
+                                                        HKAS 1 (Amendments)                           Classification of Liabilities as Current or Non-current1
+                                                        HKAS 1 (Amendments)                           Non-current Liabilities with Covenants1
+                                                        HKFRS 10 and HKAS 28                          Sale or Contribution of Assets between an Investor and its
+                                                          (Amendments)                                  Associate or Joint Venture2
+                                                        HKFRS 16 (Amendments)                         Lease Liability in a Sale and Leaseback1
+                                                        HK-Interpretation 5 (2020)                    Presentation of Financial Statements – Classification by the
+                                                                                                        Borrower of a Term Loan that Contains a Repayment on
+                                                                                                        Demand Clause1
+                                                        Amendments to HKAS 7 and HKFRS 7              Supplier Finance Arrangement1
+                                                        HKAS 21 (Amendments)                          Lack of Exchangeability3
+
+                                                        1
+                                                             Effective for annual periods beginning on or after 1 January 2024.
+                                                        2
+                                                             The original effective date of 1 January 2016 has been postponed until further announcement.
+                                                        3
+                                                             Effective for annual periods beginning on or after 1 January 2025.
+
+
+                                               3 Financial risk management and financial instruments
+                                                   (a) Financial risk factors
+                                                        The Group’s activities expose it to a variety of financial risks: market risk (including foreign currency risk,
+                                                        interest rate risk and price risk), credit risk and liquidity risk.
+
+                                                        The Interim Financial Statements do not include all financial risk management information and disclosures
+                                                        required in the annual financial statements, and should be read in conjunction with the Group’s annual
+                                                        financial statements as at 30 June 2023.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                        There have been no changes in any risk management policies since year end.
+
+
+
+
+32
+                            NOTES TO THE CONDENSED CONSOLIDATED
+                                     INTERIM FINANCIAL STATEMENTS
+                                                                                 (Expressed in Hong Kong dollars)
+
+
+
+
+3 Financial risk management and financial instruments (continued)
+  (b) Fair value estimation
+     This note provides an update on the judgements and estimates made by the Group in determining the fair
+     values of the financial instruments since the last annual financial statements. To provide an indication about
+     the reliability of the inputs used in determining fair value, the Group classifies its financial instruments into
+     the three levels prescribed under the accounting standards. An explanation of each level follows underneath
+     the table.
+
+     The following table presents the Group’s financial assets measured and recognized at fair value at 31
+     December 2023 and 30 June 2023.
+
+                                                           Level 1          Level 2          Level 3            Total
+                                                             $000             $000             $000             $000
+
+     Assets
+     Financial asset at fair value through
+        other comprehensive income
+
+     At 31 December 2023 (Unaudited)                             –           9,438                 –            9,438
+
+
+     At 30 June 2023 (Audited)                                   –           7,291                 –            7,291
+
+
+     There were no transfers between level 1 and level 2 and no changes in valuation techniques during the
+     period.
+
+     Level 1: The fair value of financial instruments traded in active markets (such as publicly traded derivatives
+     and equity securities) is based on quoted market prices at the end of the reporting period. The quoted
+     market price used for financial assets held by the Group is the current bid price. These instruments are
+     included in level 1.
+
+     Level 2: The fair value of financial instruments that are not traded in an active market (for example, over-
+     the-counter derivatives) is determined using valuation techniques which maximize the use of observable
+     market data and rely as little as possible on entity-specific estimates. If all significant inputs required to fair
+     value an instrument are observable, the instrument is included in level 2.
+
+     Level 3: If one or more of the significant inputs is not based on observable market data, the instrument is
+     included in level 3.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2023/24
+     The financial asset at fair value through other comprehensive income is stated at fair value based on the net
+     asset value per unit of the respective fund as determined by the manager of the relevant fund.
+
+     All of the resulting fair value estimates are included in level 2.
+
+
+
+
+                                                                                                                           33
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               4 Segment reporting
+                                                   The chief operating decision-maker (the “CODM”) has been identified as the Group’s senior executive
+                                                   management. The CODM reviews the Group’s internal reporting in order to assess performance and allocate
+                                                   resources. The CODM has determined the operating segments based on these reports.
+
+                                                   The CODM examines the Group’s performance from a geographic perspective based on the location in which
+                                                   the sale originated. The CODM measures the performance of its segments based on earnings before interest,
+                                                   tax, depreciation, amortization and loss on disposal (“EBITDA”) and operating profit.
+
+                                                   An analysis of the Group’s segment information by geographical segments is set out as follows:
+
+
+                                                   (a) Segment results
+
+                                                                                                       Unaudited six months ended 31 December 2023
+                                                                                                    Hong Kong         Macau    Elimination Consolidated
+                                                                                                         $000          $000          $000          $000
+
+                                                        External revenue                              3,357,982          32,513               –     3,390,495
+                                                        Inter-segment revenue                            11,380           1,857         (13,237)            –
+
+
+                                                        Total revenue                                 3,369,362          34,370         (13,237)    3,390,495
+
+
+                                                        Timing of revenue recognition
+                                                          At a point in time                          1,086,855          11,189         (11,012)    1,087,032
+                                                          Over time                                   2,282,507          23,181          (2,225)    2,303,463
+
+
+                                                                                                      3,369,362          34,370         (13,237)    3,390,495
+
+
+                                                        EBITDA                                        1,248,888           (7,709)              –    1,241,179
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                        Depreciation, amortization and
+                                                          loss on disposal                             (875,466)          (4,878)              –     (880,344)
+
+
+                                                        Operating profit/(loss)                         373,422         (12,587)               –     360,835
+
+
+                                                        Finance income                                                                                 35,071
+                                                        Finance costs                                                                                 (51,365)
+
+
+                                                        Profit before income tax                                                                     344,541
+
+
+
+
+34
+                                NOTES TO THE CONDENSED CONSOLIDATED
+                                         INTERIM FINANCIAL STATEMENTS
+                                                                (Expressed in Hong Kong dollars)
+
+
+
+
+4 Segment reporting (continued)
+   (a) Segment results (continued)
+
+                                              Unaudited six months ended 31 December 2022
+                                          Hong Kong          Macau     Elimination Consolidated
+                                               $000           $000           $000         $000
+
+      External revenue                    3,643,851       165,160              –     3,809,011
+      Inter-segment revenue                 143,947         1,667       (145,614)            –
+
+
+      Total revenue                       3,787,798       166,827       (145,614)    3,809,011
+
+
+      Timing of revenue recognition
+        At a point in time                1,473,371       145,999       (143,389)    1,475,981
+        Over time                         2,314,427        20,828          (2,225)   2,333,030
+
+
+                                          3,787,798       166,827       (145,614)    3,809,011
+
+
+      EBITDA                              1,288,856         (9,791)             –    1,279,065
+      Depreciation, amortization and
+        loss on disposal                    (882,749)       (4,943)             –     (887,692)
+
+
+      Operating profit/(loss)               406,107        (14,734)             –      391,373
+
+
+      Finance income                                                                     41,968
+      Finance costs                                                                     (77,376)
+
+
+      Profit before income tax                                                         355,965
+
+
+
+
+                                                                                                   INTERIM REPORT 2023/24
+
+
+
+                                                                                                   35
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               4 Segment reporting (continued)
+                                                   (b) Segment assets/(liabilities)
+
+                                                                                                             At 31 December 2023 (Unaudited)
+                                                                                                     Hong Kong       Macau Unallocated Consolidated
+                                                                                                          $000         $000         $000       $000
+
+                                                        Segment assets                                10,094,302          98,914         528,474      10,721,690
+
+
+                                                        Segment liabilities                            (4,765,742)      (103,246)        (724,521)     (5,593,509)
+
+
+                                                                                                                      At 30 June 2023 (Audited)
+                                                                                                      Hong Kong            Macau     Unallocated     Consolidated
+                                                                                                           $000             $000           $000             $000
+
+                                                        Segment assets                                10,255,416         100,656         542,871      10,898,943
+
+
+                                                        Segment liabilities                            (4,955,384)      (104,795)        (754,277)     (5,814,456)
+
+
+                                                  There are no differences from the last annual financial statements in the basis of segmentation or in the basis of
+                                                  measurement of segment results.
+
+
+                                               5 Finance income
+
+                                                                                                                                    Unaudited six months ended
+                                                                                                                                           31 December
+                                                                                                                                           2023             2022
+                                                                                                                                           $000             $000
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                   Interest income from bank deposits                                                    31,109            31,894
+                                                   Interest income from financial assets at amortized cost                                3,962            10,074
+
+
+                                                                                                                                         35,071            41,968
+
+
+
+
+36
+                              NOTES TO THE CONDENSED CONSOLIDATED
+                                       INTERIM FINANCIAL STATEMENTS
+                                                                                 (Expressed in Hong Kong dollars)
+
+
+
+
+6 Finance costs
+
+                                                                                   Unaudited six months ended
+                                                                                          31 December
+                                                                                          2023             2022
+                                                                                          $000             $000
+
+  Interest expense on bank and other borrowings                                          1,185           30,398
+  Accretion expenses
+     Spectrum utilization fee liabilities                                               33,101           34,946
+     Lease liabilities                                                                  13,731            7,594
+     Asset retirement obligations                                                          933              436
+  Net exchange loss on financing activities (note 9)                                        37            4,002
+  Loss on early redemption of financial assets at amortized cost                         2,378                –
+
+
+                                                                                        51,365           77,376
+
+
+  Accretion expenses represent changes in the spectrum utilization fee liabilities, lease liabilities and asset
+  retirement obligations due to passage of time calculated by applying an effective interest rate method of
+  allocation to the amount of the liabilities at the beginning of the period.
+
+
+7 Profit before income tax
+  Profit before income tax is stated after charging/(crediting) the following:
+
+                                                                                   Unaudited six months ended
+                                                                                          31 December
+                                                                                          2023             2022
+                                                                                          $000             $000
+
+  Other operating expenses, net
+    – Network costs                                                                    288,324          284,531
+    – Short-term and low-value leases                                                   15,081           16,931
+    – Impairment loss of trade receivables (note 14)                                     1,846            1,552
+    – Net exchange gain (note 9)                                                        (1,238)          (2,741)
+    – Others                                                                           183,128          203,089
+  Loss on disposal of fixed assets                                                       7,296            2,798
+  Depreciation of fixed assets                                                         264,083          270,975
+
+
+
+
+                                                                                                                    INTERIM REPORT 2023/24
+  Depreciation of right-of-use assets                                                  327,477          334,473
+  Amortization of spectrum utilization fee                                             236,666          236,666
+  Amortization of customer acquisition costs                                            44,822           42,780
+  Share-based payments                                                                     746            1,733
+
+
+
+
+                                                                                                                    37
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               8 Income tax expense
+
+                                                                                                                                 Unaudited six months ended
+                                                                                                                                        31 December
+                                                                                                                                        2023             2022
+                                                                                                                                        $000             $000
+
+                                                   Current income tax
+                                                     Hong Kong profits tax                                                            84,658            84,655
+                                                     Non-Hong Kong tax                                                                   974               888
+                                                   Under/(over)-provision in prior years
+                                                     Hong Kong profits tax                                                               496             (6,139)
+
+
+                                                   Total current income tax expense                                                   86,128            79,404
+
+                                                   Deferred income tax expense                                                        12,621            20,729
+
+
+                                                   Income tax expense                                                                 98,749           100,133
+
+
+                                                   Income tax expense is recognized based on management’s estimate of the weighted average annual income tax
+                                                   rate expected for the full financial year.
+
+
+                                               9 Net exchange (gain)/loss
+                                                   The exchange differences (credited)/charged to the condensed consolidated profit and loss account are included
+                                                   as follows:
+
+                                                                                                                                 Unaudited six months ended
+                                                                                                                                        31 December
+                                                                                                                                        2023             2022
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                                                                                                        $000             $000
+
+                                                   Other operating expenses, net (note 7)                                              (1,238)           (2,741)
+                                                   Finance costs (note 6)                                                                  37             4,002
+
+
+                                                                                                                                       (1,201)           1,261
+
+
+
+
+38
+                           NOTES TO THE CONDENSED CONSOLIDATED
+                                    INTERIM FINANCIAL STATEMENTS
+                                                                             (Expressed in Hong Kong dollars)
+
+
+
+
+10 Earnings per share
+  (a) Basic earnings per share
+     Basic earnings per share is calculated by dividing:
+
+     •    the profit attributable to Company’s shareholders
+
+     •    by the weighted average number of ordinary shares outstanding during the period and excluding
+          shares held for share award scheme.
+
+                                                                                Unaudited six months ended
+                                                                                       31 December
+                                                                                       2023             2022
+                                                                                     Cents              Cents
+
+     Basic earnings per share attributable to Company’s shareholders                    22.2              23.1
+
+
+  (b) Diluted earnings per share
+     Diluted earnings per share adjusts the figures used in the determination of basic earnings per share to take
+     into account:
+
+     •    the weighted average number of additional ordinary shares that would have been outstanding
+          assuming the conversion of all dilutive potential ordinary shares.
+
+                                                                                Unaudited six months ended
+                                                                                       31 December
+                                                                                       2023             2022
+                                                                                     Cents              Cents
+
+     Diluted earnings per share attributable to Company’s shareholders                  22.2              23.1
+
+
+                                                                                Unaudited six months ended
+                                                                                       31 December
+                                                                                       2023             2022
+                                                                                       $000             $000
+
+     Profit attributable to Company’s shareholders used in calculating
+       basic earnings per share and diluted earnings per share                      245,792            255,832
+
+
+
+
+                                                                                                                    INTERIM REPORT 2023/24
+
+
+
+                                                                                                                    39
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               10 Earnings per share (continued)
+                                                   (c) Weighted average number of shares used as the denominator
+
+                                                                                                                                   Unaudited six months ended
+                                                                                                                                          31 December
+                                                                                                                                          2023             2022
+                                                                                                                                      Number             Number
+
+                                                        Weighted average number of ordinary shares used as
+                                                          the denominator in calculating basic earnings per share
+                                                          (less shares held for share award scheme)                              1,104,918,857     1,105,412,303
+                                                        Adjustments for calculation of diluted earnings per share:
+                                                          Effect of awarded shares                                                        4,320            50,852
+                                                          Effect of share options                                                             –            23,246
+
+
+                                                        Weighted average number of ordinary shares and potential
+                                                         ordinary shares used as the denominator in calculating
+                                                         diluted earnings per share                                              1,104,923,177     1,105,486,401
+
+
+                                               11 Dividends
+                                                   (a) In respect of the period
+
+                                                                                                                                   Unaudited six months ended
+                                                                                                                                          31 December
+                                                                                                                                          2023             2022
+                                                                                                                                          $000             $000
+
+                                                        Interim dividend declared of 14.5 cents (2022: 14.5 cents)
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                           per fully paid share                                                        160,004            160,437
+
+
+                                                        At a meeting held on 22 February 2024, the directors declared an interim dividend of 14.5 cents per fully
+                                                        paid share for the year ending 30 June 2024. The interim dividend declared is not reflected as a dividend
+                                                        payable in these Interim Financial Statements, but will be reflected as an appropriation of retained profits
+                                                        for the year ending 30 June 2024.
+
+                                                        The interim dividend declared is calculated based on the number of shares in issue at the date of approval
+                                                        of these Interim Financial Statements.
+
+
+
+
+40
+                             NOTES TO THE CONDENSED CONSOLIDATED
+                                      INTERIM FINANCIAL STATEMENTS
+                                                                              (Expressed in Hong Kong dollars)
+
+
+
+
+11 Dividends (continued)
+   (b) Attributable to prior year paid in the period
+
+                                                                                Unaudited six months ended
+                                                                                       31 December
+                                                                                       2023             2022
+                                                                                       $000             $000
+
+       Final dividend of 17.5 cents (2022: 15.5 cents) per fully paid share         193,117          171,325
+
+
+12 Fixed assets
+
+                                                                                                   Unaudited
+                                                                                                       $000
+
+   Opening net book amount at 1 July 2023                                                          2,925,297
+   Additions                                                                                         244,982
+   Disposals                                                                                          (7,923)
+   Exchange differences                                                                                  112
+   Depreciation                                                                                     (264,083)
+
+
+   Closing net book amount at 31 December 2023                                                     2,898,385
+
+
+   Opening net book amount at 1 July 2022                                                          2,736,212
+   Additions                                                                                         334,083
+   Disposals                                                                                           (3,384)
+   Exchange differences                                                                                  (476)
+   Depreciation                                                                                     (270,975)
+
+
+   Closing net book amount at 31 December 2022                                                     2,795,460
+
+
+   During the six months ended 31 December 2023, major fixed assets acquired by the Group included network
+   and testing equipment, including network under construction amounting to $192,491,000 (2022:
+   $224,527,000).
+
+   At 31 December 2023, buildings with carrying amount of $64,210,000 (30 June 2023: $65,429,000) were
+
+
+
+
+                                                                                                                 INTERIM REPORT 2023/24
+   pledged as security for bank borrowings of the Group (note 16).
+
+
+
+
+                                                                                                                 41
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               13 Intangible assets
+
+                                                                                                                   Unaudited
+                                                                                                                     Spectrum
+                                                                                                                utilization fee
+                                                                                                                          $000
+
+                                                   Opening net book amount at 1 July 2023                          4,431,409
+                                                   Amortization                                                     (236,666)
+
+
+                                                   Closing net book amount at 31 December 2023                     4,194,743
+
+
+                                                   Opening net book amount at 1 July 2022                          4,904,742
+                                                   Amortization                                                     (236,666)
+
+
+                                                   Closing net book amount at 31 December 2022                     4,668,076
+
+
+                                               14 Trade receivables
+
+                                                                                                   Unaudited          Audited
+                                                                                                 31 December          30 June
+                                                                                                        2023            2023
+                                                                                                        $000            $000
+
+                                                   Trade receivables                                 466,073         357,629
+                                                   Less: loss allowance                               (6,247)         (6,290)
+
+
+                                                                                                     459,826         351,339
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+
+
+
+
+42
+                              NOTES TO THE CONDENSED CONSOLIDATED
+                                       INTERIM FINANCIAL STATEMENTS
+                                                                                 (Expressed in Hong Kong dollars)
+
+
+
+
+14 Trade receivables (continued)
+   The credit periods granted by the Group to its customers generally range from 15 days to 45 days from the date
+   of invoice. An ageing analysis of trade receivables, net of provision, based on invoice date is as follows:
+
+                                                                                     Unaudited              Audited
+                                                                                   31 December              30 June
+                                                                                          2023                2023
+                                                                                          $000                $000
+
+   Current to 30 days                                                                       360,439         280,536
+   31–60 days                                                                                35,081          16,490
+   61–90 days                                                                                12,640           7,005
+   Over 90 days                                                                              51,666          47,308
+
+
+                                                                                            459,826         351,339
+
+
+   The Group applies the HKFRS 9 simplified approach to measuring expected credit losses which uses a lifetime
+   expected loss allowance for all trade receivables and contract assets. This resulted in a loss of $1,846,000 (2022:
+   $1,552,000) for the impairment of its trade receivables during the six months ended 31 December 2023.
+
+
+15 Trade payables
+   An ageing analysis of trade payables based on invoice date is as follows:
+
+                                                                                     Unaudited              Audited
+                                                                                   31 December              30 June
+                                                                                          2023                2023
+                                                                                          $000                $000
+
+   Current to 30 days                                                                       156,798         193,061
+   31–60 days                                                                                50,893          59,838
+   61–90 days                                                                                31,077          26,589
+   Over 90 days                                                                              71,942          37,814
+
+
+                                                                                            310,710         317,302
+
+
+16 Bank borrowings
+
+
+
+                                                                                                                         INTERIM REPORT 2023/24
+                                                  Unaudited                                    Audited
+                                              31 December 2023                               30 June 2023
+                                       Current Non-current           Total        Current     Non-current      Total
+                                         $000          $000          $000           $000            $000       $000
+
+   Secured bank borrowings               2,200        61,600        63,800         2,200          63,800      66,000
+                                                                                                                         43
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               16 Bank borrowings (continued)
+                                                   The carrying amounts of the Group’s bank borrowings included under current liabilities approximate their fair
+                                                   values, as the impact of discounting is not significant. The fair value of the bank borrowings included under non-
+                                                   current liabilities as estimated by discounting their future cash flows at the prevailing market borrowing rates at
+                                                   the period end date for similar borrowings is as follows:
+
+                                                                                                           Level 1         Level 2          Level 3           Total
+                                                                                                             $000            $000             $000            $000
+
+                                                   At 31 December 2023
+                                                   Secured bank borrowings                                       –          61,600                  –        61,600
+
+
+                                                                                                           Level 1          Level 2         Level 3            Total
+                                                                                                             $000             $000            $000             $000
+
+                                                   At 30 June 2023
+                                                   Secured bank borrowings                                       –          63,800                  –        63,800
+
+
+                                                   At 31 December 2023, secured bank borrowings are secured by certain buildings of the Group (note 12) (30
+                                                   June 2023: same).
+
+
+                                               17 Share capital
+
+                                                                                                                                             Unaudited
+                                                                                                                                        Shares of
+                                                                                                                                       $0.1 each               $000
+
+                                                   Authorized
+                                                   At 1 July 2022, 30 June 2023, 1 July 2023 and 31 December 2023                 2,000,000,000            200,000
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                   Issued and fully paid
+                                                   At 1 July 2023                                                                 1,106,464,601            110,646
+                                                   Repurchase of shares (a)                                                          (2,988,000)              (298)
+
+
+                                                   At 31 December 2023                                                            1,103,476,601            110,348
+
+
+                                                   At 1 July 2022                                                                 1,105,792,101            110,579
+                                                   Repurchase of shares                                                                (527,500)                (53)
+
+
+                                                   At 31 December 2022                                                            1,105,264,601            110,526
+
+
+                                                   (a)   During the six months ended 31 December 2023, the Company repurchased and cancelled 2,988,000
+                                                         shares on the SEHK. The amount paid to acquire these cancelled shares of $12,038,000 was deducted from
+44                                                       equity attributable to equity holders.
+                         NOTES TO THE CONDENSED CONSOLIDATED
+                                  INTERIM FINANCIAL STATEMENTS
+                                                                         (Expressed in Hong Kong dollars)
+
+
+
+
+18 Share option scheme
+  (a) Movements in share options
+
+                                                                                       Unaudited
+                                                                                  Average
+                                                                             exercise price     Numbers of
+                                                                                 per share    share options
+
+     At 30 June 2023 and 31 December 2023                                           $4.96          4,000,000
+
+
+     At 31 December 2023, 4,000,000 share options were exercisable with average exercise price of $4.96 per
+     share.
+
+
+  (b) Terms of unexpired and unexercised share options at balance sheet
+      date
+
+                                                                               Unaudited             Audited
+                                                                             31 December             30 June
+                                                                                     2023               2023
+                                                                   Exercise      Number              Number
+                                                                       price     of share            of share
+     Date of grant        Exercise period                         per share       options            options
+
+     21 April 2023        21 April 2024 to 20 April 2028             $4.96        4,000,000        4,000,000
+
+
+  (c) Details of share options exercised
+     No share options were exercised during the six months ended 31 December 2023 and 2022.
+
+
+
+
+                                                                                                                INTERIM REPORT 2023/24
+
+
+
+                                                                                                                45
+                                               NOTES TO THE CONDENSED CONSOLIDATED
+                                               INTERIM FINANCIAL STATEMENTS
+                                               (Expressed in Hong Kong dollars)
+
+
+
+
+                                               19 Commitments and contingent liabilities
+                                                   (a) Capital commitments
+
+                                                                                                                                Unaudited            Audited
+                                                                                                                              31 December            30 June
+                                                                                                                                     2023              2023
+                                                                                                                                     $000              $000
+
+                                                        Fixed assets
+                                                           Contracted for                                                            83,741           80,289
+
+
+                                                   (b) Contingent liabilities
+
+                                                                                                                                Unaudited            Audited
+                                                                                                                              31 December            30 June
+                                                                                                                                     2023              2023
+                                                                                                                                     $000              $000
+
+                                                        Performance guarantees                                                     622,500           622,500
+
+
+                                               20 Related party transactions
+                                                   The Group is controlled by Cellular 8 Holdings Limited, which owns 69.16% of the Company’s shares as at 31
+                                                   December 2023. The remaining 30.84% of the shares are widely held, of which 3.91% is held by another
+                                                   subsidiary of Sun Hung Kai Properties Limited (“SHKP”). The ultimate holding company of the Group is SHKP, a
+                                                   company incorporated in Hong Kong.
+
+                                                   During the six months ended 31 December 2023, the Group had transactions with certain fellow subsidiaries
+                                                   and associates of SHKP in the ordinary course of business. All related party transactions are carried out in
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                   accordance with the terms of the relevant agreements governing the transactions. These transactions are not
+                                                   significant to the Group’s Interim Financial Statements.
+
+
+
+
+46
+                                                                                OTHER INFORMATION
+                                                           (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+Interim dividend
+The Directors declared an interim dividend of 14.5 cents per share for the six months ended 31 December 2023
+(2022: 14.5 cents). The interim dividend will be paid in cash on or about Monday, 18 March 2024 to shareholders
+whose names appear on the Register of Members of the Company on Thursday, 7 March 2024.
+
+
+Closure of register of members
+The record date for entitlement to the interim dividend is Thursday, 7 March 2024. For determining the entitlement to
+the interim dividend, the Register of Members of the Company will be closed for one day on Thursday, 7 March 2024
+during which no transfer of shares will be effected. In order to qualify for the interim dividend, all transfers
+accompanied by the relevant share certificates must be lodged with the Company’s Share Registrar in Hong Kong,
+Computershare Hong Kong Investor Services Limited at Shops 1712-1716, 17th Floor, Hopewell Centre, 183 Queen’s
+Road East, Hong Kong for registration no later than 4:30 p.m. on Wednesday, 6 March 2024.
+
+
+Directors’ and chief executive’s interests
+As at 31 December 2023, the interests or short positions of the Directors and chief executive of the Company in the
+shares, underlying shares and debentures of the Company or any of its associated corporations (within the meaning
+of Part XV of the Securities and Futures Ordinance (“SFO”)) which were notified to the Company and The Stock
+Exchange of Hong Kong Limited (“SEHK”) pursuant to Divisions 7 and 8 of Part XV of the SFO (including interests or
+short positions which they were taken or deemed to have under such provisions of the SFO), or which were recorded
+in the register required to be kept by the Company under section 352 of the SFO, or which were required, pursuant
+to the Model Code for Securities Transactions by Directors of Listed Issuers (the “Model Code”) set out in Appendix
+C3 to the Rules Governing the Listing of Securities on SEHK (the “Listing Rules”), to be notified to the Company and
+SEHK, were as follows:
+
+
+1. Long positions in shares and underlying shares of the Company
+
+                                            Number of shares held
+                                      Personal                                  Number of
+                                      interests                                 underlying                     % of
+                                       (held as                                shares held                   issued
+                                     beneficial       Other                   under equity                   voting
+     Name of Director                   owner)     interests            Total  derivatives        Total      shares
+
+
+     Kwok Ping-luen, Raymond                 –     5,162,3371       5,162,337            –    5,162,337        0.47
+
+     Fung Yuk-lun, Allen               437,359             –         437,359             –     437,359         0.04
+
+
+
+
+                                                                                                                        INTERIM REPORT 2023/24
+     Lau Yeuk-hung, Fiona                    –             –               –     4,000,0002   4,000,000        0.36
+                                                                                 (Personal
+                                                                                  interests
+                                                                                   in share
+                                                                                  options)
+
+     Chau Kam-kun, Stephen             146,000        11,0003        157,000             –     157,000         0.01     47
+                                               OTHER INFORMATION
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+                                                   Notes:
+
+                                                   1.   Mr. Kwok Ping-luen, Raymond was deemed to be interested in these shares in the Company by virtue of him being a
+                                                        beneficiary of a discretionary trust for the purpose of Part XV of the SFO.
+
+                                                   2.   These underlying shares of the Company represented the share options (being regarded for the time being as unlisted
+                                                        physically settled equity derivatives) granted by the Company. Details of these share options are shown in the section
+                                                        entitled “Share option scheme”.
+
+                                                   3.   These shares in the Company were held by the spouse of Mr. Chau Kam-kun, Stephen.
+
+
+                                               2. Long positions in shares and underlying shares of the associated
+                                                  corporations of the Company
+
+                                                   (a) Sun Hung Kai Properties Limited (“SHKP”)
+
+                                                                                                   Number of shares held
+                                                                                            Personal                                      Number of
+                                                                                            interests                                     underlying                    % of
+                                                                                             (held as                                    shares held                  issued
+                                                                                           beneficial         Other                     under equity                  voting
+                                                        Name of Director                      owner)       interests         Total       derivatives         Total    shares
+
+
+                                                        Kwok Ping-luen, Raymond              188,743    562,111,1861   563,879,929                 –   563,879,929     19.46
+                                                                                                          1,580,0002
+
+                                                        Chau Kam-kun, Stephen                  1,000              –          1,000                 –         1,000      0.00
+
+                                                        David Norman Prince                    2,000              –          2,000                 –         2,000      0.00
+
+                                                        Siu Hon-wah, Thomas                        –          7,0003         7,000                 –         7,000      0.00
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                                        Li Ka-cheung, Eric                         –          4,0284         4,028                 –         4,028      0.00
+
+                                                        Notes:
+
+                                                        1.    Mr. Kwok Ping-luen, Raymond was deemed to be interested in these shares in SHKP by virtue of him being a
+                                                              beneficiary of certain discretionary trusts for the purpose of Part XV of the SFO.
+
+                                                        2.    These shares in SHKP were held by the spouse of Mr. Kwok Ping-luen, Raymond.
+
+                                                        3.    These shares in SHKP were held jointly by Mr. Siu Hon-wah, Thomas and his spouse.
+
+                                                        4.    These shares in SHKP were held by the spouse of Dr. Li Ka-cheung, Eric.
+
+
+
+
+48
+                                                                                                     OTHER INFORMATION
+                                                                            (Financial figures are expressed in Hong Kong dollars)
+
+
+
+(b) SUNeVision Holdings Ltd. (“SUNeVision”)
+
+                                                            Number of shares held
+                                                    Personal                                               Number of
+                                                    interests                                              underlying                                   % of
+                                                     (held as                                             shares held                                 issued
+                                                   beneficial            Other                           under equity                                 voting
+    Name of Director                                  owner)          interests              Total        derivatives                 Total           shares
+
+
+    Kwok Ping-luen, Raymond                                 –        3,485,0001         3,485,000                       –        3,485,000              0.15
+
+    Fung Yuk-lun, Allen                            4,000,000                      –     4,000,000             8,000,0002       12,000,000               0.51
+
+    Lau Yuek-hung, Fiona                                    –                     –                  –        4,700,0002         4,700,000              0.20
+
+    Chau Kam-kun, Stephen                             50,000                      –         50,000                      –            50,000             0.00
+
+    Notes:
+
+    1.    Mr. Kwok Ping-luen, Raymond was deemed to be interested in these shares in SUNeVision by virtue of him being a
+          beneficiary of certain discretionary trusts for the purpose of Part XV of the SFO.
+
+    2.    These underlying shares of SUNeVision represented the share options (being regarded for the time being as unlisted
+          physically settled equity derivatives) granted by SUNeVision under its share option scheme. Details of these share
+          options are shown below:
+
+                                                                                                                 Number of share options
+                                                                                                                                       Cancelled/ Outstanding
+                                                                                      Outstanding          Granted       Exercised        Lapsed           at
+                                                      Exercise                           at 1 July       during the     during the     during the 31 December
+          Name of Director       Date of grant           price   Exercise period*            2023            period         period         period        2023
+                                                             $
+
+          Fung Yuk–lun, Allen    22 May 2019            6.688    22 May 2020 to         4,000,000                –              –             –      4,000,000
+                                                                   21 May 2024
+
+                                 4 May 2022             6.532    4 May 2023 to          4,000,000                –              –             –      4,000,000
+                                                                   3 May 2027
+
+          Lau Yeuk–hung, Fiona   22 May 2019            6.688    22 May 2020 to         1,000,000                –              –             –      1,000,000
+                                                                   21 May 2024
+
+                                 5 May 2021             7.982    5 May 2022 to          2,500,000                –              –             –      2,500,000
+                                                                   4 May 2026
+
+
+
+
+                                                                                                                                                                 INTERIM REPORT 2023/24
+                                 12 January 2023        4.514    12 January 2024 to     1,200,000                –              –             –      1,200,000
+                                                                   11 January 2028
+
+
+          *       The share options of SUNeVision can be exercised up to 30% of the grant from the first anniversary of the
+                  date of grant, up to 60% of the grant from the second anniversary of the date of grant, and in whole or in
+                  part of the grant from the third anniversary of the date of grant.
+
+
+
+                                                                                                                                                                 49
+                                               OTHER INFORMATION
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+                                                    (c) Mr. Kwok Ping-luen, Raymond had the following interests in shares of the following
+                                                        associated corporations:
+
+                                                                                                                                                             Actual % of
+                                                                                                                                       Actual shares          interests in
+                                                                                                                                       held through        issued voting
+                                                         Name of associated corporation                                                 corporation                shares
+
+
+                                                         Hung Carom Company Limited                                                                 251              25.00
+
+                                                         Tinyau Company Limited                                                                       11             50.00
+
+                                                         Open Step Limited                                                                            81             80.00
+
+                                                         Vivid Synergy Limited                                                           963,536,9001                20.00
+
+                                                         Note:
+
+                                                         1.   Mr. Kwok Ping-luen, Raymond was deemed to be interested in these shares by virtue of him being a beneficiary of
+                                                              certain discretionary trusts for the purpose of Part XV of the SFO.
+
+
+                                               Save as disclosed above, as at 31 December 2023, none of the Directors or chief executive of the Company had any
+                                               interests or short positions in any shares, underlying shares or debentures of the Company or any of its associated
+                                               corporations (within the meaning of Part XV of the SFO) which would have to be notified to the Company and SEHK
+                                               pursuant to Divisions 7 and 8 of Part XV of the SFO (including interests or short positions which they were taken or
+                                               deemed to have under such provisions of the SFO), or which were recorded in the register required to be kept by the
+                                               Company under section 352 of the SFO, or which were required to be notified to the Company and SEHK pursuant to
+                                               the Model Code.
+
+
+                                               Share option scheme
+                                               The shareholders of the Company passed an ordinary resolution at the annual general meeting of the Company held
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               on 2 November 2021 to approve the adoption of a share option scheme (the “Share Option Scheme”) of the
+                                               Company. The Share Option Scheme became effective on 4 November 2021 following the grant of a listing approval
+                                               by SEHK and the passing of an ordinary resolution by the shareholders of SHKP, the Company’s holding company, at
+                                               the annual general meeting of SHKP to approve the adoption of the Share Option Scheme.
+
+
+
+
+50
+                                                                                                 OTHER INFORMATION
+                                                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+Movements of the share options granted to the participants pursuant to the Share Option Scheme during the six
+months ended 31 December 2023 were as follows:
+
+                                                                                                 Number of share options
+                                                                                                                                            Outstanding
+                                                                     Outstanding      Granted     Exercised      Canceled         Lapsed             at
+                                       Exercise                         at 1 July   during the   during the     during the     during the   31 December
+Grantee                Date of grant      price   Exercise period           2023        period       period         period         period          2023
+                                              $
+
+
+Director
+Lau Yeuk-hung, Fiona   21 April 2023     4.964    21 April 2024 to     4,000,000            –            –                 –           –      4,000,000
+                                                    20 April 20281
+
+Note:
+
+1.     The share options can be exercised up to 30% of the grant from the first anniversary of the date of grant, up to 60% of the
+       grant from the second anniversary of the date of grant, and in whole or in part of the grant from the third anniversary of the
+       date of grant. Any unexercised share options shall lapse after the fifth anniversary of the date of grant.
+
+
+Other than the share options stated above, no share options had been granted by the Company to other participants
+pursuant to the Share Option Scheme. Save as disclosed above, no other share options were granted, exercised,
+canceled or lapsed during the period.
+
+The number of share options available for grant under the scheme mandate of the Share Option Scheme was
+105,898,860 on both 1 July 2023 and 31 December 2023.
+
+
+Share award scheme
+A share award scheme (the “Share Award Scheme”) was adopted by the Board on 29 June 2018 as an incentive
+arrangement to recognize the contributions by certain employees and to attract and retain suitable personnel for the
+development of the Group. Pursuant to the rules of the scheme, shares of the Company will be acquired by a trustee
+at the cost of the Company and be held in trust for selected employees until the end of each vesting period. The
+shares will be transferred to the selected employees upon vesting. The selected employees are not required to pay any
+purchase price for the transfer of the vested shares. No new shares of the Company will be issued under the Share
+Award Scheme.
+
+As of 1 July 2023, there were no unvested award shares, and no award shares were granted, vested, canceled or
+lapsed under the Share Award Scheme during the six months ended 31 December 2023.
+
+
+
+
+                                                                                                                                                          INTERIM REPORT 2023/24
+The number of award shares available for grant under the scheme mandate of the Share Award Scheme was
+107,171,217 on both 1 July 2023 and 31 December 2023.
+
+
+
+
+                                                                                                                                                          51
+                                               OTHER INFORMATION
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+                                               Interests of substantial shareholder
+                                               As at 31 December 2023, the interests or short positions of the persons, other than Directors or chief executive of the
+                                               Company, in the shares or underlying shares of the Company which would fall to be disclosed to the Company under
+                                               the provisions of Divisions 2 and 3 of Part XV of the SFO, or which were recorded in the register required to be kept
+                                               by the Company under section 336 of the SFO, were as follows:
+
+
+                                               Long positions in shares of the Company
+
+                                                                                                                                          Total number         % of issued
+                                               Name                                                                                           of shares       voting shares
+
+
+                                               Sun Hung Kai Properties Limited (“SHKP”)1                                                    806,362,555               73.07%
+
+                                               HSBC Trustee (C.I.) Limited (“HSBCCI”)2                                                      807,292,867               73.16%
+
+                                               Notes:
+
+                                               1.   TFS Development Company Limited (“TFS”) and Cellular 8 Holdings Limited (“Cellular 8”, a wholly owned subsidiary of TFS)
+                                                    held 43,162,883 shares and 763,199,672 shares in the Company respectively. For the purpose of Part XV of the SFO, TFS was
+                                                    deemed to be interested in the 763,199,672 shares in the Company held by Cellular 8. Accordingly, TFS had interests and
+                                                    deemed interests in an aggregate of 806,362,555 shares in the Company.
+
+                                                    In addition, TFS is a wholly-owned subsidiary of Fourseas Investments Limited (“Fourseas”) which in turn is a wholly-owned
+                                                    subsidiary of SHKP. For the purpose of Part XV of the SFO, SHKP and Fourseas were also deemed to be interested in the above-
+                                                    mentioned 806,362,555 shares in the Company.
+
+                                               2.   As HSBCCI is entitled to control the exercise of one-third or more of the voting power at general meetings of SHKP, HSBCCI is
+                                                    deemed to have interest in the 806,362,555 shares of the Company held indirectly by SHKP for the purpose of Part XV of the
+                                                    SFO.
+
+
+                                               Save as disclosed above, as at 31 December 2023, the Company had not been notified by any persons (other than
+                                               Directors or chief executive of the Company) who had interests or short positions in the shares or underlying shares of
+                                               the Company which would fall to be disclosed to the Company under the provisions of Divisions 2 and 3 of Part XV of
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               the SFO, or which were recorded in the register required to be kept by the Company under section 336 of the SFO.
+
+
+
+
+52
+                                                                           OTHER INFORMATION
+                                                            (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+Purchase, sale or redemption of shares
+During the six months ended 31 December 2023, the Company repurchased 2,988,000 shares of the Company on
+SEHK. These repurchased shares were cancelled prior to 31 December 2023. Details of the repurchases were as
+follows:
+
+
+                                                        Number of
+                                                           shares            Price per share            Aggregate
+Month of repurchase                                   repurchased          Highest          Lowest       price paid
+                                                                                 $               $                $
+
+
+September 2023                                           1,923,500             4.10            3.98       7,801,000
+October 2023                                             1,014,500             4.06            3.92       4,040,000
+November 2023                                               50,000             3.94            3.92         197,000
+
+
+                                                         2,988,000                                      12,038,000
+
+
+The Directors considered that the repurchases could lead to an enhancement of the Company’s earnings per share.
+Save as disclosed above, at no time during the six months ended 31 December 2023 was there any purchase, sale or
+redemption by the Company, or any of its subsidiaries, of the Company’s shares.
+
+
+Review of interim results
+An Audit Committee has been established by the Company to provide advice and recommendations to the Board. The
+chairman of the Committee is Dr. Li Ka-cheung, Eric (with professional accounting expertise) and the other members
+are Mr. Ng Leung-sing, Mr. Gan Fock-kin, Eric and Mr. Peter Kung. All the members of the Committee are
+Independent Non-Executive Directors of the Company. The Committee members possess appropriate business or
+financial expertise and experience to provide relevant advice and recommendations to the Company.
+
+The Audit Committee held a meeting on 16 February 2024 and reviewed the interim financial statements of the
+Group for the six months ended 31 December 2023 as well as the report of the Risk Management Committee and the
+report of Internal Audit. The Committee was satisfied that the accounting policies and methods of computation
+adopted by the Group are appropriate and in line with the market participants in Hong Kong. The Committee found
+no unusual items that were omitted from the financial statements and was satisfied with the disclosures of data and
+explanations shown in the financial statements. The Committee was also satisfied with the risk management and
+internal control measures adopted by the Group.
+
+The interim financial statements for the six months ended 31 December 2023 have not been audited but have been
+reviewed by the Company’s external auditor in accordance with Hong Kong Standard on Review Engagements 2410
+
+
+
+
+                                                                                                                         INTERIM REPORT 2023/24
+“Review of Interim Financial Information Performed by the Independent Auditor of the Entity” issued by the Hong
+Kong Institute of Certified Public Accountants.
+
+The financial information disclosed in this interim report complies with the disclosure requirements of Appendix D2 to
+the Listing Rules.
+
+
+
+                                                                                                                         53
+                                               OTHER INFORMATION
+                                               (Financial figures are expressed in Hong Kong dollars)
+
+
+
+
+                                               Corporate governance
+                                               The Company is committed to building and maintaining high standards of corporate governance. Throughout the six
+                                               months ended 31 December 2023, the Company has applied the principles and complied with the requirements set
+                                               out in the Corporate Governance Code (the “CG Code”) contained in Appendix C1 to the Listing Rules, except for
+                                               the following deviations:
+
+                                               Code Provision C.1.6 of the CG Code provides that independent non-executive directors and other non-executive
+                                               directors should attend general meetings to gain and develop a balanced understanding of the views of shareholders.
+                                               Code Provision F.2.2 of the CG Code also provides that the chairman of the board should attend the annual general
+                                               meeting. Mr. Kwok Ping-luen, Raymond, Non-Executive Director and Chairman of the Board, and Mr. Gan Fock-kin,
+                                               Eric, Independent Non-Executive Director, were unable to attend the annual general meeting of the Company held on
+                                               31 October 2023 due to overseas commitments or other prior engagements. The remaining eight Independent Non-
+                                               Executive Directors and Non-Executive Directors (representing 80% of all independent non-executive and non-
+                                               executive members of the Board at the time) attended the said meeting in person to listen to the views expressed by
+                                               the shareholders. Mr. Fung Yuk-lun, Allen, Executive Director and Deputy Chairman of the Board, took the chair of
+                                               the said meeting pursuant to the Bye-laws of the Company.
+
+                                               The Board will continue to monitor and review the Company’s corporate governance practices to ensure compliance
+                                               with the CG Code.
+
+
+                                               Compliance with model code for securities transactions by
+                                               Directors
+                                               The Group adopted the Model Code set out in Appendix C3 to the Listing Rules as the code of conduct regarding
+                                               Directors’ transactions in the securities of the Company. Upon specific enquiry, each Director had confirmed that
+                                               during the six months ended 31 December 2023, they had fully complied with the required standard set out in the
+                                               Model Code and there was no event of non-compliance.
+
+
+
+
+SMARTONE TELECOMMUNICATIONS HOLDINGS LIMITED
+                                               By order of the Board
+                                               Mak Yau-hing, Alvin
+                                               Company Secretary
+
+                                               Hong Kong, 22 February 2024
+
+                                               As at the date of this report, the Executive Directors of the Company are Mr. FUNG Yuk-lun, Allen (Deputy Chairman),
+                                               Ms. LAU Yeuk-hung, Fiona (Chief Executive Officer) and Mr. CHAU Kam-kun, Stephen; Non-Executive Directors are
+                                               Mr. KWOK Ping-luen, Raymond (Chairman), Mr. CHEUNG Wing-yui (Deputy Chairman), Mr. David Norman PRINCE
+                                               and Mr. SIU Hon-wah, Thomas; Independent Non-Executive Directors are Dr. LI Ka-cheung, Eric, JP, Mr. NG Leung-
+                                               sing, JP, Mr. GAN Fock-kin, Eric, Mr. LAM Kwok-fung, Kenny, Mr. LEE Yau-tat, Samuel and Mr. Peter KUNG.
+
+
+
+
+54
+

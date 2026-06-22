@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import json
 import mimetypes
 import os
@@ -21,8 +22,11 @@ from ai_config import load_ai_config, save_ai_config
 from crawl_settings import SETTINGS_PATH, load_settings, save_settings
 from company_metrics import build_company_metrics_payload
 from extractors import row_fields
-from rag_llm import ask_llm_with_rag, list_knowledge_datasets, stream_llm_with_rag
+from rag_llm import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
 from agent import available_agent_skills, stream_agent
+from agent_memory import delete_memory, load_memories
+from agent_production import dataset_lineage, list_agent_runs
+from chart_renderer import generated_chart_path
 from tts_service import (
     AUDIO_DIR,
     audio_info_for_report,
@@ -51,6 +55,9 @@ EXCLUDED_REPORT_NAMES = {
     "模板.docx",
 }
 REFERENCE_FILES = {"weekly_report.md", "weekly_report.html", "final_audit.md", "coverage_report.tsv", "run_log.tsv"}
+UPLOAD_DATASET_PREFIX = "user-upload"
+UPLOAD_ALLOWED_SUFFIXES = {".txt", ".md", ".csv", ".tsv", ".json", ".docx", ".pdf"}
+UPLOAD_MAX_BYTES = 8 * 1024 * 1024
 
 
 def reference_path(name: str) -> Path | None:
@@ -388,6 +395,98 @@ def read_request_json(handler: BaseHTTPRequestHandler) -> dict:
         return {}
     raw = handler.rfile.read(length)
     return json.loads(raw.decode("utf-8") or "{}")
+
+
+def safe_dataset_slug(value: str) -> str:
+    stem = Path(value or "upload").stem or "upload"
+    slug = re.sub(r"[^A-Za-z0-9_.\-\u4e00-\u9fff]+", "-", stem).strip("-._")
+    return slug[:48] or "upload"
+
+
+def write_uploaded_knowledge_dataset(payload: dict) -> dict:
+    filename = str(payload.get("filename") or "").strip()
+    encoded = str(payload.get("contentBase64") or "").strip()
+    if not filename:
+        raise ValueError("缺少文件名")
+    suffix = Path(filename).suffix.lower()
+    if suffix not in UPLOAD_ALLOWED_SUFFIXES:
+        raise ValueError("暂不支持该文件类型；请上传 txt、md、csv、tsv、json、docx 或 pdf。")
+    if not encoded:
+        raise ValueError("上传文件内容为空")
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+    except Exception as exc:
+        raise ValueError(f"文件内容解码失败：{exc}") from exc
+    if not raw:
+        raise ValueError("上传文件内容为空")
+    if len(raw) > UPLOAD_MAX_BYTES:
+        raise ValueError("文件过大，当前单文件上限为 8MB。")
+
+    now = datetime.now().astimezone()
+    timestamp = now.strftime("%Y%m%d_%H%M%S")
+    slug = safe_dataset_slug(filename)
+    dataset_id = f"{UPLOAD_DATASET_PREFIX}-{timestamp}-{slug}"
+    folder = ROOT / "agent_knowledge" / dataset_id
+    folder.mkdir(parents=True, exist_ok=False)
+
+    original_name = f"original{suffix}"
+    original_path = folder / original_name
+    original_path.write_bytes(raw)
+
+    extracted_text = read_display_text(original_path).strip()
+    if not extracted_text:
+        extracted_text = decode_text_bytes(raw).strip()
+    if not extracted_text:
+        raise ValueError("文件已保存但未能提取可检索文本，请换用文本、CSV、JSON、Word 或可复制文字的 PDF。")
+
+    knowledge_path = folder / "uploaded_knowledge.md"
+    knowledge_path.write_text(
+        "\n".join(
+            [
+                f"# {filename}",
+                "",
+                f"- 上传时间：{now.isoformat(timespec='seconds')}",
+                f"- 原始文件：{original_name}",
+                f"- 文件大小：{len(raw)} bytes",
+                "",
+                "## 可检索正文",
+                "",
+                extracted_text[:300000],
+            ]
+        ),
+        encoding="utf-8",
+    )
+    readme_path = folder / "README.md"
+    readme_path.write_text(
+        "\n".join(
+            [
+                f"# 用户上传知识库：{filename}",
+                "",
+                "该数据集由前端上传文件生成。只有用户在数据库按钮中选中本数据集时，后端才会把它发送给小竞AI检索。",
+                "",
+                f"- 数据集 id：`{dataset_id}`",
+                f"- 原始文件：`{original_name}`",
+                "- 检索入口：`uploaded_knowledge.md`",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    manifest = {
+        "id": dataset_id,
+        "title": f"用户上传：{filename}",
+        "summary": f"用户上传文件生成的临时知识库，原始文件 {filename}，已抽取为可检索文本。",
+        "source_type": "user_uploaded_file",
+        "scope": "用户手动上传给小竞AI的知识库文件",
+        "tags": ["user-upload", "knowledge-base"],
+        "keywords": [Path(filename).stem, filename, "用户上传", "知识库"],
+        "entrypoints": ["README.md", "uploaded_knowledge.md"],
+        "updated_at": now.isoformat(timespec="seconds"),
+        "quality": "user_uploaded_unverified; visible to AI only when selected in the database picker",
+        "original_file": original_name,
+    }
+    (folder / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    dataset = next((item for item in list_knowledge_datasets() if item.get("id") == dataset_id), manifest)
+    return {"dataset": dataset, "folder": folder.relative_to(ROOT).as_posix()}
 
 
 def load_report_metadata() -> dict:
@@ -1137,82 +1236,7 @@ def output_overview() -> str:
 
 
 def check_local_action(message: str) -> dict | None:
-    text = message.strip()
-    lowered = text.lower()
-    crawl_log_intent = any(
-        key in text
-        for key in [
-            "爬虫日志",
-            "爬取日志",
-            "抓取日志",
-            "上次爬虫",
-            "上一次爬虫",
-            "最近爬虫",
-            "飞书日志",
-            "日志页",
-            "失败链接",
-            "覆盖率",
-        ]
-    )
-    if crawl_log_intent and not any(key in text for key in ["重新", "开始", "执行", "触发", "跑一下", "跑一遍"]):
-        return {"content": latest_crawl_run_summary(5)}
-
-    crawl_execute_intent = any(
-        key in text
-        for key in [
-            "重新爬",
-            "重新抓",
-            "开始爬",
-            "开始抓",
-            "执行爬虫",
-            "触发爬虫",
-            "跑数据",
-            "更新数据",
-            "全量爬取",
-            "全量抓取",
-        ]
-    )
-    if crawl_execute_intent:
-        result = run_crawl()
-        if result["ok"]:
-            return {
-                "content": "已按当前设置重新爬取公开信息。现在可以继续生成周报，输出会按设置范围使用数据。",
-                "crawl": result,
-            }
-        return {
-            "content": f"爬取失败，退出码 {result['returnCode']}。错误信息：{result['stderr'] or '无'}",
-            "crawl": result,
-        }
-
-    if any(key in text for key in ["生成", "输出", "周报", "word", "Word"]) and any(
-        key in text for key in ["生成", "重新", "跑", "做"]
-    ):
-        result = run_report_generation()
-        if result["ok"]:
-            return {
-                "content": "已按 Word 模板重新生成正式 Word 周报。你可以在输出区下载最新文件。",
-                "generation": result,
-            }
-        return {
-            "content": f"生成失败，退出码 {result['returnCode']}。错误信息：{result['stderr'] or '无'}",
-            "generation": result,
-        }
-
-    if any(key in text for key in ["下载", "打开", "输出在哪", "文件在哪", "word在哪", "html在哪"]):
-        return {"content": output_overview()}
-
-    if any(key in text for key in ["设置", "范围", "公司", "字段", "数据内容"]) and not any(
-        key in text for key in ["建议", "总结", "分析", "为什么"]
-    ):
-        settings = build_settings_payload()
-        summary = settings["summary"]
-        return {
-            "content": (
-                f"当前设置启用 {summary['enabledRows']} / {summary['totalRows']} 个表格行，"
-                f"覆盖 {summary['selectedEntities']} 个公司/主体选择、{summary['selectedFields']} 个数据字段。"
-                "可以进入“爬取设置”子页面逐项调整，保存后爬虫和周报生成都会按新范围执行。"
-            ),
-        }
+    return None
 
     status = build_status()
     status_intent = any(
@@ -1293,6 +1317,11 @@ class AppHandler(BaseHTTPRequestHandler):
             if target.exists() and target.suffix.lower() in {".wav", ".mp3"}:
                 self.serve_head(target)
                 return
+        if parsed.path.startswith("/generated-charts/"):
+            target = generated_chart_path(unquote(parsed.path.removeprefix("/generated-charts/")))
+            if target and target.exists():
+                self.serve_head(target)
+                return
         if parsed.path.startswith("/references/"):
             target = reference_path(unquote(parsed.path.removeprefix("/references/")))
             if target and target.exists():
@@ -1363,13 +1392,35 @@ class AppHandler(BaseHTTPRequestHandler):
         if path == "/api/agent-skills":
             json_response(self, {"ok": True, "skills": available_agent_skills()})
             return
+        if path == "/api/agent-runs":
+            query = parse_qs(parsed.query)
+            try:
+                limit = max(1, min(100, int(query.get("limit", ["20"])[0])))
+            except Exception:
+                limit = 20
+            json_response(self, {"ok": True, "runs": list_agent_runs(limit=limit)})
+            return
+        if path == "/api/agent-memory":
+            query = parse_qs(parsed.query)
+            try:
+                limit = max(1, min(100, int(query.get("limit", ["50"])[0])))
+            except Exception:
+                limit = 50
+            json_response(self, {"ok": True, "memories": load_memories(limit=limit)})
+            return
+        if path == "/api/agent-dataset-lineage":
+            query = parse_qs(parsed.query)
+            raw_ids = query.get("datasetId", []) + query.get("datasetIds", [])
+            dataset_ids = {item for raw in raw_ids for item in str(raw).split(",") if item}
+            json_response(self, {"ok": True, "lineage": dataset_lineage(dataset_ids or None)})
+            return
         if path == "/api/agent-datasets":
             json_response(
                 self,
                 {
                     "ok": True,
                     "root": "agent_knowledge",
-                    "allowedExtensions": [".md", ".txt", ".json", ".csv", ".tsv"],
+                    "allowedExtensions": sorted(UPLOAD_ALLOWED_SUFFIXES),
                     "datasets": list_knowledge_datasets(),
                 },
             )
@@ -1657,6 +1708,13 @@ class AppHandler(BaseHTTPRequestHandler):
             target = AUDIO_DIR / name
             if not target.exists() or target.suffix.lower() not in {".wav", ".mp3"} or target.parent != AUDIO_DIR:
                 json_response(self, {"ok": False, "error": "audio not found"}, 404)
+                return
+            self.serve_file(target)
+            return
+        if path.startswith("/generated-charts/"):
+            target = generated_chart_path(unquote(path.removeprefix("/generated-charts/")))
+            if not target or not target.exists():
+                json_response(self, {"ok": False, "error": "chart not found"}, 404)
                 return
             self.serve_file(target)
             return
@@ -1963,6 +2021,14 @@ class AppHandler(BaseHTTPRequestHandler):
             json_response(self, run_carrier_performance_generation())
             return
 
+        if parsed.path == "/api/agent-datasets/upload":
+            try:
+                result = write_uploaded_knowledge_dataset(read_request_json(self))
+                json_response(self, {"ok": True, **result, "datasets": list_knowledge_datasets()})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+
         if parsed.path == "/api/audio/generate":
             try:
                 body = read_request_json(self)
@@ -2087,6 +2153,26 @@ class AppHandler(BaseHTTPRequestHandler):
             result = ask_llm_with_rag("请用一句话确认 RAG 助手已连接，并说明你会基于哪些本地文件回答。")
             json_response(self, {"ok": bool(result.get("ok")), "result": result, "status": build_status()})
             return
+        if parsed.path == "/api/rag-token-estimate":
+            payload = read_request_json(self)
+            text = str(payload.get("text") or "")
+            model = str(payload.get("model") or "")
+            json_response(
+                self,
+                {
+                    "ok": True,
+                    "tokens": estimate_tokens(text, model=model or None),
+                    "chars": len(text),
+                    "model": model or None,
+                    "counter": "tiktoken_or_heuristic",
+                },
+            )
+            return
+        if parsed.path == "/api/agent-memory/delete":
+            payload = read_request_json(self)
+            memory_id = str(payload.get("id") or "")
+            json_response(self, {"ok": delete_memory(memory_id), "id": memory_id})
+            return
         if parsed.path == "/api/chat":
             json_response(self, {"ok": False, "error": "deprecated API, use stream"}, 404)
             return
@@ -2098,38 +2184,41 @@ class AppHandler(BaseHTTPRequestHandler):
             selected_skill_ids = payload.get("selectedSkillIds")
             if not isinstance(selected_skill_ids, list):
                 selected_skill_ids = []
+            selected_dataset_ids = payload.get("selectedDatasetIds")
+            if not isinstance(selected_dataset_ids, list):
+                selected_dataset_ids = []
+            approved_action_ids = payload.get("approvedActionIds")
+            if not isinstance(approved_action_ids, list):
+                approved_action_ids = []
+            conversation_history = payload.get("conversationHistory")
+            if not isinstance(conversation_history, list):
+                conversation_history = []
+            emit_context_events = bool(payload.get("emitContextEvents", True))
+            loaded_skill_ids = payload.get("loadedSkillIds")
+            if not isinstance(loaded_skill_ids, list):
+                loaded_skill_ids = []
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "keep-alive")
+            self.send_header("Connection", "close")
             self.end_headers()
 
-            action = None if web_search_enabled else check_local_action(message)
-            if action:
-                if action.get("meta"):
-                    body = json.dumps(action["meta"], ensure_ascii=False)
-                    self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-                body = json.dumps({"type": "delta", "text": action["content"]}, ensure_ascii=False)
-                self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-                if "crawl" in action:
-                    body = json.dumps({"type": "action_result", "crawl": action["crawl"]}, ensure_ascii=False)
-                    self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-                if "generation" in action:
-                    body = json.dumps({"type": "action_result", "generation": action["generation"]}, ensure_ascii=False)
-                    self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-                body = json.dumps({"type": "done"}, ensure_ascii=False)
+            for event in stream_agent(
+                message,
+                force_web_search=web_search_enabled,
+                selected_skill_ids=[str(item) for item in selected_skill_ids],
+                selected_dataset_ids=[str(item) for item in selected_dataset_ids],
+                thinking_enabled=thinking_enabled,
+                approved_action_ids=[str(item) for item in approved_action_ids],
+                conversation_history=conversation_history,
+                emit_context_events=emit_context_events,
+                loaded_skill_ids=[str(item) for item in loaded_skill_ids],
+            ):
+                body = json.dumps(event, ensure_ascii=False)
                 self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
                 self.wfile.flush()
-            else:
-                for event in stream_agent(
-                    message,
-                    force_web_search=web_search_enabled,
-                    selected_skill_ids=[str(item) for item in selected_skill_ids],
-                    thinking_enabled=thinking_enabled,
-                ):
-                    body = json.dumps(event, ensure_ascii=False)
-                    self.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-                    self.wfile.flush()
+                if event.get("type") == "done":
+                    self.close_connection = True
             return
         json_response(self, {"ok": False, "error": "not found"}, 404)
 

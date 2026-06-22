@@ -1,0 +1,2866 @@
+                                                                         中國聯合網絡通信（香港）股份有限公司 CHINA UNICOM (HONG KONG) LIMITED
+                                                                                                                                                       U N ICOM ’ S   GOT
+
+
+
+
+                                                                                                                                                                       創 新
+                                                                                                                                                                 與 智 慧 同 行
+中國聯合網絡通信（香港）股份有限公司
+CHINA UNICOM (HONG KONG) LIMITED
+
+香港皇后大道中99號中環中心75樓
+75th Floor, The Center, 99 Queen’s Road Central, Hong Kong
+電話 Tel : (852) 2126 2018   傳真 Fax : (852) 2126 2016
+
+
+
+
+                                                                         中期報告 INTERIM REPORT 2021
+www.chinaunicom.com.hk
+
+
+
+
+Concept and Design: Coolgrey Design Workshop Limited 概念與設計：傲美設計工作室有限公司
+Printing and Production: Cre8 (Greater China) Ltd. 印刷與製作：創意（大中華）有限公司                                                           Stock Code 股份代號 : 762              中 期 報 告 INTERIM REPORT 2021
+Forward-looking statements
+Certain statements contained in this report may be viewed as “forward-looking
+statements”. Such forward-looking statements are subject to known and
+unknown risks, uncertainties and other factors, which may cause the actual
+performance, financial condition or results of operations of the Company to be
+materially different from any future performance, financial condition or results
+of operations implied by such forward looking statements. In addition, we do
+not intend to update these forward-looking statements. Neither the Company
+nor the directors, employees or agents of the Company assume any liabilities in
+the event that any of the forward-looking statements does not materialise or
+turns out to be incorrect.
+
+
+
+
+                CONTE
+                         2
+                              Chairman’s Statement
+
+
+
+
+                                    8
+                                         Financial Overview
+
+
+
+
+                                                     2    Unaudited Condensed Consolidated Statement
+                                                          of Income
+
+
+
+
+                                                        3
+
+
+NTS
+                                                                Unaudited Condensed Consolidated Statement
+                                                                of Comprehensive Income
+
+
+
+
+                                                         4      Unaudited Condensed Consolidated Statement
+                                                                of Financial Position
+
+
+
+
+                                                       6      Unaudited Condensed Consolidated Statement
+                                                              of Changes In Equity
+
+
+
+
+                                                 7
+                                                        Unaudited Condensed Consolidated Statement
+                                                        of Cash Flows
+
+
+
+
+                                       8
+                                            Notes to Unaudited Condensed Consolidated
+                                            Interim Financial Statements
+
+
+
+
+                  45
+                         Report on Review of Condensed Consolidated
+                         Interim Financial Statements
+
+
+
+
+46
+     Other Information
+    CHAIRMAN’S
+                                            S TAT E M E N T
+
+    DEAR SHAREHOLDERS,
+
+
+    In the first half of 2021, the Company fully implemented the new
+    development philosophy and deepened the execution of the “Focus,
+    Innovation and Cooperation” strategy. Through consistently pushing
+    forward comprehensive digital transformation, the Company focused
+    on building the “Five High” development edges — high-quality
+    services, high-quality development, highly-efficient governance, high-
+    tech engines and high-vitality operation, constantly improved the
+    quality and efficiency of business development. Stable and favourable
+    momentum was achieved in overall operation.
+
+
+
+
+                                                         WANG XIAOCHU
+                                                         Chairman and CEO
+
+
+
+2   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                C H A I R M A N ’ S S TAT E M E N T
+
+
+
+
+OVERALL RESULTS                                             comprehensive digital transformation, fully taking
+In the first half of 2021, backed by the determined         advantages of being the first in the industry, globally,
+innovative transformation and in-depth mixed-               to achieve the nationwide-centralised digital operation
+ownership reform, the Company’s revenue and profit          for full-service serving all subscribers. It enabled China
+growth accelerated, bringing significant enhancement        Unicom to run on a new track in a faster pace through
+in the quality and efficiency of business development.      providing one-stop, centralised, smart, convenient, and
+Operating revenue amounted to RMB164.2 billion,             integrated digital services. The Company persisted in
+representing a year-on-year increase of 9.2%, while         the two-flywheel drive of fundamental and innovative
+service revenue reached RMB148.7 billion,                   services, and the synergetic collaboration between the
+representing a year-on-year increase of 7.5% and an         consumer market and the government and enterprise
+increase of 3.2 percentage points in growth rate as         customer services. It accelerated the building of
+compared to the full year of 2020. Profit before            proprietary innovation platform capabilities and
+income tax amounted to RMB11.3 billion in the first         promoted the continuous optimisation of the revenue
+half of the year, exceeding RMB10 billion for the first     structure. In the first half of the year, the fundamental
+time in recent years. Profit attributable to equity         business rebounded steadily and innovative business
+holders of the Company amounted to RMB9.17 billion,         grew rapidly. The customer recognition was also on the
+representing a year-on-year increase of 21.1% and an        rise, sending high-quality and stable development in
+increase of 10.8 percentage points in growth rate as        the Company’s overall businesses.
+compared to the full year of 2020. EBITDA1 reached
+RMB49.5 billion.
+                                                            Firmly deepening 5G-led transformation and
+                                                            innovative development of mobile business
+The Company thoroughly practised green and low-
+                                                            The Company continued to deepen its 5G-led strategy
+carbon development, and achieved remarkable results
+                                                            and firmly adhered to rational and orderly
+in the network “co-build and co-share”. In the first half
+                                                            competition, effectively balancing value-oriented
+of 2021, the capital expenditure amounted to
+                                                            operation and scale development, enhancing both
+RMB14.3 billion. Investment and operation efficiency
+                                                            market share and value contribution of mobile
+were greatly improved while network competitiveness
+                                                            subscribers, thus promoting high-quality and
+was ensured. The Company also achieved significant
+                                                            coordinated industry development.
+results in energy conservation and carbon reduction.
+The Company maintained strong free cash flow 2,
+reaching RMB36.4 billion during the first half of the       In consumer market, leveraging on the efficiently
+year, further consolidating the financial strength.         centralised IT support capabilities, the Company
+                                                            strengthened the digital and differentiated operation
+                                                            led by 5G innovative integration, and continued to
+The Company attached great importance to
+shareholders’ return. With due regard to the                promote the iterative development of innovative
+Company’s robust business development and strong            products. Aggregating various data traffic platforms,
+free cash flow, the Board resolved to distribute an         the Company launched the industry-leading innovative
+inaugural interim dividend (RMB0.120 per share) in          China Unicom APP, with monthly active users
+2021 and planned to raise 2021 full year dividend           exceeding 100 million, forming a new smart living
+payout ratio, with the magnitude to be decided in the       ecology integrating communication, lifestyle,
+first half of 2022 considering such factors as the          entertainment and finance. The Company accelerated
+Company’s profitability, cash flow, future capital          scale development of broadband and mobile
+requirements and dividend payout in the industry, etc.      integration via the “three gigabit-network” and
+                                                            leveraged content, privileges and financial tools to
+BUSINESS DEVELOPMENT                                        improve product value. Utilising the Big Data analytics
+The accelerated development of 5G and the robust            model to power up total lifecycle management of
+demand for digital transformation by economy and            customers, the Company managed to drive precise
+society brought valuable opportunities and enormous         upgrade of existing customer. By bringing the
+room for the Company’s innovation and                       ecological resources of “platform + network + X”
+transformation. The Company led the improvement of          together, the Company unlocked 5G customers’ value
+quality and efficiency of its full services with 5G,        through coordinated development of terminal,
+turning around from last year’s decline in mobile           network and business, while enriching 5G innovative
+subscriber scale. The Company continued to deepen           applications.
+
+
+
+
+                                                                                                                         INTERIM REPORT 2021   3
+    C H A I R M A N ’ S S TAT E M E N T
+
+
+
+
+                            In the government and enterprise market, the               Seizing the opportunity of economic and social
+                            Company seized the opportunities arising from the          transformation to achieve the collaborative
+                            digital transformation of the whole society and the        development through multi-business integration
+                            industry, actively pushing forward the integrated and      The Company grasped the boosted demand for
+                            innovative development of 5G+ industry vertical            digitisation, cyberisation, and intelligent
+                            applications. With 5G private network as an entry          transformation of the economy and society, and
+                            point, the Company integrated its proprietary              actively leveraged proprietary resources and edges to
+                            capabilities and expanded ecological cooperation to        empower government and enterprise, as well as
+                            develop differentiated advantages of digital services.     household customers, pushing forward the pan-
+                            The Company innovated 5G application product               integration development of innovative and
+                            system leveraging 5 major components, namely 5G            fundamental businesses. In Northern China, the
+                            industry private network, MEC, industry platform,          Company leveraged broadband to expand mobile and
+                            customised service and terminal, to support over 15        promoted mutual growth dynamics and high-quality
+                            industry applications and fully promote scale              services, actively promoting multi-SIM and full-home
+                            development of 5G applications. The Company actively       smarts under one household. In Southern China, the
+                            explored business models to flexibly meet the demand       Company expanded broadband to boost mobile and
+                            of 5G industry customers. In the key areas including       effective integration, focusing on key areas and
+                            industrial Internet, smart mining, smart medical, smart    customers with precise coverage. The Company
+                            cities, etc., it successfully commercialised a range of    continued to strengthen core capabilities of Smart
+                            influential 5G lighthouse projects such as the first in    Community and Smart WoHome platforms, and
+                            global fully 5G-connected factory and the global first     promoted the Digital Village service cloud platform,
+                            underneath-mine-5G private network.                        continuously reinforcing the differentiated edges of
+                                                                                       broadband business.
+                            In the first half of 2021, mobile service revenue
+                            reached RMB82.1 billion, representing a year-on-year       In the first half of 2021, the Company’s fixed-line
+                            increase of 7.3%, with the growth rate reaching a new      broadband access revenue increased by 0.7% year-on-
+                            high since the full year of 2018. Mobile billing           year to RMB22.0 billion. The net addition of fixed-line
+                            subscribers significantly improved to a net increase of    broadband subscribers was up by 67.8% year-on-year
+                            4.65 million from a decline of 8.95 million for the same   to 4.03 million, reaching a total of 90.12 million fixed-
+                            period last year, making the total number of mobile        line broadband subscribers, with broadband access
+                            billing subscriber increase to 310 million. Subscriber     ARPU reaching RMB41.8. The penetration rate of the
+                            value continued to optimise, with mobile billing           integrated service among fixed-line broadband
+                            subscribers ARPU reaching RMB44.4, representing a          subscribers reached 67%, representing a year-on-year
+                            year-on-year increase of 8.5%. Data traffic promotion      increase of 6 percentage points.
+                            achieved remarkable results with the total mobile
+                            handset data traffic volume grown by 27.5%, while the      Digital transformation drove sustained rapid growth
+                            monthly average DOU per handset subscriber reached         in innovative businesses
+                            approximately 12.2GB. The Company’s 5G package             Our China Unicom Cloud is the base for digital
+                            subscribers reached 113 million and the penetration        transformation and integrated innovation. Focusing on
+                            rate of 5G package subscribers reached 36.5%, leading      security and reliability, cloud-network integration,
+                            the industry. The Company continued to provide 5G          dedicated customisation and multi-cloud
+                            high-quality services and ranked No.1 in the industry      collaboration, the Company provided customers with
+                            on 5G customer satisfaction. In the second half of the     integrated innovative solutions including cloud
+                            year, with the gradual maturity of 5G technology,          resources, cloud platform, cloud service, cloud
+                            network, terminal and application, the Company will        integration, cloud interconnection, cloud security, etc.
+                            actively leverage the unique competitive edges of          Led by digital innovation, the Company actively
+                            China Unicom 5G n to facilitate the continuous             explored market space in key areas such as smart
+                            transformation and innovation development of mobile        cities, digital government and industrial Internet,
+                            business led by 5G.                                        thoroughly deepening the development of application
+                                                                                       products for major industries. Unicom Digital
+                                                                                       Technology Co., Ltd. was formed to create integrated
+
+
+
+
+4   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                C H A I R M A N ’ S S TAT E M E N T
+
+
+
+
+innovation and differentiated edges of 5G + ABCDE            significantly to the target of “Peak Carbon-emission
+(artificial intelligence, blockchain, cloud computing, Big   and Carbon-neutrality”. The Company fully promoted
+Data, edge computing). The Company built an                  the “co-build and co-share” of infrastructure
+innovative business capability system, focusing on the       resources, optimising and revitalising existing network
+platform-based capability, research and development          resources to further unlock the cost-efficiency of the
+centralisation, product standardisation and delivery of      network. In addition, the Company actively expanded
+proprietary integration. By enhancing proprietary            the new network sharing model and engaged in multi-
+capabilities, the Company created unique innovative          dimensional “co-build and co-share” cooperation with
+edges in the digital economy era.                            cable, power, high-speed railway, oil industries and
+                                                             others to maximise investment efficiency.
+In the first half of 2021, the Company’s revenue from
+industry Internet business increased by 23.6% year-on-       Building high-quality network with craftsmanship to
+year to RMB28.03 billion, as a percentage of the             drive profitable and fast business growth
+overall service revenue increased by 2.5 percentage          With customer perception as the centre, the Company
+points year-on-year to 18.9%. China Unicom Cloud             focused on key city clusters, such as Beijing-Tianjin-
+revenue3 was RMB7.69 billion, up by 54.1% year-on-           Hebei, Yangtze River Delta and Greater Bay Area, key
+year. Driven by the sound growth of innovative               cities and major venues and strived to build a high-
+business, the Company’s fixed-line service revenue           quality network and improved the supporting
+reached RMB65.3 billion, up by 7.9% year-on-year. In         capabilities of network services. The Company focused
+the future, the Company will accelerate the buildout of      on the deployment of premium 5G, gigabit fibre
+proprietary innovative platform capabilities and key         network and innovative business investment, such as
+products to continuously enhance competitiveness and         IDC, cloud computing, Big Data and IoT and others,
+value.                                                       while continuing to enhance the coverage of
+                                                             commercial buildings and government and enterprise
+NETWORK CONSTRUCTION                                         premium networks. To facilitate network technology
+Continuous implementation of new development                 innovation, CUBE-NET 3.0 network system was built
+philosophy to raise network “co-build and co-share”          while research and development of innovative network
+to a new level                                               products was accelerated. The Company promoted AI
+The Company adhered to low-carbon and innovative             to drive systematic smart network operation and
+operation by actively implementing the requirements          introduced intelligent operation and maintenance
+of new infrastructure. The efficiency of resource            robots nationwide. The Company seized the
+utilisation significantly increased as network “co-build     opportunities of network cloudification, NFV, SDN and
+and co-share” was facilitated further in depth. The 5G       intelligentisation to deepen the centralised operation
+network “co-build and co-share” continued to advance         of network capabilities, network resources and
+steadily, achieving both the 5G network scale and            network data, actively promoted 4G/5G collaborative
+quality on par with the leading operator. In the first       intelligent energy-saving management with
+half of the year, the Company continued to cooperate         proprietary research and development. In the first half
+closely with China Telecom to add 80,000 5G base             of the year, the Company ranked first in 5G network
+stations in service, with the total scale of 5G base         quality satisfaction in the industry and equipped the
+stations of more than 460,000, achieving a leading           city areas across nationwide with gigabit broadband
+position in both coverage and network perception in          capability, achieving remarkable results in the high-
+first-tier cities. The scale of 4G “co-share” achieved a     quality development of the network.
+further breakthrough as both parties shared 460,000
+4G base stations, representing an increase of 240,000        MIXED-OWNERSHIP REFORM
+stations as compared to the end of last year. 4G/5G          Unlocking the reform bonus consistently and further
+network “co-build and co-share” enabled the two              strengthening the development momentum
+operators combined to generate cumulative savings of         The Company continued to expand the dimension,
+over RMB100 billion in capital expenditure, as well as       width and depth of cooperation with strategic
+substantial savings in network costs including tower         investors through promoting the research and
+usage fee, network maintenance costs and electricity         development, iterative upgrade of products of joint
+charges for both parties, while contributing                 ventures. By focusing on multiple areas with strong
+
+
+
+
+                                                                                                                       INTERIM REPORT 2021   5
+    C H A I R M A N ’ S S TAT E M E N T
+
+
+
+
+                            synergetic and complementary advantages, new              SOCIAL RESPONSIBILITY AND CORPORATE
+                            energy was added to the Company’s innovative              GOVERNANCE
+                            development. The Company optimised sub-division           The Company comprehensively implemented the
+                            reform by iteration upgrade through strengthening         construction of cyber superpower, digital China and
+                            digital empowerment and improving the alignment of        smart community, empowered the transformation and
+                            performance assessment and incentives in order to         upgrading of various industries and promoted the
+                            enhance organisational efficiency and stimulate the       structural supply side reform of network. Through
+                            vitality of micro-entities. The Company accelerated the   resolutely fulfilling its responsibilities and actively
+                            market-oriented reform of the subordinate companies       participating in the digital epidemic prevention and
+                            in a structured manner. It strengthened and further       control as well as flood prevention and relief, the
+                            optimised the core platform business. China Unicom        Company made every effort to assure the security and
+                            Smart Connection Technology Limited completed the         smoothness of communication. The “Digital Village”
+                            shareholding reform and was aimed to spin off to          brand was launched to actively provide digital
+                            accelerate development and enhance values. The            governance service, industrial service, livelihood
+                            Company enhanced the technology innovation                service and local service solutions, helping rural
+                            management model by speeding up key core                  revitalisation. The Company announced its ‘14th Five-
+                            technologies breakthrough, regularly introducing          Year Action Plan of “Peak Carbon-emission and
+                            digital innovation talents and increasing efforts to      Carbon-neutrality”’ with the aim for green and low-
+                            promote technological innovation, consistently            carbon cycle development. The Company continuously
+                            growing proprietary innovation capability and             improved the green level of communication network
+                            development momentum.                                     infrastructure, supporting different businesses and
+                                                                                      industries to achieve “Peak Carbon-emission and
+                            To fully expedite digital transformation and strive to    Carbon-neutrality”.
+                            build an exceptional China Unicom
+                            The Company actively responded to the industry trend      The Company continued to excel its corporate
+                            and accelerated the comprehensive digital                 governance mechanism, enhance execution and
+                            transformation, basically establishing the core           strengthen risk management and internal control, in a
+                            capability of five middle platforms, namely consumer,     bid to providing solid support for the sustainable and
+                            government and enterprise, network, data, and             healthy development of the Company. Since the
+                            management, as well as rationalising the workflow         beginning of this year, the Company attained a number
+                            concerned. The Company built the centralised and          of accolades, including being ranked 260th in “Fortune
+                            unified IT services capabilities together with the        Global 500” for the year 2021, ranked 276th in “Forbes
+                            efficiently-centralised and integrated innovation         Global 2000” for the year 2021, being awarded “Asia’s
+                            system to continue pushing forward the integration of     No.1 Best Telecommunications Company” and “Best
+                            business, technology and data, while accelerating the     Managed Listed Company in China — 1 st ” by
+                            upgrade of the centralised IT advantages to               FinanceAsia, and voted “Asia’s No. 1 Most Honored
+                            operational advantages. Internally, the Company           Telecom Company” for the sixth consecutive year by
+                            leveraged data to power up business development,          Institutional Investor.
+                            customer service, network operation and supervision
+                            and management, allowing the Company to enjoy             Pursuant to the former U.S. President’s executive
+                            smart operation and greatly improve its productivity,     order and the requirements of the New York Stock
+                            and develop a professional digital team of more than      Exchange LLC (the “NYSE”), the delisting of the
+                            15,000 talents during the process. Externally, the        Company’s the American Depositary Shares (“ADSs”)
+                            Company were able to better satisfy the nationwide        has taken effect on 18 May 2021, and the ADSs
+                            service needs of government and enterprise                Program will terminate on 18 October 2021. Holders of
+                            customers, the mobility needs of individual customers     ADSs will have the right until the termination date to
+                            and the information consumption upgrade needs of          exchange their ADSs into ordinary shares of the
+                            household customers, while forging differentiated new     Company in accordance with the terms and conditions
+                            edges.                                                    of the deposit agreement. The Company’s ordinary
+                                                                                      shares are traded on The Stock Exchange of Hong Kong
+                                                                                      Limited.
+
+
+
+
+6   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                  C H A I R M A N ’ S S TAT E M E N T
+
+
+
+
+OUTLOOK                                                     Note 1: EBITDA represents profit for the period before
+At present, with the surging wave of digitisation, it is            finance costs, interest income, share of net profit
+speeding up our entry into a digital society and pushing            of associates, share of net profit of joint ventures,
+the global economy into a new digital era. Driven by                other income-net, income tax expense,
+                                                                    depreciation and amortisation. As the
+new technologies represented by 5G and artificial
+                                                                    telecommunications business is a capital intensive
+intelligence, the digital economy continues to grow
+                                                                    industry, capital expenditure and finance costs
+and is creating a new vast unseen blue ocean, far
+                                                                    may have a significant impact on the net profit of
+greater than the known opportunities. As the provider               the companies with similar operating results.
+of cloud network “new supply” and digital “new                      Therefore, the Company believes that EBITDA may
+engine” to support and service the digital                          be helpful in analysing the operating results of a
+transformation of the economy and society, telecom                  telecommunications service operator like the
+operators face the moment of new opportunities and                  Company. However, it is a non-GAAP financial
+new leap forward. China Unicom will grasp the                       measure which does not have a standardised
+opportunities and aim high to firmly implement the                  meaning and therefore may not be comparable to
+strategy of “Focus, Innovation and Cooperation”. It will            similar measures presented by other companies.
+
+fully unlock the edges established by the ecology
+                                                            Note 2: Free cash flow represents operating cash flow less
+integration brought by the mixed-ownership reform
+                                                                    capital expenditure. However, it is a non-GAAP
+and the pioneering digital transformation. Through the              financial measure which does not have a
+two-flywheel superimposing of the growing “digital”                 standardised meaning and therefore may not be
+productivity and the new production function under                  comparable to similar measures presented by
+“mixed-ownership reform”, the Company will further                  other companies.
+improve market-oriented operation, further enhance
+the systemic innovation abilities and further accelerate    Note 3: China Unicom Cloud revenue includes revenue of
+the pace of digital transformation. China Unicom will               cloud resources, cloud platform, cloud service,
+                                                                    cloud integration, cloud interconnection, cloud
+further its efforts to comprehensively shape the new
+                                                                    security, etc generated from integrated innovative
+edges of differentiated development, strive to make a
+                                                                    solutions.
+new leap in high-quality development and dedicate to
+building an exceptional, a smarter and a brighter China
+Unicom, creating greater values for shareholders,
+customers, and society.
+
+
+Lastly, on behalf of the Board of Directors, I would like
+to express our sincere gratitude to all shareholders,
+customers, and fellows across society for their support
+to the Company and to all employees for their
+continuous dedication and contribution along the way!
+
+
+
+
+Wang Xiaochu
+Chairman and Chief Executive Officer
+
+
+Hong Kong, 19 August 2021
+
+
+
+
+                                                                                                                            INTERIM REPORT 2021   7
+    FINANCIAL
+                                       OVERVIEW
+                                       I.   OVERVIEW
+                                            In the first half of 2021, the Company continuously deepened the
+                                            implementation of “Focus Strategy”, total revenue was RMB164.17 billion, up
+                                            by 9.2% year-on-year. Service revenue reached RMB148.67 billion in the first
+                                            half of 2021, up by 7.5% year-on-year. Net profit1 was RMB9.17 billion in the
+                                            first half of 2021, up by RMB1.60 billion year-on-year.
+
+
+                                            In the first half of 2021, the Company’s net cash flow from operating
+                                            activities was RMB50.66 billion. Capital expenditure was RMB14.28 billion in
+                                            the first half of 2021. Liabilities-to-assets ratio was 41.9% as at 30 June 2021.
+
+
+
+
+8   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                       FINANCIAL OVERVIEW
+
+
+
+
+II.    REVENUE
+       In the first half of 2021, the Company’s revenue was RMB164.17 billion, up by 9.2% year-on-year, of which, service revenue was
+       RMB148.67 billion, up by 7.5% year-on-year due to continuous optimisation of the revenue mix.
+
+
+       The table below sets forth the composition of service revenue, and the percentage contribution of each service to total service revenue
+       for the first half of 2021 and 2020:
+
+
+                                                                      First half of 2021                          First half of 2020
+                                                                               As a percentage of                          As a percentage of
+       (RMB in billions)                                       Total amount       service revenue         Total amount        service revenue
+
+
+       Service revenue                                                148.67               100.00%               138.33                100.00%
+       Include: Voice service                                          17.51                11.78%                17.25                 12.47%
+                Non-voice service                                     131.16                88.22%               121.08                 87.53%
+
+
+       1.     Voice Service
+              In the first half of 2021, service revenue from the voice service was RMB17.51 billion, up by 1.5% year-on-year.
+
+
+       2.     Non-Voice Service
+              In the first half of 2021, service revenue from the non-voice service was RMB131.16 billion, up by 8.3% year-on-year.
+
+
+III.   COSTS AND EXPENSES
+       In the first half of 2021, total costs and expenses were RMB152.88 billion, up by 8.7% year-on-year.
+
+
+       The table below sets forth the items of the costs and expenses and their respective percentage of the revenue for the first half of 2021
+       and 2020:
+
+
+                                                                      First half of 2021                          First half of 2020
+                                                                               As a percentage of                          As a percentage of
+       (RMB in billions)                                       Total amount              revenue          Total amount               revenue
+
+
+       Total costs and expenses                                       152.88                93.12%               140.66                 93.53%
+       Operating costs                                                156.06                95.06%               142.25                 94.59%
+       Include: Interconnection charges                                 5.25                 3.20%                 5.09                  3.39%
+                Depreciation and amortisation                          41.38                25.20%                41.31                 27.47%
+                Network, operation and support
+                   expenses                                            25.11                15.29%                22.22                 14.77%
+                Employee benefit expenses                              30.99                18.88%                27.50                 18.29%
+                Costs of telecommunications products
+                   sold                                                14.81                 9.02%                11.60                  7.71%
+                Selling and marketing expenses                         15.56                 9.48%                14.88                  9.89%
+                General, administrative and
+                   other operating expenses                            22.96                13.99%                19.65                 13.07%
+       Finance costs, net of interest income                            0.17                 0.10%                 0.18                  0.12%
+       Share of net profit of associates                               –1.10                –0.67%                –0.73                 –0.49%
+       Share of net profit of joint ventures                           –0.72                –0.44%                –0.26                 –0.17%
+       Other income-net                                                –1.53                –0.93%                –0.78                 –0.52%
+
+
+
+
+                                                                                                                          INTERIM REPORT 2021     9
+     FINANCIAL OVERVIEW
+
+
+
+
+           1.    Interconnection charges
+                 Interconnection charges were RMB5.25 billion in the first half of 2021, up by 3.0% year-on-year and, as a percentage of revenue,
+                 decreased from 3.39% in the first half of 2020 to 3.20% in the first half of 2021.
+
+
+           2.    Depreciation and amortisation
+                 Depreciation and amortisation charges were RMB41.38 billion in the first half of 2021, up by 0.2% year-on-year and, as a
+                 percentage of revenue, decreased from 27.47% in the first half of 2020 to 25.20% in the first half of 2021.
+
+
+           3.    Network, operation and support expenses
+                 Network, operation and support expenses were RMB25.11 billion in the first half of 2021, up by 13.0% year-on-year and, as a
+                 percentage of revenue, increased from 14.77% in the first half of 2020 to 15.29% in the first half of 2021 due to the increase in
+                 usage expenses of premises and equipment, network maintenance and energy consumption cost.
+
+
+           4.    Employee benefit expenses
+                 As a result of the ongoing effort in incentive mechanism reform to strengthen performance-based compensation and the
+                 acquisition of innovative talents in the meantime, employee benefit expenses were RMB30.99 billion in the first half of 2021, up
+                 by 12.7% year-on-year and, as a percentage of revenue, increased from 18.29% in the first half of 2020 to 18.88% in the first half
+                 of 2021.
+
+
+           5.    Cost of telecommunications products sold
+                 Costs of telecommunications products sold were RMB14.81 billion and revenue from sales of telecommunications products were
+                 RMB15.50 billion in the first half of 2021. Gross profits on sales of telecommunications products were RMB0.69 billion.
+
+
+           6.    Selling and marketing expenses
+                 The Company promoted transformation on digitisation, strengthened O2O integrated operation and exercised stringent control
+                 over users development costs, selling and marketing expenses were RMB15.56 billion in the first half of 2021, up by 4.6% year-
+                 on-year and, as a percentage of revenue, decreased from 9.89% in the first half of 2020 to 9.48% in the first half of 2021.
+
+
+           7.    General, administrative and other operating expenses
+                 General, administrative and other operating expenses were RMB22.96 billion in the first half of 2021, up by 16.9% year-on-year,
+                 mainly due to the rapid growth of ICT services leading to increased related service costs and increased investment in technical
+                 support for innovative businesses.
+
+
+           8.    Finance costs, net of interest income
+                 Finance costs, net of interest income, was RMB0.17 billion in the first half of 2021, basically unchanged year-on-year.
+
+
+           9.    Other income-net
+                 Other income-net was RMB1.53 billion in the first half of 2021, up by RMB0.75 billion year-on-year.
+
+
+     IV.   EARNINGS
+           1.    Profit before income tax
+                 In the first half of 2021, the Company benefited from continuous enhancement in growth quality and profitability, profit before
+                 income tax was RMB11.29 billion, up by 16.0% year-on-year.
+
+
+
+
+10   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                              FINANCIAL OVERVIEW
+
+
+
+
+       2.      Income tax expense
+               In the first half of 2021, the Company’s income tax expense was RMB2.08 billion and the effective tax rate was 18.4%.
+
+
+       3.      Profit for the period
+               In the first half of 2021, the Company’s net profit1 was RMB9.17 billion, up by RMB1.60 billion year-on-year. Basic earnings per
+               share was RMB0.300, up by 21.1% year-on-year.
+
+
+V.     EBITDA2
+       In the first half of 2021, the Company’s EBITDA was RMB49.49 billion, up by 0.1% year-on-year. EBITDA as a percentage of service
+       revenue was 33.3%, down by 2.4 percentage points year-on-year.
+
+
+VI.    CAPITAL EXPENDITURE AND CASH FLOW
+       In the first half of 2021, capital expenditure of the Company totaled RMB14.28 billion, which mainly consisted of investments in mobile
+       network, broadband and data, and infrastructure and transmission network etc. In the first half of 2021, the Company’s net cash flow
+       from operating activities was RMB50.66 billion. Free cash flow3 was RMB36.38 billion after the deduction of the capital expenditure.
+
+
+       The table below sets forth the major items of the capital expenditure in the first half of 2021:
+
+
+                                                                                                                        First half of 2021
+
+       (RMB in billions)                                                                                        Total amount              As percentage
+
+
+       Total                                                                                                             14.28                  100.00%
+       Include: Mobile network                                                                                            4.55                    31.83%
+                Broadband and data                                                                                        3.71                    26.00%
+                Infrastructure and transmission network                                                                   3.24                    22.69%
+                Others                                                                                                    2.78                    19.48%
+
+
+VII.   BALANCE SHEET
+       The Company’s total assets changed from RMB580.62 billion as at 31 December 2020 to RMB571.27 billion as at 30 June 2021. Total
+       liabilities changed from RMB253.10 billion as at 31 December 2020 to RMB239.23 billion as at 30 June 2021. The liabilities-to-assets ratio
+       changed from 43.6% as at 31 December 2020 to 41.9% as at 30 June 2021. The debt-to-capitalisation ratio decreased from 12.2% as at
+       31 December 2020 to 9.4% as at 30 June 2021. The net debt-to-capitalisation ratio was 3.3% as at 30 June 2021.
+
+
+       Note 1: Net profit represented profit attribute to equity shareholders of the Company.
+
+
+       Note 2: EBITDA represents profit for the period before finance costs, interest income, share of net profit of associates, share of net profit of joint
+               ventures, other income-net, income tax expense, depreciation and amortisation. As the telecommunications business is a capital
+               intensive industry, capital expenditure and finance costs may have a significant impact on the net profit of the companies with similar
+               operating results. Therefore, the Company believes that EBITDA may be helpful in analysing the operating results of a
+               telecommunications service operator like the Company. However, it is a non-GAAP financial measure which does not have a standardised
+               meaning and therefore may not be comparable to similar measures presented by other companies.
+
+
+       Note 3: Free cash flow represents operating cash flow less capital expenditure. However, it is a non-GAAP financial measure which does not have a
+               standardised meaning and therefore may not be comparable to similar measures presented by other companies.
+
+
+
+
+                                                                                                                                    INTERIM REPORT 2021         11
+     UNAUDITED CONDENSED
+     CONSOLIDATED STATEMENT OF INCOME
+     FOR THE SIX MONTHS ENDED 30 JUNE 2021
+     (All amounts in Renminbi (“RMB”) millions, except per share data)
+
+
+
+
+                                                                                                                  Six months ended 30 June
+
+                                                                                               NOTE                    2021              2020
+
+
+     Revenue                                                                                     5                  164,174           150,397
+
+
+     Interconnection charges                                                                                          (5,247)           (5,094)
+     Depreciation and amortisation                                                                                   (41,376)          (41,312)
+     Network, operation and support expenses                                                     6                   (25,107)          (22,220)
+     Employee benefit expenses                                                                   7                   (30,991)          (27,503)
+     Costs of telecommunications products sold                                                   8                   (14,808)          (11,603)
+     Other operating expenses                                                                    9                   (38,532)          (34,525)
+     Finance costs                                                                               10                     (645)            (859)
+     Interest income                                                                                                     471                 682
+     Share of net profit of associates                                                                                 1,101                 732
+     Share of net profit of joint ventures                                                                               720                 257
+     Other income — net                                                                          11                    1,529                 784
+
+
+     Profit before income tax                                                                                         11,289            9,736
+     Income tax expense                                                                          12                   (2,081)           (2,138)
+
+
+     Profit for the period                                                                                             9,208            7,598
+
+
+     Profit attributable to:
+       Equity shareholders of the Company                                                                              9,167            7,569
+
+
+       Non-controlling interests                                                                                          41                 29
+
+
+     Earnings per share for profit attributable to equity shareholders of the Company
+       during the period:
+     Basic earnings per share (RMB)                                                              13                     0.30              0.25
+
+
+     Diluted earnings per share (RMB)                                                            13                     0.30              0.25
+
+
+     The notes on pages 18 to 44 are an integral part of these unaudited condensed consolidated interim financial statements.
+
+
+
+
+12   CHINA UNICOM (HONG KONG) LIMITED
+                         UNAUDITED CONDENSED CONSOLIDATED
+                        STATEMENT OF COMPREHENSIVE INCOME
+                                                                                                  FOR THE SIX MONTHS ENDED 30 JUNE 2021
+                                                                                                               (All amounts in RMB millions)
+
+
+
+
+                                                                                                               Six months ended 30 June
+
+                                                                                                                     2021                2020
+
+
+Profit for the period                                                                                               9,208                7,598
+
+
+Other comprehensive income
+Items that will not be reclassified to statement of income:
+  Changes in fair value of financial assets measured at fair value through other comprehensive income
+     (“FVOCI”) (non-recycling)                                                                                        284                 (967)
+  Tax effect on changes in fair value of financial assets measured at FVOCI (non-recycling)                                (2)               2
+
+
+  Changes in fair value of financial assets measured at FVOCI, net of tax (non-recycling)                             282                 (965)
+  Others                                                                                                                   (4)             (13)
+
+
+                                                                                                                      278                 (978)
+
+
+Item that may be reclassified subsequently to statement of income:
+  Changes in fair value of financial assets measured at FVOCI, net of tax (recycling)                                      (3)              —
+  Currency translation differences                                                                                     (42)                68
+
+
+Other comprehensive income for the period, net of tax                                                                 233                 (910)
+
+
+Total comprehensive income for the period                                                                           9,441                6,688
+
+
+Total comprehensive income attributable to:
+  Equity shareholders of the Company                                                                                9,400                6,659
+
+
+  Non-controlling interests                                                                                            41                  29
+
+
+The notes on pages 18 to 44 are an integral part of these unaudited condensed consolidated interim financial statements.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2021    13
+     UNAUDITED CONDENSED CONSOLIDATED
+     STATEMENT OF FINANCIAL POSITION
+     AS AT 30 JUNE 2021
+     (All amounts in RMB millions)
+
+
+
+
+                                                                        30 June    31 December
+                                                                 NOTE     2021            2020
+
+
+     ASSETS
+     Non-current assets
+       Property, plant and equipment                              14    341,890        364,187
+       Right-of-use assets                                        15     35,385         37,960
+       Goodwill                                                           2,771          2,771
+       Interest in associates                                            39,647         38,802
+       Interest in joint ventures                                         6,409          5,656
+       Deferred income tax assets                                 12      1,537            745
+       Contract assets                                                       19            103
+       Contract costs                                                     3,602          3,672
+       Financial assets measured at fair value                    16      4,012          3,493
+       Other assets                                               18     15,134         14,591
+
+
+                                                                        450,406        471,980
+
+
+     Current assets
+       Inventories and consumables                                19      2,748          1,951
+       Contract assets                                                      544            823
+       Accounts receivable                                        20     24,117         16,287
+       Prepayments and other current assets                       21     16,521         15,882
+       Amounts due from ultimate holding company                  35     10,566         10,570
+       Amounts due from related parties                           35        362            195
+       Amounts due from domestic carriers                                 4,254          3,665
+       Financial assets measured at fair value                    16     33,439         24,189
+       Short-term bank deposits and restricted deposits           17      5,816         11,989
+       Cash and cash equivalents                                  22     22,494         23,085
+
+
+                                                                        120,861        108,636
+
+
+     Total assets                                                       571,267        580,616
+
+
+     EQUITY
+     Equity attributable to equity shareholders of the Company
+       Share capital                                              23    254,056        254,056
+       Reserves                                                         (18,491)       (18,821)
+       Retained profits
+          — Proposed 2021 interim dividend                        24      3,672             —
+          — Proposed 2020 final dividend                          24         —           5,018
+          — Others                                                       91,829         86,334
+
+
+                                                                        331,066        326,587
+
+
+     Non-controlling interests                                             974            933
+
+
+     Total equity                                                       332,040        327,520
+
+
+
+
+14   CHINA UNICOM (HONG KONG) LIMITED
+                                        U N A U D I T E D C O N D E N S E D C O N S O L I D AT E D
+                                             S TAT E M E N T O F F I N A N C I A L P O S I T I O N
+                                                                                                                         AS AT 30 JUNE 2021
+                                                                                                                (All amounts in RMB millions)
+
+
+
+
+                                                                                                                  30 June         31 December
+                                                                                             NOTE                   2021                 2020
+
+
+LIABILITIES
+Non-current liabilities
+   Long-term bank loans                                                                       25                    1,996                2,482
+   Promissory notes                                                                           26                      998                  998
+   Corporate bonds                                                                            27                       —                 1,999
+   Lease liabilities                                                                                               14,097               16,458
+   Deferred income tax liabilities                                                            12                       63                   64
+   Deferred revenue                                                                                                 6,320                5,927
+   Amounts due to related parties                                                             35                      742                3,042
+   Other obligations                                                                                                   96                   98
+
+
+                                                                                                                   24,312               31,068
+
+
+Current liabilities
+  Short-term bank loans                                                                       28                      490                  740
+  Commercial papers                                                                           29                    2,000                7,000
+  Current portion of long-term bank loans                                                     25                      346                  418
+  Current portion of corporate bonds                                                          27                    2,022                1,000
+  Lease liabilities                                                                                                11,774               11,503
+  Accounts payable and accrued liabilities                                                    30                  126,965              134,437
+  Bills payable                                                                                                     8,258                5,482
+  Taxes payable                                                                                                     2,595                2,805
+  Amounts due to ultimate holding company                                                     35                    3,772                1,640
+  Amounts due to related parties                                                              35                   11,105                9,183
+  Amounts due to domestic carriers                                                                                  2,486                2,291
+  Current portion of other obligations                                                                              2,556                2,529
+  Contract liabilities                                                                                             40,201               42,641
+  Advances from customers                                                                                             345                  359
+
+
+                                                                                                                  214,915              222,028
+
+
+Total liabilities                                                                                                 239,227              253,096
+
+
+Total equity and liabilities                                                                                      571,267              580,616
+
+
+Net current liabilities                                                                                           (94,054)            (113,392)
+
+
+Total assets less current liabilities                                                                             356,352              358,588
+
+
+The notes on pages 18 to 44 are an integral part of these unaudited condensed consolidated interim financial statements.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2021    15
+     UNAUDITED CONDENSED CONSOLIDATED
+     STATEMENT OF CHANGES IN EQUITY
+     FOR THE SIX MONTHS ENDED 30 JUNE 2021
+     (All amounts in RMB millions)
+
+
+
+
+                                                                      Attributable to equity shareholders of the Company
+
+                                                                           Investment                                                                Non-
+                                                      Share General risk   revaluation    Statutory         Other      Retained                 controlling     Total
+                                                     capital     reserve      reserve      reserves      reserves          profits     Total      interests    equity
+
+
+     Balance at 1 January 2020                      254,056         690         (7,956)      30,185       (41,722)         84,794    320,047           708    320,755
+     Total comprehensive income for the period           —            —          (965)           —             55           7,569      6,659            29      6,688
+     Capital contribution from non-controlling
+        interests                                        —            —             —            —             —               —          —             25        25
+     Share of an associate’s other reserves              —            —             —            —             (7)             —          (7)           —          (7)
+     Dividends relating to 2019 (Note 24)                —            —             —            —             —           (4,529)    (4,529)           —      (4,529)
+     Capital contribution relating to share-based
+        payment borne by A Share Company
+        (as defined in Note 1) (Note 33)                 —            —             —            —            221              —        221             —        221
+
+
+     Balance at 30 June 2020                        254,056         690         (8,921)      30,185       (41,453)         87,834    322,391           762    323,153
+
+
+
+     Balance at 1 January 2021                      254,056         850         (9,434)      31,431       (41,668)         91,352    326,587           933    327,520
+     Total comprehensive income for the period           —            —           282            —            (49)          9,167      9,400            41      9,441
+     Share of associates’ other reserves                 —            —             —            —             19              —         19             —         19
+     Dividends relating to 2020 (Note 24)                —            —             —            —             —           (5,018)    (5,018)           —      (5,018)
+     Capital contribution relating to share-based
+        payment borne by A Share Company
+        (Note 33)                                        —            —             —            —             78              —         78             —         78
+
+
+     Balance at 30 June 2021                        254,056         850         (9,152)      31,431       (41,620)         95,501    331,066           974    332,040
+
+
+
+     The notes on pages 18 to 44 are an integral part of these unaudited condensed consolidated interim financial statements.
+
+
+
+
+16   CHINA UNICOM (HONG KONG) LIMITED
+                       UNAUDITED CONDENSED CONSOLIDATED
+                                 STATEMENT OF CASH FLOWS
+                                                                                                  FOR THE SIX MONTHS ENDED 30 JUNE 2021
+                                                                                                               (All amounts in RMB millions)
+
+
+
+
+                                                                                                               Six months ended 30 June
+
+                                                                                                                     2021                2020
+
+
+Cash flows from operating activities
+  Cash generated from operations                                                                                   53,394               48,267
+  Income tax paid                                                                                                   (2,730)               (518)
+
+
+  Net cash inflow from operating activities                                                                        50,664               47,749
+
+
+Cash flows from investing activities
+  Purchase of property, plant and equipment and right-of-use assets                                               (30,011)             (25,356)
+  Other cash flows arising from investing activities                                                                (3,110)            (19,822)
+
+
+  Net cash outflow from investing activities                                                                      (33,121)             (45,178)
+
+
+Cash flows from financing activities
+  Capital element of lease rentals paid                                                                             (5,702)             (5,159)
+  Dividend paid to equity shareholders of the Company                                                               (5,018)             (5,447)
+  Other cash flows arising from financing activities                                                                (7,378)               (566)
+
+
+  Net cash outflow from financing activities                                                                      (18,098)             (11,172)
+
+
+Net decrease in cash and cash equivalents                                                                            (555)              (8,601)
+  Cash and cash equivalents, beginning of period                                                                   23,085               34,945
+  Effect of changes in foreign exchange rate                                                                           (36)                15
+
+
+Cash and cash equivalents, end of period                                                                           22,494               26,359
+
+
+The notes on pages 18 to 44 are an integral part of these unaudited condensed consolidated interim financial statements.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2021    17
+     NOTES TO UNAUDITED CONDENSED
+     CONSOLIDATED INTERIM FINANCIAL STATEMENTS
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     1.     ORGANISATION AND PRINCIPAL ACTIVITIES
+            China Unicom (Hong Kong) Limited (the “Company”) was incorporated as a limited liability company in the Hong Kong Special
+            Administrative Region (“Hong Kong”), the People’s Republic of China (the “PRC”) on 8 February 2000. The principal activity of the
+            Company is investment holding. The principal activities of the Company’s subsidiaries are the provision of voice usage, broadband and
+            mobile data services, data and internet application services, other value-added services, transmission lines usage and associated services
+            and sales of telecommunications products in the PRC. The Company and its subsidiaries are hereinafter referred to as the “Group”. The
+            address of the Company’s registered office is 75th Floor, The Center, 99 Queen’s Road Central, Hong Kong.
+
+
+            The shares of the Company were listed on The Stock Exchange of Hong Kong Limited (“SEHK”) on 22 June 2000 and the American
+            Depositary Shares (“ADSs”) of the Company were listed on the New York Stock Exchange (“NYSE”) on 21 June 2000. The NYSE filed Form
+            25 with the United States Securities and Exchange Commission on 7 May 2021 and the delisting of the Company’s ADSs has taken
+            effective on 18 May 2021. The Company’s reporting obligation under the Securities Exchange Act of 1934, as amended was suspended
+            since 28 May 2021.
+
+
+            The substantial shareholders of the Company are China Unicom (BVI) Limited (“Unicom BVI”) and China Unicom Group Corporation (BVI)
+            Limited (“Unicom Group BVI”). The majority of equity interests in Unicom BVI is owned by China United Network Communications
+            Limited (hereinafter referred to as “A Share Company”), a joint stock company incorporated in the PRC on 31 December 2001, with its A
+            shares listed on the Shanghai Stock Exchange on 9 October 2002.
+
+
+            The directors of the Company consider Unicom BVI and China United Network Communications Group Company Limited (a state-owned
+            enterprise established in the PRC, hereinafter referred to as “Unicom Group”) as the immediate holding company and ultimate holding
+            company, respectively.
+
+
+     2.     BASIS OF PREPARATION
+            The unaudited condensed consolidated interim financial statements for the six months ended 30 June 2021 have been prepared in
+            accordance with the applicable disclosure requirements of the Rules Governing the Listing of Securities on The Stock Exchange of Hong
+            Kong Limited and International Accounting Standard (“IAS”) 34, “Interim financial reporting” issued by the International Accounting
+            Standards Board (“IASB”). IAS 34 is consistent with Hong Kong Accounting Standard (“HKAS”) 34, “Interim financial reporting” issued by
+            the Hong Kong Institute of Certified Public Accountants (“HKICPA”) and accordingly these unaudited condensed consolidated interim
+            financial statements are also prepared in accordance with HKAS 34.
+
+
+            The unaudited condensed consolidated interim financial statements for the six months ended 30 June 2021 have not been audited, but
+            has been reviewed by the Company’s Audit Committee. It has also been reviewed by the Company’s auditor in accordance with Hong
+            Kong Standard on Review Engagements 2410, “Review of Interim Financial Information Performed by the Independent Auditor of the
+            Entity”, issued by the HKICPA.
+
+
+            The unaudited condensed consolidated interim financial statements should be read in conjunction with the Group’s annual financial
+            statements for the year ended 31 December 2020. The Group’s policies on financial risk management, including management of market
+            risk, credit risk and liquidity risk, as well as capital risk management, were set out in the financial statements included in the Company’s
+            2020 Annual Report and there have been no significant changes in any financial risk management policies for the six months ended
+            30 June 2021.
+
+
+
+
+18   CHINA UNICOM (HONG KONG) LIMITED
+                                  NOTES TO UNAUDITED CONDENSED
+            C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                         (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+2.   BASIS OF PREPARATION (Continued)
+     The financial information relating to the year ended 31 December 2020 that is included in this unaudited condensed consolidated
+     interim financial statements of 2021 as comparative information does not constitute the Company’s statutory annual consolidated
+     financial statements for that year but is derived from those financial statements. Further information relating to these statutory financial
+     statements disclosed in accordance with section 436 of the Hong Kong Companies Ordinance (Cap. 622) is as follows:
+
+
+     The Company has delivered the financial statements for the year ended 31 December 2020 to the Registrar of Companies as required by
+     section 662(3) of, and Part 3 of Schedule 6 to, the Hong Kong Companies Ordinance (Cap. 622).
+
+
+     The Company’s auditor has reported on those financial statements. The auditor’s report was unqualified; did not include a reference to
+     any matters to which the auditor drew attention by way of emphasis without qualifying its report; and did not contain a statement
+     under sections 406(2), 407(2) or (3) of the Hong Kong Companies Ordinance (Cap. 622).
+
+
+     (a)    Going Concern Assumption
+            As at 30 June 2021, current liabilities of the Group exceeded current assets by approximately RMB94.1 billion (31 December
+            2020: approximately RMB113.4 billion). Considering the current economic conditions and taking into account of the Group’s
+            expected capital expenditures in the foreseeable future, management has comprehensively considered the Group’s available
+            sources of funds as follows:
+
+
+            •       The Group’s continuous net cash inflow from operating activities;
+
+
+            •       Approximately RMB247.6 billion of revolving banking facilities of which approximately RMB235.4 billion was unutilised as
+                    at 30 June 2021; and
+
+
+            •       Other available sources of financing from domestic banks and other financial institutions in view of the Group’s good credit
+                    history.
+
+
+            In addition, the Group believes that it has the ability to raise funds from the short, medium and long-term perspectives and
+            maintain reasonable financing costs through appropriate financing portfolio.
+
+
+            Based on the above considerations, the Board of Directors is of the opinion that the Group has sufficient funds to meet its
+            working capital commitments, expected capital expenditure and debt obligations. As a result, the unaudited condensed
+            consolidated interim financial statements of the Group for the six months ended 30 June 2021 have been prepared on a going
+            concern basis.
+
+
+
+
+                                                                                                                          INTERIM REPORT 2021       19
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     3.     SIGNIFICANT ACCOUNTING POLICIES
+            The unaudited condensed consolidated interim financial statements have been prepared on the historical cost basis except for certain
+            financial instruments which are measured at fair values.
+
+
+            Other than the changes in accounting policies resulting from application of amendments to International Financial Reporting Standards
+            (“IFRSs”)/Hong Kong Financial Reporting Standards (“HKFRSs”), the accounting policies and methods of computation applied in the
+            preparation of these unaudited condensed consolidated interim financial statements are consistent with those used in the preparation
+            of the Group’s annual financial statements for the year ended 31 December 2020.
+
+
+            The IASB and HKICPA have issued the following amendments to IFRSs/HKFRSs that are first effective for the current accounting period of
+            the Group:
+
+
+            •      Amendments to IFRS/HKFRS 9, IAS/HKAS 39, IFRS/HKFRS 7, IFRS/HKFRS 4 and IFRS/HKFRS 16, “Interest Rate Benchmark Reform —
+                   Phase 2 “
+
+
+            The amendments have had no material effect on how the Group’s results and financial positions for the current or prior periods have
+            been prepared or presented in this unaudited condensed consolidated interim financial statements.
+
+
+     4.     SEGMENT INFORMATION
+            The Executive Directors of the Company have been identified as the Chief Operating Decision Maker (the “CODM”). Operating segments
+            are identified on the basis of internal reports that the CODM reviews regularly in allocating resources to segments and in assessing their
+            performances.
+
+
+            The CODM makes resources allocation decisions based on internal management functions and assesses the Group’s business
+            performance as one integrated business instead of by separate business lines or geographical regions. Accordingly, the Group has only
+            one operating segment and therefore, no segment information is presented.
+
+
+            The Group primarily operates in Mainland China and accordingly, no geographic information is presented. No single customer accounted
+            for 10 percent or more of the Group’s revenue in all periods presented.
+
+
+
+
+20   CHINA UNICOM (HONG KONG) LIMITED
+                                   NOTES TO UNAUDITED CONDENSED
+             C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                      (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+5.   REVENUE
+     Revenue from telecommunications services are subject to value-added tax (“VAT”) and VAT rates applicable to various
+     telecommunications services. The VAT rate for basic telecommunications services is 9%, the VAT rate for value-added
+     telecommunications services is 6% and the VAT rate for sales of telecommunications products is 13%. Basic telecommunications services
+     include business activities for the provision of voice services, and transmission lines usage and associated services etc. Value-added
+     telecommunications services include business activities for the provision of short message service and multimedia message service,
+     broadband and mobile data services, and data and internet application services etc. VAT is excluded from the revenue.
+
+
+     Disaggregation of revenue by major services and products:
+
+
+                                                                                                            Six months ended 30 June
+
+                                                                                                                   2021                2020
+
+
+     Voice usage and monthly fees                                                                                11,247             11,441
+     Broadband and mobile data services                                                                          77,533             75,355
+     Data and internet application services                                                                      31,110             25,410
+     Other value-added services                                                                                  11,508             10,111
+     Interconnection fees                                                                                         6,266              5,808
+     Transmission lines usage and associated services                                                             8,859              8,141
+     Other services                                                                                               2,151              2,069
+
+
+     Total service revenue                                                                                      148,674            138,335
+     Sales of telecommunications products                                                                        15,500             12,062
+
+
+     Total                                                                                                      164,174            150,397
+     Include: Revenue from contracts with customers within the scope of IFRS/HKFRS 15,
+                “Revenue from Contracts with Customers”                                                         163,583            149,896
+             Revenue from other sources                                                                             591                 501
+
+
+
+
+                                                                                                                      INTERIM REPORT 2021     21
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     6.     NETWORK, OPERATION AND SUPPORT EXPENSES
+
+                                                                                                                      Six months ended 30 June
+
+                                                                                                   Notes                    2021                2020
+
+
+            Repairs and maintenance                                                                                        5,520               4,744
+            Power and water charges                                                                                        6,687               6,174
+            Charges for use of network, premises, equipment and facilities                           (i)                   6,391               4,808
+            Charges for use of tower assets                                                          (ii)                  5,429               5,452
+            Others                                                                                                         1,080               1,042
+
+
+                                                                                                                          25,107              22,220
+
+
+            (i)      During the six months ended 30 June 2021 and 2020, charges for use of network, premises, equipment and facilities mainly
+                     included the non-lease components charges and charges relating to short-term leases, leases of low-value assets and variable
+                     lease payments which are recorded in profit or loss as incurred.
+
+
+            (ii)     During the six months ended 30 June 2021 and 2020, charges for use of tower assets included the non-lease components charges
+                     (maintenance service, certain ancillary facilities usage and other related support services charges) and variable lease payments
+                     which are recorded in profit or loss as incurred.
+
+
+     7.     EMPLOYEE BENEFIT EXPENSES
+
+                                                                                                                      Six months ended 30 June
+
+                                                                                                    Note                    2021                2020
+
+
+            Salaries and wages                                                                                            24,198              22,116
+            Contributions to defined contribution pension schemes                                                          3,602               2,537
+            Contributions to medical insurance                                                                             1,343                 937
+            Contributions to housing fund                                                                                  1,762               1,685
+            Other housing benefits                                                                                              8                  7
+            Share-based compensation                                                                 33                       78                 221
+
+
+                                                                                                                          30,991              27,503
+
+
+
+
+22   CHINA UNICOM (HONG KONG) LIMITED
+                                    NOTES TO UNAUDITED CONDENSED
+              C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                           (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+8.   COSTS OF TELECOMMUNICATIONS PRODUCTS SOLD
+
+                                                                                                Six months ended 30 June
+
+                                                                                                       2021                2020
+
+
+     Handsets and other telecommunications products                                                  14,559              11,501
+     Others                                                                                             249                 102
+
+
+                                                                                                     14,808              11,603
+
+
+9.   OTHER OPERATING EXPENSES
+
+                                                                                                Six months ended 30 June
+
+                                                                                                       2021                2020
+
+
+     Impairment losses under expected credit loss model, net of reversal                              2,699               2,732
+     Write-down of inventories and impairment losses of other assets                                    203                 240
+     Commission and other service expenses                                                           11,568              10,330
+     Advertising and promotion expenses                                                               1,061               1,013
+     Internet access terminal maintenance expenses                                                      874               1,427
+     Customer retention costs                                                                         1,522               1,428
+     Property management fee                                                                          1,241               1,066
+     Office and administrative expenses                                                                 624                 423
+     Transportation expense                                                                             645                 638
+     Miscellaneous taxes and fees                                                                       662                 670
+     Service technical support expenses                                                              13,643              11,009
+     Repairs and maintenance expenses                                                                   250                 242
+     Loss on disposal of property, plant and equipment                                                1,479               1,279
+     Others                                                                                           2,061               2,028
+
+
+                                                                                                     38,532              34,525
+
+
+
+
+                                                                                                          INTERIM REPORT 2021      23
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     10.    FINANCE COSTS
+
+                                                                                                          Six months ended 30 June
+
+                                                                                                                2021                 2020
+
+
+            Finance costs:
+              — Interest on bank loans repayable within 5 years                                                   33                   70
+              — Interest on corporate bonds, promissory notes and commercial papers repayable
+                     within 5 years                                                                               76                  170
+              — Interest on lease liabilities                                                                    515                  618
+              — Interest on related party loans repayable within 5 years                                          44                   66
+              — Interest on bank loans repayable over 5 years                                                     14                   20
+              — Less: Amount capitalised in construction-in-progress (“CIP”)                                      (84)               (122)
+
+
+            Total interest expense                                                                               598                  822
+              — Net exchange loss/(gain)                                                                           5                   (9)
+              — Others                                                                                            42                   46
+
+
+                                                                                                                 645                  859
+
+
+     11.    OTHER INCOME — NET
+
+                                                                                                          Six months ended 30 June
+
+                                                                                                                2021                 2020
+
+
+            Dividend from financial assets measured at FVOCI (non-recycling)                                     101                   98
+            Investment income from debt securities measured at FVOCI (recycling)                                 403                    1
+            Fair value gains on financial assets measured at fair value through profit or loss (“FVPL”)           49                    7
+            Government grants                                                                                    177                  155
+            Others                                                                                               799                  523
+
+
+                                                                                                               1,529                  784
+
+
+
+
+24   CHINA UNICOM (HONG KONG) LIMITED
+                                   NOTES TO UNAUDITED CONDENSED
+             C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                         (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+12.   TAXATION
+      Hong Kong profits tax has been provided at the rate of 16.5% (for the six months ended 30 June 2020: 16.5%) on the estimated
+      assessable profits for the six months ended 30 June 2021. Taxation on profits outside Hong Kong has been calculated on the estimated
+      assessable profits for the six months ended 30 June 2021 at the rates of taxation prevailing in the countries in which the Group operates.
+      The Company’s subsidiaries operate mainly in the PRC and the applicable statutory enterprise income tax rate is 25% (for the six months
+      ended 30 June 2020: 25%). Taxation for certain subsidiaries in the PRC was calculated at a preferential tax rate of 15% (for the six
+      months ended 30 June 2020: 15%).
+
+
+                                                                                                               Six months ended 30 June
+
+                                                                                                                      2021                 2020
+
+
+      Provision for income tax on estimated taxable profits for the period
+        — Hong Kong                                                                                                      33                  40
+        — Mainland China and other countries                                                                          2,910               2,290
+      (Over)/under-provision in respect of prior years                                                                  (67)                 15
+
+
+                                                                                                                      2,876               2,345
+      Deferred taxation                                                                                                (795)               (207)
+
+
+      Income tax expense                                                                                              2,081               2,138
+
+
+      Reconciliation between actual income tax expense and accounting profit at PRC statutory tax rate:
+
+
+                                                                                                                Six months ended 30 June
+
+                                                                                             Notes                    2021                 2020
+
+
+      Profit before income tax                                                                                      11,289                9,736
+
+
+      Expected income tax expense at PRC statutory tax rate of 25%                                                    2,822               2,434
+      Impact of different tax rate outside Mainland China                                                               (17)                (20)
+      Tax effect of preferential tax rate                                                      (i)                     (126)               (127)
+      Additional deduction for qualified research and development costs                        (i)                     (207)               (128)
+      Tax effect of non-deductible expenses                                                                             182                 168
+      Tax effect of non-taxable income from share of net profit of joint ventures                                      (180)                (65)
+      Tax effect of non-taxable income from share of net profit of associates                  (ii)                    (243)               (149)
+      (Over)/under-provision in respect of prior years                                                                  (67)                 15
+      Tax effect of unused tax losses not recognised, net of utilisation                       (iii)                    (83)                 10
+
+
+      Actual tax expense                                                                                              2,081               2,138
+
+
+
+
+                                                                                                                         INTERIM REPORT 2021       25
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     12.    TAXATION (Continued)
+            (i)       According to the PRC enterprise income tax law and its relevant regulations, entities that are qualified as High and New Technology
+                      Enterprise under the tax law are entitled to a preferential income tax rate of 15% (for the six months ended 30 June 2020: 15%).
+                      Certain subsidiaries of the Group obtained the approval of High and New Technology Enterprise and were entitled to a
+                      preferential income tax rate of 15% (for the six months ended 30 June 2020: 15%), and certain research and development costs
+                      of the Group’s PRC subsidiaries are qualified for 75% (for the six months ended 30 June 2020: 75%) additional deduction for tax
+                      purpose.
+
+
+            (ii)      Adjustment to investment in associates represents the tax effect on share of net profit of associates, net of reversal of deferred tax
+                      assets on unrealised profit from transactions with China Tower Corporation Limited (“Tower Company”).
+
+
+            (iii)     As at 30 June 2021, the Group did not recognise deferred tax assets of approximately RMB98 million (31 December 2020:
+                      approximately RMB181 million) in respect of tax losses amounting to approximately RMB392 million (31 December 2020:
+                      approximately RMB726 million), since it is not probable that future taxable profits will be available against which the deferred tax
+                      asset can be utilised. The tax losses can be carried forward for five years from the year incurred and hence will be expired by the
+                      year of 2026.
+
+
+            As at 30 June 2021, the Group did not recognise deferred tax assets of RMB2,380 million (31 December 2020: RMB2,448 million) in
+            respect of changes in fair value on financial assets measured at FVOCI (non-recycling), since it is not probable that the related tax benefit
+            will be realised.
+
+
+            The movement of the net deferred tax assets/(liabilities) is as follows:
+
+
+                                                                                                                          Six months ended 30 June
+
+                                                                                                                                  2021                2020
+
+
+            Net deferred tax assets after offsetting:
+                  — Balance at 1 January 2021 and 2020                                                                             745                1,226
+                  — Deferred tax credited to the statement of income                                                               792                  207
+                  — Deferred tax credited to other comprehensive income                                                              —                    3
+
+
+                  — Balance at 30 June 2021 and 2020                                                                             1,537                1,436
+
+
+            Net deferred tax liabilities after offsetting:
+                  — Balance at 1 January 2021 and 2020                                                                              (64)                (87)
+                  — Deferred tax credited to the statement of income                                                                  3                  —
+                  — Deferred tax charged to other comprehensive income                                                               (2)                 —
+
+
+                  — Balance at 30 June 2021 and 2020                                                                                (63)                (87)
+
+
+
+
+26   CHINA UNICOM (HONG KONG) LIMITED
+                                    NOTES TO UNAUDITED CONDENSED
+              C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                         (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+13.   EARNINGS PER SHARE
+      Basic earnings per share for the six months ended 30 June 2021 and 2020 were computed by dividing the profit attributable to equity
+      shareholders of the Company by the weighted average number of ordinary shares outstanding during the periods.
+
+
+      Diluted earnings per share for the six months ended 30 June 2021 and 2020 were computed by dividing the profit attributable to equity
+      shareholders of the Company by the weighted average number of ordinary shares outstanding during the periods, after adjusting for the
+      effects of dilutive potential ordinary shares. No dilutive potential ordinary shares existed for the six months ended 30 June 2021 and
+      2020.
+
+
+      The following table sets forth the computation of basic and diluted earnings per share:
+
+
+                                                                                                              Six months ended 30 June
+
+                                                                                                                     2021                2020
+
+
+      Numerator (in RMB millions):
+      Profit attributable to equity shareholders of the Company used in computing basic/diluted
+        earnings per share                                                                                          9,167               7,569
+
+
+      Denominator (in millions):
+      Weighted average number of ordinary shares outstanding used in computing basic/diluted
+        earnings per share                                                                                         30,598              30,598
+
+
+      Basic/Diluted earnings per share (in RMB)                                                                       0.30               0.25
+
+
+
+
+                                                                                                                        INTERIM REPORT 2021      27
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     14.    PROPERTY, PLANT AND EQUIPMENT
+            The movements of property, plant and equipment for the six months ended 30 June 2021 and 2020 are as follows:
+
+
+                                                                                              Six months ended 30 June 2021
+
+                                                                                            Office furniture,
+                                                                                             fixtures, motor
+                                                                                   Tele-        vehicles and
+                                                                          communications               other       Leasehold
+                                                             Buildings        equipment          equipment      improvements        CIP       Total
+
+
+            Cost:
+               Beginning of period                             76,658            841,394             20,255            3,701    48,251     990,259
+               Additions                                             9              145                  106            101     14,406      14,767
+               Transfer from CIP                                  301             21,431                 331             52     (22,115)         —
+               Transfer to other assets                             —                 —                   —               —      (2,148)     (2,148)
+               Disposals                                           (84)          (57,861)               (373)           (241)        —      (58,559)
+
+
+               End of period                                   76,884            805,109             20,319            3,613    38,394     944,319
+
+
+            Accumulated depreciation and impairment:
+               Beginning of period                             (39,243)         (568,173)            (15,641)         (2,908)     (107)    (626,072)
+               Charge for the period                            (1,325)          (31,063)               (590)           (186)        (4)    (33,168)
+               Disposals                                           40             56,192                 342            237          —      56,811
+
+
+               End of period                                   (40,528)         (543,044)            (15,889)         (2,857)     (111)    (602,429)
+
+
+            Net book value:
+               End of period                                   36,356            262,065               4,430            756     38,283     341,890
+
+
+               Beginning of period                             37,415            273,221               4,614            793     48,144     364,187
+
+
+
+
+28   CHINA UNICOM (HONG KONG) LIMITED
+                                     NOTES TO UNAUDITED CONDENSED
+               C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                             (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+14.   PROPERTY, PLANT AND EQUIPMENT (Continued)
+
+                                                                                        Six months ended 30 June 2020
+
+                                                                                      Office furniture,
+                                                                                       fixtures, motor
+                                                                             Tele-       vehicles and
+                                                                    communications               other       Leasehold
+                                                        Buildings       equipment          equipment      improvements          CIP           Total
+
+
+      Cost:
+         Beginning of period                              75,160           833,423             20,092            3,728       54,261        986,664
+         Additions                                            24              261                   93            141        24,994         25,513
+         Transfer from CIP                                   380            25,348                 420             63       (26,211)             —
+         Transfer to other assets                             —                 —                   —               —        (1,595)         (1,595)
+         Disposals                                           (69)          (39,072)               (247)           (216)          —          (39,604)
+
+
+         End of period                                    75,495           819,960             20,358            3,716       51,449        970,978
+
+
+      Accumulated depreciation and impairment:
+         Beginning of period                             (36,840)         (563,735)           (15,658)          (2,919)        (111)       (619,263)
+         Charge for the period                            (1,349)          (29,548)               (601)           (205)          —          (31,703)
+         Disposals                                            50            37,204                 232            215            —          37,701
+
+
+         End of period                                   (38,139)         (556,079)           (16,027)          (2,909)        (111)       (613,265)
+
+
+      Net book value:
+         End of period                                    37,356           263,881               4,331            807        51,338        357,713
+
+
+         Beginning of period                              38,320           269,688               4,434            809        54,150        367,401
+
+
+15.   RIGHT-OF-USE ASSETS
+      During the six months ended 30 June 2021, the Group entered into a number of lease agreements for use of buildings,
+      telecommunications equipment and land use rights, and therefore recognised the additions to right-of-use assets of RMB3,986 million
+      (for the six months ended 30 June 2020: RMB3,644 million).
+
+
+
+
+                                                                                                                            INTERIM REPORT 2021        29
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     16.    FINANCIAL ASSETS MEASURED AT FAIR VALUE
+
+                                                                                                                           30 June      31 December
+                                                                                                     Notes                      2021             2020
+
+
+            Non-current portion:
+                  Equity securities measured at FVOCI (non-recycling)                                  (i)                      2,122           1,838
+                  Financial assets measured at FVPL                                                    (ii)                      976              934
+                  Debt securities measured at FVOCI (recycling)                                       (iii)                      914              721
+
+
+                                                                                                                                4,012           3,493
+
+
+            Current portion:
+                  Financial assets measured at FVPL                                                    (ii)                     2,455           1,560
+                  Debt securities measured at FVOCI (recycling)                                       (iii)                 30,984             22,629
+
+
+                                                                                                                            33,439             24,189
+
+
+                                                                                                                            37,451             27,682
+
+
+            (i)       Equity securities measured at FVOCI (non-recycling):
+
+
+                                                                                                                           30 June      31 December
+                                                                                                     Note                       2021             2020
+
+
+                      Listed in the PRC                                                                                          125              114
+                      Listed outside the PRC                                                           31                       1,945           1,672
+                      Unlisted                                                                                                    52               52
+
+
+                                                                                                                                2,122           1,838
+
+
+            (ii)      Financial assets measured at FVPL represent certain equity investments, investments in monetary funds and wealth management
+                      products.
+
+
+            (iii)     Debt securities measured at FVOCI (recycling) represent certain debt investments issued by banks and the investments held within
+                      a business model whose objective is achieved by both the collection of contractual cash flows and sale.
+
+
+
+
+30   CHINA UNICOM (HONG KONG) LIMITED
+                                      NOTES TO UNAUDITED CONDENSED
+                C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                          (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+17.   SHORT-TERM BANK DEPOSITS AND RESTRICTED DEPOSITS
+
+                                                                                                                   30 June       31 December
+                                                                                                                      2021                2020
+
+
+      Short-term bank deposits                                                                                       1,110               6,900
+      Restricted deposits                                                                                            4,706               5,089
+
+
+                                                                                                                     5,816              11,989
+
+
+18.   OTHER ASSETS
+
+                                                                                                                   30 June       31 December
+                                                                                              Note                    2021                2020
+
+
+      Intangible assets                                                                                             10,961              10,974
+      Prepaid services charges for transmission lines and electricity cables and
+            other services                                                                                           1,196               1,281
+      VAT recoverable                                                                          (i)                      81                 442
+      Others                                                                                                         2,896               1,894
+
+
+                                                                                                                    15,134              14,591
+
+
+      (i)       VAT recoverable includes input VAT and prepaid VAT which will likely be deducted beyond one year. VAT recoverable which will be
+                deducted within one year are included in “Prepayments and other current assets”. See Note 21(i).
+
+
+
+
+                                                                                                                         INTERIM REPORT 2021      31
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     19.    INVENTORIES AND CONSUMABLES
+
+                                                                                                                           30 June           31 December
+                                                                                                                              2021                 2020
+
+
+            Handsets and other telecommunications products                                                                    2,122                1,682
+            Consumables                                                                                                          23                    1
+            Others                                                                                                              603                 268
+
+
+                                                                                                                              2,748                1,951
+
+
+     20.    ACCOUNTS RECEIVABLE
+
+                                                                                                                           30 June           31 December
+                                                                                                                              2021                 2020
+
+
+            Accounts receivable                                                                                             36,420                26,009
+            Less: Expected credit loss allowance                                                                            (12,303)              (9,722)
+
+
+                                                                                                                            24,117                16,287
+
+
+            The aging analysis of accounts receivable, based on the billing date and net of expected credit loss allowance, is as follows:
+
+
+                                                                                                                           30 June           31 December
+                                                                                                                              2021                 2020
+
+
+            Within one month                                                                                                10,846                 8,963
+            More than one month to three months                                                                               4,929                2,766
+            More than three months to one year                                                                                7,081                3,914
+            More than one year                                                                                                1,261                 644
+
+
+                                                                                                                            24,117                16,287
+
+
+            The normal credit period granted by the Group to individual subscribers and general corporate customers is thirty days from the date of
+            billing unless they meet certain specified credit assessment criteria. For major corporate customers, the credit period granted by the
+            Group is based on the service contract terms, normally not exceeding one year.
+
+
+            There is no significant concentration of credit risk with respect to accounts receivable, as the Group has a large number of customers.
+            The Covid-19 pandemic since early 2020 has brought about additional uncertainties in the operations and financial position of the
+            Group’s customers. The Group considered the impact of Covid-19 when evaluating the forward-looking information used in the expected
+            credit loss model including assessing the risk factors associated with various customer sectors.
+
+
+
+
+32   CHINA UNICOM (HONG KONG) LIMITED
+                                      NOTES TO UNAUDITED CONDENSED
+                C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                         (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+21.   PREPAYMENTS AND OTHER CURRENT ASSETS
+      The nature of prepayments and other current assets, net of credit loss allowance, are as follows:
+
+
+                                                                                                                     30 June        31 December
+                                                                                             Note                       2021               2020
+
+
+      Prepaid services charges for transmission lines and electricity cables and
+            other services                                                                                             3,534               3,549
+      Prepaid power and water charges                                                                                       710              625
+      Deposits and prepayments                                                                                         2,918               3,607
+      VAT recoverable                                                                          (i)                     5,646               5,726
+      Prepaid enterprise income tax                                                                                         40                12
+      Others                                                                                                           3,673               2,363
+
+
+                                                                                                                      16,521              15,882
+
+
+      (i)       VAT recoverable includes the input VAT and prepaid VAT that can be deducted within one year.
+
+
+      Prepayments and other current assets are expected to be recovered or recognised as expenses within one year.
+
+
+      As at 30 June 2021, there was no significant impairment for the prepayments and other current assets.
+
+
+22.   CASH AND CASH EQUIVALENTS
+      Cash and cash equivalents refer to all cash on hand and demand deposits, short-term highly liquid investments that are readily
+      convertible to known amounts of cash and which are subject to an insignificant risk of changes in value.
+
+
+23.   SHARE CAPITAL
+
+                                                                                                     Number of shares                      Share
+      Issued and fully paid:                                                                                     millions                 capital
+
+
+      At 1 January 2020, at 31 December 2020 and at 30 June 2021                                                  30,598                 254,056
+
+
+24.   DIVIDENDS
+      At the annual general meeting held on 13 May 2021, the shareholders of the Company approved the payment of a final dividend of
+      RMB0.164 per ordinary share for the year ended 31 December 2020 totaling approximately RMB5,018 million (for the year ended
+      31 December 2019: final dividend of RMB0.148 per ordinary share, totaling approximately RMB4,529 million) which has been reflected
+      as a reduction of retained profits for the six months ended 30 June 2021.
+
+
+      At a meeting held on 19 August 2021, the Board of Directors of the Company declared an 2021 interim dividend of RMB0.120 per
+      ordinary share to the shareholders totaling approximately RMB3,672 million (2020 interim dividend: Nil).
+
+
+
+
+                                                                                                                             INTERIM REPORT 2021    33
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     24.    DIVIDENDS (Continued)
+            Pursuant to the PRC enterprise income tax law, a 10% withholding income tax is levied on dividends declared on or after 1 January 2008
+            by foreign investment enterprises to their foreign enterprise shareholders unless the enterprise investor is deemed as a PRC Tax
+            Resident Enterprise (“TRE”). On 11 November 2010, the Company obtained an approval from State Administration of Taxation of the
+            PRC, pursuant to which the Company qualifies as a PRC TRE from 1 January 2008. Therefore, as at 30 June 2021 and 31 December 2020,
+            the Company’s subsidiaries in the PRC did not accrue for withholding tax on dividends distributed to the Company and there has been no
+            deferred tax liability accrued in the Group’s unaudited condensed consolidated financial statements for the undistributed profits of the
+            Company’s subsidiaries in the PRC.
+
+
+            For the Company’s non-PRC TRE shareholders (including HKSCC Nominees Limited), the Company would distribute dividends after
+            deducting the amount of enterprise income tax payable by these non-PRC TRE shareholders thereon and reclassify the related dividend
+            payable to withholding tax payable upon the declaration of such dividends. The requirement to withhold tax does not apply to the
+            Company’s shareholders appearing as individuals in its share register.
+
+
+     25.    LONG-TERM BANK LOANS
+
+                                                                                                                        30 June       31 December
+                                                 Interest rates and final maturity                                         2021                2020
+
+
+            RMB denominated bank loans           Fixed interest rates ranging from 1.08% to 1.20%
+                                                    (31 December 2020: 1.08% to 1.20%) per annum with
+                                                    maturity through 2036 (31 December 2020: maturity
+                                                    through 2036)                                                         2,135               2,678
+            USD denominated bank loans           Fixed interest rates ranging from Nil to 1.55% (31
+                                                    December 2020: Nil to 1.55%) per annum with maturity
+                                                    through 2039 (31 December 2020: maturity through
+                                                    2039)                                                                   191                 204
+            Euro denominated bank loans          Fixed interest rates ranging from 1.10% to 2.50% (31
+                                                    December 2020: 1.10% to 2.50%) per annum with
+                                                    maturity through 2034 (31 December 2020: maturity
+                                                    through 2034)                                                            16                  18
+
+
+            Sub-total                                                                                                     2,342               2,900
+            Less: Current portion                                                                                          (346)               (418)
+
+
+                                                                                                                          1,996               2,482
+
+
+            As at 30 June 2021, long-term bank loans of approximately RMB43 million (31 December 2020: approximately RMB46 million) were
+            guaranteed by third parties.
+
+
+
+
+34   CHINA UNICOM (HONG KONG) LIMITED
+                                    NOTES TO UNAUDITED CONDENSED
+              C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                       (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+25.   LONG-TERM BANK LOANS (Continued)
+      The repayment schedule of the long-term bank loans is as follows:
+
+
+                                                                                                                30 June       31 December
+                                                                                                                    2021               2020
+
+
+      Balances due:
+        — no later than one year                                                                                     346                418
+        — later than one year and no later than two years                                                            373                444
+        — later than two years and no later than five years                                                          930              1,072
+        — later than five years                                                                                      693                966
+
+
+                                                                                                                    2,342             2,900
+      Less: Portion classified as current liabilities                                                               (346)              (418)
+
+
+                                                                                                                    1,996             2,482
+
+
+26.   PROMISSORY NOTES
+      On 18 November 2019, China United Network Communications Corporation Limited (“CUCL”) issued tranche one of 2019 promissory
+      notes in an amount of RMB1 billion, with a maturity period of 3 years from the date of issue and which carries interest at 3.39% per
+      annum.
+
+
+27.   CORPORATE BONDS
+      On 7 June 2016, the Group issued RMB1 billion 5-year corporate bond, bearing interest at 3.43% per annum, and was fully repaid in June
+      2021.
+
+
+      On 19 June 2019, the Group issued RMB2 billion 3-year corporate bonds, bearing interest at 3.67% per annum.
+
+
+
+
+                                                                                                                       INTERIM REPORT 2021     35
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     28.    SHORT-TERM BANK LOANS
+
+                                                                                                                        30 June       31 December
+                                                 Interest rates and final maturity                                         2021                2020
+
+
+
+
+            RMB denominated bank loans           Fixed interest rates at 1.85% (31 December 2020: 1.85%)
+                                                   per annum with maturity through 2022
+                                                   (31 December 2020: maturity through 2021)                                490                 740
+
+
+     29.    COMMERCIAL PAPERS
+            On 15 July 2020, CUCL issued tranche one of 2020 super short term commercial papers in an amount of RMB2 billion, with a maturity
+            period of 180 days from the date of issue and which carries interest at 1.89% per annum, and was fully repaid in January 2021.
+
+
+            On 15 July 2020, CUCL issued tranche two of 2020 super short term commercial papers in an amount of RMB3 billion, with a maturity
+            period of 180 days from the date of issue and which carries interest at 1.89% per annum, and was fully repaid in January 2021.
+
+
+            On 5 November 2020, CUCL issued tranche four of 2020 super short term commercial papers in an amount of RMB2 billion, with a
+            maturity period of 90 days from the date of issue and which carries interest at 2.17% per annum, and was fully repaid in February 2021.
+
+
+            On 23 June 2021, CUCL issued tranche one of 2021 super short term commercial papers in an amount of RMB2 billion, with a maturity
+            period of 270 days from the date of issue and which carries interest at 2.80% per annum.
+
+
+     30.    ACCOUNTS PAYABLE AND ACCRUED LIABILITIES
+
+                                                                                                                        30 June       31 December
+                                                                                                                           2021                2020
+
+
+            Payables to contractors and equipment suppliers                                                              60,072               73,046
+            Payables to telecommunications products suppliers                                                             5,119                3,779
+            Customer/contractor deposits                                                                                  5,286                5,723
+            Repair and maintenance expense payables                                                                       5,431                5,261
+            Salary and welfare payables                                                                                  16,641               12,248
+            Amounts due to technical support services and other service providers/content providers                       5,156                4,852
+            VAT received from customers in advance                                                                        3,038                2,746
+            Accrued expenses                                                                                             19,021               17,186
+            Others                                                                                                        7,201                9,596
+
+
+                                                                                                                        126,965              134,437
+
+
+
+
+36   CHINA UNICOM (HONG KONG) LIMITED
+                                   NOTES TO UNAUDITED CONDENSED
+             C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                           (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+30.   ACCOUNTS PAYABLE AND ACCRUED LIABILITIES (Continued)
+      The aging analysis of accounts payable and accrued liabilities is based on the invoice date as follows:
+
+
+                                                                                                                    30 June       31 December
+                                                                                                                       2021                2020
+
+
+      Less than six months                                                                                          105,971             116,553
+      Six months to one year                                                                                          9,850               8,846
+      More than one year                                                                                             11,144               9,038
+
+
+                                                                                                                    126,965             134,437
+
+
+31.   MUTUAL INVESTMENT OF THE COMPANY AND TELEFÓNICA S.A. (“TELEFÓNICA”) IN EACH OTHER
+      On 6 September 2009, the Company announced that in order to strengthen the cooperation between the Company and Telefónica, the
+      parties entered into a strategic alliance agreement and a subscription agreement, pursuant to which each party conditionally agreed to
+      invest an equivalent of USD1 billion in each other through an acquisition of each other’s shares.
+
+
+      On 23 January 2011, the Company entered into an agreement to enhance the strategic alliance with Telefónica that: (a) Telefónica
+      would purchase ordinary shares of the Company for a consideration of USD500 million through acquisition from third parties; and (b) the
+      Company would acquire from Telefónica 21,827,499 ordinary shares of Telefónica held in treasury (“Telefónica Treasury Shares”) for an
+      aggregate purchase price of Euro374,559,882.84. On 25 January 2011, the Company completed the purchase of Telefónica Treasury
+      Shares in accordance with the strategic agreement. During 2011, Telefónica completed its investment of USD500 million in the
+      Company.
+
+
+      On 14 May 2012, Telefónica declared a dividend. The Company chose to implement it by means of a scrip dividend and received
+      1,646,269 ordinary shares of approximately RMB146 million.
+
+
+      As at 30 June 2021, the related financial assets measured at FVOCI amounted to approximately RMB1,945 million (31 December 2020:
+      approximately RMB1,672 million). For the six months ended 30 June 2021, the increase in fair value of the financial assets measured at
+      FVOCI was approximately RMB273 million (for the six months ended 30 June 2020: decrease of approximately RMB954 million), has
+      been recorded in the unaudited condensed consolidated statement of comprehensive income.
+
+
+32.   EQUITY-SETTLED SHARE OPTION SCHEMES
+      On 16 April 2014, the Company adopted a share option scheme (the “2014 Share Option Scheme”). The 2014 Share Option Scheme is
+      valid and effective for a period of 10 years commencing on 22 April 2014 and will expire on 22 April 2024. No share options had been
+      granted since adoption of the 2014 Share Option Scheme.
+
+
+      No options outstanding as at 30 June 2021 and 2020.
+
+
+
+
+                                                                                                                          INTERIM REPORT 2021      37
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     33.    RESTRICTED A-SHARE INCENTIVE SCHEME
+            Pursuant to the share incentive scheme (Phase I) of A Share Company (the “Restricted A-Share Incentive Scheme”), not more than 848
+            million restricted shares of A Share Company (“Restricted Shares”) were approved for granting to the core employees of the Group, the
+            first batch granted Restricted Shares of 793,861,000 and second batch granted Restricted Shares of 13,156,000 were subscribed by them
+            (the “Participants”, including certain core employees of the Company’s subsidiaries) on 21 March 2018 and 1 February 2019 (the “Grant
+            Dates”), respectively, with a subscription price of RMB3.79 per share. The fair value of the Restricted Shares granted under the
+            respective Grant Dates is RMB2.34 and RMB1.57 per share, respectively, as determined based on the difference between the market
+            price of A Share Company of RMB6.13 per share and RMB5.36 per share at the respective Grant Dates, and the subscription price of
+            RMB3.79 per share.
+
+
+            The Restricted Shares are subject to various lock-up periods (the “Lock-Up Period”) of approximately 2 years, 3 years and 4 years,
+            respectively, immediately from the Grant Dates. During the Lock-Up Period, these shares are not transferrable, nor subject to any
+            guarantee or indemnity. The Restricted Shares shall be unlocked (or repurchased and cancelled by A Share Company) separately in three
+            tranches in proportion of 40%, 30% and 30% of the total number of the Restricted Shares granted upon the expiry of each of the Lock-Up
+            Period.
+
+
+            Subject to fulfilment of all service and performance conditions under the Restricted A-Share Incentive Scheme which include the
+            achievement of certain revenue and profit targets of A Share Company, the Participants’ individual performance appraisal, etc.
+            (collectively referred to as “vesting conditions”), the restriction over the Restricted Shares will be removed after the expiry of the
+            corresponding Lock-Up Period for each tranche and the Participants will be fully entitled to these incentive shares. If the vesting
+            conditions are not fulfilled and hence the Restricted Shares cannot be unlocked, A Share Company shall repurchase the Restricted Shares
+            based on the respective subscription price from the Participants.
+
+
+            Pursuant to the Restricted A-Share Incentive Scheme, the second Lock-Up Period of approximately 3 years for the first batch granted
+            Restricted Shares as well as the first Lock-Up Period of approximately 2 years for the second batch granted Restricted Shares have
+            expired in April 2021. With the fulfilment of the vesting conditions, Restricted Shares of 218,379,125 were approved for unlocking after
+            Lock-Up Period by the Board of Directors of A Share Company during the current period.
+
+
+            For the six months ended 30 June 2021, Restricted Shares of 3,742,200 were forfeited and repurchased (for the six months ended
+            30 June 2020: Restricted Shares of 8,198,000).
+
+
+            For the six months ended 30 June 2021, the Group recognised share-based payment expenses and other reserve of RMB78 million
+            during the period under the Restricted A-Share Incentive Scheme (for the six month ended 30 June 2020: RMB221 million).
+
+
+
+
+38   CHINA UNICOM (HONG KONG) LIMITED
+                                   NOTES TO UNAUDITED CONDENSED
+             C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                           (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+34.   FAIR VALUE ESTIMATION
+      Financial assets of the Group mainly include cash and cash equivalents, short-term bank deposits and restricted deposits, accounts
+      receivable, financial assets included in prepayments and other current assets, amounts due from ultimate holding company, related
+      parties and domestic carriers, financial assets measured at fair value. Financial liabilities of the Group mainly include short-term bank
+      loans, financial liabilities included in accounts payable and accrued liabilities, commercial papers, corporate bonds, promissory notes,
+      long-term bank loans, other obligations and amounts due to ultimate holding company, related parties and domestic carriers.
+
+
+      (a)    Financial assets measured at fair value
+             The table below analyses financial instruments carried at fair value, by valuation method. The different levels have been defined
+             as follows:
+
+
+             •       Level 1 valuation: unadjusted quoted prices in active markets for identical assets or liabilities at the measurement date.
+
+
+             •       Level 2 valuation: observable inputs which fail to meet level 1, and not using significant unobservable inputs for which
+                     market data are not available.
+
+
+             •       Level 3 valuation: fair value measured using significant unobservable inputs.
+
+
+             The following table presents the Group’s assets that are measured at fair value at 30 June 2021:
+
+
+                                                                                 Level 1             Level 2           Level 3              Total
+
+
+             Recurring fair value measurement
+             Equity securities measured at FVOCI (non-recycling)                   2,070                 —                  52             2,122
+             Financial assets measured at FVPL                                     2,481                 —                950              3,431
+             Debt securities measured at FVOCI (recycling)                       31,898                  —                  —             31,898
+
+
+             Total                                                               36,449                  —              1,002             37,451
+
+
+             The following table presents the Group’s assets that are measured at fair value at 31 December 2020:
+
+
+                                                                                 Level 1             Level 2           Level 3              Total
+
+
+             Recurring fair value measurement
+             Equity securities measured at FVOCI (non-recycling)                   1,786                 —                  52             1,838
+             Financial assets measured at FVPL                                     1,465                100               929              2,494
+             Debt securities measured at FVOCI (recycling)                       23,350                  —                  —             23,350
+
+
+             Total                                                               26,601                 100               981             27,682
+
+
+
+
+                                                                                                                           INTERIM REPORT 2021      39
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     34.    FAIR VALUE ESTIMATION (Continued)
+            (a)    Financial assets measured at fair value (Continued)
+                   The fair value of financial instruments traded in active markets is based on quoted market prices at the end of the reporting
+                   period. A market is regarded as active if quoted prices are readily and regularly available from an exchange, dealer, broker,
+                   industry group, pricing service, or regulatory agency, and those prices represent actual and regularly occurring market
+                   transactions on an arm’s length basis. The quoted market price used for financial assets held by the Group is the current bid
+                   price. These instruments are included in level 1 and comprise primarily equity securities of Telefónica, debt securities issued by
+                   banks which are classified as financial assets measured at FVOCI and certain equity investments, investments in monetary funds
+                   that are classified as financial assets measured at FVPL.
+
+
+                   During the six months ended 30 June 2021 and 2020, there was no transfer between Level 1 and Level 2, or transfer into or out of
+                   Level 3. The Group’s policy is to recognise transfers between levels of fair value hierarchy as at the end of the reporting period in
+                   which they occur.
+
+
+            (b)    Fair value of financial instruments carried at other than fair value
+                   Except as detailed in the following table, the carrying amounts of the Group’s financial instruments carried at amortised cost are
+                   not materially different from their fair values as at 30 June 2021 and 31 December 2020 due to the nature or short maturity of
+                   those instruments.
+
+                                                                     Carrying                                                                Carrying      Fair value
+                                                                  amounts as    Fair value as                                           amounts as at            as at
+                                                                   at 30 June     at 30 June      Fair value measurements as at          31 December    31 December
+                                                                        2021            2021      30 June 2021 categorised into                 2020            2020
+                                                                                                Level 1        Level 2        Level 3
+
+
+                   Non-current portion of long-term bank loans         1,996           2,060        —           2,060             —            2,482            2,552
+                   Non-current portion of promissory notes               998           1,019     1,019             —              —              998            1,005
+                   Non-current portion of corporate bonds                 —               —         —              —              —            1,999            2,050
+
+
+
+                   The fair value of the non-current portion of long-term bank loans is based on the expected cash flows of principal and interests
+                   payment discounted at market rates ranging from 0.57% to 4.35% (31 December 2020: 0.57% to 4.35%) per annum. The fair
+                   value of promissory notes are based on the quoted price in the interbank trading market.
+
+
+     35.    MATERIAL RELATED PARTY TRANSACTIONS
+            Unicom Group is a state-owned enterprise directly controlled by the PRC government. The PRC government is the Company’s ultimate
+            controlling party. Neither Unicom Group nor the PRC government publishes financial statements available for public use.
+
+
+            The PRC government controls a significant portion of the productive assets and entities in the PRC. The Group provides
+            telecommunications services as part of its retail transactions, thus, is likely to have extensive transactions with the employees of other
+            state-controlled entities, including their key management personnel and their close family members. These transactions are carried out
+            on commercial terms that are consistently applied to all customers.
+
+
+
+
+40   CHINA UNICOM (HONG KONG) LIMITED
+                                   NOTES TO UNAUDITED CONDENSED
+             C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                          (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+35.   MATERIAL RELATED PARTY TRANSACTIONS (Continued)
+      Management considers certain state-owned enterprises have material transactions with the Group in its ordinary course of business,
+      which include but not limited to 1) rendering and receiving telecommunications services, including interconnection revenue/charges; 2)
+      sharing certain telecommunications network infrastructure; 3) purchasing of goods, including use of public utilities; and 4) placing of
+      bank deposits and borrowing money. The Group’s telecommunications network depends, in large part, on interconnection with the
+      network and on transmission lines service provided by other domestic carriers. These transactions are mainly carried out on terms
+      comparable to those conducted with third parties or standards promulgated by relevant government authorities and have been
+      reflected in the financial statements. Amounts due from domestic carriers are all derived from contracts with customers.
+
+
+      Management believes that meaningful information relating to related party transactions has been disclosed below.
+
+
+      35.1   Connected transactions with Unicom Group and its subsidiaries other than the Group (“Unicom Group and its subsidiaries”)
+             (a)    Recurring transactions
+                    The following is a summary of significant recurring transactions carried out by the Group with Unicom Group and its
+                    subsidiaries. In the directors’ opinion, these transactions were carried out in the ordinary course of business.
+
+
+                                                                                                                 Six months ended 30 June
+
+                                                                                              Note                     2021               2020
+
+
+                    Transactions with Unicom Group and its subsidiaries:
+                    Charges for value-added telecommunications services                         (i)                       55                55
+                    Rental charges for short-term property leasing and related
+                          services charges                                                      (i)                      485                492
+                    Charges for short-term lease of telecommunications resources
+                          and related services                                                  (i)                      143                133
+                    Charges for engineering design and construction services                    (i)                      878                539
+                    Charges for shared services                                                 (i)                       41                39
+                    Charges for materials procurement services                                  (i)                        6                 9
+                    Charges for ancillary telecommunications services                           (i)                    1,259             1,371
+                    Charges for comprehensive support services                                  (i)                      444                404
+                    Income from comprehensive support services                                  (i)                       32                35
+                    Lending by Unicom Group Finance Company Limited (“Finance
+                          Company”) to Unicom Group                                             (i)                    8,100            14,100
+                    Repayment of loans lending by Finance Company to
+                          Unicom Group                                                          (i)                    8,100            11,304
+                    Interest income from lending services                                       (i)                      168                191
+
+
+                    (i)       On 21 October 2019, CUCL entered into the agreement “2020–2022 Comprehensive Services Agreement” with
+                              Unicom Group to renew certain continuing connected transactions. “2020 – 2022 Comprehensive Services
+                              Agreement” has a term of three years commencing on 1 January 2020 and expiring on 31 December 2022, the
+                              service fees payable under “2020–2022 Comprehensive Services Agreement” shall be calculated on the same basis
+                              as under previous agreement, and no changes on the annual caps amount.
+
+
+
+
+                                                                                                                           INTERIM REPORT 2021    41
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     35.    MATERIAL RELATED PARTY TRANSACTIONS (Continued)
+            35.1   Connected transactions with Unicom Group and its subsidiaries other than the Group (“Unicom Group and its subsidiaries”)
+                   (Continued)
+                   (b)    Amounts due from and to Unicom Group and its subsidiaries
+                          Amount due from Unicom Group as at 30 June 2021 included loans from Finance Company to Unicom Group of
+                          RMB10,500 million in total with respective floating interest rate of Loan Prime Rate (“LPR”) published by the National
+                          Interbank Funding Center (“NIFC”) (31 December 2020: RMB10,500 million with floating interest rate of LPR published by
+                          the NIFC).
+
+
+                          Apart from the above and as disclosed in Note 35.3 below, amounts due from and to Unicom Group and its subsidiaries
+                          are unsecured, interest-free, repayable on demand/on contract terms and arise in the ordinary course of business in
+                          respect of transactions with Unicom Group and its subsidiaries as described in (a) above.
+
+
+            35.2   Related party transactions with Tower Company
+                   (a)    Related Party transactions
+                          (i)    Lease of the Tower Assets and other related services
+                                  On 8 July 2016, CUCL and Tower Company entered into a framework agreement to confirm the pricing and related
+                                  arrangements in relation to the usage of certain telecommunications towers and related assets (the
+                                  “Agreement”). The Agreement finalised terms including assets categories, pricing basis for usage charges, and
+                                  relevant service period etc. Provincial service agreements and detailed lease confirmation for specified towers
+                                  have been signed subsequently.
+
+
+                                  On 31 January 2018, after further arm-length negotiations and discussions, CUCL and Tower Company agreed on
+                                  certain supplementary provisions based on the Agreement dated 8 July 2016, which mainly relate to a reduction in
+                                  cost-plus margin of Tower Company which forms the benchmark for pricing and an increase in co-tenancy
+                                  discount rates offered to the Group regarding towers under co-sharing arrangements. The new terms apply to the
+                                  leased tower portfolio as confirmed by both parties are effective from 1 January 2018 for a period of five years.
+
+
+                                  In connection with the use of telecommunications towers and related assets, the minimum amount of lease
+                                  payments payable by the Group under the terms of the arrangement had resulted in recognition of lease liabilities
+                                  with the balance of RMB15,781 million, and right-of-use assets with the balance of RMB14,398 million as at
+                                  30 June 2021 (31 December 2020: RMB17,837 million and RMB17,005 million, respectively). For the six months
+                                  ended 30 June 2021, the Group recorded depreciation of right-of-use asset of RMB3,701 million (for the six
+                                  months ended 30 June 2020: RMB3,501 million), interest expense of RMB313 million (for the six months ended
+                                  30 June 2020: RMB403 million), and variable lease payments and other related service charges of RMB5,429
+                                  million (for the six months ended 30 June 2020: RMB5,452 million) in its unaudited condensed consolidated
+                                  statement of income.
+
+
+                                  The total contractual amounts of lease payments and service charges incurred by the Group under the Agreement
+                                  and supplementary provisions with Tower Company for the six months ended 30 June 2021 were RMB9,488
+                                  million (for the six months ended 30 June 2020: RMB9,295 million). The related payable balance to Tower
+                                  Company excluding lease liabilities included in the balance of amounts due to related parties as at 30 June 2021
+                                  was RMB4,236 million (31 December 2020: RMB3,893 million).
+
+
+
+
+42   CHINA UNICOM (HONG KONG) LIMITED
+                                   NOTES TO UNAUDITED CONDENSED
+             C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+                                                                                        (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+35.   MATERIAL RELATED PARTY TRANSACTIONS (Continued)
+      35.2   Related party transactions with Tower Company (Continued)
+             (a)    Related Party transactions (Continued)
+                   (ii)    Income from engineering design and construction services
+                           The Group provide engineering design and construction services, including system integration and engineering
+                           design services to Tower Company. Income for the six months ended 30 June 2021 was RMB173 million (for the six
+                           months ended 30 June 2020: RMB151 million).
+
+
+                           Amounts due from and to Tower Company are unsecured, interest-free, repayable on demand/on contract terms
+                           and arise in the ordinary course of business in respect of transactions with Tower Company as described above.
+
+
+      35.3   Other related party transactions with Unicom Group and its subsidiaries
+             (a)   Related party transactions
+
+
+                                                                                                               Six months ended 30 June
+
+                                                                                            Notes                    2021                 2020
+
+
+                    Transactions with Unicom Group and its subsidiaries:
+                    Interest expenses on unsecured entrusted loan                             (i)                       44                  66
+                    Lending of loan                                                           (i)                      208                  —
+                    Repayment of loan                                                         (i)                    2,385                  —
+                    Net deposits with Finance Company                                         (ii)                   1,267               3,223
+                    Interest expenses on the deposits in Finance Company                      (ii)                      31                  34
+
+
+                    (i)    On 26 December 2018, the Group borrowed an unsecured entrusted loan from A Share Company of RMB3,042
+                           million with a maturity period of 5 years and interest rate at 4.28% per annum. The Group partially repaid this loan
+                           amounting to RMB2,300 million for the six months ended 30 June 2021.
+
+
+                           On 21 May 2021, the Group borrowed an unsecured entrusted loan from Unicom Group BVI of HKD250 million
+                           (equivalent to RMB208 million) with floating interest rate at six-month HIBOR plus 0.9%. The Group partially
+                           repaid this loan amounting to HKD103 million (equivalent to RMB85 million) for the six months ended 30 June
+                           2021.
+
+
+                    (ii)   Finance Company has agreed to provide financial services to Unicom Group and its subsidiaries. For the deposit
+                           services, the interest rate for deposits placed by Unicom Group and its subsidiaries will be no more than the
+                           maximum interest rate promulgated by the People’s Bank of China for the same type of deposit, the interest rate
+                           for the same type of deposit offered to other clients and the applicable interest rate offered by the general
+                           commercial banks in the PRC for the same type of deposit.
+
+
+
+
+                                                                                                                        INTERIM REPORT 2021       43
+     NOTES TO UNAUDITED CONDENSED
+     C O N S O L I D AT E D I N T E R I M F I N A N C I A L S TAT E M E N T S
+     (All amounts in RMB millions unless otherwise stated)
+
+
+
+
+     35.    MATERIAL RELATED PARTY TRANSACTIONS (Continued)
+            35.3   Other related party transactions with Unicom Group and its subsidiaries (Continued)
+                   (b)    Amounts due to Unicom Group and its subsidiaries
+                           Amount due to Unicom Group and its subsidiaries as at 30 June 2021 included a balance of deposits received by Finance
+                           Company from Unicom Group and its subsidiaries of RMB6,379 million with interest rates ranging from 0.42% to 2.75%
+                           per annum for saving and fixed deposits of different terms (31 December 2020: RMB5,112 million with interest rates
+                           ranging from 0.42% to 2.75% per annum).
+
+
+                           Amount due to Unicom Group and its subsidiaries as at 30 June 2021 included: 1) a balance of unsecured entrusted loan
+                           from A Share Company of RMB742 million with a maturity period of 5 years and interest rate at 4.28% per annum
+                           (31 December 2020: RMB3,042 million with a maturity period of 5 years and interest rate at 4.28% per annum); 2) a
+                           balance of unsecured entrusted loan from Unicom Group BVI of HKD147 million (equivalent to RMB123 million)
+                           (31 December 2020: Nil) with floating interest rate at six-month HIBOR plus 0.9%.
+
+
+     36.    CONTINGENCIES AND COMMITMENTS
+            36.1   Capital commitments
+                   As at 30 June 2021 and 31 December 2020, the Group had capital commitments, mainly in relation to the construction of
+                   telecommunications network, as follows:
+
+
+                                                                                                                                         31 December
+                                                                                                   30 June 2021                                  2020
+
+                                                                                     Property         Equipment                Total             Total
+
+
+                   Authorised and contracted for                                         2,092            26,718             28,810             26,082
+                   Authorised but not contracted for                                     7,403            23,577             30,980             47,801
+
+
+                                                                                         9,495            50,295             59,790             73,883
+
+
+            36.2   Contingent liabilities
+                   As at 30 June 2021, the Group had no material contingent liabilities and no material financial guarantees issued.
+
+
+     37.    NON-ADJUSTING EVENTS AFTER THE REPORTING PERIOD
+            After the end of the reporting period, the Board of Directors declared an interim dividend. For details, please refer to Note 24.
+
+
+     38.    APPROVAL OF FINANCIAL STATEMENTS
+            This unaudited condensed consolidated interim financial statements were approved by the Board of Directors on 19 August 2021.
+
+
+
+
+44   CHINA UNICOM (HONG KONG) LIMITED
+                      REPORT ON REVIEW OF CONDENSED
+            CONSOLIDATED INTERIM FINANCIAL STATEMENTS
+
+
+
+
+To the Board of Directors of China Unicom (Hong Kong) Limited
+(Incorporated in Hong Kong with limited liability)
+
+
+INTRODUCTION
+We have reviewed the condensed consolidated interim financial statements of China Unicom (Hong Kong) Limited (the “Company”) and its
+subsidiaries (collectively referred to as the “Group”) set out on pages 12 to 44, which comprise the unaudited condensed consolidated
+statement of financial position as of 30 June 2021 and the related unaudited condensed consolidated statement of income, statement of
+comprehensive income, statement of changes in equity and statement of cash flows for the six-month period then ended, and certain
+explanatory notes. The Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited require the preparation of a report
+on interim financial information to be in compliance with the relevant provisions thereof, and to be in compliance with either International
+Accounting Standard 34 “Interim Financial Reporting” (“IAS 34”) issued by the International Accounting Standards Board or Hong Kong
+Accounting Standard 34 “Interim Financial Reporting” (“HKAS 34”) issued by the Hong Kong Institute of Certified Public Accountants, depending
+on whether the issuer’s annual financial statements are prepared in accordance with International Financial Reporting Standards (“IFRSs”) or
+Hong Kong Financial Reporting Standards (“HKFRSs”) respectively. As the annual financial statements of the Group are prepared in accordance
+with both IFRSs and HKFRSs, the directors of the Company are responsible for the preparation and presentation of these condensed
+consolidated interim financial statements in accordance with both IAS 34 and HKAS 34. Our responsibility is to express a conclusion on these
+condensed consolidated interim financial statements based on our review, and to report our conclusion solely to you, as a body, in accordance
+with our agreed terms of engagement, and for no other purpose. We do not assume responsibility towards or accept liability to any other
+person for the contents of this report.
+
+
+SCOPE OF REVIEW
+We conducted our review in accordance with Hong Kong Standard on Review Engagements 2410, “Review of Interim Financial Information
+Performed by the Independent Auditor of the Entity”, issued by the Hong Kong Institute of Certified Public Accountants. A review of these
+condensed consolidated interim financial statements consists of making inquiries, primarily of persons responsible for financial and accounting
+matters, and applying analytical and other review procedures. A review is substantially less in scope than an audit conducted in accordance with
+Hong Kong Standards on Auditing and consequently does not enable us to obtain assurance that we would become aware of all significant
+matters that might be identified in an audit. Accordingly, we do not express an audit opinion.
+
+
+CONCLUSION
+Based on our review, nothing has come to our attention that causes us to believe that the condensed consolidated interim financial statements
+are not prepared, in all material respects, in accordance with IAS 34 and HKAS 34.
+
+
+
+
+Deloitte Touche Tohmatsu
+Certified Public Accountants
+Hong Kong
+19 August 2021
+
+
+
+
+                                                                                                                          INTERIM REPORT 2021      45
+     OTHER
+     INFORMATION
+
+
+     SHARE OPTION SCHEME OF THE COMPANY
+     Pursuant to a resolution passed at the annual general meeting held on 16 April 2014, the Company adopted a new share option scheme (the
+     “2014 Share Option Scheme”). The purpose of the 2014 Share Option Scheme was to recognise the contribution that certain individuals have
+     made to the Company, to attract and retain the best available personnel and to promote the success of the Company. The 2014 Share Option
+     Scheme is valid and effective for a period of 10 years commencing on 22 April 2014 and will expire on 22 April 2024. Following the expiry of the
+     2014 Share Option Scheme, no further share option can be granted under the 2014 Share Option Scheme, but the provisions of the 2014 Share
+     Option Scheme will remain in full force and effect to the extent necessary to give effect to the exercise of any share options granted prior
+     thereto or otherwise as may be required in accordance with the provisions of the 2014 Share Option Scheme.
+
+
+     No share options had been granted since adoption of the 2014 Share Option Scheme and up to and including 30 June 2021.
+
+
+     DIRECTORS’, CHIEF EXECUTIVES’ AND EMPLOYEES’ INTERESTS UNDER THE SHARE OPTION SCHEME OF THE COMPANY
+     During the six months ended and as at 30 June 2021, none of the Directors of the Company or chief executives or employees of the Company
+     had any interests under any share option scheme of the Company.
+
+
+     DIRECTORS’ AND CHIEF EXECUTIVES’ INTERESTS AND SHORT POSITIONS IN SHARES, UNDERLYING SHARES AND
+     DEBENTURES
+     As at 30 June 2021, the interests and short positions of Directors and chief executives of the Company in any shares, underlying shares and
+     debentures of the Company or any of its associated corporations (as defined in Part XV of the Hong Kong Securities and Futures Ordinance (the
+     “SFO”)) as recorded in the register required to be kept under Section 352 of the SFO or as otherwise notified to the Company and the Stock
+     Exchange of Hong Kong Limited pursuant to the Model Code for Securities Transactions by Directors of Listed Issuers (the “Model Code”) as set
+     out in Appendix 10 of the Rules Governing the Listing of Securities on the Hong Kong Stock Exchange (the “Listing Rules”), were as follows:
+
+
+                                                                                                                        Ordinary       Percentage of
+     Name of Director                                         Capacity                                               Shares Held        Issued Shares
+
+
+     Chung Shui Ming Timpson                                  Beneficial owner (Personal)                                   6,000              0.00%
+
+
+     Save as disclosed in the foregoing, as at 30 June 2021, none of the Directors or chief executives of the Company had any interests or short
+     positions in any shares, underlying shares, or debentures of the Company or any of its associated corporations (as defined in Part XV of the SFO)
+     as recorded in the register required to be kept pursuant to Section 352 of the SFO or as otherwise notified to the Company and the Hong Kong
+     Stock Exchange pursuant to the Model Code.
+
+
+     Furthermore, save as disclosed in the foregoing, during the six months ended 30 June 2021, none of the Directors or chief executives (including
+     their spouses and children under the age of 18) of the Company had any interests in or was granted any right to subscribe in any shares,
+     underlying shares, or debentures of the Company or any of its associated corporations, or had exercised any such rights.
+
+
+
+
+46   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                                                            OTHER
+                                                                                                                 I N F O R M AT I O N
+
+
+
+
+MATERIAL INTERESTS AND SHORT POSITIONS OF SUBSTANTIAL SHAREHOLDERS IN SHARES AND UNDERLYING
+SHARES OF THE COMPANY
+As at 30 June 2021, the following persons (other than disclosed under the section headed “Directors’ and Chief Executives’ Interests and Short
+Positions in Shares, Underlying Shares and Debentures”) had the following interests and short positions in the shares or underlying shares of the
+Company as recorded in the register required to be kept pursuant to Section 336 of Part XV of the SFO:
+
+
+                                                                                                     Ordinary Shares Held                Percentage of
+Name of Shareholders                                                                                 Directly           Indirectly       Issued Shares
+
+
+(i)      China United Network Communications Group Company Limited (“Unicom
+         Group”)1,2                                                                                        —      24,683,896,309                80.67%
+(ii)     China United Network Communications Limited (“Unicom A Share Company”)1                           —      16,376,043,282                53.52%
+(iii)    China Unicom (BVI) Limited (“Unicom BVI”)1                                          16,376,043,282                     —               53.52%
+(iv)     China Unicom Group Corporation (BVI) Limited (“Unicom Group BVI”)2,3                  8,082,130,236          225,722,791               27.15%
+
+
+Notes:
+
+
+1.       Unicom Group and Unicom A Share Company directly or indirectly control one-third or more of the voting rights in the shareholders’ meetings of
+         Unicom BVI, and in accordance with the SFO, the interests of Unicom BVI are deemed to be, and have therefore been included in, the respective
+         interests of Unicom Group and Unicom A Share Company.
+
+
+2.       Unicom Group BVI is a wholly-owned subsidiary of Unicom Group. In accordance with the SFO, the interests of Unicom Group BVI are deemed to
+         be, and have therefore been included in, the interests of Unicom Group.
+
+
+3.       Unicom Group BVI holds 8,082,130,236 shares (representing 26.41% of the total issued shares) of the Company directly. In addition, Unicom Group
+         BVI is also interested in 225,722,791 shares (representing 0.74% of the total issued shares) of the Company under the SFO, in which Unicom
+         Group BVI had a pre-emptive right.
+
+
+Apart from the foregoing, as at 30 June 2021, no person had any interests or short position in the shares or underlying shares in the Company as
+recorded in the register required to be kept under Section 336 of the SFO.
+
+
+Please also refer to Note 23 to the unaudited condensed consolidated interim financial statements for details of the share capital of the
+Company.
+
+
+REPURCHASE, SALE OR REDEMPTION OF LISTED SHARES OF THE COMPANY
+For the six months ended 30 June 2021, neither the Company nor any of its subsidiaries had repurchased, sold or redeemed any of the
+Company’s listed shares.
+
+
+
+
+                                                                                                                                 INTERIM REPORT 2021       47
+     OTHER
+     I N F O R M AT I O N
+
+
+
+
+     CHANGES OF DIRECTORS’ INFORMATION
+     Changes in Directors’ major offices since the publication of the Company’s 2020 annual report are set out below:
+
+
+     •      Mr. Li Fushen has resigned as an Executive Director of the Company.
+
+
+     •      Mr. Zhu Kebing has resigned as the Executive Director and Chief Financial Officer of the Company.
+
+
+     •      Mr. Fan Yunjun has resigned as the Executive Director and Senior Vice President of the Company.
+
+
+     •      Mr. Chung Shui Ming Timpson no longer served as an Independent Non-executive Director of Glorious Sun Enterprises Limited.
+
+
+     Save as stated above, no other information on the Directors of the Company is required to be disclosed pursuant to Rule 13.51B(1) of the Listing
+     Rules. The updated biographical details of the Directors are available on the website of the Company (www.chinaunicom.com.hk).
+
+
+     USE OF PROCEEDS FROM ISSUE OF NEW SHARES
+     As part of the mixed ownership reform plan, on 22 August 2017, the Company and Unicom BVI entered into a share subscription agreement.
+     The completion of allotment and issuance of the subscription shares took place on 28 November 2017. Pursuant to the share subscription
+     agreement, 6,651,043,262 new ordinary shares of the Company have been issued for a cash consideration of HKD13.24 per share to Unicom BVI
+     and the gross proceeds amounted to HKD88,059.81 million (equivalent to approximately RMB74,953.87 million) and the net issue price
+     amounted to HKD13.24 each. The closing price was HKD12.04 per share as quoted on the Hong Kong Stock Exchange as at the date of the share
+     subscription agreement. Details of such issue have been disclosed in the circular dated 28 August 2017.
+
+
+     As disclosed in our 2020 Annual Report, the actual amounts of proceeds utilised up to 31 December 2020 was approximately RMB74.58 billion
+     and remaining proceeds as at 31 December 2020 was approximately RMB0.38 billion. Such remaining proceeds would be utilised in technology
+     validation and enablement and launch of trial programs in relation to the 5G network. The Company utilised the proceeds according to the
+     above-mentioned plan during the period of 1 January 2021 to 30 June 2021. As at 30 June 2021, the Company did not have proceeds that
+     remained unused.
+
+
+     EMPLOYEE BENEFIT EXPENSES
+     Employee benefit expenses as disclosed in note 7 to the unaudited condensed consolidated interim financial statements included salaries and
+     wages, benefit and pension schemes etc.
+
+
+     As stipulated by the regulations of the PRC, the Group participates in various defined contribution retirement plans organised by municipal,
+     autonomous regional and provincial governments for its employees in Mainland China. The Group is required to make contributions to the
+     retirement plans at certain percentage of the employees’ payroll. For the six months ended 30 June 2021 and the year ended 31 December
+     2020, no forfeited contributions may be used by the Group to reduce the existing level of contributions.
+
+
+     In addition to participating in local governmental defined contribution social insurance, certain subsidiaries of the Group also provide other post
+     retirement supplementary benefits to their employees, including supplementary pension allowance, reimbursement of medical expenses and
+     supplementary medical insurance. These post retirement supplementary benefits are accounted as defined benefit plan. The Group’s obligation
+     for this benefit plan is calculated using actuarial method (according to the projected unit credit method) and recognised as liability. As at 30
+     June 2021, the amount of liability for the defined benefit plan was RMB76 million (31 December 2020: RMB75 million). Actuarial assumptions
+     mainly include discount rate and future mortality etc. This defined benefit plan does not have any plan assets. The Group plans to appoint an
+     independent actuary to carry out actuarial valuation for the defined benefit plan as at 31 December 2021.
+
+
+     AUDIT COMMITTEE
+     The Audit Committee, together with the management and the auditor of the Company, Deloitte Touche Tohmatsu, have reviewed the
+     accounting principles and practices adopted by the Group, and discussed internal control and financial reporting matters, including the review
+     of interim financial information for the six months ended 30 June 2021.
+
+
+
+
+48   CHINA UNICOM (HONG KONG) LIMITED
+                                                                                                                          OTHER
+                                                                                                               I N F O R M AT I O N
+
+
+
+
+COMPLIANCE WITH CORPORATE GOVERNANCE CODE
+The Board is committed to maintain high standards of corporate governance and recognises that good governance is vital for the long-term
+success and sustainability of the Company’s business. The Company has complied with the code provisions in the Corporate Governance Code
+as set out in Appendix 14 of the Listing Rules for the six months ended 30 June 2021 except the following:
+
+
+The roles and responsibilities of the Chairman and the Chief Executive Officer of the Company were performed by the same individual for the six
+months ended 30 June 2021. The Company considers that, as all major decisions are made by the Board and relevant Board Committees after
+discussion, through supervision by the Board and the independent non-executive Directors together with effective internal control mechanism,
+the Company has achieved a balance of power and authority. In addition, the same individual performing the roles of the Chairman and the
+Chief Executive Officer can enhance the Company’s efficiency in decision-making and execution, effectively capturing business opportunities.
+
+
+The Directors of the Company (including non-executive Directors) are not appointed for a specific term. However, pursuant to the Company’s
+articles of association, one-third of the directors shall retire from office by rotation and shall be eligible for re-election at each annual general
+meeting.
+
+
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+The Company has adopted the Model Code as set out in Appendix 10 of the Listing Rules to govern securities transactions by directors. Further
+to the specific enquiries made by the Company to the directors, all directors have confirmed their compliance with the Model Code for the six
+months ended 30 June 2021.
+
+
+COMPLIANCE WITH APPENDIX 16 OF THE LISTING RULES
+According to paragraph 40 of Appendix 16 of the Listing Rules, save as disclosed herein, the Company confirmed that the current company
+information in relation to those matters set out in paragraph 32 of Appendix 16 has not changed materially from the information disclosed in
+the Company’s 2020 annual report.
+
+
+CLOSURE OF REGISTER OF MEMBERS
+The Board of Directors of the Company declared an interim dividend for 2021 (pre-tax) (the “2021 Interim Dividend”) of RMB0.120 per share
+(equivalent to HK$0.14426 per share, the relevant exchange rate was the mid-rate of RMB to Hong Kong dollars (RMB0.83186 equivalent to
+HK$1.00) as announced by the People’s Bank of China on 17 August 2021 (being the second business day prior to the Board declared the 2021
+Interim Dividend) to shareholders of the Company (the “Shareholders”).
+
+
+For the purpose of ascertaining the Shareholders’ rights to be entitled to the 2021 Interim Dividend, the register of members of the Company
+will be closed. Details of such closure is set out below:
+
+
+Latest time to lodge transfer documents for registration                                                          4:30 p.m. of 3 September 2021
+Closure of register of members                                                                                                 6 September 2021
+Interim Dividend Record date                                                                                                   6 September 2021
+
+
+During the above closure period, no transfer of shares of the Company will be registered. In order to be entitled to the 2021 Interim Dividend,
+Shareholders who have not registered the transfer documents are required that all transfers, accompanied by the relevant certificates, must be
+lodged with the Company’s Share Registrar, Hong Kong Registrars Limited, at Shops 1712–1716, 17th Floor, Hopewell Centre, 183 Queen’s Road
+East, Wan Chai, Hong Kong, by no later than the aforementioned latest time. The 2021 Interim Dividend is expected to be paid in Hong Kong
+dollars on or about 29 September 2021 to those members registered in the Company’s register of members as at 6 September 2021 (the
+“Interim Dividend Record Date”).
+
+
+
+
+                                                                                                                              INTERIM REPORT 2021       49
+     OTHER
+     I N F O R M AT I O N
+
+
+
+
+     WITHHOLDING AND PAYMENT OF ENTERPRISE INCOME TAX FOR NON-RESIDENT ENTERPRISES IN RESPECT OF 2021
+     INTERIM DIVIDEND
+     Pursuant to (i) the “Notice Regarding Matters on Determination of Tax Residence Status of Chinese-controlled Offshore Incorporated
+     Enterprises under Rules of Effective Management” (the “Notice”) issued by the State Administration of Taxation of the People’s Republic of
+     China (the “SAT”); (ii) the “Enterprise Income Tax Law of the People’s Republic of China” (the “Enterprise Income Tax Law”) and the “Detailed
+     Rules for the Implementation of the Enterprise Income Tax Law of the People’s Republic of China” (the “Implementation Rules”); and (iii)
+     information obtained from the SAT, the Company is required to withhold and pay enterprise income tax when it pays the 2021 Interim Dividend
+     to its non-resident enterprise shareholders. The enterprise income tax is 10% on the amount of dividend paid to non-resident enterprise
+     shareholders (the “Enterprise Income Tax”), and the withholding and payment obligation lies with the Company.
+
+
+     As a result of the foregoing, in respect of any shareholders whose names appear on the Company’s register of members on the Interim Dividend
+     Record Date and who are not individuals (including HKSCC Nominees Limited, other custodians, corporate nominees and trustees such as
+     securities companies and banks, and other entities or organisations), the Company will distribute the 2021 Interim Dividend payable to them
+     after deducting the amount of Enterprise Income Tax payable on such dividend. Investors who invest in the shares in the Company listed on the
+     Main Board of The Stock Exchange of Hong Kong Limited through the Shanghai Stock Exchange or Shenzhen Stock Exchange (the Shanghai-Hong
+     Kong Stock Connect or Shenzhen-Hong Kong Stock Connect investors) are investors who hold shares through HKSCC Nominees Limited, and in
+     accordance with the above requirements, the Company will pay to HKSCC Nominees Limited the amount of the 2021 Interim Dividend after
+     deducting the amount of Enterprise Income Tax payable on such dividend.
+
+
+     In respect of any shareholders whose names appear on the Company’s register of members on the Interim Dividend Record Date and who are
+     individual shareholders, there will be no deduction of Enterprise Income Tax from the dividend that such shareholder is entitled to.
+
+
+     Shareholders who are not individual shareholders listed on the Company’s register of members and who (i) are resident enterprises of the
+     People’s Republic of China (the “PRC”) (as defined in the Enterprise Income Tax Law), or (ii) are enterprises deemed to be resident enterprises of
+     the PRC in accordance with the Notice, and who, in each case, do not desire to have the Company withhold Enterprise Income Tax from their
+     2021 Interim Dividend, should lodge with the Company’s Share Registrar, Hong Kong Registrars Limited, at Shops 1712–1716, 17th Floor,
+     Hopewell Centre, 183 Queen’s Road East, Wan Chai, Hong Kong, at or before 4:30 p.m. of 3 September 2021, and present the documents from
+     such shareholder’s governing tax authority in the PRC confirming that the Company is not required to withhold and pay Enterprise Income Tax in
+     respect of the dividend that such shareholder is entitled to.
+
+
+     If anyone would like to change the identity of the holders in the register of members, please enquire about the relevant procedures with the
+     nominees or trustees. The Company will withhold for payment of the Enterprise Income Tax for its non-resident enterprise shareholders strictly
+     in accordance with the relevant laws and requirements of the relevant government agencies and adhere strictly to the information set out in the
+     Company’s register of members on the Interim Dividend Record Date. The Company assumes no liability whatsoever in respect of and will not
+     process any claims, arising from any delay in, or inaccurate determination of, the status of the shareholders, or any disputes over the
+     mechanism of withholding.
+
+
+
+
+50   CHINA UNICOM (HONG KONG) LIMITED
+w w w. c h i n a u n i c o m . c o m . h k
+中國聯合網絡通信（香港）股份有限公司
+CHINA UNICOM (HONG KONG) LIMITED
+
+香港皇后大道中99號中環中心75樓
+75th Floor, The Center, 99 Queen’s Road Central, Hong Kong
+電話 Tel : (852) 2126 2018   傳真 Fax : (852) 2126 2016
+
+
+www.chinaunicom.com.hk
+
+
+
+
+Concept and Design: Coolgrey Design Workshop Limited 概念與設計：傲美設計工作室有限公司
+Printing and Production: Cre8 (Greater China) Ltd. 印刷與製作：創意（大中華）有限公司
+

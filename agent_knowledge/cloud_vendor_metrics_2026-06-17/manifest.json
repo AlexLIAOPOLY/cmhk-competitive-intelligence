@@ -1,0 +1,60 @@
+{
+  "id": "cloud_vendor_metrics_2026-06-17",
+  "title": "CMHK 重点云厂商近三年经营数据",
+  "summary": "AWS、Azure/Microsoft、Google Cloud、阿里云、腾讯云代理口径、华为云、Oracle Cloud 的 FY2023-FY2025 云收入、利润和口径说明。",
+  "source_type": "external_official_public",
+  "visibility": "archived",
+  "superseded_by": "quarterly_competitor_metrics_2026-06-18",
+  "scope": "CMHK 云业务和 AI 基础设施竞品/合作方经营数据",
+  "tags": [
+    "cloud",
+    "AI infrastructure",
+    "financial metrics",
+    "competitor intelligence",
+    "CMHK"
+  ],
+  "keywords": [
+    "云厂商",
+    "云收入",
+    "AWS",
+    "Azure",
+    "Microsoft Intelligent Cloud",
+    "Google Cloud",
+    "阿里云",
+    "Alibaba Cloud",
+    "腾讯云",
+    "Tencent Cloud",
+    "华为云",
+    "Huawei Cloud",
+    "Oracle Cloud",
+    "云计算",
+    "AI 云",
+    "CMHK 云业务"
+  ],
+  "entrypoints": [
+    "README.md",
+    "cloud_vendor_metrics_summary.md",
+    "cloud_vendor_metrics_2023_2025.json",
+    "cloud_vendor_metrics_2023_2025.csv",
+    "cloud_vendor_metrics_human_readable.csv",
+    "sources.json",
+    "online_verification_2026-06-17.md",
+    "online_verification_2026-06-17.csv"
+  ],
+  "updated_at": "2026-06-19T09:15:50",
+  "quality": {
+    "status": "verified_against_official_public_sources",
+    "notes": [
+      "直接披露与代理口径分开标注。",
+      "本体 CSV/JSON 已升级为统一 official_value / verification_status / verification_count schema。",
+      "不估算未披露的单独云收入。",
+      "华为 2024 云计算收入采用 2025 年报重述口径，保留原披露值说明。"
+    ]
+  },
+  "version": "2026-06-19T09:15:50",
+  "built_at": "2026-06-19T09:15:50",
+  "row_count": 83,
+  "verified_count": 83,
+  "gap_count": 2,
+  "last_audit_path": "agent_knowledge/cloud_vendor_metrics_2026-06-17/online_verification_2026-06-17.md"
+}

@@ -1,0 +1,10 @@
+﻿dataset_id,status,issues,row_count,manifest_row_count,manifest_quality_status,verification_count_lt_2,missing_official_value_for_official_rows,source_gap_rows_with_official_value,missing_required_fields,missing_entrypoints,status_counts_json,folder,primary_csv,primary_json
+cmhk_macro_policy_2026-06-19,pass,,7580,7580,official_verified_macro_policy_build_ready_for_rag,0,0,0,,,"{""official_match"": 7577, ""source_gap_confirmed"": 3}",agent_knowledge/cmhk_macro_policy_2026-06-19,macro_policy_metrics.csv,macro_policy_metrics.json
+quarterly_competitor_metrics_2026-06-18,pass,,3013,3013,official_verified_with_documented_source_gaps,0,0,0,,,"{""official_conflict"": 570, ""official_match"": 1500, ""official_only"": 631, ""source_gap_confirmed"": 312}",agent_knowledge/quarterly_competitor_metrics_2026-06-18,quarterly_metrics.csv,quarterly_metrics.json
+cloud_vendor_metrics_2026-06-17,pass,,83,,verified_against_official_public_sources,0,0,0,,,"{""official_derived_from_verified_rows"": 31, ""official_match"": 50, ""source_gap_confirmed"": 2}",agent_knowledge/cloud_vendor_metrics_2026-06-17,cloud_vendor_metrics_2023_2025.csv,cloud_vendor_metrics_2023_2025.json
+forecast_readiness_audits,pass,,8,8,pass,0,0,0,,,"{""pass"": 8}",agent_knowledge/forecast_readiness_audits,forecast_readiness_alignment_2026-06-19.csv,
+source_evidence_audits,pass,,3,3,pass,0,0,0,,,"{""pass"": 3}",agent_knowledge/source_evidence_audits,source_evidence_integrity_2026-06-19.csv,
+source_url_reachability_audits,pass,,705,705,pass_with_external_warnings,0,0,0,,,"{""ok"": 571, ""reachable_restricted"": 133, ""ssl_error"": 1}",agent_knowledge/source_url_reachability_audits,source_url_reachability_2026-06-19.csv,
+agent_dataset_visibility_audits,pass,,11,11,pass,0,0,0,,,"{""pass"": 11}",agent_knowledge/agent_dataset_visibility_audits,agent_dataset_visibility_2026-06-19.csv,
+goal_readiness_audits,pass,,7,7,pass,0,0,0,,,"{""pass"": 7}",agent_knowledge/goal_readiness_audits,goal_readiness_2026-06-19.csv,
+agent_guidance_alignment_audits,pass,,5,5,pass,0,0,0,,,"{""pass"": 5}",agent_knowledge/agent_guidance_alignment_audits,agent_guidance_alignment_2026-06-19.csv,

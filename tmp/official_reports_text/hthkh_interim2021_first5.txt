@@ -1,0 +1,155 @@
+2021 Interim Report
+Corporate Information
+
+BOARD OF DIRECTORS                               AUDIT COMMITTEE
+                                                 IP Yuk Keung (Chairman)
+Chairman and Non-executive Director
+                                                 LAN Hong Tsung, David
+FOK Kin Ning, Canning, BA, DFM, FCA (ANZ)
+                                                 WONG Yick Ming, Rosanna
+
+Co-Deputy Chairmen and Non-executive Directors
+                                                 NOMINATION COMMITTEE
+LUI Dennis Pok Man, BSc
+                                                 WONG Yick Ming, Rosanna (Chairman)
+WOO Chiu Man, Cliff, BSc
+                                                 FOK Kin Ning, Canning
+                                                 IP Yuk Keung
+Executive Director
+KOO Sing Fai, BSc
+ Chief Executive Officer                         REMUNERATION COMMITTEE
+                                                 LAN Hong Tsung, David (Chairman)
+Non-executive Directors                          FOK Kin Ning, Canning
+LAI Kai Ming, Dominic, BSc, MBA                  IP Yuk Keung
+ (also Alternate to FOK Kin Ning, Canning and
+ Edith SHIH)
+                                                 SUSTAINABILITY COMMITTEE
+Edith SHIH, BSE, MA, MA, EdM, Solicitor,
+  FCG (CS, CGP), FCS (CS, CGP) (PE)              Edith SHIH (Chairman)
+MA Lai Chee, Gerald, BCom, MA                    KOO Sing Fai
+ (Alternate to LAI Kai Ming, Dominic)
+                                                 WONG Yick Ming, Rosanna
+
+Independent Non-executive Directors
+                                                 COMPANY SECRETARY
+IP Yuk Keung, BSc, MSc, MSc
+                                                 Edith SHIH, BSE, MA, MA, EdM, Solicitor,
+LAN Hong Tsung, David, GBS, ISO, JP                FCG (CS, CGP), FCS (CS, CGP) (PE)
+
+WONG Yick Ming, Rosanna, PhD, DBE, JP
+                                                 AUDITOR
+                                                 PricewaterhouseCoopers
+                                                   Certified Public Accountants
+                                                   Registered Public Interest Entity Auditor
+Contents
+
+
+
+
+           •    Corporate Information
+            2   Highlights
+            3   Chairman’s Statement
+            5   Management Discussion and Analysis
+            9   Group Capital Resources and Liquidity
+           12   Disclosure of Interests
+           17   Corporate Governance
+           18   Changes in Information of Directors
+           19   Report on Review of Condensed Consolidated Interim
+                Financial Statements
+           20   Condensed Consolidated Statement of Comprehensive Income
+           21   Condensed Consolidated Statement of Financial Position
+           22   Condensed Consolidated Statement of Changes in Equity
+           23   Condensed Consolidated Statement of Cash Flows
+           24   Notes to the Condensed Consolidated Interim Financial Statements
+           34   Supplementary Financial Information
+           35   Glossary
+           •    Information for Shareholders
+    Highlights
+
+                                                                                                                         1H 2021                    1H 2020
+                                                                                                                      HK$ million                 HK$ million              Change
+
+        Total revenue                                                                                                           2,565                     1,982                +29%
+        Local service revenue                                                                                                   1,503                     1,443                 +4%
+        Total EBITDA (1)                                                                                                           747                       778                 -4%
+        Local service EBITDA (1)                                                                                                   638                       622                 +3%
+        Total EBIT (2)                                                                                                               92                      147                -37%
+        Profit attributable to shareholders                                                                                         31                      146                 -79%
+        Earnings per share (in HK cents)                                                                                          0.64                      3.03                -79%
+        Special interim dividend per share (in HK cents)                                                                         19.80                         –             +100%
+        Interim dividend per share (in HK cents)                                                                                  2.28                      2.28                 –
+
+
+
+
+    Note 1: EBITDA represents the EBITDA of the Company and subsidiary companies as well as the Group’s share of the EBITDA of a joint venture. EBITDA is defined as earnings before
+            net interest and other finance (costs)/income, taxation, depreciation and amortisation. Information concerning EBITDA has been included in the Group’s financial information
+            and is used by many industries and investors as one measure of gross cash flow generation. The Group considers EBITDA to be an important performance measure which is
+            used in the Group’s internal financial and management reporting to monitor business performance. EBITDA is not a measure of cash liquidity or financial performance under
+            IFRS and the EBITDA measures used by the Group may not be comparable to other similarly titled measures of other companies. EBITDA should not necessarily be construed
+            as an alternative to cash flows or results from operations as determined in accordance with IFRS.
+
+    Note 2: EBIT represents the EBIT of the Company and subsidiary companies as well as the Group’s share of the EBIT of a joint venture. EBIT is defined as earnings before net interest and
+            other finance (costs)/income and taxation. Information concerning EBIT has been included in the Group’s financial information and is used by many industries and investors as
+            one measure of results from operations. The Group considers EBIT to be an important performance measure which is used in the Group’s internal financial and management
+            reporting to monitor business performance. EBIT is not a measure of financial performance under IFRS and the EBIT measures used by the Group may not be comparable to
+            other similarly titled measures of other companies. EBIT should not necessarily be construed as an alternative to results from operations as determined in accordance
+            with IFRS.
+
+
+
+2   Hutchison Telecommunications Hong Kong Holdings Limited
+Chairman’s Statement
+
+The COVID-19 pandemic has continued to bring significant upheaval to the way of life and businesses. Sluggish economic
+recovery and persistent travel restrictions have led to unprecedented operational uncertainties throughout the first half of 2021.
+
+Total EBITDA of the Group decreased by HK$31 million or 4% to HK$747 million in the first six months of 2021 as revenue from
+roaming slashed by HK$94 million or 43% compared with the same period last year, and HK$20 million or 14% compared with
+the second half of 2020. Despite the impact of travel restrictions on the roaming business of the Group, local service revenue
+reported a 4% or HK$60 million steady growth compared with the same period last year. This growth demonstrated the ability
+of the Group to maintain its market competitiveness, capturing new opportunities and expanding the distribution network under
+a challenging operating environment, as well as delivering the best network services to its customers. In particular, the surging
+demand for corporate solutions gave rise to an encouraging 58% growth compared with the first six months of 2020.
+
+Excluding the impact from lower roaming margin, total EBITDA of the Group improved by 6% compared with the same period last
+year. Although higher network costs are incurred for the 5G technology investment and network coverage expansion, the Group
+has generated a healthy service EBITDA margin of 44% for the first half of 2021.
+
+Total EBIT of the Group decreased by HK$55 million or 37% to HK$92 million compared with the same period last year mainly
+due to lower roaming margin mentioned above, as well as the launch of the 5G network during 2020 resulted in a 4% increase
+in depreciation and amortisation. Excluding the impact of the lower roaming margin, total EBIT of the Group improved by 217%
+compared with the same period last year.
+
+Profit attributable to shareholders and earnings per share were HK$31 million and 0.64 HK cents, a 79% decrease compared with
+HK$146 million and 3.03 HK cents respectively for the same period last year. The decrease was mainly driven by a HK$58 million
+reduction in net interest income as the bank deposit rates dropped significantly from an average of 2.40% for the first half of
+2020 to approximately 0.34% for the first half of 2021, coupled with a HK$310 million decrease in the net cash balance from the
+beginning of 2020 subsequent to the settlement of 5G investment and spectrum spending in the first half of 2021.
+
+As of 30 June 2021, the total number of customers in Hong Kong and Macau dropped by 2% to approximately 3.2 million (as of
+30 June 2020: approximately 3.3 million) mainly due to a decrease in prepaid customers in Macau, partially offset by strong
+growth in Hong Kong prepaid customers following the successful launch of SoSIM in November 2020. The monthly postpaid
+churn rate remained stable at 1.1% (1H 2020: 1.1%). Local postpaid net ARPU increased by 7% to HK$160 mainly due to higher
+contributions from the corporate segment as well as uplift from 5G services upgrades.
+
+Dividend
+The Board declared an interim dividend of 2.28 HK cents (2020 interim dividend: 2.28 HK cents) per share for the six months
+ended 30 June 2021, in line with the same period last year. The Board is of the view that 2021 is a transitional year, there will be
+progressive improvement in operational performance and commercial momentum in the future. The Board expects to keep the
+same level of dividend payout similar to that of 2020 at HK$361 million until the recurring profit attributable to shareholders
+exceeds HK$361 million, which by then the dividend payout will change to the equivalent of 100% of annual profit attributable
+to shareholders.
+
+The Board also declared a one-off special interim dividend of 19.80 HK cents (1H 2020: Nil) per share for the first half of 2021.
+Coupling with the interim dividend, the total dividends amount to 22.08 HK cents per share for the first six months of 2021.
+
+The aforementioned interim dividend and one-off special interim dividend will be payable on Friday, 3 September 2021, to
+shareholders whose names appear on the Register of Members of the Company at the close of business on Wednesday, 25 August
+2021, being the record date for determining shareholders’ entitlement to the interim dividend and special interim dividend.
+
+
+
+
+                                                                                                                     2021 Interim Report   3
+

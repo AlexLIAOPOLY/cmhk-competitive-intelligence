@@ -1,0 +1,40 @@
+{
+  "id": "agent_guidance_alignment_audits",
+  "title": "小竞AI Agent提示与Skill对齐审计",
+  "summary": "检查 Agent 系统提示和关键项目内 skills 是否优先使用目标级审计、正式使用最新季度包，并把旧季度包限定为 superseded 审计历史。",
+  "source_type": "local_audit",
+  "visibility": "hidden",
+  "scope": "Agent prompt, local skills, goal-readiness routing, superseded package handling, and forecast/source-verification guidance.",
+  "updated_at": "2026-06-19",
+  "tags": [
+    "audit",
+    "agent-guidance",
+    "skills",
+    "prompt",
+    "superseded"
+  ],
+  "keywords": [
+    "agent_guidance_alignment_audits",
+    "goal_readiness_audits",
+    "superseded",
+    "quarterly_competitor_metrics_2026-06-18",
+    "source-verification"
+  ],
+  "entrypoints": [
+    "agent_guidance_alignment_2026-06-19.md",
+    "agent_guidance_alignment_2026-06-19.csv"
+  ],
+  "quality": {
+    "status": "pass",
+    "row_count": 5,
+    "checks": 5,
+    "passed": 5,
+    "failed": 0,
+    "notes": [
+      "Agent and skills must use goal-level audit evidence for data quality and prediction readiness questions.",
+      "Superseded packages may be mentioned only as audit history, not as default or formal conclusion sources."
+    ]
+  },
+  "version": "2026-06-19",
+  "built_at": "2026-06-19"
+}

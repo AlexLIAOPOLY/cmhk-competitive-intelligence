@@ -1,0 +1,1654 @@
+Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no
+responsibility for the contents of this announcement, make no representation as to its accuracy or
+completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in
+reliance upon the whole or any part of the contents of this announcement.
+
+
+
+
+                                   HKBN Ltd.
+                                 香港寬頻有限公司
+                      (Incorporated in the Cayman Islands with limited liability)
+                                        (Stock Code: 1310)
+
+                INTERIM RESULTS ANNOUNCEMENT
+           FOR THE SIX MONTHS ENDED 28 FEBRUARY 2022
+     (Unless otherwise stated, all monetary figures in this announcement are in Hong Kong dollars.)
+
+
+The board of directors (the “Board”) of HKBN Ltd. (the “Company”) is pleased to
+announce the unaudited consolidated results of the Company and its subsidiaries (the
+“Group”) for the six months ended 28 February 2022 (“1H2022”). These results were
+based on the unaudited consolidated interim financial report for 1H2022, which was
+prepared in accordance with the Hong Kong Accounting Standard (“HKAS”) 34, Interim
+financial reporting, issued by the Hong Kong Institute of Certified Public Accountants
+(“HKICPA”).
+
+ •     Despite the challenging economic environment, our Revenue, EBITDA
+       (Adjusted) and Adjusted Free Cash Flow (“AFF”) continued to grow year-on-
+       year at 9%, 1% and 94%, respectively, to $6,803 million, $1,320 million and
+       $758 million; half-on-half compared to 2H2021, the growth in 1H2022 is more
+       pronounced with 30%, 5%, 2%, respectively.
+
+ •     Revenue increased by 9% year-on-year to $6,803 million, mainly driven by
+       significant growth in smartphone sales and growth from Enterprise Solutions
+       related product revenue. As a result, EBITDA (Adjusted) increased by 1% year-
+       on-year to $1,320 million.
+
+ •     The Board has recommended the payment of an interim dividend of 40 cents per
+       share (1H2021: 39 cents per share), resulting in a 3% year-on-year increase.
+
+
+
+
+                                                 –1–
+SHAREHOLDER LETTER
+
+                                     Partnership+
+
+Dear Fellow Shareholders,
+
+At HKBN, our Legal Unfair Competitive Advantage (LUCA) is no longer the fibre
+network that we have been building since the mid 1990s, rather it is our incredible
+customer relationships with 1 million or 1-in-3 residential households, and ~110,000
+enterprises or 1-in-2 active companies in Hong Kong. Our reach is extremely scalable in
+terms of the services that we can upsell to our customers beyond the traditional telecom
+connectivity services. In most industries, Customer Acquisition Cost (CAC) is a major
+expense item to do business, which typically ranges from a quarter to a third of revenues.
+
+Metcalfe’s Law is a concept used in computer networks and telecommunications to
+represent the value of the total network. Metcalfe’s Law states that a network’s impact is
+the square of the number of nodes in the network. We believe Metcalfe’s Law applies to
+our Partnership+ approach. By getting partners to team up with HKBN, we bring them
+lower CAC through our substantial customer base. In this way, all parties will benefit,
+especially our customers who can enjoy a far wider range of services at far lower prices,
+our partners will have a far more efficient channel to market — and for us, the more
+services our customers use, the far more loyal they will be to us.
+
+In Residential, we are the exclusive broadband service provider for Disney+. Ever since
+the service launched in November 2021, we have already secured about 140,000
+customers who’ve benefitted from our Disney+ bundles. With our monthly billing reach
+of 1 million residential households and an average of 3.5 mobile SIMs per household,
+we have a warm base reach of 3.5 million mobile subscribers or 35% of the total 10
+million postpaid mobile market. This makes us a perfect Mobile Virtual Network
+Operator (MVNO) partner to HTHKH “3 Hong Kong” mobile, for whom we are reselling
+its 5G services. Another key partnership for us is HOME+, our joint venture with major
+partners Dah Chong Hong and Kerry Logistics, which has seen a huge increase in
+business since the 5 th wave of COVID-19 lockdowns. We offer our HOME+ partners
+amazing promotions such as our “Spend $1 Get $2” deal whereby every dollar spent at
+HOME+ or HKBN is doubled-up by being matched reciprocally. By working with
+partners, this is how we will transform our Residential business and further expand the
+scope of our Infinite-play strategy.
+
+In Enterprise, we are partnering for unique collaborations or exclusive deals with a large
+number of multi-nationals such as Cisco, Microsoft, Apple, PwC DarkLab, Alibaba
+Cloud, AWS, UiPath, etc. We bring these big global names more direct sales channels in
+Hong Kong, mainland China (where we have 10 regional offices in major cities like
+Beijing, Shanghai, Guangzhou, Shenzhen and Macau), and in Singapore plus Malaysia
+via our jointly operated associates with StarHub. Our telecom services monthly Average
+Revenue Per User is $2,905 across our ~110,000 entire Enterprise customers base
+whereas system integration customers on average consume 10 times more comparing to
+standalone telecom service; this discrepancy shows inherent upside when we upsell
+system integration services and managed services to our telecom customer base. By
+working with partners, this is how we will transform our Enterprise business from
+traditional telecom services to Information and Communications Technologies (ICT).
+
+
+                                          –2–
+Our key business approach is to “eat what we cook before we sell it”, i.e. we experiment
+the recipe to perfect it internally before we sell it externally as a canned solution. With
+>$10 billion in gross revenue and >4,700 Talents, we enjoy the economies of scale that
+few of our customers can match. For example, in 2016, we pioneered our “Something
+from Nothing” ESG initiative to improve our electricity efficiency by upgrading our data
+centre air conditioning plant. Our preliminary assessment of the opportunity indicated a
+6-year payback for the more efficient upgrade — which stalled our investment. However,
+our partnership with Energenz, to optimise technical design, and Blue Sky for the upfront
+funding, enabled us to upgrade our plant on a timely basis at no cost, no balance sheet
+impact and with limited risk and resource commitment, in exchange for a share of
+realised future electricity savings. Having learnt from this experience, we are now ready
+to help our customers in improving their ESG initiatives.
+Pay for Today’s Facility Upgrade with Tomorrow’s Energy Savings
+$5.5M in Energy Savings with $0 Capex
+   $7 M
+           Contract Period                                                          Thereafter
+   $6 M    • Financier pays $1.7M CAPEX upfront                                     • HKBN gets 100% savings
+           • HKBN achieves $4.2M energy savings /                                   • Forecast $4.2M
+   $5 M      2,000 tonnes CO2-e                                                       energy savings
+                   • HKBN gets 30% = $1.3M
+   $4 M            • Financier gets 70% = $2.9M
+   $3 M
+   $2 M
+   $1 M
+   $0 M
+          2016      2017       2018      2019       2020      2021    2022      2023      2024      2025       2026
+  -$1 M
+  -$2 M
+             HKBN Savings (HKD)        Financier Cash (HKD)    HKBN Accumulated (HKD)     Financier Accumulated (HKD)
+  -$3 M
+
+* Showcase in Trans Asia Centre
+
+Like Metcalfe’s Law, the value of our Partnership+ approach can deliver exponential
+growth potential.
+
+
+
+
+Sincerely yours,
+
+
+
+
+William Yeung                                                    NiQ Lai
+Co-Owner and Executive Vice-chairman                             Co-Owner and Group CEO
+
+
+                                                           –3–
+KEY FINANCIAL AND OPERATIONAL SUMMARY
+Table 1: Financial highlights
+                                                           For the six months ended
+                                                          28 February       28 February         Change
+                                                                 2022             2021            YoY
+Key financials ($’000)
+Revenue                                                     6,803,050        6,229,584             +9%
+– Enterprise Solutions                                      2,290,870        2,615,595            -12%
+– Enterprise Solutions related product                      1,294,917        1,248,523             +4%
+– Residential Solutions                                     1,224,398        1,224,434             -0%
+– Other product                                             1,992,865        1,141,032            +75%
+Profit for the period                                         304,330           48,562           >100%
+Adjusted Net Profit 1,2                                       479,790          385,016            +25%
+EBITDA (Adjusted)* 1,3                                      1,319,543        1,311,817             +1%
+Service EBITDA (Adjusted)* 1,3                              1,118,968        1,077,828             +4%
+Service EBITDA margin (Adjusted)* 1,4                          31.8%            28.1%            +3.7pp
+Adjusted Free Cash Flow 1,5                                   757,750          391,457            +94%
+
+Reconciliation of Adjusted Net Profit 1,2
+Profit for the period                                         304,330           48,562           >100%
+Amortisation of intangible assets                             209,153          241,497            -13%
+Deferred tax arising from amortisation of intangible
+  assets                                                       (33,693)        (39,000)           -14%
+Loss on extinguishment of senior notes                               –         145,463           -100%
+Deferred tax recognised on unused tax losses                         –         (11,506)          -100%
+
+Adjusted Net Profit                                           479,790          385,016            +25%
+
+Reconciliation of EBITDA & Adjusted Free
+  Cash Flow 1,3,5
+Profit for the period                                         304,330           48,562           >100%
+Finance costs                                                 106,420          325,496            -67%
+Interest income                                                (1,535)          (1,271)           +21%
+Income tax charge                                              80,357           41,976            +91%
+Depreciation (Adjusted)*                                      470,530          507,518             -7%
+Amortisation of intangible assets (Adjusted)*                 210,783          241,497            -13%
+Amortisation of customer acquisition and retention
+  costs                                                       148,658          148,039             +0%
+
+EBITDA (Adjusted)*                                          1,319,543        1,311,817             +1%
+Capital expenditure                                          (291,603)        (325,604)           -10%
+Net interest paid                                             (98,435)        (219,309)           -55%
+Other non-cash items                                           (4,300)          (4,173)            +3%
+Income tax paid                                              (150,084)        (223,375)           -33%
+Customer acquisition and retention costs                     (125,710)        (132,914)            -5%
+Premium paid on senior notes redemption                             –         (113,776)          -100%
+Lease payments in relation to right-of-use assets            (112,986)        (152,693)           -26%
+Changes in working capital                                    221,325          251,484            -12%
+
+Adjusted Free Cash Flow                                       757,750          391,457            +94%
+
+*    Depreciation and amortisation of the Disposal Group was not recognised on consolidation level from
+     1 September 2021 to 3 January 2022 in the consolidated financial statements. The $15 million pro
+     forma adjustment is to account for the depreciation and amortisation of the Disposal Group in order
+     to reflect the true business performance of the Disposal Group up to the date of disposal.
+                                                    –4–
+KEY FINANCIAL AND OPERATIONAL SUMMARY (CONTINUED)
+
+Table 2: Operational highlights
+
+                                            For the six months ended
+                                    28 February       31 August   28 February   Change
+                                           2022           2021          2021      YoY
+
+Enterprise business
+
+Commercial building coverage              7,932          7,584         7,418      +7%
+
+Subscriptions (’000)
+  – Broadband                               120            119           118      +2%
+  – Voice                                   421            423           434      -3%
+
+Market share 6
+ – Broadband                             37.1%          36.9%          36.7%    +0.4pp
+ – Voice                                 24.3%          24.9%          25.1%    -0.8pp
+
+Enterprise customers (’000)                 106            107           105      +1%
+
+Broadband churn rate 9                    1.3%           1.5%           1.3%      +0pp
+
+Enterprise ARPU 10                       $2,905         $3,058        $3,028       -4%
+
+Residential business
+
+Fixed telecommunications network services business
+
+Residential homes passed (’000)           2,489          2,466         2,438      +2%
+
+Subscriptions (’000)
+  – Broadband                               889            886           886      +0%
+  – Voice                                   458            474           485      -6%
+
+Market share 6
+ – Broadband                             33.8%          34.2%          34.6%     -0.8pp
+ – Voice                                 21.9%          22.1%          22.2%     -0.3pp
+
+Broadband churn rate 7                    0.9%           0.9%           0.9%      +0pp
+
+Residential ARPU (Without TTT) 8           $187          $190           $191       -2%
+Residential ARPU (With TTT) 8              $187          $189           $189       -1%
+
+Mobile business
+
+Subscriptions (’000)                        243            254           269      -10%
+
+Mobile ARPU 11                             $111          $112           $108      +3%
+
+Residential customers (’000)                983            997         1,011       -3%
+
+Total full-time permanent Talents         4,700          5,218         5,683      -17%
+
+                                            –5–
+Notes:
+
+(1)   EBITDA, service EBITDA, service EBITDA margin, Adjusted Free Cash Flow and Adjusted Net
+      Profit are not measures of performance under Hong Kong Financial Reporting Standards
+      (“HKFRSs”). These measures do not represent, and should not be used as substitutes for, net income
+      or cash flows from operations as determined in accordance with HKFRSs. These measures are not
+      necessarily an indication of whether cash flow will be sufficient to fund our cash requirements. In
+      addition, our definitions of these measures may not be comparable to other similarly titled measures
+      used by other companies.
+
+(2)   Adjusted Net Profit means profit for the period plus amortisation of intangible assets (net of deferred
+      tax credit and direct cost incurred in corresponding period).
+
+(3)   EBITDA means profit for the period plus finance costs, income tax charge, depreciation, amortisation
+      of intangible assets (net of direct cost incurred in corresponding period), amortisation of customer
+      acquisition and retention costs and less interest income. Service EBITDA means EBITDA excluding
+      gross profit on product revenue.
+
+(4)   Service EBITDA margin means service EBITDA divided by service revenue, which is excluding
+      product revenue.
+
+(5)   Adjusted Free Cash Flow means EBITDA less capital expenditure, customer acquisition and retention
+      costs, net interest paid, income tax paid, premium paid on senior notes redemption, lease payments in
+      relation to right-of-use assets, changes in working capital and other non-cash items. Working capital
+      includes other non-current assets, inventories, trade receivables, finance lease receivables, other
+      receivables, deposits and prepayments, contract assets, amounts due from joint ventures, amounts
+      due to joint ventures, trade payables (including amount utilised for supply chain financing), contract
+      liabilities and deposits received. Other non-cash items, in the period under review, include
+      amortisation of obligations under granting of rights and Co-Ownership Plan II related non-cash
+      items.
+
+(6)   Our market share in broadband or voice services in Hong Kong, for residential or enterprise business,
+      is calculated by dividing the number of broadband or voice subscriptions we have at a given point in
+      time by the total number of corresponding broadband or voice subscriptions recorded by the Office
+      of the Communications Authority (“OFCA”) at the same point in time. Based on the latest disclosure
+      from OFCA for December 2021 market data.
+
+(7)   Calculated by dividing the sum of the monthly broadband churn rate for each month of the given
+      financial period by the number of months in the financial period. Monthly broadband churn rate is
+      calculated by the sum of the number of residential broadband subscription terminations in a month
+      divided by the average number of residential broadband subscriptions during the respective month
+      and multiplying the result by 100%.
+
+
+
+
+                                                   –6–
+(8)   ARPU means average revenue per user per month. Calculated by dividing the revenue generated in
+      the relevant period from services subscribed by residential broadband subscribers, which include
+      broadband services and any bundled voice, IP-TV and/or other entertainment services (excluding
+      revenue from IDD and mobile services), by the number of average residential broadband
+      subscriptions and further dividing by the number of months in the relevant period. Average
+      residential broadband subscriptions are calculated by dividing the sum of such subscriptions at the
+      beginning of the period and the end of the period by two. Our use and computation of residential
+      ARPU may differ from the industry definition of ARPU due to our tracking of revenue generated
+      from all services subscribed by residential broadband subscribers. We believe this gives us a better
+      tool for observing the performance of our business as we track our residential ARPU on a bundled
+      rather than standalone basis. “TTT” represents the campaign namely ToughTimesTogether, in which
+      the Group offered one-month service fee waiver to its customers for the purpose of relieving the
+      household financial burden caused by COVID-19.
+
+(9)   Calculated by dividing the sum of the monthly broadband churn rate for each month of the given
+      financial period by the number of months in the period. Monthly broadband churn rate is calculated
+      by the sum of the number of enterprise broadband subscription terminations in a month divided by
+      the average number of enterprise broadband subscriptions during the respective month and
+      multiplying the result by 100%.
+
+(10) ARPU means average revenue per user per month. Calculated by dividing the revenue generated in
+     the relevant period from the enterprise telecom and technology solutions business (excluding revenue
+     from IDD, Enterprise Solutions related product and mobile services) by the average number of
+     enterprise customers and further dividing by the number of months in the relevant period. Average
+     number of enterprise customers is the sum of: i) number of enterprise telecom customers, as
+     calculated by dividing the sum of enterprise telecom customers at the beginning of the period and the
+     end of the period by two, and; ii) the number of enterprise solutions customers, which represents the
+     number of unique customers with billing transactions on technology solutions related services during
+     the financial period. This metric may be distorted by the impact of certain particularly large contracts
+     we have with enterprise customers.
+
+(11) Mobile ARPU means average revenue per user per month. Calculated by dividing the revenue
+     generated in the relevant period from services subscribed by residential mobile subscribers, which
+     include all services revenue (excluding IDD and value added services), by the number of average
+     residential mobile subscriptions and further dividing by the number of months in the relevant period.
+     Average residential mobile subscriptions are calculated by dividing the sum of such subscriptions at
+     the beginning of the period and the end of the period by two. Our use and computation of Mobile
+     ARPU may differ from the industry definition of ARPU due to our tracking of revenue generated
+     from all services subscribed by residential mobile subscribers. We believe this gives us a better tool
+     for observing the performance of our business as we track our residential mobile ARPU on a bundled
+     rather than standalone basis.
+
+(12) Enterprise customers means total number of enterprise customers excluding IDD, product resell and
+     mobile customers.
+
+
+
+
+                                                   –7–
+BUSINESS REVIEW
+
+In 1H2022, the COVID-19 pandemic continued to affect our daily lives and hinder the
+economy. Competition within the telecom industry continued to be intense as we adapted
+to this dynamic operating environment. The Group demonstrated its resilience amid
+these challenges and delivered a solid set of operational and financial results in 1H2022.
+
+Having transformed our Enterprise business through the successful integration of prior
+acquisitions, a larger market presence and our expanded capabilities as the largest
+alternative telecom carrier in Hong Kong enables us to remain competitive relative to
+other standalone telecom or technology solutions providers in this tough environment.
+
+On 3 January 2022, we completed the disposal of 60% of the issued share capital of
+HKBN JOS (SINGAPORE) PTE. LTD. and HKBN JOS (MALAYSIA) SDN. BHD.
+(collectively the “Disposal Group”) to StarHub Ltd.. The Disposal Group has ceased to
+be subsidiaries of the Company and has become 40%-owned associates of the Company.
+The Disposal Group is jointly operated by the two leading telecommunications and
+technology solutions companies in their respective regions, which unlock cross-border
+business opportunities and synergies through leveraging the strengths of the Group and
+StarHub Ltd. fostered by this deepened collaboration.
+
+Under this tough market environment, our Residential business remained resilient.
+Service revenue was stable as we continued to execute our Infinite play strategy by
+expanding our consumer-centric high value-for-money services to our customers.
+
+As a result, our Revenue, EBITDA (Adjusted), and AFF increased year-on-year by 9%,
+1% and 94% to $6,803 million, $1,320 million and $758 million respectively.
+
+•   Enterprise Solutions revenue decreased year-on-year by $325 million, or 12%, to
+    $2,291 million. This is mainly due to the decrease in international telecommunications
+    services revenue, which comprised mainly of low margin wholesale IDD. In
+    addition, the Disposal Group contributed four months in 1H2022 vs six months in
+    1H2021. Despite a gloomy economic outlook brought about by COVID-19, our
+    business showed resilience in this difficult time as indicated by stable customer
+    churn and the increase in broadband subscriptions and market share to 120,000 and
+    37.1% as at 31 December 2021 (based on the latest available OFCA statistics)
+    respectively. Enterprise ARPU decreased from $3,028/month to $2,905/month
+    mainly due to the lowered contribution from the Disposal Group during 1H2022.
+
+    Enterprise Solutions related product revenue increased year-on-year by 4% to
+    $1,295 million due to the increase in demand for hardware.
+
+
+
+
+                                          –8–
+    The COVID-19 pandemic has posed significant challenges to businesses in Hong
+    Kong, and this has increased the demand on running their companies remotely,
+    securely, and efficiently at affordable costs. This materialised as an opportunity for
+    innovative solutions such as FixIT, e-Security and business application services
+    which aimed to serve the needs of our large Enterprise customer base. We will
+    strengthen the relationship with our customers and increase our market penetration
+    in the upcoming economic rebound.
+
+•   Residential Solutions revenue remained stable at $1,224 million, despite intense
+    market competition. Our Residential ARPU (Without TTT) fell slightly by 2% year-
+    on-year to $187/month due to the aggressive tactical offer introduced at the initial
+    launch of Disney+ OTT bundle, as well as intense market competition in general.
+
+    Our monthly churn rate remained low at 0.9% and our subscriptions slightly
+    increased to 889,000 in 1H2022. Our market share by broadband subscriptions
+    remained stable at 33.8% as at 31 December 2021 (based on the latest available
+    OFCA statistics).
+
+    Our mobile business recorded growth on ARPU with 3% year-on-year increase to
+    $111/month amid intense market competition. Mobile subscriptions have dropped to
+    243,000 but growth momentum has been resumed in recent months as we launched
+    the best-in-town 5G mobile plan offers for both entry level and high usage level,
+    with the aim to capture growth aggressively in the mobile segment.
+
+    All in all, a continued expansion in our Infinite play offerings via HOME+ bundling,
+    comprehensive Over-The-Top content and aggressive 5G offers shall be our biggest
+    differentiator to other operators and the key driver of our growth in the near term.
+
+•   Other product revenue increased by 75% to $1,993 million, mainly represented by
+    the sales of smartphone products that complement our mobile business.
+
+Network costs and costs of sales increased year-on-year by $573 million, or 15%, to $4,500
+million, mainly due to the cost of inventories increased by $933 million, or 43%, to $3,087
+million led by an increase in sales of smartphone products and Enterprise Solutions related
+product. This has been offset by a decrease in cost of wholesale IDD.
+
+Other operating expenses slightly decreased year-on-year by $52 million, or 3%, to
+$1,840 million, which is the combined effect of a decrease in Talent cost by $7 million,
+a decrease in depreciation by $25 million and a decrease in amortisation of intangible
+assets by $32 million, partly offset by an increase in recognition of loss allowance in
+trade receivables and contract assets by $16 million.
+
+
+
+
+                                          –9–
+Finance cost decreased by 67% year-on-year from $325 million to $106 million. This
+was mainly caused by the increase in fair value gain on interest-rate swap by $48
+million, the decrease in loss on extinguishment of senior notes by $145 million and the
+decrease of interest and finance charges on senior notes by $57 million, partly offset by
+the increase in interest and finance charge on bank loans by $31 million.
+
+Income tax increased by 91% year-on-year from $42 million to $80 million in line with
+the increase in profit before tax.
+
+As a result of the aforementioned factors, profit attributable to equity shareholders
+increased by 527% to $304 million.
+
+Adjusted Net Profit, excluding the impact of amortisation of intangible assets (net of
+deferred tax credit) increased by 25% year-on-year to $480 million. This was mainly
+contributed a decrease in finance cost by $219 million, partly offset by an increase in
+share of losses of associates and joint ventures during 1H2022.
+
+EBITDA (Adjusted) increased by 1% year-on-year from $1,312 million to $1,320
+million, mainly contributed by lower operating expenses due to operational
+enhancement.
+
+Services EBITDA (Adjusted), which excluded the gross profits on Enterprise Solutions
+related product and other product, increased by 4% year-on-year from $1,078 million to
+$1,119 million, mainly due to the increase in gross profit. Services EBITDA margin
+(Adjusted) increased by 3.7 percentage points from 28.1% to 31.8% mainly due to the
+decrease in low margin wholesale IDD services.
+
+AFF increased by 94% year-on-year to $758 million, mainly caused by a decrease in
+capital expenditure, interest paid and premium paid on the senior notes redemption by
+$34 million, $121 million and $114 million respectively, partly offset by a decrease in
+working capital inflow by $30 million.
+
+OUTLOOK
+
+As a leading ICT solutions provider with extensive customer reach, comprehensive suite
+of service offerings, strong business partnerships, and unique silo-less culture, we are
+confident that we will be riding the post COVID-19 rebound and deliver more value to
+our stakeholders.
+
+
+
+
+                                         – 10 –
+Market competition continues to be intense for our existing business. We shall focus on
+harvesting our substantially invested network and our monthly billing relationships by
+upselling more services via collaborations with new partnerships through our well-
+established digital platforms. We will drive sustainable growth in revenue, EBITDA and
+AFF through the following initiatives:
+
+–   continue to foster Co-Ownership culture to align risks and rewards of our Talents
+    with our key stakeholders. In October 2021, we obtained shareholders’ approval on
+    the adoption of the Co-Ownership Plan IV, of which the purpose is to align the
+    performance target of the Group with the incentives of our Talents so that the Group
+    could be better positioned to seize opportunities and benefits in the post COVID-19
+    era;
+
+–   take advantage of our one-stop telecom and technology solutions offerings that
+    differentiates us from standalone telecom or technology solutions business to gain a
+    further share of wallet of our large Enterprise customer base;
+
+–   strategic partnerships with industry leaders in e-security, cloud-based solutions and
+    process automation with skin-in-the-game alignment to go big in the Hong Kong
+    market;
+
+–   expand our quad-play bundle plans to Infinite-play to drive ARPU and subscriptions
+    growth and disrupt the legacy broadband, fixed-voice, multimedia content and
+    mobile standalone services, improve customer stickiness by expanding our
+    Residential ecosystem through different new disruptive services (e.g. new OTT
+    services with Disney+, WiFi 6 Gateway and HOME+);
+
+–   resume market growth strategy in the mobile space with best-in-town 5G mobile
+    plans targeting both entry level and high usage users in both Residential and
+    Enterprise market; and
+
+–   further lower finance costs by managing the net leverage ratio to below 3.5x in the
+    medium term to enjoy a better interest rate grid of existing bank facilities.
+
+LIQUIDITY AND CAPITAL RESOURCES
+
+As at 28 February 2022, the Group had total cash and cash equivalents of $1,154 million
+(31 August 2021: $1,527 million) and gross debt of $11,814 million (31 August 2021:
+$12,124 million), which led to a net debt position of $10,660 million (31 August 2021:
+$10,597 million). Lease liabilities of $388 million (31 August 2021: $508 million) was
+included as debt as at 28 February 2022 in accordance with the term of the Group’s
+various loan facilities. The Group’s gearing ratio, which was expressed as a ratio of the
+gross debt over total equity, was 2.2x as at 28 February 2022 (31 August 2021: 2.2x).
+
+
+
+
+                                         – 11 –
+The Group’s net debt to EBITDA ratio as computed in accordance with the term of the
+Group’s various loan facilities was approximately 4.7x as at 28 February 2022 (31
+August 2021: 4.6x). The average finance cost calculated as the interest and coupon
+charges over the average borrowing balance was 2.3% (31 August 2021: 2.6%). The
+average weighted maturity of the Group’s borrowings was 3.8 years as at 28 February
+2022 (31 August 2021: 4.3 years).
+
+Cash and cash equivalents consisted of cash at bank and in hand. There was no pledged
+bank deposit as at 31 August 2021 and 28 February 2022. As at 28 February 2022, the
+Group had an undrawn revolving credit facility of $1,655 million (31 August 2021:
+$1,464 million).
+
+Under the liquidity and capital resources condition as at 28 February 2022, the Group
+can fund its capital expenditures and working capital requirements for the period with
+internal resources and the available banking facilities.
+
+HEDGING
+
+The Group’s policy is to partially hedge the currency and interest rate risk arising from
+non-Hong Kong dollar denominated assets/liabilities and the variable interest rates of the
+debt instruments and facilities by entering into currency forward and interest-rate swaps,
+respectively. The Group Chief Executive Officer and Chief Financial Officer are
+primarily responsible for overseeing the hedging activities. Under their guidance, the
+Group’s finance team is responsible for planning, executing and monitoring the hedging
+activities. The Group would not enter into hedging arrangements for speculative
+purposes.
+
+The Group also entered into an interest-rate swap arrangement in the principal amount of
+$3,900 million with an international financial institution for a term of 2.6 years from 30
+October 2020 to 31 May 2023. Benefiting from the hedging arrangement, the Group
+fixed the HIBOR interest rate exposure at 0.399% per annum.
+
+The currency forward and the interest-rate swap arrangements are recognised initially at
+fair value and remeasured at the end of each reporting period. Neither of the financial
+instruments qualify for hedge accounting under HKFRS 9, Financial instruments, and
+therefore, it is accounted for as held for trading and measured at fair value through profit
+or loss.
+
+CHARGE ON GROUP ASSETS
+
+As at 28 February 2022, the Group pledged assets to secure the other borrowings of $17
+million (31 August 2021: $38 million).
+
+
+
+
+                                          – 12 –
+CONTINGENT LIABILITIES
+
+As at 28 February 2022, the Group had total contingent liabilities of $225 million (31
+August 2021: $191 million) in respect of bank guarantees provided to suppliers and
+customers and utility vendors in lieu of payment of utility deposits. The increase of $34
+million was mainly due to increase of performance guarantee issued to the Group’s
+suppliers and customers.
+
+EXCHANGE RATES
+
+All the Group’s monetary assets and liabilities are primarily denominated in either Hong
+Kong dollars (“HKD”) or United States dollars (“USD”). Given the exchange rate of
+HKD to the USD has remained close to the current pegged rate of HKD7.80 = USD1.00
+since 1983, management does not expect significant foreign exchange gains or losses
+between the two currencies. The Group is also exposed to a certain amount of foreign
+exchange risk based on fluctuations between HKD and Renminbi arising from its
+operations. In order to limit this foreign currency risk exposure, the Group ensures that
+the net exposure is kept to an acceptable level of buying or selling foreign currencies at
+spot rates where necessary.
+
+SIGNIFICANT INVESTMENTS, ACQUISITIONS AND DISPOSALS
+
+On 10 November 2021, HKBN JOS Holdings (C.I.) Limited (the “Vendor”), an indirect
+wholly-owned subsidiary of the Company and StarHub Ltd. (the “Purchaser”) entered
+into the share purchase agreement (the “Share Purchase Agreement”), pursuant to
+which the Vendor conditionally agreed to sell 60% of the issued share capital of HKBN
+JOS (SINGAPORE) PTE. LTD. and HKBN JOS (MALAYSIA) SDN. BHD. to the
+Purchaser for a total consideration of approximately SG$15 million (representing
+approximately $87 million) before the post-closing adjustments in accordance with the
+Share Purchase Agreement. The conditions precedents as set out in the Share Purchase
+Agreement were satisfied and the completion of the disposal took place on 3 January
+2022. The Disposal Group has ceased to be subsidiaries of the Company and has become
+40%-owned associates of the Company. Please refer to the announcements of the
+Company dated 10 November 2021 and 3 January 2022 for further details.
+
+Save as disclosed, the Group did not make any significant investments, acquisitions or
+disposals in relation to its subsidiaries and associated companies during 1H2022.
+
+
+
+
+                                         – 13 –
+TALENT REMUNERATION
+
+As at 28 February 2022, the Group had 4,700 permanent full-time Talents (31 August
+2021: 5,218 Talents). The Group provides remuneration package consisting of basic
+salary, bonus and other benefits. Bonus payments are discretionary and dependent on
+both the Group’s and individual performances. The Group also provides comprehensive
+medical insurance coverage, competitive retirement benefits schemes, and Talent
+training programmes.
+
+RESTRICTED SHARE UNIT SCHEMES
+
+To attract, retain and motivate skilled and experienced Talents, the Company adopted
+four Co-Ownership plans, namely Co-Ownership Plan II, Co-Ownership Plan III (was
+terminated and replaced by Co-Ownership Plan III Plus)*, Co-Ownership Plan III Plus
+and Co-Ownership Plan IV on 21 February 2015, 27 December 2017, 4 September 2019
+and 21 October 2021 respectively. Co-Ownership is a powerful expression of the
+commitment and belief our Talents have in the Group. Unlike the more traditional
+approach of giving stock options to a very limited group of senior executives, the
+Company’s Co-Ownership plans are open to all supervisors and above level Talents,
+spanning the Group’s operations across Hong Kong, Macau and mainland China.
+
+*   By reasons of (i) the occurrence of the acquisition of the entire issued share capital of WTT Holding
+    Corp by Metropolitan Light Company Limited, a direct wholly-owned subsidiary of the Company, on
+    30 April 2019 (the “WTT Merger”) and that the aspirational target of the adjusted available cash
+    per share for distribution is different for the enlarged group after the WTT Merger and (ii) no grant
+    of restricted share unit has been made under the plan since its adoption, on 21 June 2019, the Board
+    resolved to terminate the Co-Ownership Plan III, and to adopt the Co-Ownership Plan III Plus as a
+    replacement.
+
+
+Co-Ownership Plan II
+
+Co-Ownership Plan II is a restricted share unit scheme adopted by the Company on 21
+February 2015. The plan has a matching ratio of 7:3 (i.e. 3 restricted share units
+(“RSUs”) would be granted by the Company for every 7 purchased shares), and the
+vesting schedule would also be 25%-25%-50% upon each anniversary over 3 years after
+the date of grant. The maximum investment amount of each participant is limited to one
+year of the annual compensation package.
+
+
+
+
+                                                – 14 –
+The total number of shares that may underlie the RSUs granted pursuant to the Co-
+Ownership Plan II shall be (i) 10% of the shares in issue on 12 March 2015 (the “Listing
+Date”), the date on which the Company was listed on The Stock Exchange of Hong
+Kong Limited (the “Stock Exchange”) or (ii) 10% or less of the shares in issue as at the
+date following the date of approval of the renewed limit (as the case may be). The Co-
+Ownership Plan II shall be valid and effective for the period commencing on the Listing
+Date and expiring on the tenth anniversary thereof or such earlier date as it is terminated
+in accordance with the terms of the Co-Ownership Plan II, after which period no further
+RSUs shall be offered or granted.
+
+In order to enable the Co-Ownership Plan II trustee to release shares to participants upon
+vesting of each RSU, the Company allotted and issued, on the Listing Date, by way of
+capitalisation issue 5,666,666 shares to the Co-Ownership Plan II trustee. Such shares
+represented approximately 0.56% of the total issued share capital of the Company on the
+Listing Date. The Co-Ownership Plan II trustee will hold such shares on trust until their
+release to participants upon vesting of the RSUs.
+
+On Talents’ own volition, they invested their personal savings in the amount of between
+two to twelve months of salary to acquire the Company’s shares at full market price. The
+shares are then matched with free shares at a certain ratio vested over three years.
+
+Details of movements of the Co-Ownership Plan II during 1H2022 are as follows:
+
+                                                                          Number of RSUs
+                                                                                                              To be vested on
+                                                                                                         30 January/26 February
+                                                      As at   Granted   Forfeited    Vested        As at
+                                                                                                         (As at 28 February 2022)
+                                               1 September     during     during     during 28 February
+ Participants       Date of grant      Granted        2021    1H2022     1H2022     1H2022         2022        2021          2022
+
+
+ Other Participants 30 January 2019    329,330       97,010         –          –     97,010           –            –           –
+ Other Participants 26 February 2019   126,410       54,002         –          –     54,002           –            –           –
+
+ Total                                 455,740      151,012         –          –    151,012           –            –           –
+
+
+
+Co-Ownership Plan III Plus
+
+Co-Ownership Plan III Plus is a replacement of Co-Ownership Plan III, which was
+adopted by the Company on 4 September 2019.
+
+
+
+
+                                                              – 15 –
+Under the Co-Ownership Plan III Plus, the granting of the RSUs to the eligible
+participants depends on the level of the adjusted available cash per share for distribution
+achieved, on a cumulative basis, during the 2019, 2020 and 2021 financial years. The
+minimum level of the adjusted available cash per share for distribution required to be
+achieved by the Company before any RSU would be granted is an amount in excess of
+$2.53 on a cumulative basis over the 2019, 2020 and 2021 financial years of the
+Company. If the adjusted available cash per share for distribution, on a cumulative basis,
+over the 2019, 2020 and 2021 financial years of the Company reaches $3.03, RSUs
+would be granted to the grantees on the basis that the grantees would, subject to the
+satisfaction of the vesting conditions and on the vesting date, receive 1.33 award share
+for every purchased share. Details of the scheme are contained in the circular of the
+Company dated 29 July 2019.
+
+The cumulative adjusted available cash per share for distribution achieved by the
+Company was below the minimum level of $2.53 over the 2019, 2020 and 2021 financial
+years of the Company, therefore no RSUs were granted and accordingly, no new shares
+were allotted and issued. The Co-Ownership Plan III Plus will be naturally expired in
+October 2022.
+
+Co-Ownership Plan IV
+
+Co-Ownership Plan IV is similar to Co-Ownership Plan III Plus, which was adopted by
+the Company on 21 October 2021. Under the Co-Ownership Plan IV, the granting of the
+RSUs to the eligible participants depends on the level of the adjusted available cash per
+share for distribution achieved, on a cumulative basis, during the 2022, 2023 and 2024
+financial years. If the adjusted available cash per share for distribution, on a cumulative
+basis, over the 2022, 2023 and 2024 financial years of the Company reaches $3.01, the
+participants (including the Charitable Fund) would be granted with one RSU for every
+CO4 qualifying share of each participant under the Co-Ownership Plan IV, and each
+participant would, subject to the satisfaction of the vesting conditions and on the vesting
+date, receive one new award share for every RSU that he/she/it is granted. Details of the
+scheme are contained in the circular of the Company dated 21 September 2021.
+
+
+
+
+                                          – 16 –
+Details of the movement of rollover and purchase of shares for the Co-Ownership Plan
+IV during 1H2022 are as follows:
+
+                                                                                                                         Approximate
+                                                                      Number of                         Approximate      percentage of
+                                                               shares purchased        Number of       percentage of shares purchased
+                                Number of                         to be forfeited    shares under    the issued share under the scheme
+                                   rollover                      during 1H2022      Co-Ownership        capital of the   mandate limit
+                               shares from          Number of    (i.e. purchased     Plan IV as at    Company as at       utilised as at
+1st Batch CO4                Co-Ownership     shares purchased shares returned        28 February        28 February      28 February
+Qualifying Shares             Plan III Plus     during 1H2022 to Bad Leavers*)               2022                2022              2022
+
+Executive Directors of
+  the Company:
+— Mr. Chu Kwong YEUNG              848,002           1,051,563                 –         1,899,565            0.14%               5.14%
+— Mr. Ni Quiaque LAI               556,007           1,051,563                 –         1,607,570            0.12%               4.35%
+Directors of the Company’s
+  subsidiaries                      667,800             99,381                 –           767,181            0.06%               2.07%
+Other participants                7,416,120          1,377,656                 –         8,793,776            0.67%              23.78%
+
+Total                             9,487,929          3,580,163                 –       13,068,092             1.00%             35.34%
+
+
+*       Please refer to the circular of the Company dated 21 September 2021 for the definition of Bad
+        Leavers.
+
+
+INTERIM DIVIDEND
+
+The Board has resolved to declare an interim dividend of 40 cents (28 February 2021: 39
+cents) per share for 1H2022 to the shareholders whose names appear on the register of
+members of the Company on Tuesday, 17 May 2022. The interim dividend will be
+payable in cash on Thursday, 26 May 2022.
+
+The dividend policy of the Company is to pay dividends in an amount of not less than
+90% of the AFF with an intention to pay 100% of the AFF in respect of the relevant
+year/period, after adjusting for potential debt repayment, if required.
+
+Based on the terms and conditions of the Vendor Loan Notes, the holders of Vendor
+Loan Notes are entitled to receive a cash amount payable by the Company equal to
+$66,928,885 based on the 40 cents interim dividend per ordinary share declared by the
+Company for the six months ended 28 February 2022, as if the holders of the Vendor
+Loan Notes are holders of 167,322,212 ordinary shares in the Company as at the record
+date for such interim dividend. Such cash amount will be paid by the Company to the
+holders of Vendor Loan Notes on Thursday, 26 May 2022, being the date on which the
+2022 interim dividend will be paid by the Company.
+
+
+
+
+                                                                 – 17 –
+CLOSURE OF REGISTER OF MEMBERS
+
+For determining the entitlement to the proposed interim dividend, the register of
+members of the Company will be closed from Friday, 13 May 2022 to Tuesday, 17 May
+2022, both days inclusive, during which period no transfer of shares will be effected. In
+order to qualify for the proposed interim dividend, all transfers, accompanied by the
+relevant share certificates, must be lodged with the Company’s Hong Kong branch share
+registrar, Computershare Hong Kong Investor Services Limited at Rooms 1712–1716,
+17/F, Hopewell Centre, 183 Queen’s Road East, Wanchai, Hong Kong, no later than 4:30
+p.m. on Thursday, 12 May 2022.
+
+PURCHASE, SALE OR REDEMPTION OF THE COMPANY’S LISTED
+SECURITIES
+
+Neither the Company nor any of its subsidiaries purchased, sold or redeemed any of the
+listed securities of the Company during 1H2022.
+
+REVIEW OF INTERIM FINANCIAL INFORMATION
+
+The Audit Committee has reviewed with the management and the external auditor the
+unaudited interim results of the Group for 1H2022, the accounting principles and
+practices adopted by the Group, as well as discussion on auditing, internal control, risk
+management and financial reporting matters of the Group.
+
+The unaudited interim financial report of the Group for 1H2022 has been reviewed by
+the Company’s external auditor in accordance with Hong Kong Standard on Review
+Engagements 2410 “Review of interim financial information performed by the
+independent auditor of the entity” issued by the HKICPA and reviewed by the Audit
+Committee of the Company.
+
+CORPORATE GOVERNANCE
+
+The Company has complied with all the code provisions as set out in the “Corporate
+Governance Code and Corporate Governance Report” contained in Appendix 14 to the
+Rules Governing the Listing of Securities on the Stock Exchange (the “Listing Rules”)
+during 1H2022.
+
+MODEL CODE FOR SECURITIES TRANSACTIONS BY DIRECTORS
+
+The Company has adopted the “Model Code for Securities Transactions by Directors of
+Listed Issuers” (the “Model Code”) set out in Appendix 10 to the Listing Rules as its
+code of conduct for dealings in securities of the Company by Directors. Having made
+specific enquiries with all Directors, they confirmed that they complied with the Model
+Code during 1H2022.
+
+
+
+
+                                         – 18 –
+SUBSEQUENT EVENT
+
+No significant events occurred after the end of the reporting period.
+
+PUBLICATION OF INTERIM RESULTS ON THE WEBSITES OF THE STOCK
+EXCHANGE AND THE COMPANY
+
+This announcement will be published on the websites of the Stock Exchange
+(www.hkexnews.hk) and the Company (www.hkbnltd.net). The interim report of the
+Company for 1H2022 will be despatched to the shareholders of the Company and made
+available on the same websites in due course.
+
+                                                                By order of the Board
+                                                                     HKBN Ltd.
+                                                               Bradley Jay HORWITZ
+                                                                      Chairman
+
+Hong Kong, 21 April 2022
+
+As at the date of this announcement, the Board comprises:
+
+Executive Directors                       Independent Non-executive Directors
+Mr. Chu Kwong YEUNG                       Mr. Bradley Jay HORWITZ (Chairman)
+Mr. Ni Quiaque LAI                        Mr. Stanley CHOW
+                                          Mr. Yee Kwan Quinn LAW, SBS, JP
+Non-executive Directors
+Mr. Agus TANDIONO
+Ms. Shengping YU
+Mr. Zubin Jamshed IRANI
+
+Where the English and the Chinese texts conflict, the English text prevails.
+
+
+
+
+                                          – 19 –
+CONSOLIDATED INCOME STATEMENT
+FOR THE SIX MONTHS ENDED 28 FEBRUARY 2022
+
+                                                            Six months ended
+                                                        28 February     28 February
+                                                               2022            2021
+                                                 Note         $’000           $’000
+
+Revenue                                           3       6,803,050       6,229,584
+
+Other net income                                 4(a)        37,085           5,205
+
+Network costs and costs of sales                          (4,499,739)    (3,926,277)
+
+Other operating expenses                                  (1,839,751)    (1,892,206)
+
+Finance costs                                    4(d)      (106,420)       (325,496)
+
+Share of losses of associates                                  (744)              –
+
+Share of losses of joint ventures                             (8,794)          (272)
+
+Profit before taxation                            4         384,687          90,538
+
+Income tax charge                                 5         (80,357)        (41,976)
+
+Profit for the period attributable to equity
+  shareholders of the Company                               304,330          48,562
+
+Earnings per share
+
+Basic                                             6       23.2 cents       3.7 cents
+
+Diluted                                           6       20.6 cents       3.3 cents
+
+
+
+
+                                        – 20 –
+CONSOLIDATED STATEMENT OF COMPREHENSIVE INCOME
+FOR THE SIX MONTHS ENDED 28 FEBRUARY 2022
+
+                                                       Six months ended
+                                                   28 February     28 February
+                                                          2022            2021
+                                                         $’000           $’000
+
+Profit for the period                                  304,330          48,562
+
+Other comprehensive income for the period
+
+Item that may be reclassified subsequently to
+   profit or loss:
+
+Exchange differences on translation of financial
+ statements of subsidiaries outside Hong Kong,
+  with nil tax effect                                    7,079           9,634
+
+Exchange gain on translating foreign operations
+  transferred to consolidated income statement
+  upon disposal                                         (1,917)             –
+
+Other comprehensive income for the period                5,162           9,634
+
+Total comprehensive income for the period
+  attributable to equity shareholders
+  of the Company                                       309,492          58,196
+
+
+
+
+                                         – 21 –
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION
+AS AT 28 FEBRUARY 2022
+
+                                                                    At           At
+                                                           28 February    31 August
+                                                                  2022         2021
+                                                    Note         $’000        $’000
+Non-current assets
+Goodwill                                                     9,016,507     9,016,507
+Intangible assets                                            3,364,933     3,606,163
+Property, plant and equipment                                3,779,820     3,901,090
+Investment properties                                          194,875       198,828
+Right-of-use assets                                            592,809       681,349
+Customer acquisition and retention costs                       541,900       564,849
+Interest in associates                                          53,319         4,816
+Interest in joint ventures                                       9,085        17,879
+Loan to associates                                              15,359             –
+Deferred tax assets                                             44,544        68,913
+Other non-current assets                                        73,350        91,958
+
+                                                            17,686,501    18,152,352
+
+Current assets
+Inventories                                                    112,313       110,615
+Trade receivables                                    8       1,250,553     1,073,306
+Other receivables, deposits and prepayments                    513,754       353,015
+Contract assets                                                230,071       211,945
+Amount due from associates                                          57             –
+Amount due from joint ventures                                  60,037        45,500
+Tax recoverable                                                    192           192
+Cash and cash equivalents                                    1,154,341     1,421,124
+Assets classified as held for sale                                   –       400,384
+
+                                                             3,321,318     3,616,081
+
+Current liabilities
+Trade payables                                       9         946,460      935,864
+Other payables and accrued charges –
+  current portion                                              950,194     1,018,271
+Contract liabilities – current portion                         778,648       632,492
+Deposits received                                               93,493        90,475
+Obligations under granting of rights –
+  current portion                                                2,259        6,771
+Amounts due to associates                                        4,945        4,816
+Amounts due to joint ventures                                   10,750       10,750
+Bank and other borrowings                                      419,067      481,283
+Lease liabilities – current portion                            139,622      166,649
+Tax payable                                                    159,011      189,496
+Other current liabilities                                       13,036       12,863
+Liabilities classified as held of sale                               –      314,514
+
+                                                             3,517,485     3,864,244
+
+Net current liabilities                                       (196,167)    (248,163)
+
+Total assets less current liabilities                       17,490,334    17,904,189
+
+                                           – 22 –
+CONSOLIDATED STATEMENT OF FINANCIAL POSITION (CONTINUED)
+AS AT 28 FEBRUARY 2022
+
+                                                             At          At
+                                                    28 February   31 August
+                                                           2022        2021
+                                                          $’000       $’000
+
+Non-current liabilities
+Other payables and accrued charges –
+  long-term portion                                       2,128       30,397
+Contract liabilities – long-term portion                161,448      194,818
+Deferred tax liabilities                                840,449      904,848
+Lease liabilities – long-term portion                   248,402      305,129
+Provision for reinstatement costs                        62,658       62,442
+Bank and other borrowings                            10,851,632   10,831,416
+Other non-current liabilities                            30,813       37,376
+
+                                                     12,197,530   12,366,426
+
+NET ASSETS                                            5,292,804    5,537,763
+
+CAPITAL AND RESERVES
+
+Share capital                                               132          132
+Reserves                                              5,292,672    5,537,631
+
+TOTAL EQUITY                                          5,292,804    5,537,763
+
+
+
+
+                                           – 23 –
+NOTES TO THE UNAUDITED CONSOLIDATED INTERIM FINANCIAL
+INFORMATION:
+
+1   BASIS OF PREPARATION
+
+    The unaudited consolidated interim financial information set out in this announcement does not
+    constitute the Group’s interim financial report for the six months ended 28 February 2022 but is
+    extracted from that interim financial report which has been prepared in accordance with the
+    applicable disclosure provisions of the Rules Governing the Listing of Securities on The Stock
+    Exchange of Hong Kong Limited, including compliance with Hong Kong Accounting Standard
+    (“HKAS”) 34, Interim financial reporting, issued by the Hong Kong Institute of Certified Public
+    Accountants (“HKICPA”). It was authorised for issue on 21 April 2021.
+
+    The interim financial report has been prepared in accordance with the same accounting policies
+    adopted in the annual financial statements of the Group for the year ended 31 August 2021, except
+    for the accounting policy changes that are expected to be reflected in the 2022 annual financial
+    statements. Details of any changes in accounting policies are set out in note 2.
+
+    The preparation of an interim financial report in conformity with HKAS 34 requires management to
+    make judgements, estimates and assumptions that affect the application of policies and reported
+    amounts of assets and liabilities, income and expenses on a year to date basis. Actual results may
+    differ from these estimates.
+
+    This interim financial report contains condensed consolidated financial statements and selected
+    explanatory notes. The notes include an explanation of events and transactions that are significant to
+    an understanding of the changes in financial position and performance of the Group since the annual
+    financial statements for the year ended 31 August 2021. The condensed consolidated interim
+    financial statements and notes thereon do not include all of the information required for full set of
+    financial statements prepared in accordance with Hong Kong Financial Reporting Standards
+    (“HKFRSs”).
+
+    The interim financial report is unaudited, but has been reviewed by KPMG in accordance with Hong
+    Kong Standard on Review Engagements 2410, Review of interim financial information performed by
+    the independent auditor of the entity, issued by the HKICPA.
+
+    Going concern assumption
+
+    As at 28 February 2022, the current liabilities of the Group exceeded their current assets by
+    approximately $196 million. Included in the current liabilities were current portion of contract
+    liabilities of $779 million recognised under Hong Kong Financial Reporting Standard (“HKFRS”)
+    15 which will gradually reduce over the contract terms through the satisfaction of performance
+    obligations and current portion of lease liabilities of $140 million recognised under HKFRS 16 which
+    is the amount related to leases that has a lease term more than 12 months and with a corresponding
+    asset recorded in the non-current assets as right-of-use assets. Management of the Group anticipates
+    the net cash inflows from their operations, together with the ability to draw down from available
+    bank loan facilities, would be sufficient to enable the Group to meet their liabilities as and when they
+    fall due. Accordingly, this unaudited condensed consolidated interim financial information has been
+    prepared on a going concern basis.
+
+
+
+
+                                                 – 24 –
+2   CHANGES IN ACCOUNTING POLICIES
+
+    The HKICPA has issued a number of amendments to HKFRSs that are first effective for the current
+    accounting period of the Group:
+
+    •     Amendment to HKFRS 16, Covid-19-related rent concessions beyond 30 June 2021
+
+    •     Amendments to HKFRS 9, HKAS 39, HKFRS 7, HKFRS 4 and HKFRS 16, Interest rate
+          benchmark reform – phase 2
+
+    None of these developments has had a material effect on how the Group’s results and financial
+    position for the current or prior periods have been prepared or presented. The Group has not applied
+    any new standard or interpretation that is not yet effective for the current accounting period.
+
+3   REVENUE AND SEGMENT REPORTING
+
+    The principal activities of the Group are (i) provision of fixed telecommunications network services,
+    international telecommunications services and mobile services to residential and enterprise customers
+    in Hong Kong, (ii) system integration services, (iii) product sales and (iv) marketing and
+    distribution of computer hardware and software, telecommunication products, office automation
+    products and the provision of related services.
+
+    (a)   Disaggregation of revenue
+
+          Revenue represents revenue from (i) fixed telecommunications network services, international
+          telecommunications services and mobile services to residential and enterprise customers in
+          Hong Kong, (ii) system integration services, (iii) product sales and (iv) marketing and
+          distribution of computer hardware and software, telecommunication products, office automation
+          products and the provision of related services.
+
+          Disaggregation of revenue from contracts with customers by major categories is as follows:
+
+                                                                               Six months ended
+                                                                           28 February    28 February
+                                                                                  2022           2021
+                                                                                 $’000          $’000
+
+          Disaggregated by major products or service lines:
+          Fixed telecommunications network services                           2,322,403        2,373,623
+          International telecommunications services                             442,584          715,216
+          Other services                                                        183,256          241,648
+
+          Fees from provision of telecommunications services                  2,948,243        3,330,487
+          Product revenue                                                     3,287,782        2,389,555
+          Technology solution and consultancy services                          556,524          480,192
+
+          Revenue from contracts with customers within
+            the scope of HKFRS 15                                             6,792,549        6,200,234
+          Rental income from leasing business                                    10,501           29,350
+
+                                                                              6,803,050        6,229,584
+
+
+
+                                                – 25 –
+3   REVENUE AND SEGMENT REPORTING (Continued)
+
+    (a)   Disaggregation of revenue (Continued)
+
+                                                                                Six months ended
+                                                                            28 February    28 February
+                                                                                   2022           2021
+                                                                                  $’000          $’000
+          Disaggregated by major categories:
+          Residential Solutions revenue                                         1,224,398        1,224,434
+          Enterprise Solutions revenue                                          2,290,870        2,615,595
+          Enterprise Solutions related product revenue                          1,294,917        1,248,523
+          Other product revenue                                                 1,992,865        1,141,032
+
+                                                                                6,803,050        6,229,584
+
+          The Group’s customer base is diversified and no individual customer with whom transactions
+          have exceeded 10% of the Group’s revenue.
+
+          Disaggregation of revenue from contracts with customers by the timing of revenue recognition
+          is disclosed in note 3(b).
+
+    (b) Segment reporting
+
+          Operating segments, and the amounts of each segment item reported in the interim financial
+          report, are identified from the financial information provided regularly to the Group’s most
+          senior executive management for the purposes of allocating resources to, and assessing the
+          performance of, the Group’s various lines of business and geographical locations.
+
+          Individually material operating segments are not aggregated for financial reporting purposes
+          unless the segments have similar economic characteristics and are similar in respect of the
+          nature of products and services, the nature of production processes, the type or class of
+          customers, the methods used to distribute the products or provide the services, and the nature of
+          the regulatory environment. Operating segments which are not individually material may be
+          aggregated if they share a majority of these criteria.
+
+          The Group’s management assesses the performance and allocates the resources of the Group by
+          geographical location. In a manner consistent with the way in which information is reported
+          internally to the Group’s most senior executive management for the purposes of resource
+          allocation and performance assessment, the Group has presented the following two reportable
+          segments following the acquisition of Jardine OneSolution Holdings (C.I.) Limited, Adura
+          Hong Kong Limited and ADURA CYBER SECURITY SERVICES PTE. LTD. on 13 December
+          2019. No operating segments have been aggregated to form the following reportable segments.
+
+
+
+
+                                                 – 26 –
+3   REVENUE AND SEGMENT REPORTING (Continued)
+
+    (b) Segment reporting (Continued)
+
+        (i)   Telecom and technology solutions (Hong Kong)
+
+              Include provision of fixed telecommunications network services, international
+              telecommunications services, mobile services to residential and enterprise customers and
+              technology-related services in Hong Kong.
+
+        (ii) Telecom and technology solutions (non-Hong Kong)
+
+              Include the provision of telecom and technology solutions and consultancy services in
+              Mainland China, Macau, Singapore and Malaysia.
+
+        The Group’s senior executive management monitors the results attributable to each reportable
+        segment on the following basis:
+
+        The segment revenue of the Group is based on geographical location of customers. Income and
+        expenses are allocated to the reportable segments with reference to revenue generated by those
+        segments and expenses incurred by those segments or which otherwise arisen from the
+        depreciation or amortisation of assets attributable to those segments. The inter-segment
+        transactions are conducted on normal commercial terms and are priced with reference to
+        prevailing market prices and in the ordinary course of business.
+
+
+
+
+                                              – 27 –
+3   REVENUE AND SEGMENT REPORTING (Continued)
+
+    Disaggregation of revenue from contracts with customers by timing of revenue recognition, as well
+    as information regarding the Group’s reportable segments as provided to the Group’s most senior
+    executive management for the purposes of resource allocation and assessment of segment
+    performance for the period is set out below.
+
+                                        Telecom and technology         Telecom and technology
+                                         solutions (Hong Kong)       solutions (non-Hong Kong)                Total
+                                      28 February      28 February   28 February     28 February    28 February     28 February
+    For the six months ended                  2022            2021           2022           2021           2022            2021
+                                             $’000           $’000          $’000          $’000          $’000           $’000
+
+    Disaggregated by timing of
+      revenue recognition
+
+    Point in time                       2,716,360       1,900,673        571,422        488,882        3,287,782      2,389,555
+    Over time                           3,333,061       3,602,210        182,207        237,819        3,515,268      3,840,029
+
+    Revenue from external customers     6,049,421       5,502,883        753,629        726,701        6,803,050      6,229,584
+
+    Inter-segment revenue                  34,605          17,149        151,392        171,983         185,997        189,132
+
+    Reportable segment revenue          6,084,026       5,520,032        905,021        898,684        6,989,047      6,418,716
+
+
+    Reportable segment profit
+      (EBITDA)                          1,241,405       1,196,213         63,237        115,604        1,304,642      1,311,817
+
+    The performance measure used for reporting segment profit is “EBITDA” i.e. “earnings before
+    finance costs, interest income, income tax, depreciation, amortisation of intangible assets (net of
+    direct cost incurred) and amortisation of customer acquisition and retention costs”
+
+    (c)    Reconciliation between segment profit and profit before taxation for the period
+
+                                                                                              Six months ended
+                                                                                          28 February    28 February
+                                                                                                 2022           2021
+                                                                                                $’000          $’000
+
+           Reportable segment profit derived from Group’s
+             external customers                                                               1,304,642            1,311,817
+           Finance costs                                                                       (106,420)            (325,496)
+           Interest income                                                                        1,535                1,271
+           Depreciation                                                                        (457,259)            (507,518)
+           Amortisation of intangible assets                                                   (209,153)            (241,497)
+           Amortisation of customer acquisition and retention costs                            (148,658)            (148,039)
+
+           Consolidated profit before taxation                                                     384,687            90,538
+
+
+
+
+                                                          – 28 –
+4   PROFIT BEFORE TAXATION
+
+    Profit before taxation is arrived at after (crediting)/charging:
+
+                                                                           Six months ended
+                                                                       28 February    28 February
+                                                                              2022           2021
+                                                                             $’000          $’000
+
+    (a)   Other net income
+
+          Interest income                                                   (1,535)        (1,271)
+          Net foreign exchange loss                                          8,090         11,381
+          Amortisation of obligations under granting of rights              (4,512)        (4,512)
+          Fair value loss on currency forward                                    –            309
+          Gain on disposal of subsidiaries                                 (26,859)             –
+          Other income                                                     (12,269)       (11,112)
+
+                                                                           (37,085)        (5,205)
+
+    (b) Other operating expenses
+
+          Advertising and marketing expenses                               172,472        172,514
+          Depreciation
+          – Property, plant and equipment                                  355,454        373,129
+          – Investment properties                                            3,953          3,953
+          – Right-of-user assets                                            95,018        102,733
+          Loss on disposal of property, plant and equipment, net               650            418
+          Gain on disposal of right-of-use assets, net                           –           (148)
+          Recognition of loss allowance on trade receivables and
+             contract assets                                                59,887         43,818
+          Talents costs (note 4(c))                                        509,624        516,565
+          Amortisation of intangible assets                                209,153        241,497
+          Amortisation of customer acquisition and retention costs         148,658        148,039
+          Others                                                           284,882        289,688
+          – Office rental and utilities                                     41,145         40,054
+          – Site expenses                                                   47,176         45,623
+          – Bank handling charges                                           21,467         22,022
+          – Maintenance                                                     60,827         64,717
+          – Subscription and license fees                                   54,786         52,578
+          – Legal and professional fees                                     11,871         17,787
+          – Printing, telecommunication and logistics expenses              23,804         25,815
+          – Others                                                          23,806         21,092
+
+
+                                                                         1,839,751      1,892,206
+
+
+
+
+                                                  – 29 –
+4   PROFIT BEFORE TAXATION (Continued)
+
+    Profit before taxation is arrived at after (crediting)/charging: (Continued)
+
+    (c)   Talents costs
+
+                                                                                  Six months ended
+                                                                              28 February    28 February
+                                                                                     2022           2021
+                                                                                    $’000          $’000
+
+          Salaries, wages and other benefits                                       830,001       868,444
+          Contributions to defined contribution retirement plan                     64,003        59,933
+          Equity-settled share-based payment expenses                                  145           269
+          Cash-settled share-based payment expenses                                     67            70
+
+                                                                                   894,216       928,716
+
+          Less: Talent costs capitalised as property, plant and equipment           (24,901)     (29,492)
+              Talent costs included in advertising and marketing
+               expenses and amortisation of customer acquisition
+              and retention costs                                                  (160,048)    (197,804)
+
+                                                                                   709,267       701,420
+
+
+          Talent costs included in other operating expenses                        509,624       516,565
+          Talent costs included in network costs and costs of sales                199,643       184,855
+
+                                                                                   709,267       701,420
+
+          During the period ended 28 February 2021, the Group successfully applied for Talent-related
+          funding support from the Hong Kong SAR Government, the Macau SAR Government and all
+          regions/countries where the Group operates (“the Funds”) of $104,356,000, of which
+          $85,237,000 was passed on to the Talents. The Funds is to for providing time-limited financial
+          support to employers to retain their employees with the operating pressure caused by the novel
+          coronavirus epidemic.
+
+          No such Talent-related funding support was recognised and passed to the Talents during six
+          months ended 28 February 2022.
+
+          Talent costs include all compensation and benefits paid to and accrued for all individuals
+          employed by the Group, including directors.
+
+
+
+
+                                                  – 30 –
+4   PROFIT BEFORE TAXATION (Continued)
+
+    Profit before taxation is arrived at after (crediting)/charging: (Continued)
+
+    (d) Finance costs
+
+                                                                                  Six months ended
+                                                                              28 February    28 February
+                                                                                     2022           2021
+                                                                                    $’000          $’000
+
+          Interest and finance charges on bank loans                                126,237       95,211
+          Interest on other borrowings                                                  480          528
+          Interest and finance charges on senior notes                                    –       56,640
+          Interest on interest-rate swap, net                                         5,623        2,340
+          Interest on lease liabilities                                               9,473       12,634
+          Interest on other liabilities                                                 631          777
+          Loss on extinguishment of senior notes                                          –      145,463
+          Fair value (gain)/loss on interest-rate swap                              (36,024)      11,903
+
+                                                                                    106,420      325,496
+
+    (e)   Other items
+
+                                                                                  Six months ended
+                                                                              28 February    28 February
+                                                                                     2022           2021
+                                                                                    $’000          $’000
+
+          Amortisation of intangible assets                                         241,246      293,003
+          Depreciation
+            – Property, plant and equipment                                         355,454      373,129
+            – Investment properties                                                   3,953        3,953
+            – Right-of-user assets                                                   97,852      130,436
+          Rental charges on telecommunications facilities and
+            computer equipment                                                      205,537      176,635
+          Expenses relating to short-term leases and leases of
+            low-value assets                                                          6,654        7,102
+          Recognition of loss allowance on trade receivables and
+            contract assets                                                           59,887      43,818
+          Research and development costs                                              16,521      19,047
+          Cost of inventories                                                      3,087,159   2,153,892
+          Write-down of inventories                                                       48       1,674
+
+
+
+
+                                                  – 31 –
+5   INCOME TAX CHARGE
+
+                                                                                 Six months ended
+                                                                             28 February    28 February
+                                                                                    2022           2021
+                                                                                   $’000          $’000
+
+    Current tax – Hong Kong Profits Tax                                          (112,262)          (92,964)
+    Current tax – Outside Hong Kong                                                (8,572)           (6,651)
+    Deferred tax                                                                   40,477            57,639
+
+                                                                                   (80,357)         (41,976)
+
+    The provision for Hong Kong Profits Tax is calculated at 16.5% for the six months ended 28
+    February 2022 (six months ended 28 February 2021: 16.5%) of the estimated assessable profits for
+    the period, except for one subsidiary of the Group which is qualifying corporation under the two-
+    tired Profits Tax rate regime.
+
+    For this subsidiary, the first $2 million of assessable profits are taxed at 8.25% and the remaining
+    assessable profits are taxed at 16.5%. The provision for Hong Kong Profits Tax for this subsidiary
+    was calculated at the same basis in 2021.
+
+    Taxation for overseas subsidiaries is similarly calculated using the annual effective rates of taxation
+    that are expected to be applicable in the relevant countries.
+
+6   EARNINGS PER SHARE
+
+    (a)   Basic earnings per share
+
+          The calculation of basic earnings per share is based on the profit attributable to ordinary equity
+          shareholders of the Company of $304,330,000 (six months ended 28 February 2021:
+          $48,562,000) and the weighted average number of ordinary shares in issue less shares held for
+          the Co-Ownership Plan II, of 1,310,746,140 ordinary shares (six months ended 28 February
+          2021: 1,310,674,671 ordinary shares).
+
+                                                                                 Six months ended
+                                                                             28 February    28 February
+                                                                                    2022          2021
+                                                                                    ’000           ’000
+
+          Issued ordinary shares at 1 September 2020/2021                       1,311,599        1,311,599
+          Less: shares held for the Co-Ownership Plan II                           (5,667)          (5,667)
+          Add: effect of the Co-Ownership Plan II RSUs vested                       4,814            4,743
+
+          Weighted average number of ordinary shares
+           less shares held for the Co-Ownership Plan II                        1,310,746        1,310,675
+
+
+
+
+                                                 – 32 –
+6   EARNINGS PER SHARE (Continued)
+
+    (b) Diluted earnings per share
+
+         The calculation of diluted earnings per share is based on the profit attributable to ordinary
+         equity shareholders of the Company of $304,330,000 (six months ended 28 February 2021:
+         $48,562,000) and the weighted average number of ordinary shares in issue less shares held for
+         the Co-Ownership Plan II after adjusting for the dilutive effect of the Company’s Co-Ownership
+         Plan II and the effect of Vendor Loan Notes, calculated as follows:
+
+                                                                              Six months ended
+                                                                          28 February    28 February
+                                                                                 2022          2021
+                                                                                 ’000           ’000
+
+         Weighted average number of ordinary shares
+           less shares held for the Co-Ownership Plan II                     1,310,746        1,310,675
+         Add: effect of the Co-Ownership Plan II                                     –              411
+         Add: effect of the Vendor Loan Notes                                  167,322          167,322
+
+         Weighted average number of ordinary shares (diluted)                1,478,068        1,478,408
+
+7   DISPOSAL OF SUBSIDIARIES
+
+    Disposal of subsidiaries during the period ended 28 February 2022
+
+    On 10 November 2021, an indirect wholly-owned subsidiary of the Company entered into the Share
+    Purchase Agreement with a third party to sell the 60% equity interest of two subsidiaries. The total
+    consideration of approximately $74 million was net of provisional post-closing adjustment in
+    accordance with the Share Purchase Agreement and subject to changes after the finalisation of the
+    Completion Working Capital Statement. Upon the completion in January 2022, these two subsidiaries
+    ceased to be subsidiaries of the Company and became 40%-owned associates of the Company.
+
+
+
+
+                                               – 33 –
+7   DISPOSAL OF SUBSIDIARIES (Continued)
+
+    Disposal of subsidiaries during the period ended 28 February 2022 (Continued)
+
+    Assets and liabilities associated with these subsidiaries have been classified as held for sale as 31
+    August 2021. These assets and liabilities on the date of disposal and the reconciliation to gain on
+    disposal are as follows:
+
+                                                                                                   $’000
+
+    Intangible assets                                                                             37,969
+    Property, plant and equipment                                                                  6,094
+    Right-of-use assets                                                                           51,026
+    Deferred tax assets                                                                            1,245
+    Inventories                                                                                   62,488
+    Contract assets                                                                               22,548
+    Trade receivables                                                                             84,573
+    Other receivables, deposits and prepayments                                                   19,571
+    Finance lease receivables                                                                      3,633
+    Trade payables                                                                              (105,713)
+    Other payables and accrued charges                                                           (16,101)
+    Provision for reinstatement costs                                                             (1,340)
+    Contract liabilities                                                                         (11,028)
+    Bank loans                                                                                    (7,406)
+    Tax payables                                                                                  (1,104)
+    Deferred tax liabilities                                                                      (6,034)
+    Lease liabilities                                                                            (42,498)
+
+    Net assets disposed of                                                                        97,923
+
+
+    Net assets disposed of                                                                       (97,923)
+    Consideration received                                                                        73,719
+    Exchange gain on translating foreign operations
+      transferred income statement upon disposal                                                   1,917
+    Fair value of the retained equity interest                                                    49,146
+
+    Gain on disposal of subsidiaries                                                              26,859
+
+
+    Consideration received                                                                        73,719
+
+
+
+
+                                                – 34 –
+8   TRADE RECEIVABLES
+
+    As of the end of the reporting period, the ageing analysis of trade receivables, based on the invoice
+    date and net of loss allowance, is as follows:
+
+                                                                                    At               At
+                                                                           28 February        31 August
+                                                                                  2022             2021
+                                                                                 $’000            $’000
+
+    Within 30 days                                                              425,964          391,683
+    31 to 60 days                                                               230,703          211,658
+    61 to 90 days                                                               149,234          114,712
+    Over 90 days                                                                444,652          355,253
+
+                                                                              1,250,553        1,073,306
+
+    The majority of the Group’s trade receivables are due within 30 to 90 days from the date of billing.
+    Subscribers with receivable that are more than 3 months overdue are requested to settle all
+    outstanding balances before further credit is granted.
+
+9   TRADE PAYABLES
+
+    As of the end of the reporting period, the ageing analysis of trade payables, based on the invoice
+    date, is as follows:
+
+                                                                                    At               At
+                                                                           28 February        31 August
+                                                                                  2022             2021
+                                                                                 $’000            $’000
+
+    Within 30 days                                                              352,488          388,941
+    31 to 60 days                                                               307,907          111,618
+    61 to 90 days                                                               129,895          132,769
+    Over 90 days                                                                156,170          302,536
+
+                                                                                946,460          935,864
+
+
+
+
+                                                – 35 –
+10   DIVIDENDS
+
+     (i)   Dividends payable to equity shareholders of the Company attributable to the interim
+           period
+
+                                                                                Six months ended
+                                                                            28 February    28 February
+                                                                                   2022           2021
+                                                                                  $’000          $’000
+
+           Interim dividend declared after the interim period of
+             40 cents per ordinary share (six months ended
+             28 February 2021: 39 cents per ordinary share) (Note)               524,640          511,524
+
+           Note:   The amount of 2022 proposed interim dividend is based on the 1,311,599,356
+                   (2021: 1,311,599,356) ordinary shares in issue as at the date of this interim results
+                   announcement.
+
+           The proposed interim dividend declared has not been recognised as a liability at the end of the
+           reporting period.
+
+     (ii) Dividends payable to equity shareholders of the Company attributable to the previous
+          financial year, approved and paid during the interim period
+
+                                                                                Six months ended
+                                                                            28 February    28 February
+                                                                                   2022           2021
+                                                                                  $’000          $’000
+
+           Final dividend in respect of the previous financial year,
+             approved and paid during the following interim period,
+             of 37.5 cents per ordinary share (six months ended
+             28 February 2021: 38 cents per ordinary share)                      491,850          498,408
+
+
+
+
+                                                 – 36 –
+

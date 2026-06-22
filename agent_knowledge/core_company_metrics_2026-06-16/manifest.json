@@ -4,15 +4,48 @@
   "summary": "覆盖当前表格主体公司 FY2023-FY2025 的收入、净利润、毛利率、EBITDA、资本开支、现金流和资产负债等核心指标。",
   "source_type": "external_normalized",
   "scope": "公开财务数据和标准化财务表，供小竞 AI 做趋势分析、问数、同业比较和图表展示。",
-  "updated_at": "2026-06-16",
-  "tags": ["财务数据", "三年趋势", "运营商", "同业对比", "图表分析"],
-  "keywords": ["中国移动", "中国电信", "中国联通", "中国铁塔", "HKT", "3HK", "SmarTone", "HKBN", "HGC", "i-CABLE", "收入", "净利润", "毛利率", "EBITDA", "资本开支", "现金流"],
+  "updated_at": "2026-06-17",
+  "tags": [
+    "财务数据",
+    "三年趋势",
+    "运营商",
+    "同业对比",
+    "图表分析"
+  ],
+  "keywords": [
+    "中国移动",
+    "中国电信",
+    "中国联通",
+    "中国铁塔",
+    "HKT",
+    "3HK",
+    "SmarTone",
+    "HKBN",
+    "HGC",
+    "i-CABLE",
+    "收入",
+    "净利润",
+    "毛利率",
+    "EBITDA",
+    "资本开支",
+    "现金流"
+  ],
   "entrypoints": [
     "README.md",
     "core_metrics_summary.md",
     "core_metrics_2023_2025.json",
     "core_metrics_2023_2025.csv",
-    "sources.json"
+    "sources.json",
+    "core_metrics_human_readable.csv",
+    "online_verification_2026-06-17.md",
+    "online_verification_2026-06-17.csv"
   ],
-  "quality": "上市主体三年财务表采用 StockAnalysis 对港股公告的标准化表格，并保留官方来源链接；正式引用关键数时建议以官方年报/业绩公告复核。HGC 为非上市主体，不填造三年完整财务数。"
+  "quality": "上市主体三年财务表采用 StockAnalysis 对港股公告的标准化表格，并保留官方来源链接；正式引用关键数时建议以官方年报/业绩公告复核。HGC 为非上市主体，不填造三年完整财务数。",
+  "visibility": "hidden",
+  "version": "2026-06-17",
+  "built_at": "2026-06-17",
+  "row_count": 405,
+  "verified_count": 0,
+  "gap_count": 0,
+  "last_audit_path": "agent_knowledge/core_company_metrics_2026-06-16/online_verification_2026-06-17.md"
 }
