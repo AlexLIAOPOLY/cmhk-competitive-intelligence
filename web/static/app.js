@@ -2294,7 +2294,8 @@ function stripAssistantControlText(content) {
 }
 
 function renderCitationMarkers(html, node) {
-  return html.replace(/\[(?:来源\s*)?(\d+)\]/g, (match, p1) => {
+  const citationPattern = /\[(?:来源\s*)?(\d+)(?:\s*[,，:：;；]\s*[^\]\n]+)?\]/g;
+  return html.replace(citationPattern, (match, p1) => {
     const idx = parseInt(p1, 10);
     let href = null;
     let label = `来源 ${idx}`;
@@ -3302,10 +3303,10 @@ async function sendChat(message, options = {}) {
         const fallbackRefs = [];
         const lines = llmCitationText.split(/\n|(?=\[来源\s*\d+\])/g);
         for (const line of lines) {
-          const m = line.match(/\[来源\s*(\d+)\]\s*([^—\n]+)/);
+          const m = line.match(/\[来源\s*(\d+)(?:\s*[,，:：;；]\s*([^\]\n]+))?\]\s*([^—\n]*)/);
           if (m) {
             const idx = parseInt(m[1]);
-            const src = m[2].trim();
+            const src = (m[3] || m[2] || `来源 ${idx}`).trim();
             fallbackRefs.push({ index: idx, source: src, links: [{ label: src, url: `/references/${src}` }] });
           }
         }
