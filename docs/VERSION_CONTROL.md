@@ -13,7 +13,7 @@
 - Python/JS/CSS/HTML 源码。
 - 测试、审计脚本、构建脚本和轻量配置。
 - 人工维护的 README、项目文档、数据口径说明、manifest、正式审计摘要。
-- 必须随代码一起演进的模板文件，例如 `weekly_report_template.docx` 和 `carrier_performance_template.docx`。
+- 必须随代码一起演进的模板文件，例如 `weekly_report_template.docx`、`weekly_report_from_word_template.docx` 和 `carrier_performance_template.docx`。
 
 ## 不该进入 Git 的内容
 
@@ -59,8 +59,8 @@
 ```bash
 git rm --cached -r tmp agent_runs agent_chat_threads agent_knowledge/generated_charts
 git rm --cached -- '*.log' '*.pid' '*.wav' '*.aiff' '*.mp3'
-git rm --cached -- '*.docx'
-git add weekly_report_template.docx carrier_performance_template.docx .gitignore .gitattributes docs/VERSION_CONTROL.md scripts/git_health_check.py Makefile
+git rm --cached -- '*.docx' '*.xlsx'
+git add weekly_report_template.docx weekly_report_from_word_template.docx carrier_performance_template.docx .gitignore .gitattributes docs/VERSION_CONTROL.md scripts/git_health_check.py Makefile
 python3 scripts/git_health_check.py --strict
 git commit -m "Clean generated runtime artifacts from git index"
 ```

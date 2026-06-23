@@ -14,7 +14,8 @@ blocked="$(git diff --cached --name-only --diff-filter=ACMR | awk '
   /\.wav$/ { print; next }
   /\.aiff$/ { print; next }
   /\.mp3$/ { print; next }
-  /\.docx$/ && $0 !~ /(^|\/)(weekly_report_template|carrier_performance_template)\.docx$/ { print; next }
+  /\.xlsx$/ { print; next }
+  /\.docx$/ && $0 !~ /(^|\/)(weekly_report_template|carrier_performance_template|weekly_report_from_word_template)\.docx$/ { print; next }
 ')"
 
 if [ -n "$blocked" ]; then

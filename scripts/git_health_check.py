@@ -49,6 +49,7 @@ SOURCE_SUFFIXES = (
 TEMPLATE_ALLOWLIST = {
     "weekly_report_template.docx",
     "carrier_performance_template.docx",
+    "weekly_report_from_word_template.docx",
 }
 
 
@@ -143,8 +144,8 @@ def main() -> int:
         print("recommended cleanup, after review:")
         print("  git rm --cached -r tmp agent_runs agent_chat_threads agent_knowledge/generated_charts")
         print("  git rm --cached -- '*.log' '*.pid' '*.wav' '*.aiff' '*.mp3'")
-        print("  git rm --cached -- '*.docx'")
-        print("  git add weekly_report_template.docx carrier_performance_template.docx")
+        print("  git rm --cached -- '*.docx' '*.xlsx'")
+        print("  git add weekly_report_template.docx carrier_performance_template.docx weekly_report_from_word_template.docx")
     else:
         print("warnings: none")
 
