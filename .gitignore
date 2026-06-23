@@ -41,6 +41,7 @@ agent_chat_threads/*.json
 agent_chat_threads/*.jsonl
 agent_knowledge/generated_charts/
 agent_knowledge/*_human_readable.xlsx
+agent_knowledge/**/*.xlsx
 agent_knowledge/cmhk_*.xlsx
 agent_evals/
 frontend_test_results.txt

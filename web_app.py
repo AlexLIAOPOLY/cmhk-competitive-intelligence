@@ -134,6 +134,10 @@ def chat_thread_summaries() -> list[dict]:
     for thread in threads:
         messages = thread.get("messages") if isinstance(thread.get("messages"), list) else []
         last = next((m for m in reversed(messages) if isinstance(m, dict) and m.get("content")), {})
+        preview = str(last.get("content") or "")
+        preview = re.sub(r"[*_`#]+", "", preview)
+        preview = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", preview)
+        preview = re.sub(r"\s+", " ", preview).strip()[:120]
         summaries.append(
             {
                 "id": thread.get("id"),
@@ -141,7 +145,7 @@ def chat_thread_summaries() -> list[dict]:
                 "createdAt": thread.get("createdAt"),
                 "updatedAt": thread.get("updatedAt"),
                 "messageCount": len(messages),
-                "preview": str(last.get("content") or "")[:120],
+                "preview": preview,
                 "pinned": bool(thread.get("pinned")),
             }
         )

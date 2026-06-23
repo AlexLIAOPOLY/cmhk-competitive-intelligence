@@ -3128,14 +3128,10 @@ async function sendChat(message, options = {}) {
     const insertedChartUrls = new Set();
     let isDone = false;
 
-    // Create a stable text node for all assistant text in this stream
-    const stableTextNode = document.createElement("div");
-    stableTextNode.className = "markdown-body";
-    stableTextNode._rawMarkdown = "";
     const bodyContainer = messageBody(assistantNode);
 
     const showImmediateStatus = () => {
-      if (stableTextNode._rawMarkdown.trim()) return;
+      if (answer.trim()) return;
       if (!assistantNode.querySelector(".assistant-status-line")) {
         const statusNode = document.createElement("div");
         statusNode.className = "assistant-status-line";
@@ -3189,7 +3185,7 @@ async function sendChat(message, options = {}) {
         } else if (event.type === "run_summary") {
           if (thinkingEnabled) appendRunSummary(assistantNode, event);
         } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
-          if (!stableTextNode._rawMarkdown.trim()) showImmediateStatus();
+          if (!answer.trim()) showImmediateStatus();
           renderToolEvent(event);
           scrollMessagesToBottom();
         } else if (event.type === "delta" || event.type === "error" || event.type === "tool_start") {
@@ -3206,9 +3202,12 @@ async function sendChat(message, options = {}) {
           }
 
           answer += textChunk;
-          stableTextNode._rawMarkdown += textChunk;
 
-          let displayAnswer = stableTextNode._rawMarkdown;
+          const textNode = currentMessageTextNode(assistantNode);
+          if (textNode._rawMarkdown === undefined) textNode._rawMarkdown = "";
+          textNode._rawMarkdown += textChunk;
+
+          let displayAnswer = textNode._rawMarkdown;
           const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
           let suggestionsHTML = "";
           if (sugMatch) {
@@ -3223,22 +3222,14 @@ async function sendChat(message, options = {}) {
             } catch (e) {}
           }
 
-          // Ensure the stable text node is the last child in the body so it follows any recent tool cards
-          if (bodyContainer && bodyContainer.lastElementChild !== stableTextNode) {
-            if (stableTextNode.parentNode === bodyContainer) {
-              bodyContainer.removeChild(stableTextNode);
-            }
-            bodyContainer.appendChild(stableTextNode);
-          }
-
           // Render the markdown content
           const cleaned = stripAssistantControlText(displayAnswer);
           let html = markdownToHtml(cleaned);
           html = renderCitationMarkers(html, assistantNode);
-          stableTextNode.innerHTML = html;
+          textNode.innerHTML = html;
 
           if (suggestionsHTML) {
-            stableTextNode.insertAdjacentHTML("beforeend", suggestionsHTML);
+            textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
           }
           
           scrollMessagesToBottom();
@@ -3265,42 +3256,42 @@ async function sendChat(message, options = {}) {
     }
 
     if (!answer.trim()) {
-      stableTextNode.innerHTML = "<p>操作完成。</p>";
-      if (bodyContainer && stableTextNode.parentNode !== bodyContainer) {
-        bodyContainer.appendChild(stableTextNode);
-      }
+      const textNode = currentMessageTextNode(assistantNode);
+      textNode.innerHTML = "<p>操作完成。</p>";
       state.chatHistory.push({ role: "assistant", content: "操作完成。" });
       state.chatHistory = state.chatHistory.slice(-80);
       state.agentContextKey = contextKey;
       await persistActiveThread();
     } else {
-      // Final processing of the accumulated text in the stable text node
-      let finalAnswer = stableTextNode._rawMarkdown;
-      const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
+      // Final processing of the accumulated text in the LAST text node ONLY
+      const textNode = currentMessageTextNode(assistantNode);
+      let finalChunk = textNode._rawMarkdown || "";
+
+      const sugMatch = finalChunk.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
       let suggestionsHTML = "";
       if (sugMatch) {
         try {
           let jsonStr = sugMatch[1].trim();
           jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
           const arr = normalizeSuggestionList(JSON.parse(jsonStr));
-          finalAnswer = finalAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
+          finalChunk = finalChunk.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
           if (arr && arr.length > 0) {
             suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
           }
         } catch (e) {}
       }
-      
-      const citationTagMatch = finalAnswer.match(/<引用来源>([\s\S]*?)<\/引用来源>/i);
+
+      const citationTagMatch = finalChunk.match(/<引用来源>([\s\S]*?)<\/引用来源>/i);
       let llmCitationText = citationTagMatch ? citationTagMatch[1].trim() : null;
-      finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
-      finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*$/gi, "").trim();
-      finalAnswer = finalAnswer.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
-      finalAnswer = finalAnswer.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
-      
-      const cleaned = stripAssistantControlText(finalAnswer);
-      let html = markdownToHtml(cleaned);
+      finalChunk = finalChunk.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
+      finalChunk = finalChunk.replace(/<引用来源>[\s\S]*$/gi, "").trim();
+      finalChunk = finalChunk.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
+      finalChunk = finalChunk.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
+
+      const cleanedChunk = stripAssistantControlText(finalChunk);
+      let html = markdownToHtml(cleanedChunk);
       html = renderCitationMarkers(html, assistantNode);
-      stableTextNode.innerHTML = html;
+      textNode.innerHTML = html;
 
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
@@ -3320,17 +3311,17 @@ async function sendChat(message, options = {}) {
         }
         if (fallbackRefs.length) appendCitationFooter(assistantNode, fallbackRefs, null);
       }
-      
+
       if (suggestionsHTML) {
-        stableTextNode.insertAdjacentHTML("beforeend", suggestionsHTML);
+        textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
       } else {
         const fallback = generateFallbackSuggestions(message);
         const fallbackHTML = `<div class="suggestion-chips">` + fallback.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
-        stableTextNode.insertAdjacentHTML("beforeend", fallbackHTML);
+        textNode.insertAdjacentHTML("beforeend", fallbackHTML);
       }
-      
-      if (cleaned.trim()) {
-        state.chatHistory.push({ role: "assistant", content: cleaned });
+
+      if (answer.trim()) {
+        state.chatHistory.push({ role: "assistant", content: stripAssistantControlText(answer) });
         state.chatHistory = state.chatHistory.slice(-80);
       }
       state.agentContextKey = contextKey;

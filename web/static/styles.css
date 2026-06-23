@@ -2027,8 +2027,8 @@ select {
 
 .message-body img.chat-inline-image[src^="/generated-charts/"],
 .chart-result-block img.chat-inline-image {
-  width: min(100%, 1100px);
-  max-height: 620px;
+  width: min(100%, 720px);
+  max-height: 480px;
   padding: 4px;
 }
 .message-body hr {
