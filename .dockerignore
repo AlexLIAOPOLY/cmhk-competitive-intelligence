@@ -1,0 +1,16 @@
+.git
+.venv
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+agent_chat_threads/
+agent_runs/
+tmp/
+outputs/
+*.log
+*.pid
+*.wav
+*.mp3
+agent_knowledge/generated_charts/
