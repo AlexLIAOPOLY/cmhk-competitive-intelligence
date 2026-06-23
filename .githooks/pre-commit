@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+blocked="$(git diff --cached --name-only --diff-filter=ACMR | awk '
+  /^tmp\// { print; next }
+  /^agent_runs\// { print; next }
+  /^agent_chat_threads\// { print; next }
+  /^agent_knowledge\/generated_charts\// { print; next }
+  /^weekly_report_render\// { print; next }
+  /^audio\// { print; next }
+  /^evidence_cache\// { print; next }
+  /\.log$/ { print; next }
+  /\.pid$/ { print; next }
+  /\.wav$/ { print; next }
+  /\.aiff$/ { print; next }
+  /\.mp3$/ { print; next }
+  /\.docx$/ && $0 !~ /(^|\/)(weekly_report_template|carrier_performance_template)\.docx$/ { print; next }
+')"
+
+if [ -n "$blocked" ]; then
+  echo "Blocked generated/runtime files from commit:" >&2
+  echo "$blocked" >&2
+  echo "" >&2
+  echo "If these are intentional source artifacts, update .githooks/pre-commit and docs/VERSION_CONTROL.md first." >&2
+  exit 1
+fi

@@ -1928,6 +1928,10 @@ function markdownToHtml(markdown) {
     tableRows = null;
     if (!rows.length) return;
     if (rows.length < 2) {
+      // Don't silently discard — output as plain text so partial tables are visible during streaming
+      rows.forEach(cells => {
+        html.push(`<p>${inlineMarkdown("| " + cells.join(" | ") + " |")}</p>`);
+      });
       return;
     }
     html.push('<div class="chat-table-wrap"><table class="chat-data-table">');
@@ -2762,26 +2766,6 @@ function setCurrentMessageContent(node, content, markdown = false, textNode = nu
   }
 }
 
-function dedupeAssistantTextBlocks(node) {
-  const body = messageBody(node);
-  if (!body) return;
-  const blocks = [...body.querySelectorAll(":scope > .message-text, :scope > .markdown-body")]
-    .filter((item) => !item.classList.contains("assistant-status-line") && item.textContent.trim().length > 80);
-  const seen = new Map();
-  blocks.forEach((block) => {
-    const normalized = block.textContent.replace(/\s+/g, " ").trim();
-    const key = /中国铁塔/.test(normalized) && /2017/.test(normalized) && /2025/.test(normalized) && /Q1=/.test(normalized)
-      ? "china-tower-quarterly-revenue-list"
-      : normalized.slice(0, 120);
-    if (!key) return;
-    const earlier = seen.get(key);
-    if (earlier && earlier.isConnected) {
-      earlier.remove();
-    }
-    seen.set(key, block);
-  });
-}
-
 function appendStableChartImage(node, chartImage) {
   const body = messageBody(node);
   if (!body || !chartImage || !chartImage.url) return;
@@ -3142,19 +3126,22 @@ async function sendChat(message, options = {}) {
     let buffer = "";
     let answer = "";
     const insertedChartUrls = new Set();
-    let hasVisibleAssistantText = false;
     let isDone = false;
 
+    // Create a stable text node for all assistant text in this stream
+    const stableTextNode = document.createElement("div");
+    stableTextNode.className = "markdown-body";
+    stableTextNode._rawMarkdown = "";
+    const bodyContainer = messageBody(assistantNode);
+
     const showImmediateStatus = () => {
-      if (hasVisibleAssistantText) return;
+      if (stableTextNode._rawMarkdown.trim()) return;
       if (!assistantNode.querySelector(".assistant-status-line")) {
         const statusNode = document.createElement("div");
         statusNode.className = "assistant-status-line";
         statusNode.textContent = "正在分析请求，并调用相关工具获取依据。";
-        const body = messageBody(assistantNode);
-        if (body) body.appendChild(statusNode);
+        if (bodyContainer) bodyContainer.appendChild(statusNode);
       }
-      hasVisibleAssistantText = true;
       scrollMessagesToBottom();
     };
 
@@ -3166,9 +3153,7 @@ async function sendChat(message, options = {}) {
         try {
           const parsedArgs = JSON.parse(event.args);
           if (parsedArgs && parsedArgs.skill_id) state.loadedSkillIds.add(String(parsedArgs.skill_id));
-        } catch (e) {
-          // Ignore malformed tool args; the visible tool card still shows the call.
-        }
+        } catch (e) {}
       }
       appendToolCallCard(assistantNode, event);
       if (event.type === "tool_call_result" && event.name === "render_python_chart") {
@@ -3195,32 +3180,36 @@ async function sendChat(message, options = {}) {
         if (event.type === "done") {
           isDone = true;
           break;
-        } else if (event.type === "thinking_status") {
-          if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
-        } else if (event.type === "process") {
+        } else if (event.type === "thinking_status" || event.type === "process") {
           if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
           mergeCitationMeta(assistantNode, event);
-        } else if (event.type === "process_line") {
-          // Legacy event from older streams; process text is now merged into tool_call_start.
         } else if (event.type === "action_confirmation") {
           appendActionConfirmation(assistantNode, event, message);
         } else if (event.type === "run_summary") {
           if (thinkingEnabled) appendRunSummary(assistantNode, event);
         } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
-          if (!hasVisibleAssistantText) {
-            showImmediateStatus();
-          }
+          if (!stableTextNode._rawMarkdown.trim()) showImmediateStatus();
           renderToolEvent(event);
           scrollMessagesToBottom();
-        } else if (event.type === "delta") {
-          answer += event.text;
-          const textNode = currentMessageTextNode(assistantNode);
-          if (textNode._rawMarkdown === undefined) textNode._rawMarkdown = "";
-          textNode._rawMarkdown += event.text;
+        } else if (event.type === "delta" || event.type === "error" || event.type === "tool_start") {
+          let textChunk = "";
+          if (event.type === "delta") {
+            textChunk = event.text;
+          } else if (event.type === "error") {
+            textChunk = `\n\n**错误：** ${event.text}`;
+          } else if (event.type === "tool_start") {
+            const label = escapeHtml(toolFriendlyName(event.name));
+            const technicalName = escapeHtml(event.name || "tool");
+            const icon = iconSvg(toolIconName(event.name));
+            textChunk = `\n\n<div class="inline-tool-event"><span class="tool-icon" aria-hidden="true">${icon}</span><strong>${label}</strong><code>${technicalName}</code></div>\n\n`;
+          }
 
-          let displayAnswer = textNode._rawMarkdown;
-          const sugMatch = answer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
+          answer += textChunk;
+          stableTextNode._rawMarkdown += textChunk;
+
+          let displayAnswer = stableTextNode._rawMarkdown;
+          const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
           let suggestionsHTML = "";
           if (sugMatch) {
             try {
@@ -3231,41 +3220,28 @@ async function sendChat(message, options = {}) {
               if (arr && arr.length > 0) {
                 suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
               }
-            } catch (e) {
-               console.error("Suggestion parse error:", e, sugMatch[1]);
+            } catch (e) {}
+          }
+
+          // Ensure the stable text node is the last child in the body so it follows any recent tool cards
+          if (bodyContainer && bodyContainer.lastElementChild !== stableTextNode) {
+            if (stableTextNode.parentNode === bodyContainer) {
+              bodyContainer.removeChild(stableTextNode);
             }
+            bodyContainer.appendChild(stableTextNode);
           }
-          const renderedAnswer = renderAssistantTextWithProcess(assistantNode, displayAnswer, true, textNode);
-          if (renderedAnswer.trim()) {
-            hasVisibleAssistantText = true;
-          }
-          dedupeAssistantTextBlocks(assistantNode);
+
+          // Render the markdown content
+          const cleaned = stripAssistantControlText(displayAnswer);
+          let html = markdownToHtml(cleaned);
+          html = renderCitationMarkers(html, assistantNode);
+          stableTextNode.innerHTML = html;
+
           if (suggestionsHTML) {
-            textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
+            stableTextNode.insertAdjacentHTML("beforeend", suggestionsHTML);
           }
+          
           scrollMessagesToBottom();
-        } else if (event.type === "error") {
-          answer += `\n\n**错误：** ${event.text}`;
-          const errTextNode = currentMessageTextNode(assistantNode);
-          if (errTextNode._rawMarkdown === undefined) errTextNode._rawMarkdown = "";
-          errTextNode._rawMarkdown += `\n\n**错误：** ${event.text}`;
-          let displayAnswer = errTextNode._rawMarkdown.replace(/<suggestions>[\s\S]*$/, "");
-          setCurrentMessageContent(assistantNode, displayAnswer, true, errTextNode);
-          hasVisibleAssistantText = true;
-          dedupeAssistantTextBlocks(assistantNode);
-        } else if (event.type === "tool_start") {
-          const label = escapeHtml(toolFriendlyName(event.name));
-          const technicalName = escapeHtml(event.name || "tool");
-          const icon = iconSvg(toolIconName(event.name));
-          const toolHtml = `<div class="inline-tool-event"><span class="tool-icon" aria-hidden="true">${icon}</span><strong>${label}</strong><code>${technicalName}</code></div>`;
-          answer += `\n\n${toolHtml}\n\n`;
-          const toolTextNode = currentMessageTextNode(assistantNode);
-          if (toolTextNode._rawMarkdown === undefined) toolTextNode._rawMarkdown = "";
-          toolTextNode._rawMarkdown += `\n\n${toolHtml}\n\n`;
-          setCurrentMessageContent(assistantNode, toolTextNode._rawMarkdown, true, toolTextNode);
-          scrollMessagesToBottom();
-        } else if (event.type === "tool_end") {
-          // Tool result cards handle completion state; do not add a separate completion line.
         } else if (event.type === "action_result") {
           if (event.generation) {
             appendLog([
@@ -3287,14 +3263,19 @@ async function sendChat(message, options = {}) {
       }
       if (isDone) break;
     }
+
     if (!answer.trim()) {
-      setCurrentMessageContent(assistantNode, "操作完成。", true);
+      stableTextNode.innerHTML = "<p>操作完成。</p>";
+      if (bodyContainer && stableTextNode.parentNode !== bodyContainer) {
+        bodyContainer.appendChild(stableTextNode);
+      }
       state.chatHistory.push({ role: "assistant", content: "操作完成。" });
       state.chatHistory = state.chatHistory.slice(-80);
       state.agentContextKey = contextKey;
       await persistActiveThread();
     } else {
-      let finalAnswer = answer;
+      // Final processing of the accumulated text in the stable text node
+      let finalAnswer = stableTextNode._rawMarkdown;
       const sugMatch = finalAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
       let suggestionsHTML = "";
       if (sugMatch) {
@@ -3306,28 +3287,27 @@ async function sendChat(message, options = {}) {
           if (arr && arr.length > 0) {
             suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
           }
-        } catch (e) {
-            console.error("Suggestion parse error final:", e, sugMatch[1]);
-        }
+        } catch (e) {}
       }
-      // Strip <引用来源> tag from final answer (LLM sometimes outputs it despite instructions)
+      
       const citationTagMatch = finalAnswer.match(/<引用来源>([\s\S]*?)<\/引用来源>/i);
       let llmCitationText = citationTagMatch ? citationTagMatch[1].trim() : null;
       finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
       finalAnswer = finalAnswer.replace(/<引用来源>[\s\S]*$/gi, "").trim();
       finalAnswer = finalAnswer.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
       finalAnswer = finalAnswer.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
-      finalAnswer = stripAssistantControlText(finalAnswer);
+      
+      const cleaned = stripAssistantControlText(finalAnswer);
+      let html = markdownToHtml(cleaned);
+      html = renderCitationMarkers(html, assistantNode);
+      stableTextNode.innerHTML = html;
 
-          finalAnswer = renderAssistantTextWithProcess(assistantNode, finalAnswer, true);
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
       const storedLinks = assistantNode.dataset.links ? JSON.parse(assistantNode.dataset.links) : null;
       if (storedRefs || storedLinks) {
         appendCitationFooter(assistantNode, storedRefs, storedLinks);
       } else if (llmCitationText) {
-        // Fallback: parse LLM's own citation text into simple link items
-        // e.g. "[来源 1] weekly_report.md — 政治资讯\n[来源 2] final_audit.md — ..."
         const fallbackRefs = [];
         const lines = llmCitationText.split(/\n|(?=\[来源\s*\d+\])/g);
         for (const line of lines) {
@@ -3340,18 +3320,17 @@ async function sendChat(message, options = {}) {
         }
         if (fallbackRefs.length) appendCitationFooter(assistantNode, fallbackRefs, null);
       }
+      
       if (suggestionsHTML) {
-        const b = currentMessageTextNode(assistantNode);
-        b.insertAdjacentHTML("beforeend", suggestionsHTML);
+        stableTextNode.insertAdjacentHTML("beforeend", suggestionsHTML);
       } else {
-        // Fallback: AI didn't output suggestions, generate defaults based on the user message
         const fallback = generateFallbackSuggestions(message);
         const fallbackHTML = `<div class="suggestion-chips">` + fallback.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
-        const b = currentMessageTextNode(assistantNode);
-        b.insertAdjacentHTML("beforeend", fallbackHTML);
+        stableTextNode.insertAdjacentHTML("beforeend", fallbackHTML);
       }
-      if (finalAnswer.trim()) {
-        state.chatHistory.push({ role: "assistant", content: finalAnswer });
+      
+      if (cleaned.trim()) {
+        state.chatHistory.push({ role: "assistant", content: cleaned });
         state.chatHistory = state.chatHistory.slice(-80);
       }
       state.agentContextKey = contextKey;
