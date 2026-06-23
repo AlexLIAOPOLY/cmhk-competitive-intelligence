@@ -28,6 +28,7 @@ const state = {
   activeThreadId: null,
   chatQueue: [],
   chatThreadSearch: "",
+  chatThreadSearchOpen: false,
   agentContextKey: "",
   loadedSkillIds: new Set(),
 };
@@ -92,6 +93,7 @@ const els = {
   newChatThreadButton: document.querySelector("#newChatThreadButton"),
   chatWorkspace: document.querySelector("#chatWorkspace"),
   chatThreadSidebar: document.querySelector("#chatThreadSidebar"),
+  chatThreadSearchToggle: document.querySelector("#chatThreadSearchToggle"),
   chatThreadSearchInput: document.querySelector("#chatThreadSearchInput"),
   chatThreadList: document.querySelector("#chatThreadList"),
   chatQueueList: document.querySelector("#chatQueueList"),
@@ -189,7 +191,7 @@ function setChatBusy(value) {
   if (els.thinkingToggle) els.thinkingToggle.disabled = false;
   if (els.skillToggle) els.skillToggle.disabled = false;
   if (els.databaseToggle) els.databaseToggle.disabled = false;
-  if (els.knowledgeUploadButton) els.knowledgeUploadButton.disabled = value || state.knowledgeUploadBusy;
+  if (els.knowledgeUploadButton) els.knowledgeUploadButton.disabled = state.knowledgeUploadBusy;
   els.chatSubmitButton.textContent = value ? "排队" : "发送";
 }
 
@@ -287,7 +289,7 @@ function renderDatabaseMenu() {
   const menu = els.databaseMenu;
   if (!menu) return;
   const uploadAction = `
-    <button class="database-upload-action ${state.knowledgeUploadBusy ? "is-loading" : ""}" id="knowledgeUploadButton" type="button" ${state.chatBusy || state.knowledgeUploadBusy ? "disabled" : ""}>
+    <button class="database-upload-action ${state.knowledgeUploadBusy ? "is-loading" : ""}" id="knowledgeUploadButton" type="button" ${state.knowledgeUploadBusy ? "disabled" : ""}>
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 3v12"></path>
         <path d="m7 8 5-5 5 5"></path>
@@ -1891,6 +1893,7 @@ function inlineMarkdown(value) {
     .replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, '<div class="chat-image-wrapper"><img src="$2" alt="$1" class="chat-inline-image" loading="lazy" /><a href="$2" download class="chat-image-download-btn" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></a></div>')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/&#42;&#42;(.+?)&#42;&#42;/g, "<strong>$1</strong>")
     .replace(/`(.+?)`/g, "<code>$1</code>");
 }
 
@@ -1924,6 +1927,9 @@ function markdownToHtml(markdown) {
     const rows = tableRows;
     tableRows = null;
     if (!rows.length) return;
+    if (rows.length < 2) {
+      return;
+    }
     html.push('<div class="chat-table-wrap"><table class="chat-data-table">');
     rows.forEach((cells, rowIndex) => {
       const tag = rowIndex === 0 ? "th" : "td";
@@ -1949,8 +1955,13 @@ function markdownToHtml(markdown) {
       html.push(`<div class="chart-placeholder" data-chart-index="${chartIndex}"></div>`);
       continue;
     }
-    if (/^\|.+\|$/.test(line)) {
-      const cells = line.split("|").slice(1, -1);
+    if (line.startsWith("|") && line.includes("|", 1)) {
+      const expectedCells = tableRows && tableRows.length ? tableRows[0].length : null;
+      const completeLine = line.endsWith("|") ? line : `${line}|`;
+      const cells = completeLine.split("|").slice(1, -1);
+      if (expectedCells && cells.length < expectedCells) {
+        continue;
+      }
       if (cells.every((cell) => /^:?-{3,}:?$/.test(cell.trim()))) {
         continue;
       }
@@ -2168,7 +2179,46 @@ function renderChartBlock(jsonText) {
   return `<div class="chat-chart-card">${svg}<div class="chart-legend">${legend}</div>${notes}</div>`;
 }
 
-const ASSISTANT_PROCESS_MARKERS = "(?:用户问的是|“[^”]{1,20}”通常指|\"[^\"]{1,20}\"通常指|我先|我来|我需要|为了获取|检索到了|检索只返回|数据包摘要显示|数据包显示|实际上，从数据包摘要|但早期的数据|CSV内容太大|让我|现在让我|现在我(?:已|来|开始|生成|整理)|现在(?:生成|整理|读取|检索)|我整理一下|数据已经齐全|数据非常清晰|很好|我已经有了|从JSON中|从数据中我已获取|需要搜索|需要确认|需要.*数据|从已有的数据|从JSON看到|当前时间为|按当前日期|上一个季度就是|[^。！？\\n]{0,30}最新一个完整季度是)";
+const ASSISTANT_PROCESS_MARKERS = "(?:用户问的是|“[^”]{1,20}”通常指|\"[^\"]{1,20}\"通常指|我先|我来|我读取|我确认|我联网|我同步|我打开|我调用|我需要|我继续|我再读取|为了获取|检索到了|检索只返回|联网已搜到|本地检索结果|本地数据已命中|本地数据已经命中|本地数据已确认|数据包摘要显示|数据包显示|实际上，从数据包摘要|但早期的数据|CSV文件|CSV内容太大|包含所有公司的数据|再读取|再读取一下|让我|现在让我|现在我(?:已|来|开始|生成|整理)|现在(?:生成|整理|读取|检索)|我整理一下|数据已经齐全|数据非常清晰|数据充足|搜索高度一致|很好|我已经有了|从JSON中|从数据中我已获取|已获取|需要搜索|需要确认|需要.*数据|从已有的数据|从JSON看到|当前时间为|按当前日期|上一个季度就是|[^。！？\\n]{0,30}最新一个完整季度是)";
+
+function isProcessClause(text) {
+  const clean = String(text || "").replace(/\s+/g, " ").trim();
+  if (!clean) return false;
+  if (/^(?:当前时间|按当前日期|上个完整季度|上一个完整季度)/.test(clean)) return false;
+  if (new RegExp(`^${ASSISTANT_PROCESS_MARKERS}`).test(clean)) return true;
+  return (
+    /(?:检索|搜索|命中|读取|核验|交叉验证|确认口径|确认详细|关键引用|公开来源|数据库原文|摘要片段|CSV文件|CSV内容|数据充足|verification_status|verification_count|official_match)/i.test(clean) &&
+    !/(?:营业收入|收入为|同比|亿元|百万元|核心数据|一句话结论|关键数据)/.test(clean)
+  );
+}
+
+function removeProcessClauses(text, collector = null) {
+  return String(text || "")
+    .split(/\n+/)
+    .map((line) => {
+      const parts = line.match(/[^。！？；;]+[。！？；;]?/g) || [line];
+      const kept = [];
+      parts.forEach((part) => {
+        const commaParts = part.match(/[^，,]+[，,]?/g) || [part];
+        const keptCommaParts = [];
+        commaParts.forEach((piece) => {
+          const clean = piece.trim();
+          if (!clean) return;
+          if (isProcessClause(clean)) {
+            if (collector) collector.push(clean.replace(/\s+/g, " "));
+            return;
+          }
+          keptCommaParts.push(piece);
+        });
+        const joined = keptCommaParts.join("").trim();
+        if (joined) kept.push(joined);
+      });
+      return kept.join("").trim();
+    })
+    .filter(Boolean)
+    .join("\n")
+    .trim();
+}
 
 function extractAssistantProcessLines(content) {
   const original = content || "";
@@ -2198,6 +2248,7 @@ function extractAssistantProcessLines(content) {
     })
     .join("\n")
     .trim();
+  answer = removeProcessClauses(answer, processLines);
   return { answer, processLines: [...new Set(processLines)].slice(0, 12) };
 }
 
@@ -2233,6 +2284,7 @@ function stripAssistantControlText(content) {
     .join("\n")
     .trim();
   text = text.replace(new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?=\\n\\s*(?:#{1,3}\\s+|[一二三四五六七八九十\\d]+[、.]\\s+|[^\\n：:]{2,18}[：:]|$))`, "g"), "").trim();
+  text = removeProcessClauses(text);
   text = text.replace(/^\s*[-–—]{3,}\s*$/gm, "").trim();
   return text;
 }
@@ -2455,10 +2507,10 @@ function renderChatThreadList() {
     els.chatThreadList.innerHTML = `<div class="agent-memory-empty">没有匹配的对话</div>`;
     return;
   }
-  els.chatThreadList.innerHTML = threads.map((thread) => `
+  const renderThreadItems = (items) => items.map((thread) => `
     <div class="chat-thread-item ${thread.id === state.activeThreadId ? "is-active" : ""}" data-thread-id="${escapeHtml(thread.id)}">
       <button class="chat-thread-main" type="button">
-        <span class="chat-thread-title">${thread.pinned ? "置顶 · " : ""}${escapeHtml(thread.title || "未命名对话")}</span>
+        <span class="chat-thread-title">${escapeHtml(thread.title || "未命名对话")}</span>
         <span class="chat-thread-preview">${escapeHtml(thread.preview || `${thread.messageCount || 0} 条消息`)}</span>
       </button>
       <button class="chat-thread-pin ${thread.pinned ? "is-pinned" : ""}" type="button" title="${thread.pinned ? "取消置顶" : "置顶"}" aria-label="${thread.pinned ? "取消置顶" : "置顶"}" data-action="pin">
@@ -2469,6 +2521,26 @@ function renderChatThreadList() {
       </button>
     </div>
   `).join("");
+  const pinnedThreads = threads.filter((thread) => thread.pinned);
+  const regularThreads = threads.filter((thread) => !thread.pinned);
+  const sections = [];
+  if (pinnedThreads.length) {
+    sections.push(`
+      <section class="chat-thread-section">
+        <div class="chat-thread-section-title">置顶</div>
+        ${renderThreadItems(pinnedThreads)}
+      </section>
+    `);
+  }
+  if (regularThreads.length) {
+    sections.push(`
+      <section class="chat-thread-section">
+        ${pinnedThreads.length ? '<div class="chat-thread-section-title">最近</div>' : ""}
+        ${renderThreadItems(regularThreads)}
+      </section>
+    `);
+  }
+  els.chatThreadList.innerHTML = sections.join("");
 }
 
 async function loadChatThreads() {
@@ -2616,6 +2688,22 @@ function setChatSidebarCollapsed(collapsed) {
   }
 }
 
+function setChatThreadSearchOpen(open, focus = false) {
+  state.chatThreadSearchOpen = Boolean(open);
+  if (els.chatThreadSidebar) {
+    els.chatThreadSidebar.classList.toggle("is-search-open", state.chatThreadSearchOpen);
+  }
+  if (els.chatThreadSearchToggle) {
+    els.chatThreadSearchToggle.classList.toggle("is-active", state.chatThreadSearchOpen);
+    els.chatThreadSearchToggle.setAttribute("aria-expanded", state.chatThreadSearchOpen ? "true" : "false");
+    els.chatThreadSearchToggle.title = state.chatThreadSearchOpen ? "收起搜索" : "搜索对话";
+    els.chatThreadSearchToggle.setAttribute("aria-label", state.chatThreadSearchOpen ? "收起搜索" : "搜索对话");
+  }
+  if (focus && state.chatThreadSearchOpen && els.chatThreadSearchInput) {
+    requestAnimationFrame(() => els.chatThreadSearchInput.focus());
+  }
+}
+
 function clearConnectingPlaceholder(node) {
   const placeholder = node.querySelector('.message-body > [data-placeholder="connecting"]');
   if (placeholder) placeholder.remove();
@@ -2716,7 +2804,8 @@ function appendAssistantActionLine(node, event) {
   line.className = "assistant-action-line";
   line.dataset.toolId = id;
   line.dataset.toolName = event.name || "";
-  line.textContent = toolNarrationText(event.name);
+  const label = event.processText || toolNarrationText(event.name);
+  line.innerHTML = inlineMarkdown(label);
   appendStreamBlock(node, line);
 }
 
@@ -2726,7 +2815,7 @@ function appendAssistantProcessLine(node, text, beforeNode = null, preferredTool
   if (!body || !clean) return;
   const key = clean.slice(0, 240);
   const toolName = preferredToolName || processLineToolAnchorName(clean);
-  const isModelProcessSentence = /^(?:我先|我来|让我|现在让我|我需要|为了|需要)/.test(clean);
+  const isModelProcessSentence = /^(?:我先|我来|让我|现在让我|我需要|为了|需要|我读取|我确认|我联网|我同步|我打开|我调用)/.test(clean);
   const existingForTool = toolName
     ? [...body.querySelectorAll(".assistant-process-line")].find((item) => item.dataset.toolName === toolName)
     : null;
@@ -2740,12 +2829,36 @@ function appendAssistantProcessLine(node, text, beforeNode = null, preferredTool
   line.className = "assistant-process-line";
   line.dataset.processKey = key;
   if (toolName) line.dataset.toolName = toolName;
-  line.textContent = clean;
+  line.innerHTML = inlineMarkdown(clean);
   if (beforeNode && beforeNode.parentNode === body) {
     body.insertBefore(line, beforeNode);
   } else {
     body.appendChild(line);
   }
+  dedupeAssistantProcessLines(node);
+}
+
+function dedupeAssistantProcessLines(node) {
+  const body = messageBody(node);
+  if (!body) return;
+  const seenTools = new Map();
+  [...body.querySelectorAll(".assistant-process-line")].forEach((line) => {
+    const toolName = line.dataset.toolName || processLineToolAnchorName(line.textContent || "");
+    if (!toolName) return;
+    const existing = seenTools.get(toolName);
+    if (!existing) {
+      seenTools.set(toolName, line);
+      return;
+    }
+    const existingIsTyped = existing.dataset.fromTypedEvent === "true";
+    const lineIsTyped = line.dataset.fromTypedEvent === "true";
+    if (lineIsTyped && !existingIsTyped) {
+      existing.remove();
+      seenTools.set(toolName, line);
+    } else {
+      line.remove();
+    }
+  });
 }
 
 function processLineToolAnchorName(text) {
@@ -2774,11 +2887,7 @@ function findProcessInsertionAnchor(node, text, fallbackNode = null, preferredTo
 
 function renderAssistantTextWithProcess(node, rawContent, markdown = true, textNode = null) {
   const target = textNode || currentMessageTextNode(node);
-  const { answer: contentWithoutProcess, processLines } = extractAssistantProcessLines(rawContent);
-  processLines.forEach((line) => {
-    const toolName = processLineToolAnchorName(line);
-    appendAssistantProcessLine(node, line, findProcessInsertionAnchor(node, line, target, toolName), toolName);
-  });
+  const { answer: contentWithoutProcess } = extractAssistantProcessLines(rawContent);
   setCurrentMessageContent(node, contentWithoutProcess, markdown, target);
   return contentWithoutProcess;
 }
@@ -3093,15 +3202,7 @@ async function sendChat(message, options = {}) {
         } else if (event.type === "meta") {
           mergeCitationMeta(assistantNode, event);
         } else if (event.type === "process_line") {
-          const anchor = findProcessInsertionAnchor(assistantNode, event.text, null, event.toolName || "");
-          appendAssistantProcessLine(assistantNode, event.text, anchor, event.toolName || "");
-          const toolName = event.toolName || processLineToolAnchorName(event.text);
-          if (toolName) {
-            const line = [...assistantNode.querySelectorAll(".assistant-process-line")].find((item) => item.dataset.toolName === toolName);
-            if (line) line.dataset.fromTypedEvent = "true";
-          }
-          hasVisibleAssistantText = true;
-          scrollMessagesToBottom();
+          // Legacy event from older streams; process text is now merged into tool_call_start.
         } else if (event.type === "action_confirmation") {
           appendActionConfirmation(assistantNode, event, message);
         } else if (event.type === "run_summary") {
@@ -3518,6 +3619,18 @@ if (els.chatThreadSearchInput) {
   });
 }
 
+if (els.chatThreadSearchToggle) {
+  els.chatThreadSearchToggle.addEventListener("click", () => {
+    const nextOpen = !state.chatThreadSearchOpen;
+    if (!nextOpen && els.chatThreadSearchInput && els.chatThreadSearchInput.value) {
+      els.chatThreadSearchInput.value = "";
+      state.chatThreadSearch = "";
+      renderChatThreadList();
+    }
+    setChatThreadSearchOpen(nextOpen, nextOpen);
+  });
+}
+
 if (els.chatQueueList) {
   els.chatQueueList.addEventListener("click", (event) => {
     const action = event.target.dataset.action;
@@ -3544,7 +3657,6 @@ if (els.chatQueueList) {
 if (els.webSearchToggle) {
   renderWebSearchToggle();
   els.webSearchToggle.addEventListener("click", () => {
-    if (state.chatBusy) return;
     state.webSearchEnabled = !state.webSearchEnabled;
     renderWebSearchToggle();
     els.chatInput.focus();
@@ -3554,7 +3666,6 @@ if (els.webSearchToggle) {
 if (els.thinkingToggle) {
   renderThinkingToggle();
   els.thinkingToggle.addEventListener("click", () => {
-    if (state.chatBusy) return;
     state.thinkingEnabled = !state.thinkingEnabled;
     renderThinkingToggle();
     els.chatInput.focus();
@@ -3565,7 +3676,7 @@ if (els.skillToggle) {
   renderSkillToggle();
   loadAgentSkills();
   els.skillToggle.addEventListener("click", () => {
-    if (state.chatBusy || !els.skillMenu) return;
+    if (!els.skillMenu) return;
     els.skillMenu.hidden = !els.skillMenu.hidden;
     renderSkillToggle();
   });
@@ -3575,7 +3686,7 @@ if (els.databaseToggle) {
   renderDatabaseToggle();
   loadAgentDatasets();
   els.databaseToggle.addEventListener("click", () => {
-    if (state.chatBusy || !els.databaseMenu) return;
+    if (!els.databaseMenu) return;
     els.databaseMenu.hidden = !els.databaseMenu.hidden;
     renderDatabaseToggle();
   });
@@ -3602,7 +3713,7 @@ if (els.skillMenu) {
       return;
     }
     const option = event.target.closest(".skill-option");
-    if (!option || state.chatBusy) return;
+    if (!option) return;
     const skillId = option.dataset.skillId;
     if (!skillId) return;
     state.skillSelectionTouched = true;
@@ -3618,7 +3729,7 @@ if (els.databaseMenu) {
     event.stopPropagation();
     const uploadAction = event.target.closest(".database-upload-action");
     if (uploadAction) {
-      if (state.chatBusy || state.knowledgeUploadBusy || !els.knowledgeUploadInput) return;
+      if (state.knowledgeUploadBusy || !els.knowledgeUploadInput) return;
       els.knowledgeUploadInput.click();
       return;
     }
@@ -3633,7 +3744,7 @@ if (els.databaseMenu) {
       return;
     }
     const option = event.target.closest(".database-option");
-    if (!option || state.chatBusy) return;
+    if (!option) return;
     const datasetId = option.dataset.datasetId;
     if (!datasetId) return;
     state.datasetSelectionTouched = true;

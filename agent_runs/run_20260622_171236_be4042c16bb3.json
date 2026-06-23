@@ -1,0 +1,220 @@
+{
+  "run_id": "run_20260622_171236_be4042c16bb3",
+  "started_at": "2026-06-22 17:12:36",
+  "message": "看看联通上个季度收入",
+  "selected_dataset_ids": [
+    "cloud_vendor_database",
+    "cmhk_macro_policy_2026-06-19",
+    "crawl-run-logs",
+    "quarterly_competitor_metrics_2026-06-18"
+  ],
+  "selected_skill_ids": [
+    "executive-briefing",
+    "quarterly-competitor-metrics",
+    "cloud-vendor-metrics",
+    "macro-policy-context",
+    "trend-forecasting"
+  ],
+  "web_search_enabled": true,
+  "thinking_enabled": false,
+  "approved_action_ids": [],
+  "input_tokens_estimate": 7,
+  "ended_at": "2026-06-22 17:12:56",
+  "duration_ms": 20442,
+  "answer_preview": "我先读取相关 Skill 的完整指令，同时检索本地数据和联网搜索。本地检索只返回了2017-2019年的历史片段，我需要查询最新季度（2026 Q1）的数据。来读取本地库中中国联通的最新季度记录，同时查看联网来源。很好，数据已完整。让我读取本地库中的详细行数据来确认精确数值。CSV文件有3000多行，直接筛选中国联通Q1 2026的revenue行。从检索结果我已经有了关键数据，让我来整合回答。\n\n按当前时间（2026-06-22），\"上个季度\"是指 Q1 2026（2026年第一季度）。\n\n---\n\n## 中国联通 Q1 2026 营业收入\n\n**一句话结论：** 中国联通2026年第一季度实现营业收入 **1,028.24亿元**（约102,824百万人民币），同比下降0.5%；归母净利润21.37亿元，同比下降18.0%。[1][7]\n\n### 关键数据\n\n| 指标 | 数值 | 同比变化 |\n|------|------|---------|\n| 营业收入 | 1,028.24亿元（102,824百万CNY） | -0.5% |\n| 归母净利润 | 21.37亿元（2,137百万CNY） | -18.0% |\n| 利润总额 | 约61亿元 | -- |\n| 算力业务收入 | 154亿元 | +8.3% |\n| 国际业务收入 | -- | +14.9% |\n\n**数据来源说明：**\n\n- **本地库（quarterly_metrics.csv）：** 中国联通 Q1 2026 revenue = 102,824百万CNY，verification_status = `official_match`，verification_count=3，已与上交所公告原文交叉核验一致。[1]\n- **联网公开来源：** 腾讯新闻、IT之家等报道营收为1,028.24亿元（102,824百万元），同比-0.5%；归母净利润21.37亿元，同比-18.0%。[7][9]\n- **两方口径一致**，无冲突，可直接采用。\n\n### 关键背景\n\n1. **增值税政策调整影响：** 自2026年1月1日起，电信服务增值税税率由6%上调至9%（\"增值电信服务\"调整为\"基础电信服务\"），对利润端产生一次性压力，三大运营商Q1净利润均有下滑。[7]\n2. **传统业务饱和：** 移动用户规模首次出现下降（截至2026年2月末三家+广电移动用户总数18.26亿，比上年末减少100.1万户），5G渗透率已达67.6%，增长空间收窄。[7]\n3. **算力增长亮点：** 算力业务收入154亿元（同比+8.3%），其中智算中心收入同比+11.7%；联通云服务近44万政企客户。[7]\n4. **资本开支计划：** 2026年资本开支预计约500亿元，算力投资占比超过35%。[7]\n\n### 风险提示\n\n- 若剔除增值税政策影响，主营业务内生增长仍面临压力，传统通信业务\"增量不增收\"格局未改。\n- 算力/智算赛道竞争激烈，运营商在AI产业链中的定价权仍有不确定性。[7]\n\n<suggestions>[\"中国移动2026年第一季度收入对比分析\", \"中国电信2026年第一季度收入对比分析\", \"中国联通近5个季度收入趋势图表\"]</suggestions>",
+  "answer_tokens_estimate": 840,
+  "tool_calls": [
+    {
+      "type": "tool_call_start",
+      "id": "context-agent-skills",
+      "name": "load_agent_skills",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:36"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "context-agent-skills",
+      "name": "load_agent_skills",
+      "args": "{\"skill_ids\": [\"executive-briefing\", \"quarterly-competitor-metrics\", \"cloud-vendor-metrics\", \"macro-policy-context\", \"trend-forecasting\"]}",
+      "content_preview": "本轮载入 Agent Skill：5 项\n1. 生成战略简报 Skill（executive-briefing）\n   用于把复杂分析压缩成可直接使用的简报，包括一句话结论、关键证据、风险和下一步动作。\n2. 分析竞对经营数据 Skill（quarterly-competitor-metrics）\n   用于分析竞对主体公司和重点云厂商的季度、半年度或更小期间经营/财务数据，并标明官方核验状态。\n3. 分析云厂商数据 Skill（cloud-vendor-metrics）\n   用于分析 CMHK 需要关注的重点云厂商 FY2023-FY2025 云收入、利润、利润率、同比和披露口径。\n4. 解读宏观政策 Skill（macro-policy-context）\n   用于分析 CMHK 相关的香港电信市场、5G、频谱、监管政策、宏观环境和公共机构指标，辅助解释趋势和预测风险。\n5. 预测趋势变化 Skill（trend-forecasting）\n   用于基于已核验季度/半年度历史数据预测未来几个期间，优先使用季度库和 Holt-Winters 季节趋势模型，输出预测表和图表。",
+      "ts": "2026-06-22 17:12:36"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "context-agent-databases",
+      "name": "select_agent_databases",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:36"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "context-agent-databases",
+      "name": "select_agent_databases",
+      "args": "{\"dataset_ids\": [\"cloud_vendor_database\", \"cmhk_macro_policy_2026-06-19\", \"crawl-run-logs\", \"quarterly_competitor_metrics_2026-06-18\"]}",
+      "content_preview": "本轮发送给 AI 的数据库：4 项\n1. 云厂商数据（cloud_vendor_database）\n   面向用户的云厂商统一入口，覆盖 AWS、Microsoft Azure / Intelligent Cloud、Google Cloud、Alibaba Cloud、Tencent Cloud / Tencent FBS proxy、Huawei Cloud / Cloud Computing、Oracle Cloud 的云业务经营指标、季度/年度披露边界、source-gap、外部数据源可替代性和预测可用性说明。\n2. 宏观数据（cmhk_macro_policy_2026-06-19）\n   面向用户的宏观数据入口，覆盖CMHK相关的香港电信市场、5G、频谱、监管政策、互联网接入、服务投诉、C&SD宏观经济、人口、住户和消费等政府/机构指标。\n3. 爬虫运行日志索引（crawl-run-logs）\n   记录每次全量爬虫对应的本地审计文件、飞书日志页、Agent 数据整理运行 ID 和质量摘要，供小竞 AI 调度、追溯和回答运行状态问题。\n4. 竞对数据（quarterly_competitor_metrics_2026-06-18）\n   面向用户的竞对数据入口，覆盖中国移动、中国电信、中国联通、中国铁塔、HKT / csl / 1O1O、3HK / Hutchison、SmarTone、HKBN、HGC、i-CABLE 等竞对主体的季度/半年度经营数据、年度核心指标、来源核验和预测边界。",
+      "ts": "2026-06-22 17:12:36"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_y4NplhlXXX7fGY73HCNe6263",
+      "name": "read_agent_skill",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:38"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_01_GIERJwVk6uCleeb3OVrm5852",
+      "name": "read_agent_skill",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:38"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_02_NQsrLknGhN6p0Zq0er3s9649",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:38"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_03_qx7D3uCFIBz7rzfU3mHD6525",
+      "name": "web_search",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:38"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_y4NplhlXXX7fGY73HCNe6263",
+      "name": "read_agent_skill",
+      "args": "{\"skill_id\": \"quarterly-competitor-metrics\"}",
+      "content_preview": "Agent Skill 已读取。\n\n具体返回内容：\n[Agent Skill: quarterly-competitor-metrics]\n路径：Codex/agent/skills/quarterly-competitor-metrics/SKILL.md\n已读取完整 SKILL.md。若下列引用文件与本轮任务相关，应继续用本地检索/读取工具追溯，而不是只停留在 Skill 标题。\n引用文件线索：\n- README.md\n- cloud_source_gap_integrity_2026-06-18.md\n- official_verified_metrics_2026-06-18.csv\n- online_verification_2026-06-18.md\n- prediction_history_coverage_2026-06-18.md\n- quarterly_metrics.csv\n- quarterly_metrics.json\n- quarterly_metrics_human_readable.csv\n- quarterly_metrics_summary.md\n- sources.json\n\n# 分析竞对经营数据 Skill\n\n## 前端展示\n\n- 简介：用于分析竞对主体公司和重点云厂商的季度、半年度或更小期间经营/财务数据，并标明官方核验状态。\n- 标签：季度数据、半年度、官方核验、口径冲突、同业对比\n- 数据：本地季度/半年度数据包，含 Markdown 摘要、JSON 结构化数据、CSV 长表、官方核验明细和来源清单。\n\n## 适用场景\n\n当用户询问以下内容时使用本 skill：\n\n- 中国移动、中国电信、中国联通、中国铁塔、HKT / csl / 1O1O、3HK / Hutchison、SmarTone、HKBN、HGC、i-CABLE 的季度、半年度、Q1/Q2/Q3/Q4、H1/H2 或最近几个季度数据。\n- AWS、Microsoft Azure / Intelligent Cloud、Google Cloud、Alibaba Cloud、Tencent Cloud、Huawei Cloud、Oracle Cloud 的季度云业务收入、利润、同比或分部口径。\n- 用户要求把年度数据拆成更小计量单位，或要求做季度趋势图、季度表格、季度口径核验。\n\n## 数据位置\n\n数据包目录：\n\n`/Users/liaowang/Desktop/揭榜挂帅需求/cmhk_public_crawl_20260521/agent_knowledge/quarterly_competitor_metrics_2026-06-18/`\n\n旧 `quarterly_competitor_metrics_2026-06-17` 已被 manifest 标记为 `superseded`，只保留作审计历史，不得作为默认数据库或正式结论来源。\n\n主要文件：\n\n- `README.md`：数据包说明和 Agent 使用要求。\n- `quarterly_metrics_summary.md`：按主体列出的披露粒度、覆盖期间、来源和质量说明。\n- `quarterly_metrics.json`：结构化数据，适合做趋势分析、筛选和图表。\n- `quarterly_metrics.csv`：长表数据，当前 3,013 行，含期间、指标、值、粒度、`official_value`、`verification_count`、`verification_sources` 和核验状态。\n- `quarterly_metrics_human_readable.csv`：人工查看精简表。\n- `official_verified_metrics_2026-06-18.csv`：已完成官方公告交叉核验的明细，含官方值、来源链接、证据句和冲突说明。\n- `online_verification_2026-06-18.md`：当前核验边界和已发现冲突。\n- `prediction_history_coverage_2026-06-18.md/csv`：预测历史覆盖、目标窗口、source-gap 和可用性审计。\n- `cloud_source_gap_integrity_2026-06-18.md/csv`：云厂商 source-gap、legacy/non-forecast 和披露边界审计。\n- `sources.json`：来源清单。\n\n## 调用规则\n\n1. 先用 `search_local_reports` 检索公司名称、期间和指标，例如“中国电信 Q1 2026 收入 服务收入”。\n2. 命中 `agent_knowledge/quarter",
+      "ts": "2026-06-22 17:12:39"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_01_GIERJwVk6uCleeb3OVrm5852",
+      "name": "read_agent_skill",
+      "args": "{\"skill_id\": \"executive-briefing\"}",
+      "content_preview": "Agent Skill 已读取。\n\n具体返回内容：\n[Agent Skill: executive-briefing]\n路径：Codex/agent/skills/executive-briefing/SKILL.md\n已读取完整 SKILL.md。若下列引用文件与本轮任务相关，应继续用本地检索/读取工具追溯，而不是只停留在 Skill 标题。\n引用文件线索：\n- 未发现显式引用文件\n\n# 生成战略简报 Skill\n\n## 前端展示\n\n- 简介：用于把复杂分析压缩成可直接使用的简报，包括一句话结论、关键证据、风险和下一步动作。\n- 标签：战略简报、重点提炼、风险建议、行动项\n- 数据：使用本地周报、核心指标数据包、审计日志和联网来源，按来源编号支撑结论。\n\n## 适用场景\n\n当用户要求以下内容时使用：\n\n- “给我总结一下”“写成战略简报”“一页纸”“重点是什么？”\n- “风险建议”“下一步怎么做”“业务视角”\n- “把图表/趋势分析翻译成可直接使用的话”\n\n## 工作流\n\n1. 先获取事实：本地资料优先，必要时联网交叉验证。\n2. 输出不要长篇铺陈，先给结论。\n3. 每个重要判断后面必须跟来源编号。\n4. 风险和行动项必须可执行，不要写空泛建议。\n\n## 输出结构\n\n```text\n一句话结论：...\n\n关键发现：\n1. ...\n2. ...\n3. ...\n\n风险：\n1. ...\n2. ...\n\n建议动作：\n1. ...\n2. ...\n```",
+      "ts": "2026-06-22 17:12:39"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_02_NQsrLknGhN6p0Zq0er3s9649",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国联通 收入 2026年第一季度 营收 同比\"}",
+      "content_preview": "已读取已选数据库摘要，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国联通; period=Q1 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=69005 millions CNY; official_value=69005 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国联通2018年第一季度主要财务及运营数据比较栏; official_source_url=https://doc.irasia.com/listco/hk/chinaunicom/interim/2018/int1q.pdf; official_evidence=2018 Q1公告比较栏直接列示2017 Q1 revenue、service revenue和归母利润。官方值：revenue=69005百万元。; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 2]\n精确季度指标行：subject=中国联通; period=Q2 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=69155 millions CNY; official_value=69155 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国联通2017中期报告减2017 Q1比较栏; official_source_url=https://www.chinaunicom.com.hk/en/ir/reports/ir2017.pdf; official_evidence=H1累计值减2018 Q1公告中的2017 Q1比较栏复算Q2；因缺少2017 Q1 EBITDA官方基数，不写入Q2 EBITDA。官方值：revenue=69155百万元。; verification_note=官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 3: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 3]\n精确季度指标行：subject=中国联通; period=Q3 2017; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=67618 millions CNY; official_value=67618 millions CNY; verification_status=official_only; verification_count=3; official_source_label=中国联通2018前三季度公告比较栏减2017中期报告; official_source_url=https://doc.irasia.com/listco/hk/chinaunicom/interim/2018/int3q.pdf; official_evidence=2018 Q3公告中的2017 9M比较栏减H1累计值复算Q3；因缺少2017 9M E",
+      "ts": "2026-06-22 17:12:39"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_03_qx7D3uCFIBz7rzfU3mHD6525",
+      "name": "web_search",
+      "args": "{\"query\": \"中国联通 2026年第一季度 营业收入 财报\", \"max_results\": 5}",
+      "content_preview": "联网搜索完成，找到 5 个来源：\n[6] PDF 中国联合网络通信股份有限公司2026年第一季度报告\nhttps://static.cninfo.com.cn/finalpage/2026-04-22/1225137313.PDF\n[7] 中国联通一季度净利润同比下降18% 2026年资本开支预计在500亿元左右，算力投资占比超过35%_腾讯新闻\nhttps://news.qq.com/rain/a/20260422A01OEY00\n[8] 中国联通 (600050)_公司公告_中国联通：2026年第一季度报告新浪财经_新浪网\nhttps://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600050&id=12130277\n[9] 中国联通 2026 年一季度净利润 21.37 亿元，同比下降 18%\nhttps://www.ithome.com/0/942/148.htm\n[10] 中国联通2026年一季度营收下滑 利润甚至出现双位数下降 其实很正常!_新浪财经_新浪网\nhttps://finance.sina.com.cn/jjxw/2026-04-29/doc-inhwcqxn6818080.shtml\n\n具体返回内容：\n[来源 6: PDF 中国联合网络通信股份有限公司2026年第一季度报告]\n链接：https://static.cninfo.com.cn/finalpage/2026-04-22/1225137313.PDF\n摘要：中国联合网络通信股份有限公司 2026 年第一季度报告 本公司董事会及全体董事保证本公告内容不存在任何虚假记载、误导性陈述或\n\n[来源 7: 中国联通一季度净利润同比下降18% 2026年资本开支预计在500亿元左右，算力投资占比超过35%_腾讯新闻]\n链接：https://news.qq.com/rain/a/20260422A01OEY00\n摘要：每经记者：杨卉 每经编辑：张益铭4月21日晚间，中国联通（SH600050，股价4.66元，市值1456.92亿元）披露了2026年第一季度财报：实现营业收入1028.24亿元 ...\n\n[来源 8: 中国联通 (600050)_公司公告_中国联通：2026年第一季度报告新浪财经_新浪网]\n链接：https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?stockid=600050&id=12130277\n摘要：证券代码：600050证券简称：中国联通 中国联合网络通信股份有限公司 2026 年第一季度报告 重要内容提示公司董事会及董事、高级管理人员保证季度报告内容的真实、准确、完整，不存在虚假记载、误导性陈述或重大遗漏，并承担个别和连带的法律责任。\n\n[来源 9: 中国联通 2026 年一季度净利润 21.37 亿元，同比下降 18%]\n链接：https://www.ithome.com/0/942/148.htm\n摘要：🤖 AI 解读 2026 年首季度，中国联通坚持守正创新、坚持主责主业，聚焦 \"连接\"\"算力\"\"服务\"\"安全\" 四大核心赛道，高质量发展取得新成效。公司实现营业收入 1028.24 亿元，同比下降 0.5%；归属于母公司净利润 21.37 亿元，同比下降 18.0%。\n\n[来源 10: 中国联通2026年一季度营收下滑 利润甚至出现双位数下降 其实很正常!_新浪财经_新浪网]\n链接：https://finance.sina.com.cn/jjxw/2026-04-29/doc-inhwcqxn6818080.shtml\n摘要：﻿运营商财经网 吴碧慧/文近日，中国联通发布了2026年第一季度财报，实现营业收入1028亿元，同比下降0.5%；利润总额为61亿元；归属于母公司净利润 ...",
+      "ts": "2026-06-22 17:12:40"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_oVapvr7EpSooaoYO782T9601",
+      "name": "search_local_reports",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:42"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_01_oXTKcCzKZkBSN2EzzjKO6132",
+      "name": "read_webpage",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:42"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_oVapvr7EpSooaoYO782T9601",
+      "name": "search_local_reports",
+      "args": "{\"query\": \"中国联通 Q1 2026 revenue 营业收入 1028\"}",
+      "content_preview": "已读取已选数据库摘要，找到 10 个相关片段。\n\n具体返回内容：\n[来源 1: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv · 片段 1]\n精确季度指标行：subject=中国联通; period=Q1 2026; metric_key=revenue; metric_zh=营业收入/收益; grain=quarter; standardized_value=102,824 millions CNY; official_value=102824.251 millions CNY; verification_status=official_match; verification_count=3; official_source_label=中国联通2026年第一季度报告（上交所）; official_source_url=https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf; official_evidence=主要会计数据/合并利润表：营业收入 102,824,251,223 元。; verification_note=标准化表与官方值一致，差异 -0.251。. 回答时：只要 verification_count>=2 即代表该行已有多来源核验；若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。\n\n[来源 2: agent_knowledge/quarterly_competitor_metrics_2026-06-18/online_verification_2026-06-18.md · 片段 2]\n- 中国移动 Q1 2026 EBITDA：标准化表 `65,748`，官方值 `76700 millions CNY`。标准化表 65748 与官方值 76700 不一致，差异 -10952.000；正式回答应采用官方值并说明口径冲突。 来源：https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF\n- 中国电信 Q1 2026 营业收入/收益：标准化表 `131,967`，官方值 `131393.926 millions CNY`。标准化表 131967 与官方值 131394 不一致，差异 573.074；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF\n- 中国电信 Q1 2026 经营现金流：标准化表 `23,057`，官方值 `23215.066 millions CNY`。标准化表 23057 与官方值 23215.1 不一致，差异 -158.066；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF\n- 中国电信 Q1 2026 经营利润/营业利润：标准化表 `8,151`，官方值 `9477.563 millions CNY`。标准化表 8151 与官方值 9477.56 不一致，差异 -1326.563；正式回答应采用官方值并说明口径冲突。 来源：https://static.cninfo.com.cn/finalpage/2026-04-24/1225159634.PDF\n- 中国联通 Q1 2026 净利润/股东应占利润：标准化表 `4,885`，官方值 `4857.161 millions CNY`。标准化表 4885 与官方值 4857.16 不一致，差异 27.839；正式回答应采用官方值并说明口径冲突。 来源：https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2026-04-22/600050_20260422_763Q.pdf\n- 中国铁塔 Q1 2026 EBITDA：标准化表 `15,265`，官方值 `15366 millions CNY`。标准化表 15265 与官方值 15366 不一致，差异 -101.000；正式回答应采用官方值并说明口径冲突。 ",
+      "ts": "2026-06-22 17:12:43"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_01_oXTKcCzKZkBSN2EzzjKO6132",
+      "name": "read_webpage",
+      "args": "{\"url\": \"https://news.qq.com/rain/a/20260422A01OEY00\"}",
+      "content_preview": "网页读取完成。\n\n具体返回内容：\n中国联通一季度净利润同比下降18% 2026年资本开支预计在500亿元左右，算力投资占比超过35%_腾讯新闻 中国联通一季度净利润同比下降18% 2026年资本开支预计在500亿元左右，算力投资占比超过35% 每日经济新闻 2026-04-22 08:28 发布于 四川 每日经济新闻官方账号 问AI · 算力投资能否成为中国联通应对传统业务饱和的新引擎？ 每经记者：杨卉 每经编辑：张益铭 4月21日晚间， 中国联通 （SH600050，股价4.66元，市值1456.92亿元）披露了2026年第一季度财报：实现营业收入1028.24亿元，同比下降0.5%；实现归母净利润21.37亿元，同比下降18.0%。 《每日经济新闻》记者注意到，这已是三大电信运营商披露的第二份净利润同比下滑的一季度财报。前日， 中国移动 发布了2026年第一季度报告：归属于母公司股东的净利润为293亿元，同比减少4.2%。在业内看来，一方面，电信运营商一季度业绩承压与电信服务增值税政策调整相关。但另一方面，传统电信业务趋于饱和也是事实。处于数智化转型中的电信运营商还需加快脚步，尤其是在算力建设等领域掌握话语权。 2025年算力业务收入同比提升8.3% 根据公告，2026年第一季度，中国联通实现营业收入1028亿元，同比下降0.5%；利润总额为61亿元；归属于母公司净利润21亿元，同比下降18.0%。 分业务来看，用户方面，2026年第一季度，中国联通移动和宽带用户净增超过358万户；物联网连接数超过7.5亿，净增3203万。公司加快5G规模化应用，累计打造超5.3万个5G商业化项目，落地9800余家5G工厂。 新兴业务方面， 算力业务收入154亿元，同比提升8.3%，其中智算中心收入同比提升11.7%；联通云服务近44万政企大客户，云智产品付费用户超过1.1亿户，净增549万户。 国际市场方面，2026年第一季度，中国联通国际业务收入同比增长14.9%。 值得关注的是，这是三大电信运营商披露的第二份净利润同比下滑的一季度财报。 就在前日（4月20日），中国移动发布了2026年第一季度报告：实现营业收入2665亿元，同比增加1.0%；利润总额为376亿元，同比减少4.4%；归属于母公司股东的净利润为293亿元，同比减少4.2%，连续第二个季度同比回落；归属于母公司股东的净利润率为11.0%；EBITDA（息税折旧及摊销前利润）为767亿元，同比下降5.0%。 在业内看来，电信运营商一季度利润表现承压，与电信服务增值税政策调整相关。根据此前三大运营商发布的公告，自2026年1月1日起，境内通过固网、移动网、卫星及互联网提供手机流量、短信彩信、互联网宽带接入等服务的业务活动，其适用税目由“增值电信服务”调整为“基础电信服务”，对应增值税税率由6%上调至9%。 不过，中国联通并未在一季度财报中披露传统电信业务的更多营收情况。 运营商“增量不增收”情况仍未改变 需要注意的是，即便刨除相关政策影响，传统电信业务趋于饱和也是不争的事实。 公开数据显示，2025年，我国 移动互联网 接入流量同比增长17.3%，5G流量占比近七成，全年移动互联网月户均流量（DOU）创下历史新高。 但对运营商而言，“增量不增收”的情况仍未改变。 截至2026年2月末，中国联通、中国移动、 中国电信 这三家基础电信运营商及中国广电的移动电话用户总数达18.26亿户，比上年末减少100.1万户，移动用户规模首次出现下降。与此同时，5G移动电话用户达12.35亿户，占移动电话用户的67.6%，渗透率已近七成，增长空间日趋收窄，传统电信业务增长“见顶”情况明显。在新兴业务尚无法补全传统业务缺失的情况下，电信运营商的转型“阵痛”将很难避免。 需要注意的是，电信运营商已经进行了几年的数智化转型，也取得了一定成果。随着智能体时代来临，Token（词元）成为新的基础设施，运营商的数字化转型出现了新“关键词”，从“建网”到“建算”正在成为运营商打造Token经营新商业模式的发展基础。 中国联通就在同日晚间发布的《关于2025年度“提质增效重回报”行动实施评估情况及2026年度“提质增效重回报”行动方案的公告》（以下简称《公告》）中提到，2025年中国联通战略性新兴产业收入占比超过86%，算力业务收入占比超过15%，较上年提升1.1个百分点；人工智能收入同比增长超过140%。 今年，加码算力仍是中国联通的工作中心。根据《公告》，2026年中国联通资本开支预计在500亿元左右，其中算力投资占比超过35%。 不过，也有业内人士指出，AI（人工智能）赛道变化莫测，若是仅提供基础算力或很难掌握定价权。未来，如何在头部大模型厂商中保持话语权，将是电信运营商必须面对的问题。 每日经济新闻",
+      "ts": "2026-06-22 17:12:46"
+    },
+    {
+      "type": "tool_call_start",
+      "id": "call_00_55GsVGNf99Ts2lyU75Sw5205",
+      "name": "read_local_reference",
+      "args": "",
+      "content_preview": "",
+      "ts": "2026-06-22 17:12:48"
+    },
+    {
+      "type": "tool_call_result",
+      "id": "call_00_55GsVGNf99Ts2lyU75Sw5205",
+      "name": "read_local_reference",
+      "args": "{\"source\": \"agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv\"}",
+      "content_preview": "已读取数据库原文。\n\n具体返回内容：\n[本地引用: agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.csv]\nsubject,category,legal_name,ticker,period,period_end,grain,metric_key,metric_zh,value,unit,disclosure_frequency,quality_status,verification_status,official_value,official_unit,official_source_label,official_source_url,official_evidence,verification_count,verification_method,verification_sources,verification_note\r\n3HK / Hutchison,carrier,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,H1 2021,\"Jun '21 Jun 30, 2021\",half_year,capital_expenditures,资本开支,-324,millions HKD,semiannual,standardized_online_source_with_official_crosscheck_required,official_match,-324,millions HKD,HTHKH 2021 Interim Report,https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf,\"2021中期报告直接披露或同表复核：MD&A披露1H 2021 CAPEX excluding telecommunications licences为324百万港元；现金流量表Purchases of property, plant and equipment同为324百万港元，现金流出口径记为负数。\",3,official_interim_report_multi_section_check,\"[{\"\"label\"\": \"\"HTHKH 2021 Interim Report - Financial Highlights\"\", \"\"url\"\": \"\"https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf\"\", \"\"evidence\"\": \"\"1H 2021 total revenue、Total EBITDA、Total EBIT和股东应占利润。\"\"}, {\"\"label\"\": \"\"HTHKH 2021 Interim Report - MD&A\"\", \"\"url\"\": \"\"https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf\"\", \"\"evidence\"\": \"\"1H 2021 revenue、net customer service revenue、total margin、CAPEX、EBITDA和经营表现。\"\"}, {\"\"label\"\": \"\"HTHKH 2021 Interim Report - Financial Statements\"\", \"\"url\"\": \"\"https://www.hthkh.com/en/ir/reports/ir2021/ir2021.pdf\"\", \"\"evidence\"\": \"\"1H 2021损益表、资产负债表、现金流量表及公司/子公司与合营公司调节表。\"\"}]\",标准化表与官方值一致，差异 0.000。\r\n3HK / Hutchison,carrier,Hutchison Telecommunications Hong Kong Holdings Limited,0215.HK,H2 2021,\"Dec '21 Dec 31, 2021\",half_year,capital_expenditures,资本开支,-550,millions HKD,semiannual,standardized_online_source_with_official_crosscheck_required,official_match,-550,millions HKD,HTHKH 2021 Annual Report minus 2021 Interim Report,https://www.hthkh.com/en/ir/reports/ar2021/ar2021.p",
+      "ts": "2026-06-22 17:12:48"
+    }
+  ],
+  "context_audits": [
+    {
+      "token_budget": 6500,
+      "token_estimate": 2664,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    },
+    {
+      "token_budget": 6500,
+      "token_estimate": 5995,
+      "headroom": 1200,
+      "input_chunks": 10,
+      "retained_chunks": 10,
+      "skipped_chunks": 0,
+      "compressed_chunks": 0,
+      "skipped": [],
+      "token_counter": "tiktoken"
+    }
+  ],
+  "retrieval_quality": [
+    {
+      "score": 95,
+      "retained_chunks": 10,
+      "official_hits": 10,
+      "conflict_hits": 10,
+      "source_gap_hits": 0,
+      "query_term_hits": 10,
+      "unique_sources": 1,
+      "status": "strong"
+    },
+    {
+      "score": 100,
+      "retained_chunks": 10,
+      "official_hits": 1,
+      "conflict_hits": 1,
+      "source_gap_hits": 3,
+      "query_term_hits": 10,
+      "unique_sources": 5,
+      "status": "strong"
+    }
+  ],
+  "errors": [],
+  "status": "ok"
+}

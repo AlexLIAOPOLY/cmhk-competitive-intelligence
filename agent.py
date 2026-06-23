@@ -157,6 +157,9 @@ class MarkdownTableLimiter:
             return ""
         line = self.buffer
         self.buffer = ""
+        stripped = line.strip()
+        if stripped.startswith("|") and not stripped.endswith("|"):
+            return ""
         return self._process_line(line)
 
 
@@ -1589,10 +1592,10 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
         "【目标级审计优先】当用户询问“现在数据是否完整/准确/能否预测/数据库是否正常/来源是否可靠/目标完成到哪一步”或要求给出正式数据质量结论时，如果已选择 `goal_readiness_audits`、`knowledge_integrity_audits`、`source_evidence_audits`、`source_url_reachability_audits`、`forecast_readiness_audits` 或 `agent_dataset_visibility_audits`，必须先检索并读取相关审计。正式回答要以这些审计中的 pass/fail、row_count、verification_count、official_value/source_gap 和 API 可见性结果为准；不要只凭主数据包或历史记忆判断完成度。被 manifest 标记为 `superseded`、`hidden` 或 `archived` 的数据包不得作为默认数据库或正式结论来源。\n"
         "【宏观政策数据包】若用户询问 CMHK 预测、趋势判断、香港电信市场、5G、频谱、移动用户、宽带渗透率、SIM 实名、监管政策或宏观环境，并且已选择 `cmhk_macro_policy_*` 数据库，必须检索并读取该数据包。宏观政策包用于解释市场背景、外生变量和政策事件；年度/事件粒度记录不得替代公司季度数据，也不得把政策事件直接当作收入/利润预测目标。正式结论仍使用 `official_value`，`source_gap_confirmed` 不得估算。\n"
         "【精确指标边界】问数时必须严格保持用户要的指标，不得把派生指标改写成基础指标。尤其是：`收入同比`、`营收同比`、`营业收入同比`、`收入增长`、`revenue_growth_yoy`、`YoY` 对应 `metric_key=revenue_growth_yoy`，不是 `revenue`；`EBITDA率` 对应 `metric_key=ebitda_margin`，不是 `ebitda`；`经营利润率` 对应 `operating_margin`，不是 `operating_income`；`毛利率` 对应 `gross_margin`，不是 `gross_profit`。调用 `search_local_reports` 时必须把这些关键词原样带入 query，最终回答也必须引用命中的同一指标行。\n"
-        "【表格输出限制】除非用户明确要求导出完整 CSV/Excel，否则最终回答中的 Markdown 表格最多输出 30 行、8 列；超过范围时先给摘要和关键行，并提示用户缩小范围或导出文件。后端会对超限表格做截断，不要把大表格分批塞进同一条回答。\n"
+        "【表格输出限制】除非用户明确要求导出完整 CSV/Excel，否则最终回答中的 Markdown 表格最多输出 30 行、8 列；超过范围时先给摘要和关键行，并提示用户缩小范围或导出文件。Markdown 表格必须一次性输出完整表头、分隔行和完整数据行，每一行都以 `|` 结尾；单个指标优先用项目符号，不要为了一个数值强行输出表格。后端会对超限表格做截断，不要把大表格分批塞进同一条回答。\n"
         "【爬虫日志调度】每次全量爬虫完成后，系统会登记 `agent_knowledge/crawl_run_logs/`：本地只保存运行索引和摘要，完整逐 URL 日志与 Agent 处理流程写入飞书日志子表。用户问上次爬虫、失败链接、覆盖率、日志在哪、Agent 是否处理完成时，必须先调用 `list_crawl_runs`；需要更细节再用 `search_local_reports` 或 `read_local_reference` 读取 `run_log.tsv`、`coverage_report.tsv`、`final_audit.md`。\n"
         "【操作工具决策权】用户要求生成周报、生成运营商业绩摘要、全量爬取、查看输出文件、查看爬取设置或查看系统状态时，由你根据用户真实意图自行决定是否调用 `trigger_report_generation`、`trigger_carrier_performance_report_generation`、`trigger_full_crawl`、`list_report_outputs`、`get_crawl_settings_summary`、`get_system_status` 等工具。不要把“输出预测表”“生成预测图”“正式结论”等分析表达误判成报告生成；只有用户确实要产出 Word 周报或业绩摘要时才调用生成类工具。\n"
-        "【前端展示边界】前端会按事件顺序展示工具调用卡片、已载入的 Agent Skill、已发送给 AI 的数据库，以及你在工具调用前后的简短可审计过程说明。过程说明可以用一两句话解释别名判断、相对时间定位、检索范围和读取原文动作，例如“移动通常指中国移动”“按当前日期，上个完整季度是 2026Q1”；最终正文不要再重复“我先检索”“让我读取”“现在我来获取”等过程旁白，直接输出结论、数据、依据和必要的不确定性。\n"
+        "【前端展示边界】前端会按事件顺序展示工具调用卡片；工具调用行会自动显示“读取 Skill / 检索数据库 / 联网搜索 / 读取原文”等过程说明。最终正文严禁重复检索过程、工具状态或准备动作，例如“联网已搜到”“本地检索结果只返回”“本地数据已命中”“CSV文件很大”“我继续检索”“我再读取”“数据充足”等。最终正文只输出结论、数据、依据、口径差异和必要不确定性。\n"
         f"{retrieval_pairing_rule}"
         f"{local_original_rule}"
         f"{cross_check_rule}"
@@ -1850,6 +1853,7 @@ def stream_agent(
     inputs = {"messages": [("user", message)]}
     
     tool_calls_acc = {}
+    emitted_process_tools: set[str] = set()
     disabled_web_notice_prefixes = (
         "联网搜索已关闭",
         "当前联网搜索已关闭",
@@ -1936,16 +1940,17 @@ def stream_agent(
                             tool_calls_acc[current_key] = {"name": tc.get("name"), "args": "", "id": tc_id}
                             if thinking_enabled:
                                 yield thinking_event(f"准备调用工具：{tc.get('name') or '工具'}。")
-                            process_event = {
-                                "type": "process_line",
-                                "id": f"process-{tc_id}",
-                                "toolId": tc_id,
-                                "toolName": tc.get("name") or "工具",
-                                "text": _tool_process_text(tc.get("name") or "工具"),
+                            process_tool_name = tc.get("name") or "工具"
+                            process_text = ""
+                            if process_tool_name not in emitted_process_tools:
+                                emitted_process_tools.add(process_tool_name)
+                                process_text = _tool_process_text(process_tool_name)
+                            event = {
+                                "type": "tool_call_start",
+                                "id": tc_id,
+                                "name": process_tool_name,
+                                "processText": process_text,
                             }
-                            recorder.observe(process_event)
-                            yield process_event
-                            event = {"type": "tool_call_start", "id": tc_id, "name": tc.get("name") or "工具"}
                             recorder.observe(event)
                             yield event
                         else:
