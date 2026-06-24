@@ -39,6 +39,7 @@ from chart_renderer import render_chart
 
 ROOT = Path(__file__).resolve().parent
 AGENT_SKILLS_DIR = ROOT / "Codex" / "agent" / "skills"
+CHAT_THREADS_PATH = ROOT / "agent_chat_threads" / "threads.json"
 FRONTEND_SKILL_ORDER = [
     "executive-briefing",
     "quarterly-competitor-metrics",
@@ -46,6 +47,32 @@ FRONTEND_SKILL_ORDER = [
     "macro-policy-context",
     "trend-forecasting",
 ]
+SKILL_ROUTING_RULES = [
+    (
+        "quarterly-competitor-metrics",
+        r"竞对|季度|半年度|经营数据|财务|收入|营收|利润|EBITDA|ARPU|同比|环比|中国移动|中国联通|中国电信|中国铁塔|HKT|SmarTone|Hutchison|HKBN",
+    ),
+    (
+        "cloud-vendor-metrics",
+        r"云厂商|云收入|云业务|AWS|Azure|Google Cloud|Alibaba Cloud|阿里云|腾讯云|Huawei Cloud|华为云|Oracle Cloud|cloud revenue",
+    ),
+    (
+        "macro-policy-context",
+        r"宏观|政策|监管|5G|频谱|OFCA|香港电信|电信市场|宽带|移动用户|SIM|实名|监管政策|公共机构|宏观环境",
+    ),
+    (
+        "trend-forecasting",
+        r"预测|趋势|未来|forecast|Holt|Winters|回测|naive|seasonal|模型|适用性|风险边界",
+    ),
+    (
+        "executive-briefing",
+        r"简报|战略简报|汇报|总结|一页纸|关键证据|重点提炼|风险建议|行动项|管理层|领导|结论先行",
+    ),
+]
+SKILL_BYPASS_PATTERN = re.compile(
+    r"历史聊天|聊天记录|之前聊|早先|上一轮|前台发送测试|长期记忆|记忆条目|你记住|列出记忆|你好|您好|谢谢|ok|测试",
+    re.IGNORECASE,
+)
 WEB_SEARCH_INDEX_LOCK = threading.Lock()
 WEB_SEARCH_NEXT_INDEX = 6
 SELECTED_DATASET_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_DATASET_IDS", default=None)
@@ -229,7 +256,7 @@ def _selected_skill_context(skill_ids: list[str] | None) -> str:
     allowed = {item["id"] for item in available_agent_skills()}
     blocks: list[str] = [
         "以下是本轮前端勾选的 Agent Skill 发现信息。"
-        "这不是完整 Skill 指令；当你准备使用某个 Skill 时，必须先调用 `read_agent_skill(skill_id)` 读取完整 SKILL.md。"
+        "这不是完整 Skill 指令；如果本轮确实需要某个 Skill 的完整规则，再调用 `read_agent_skill(skill_id)` 读取完整 SKILL.md。"
     ]
     for skill_id in skill_ids[:5]:
         clean_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
@@ -249,6 +276,54 @@ def _selected_skill_context(skill_ids: list[str] | None) -> str:
                 )
             )
     return "\n\n".join(blocks)
+
+
+def _skill_routing_instruction(
+    message: str,
+    selected_skill_ids: list[str] | None,
+    loaded_skill_ids: list[str] | None,
+) -> str:
+    selected = {
+        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
+        for item in (selected_skill_ids or [])
+        if str(item or "").strip()
+    }
+    if not selected:
+        return ""
+    clean_message = _clean_search_text(message, 1200)
+    if not clean_message:
+        return ""
+    if SKILL_BYPASS_PATTERN.search(clean_message):
+        return (
+            "Skill 路由判断：本轮更像历史聊天、记忆审计、寒暄或简单测试。"
+            "不要为了流程感读取 Skill；优先直接回答或调用更相关的工具。"
+        )
+    loaded = {
+        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
+        for item in (loaded_skill_ids or [])
+        if str(item or "").strip()
+    }
+    matched: list[str] = []
+    for skill_id, pattern in SKILL_ROUTING_RULES:
+        if skill_id in selected and re.search(pattern, clean_message, re.IGNORECASE):
+            matched.append(skill_id)
+    if not matched:
+        return (
+            "Skill 路由判断：本轮未明显命中已选 Skill 的领域任务。"
+            "如问题后续需要数据分析、政策解读、趋势预测或战略简报，再选择性读取相关 Skill。"
+        )
+    target = matched[:2]
+    unread = [skill_id for skill_id in target if skill_id not in loaded]
+    if unread:
+        return (
+            "Skill 路由判断：本轮问题明显需要已选 Skill 支撑。"
+            f"在正式分析前，优先调用 `read_agent_skill` 读取这些最相关 Skill：{', '.join(unread)}。"
+            "最多读取 1-2 个最相关 Skill，不要把所有已选 Skill 全部读一遍；读取后再调用数据库检索、原文核验、预测或图表工具。"
+        )
+    return (
+        "Skill 路由判断：本轮命中的相关 Skill 此前已读取过。"
+        f"可沿用这些 Skill 的规则：{', '.join(target)}；只有任务切换或规则不确定时才再次读取。"
+    )
 
 
 def _looks_like_blocked_or_encoded_text(text: str) -> bool:
@@ -1422,23 +1497,136 @@ def search_agent_memory(query: str, limit: int = 5) -> str:
             f"[记忆 {index}] {item.get('content')}\n"
             f"- kind: {item.get('kind')}\n"
             f"- tags: {'、'.join(item.get('tags') or []) or '无'}\n"
-            f"- date: {item.get('created_date')}"
+            f"- entities: {'、'.join(item.get('entities') or []) or '无'}\n"
+            f"- score: {item.get('score', 'n/a')}; importance: {item.get('importance')}; confidence: {item.get('confidence')}\n"
+            f"- date: {item.get('created_date')}; access_count: {item.get('access_count', 0)}"
         )
     return "\n\n".join(lines)
 
 
+def _chat_message_content(message: dict[str, Any], limit: int = 1200) -> str:
+    return _clean_search_text(message.get("content") or message.get("text") or "", limit)
+
+
+def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> list[dict[str, Any]]:
+    if not CHAT_THREADS_PATH.exists():
+        return []
+    try:
+        data = json.loads(CHAT_THREADS_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    threads = data.get("threads") if isinstance(data, dict) else data
+    if not isinstance(threads, list):
+        return []
+    clean_query = _clean_search_text(query, 300)
+    query_terms = {term for term in re.split(r"[\s,，。；;:：!?！？、]+", clean_query.lower()) if term}
+    rows: list[dict[str, Any]] = []
+    for thread in threads:
+        if not isinstance(thread, dict):
+            continue
+        messages = thread.get("messages") if isinstance(thread.get("messages"), list) else []
+        thread_title = _clean_search_text(thread.get("title") or "", 120)
+        for index, message in enumerate(messages):
+            if not isinstance(message, dict):
+                continue
+            content = _chat_message_content(message, 1200)
+            if not content:
+                continue
+            haystack = f"{thread_title} {content}".lower()
+            score = 0
+            if clean_query and clean_query.lower() in haystack:
+                score += 20
+            score += sum(2 for term in query_terms if term in haystack)
+            if score <= 0:
+                continue
+            start = max(0, index - max(0, int(context_window or 0)))
+            end = min(len(messages), index + max(0, int(context_window or 0)) + 1)
+            context_messages = []
+            for context_index in range(start, end):
+                context_message = messages[context_index]
+                if not isinstance(context_message, dict):
+                    continue
+                context_content = _chat_message_content(context_message, 1200)
+                if not context_content:
+                    continue
+                context_messages.append(
+                    {
+                        "message_index": context_index + 1,
+                        "role": context_message.get("role") or "unknown",
+                        "content": context_content,
+                        "created_at": context_message.get("createdAt") or "",
+                        "is_match": context_index == index,
+                    }
+                )
+            rows.append(
+                {
+                    "score": score,
+                    "thread_id": thread.get("id") or "",
+                    "thread_title": thread_title or "未命名对话",
+                    "thread_updated_at": thread.get("updatedAt") or "",
+                    "message_index": index + 1,
+                    "role": message.get("role") or "unknown",
+                    "content": content,
+                    "created_at": message.get("createdAt") or "",
+                    "context_messages": context_messages,
+                }
+            )
+    rows.sort(key=lambda item: (int(item["score"]), str(item.get("thread_updated_at") or "")), reverse=True)
+    return rows[: max(1, min(int(limit or 5), 20))]
+
+
 @tool
-def remember_agent_memory(content: str, kind: str = "semantic", tags: str = "") -> str:
+def search_chat_history(query: str, limit: int = 5) -> str:
+    """搜索小竞AI已保存的历史聊天线程。
+    当用户询问“之前聊过什么”“上一轮/早先/某次我说过什么”“历史聊天记录里有没有”等问题时使用。
+    该工具只检索本地保存的聊天线程，不等同于长期记忆；回答时要说明命中的线程、角色和消息序号。
+    """
+    rows = _chat_history_rows(query, limit=limit)
+    if not rows:
+        return "未在已保存的历史聊天线程中找到匹配消息。"
+    lines = ["历史聊天记录命中："]
+    for index, item in enumerate(rows, 1):
+        role = "AI" if str(item.get("role") or "").lower() == "assistant" else "用户"
+        lines.append(
+            f"[聊天命中 {index}] thread={item.get('thread_title')} ({item.get('thread_id')}); "
+            f"message_index={item.get('message_index')}; role={role}; updated_at={item.get('thread_updated_at')}\n"
+            f"{item.get('content')}"
+        )
+        context_messages = item.get("context_messages") if isinstance(item.get("context_messages"), list) else []
+        if context_messages:
+            lines.append("邻近对话上下文：")
+            for context_message in context_messages:
+                context_role = "AI" if str(context_message.get("role") or "").lower() == "assistant" else "用户"
+                marker = " ← 命中" if context_message.get("is_match") else ""
+                lines.append(
+                    f"- message_index={context_message.get('message_index')}; role={context_role}{marker}: "
+                    f"{context_message.get('content')}"
+                )
+    return "\n\n".join(lines)
+
+
+@tool
+def remember_agent_memory(content: str, kind: str = "semantic", tags: str = "", importance: float = 0.7, confidence: float = 0.85) -> str:
     """写入一条小竞AI长期运行记忆。
     只在用户明确要求“记住/以后都/默认/规则/偏好”，或你确认这是跨会话可复用的生产规则时使用。
     不要写入 API key、个人隐私、未验证数据值或完整聊天历史。
     """
     tag_list = [item.strip() for item in re.split(r"[,，;；\s]+", tags or "") if item.strip()]
     try:
-        item = add_memory(content, kind=kind or "semantic", tags=tag_list, source="agent-tool")
+        item = add_memory(
+            content,
+            kind=kind or "semantic",
+            tags=tag_list,
+            source="agent-tool",
+            importance=importance,
+            confidence=confidence,
+        )
     except Exception as exc:
         return f"写入长期记忆失败：{exc}"
-    return f"已写入长期记忆：{item['id']}，date={item['created_date']}。"
+    return (
+        f"已写入长期记忆：{item['id']}，kind={item.get('kind')}，"
+        f"importance={item.get('importance')}，confidence={item.get('confidence')}，date={item['created_date']}。"
+    )
 
 
 @tool
@@ -1448,7 +1636,12 @@ def list_agent_memory(limit: int = 10) -> str:
     if not rows:
         return "当前没有长期记忆。"
     return "\n\n".join(
-        f"[记忆 {index}] {item.get('content')}\n- kind: {item.get('kind')}\n- tags: {'、'.join(item.get('tags') or []) or '无'}\n- date: {item.get('created_date')}"
+        f"[记忆 {index}] {item.get('content')}\n"
+        f"- kind: {item.get('kind')}\n"
+        f"- tags: {'、'.join(item.get('tags') or []) or '无'}\n"
+        f"- entities: {'、'.join(item.get('entities') or []) or '无'}\n"
+        f"- status: {item.get('status')}; importance: {item.get('importance')}; confidence: {item.get('confidence')}\n"
+        f"- date: {item.get('created_date')}; access_count: {item.get('access_count', 0)}"
         for index, item in enumerate(rows, 1)
     )
 
@@ -1518,6 +1711,7 @@ def _agent_tools(allow_web_search: bool = True):
         forecast_quarterly_metric,
         get_system_status,
         search_agent_memory,
+        search_chat_history,
         remember_agent_memory,
         list_agent_memory,
         list_database_lineage,
@@ -1550,14 +1744,14 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
     tools = _agent_tools(allow_web_search=allow_web_search)
 
     if allow_web_search:
-        source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`web_search` 或其他工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号（对应 [来源 1], [来源 2] 的编号）。本地检索通常使用 [1]-[5]，联网搜索通常从 [6] 开始编号；必须沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
+        source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`web_search` 或其他工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号（对应 [来源 1], [来源 2] 的编号）。本地检索通常使用 [1]-[5]，联网搜索通常从 [6] 开始编号；必须沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
         retrieval_pairing_rule = "【检索工具搭配】对公开信息、竞对动态、收入/财报、政策、行业趋势、最新进展等问题，默认尽量同时调用 `search_local_reports` 和 `web_search`：先用 `search_local_reports` 获取本地监测和周报上下文，再用 `web_search` 获取联网公开来源；除非用户明确只要本地或只要联网，不要只调用其中一个。\n"
         cross_check_rule = "【本地与联网交叉校验】当 `search_local_reports` 与 `web_search` 返回的数据在日期、口径、金额、比例、主体名称或结论上存在出入时，必须在回答中单独说明差异：分别列出本地资料口径、联网公开来源口径、可能原因和建议采用的可信口径。禁止把冲突数据混合成一个确定结论。\n"
         local_original_rule = "【本地原文优先】`search_local_reports` 只是本地检索摘要；只要问题涉及数据、财报、收入、对比、结论判断或口径核对，并且你已经调用了 `search_local_reports`，就必须至少对一个最相关的本地来源调用 `read_local_reference`（例如 `weekly_report.md` 或 `row_2.json`）查看原文后再回答。如果本地检索结果没有相关来源，才说明本地原文不足。不要在没有读本地引用原文的情况下连续打开外部网页。\n"
         quarterly_crosscheck_sentence = "`needs_official_row_crosscheck` 只能作为线索，正式结论必须继续联网或读取官方来源核验。"
         web_rule = "【联网搜索】当用户明确要求上网、联网搜索、查最新公开信息，或本地资料不足以回答时，必须调用 `web_search`。搜索后仍需用 [1], [2] 标注具体事实来源；只有用户要求打开网页全文或搜索摘要不足以核实时，才对最多 2 个关键结果调用 `read_webpage`。若 `read_webpage` 返回失败、跳过、浏览器验证或 PDF 抽取失败，不要反复读取同一类链接，应改用搜索摘要、本地引用和其他公开来源交叉验证。\n"
     else:
-        source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`read_local_reference` 或其他本地工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号，并沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
+        source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`read_local_reference` 或其他本地工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号，并沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
         retrieval_pairing_rule = "【本地检索优先】优先调用 `search_local_reports`、`list_local_datasets`、`read_local_reference` 等当前可用工具回答，不得声称使用了未实际调用的工具，不得编造检索结果。用户要求搜索、查最新或公开资料时，也直接按本地可用数据检索和回答；资料不足时，只说明缺少的具体本地依据，并给出可以继续核验的本地数据路径或来源。不要解释当前工具开关、联网能力或前端配置状态。\n"
         cross_check_rule = "【本地核验优先】基于本地标准化数据集、周报、爬虫结果、审计日志和已保存来源进行回答；资料不足时只说明缺少哪些数据或依据。\n"
         local_original_rule = "【本地原文优先】`search_local_reports` 只是本地检索摘要；只要问题涉及数据、财报、收入、对比、结论判断或口径核对，并且你已经调用了 `search_local_reports`，就必须至少对一个最相关的本地来源调用 `read_local_reference`（例如 `weekly_report.md` 或 `row_2.json`）查看原文后再回答。如果本地检索结果没有相关来源，才说明本地原文不足。\n"
@@ -1586,7 +1780,8 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
         "【本地数据边界】你能接触到的本地数据不是无限的，必须以工具返回为准：`list_local_datasets` 用于列出标准化数据集，`search_local_reports` 用于检索标准化数据集、周报、审计日志和爬取结果，`read_local_reference` 用于读取可点击引用原文。用户问“你能访问哪些数据”“数据放哪里”“内部/外部数据怎么接入”“后端有哪些数据”时，必须先调用 `list_local_datasets` 再回答。做趋势分析、问数、财报对比、口径核验、图表之前，如果不确定可用数据，也要先调用 `list_local_datasets`。\n"
         "【上下文预算审计】`search_local_reports` 会返回 contextAudit，包含 token_budget、token_estimate、retained_chunks、compressed_chunks、skipped_chunks。若 compressed_chunks 或 skipped_chunks 大于 0，正式回答必须把结论限定在已保留上下文内，并在必要时说明仍需读取原文或缩小问题范围。不要声称已完整读取未进入上下文预算的全部文件。\n"
         "【长期记忆边界】`search_agent_memory`、`remember_agent_memory`、`list_agent_memory` 只用于小竞AI运行偏好、长期规则和已验证流程。长期记忆不能替代本轮用户指令、前端数据库选择、官方来源、审计文件或工具返回结果；若记忆与本轮上下文冲突，必须以本轮上下文为准。\n"
-        "【Agent Skill 渐进加载】`load_agent_skills` 只表示前端选择了哪些 Skill，不等于已阅读完整指令。若本轮用户问题适合某个已选 Skill，你必须先调用 `read_agent_skill(skill_id)` 读取完整 `SKILL.md`，再按 Skill 指令执行。读取 Skill 后如其中要求来源核验、数据检索、图表或预测，要继续调用对应工具；不要只停留在 Skill 标题或简介。\n"
+        "【历史聊天边界】当用户询问此前聊天、上一轮、早先说过什么、某个历史对话内容或要求核对聊天记录时，必须调用 `search_chat_history` 检索已保存聊天线程；不要只凭最近 8 条上下文或长期记忆猜测。回答要区分“历史聊天记录命中”和“长期记忆命中”。\n"
+        "【Agent Skill 渐进加载】前端选择的 Skill 不是固定开场流程，但它们是专业分析方法。历史聊天查询、寒暄、简单问答、纯记忆审计和无需领域规则的问题，不要为了流程感读取 Skill；但当用户要求分析竞对经营数据、云厂商数据、宏观政策、趋势预测或战略简报时，应优先读取最相关的 1-2 个已选 Skill，再按 Skill 方法调用数据库检索、原文核验、预测或图表工具。不要把所有已选 Skill 全部读一遍。\n"
         "【新增数据规范】后续新增内部或外部数据时，默认放入项目根目录 `agent_knowledge/<dataset_id>/`。每个数据集至少提供 `manifest.json`，建议同时提供 `README.md`、结构化 `data.csv` 或 `data.json`、摘要 `summary.md`、来源 `sources.json`。允许被后端索引和引用的文本文件扩展名只有 `.md`、`.txt`、`.json`、`.csv`、`.tsv`。`manifest.json` 应写明 id、title、summary、source_type、scope、tags、keywords、entrypoints、updated_at、quality。除非工具列出，否则不要声称自己能读取其他本地目录。\n"
         "【数据库选择边界】前端数据库按钮是强访问边界。只有本轮用户已选择的 `agent_knowledge` 数据库才允许被 `list_local_datasets`、`search_local_reports` 和 `read_local_reference` 读取或引用；未选择的数据集不可见。不得根据历史提示、路径记忆或未调用工具的信息声称知道未选择数据库的内容。若季度、核心公司或云厂商数据集被选择，按工具返回的 manifest、CSV/JSON 行和引用原文回答；`verification_count>=2` 表示该行已完成多来源核验，`official_conflict` 表示正式回答采用 `official_value` 并说明标准化值与官方披露冲突。\n"
         "【目标级审计优先】当用户询问“现在数据是否完整/准确/能否预测/数据库是否正常/来源是否可靠/目标完成到哪一步”或要求给出正式数据质量结论时，如果已选择 `goal_readiness_audits`、`knowledge_integrity_audits`、`source_evidence_audits`、`source_url_reachability_audits`、`forecast_readiness_audits` 或 `agent_dataset_visibility_audits`，必须先检索并读取相关审计。正式回答要以这些审计中的 pass/fail、row_count、verification_count、official_value/source_gap 和 API 可见性结果为准；不要只凭主数据包或历史记忆判断完成度。被 manifest 标记为 `superseded`、`hidden` 或 `archived` 的数据包不得作为默认数据库或正式结论来源。\n"
@@ -1682,9 +1877,7 @@ def _format_conversation_history(history: list[dict[str, Any]] | None) -> str:
 
 def _tool_process_text(tool_name: str) -> str:
     labels = {
-        "load_agent_skills": "我读取本轮需要的 Agent Skill 选择。",
         "read_agent_skill": "我读取相关 Agent Skill 的完整指令。",
-        "select_agent_databases": "我确认本轮会发送给 AI 的数据库。",
         "list_local_datasets": "我读取本轮已选数据库列表。",
         "search_agent_memory": "我查找长期记忆中是否有相关规则。",
         "search_local_reports": "我读取已选数据库并检索摘要片段。",
@@ -1694,6 +1887,7 @@ def _tool_process_text(tool_name: str) -> str:
         "render_python_chart": "我基于已核验数据生成图表。",
         "forecast_quarterly_metric": "我调用趋势预测工具，使用历史数据生成预测。",
         "get_system_status": "我读取系统当前状态。",
+        "search_chat_history": "我搜索已保存的历史聊天记录。",
         "list_report_outputs": "我查看已有报告输出。",
         "list_crawl_runs": "我读取爬虫运行日志。",
     }
@@ -1769,34 +1963,9 @@ def stream_agent(
         yield event
 
     skill_context = _selected_skill_context(selected_skill_ids)
-    skill_summaries = _selected_skill_summaries(selected_skill_ids)
-    dataset_summaries = _selected_dataset_summaries(selected_dataset_set)
-    if emit_context_events and skill_summaries:
-        event = {"type": "tool_call_start", "id": "context-agent-skills", "name": "load_agent_skills"}
-        recorder.observe(event)
-        yield event
-        event = {
-            "type": "tool_call_result",
-            "id": "context-agent-skills",
-            "name": "load_agent_skills",
-            "args": json.dumps({"skill_ids": [row["id"] for row in skill_summaries]}, ensure_ascii=False),
-            "content": _context_tool_content("本轮载入 Agent Skill", skill_summaries),
-        }
-        recorder.observe(event)
-        yield event
-    if emit_context_events and dataset_summaries:
-        event = {"type": "tool_call_start", "id": "context-agent-databases", "name": "select_agent_databases"}
-        recorder.observe(event)
-        yield event
-        event = {
-            "type": "tool_call_result",
-            "id": "context-agent-databases",
-            "name": "select_agent_databases",
-            "args": json.dumps({"dataset_ids": sorted(selected_dataset_set)}, ensure_ascii=False),
-            "content": _context_tool_content("本轮发送给 AI 的数据库", dataset_summaries),
-        }
-        recorder.observe(event)
-        yield event
+    skill_routing_instruction = _skill_routing_instruction(message, selected_skill_ids, loaded_skill_ids)
+    # Selected skills and datasets are injected as model context below. They are not
+    # rendered as fake tool calls; the UI should only show tools the Agent chose.
     if recalled_memory:
         message = f"{recalled_memory}\n\n用户问题：{message}"
     history_context = _format_conversation_history(conversation_history)
@@ -1814,12 +1983,12 @@ def stream_agent(
             )
         message = (
             "用户已在前端手动选择以下 Agent Skills。下面只是 Skill 发现信息，不是完整指令。"
-            "当你判断某个未读过的 Skill 与本轮任务相关时，必须先调用 `read_agent_skill(skill_id)` 读取完整 SKILL.md；"
-            "如果该 Skill 已在本聊天线程前序回合读取过，且本轮只是延续同一问题，可以直接沿用前文规则，不要重复读取。"
-            "随后按该 Skill 的规则继续调用本地检索、读取原文、联网搜索、图表或预测工具。"
-            "`load_agent_skills` 只表示前端选择，不等于已经阅读完整 Skill。\n\n"
+            "你可以自行判断是否需要读取某个 Skill 的完整 SKILL.md；"
+            "如果本轮只是历史聊天查询、寒暄、简单问答、纯记忆审计，或无需领域规则，直接回答或调用更相关的工具，不要固定先读 Skill。"
+            "如果该 Skill 已在本聊天线程前序回合读取过，且本轮只是延续同一问题，可以直接沿用前文规则。\n\n"
             f"{loaded_skill_note}"
             f"{skill_context}\n\n"
+            f"{skill_routing_instruction}\n\n"
             f"用户问题：{message}"
         )
     if selected_dataset_set:

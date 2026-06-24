@@ -20,13 +20,13 @@
     "人口"
   ],
   "source_urls": [
-    "https://www.censtatd.gov.hk/en/scode530.html",
     "https://www.censtatd.gov.hk/en/page_213.html",
     "https://www.censtatd.gov.hk/en/scode200.html",
+    "https://www.censtatd.gov.hk/en/scode530.html",
     "https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm",
+    "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
     "https://apidocs.hkma.gov.hk/abouthkmasapi/",
-    "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/",
-    "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5"
+    "https://www.hkma.gov.hk/eng/data-publications-and-research/data-and-statistics/monthly-statistical-bulletin/"
   ],
   "attempted_urls": [
     "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
@@ -39,7 +39,7 @@
   ],
   "extracted": {
     "访港旅客": "onsumers also pay for their electricity, gas and water bills, which are not captured in the retail sales statistics. Moreover, retail sales statistics include spending on goods by visitors in Hong Kong, but do not includ",
-    "零售": "SOURCE: https://www.censtatd.gov.hk/en/scode530.html Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview ",
+    "零售": "SOURCE: https://www.censtatd.gov.hk/en/page_213.html Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of t",
     "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
     "CPI": "Consumer Price Indices for December 2025 **************************************** The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025. Accordin",
     "利率": "tes and Abbreviations Chart Section Money and credit (EXCEL File, 78.5 KB) Deposits (EXCEL File, 79.5 KB) Domestic loans by economic sector (EXCEL File, 91.5 KB) Exchange rate and interest rate (EXCEL File, 135.0 KB) For",
@@ -53,7 +53,7 @@
       "source_urls": [],
       "extracted": {
         "访港旅客": "onsumers also pay for their electricity, gas and water bills, which are not captured in the retail sales statistics. Moreover, retail sales statistics include spending on goods by visitors in Hong Kong, but do not includ",
-        "零售": "SOURCE: https://www.censtatd.gov.hk/en/scode530.html Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview ",
+        "零售": "SOURCE: https://www.censtatd.gov.hk/en/page_213.html Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of t",
         "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
         "CPI": "Consumer Price Indices for December 2025 **************************************** The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025. Accordin",
         "利率": "tes and Abbreviations Chart Section Money and credit (EXCEL File, 78.5 KB) Deposits (EXCEL File, 79.5 KB) Domestic loans by economic sector (EXCEL File, 91.5 KB) Exchange rate and interest rate (EXCEL File, 135.0 KB) For",
@@ -61,8 +61,8 @@
       },
       "missing_fields": [],
       "raw_records": [],
-      "confidence_score": 0.0,
-      "verification_reason": "The extracted data fields do not accurately reflect the source text. For '访港旅客', the extracted segment is partial and contextually inappropriate. '零售' contains navigation menu items but not the relevant retail sales statistics. '失业率' is not present in the source text (only labor force and unemployment concepts appear, not the specific term). 'CPI' correctly references Consumer Price Index, but '利率' and '汇率' have passages from unrelated sources about banking and exchange rate systems not present in the provided source text."
+      "confidence_score": 0.3,
+      "verification_reason": "The extracted data contains partial or irrelevant text for most fields. For '访港旅客', only a sentence about visitors is taken from the retail sales context. '零售' is repeated from the source but with extra URL. '失业率' is from a different source and only contains navigation text. 'CPI' includes a press release header but no actual statistics. '利率' and '汇率' are only from file names and section headers in unrelated sources. Overall, the extracted data is incomplete and does not accurately represent the source text."
     },
     {
       "entity": "人口",
@@ -70,24 +70,7 @@
       "source_urls": [],
       "extracted": {
         "访港旅客": "onsumers also pay for their electricity, gas and water bills, which are not captured in the retail sales statistics. Moreover, retail sales statistics include spending on goods by visitors in Hong Kong, but do not includ",
-        "零售": "SOURCE: https://www.censtatd.gov.hk/en/scode530.html Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview ",
-        "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
-        "CPI": "Consumer Price Indices for December 2025 **************************************** The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025. Accordin",
-        "利率": "tes and Abbreviations Chart Section Money and credit (EXCEL File, 78.5 KB) Deposits (EXCEL File, 79.5 KB) Domestic loans by economic sector (EXCEL File, 91.5 KB) Exchange rate and interest rate (EXCEL File, 135.0 KB) For",
-        "汇率": "signation and Approval Regulatory Documents Banking Regulatory Document Repository Stablecoin Issuers Stored Value Facilities and Retail Payment Systems Key Functions Money Linked Exchange Rate System Liquidity Facilitie"
-      },
-      "missing_fields": [],
-      "raw_records": [],
-      "confidence_score": 0.2,
-      "verification_reason": "The Extracted Data contains snippets from the Source Texts but is mostly incorrect or unrelated. '访港旅客' is a fragment about visitors in Hong Kong from the retail page, but it's cut off and not a clean statistic. '零售' includes navigation text from the retail page, not actual data. '失业率' comes from the labour page heading, not unemployment data. 'CPI' correctly references the CPI press release. '利率' and '汇率' are from entirely separate sources not provided, so they are unsupported."
-    },
-    {
-      "entity": "消费",
-      "status": "ok",
-      "source_urls": [],
-      "extracted": {
-        "访港旅客": "onsumers also pay for their electricity, gas and water bills, which are not captured in the retail sales statistics. Moreover, retail sales statistics include spending on goods by visitors in Hong Kong, but do not includ",
-        "零售": "SOURCE: https://www.censtatd.gov.hk/en/scode530.html Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview ",
+        "零售": "SOURCE: https://www.censtatd.gov.hk/en/page_213.html Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of t",
         "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
         "CPI": "Consumer Price Indices for December 2025 **************************************** The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025. Accordin",
         "利率": "tes and Abbreviations Chart Section Money and credit (EXCEL File, 78.5 KB) Deposits (EXCEL File, 79.5 KB) Domestic loans by economic sector (EXCEL File, 91.5 KB) Exchange rate and interest rate (EXCEL File, 135.0 KB) For",
@@ -96,51 +79,28 @@
       "missing_fields": [],
       "raw_records": [],
       "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains garbled or unrelated text for each field. For example, '访港旅客' is assigned a snippet from a general discussion about retail sales, not visitor statistics; '零售' lists navigation links from a URL; '失业率' includes GDP contact information from a different page; 'CPI' correctly references CPI figures but is incomplete; '利率' and '汇率' contain fragments from banking documents unrelated to the source texts. No field accurately reflects the source content."
+      "verification_reason": "The extracted data contains garbled and irrelevant phrases that do not correspond to the source text. For example, '访港旅客' appears as a concatenated phrase from unrelated sentences, '零售' is just a header snippet, '失业率' is not present in the provided source, 'CPI' and '利率' have mismatched or out-of-context text, and '汇率' comes from a different source not provided."
+    },
+    {
+      "entity": "消费",
+      "status": "ok",
+      "source_urls": [],
+      "extracted": {
+        "访港旅客": "onsumers also pay for their electricity, gas and water bills, which are not captured in the retail sales statistics. Moreover, retail sales statistics include spending on goods by visitors in Hong Kong, but do not includ",
+        "零售": "SOURCE: https://www.censtatd.gov.hk/en/page_213.html Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of t",
+        "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an",
+        "CPI": "Consumer Price Indices for December 2025 **************************************** The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025. Accordin",
+        "利率": "tes and Abbreviations Chart Section Money and credit (EXCEL File, 78.5 KB) Deposits (EXCEL File, 79.5 KB) Domestic loans by economic sector (EXCEL File, 91.5 KB) Exchange rate and interest rate (EXCEL File, 135.0 KB) For",
+        "汇率": "signation and Approval Regulatory Documents Banking Regulatory Document Repository Stablecoin Issuers Stored Value Facilities and Retail Payment Systems Key Functions Money Linked Exchange Rate System Liquidity Facilitie"
+      },
+      "missing_fields": [],
+      "raw_records": [],
+      "confidence_score": 0.7,
+      "verification_reason": "The extracted data partially matches the source texts. For '访港旅客', the extracted snippet is from the first source about retail sales mentioning visitors but is cut off. '零售' is correctly from the second source about retail statistics. '失业率' correctly references the third source, but the extracted text is slightly misaligned. 'CPI' correctly references the fourth source but is incomplete. '利率' and '汇率' are from a source not provided in the source texts, thus they cannot be verified. Overall, partial matches exist but some data is missing or from unverified sources."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 30,
-      "url": "https://www.censtatd.gov.hk/en/scode530.html",
-      "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Retail",
-      "bytes": 26176,
-      "elapsed_seconds": 3.957,
-      "method": "httpx",
-      "text_sample": "Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section Total Retail Sales ( ) Value index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Volume index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Business Performance and Operating Characteristics of Retail Trade ( ) ( ) ( ) ( ) ( ) ( ) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Concepts and Methods Concepts and Methods section Feature Articles on Co",
-      "evidence_path": "evidence_cache/fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6.txt",
-      "content_hash": "fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.censtatd.gov.hk/en/scode530.html",
-          "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 26176,
-          "text_chars": 1135,
-          "title": "Retail",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_statistics",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": []
-    },
     {
       "row": 30,
       "url": "https://www.censtatd.gov.hk/en/page_213.html",
@@ -149,7 +109,7 @@
       "content_type": "text/html",
       "title": "Retail Sales and Consumer Spending",
       "bytes": 10186,
-      "elapsed_seconds": 4.017,
+      "elapsed_seconds": 1.492,
       "method": "httpx",
       "text_sample": "Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of the sales of goods sold by local establishments primarily engaged in retail trade . Retail sales statistics are compiled using data collected from the Monthly Survey of Retail Sales. Local retail establishments with and without physical shops are covered in the survey and their sales, both through conventional shops and online channels, are included in the retail sales statistics. The Census and Statistics Department selects a scientific sample of around 3 000 retail outlets for enumeration each month. The sales data thus collected are used for estimating the total retail sales value for each type of retail outlet and that of the whole retail sector. The volume of retail sales measures the trend of the sales of goods sold by",
       "evidence_path": "evidence_cache/5ff9a2c78981daab2bac82bec86167052b5cf6ab540adec98dd72a7095fd3c17.txt",
@@ -189,7 +149,7 @@
       "content_type": "text/html",
       "title": "Labour Force, Employment and Unemployment",
       "bytes": 26041,
-      "elapsed_seconds": 4.055,
+      "elapsed_seconds": 1.516,
       "method": "httpx",
       "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
       "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
@@ -223,13 +183,53 @@
     },
     {
       "row": 30,
+      "url": "https://www.censtatd.gov.hk/en/scode530.html",
+      "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Retail",
+      "bytes": 26176,
+      "elapsed_seconds": 1.519,
+      "method": "httpx",
+      "text_sample": "Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section Total Retail Sales ( ) Value index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Volume index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Business Performance and Operating Characteristics of Retail Trade ( ) ( ) ( ) ( ) ( ) ( ) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Concepts and Methods Concepts and Methods section Feature Articles on Co",
+      "evidence_path": "evidence_cache/fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6.txt",
+      "content_hash": "fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.censtatd.gov.hk/en/scode530.html",
+          "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 26176,
+          "text_chars": 1135,
+          "title": "Retail",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_statistics",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": []
+    },
+    {
+      "row": 30,
       "url": "https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm",
       "final_url": "https://www.info.gov.hk/gia/general/202601/22/P2026012200447p.htm",
       "status": 200,
       "content_type": "text/html",
       "title": "Consumer Price Indices for December 2025",
       "bytes": 7337,
-      "elapsed_seconds": 4.059,
+      "elapsed_seconds": 1.99,
       "method": "httpx",
       "text_sample": "Consumer Price Indices for December 2025 Consumer Price Indices for December 2025 **************************************** The Census and Statistics Department (C&SD) released today (January 22) the Consumer Price Index (CPI) figures for December 2025. According to the Composite CPI, overall consumer prices rose by 1.4% in December 2025 over the same month a year earlier, larger than the corresponding increase (1.2%) in November 2025. Netting out the effects of all Government's one-off relief measures, the year-on-year rate of increase in the Composite CPI (i.e. the underlying inflation rate) in December 2025 was 1.2%, also larger than that in November 2025 (1.0%). The larger increase was mainly due to the increases in the charges for package tours as well as inbound and outbound transport fares. On a seasonally adjusted basis, the average monthly rate of increase in the Composite CPI fo",
       "evidence_path": "evidence_cache/0ff16ada658520a8bb12b40b74bbabe898d58541937a603a7cc838b06906952a.txt",
@@ -263,13 +263,53 @@
     },
     {
       "row": 30,
+      "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+      "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+      "status": 200,
+      "content_type": "application/json;charset=utf-8",
+      "title": "",
+      "bytes": 1179,
+      "elapsed_seconds": 2.07,
+      "method": "httpx",
+      "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":406863396487.342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":381043026173.935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
+      "evidence_path": "evidence_cache/27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd.txt",
+      "content_hash": "27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+          "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 1179,
+          "text_chars": 1179,
+          "title": "",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "public_api",
+      "jurisdiction": "international",
+      "tos_status": "public_api",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": []
+    },
+    {
+      "row": 30,
       "url": "https://apidocs.hkma.gov.hk/abouthkmasapi/",
       "final_url": "https://apidocs.hkma.gov.hk/abouthkmasapi/",
       "status": 200,
       "content_type": "text/html",
       "title": "About HKMA's API – Hong Kong Monetary Authority",
       "bytes": 15036,
-      "elapsed_seconds": 1.107,
+      "elapsed_seconds": 1.294,
       "method": "httpx",
       "text_sample": "About HKMA's API – Hong Kong Monetary Authority Skip to content ENG | 繁 | 简 Decrease font size. Reset font size. Increase font size. Home About HKMA's API Documentation API Data Enquiry Home / About HKMA's API About HKMA's API The HKMA embraces the development and application of Open API. While promoting the wide adoption of Open API by the banking industry in Hong Kong, the HKMA sets an example by launching Open API on its official website. 156 sets of information covering all financial data and important information published on the HKMA's website have been made available for Open API, providing a convenient way for users to retrieve information from the HKMA's website. The use of API is subject to the Terms and Conditions of Use which apply to this site. First-time user? Learn more about HKMA's API and types of information you can access here at API documentation . Benefits User frien",
       "evidence_path": "evidence_cache/6717621e7d29142fdcc0cda70cb5eb2613dbb89c14d3adfd8c55819c99a9732a.txt",
@@ -309,7 +349,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "Hong Kong Monetary Authority - Monthly Statistical Bulletin",
       "bytes": 233739,
-      "elapsed_seconds": 1.448,
+      "elapsed_seconds": 1.392,
       "method": "httpx",
       "text_sample": "Hong Kong Monetary Authority - Monthly Statistical Bulletin Skip to main content Hong Kong Monetary Authority 香港金融管理局 Contact Us 繁 简 A A A Keyword Search Select Category The whole of the HKMA website Press Releases Speeches inSight R&M Column (Chinese only) Data & Statistics Publications Research Legislative Council Issues Supervisory Policy Manual Guidelines & Circulars Guide to Authorization Consultations Show All Options Modification Time Modification Time Anytime Within The Past Date Range Done Within The Past 24 hours Week Month Year Done From Done a To Done News and Media Press Releases R & M Column Videos Speeches Forthcoming Events inSight Photo Gallery Smart Consumers Overview e-Banking Personal Digital Keys Internet Banking ATMs Payment and Transfer Faster Payment System (FPS) e-CNY e-Payment and Transfer e-Wallets and Prepaid Cards Credit Cards Personal cross-boundary remittan",
       "evidence_path": "evidence_cache/3013e76fee97ae7f83bdf24853a262dea3c6331b171d678820576393280643eb.txt",
@@ -340,46 +380,6 @@
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": []
-    },
-    {
-      "row": 30,
-      "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-      "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-      "status": 200,
-      "content_type": "application/json;charset=utf-8",
-      "title": "",
-      "bytes": 1179,
-      "elapsed_seconds": 5.476,
-      "method": "httpx",
-      "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":406863396487.342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":381043026173.935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
-      "evidence_path": "evidence_cache/27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd.txt",
-      "content_hash": "27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-          "final_url": "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 1179,
-          "text_chars": 1179,
-          "title": "",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "public_api",
-      "jurisdiction": "international",
-      "tos_status": "public_api",
-      "robots_status": "not_found_allow",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": []
     }
   ],
   "live_fetch_status": "ok",
@@ -388,6 +388,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:27.342327+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:27.342554+08:00"
+  "fetched_at": "2026-06-24T03:33:53.607102+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:53.607294+08:00"
 }

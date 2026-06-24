@@ -1,0 +1,45 @@
+{
+  "run_id": "20260623_105719_d38a6d94",
+  "started_at": "2026-06-23T10:57:19+08:00",
+  "completed_at": "2026-06-23T11:02:33+08:00",
+  "tasks": 207,
+  "accepted": 204,
+  "rejected": 0,
+  "review": 3,
+  "gaps": 3,
+  "recrawl_rows": [],
+  "recrawl_performed": false,
+  "online_ai": true,
+  "node_events": [
+    "[数据整理][证据接收] 读取 207 条原始指标证据，复用 87 条缓存判断。",
+    "[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 113、public 86。",
+    "[数据整理][事实抽取] 形成 207 条候选事实；待抽取 83 条，缓存复用 75 条。",
+    "[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 52 条。",
+    "[数据整理][质量审计] 发布 207 条、证据缺口 0 条、质量拒绝 0 条、待复核 0 条。",
+    "[数据整理][冲突仲裁] 检查 207 组事实，发现 0 组冲突。",
+    "[数据整理][搜索验证] 并行核验 207 条事实，修正 1 条，转人工复核 3 条，发现冲突 34 条。",
+    "[数据整理][缺口规划] 识别 3 个事实缺口，安排 0 个定向补爬行。",
+    "[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。",
+    "[数据整理][发布] 发布层写入 204 条，拒绝 0 条，待人工复核 3 条。"
+  ],
+  "extra": {
+    "evidence_gaps": 0,
+    "quality_rejected": 0,
+    "supervisor_decision": "publish",
+    "supervisor_reason": "没有满足补爬条件的候选行，进入发布。",
+    "online_batches": 4,
+    "fallback_batches": 0,
+    "search_verification": {
+      "checked": 207,
+      "corrected": 1,
+      "review": 3,
+      "conflicts": 34,
+      "workers": 4,
+      "online_search": true,
+      "online_checked": 207,
+      "online_votes": 87
+    },
+    "cache_backup": "curation_data/cache_backups/20260623_105719_d38a6d94_before_publish.json",
+    "agent_trace": "curation_data/agent_trace.jsonl"
+  }
+}

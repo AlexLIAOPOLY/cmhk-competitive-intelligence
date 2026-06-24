@@ -17,9 +17,9 @@
   "ignored_selected_fields": [],
   "source_urls": [
     "https://web.three.com.hk/plans/3business5g/index-en.html",
-    "https://web.three.com.hk/plans/apac/index2-en.html",
+    "https://m.hthkh.com/en/media/press.php",
     "https://www.hthkh.com/en/media/press_3hk.php",
-    "https://m.hthkh.com/en/media/press.php"
+    "https://web.three.com.hk/plans/apac/index2-en.html"
   ],
   "attempted_urls": [
     "https://web.three.com.hk/plans/3business5g/index-en.html",
@@ -41,9 +41,9 @@
       "status": "ok",
       "source_urls": [
         "https://web.three.com.hk/plans/3business5g/index-en.html",
-        "https://web.three.com.hk/plans/apac/index2-en.html",
+        "https://m.hthkh.com/en/media/press.php",
         "https://www.hthkh.com/en/media/press_3hk.php",
-        "https://m.hthkh.com/en/media/press.php"
+        "https://web.three.com.hk/plans/apac/index2-en.html"
       ],
       "extracted": {
         "5G套餐": "SOURCE: https://web.three.com.hk/plans/3business5g/index-en.html 3Business 5G SIM Monthly Plan 5G SIM Monthly Plan 4.5G SIM Monthly Plan 4.5G 42M SIM Monthly Plan Step 1: Choose a plan $124 /month 1,2 Local Data 30GB + I",
@@ -62,7 +62,7 @@
           "content_type": "text/html",
           "title": "3Business",
           "bytes": 77331,
-          "elapsed_seconds": 4.375,
+          "elapsed_seconds": 1.452,
           "method": "httpx",
           "text_sample": "3Business 5G SIM Monthly Plan 5G SIM Monthly Plan 4.5G SIM Monthly Plan 4.5G 42M SIM Monthly Plan Step 1: Choose a plan $124 /month 1,2 Local Data 30GB + Infinity 1mbps data thereafter ▲ Exclusively for MoneyBack Members ♢ +3GB and 800 Points ❖ Earn MoneyBack points worth $400 upon successful subscription via referral Invite your relatives or friends who are using 3HK or MO+ to participate our member referral programme and simply input their mobile number to earn value $400 MoneyBack Points! You can use the Points to redeem cash discounts for monthly bill payment or purchase of smartphones, accessories and digital lifestyle services! 3,000 Local voice mins ≥ 24 months Contract 30 months contract 36 months contract Subscribe $188 /month 2 Local Data 60GB ≤, 2 + Infinity 1mbps data thereafter ▲ Exclusively for MoneyBack Members ♢ +6GB and 800 Points ❖ Earn MoneyBack points worth $400 upon ",
           "evidence_path": "evidence_cache/034c9b880805e9befced0819185a24b319242088a6f09ca529d5b8cbbb1806a2.txt",
@@ -98,13 +98,99 @@
         },
         {
           "row": 6,
+          "url": "https://m.hthkh.com/en/media/press.php",
+          "final_url": "https://m.hthkh.com/en/media/press.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "bytes": 21547,
+          "elapsed_seconds": 1.464,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 17 Jun 2026 HTHK Expands Customers' AI Lifestyles with INMO GO3 AI Glasses Launch, Drives AI Adoption Through Start-up Collaboration for Consumer and Enterprise Markets, Showcasing \"3 for You\" Brand Value 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launc",
+          "evidence_path": "evidence_cache/bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a.txt",
+          "content_hash": "bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://m.hthkh.com/en/media/press.php",
+              "final_url": "https://m.hthkh.com/en/media/press.php",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 21547,
+              "text_chars": 4218,
+              "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 6,
+          "url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+          "bytes": 27786,
+          "elapsed_seconds": 1.467,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
+          "evidence_path": "evidence_cache/88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595.txt",
+          "content_hash": "88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hthkh.com/en/media/press_3hk.php",
+              "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 27786,
+              "text_chars": 3929,
+              "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
+        },
+        {
+          "row": 6,
           "url": "https://web.three.com.hk/plans/apac/index2-en.html",
           "final_url": "https://web.three.com.hk/plans/apac/index2-en.html",
           "status": 200,
           "content_type": "text/html",
           "title": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK",
           "bytes": 153543,
-          "elapsed_seconds": 4.415,
+          "elapsed_seconds": 1.493,
           "method": "httpx",
           "text_sample": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK 5G Monthly Plans 4.5G Monthly Plans Tertiary Student and Staff Zone iPhone Monthly Plans Plans & VAS / All Monthly Plan / WORLD PLAN WORLD PLAN Subscribe Online 5G SIM Monthly Plan NEW Health Fit 5G Plan NEW VIPet 5G Plan 5G Data Roam Like Home Monthly Plan NEW WORLD PLAN Subscribe Online 5G Handset Voucher Plan 5G Multi-SIM Plan NEW Global Plan Handset Voucher Plans Local plan price with data usable worldwide All data can be used in HK when not travelling Free roaming calls No SIM swaps Connect upon arrival Over 100 local & oversea travel perks Local plan price with data usable worldwide All data can be used in HK when not travelling Free roaming calls No SIM swaps Connect upon arrival Over 100 local & oversea travel perks New Global Shared Data Global Shared Data New Asia Pacific Shared Data Asia Pacific Shared Data",
           "evidence_path": "evidence_cache/977060aea5404b3b290595f6d4f6d3ccb425bb59cd975aaea5d64e1dc9b917e0.txt",
@@ -137,156 +223,27 @@
           "entity_hits": [
             "3HK"
           ]
-        },
-        {
-          "row": 6,
-          "url": "https://www.hthkh.com/en/media/press_3hk.php",
-          "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
-          "bytes": 27786,
-          "elapsed_seconds": 4.466,
-          "method": "httpx",
-          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
-          "evidence_path": "evidence_cache/88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595.txt",
-          "content_hash": "88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.hthkh.com/en/media/press_3hk.php",
-              "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 27786,
-              "text_chars": 3929,
-              "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "3HK",
-            "Hutchison"
-          ]
-        },
-        {
-          "row": 6,
-          "url": "https://m.hthkh.com/en/media/press.php",
-          "final_url": "https://m.hthkh.com/en/media/press.php",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
-          "bytes": 21547,
-          "elapsed_seconds": 4.545,
-          "method": "httpx",
-          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 17 Jun 2026 HTHK Expands Customers' AI Lifestyles with INMO GO3 AI Glasses Launch, Drives AI Adoption Through Start-up Collaboration for Consumer and Enterprise Markets, Showcasing \"3 for You\" Brand Value 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launc",
-          "evidence_path": "evidence_cache/bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a.txt",
-          "content_hash": "bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://m.hthkh.com/en/media/press.php",
-              "final_url": "https://m.hthkh.com/en/media/press.php",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 21547,
-              "text_chars": 4218,
-              "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "not_found_allow",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "3HK",
-            "Hutchison"
-          ]
         }
       ],
-      "confidence_score": 0.2,
-      "verification_reason": "The extracted data is incomplete and includes fragments from source texts that are not appropriately categorized. Several fields like '5G套餐', '企业方案', and '漫游' contain truncated or misattributed content. The field 'SoSIM/Mo+' includes text from the source but not specifically about SoSIM/Mo+. The extraction fails to accurately represent the structured information of the source, leading to low confidence."
+      "confidence_score": 0.6,
+      "verification_reason": "The Extracted Data contains fragments from the Source Text, but includes significant errors such as truncation, missing context, and extraneous content from unrelated source URLs. The source text provides detailed plan information while the extraction is incomplete and contains text from other sources, leading to moderate confidence."
     },
     {
       "entity": "Hutchison",
       "status": "ok",
       "source_urls": [
-        "https://www.hthkh.com/en/media/press_3hk.php",
-        "https://m.hthkh.com/en/media/press.php"
+        "https://m.hthkh.com/en/media/press.php",
+        "https://www.hthkh.com/en/media/press_3hk.php"
       ],
       "extracted": {
-        "5G套餐": "215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest tech",
+        "5G套餐": "GO3 AI Glasses Launch, Drives AI Adoption Through Start-up Collaboration for Consumer and Enterprise Markets, Showcasing \"3 for You\" Brand Value 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Nee",
         "SoSIM/Mo+": "n Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mo",
-        "企业方案": "reers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH p",
+        "企业方案": "2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Emp",
         "漫游": "and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launch World Plan with Data Usable Across Hong ",
-        "促销折扣": "e latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Holdings (stock code: 1). Hong Kong HTHKH offers consumers and enterprises diverse"
+        "促销折扣": "ncing 1 July 12 Jun 2024 HTHK Wins Arts Sponsorship Award for Hong Kong's First 5G Live Broadcasting Concert from a Cruise Ship at Sea 29 Apr 2024 HTHK Helps Combat Phone Scams by Offering Customers Aged 60 or Above with"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 6,
-          "url": "https://www.hthkh.com/en/media/press_3hk.php",
-          "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
-          "bytes": 27786,
-          "elapsed_seconds": 4.466,
-          "method": "httpx",
-          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
-          "evidence_path": "evidence_cache/88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595.txt",
-          "content_hash": "88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.hthkh.com/en/media/press_3hk.php",
-              "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 27786,
-              "text_chars": 3929,
-              "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "3HK",
-            "Hutchison"
-          ]
-        },
         {
           "row": 6,
           "url": "https://m.hthkh.com/en/media/press.php",
@@ -295,7 +252,7 @@
           "content_type": "text/html",
           "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
           "bytes": 21547,
-          "elapsed_seconds": 4.545,
+          "elapsed_seconds": 1.464,
           "method": "httpx",
           "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 17 Jun 2026 HTHK Expands Customers' AI Lifestyles with INMO GO3 AI Glasses Launch, Drives AI Adoption Through Start-up Collaboration for Consumer and Enterprise Markets, Showcasing \"3 for You\" Brand Value 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launc",
           "evidence_path": "evidence_cache/bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a.txt",
@@ -329,10 +286,53 @@
             "3HK",
             "Hutchison"
           ]
+        },
+        {
+          "row": 6,
+          "url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+          "bytes": 27786,
+          "elapsed_seconds": 1.467,
+          "method": "httpx",
+          "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
+          "evidence_path": "evidence_cache/88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595.txt",
+          "content_hash": "88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.hthkh.com/en/media/press_3hk.php",
+              "final_url": "https://www.hthkh.com/en/media/press_3hk.php",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 27786,
+              "text_chars": 3929,
+              "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "3HK",
+            "Hutchison"
+          ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "The extracted data appears to be random, broken substrings from the source text and does not represent coherent, accurate extractions of specific fields like '5G套餐', 'SoSIM/Mo+', '企业方案', '漫游', and '促销折扣'. The source texts are web pages about HTHKH, not providing any structured or meaningful content for these labels."
+      "confidence_score": 0.3,
+      "verification_reason": "Extracted fields contain text snippets that are often truncated or combined from different press release titles and descriptions, but fail to match the exact content for each category. For example, '5G套餐' includes a full press release title incorrectly; 'SoSIM/Mo+' mixes company description with brand names; '企业方案' and '漫游' are partially correct but include extra unrelated text; '促销折扣' is a mix of unrelated press release titles. The source text does not provide distinct sections for each extracted field, leading to low confidence."
     }
   ],
   "entity_missing": [],
@@ -345,7 +345,7 @@
       "content_type": "text/html",
       "title": "3Business",
       "bytes": 77331,
-      "elapsed_seconds": 4.375,
+      "elapsed_seconds": 1.452,
       "method": "httpx",
       "text_sample": "3Business 5G SIM Monthly Plan 5G SIM Monthly Plan 4.5G SIM Monthly Plan 4.5G 42M SIM Monthly Plan Step 1: Choose a plan $124 /month 1,2 Local Data 30GB + Infinity 1mbps data thereafter ▲ Exclusively for MoneyBack Members ♢ +3GB and 800 Points ❖ Earn MoneyBack points worth $400 upon successful subscription via referral Invite your relatives or friends who are using 3HK or MO+ to participate our member referral programme and simply input their mobile number to earn value $400 MoneyBack Points! You can use the Points to redeem cash discounts for monthly bill payment or purchase of smartphones, accessories and digital lifestyle services! 3,000 Local voice mins ≥ 24 months Contract 30 months contract 36 months contract Subscribe $188 /month 2 Local Data 60GB ≤, 2 + Infinity 1mbps data thereafter ▲ Exclusively for MoneyBack Members ♢ +6GB and 800 Points ❖ Earn MoneyBack points worth $400 upon ",
       "evidence_path": "evidence_cache/034c9b880805e9befced0819185a24b319242088a6f09ca529d5b8cbbb1806a2.txt",
@@ -381,27 +381,27 @@
     },
     {
       "row": 6,
-      "url": "https://web.three.com.hk/plans/apac/index2-en.html",
-      "final_url": "https://web.three.com.hk/plans/apac/index2-en.html",
+      "url": "https://m.hthkh.com/en/media/press.php",
+      "final_url": "https://m.hthkh.com/en/media/press.php",
       "status": 200,
       "content_type": "text/html",
-      "title": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK",
-      "bytes": 153543,
-      "elapsed_seconds": 4.415,
+      "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+      "bytes": 21547,
+      "elapsed_seconds": 1.464,
       "method": "httpx",
-      "text_sample": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK 5G Monthly Plans 4.5G Monthly Plans Tertiary Student and Staff Zone iPhone Monthly Plans Plans & VAS / All Monthly Plan / WORLD PLAN WORLD PLAN Subscribe Online 5G SIM Monthly Plan NEW Health Fit 5G Plan NEW VIPet 5G Plan 5G Data Roam Like Home Monthly Plan NEW WORLD PLAN Subscribe Online 5G Handset Voucher Plan 5G Multi-SIM Plan NEW Global Plan Handset Voucher Plans Local plan price with data usable worldwide All data can be used in HK when not travelling Free roaming calls No SIM swaps Connect upon arrival Over 100 local & oversea travel perks Local plan price with data usable worldwide All data can be used in HK when not travelling Free roaming calls No SIM swaps Connect upon arrival Over 100 local & oversea travel perks New Global Shared Data Global Shared Data New Asia Pacific Shared Data Asia Pacific Shared Data",
-      "evidence_path": "evidence_cache/977060aea5404b3b290595f6d4f6d3ccb425bb59cd975aaea5d64e1dc9b917e0.txt",
-      "content_hash": "977060aea5404b3b290595f6d4f6d3ccb425bb59cd975aaea5d64e1dc9b917e0",
+      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 17 Jun 2026 HTHK Expands Customers' AI Lifestyles with INMO GO3 AI Glasses Launch, Drives AI Adoption Through Start-up Collaboration for Consumer and Enterprise Markets, Showcasing \"3 for You\" Brand Value 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launc",
+      "evidence_path": "evidence_cache/bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a.txt",
+      "content_hash": "bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a",
       "error": "",
       "fetch_attempts": [
         {
-          "url": "https://web.three.com.hk/plans/apac/index2-en.html",
-          "final_url": "https://web.three.com.hk/plans/apac/index2-en.html",
+          "url": "https://m.hthkh.com/en/media/press.php",
+          "final_url": "https://m.hthkh.com/en/media/press.php",
           "status": 200,
           "method": "httpx",
-          "bytes": 153543,
-          "text_chars": 12152,
-          "title": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK",
+          "bytes": 21547,
+          "text_chars": 4218,
+          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
           "error": "",
           "meta_refresh_url": ""
         }
@@ -410,7 +410,7 @@
       "source_type": "company_official",
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
+      "robots_status": "not_found_allow",
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
@@ -418,7 +418,8 @@
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
-        "3HK"
+        "3HK",
+        "Hutchison"
       ]
     },
     {
@@ -429,7 +430,7 @@
       "content_type": "text/html",
       "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases",
       "bytes": 27786,
-      "elapsed_seconds": 4.466,
+      "elapsed_seconds": 1.467,
       "method": "httpx",
       "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Media Centre > Press Releases Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of CK Hutchison Hol",
       "evidence_path": "evidence_cache/88561a766a67c461e2ca08a323dd7c04e3c3f716ca122dbbe389fcc8bf24e595.txt",
@@ -466,27 +467,27 @@
     },
     {
       "row": 6,
-      "url": "https://m.hthkh.com/en/media/press.php",
-      "final_url": "https://m.hthkh.com/en/media/press.php",
+      "url": "https://web.three.com.hk/plans/apac/index2-en.html",
+      "final_url": "https://web.three.com.hk/plans/apac/index2-en.html",
       "status": 200,
       "content_type": "text/html",
-      "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
-      "bytes": 21547,
-      "elapsed_seconds": 4.545,
+      "title": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK",
+      "bytes": 153543,
+      "elapsed_seconds": 1.493,
       "method": "httpx",
-      "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Press Releases 17 Jun 2026 HTHK Expands Customers' AI Lifestyles with INMO GO3 AI Glasses Launch, Drives AI Adoption Through Start-up Collaboration for Consumer and Enterprise Markets, Showcasing \"3 for You\" Brand Value 22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs to Deliver Digital Life in a Single Plan, One Plan . All of Life 24 Mar 2026 Hutchison Telecom Hong Kong Marks Fifth Consecutive Year as Official Partner of Art Basel Hong Kong 09 Mar 2026 2025 Annual Results Announcement Media Highlights 25 Sep 2025 Business Leaders Connect at 3Business Empower Partnership Summit 2025 to Achieve \"AI for Industries\" and Drive AI + 5G Transformation, Reshaping Business Operations Across Industries 15 Jul 2025 One Plan One World, HTHK Draws on 3 Group's International Network Strengths to Launc",
-      "evidence_path": "evidence_cache/bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a.txt",
-      "content_hash": "bc230622a7d7594075f58ab083c4138dffc25a51f0d783928759e7d77da5952a",
+      "text_sample": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK 5G Monthly Plans 4.5G Monthly Plans Tertiary Student and Staff Zone iPhone Monthly Plans Plans & VAS / All Monthly Plan / WORLD PLAN WORLD PLAN Subscribe Online 5G SIM Monthly Plan NEW Health Fit 5G Plan NEW VIPet 5G Plan 5G Data Roam Like Home Monthly Plan NEW WORLD PLAN Subscribe Online 5G Handset Voucher Plan 5G Multi-SIM Plan NEW Global Plan Handset Voucher Plans Local plan price with data usable worldwide All data can be used in HK when not travelling Free roaming calls No SIM swaps Connect upon arrival Over 100 local & oversea travel perks Local plan price with data usable worldwide All data can be used in HK when not travelling Free roaming calls No SIM swaps Connect upon arrival Over 100 local & oversea travel perks New Global Shared Data Global Shared Data New Asia Pacific Shared Data Asia Pacific Shared Data",
+      "evidence_path": "evidence_cache/977060aea5404b3b290595f6d4f6d3ccb425bb59cd975aaea5d64e1dc9b917e0.txt",
+      "content_hash": "977060aea5404b3b290595f6d4f6d3ccb425bb59cd975aaea5d64e1dc9b917e0",
       "error": "",
       "fetch_attempts": [
         {
-          "url": "https://m.hthkh.com/en/media/press.php",
-          "final_url": "https://m.hthkh.com/en/media/press.php",
+          "url": "https://web.three.com.hk/plans/apac/index2-en.html",
+          "final_url": "https://web.three.com.hk/plans/apac/index2-en.html",
           "status": 200,
           "method": "httpx",
-          "bytes": 21547,
-          "text_chars": 4218,
-          "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
+          "bytes": 153543,
+          "text_chars": 12152,
+          "title": "New 'World Plan' | Data usable worldwide + Free travel insurance | 3HK",
           "error": "",
           "meta_refresh_url": ""
         }
@@ -495,7 +496,7 @@
       "source_type": "company_official",
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
-      "robots_status": "not_found_allow",
+      "robots_status": "checked",
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
@@ -503,8 +504,7 @@
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": [
-        "3HK",
-        "Hutchison"
+        "3HK"
       ]
     }
   ],
@@ -514,6 +514,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:23.487841+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:23.488076+08:00"
+  "fetched_at": "2026-06-24T03:32:49.789527+00:00",
+  "fetched_at_hkt": "2026-06-24T11:32:49.789706+08:00"
 }

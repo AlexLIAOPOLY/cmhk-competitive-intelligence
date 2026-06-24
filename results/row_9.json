@@ -55,7 +55,7 @@
           "content_type": "text/html;charset=utf-8",
           "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
           "bytes": 1673620,
-          "elapsed_seconds": 5.024,
+          "elapsed_seconds": 2.496,
           "method": "httpx",
           "text_sample": "SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updates Switch to AI Plan – 5G Service Plans Key Highlights Switch to AI Plan – 5G Service Plans HONOR Magic V6 Handset Offers Samsung Galaxy S26 Series Offers iPhone 17 Series | iPhone Air Offers Disney+ Special Offer Other Offers & Updates Latest SmarTone 5G Offers AI Connect: Direct Access to Leading AI Platforms AI Smart Lifestyle by SmarTone eSIM Handbook Learn More Service Plans & Prepaid Cards 4.5G Service Plans Monthly fee from $99 Free 1GB/month Chinese Mainland & Macau Roaming Data Mobile Services 5G Service Plans 4.5G Service Plans Undergrad 5G Plan Re-contract Online Refer & Earn Prepaid Cards Value-Added Services Travel Security Music Entertainment Utilities Phones & Products Online Store 5 Key Incentives for Online Device Purchases From exc",
           "evidence_path": "evidence_cache/b69246f626221f0e18cedd018df174b033930afbc39892f2c55be2c07ee4df5b.txt",
@@ -97,7 +97,7 @@
           "content_type": "text/html;charset=utf-8",
           "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
           "bytes": 118430,
-          "elapsed_seconds": 9.622,
+          "elapsed_seconds": 6.795,
           "method": "httpx",
           "text_sample": "× Scan QR Code by using SmarTone mobile network × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and download the App × Please scan the QR code × Please scan QR Code × Please scan QR Code SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor ",
           "evidence_path": "evidence_cache/edddbef5ac8d355ef35b7cc8ee50fd0811d7699d9733cf84c5797979843c40fe.txt",
@@ -132,8 +132,8 @@
           ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "The 'Extracted Data' contains strings that are not valid JSON values (e.g., 'SOURCE: https://5g.smartone.com/...') and do not represent any structured extraction of the Source Text. The Source Text itself is a single block of text, not a JSON object. Therefore, the extracted data does not accurately reflect the source."
+      "confidence_score": 0.4,
+      "verification_reason": "The extracted data contains copying of the source URL and some phrases, but does not provide a clear, concise summary or accurate extraction of key categories like '5G套餐', '家宽', '企业方案', '漫游', and '促销折扣'. The values largely repeat the source text without proper context or structured extraction."
     }
   ],
   "entity_missing": [],
@@ -146,7 +146,7 @@
       "content_type": "text/html;charset=utf-8",
       "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
       "bytes": 1673620,
-      "elapsed_seconds": 5.024,
+      "elapsed_seconds": 2.496,
       "method": "httpx",
       "text_sample": "SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor SmarTone PRIORITY Contact Us 中文 Latest Offers & AI Updates Switch to AI Plan – 5G Service Plans Key Highlights Switch to AI Plan – 5G Service Plans HONOR Magic V6 Handset Offers Samsung Galaxy S26 Series Offers iPhone 17 Series | iPhone Air Offers Disney+ Special Offer Other Offers & Updates Latest SmarTone 5G Offers AI Connect: Direct Access to Leading AI Platforms AI Smart Lifestyle by SmarTone eSIM Handbook Learn More Service Plans & Prepaid Cards 4.5G Service Plans Monthly fee from $99 Free 1GB/month Chinese Mainland & Macau Roaming Data Mobile Services 5G Service Plans 4.5G Service Plans Undergrad 5G Plan Re-contract Online Refer & Earn Prepaid Cards Value-Added Services Travel Security Music Entertainment Utilities Phones & Products Online Store 5 Key Incentives for Online Device Purchases From exc",
       "evidence_path": "evidence_cache/b69246f626221f0e18cedd018df174b033930afbc39892f2c55be2c07ee4df5b.txt",
@@ -188,7 +188,7 @@
       "content_type": "text/html;charset=utf-8",
       "title": "SmarTone 5G – World Class 5G experience. Only at SmarTone",
       "bytes": 118430,
-      "elapsed_seconds": 9.622,
+      "elapsed_seconds": 6.795,
       "method": "httpx",
       "text_sample": "× Scan QR Code by using SmarTone mobile network × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan QR Code × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and subscribe via SmarTone CARE app × Please scan the QR code and download the App × Please scan the QR code × Please scan QR Code × Please scan QR Code SmarTone 5G – World Class 5G experience. Only at SmarTone Consumer Business Investor ",
       "evidence_path": "evidence_cache/edddbef5ac8d355ef35b7cc8ee50fd0811d7699d9733cf84c5797979843c40fe.txt",
@@ -229,6 +229,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:26.288138+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:26.288322+08:00"
+  "fetched_at": "2026-06-24T03:32:52.850609+00:00",
+  "fetched_at_hkt": "2026-06-24T11:32:52.850907+08:00"
 }

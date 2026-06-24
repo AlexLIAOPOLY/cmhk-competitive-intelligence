@@ -26,14 +26,14 @@
     "中国联通"
   ],
   "source_urls": [
-    "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
     "https://www.eand.com/en/news/16-mar-26-eand-khalifa-uni-launch-white-paper.html",
     "https://www.eand.com/en/news/28-04-26-eand-financial-results-q1-2026.html",
+    "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
     "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
     "https://dataclouds.cninfo.com.cn/shgonggao/hsomarket/2026/20260420/c34d1cf7b4794bebb3f39acf8b598c4b.PDF",
     "https://www.stc.com/en/investors.html",
-    "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
     "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
+    "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
     "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
   ],
   "attempted_urls": [
@@ -48,11 +48,11 @@
     "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
   ],
   "extracted": {
-    "AI": "ml e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carri",
+    "AI": "unch-white-paper.html e& (etisalat and ) | Global technology group | e& and Khalifa University launch white paper Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carri",
     "算力网络": "to support multi-vendor and multi-domain intelligence at scale. The white paper details five enabling pillars for AI-native 6G: pervasive AI/ML frameworks, distributed cloud-edge computing, advanced technologies includin",
-    "云": "diameter and delivers round-trip of latency under 150 ms. The solution supports a diverse range of strategic applications, including enterprise connectivity, government services, cloud-based solutions, and 5G backhauling",
-    "DICT": "th and tenth O3b mPOWER satellites last year. Operating in Medium Earth Orbit approximately 8,000 km above the Earth, the O3b mPOWER system delivers fiber-like performance with predictable low latency and highly scalable",
-    "5G-A": "ce”, and “security”, we made network population coverage rate exceeded 99%, and the network experience in key scenarios were solid strides in high-quality recognised by customers. 5G-A base stations were deployed in more",
+    "云": "es designed to support multi-vendor and multi-domain intelligence at scale. The white paper details five enabling pillars for AI-native 6G: pervasive AI/ML frameworks, distributed cloud-edge computing, advanced technolog",
+    "DICT": "tures, and sustainability-driven design. Together, these elements position 6G not simply as a faster network, but as a cognitive infrastructure capable of autonomous operation, predictive optimisation, and intent-based s",
+    "5G-A": "uires, the following terms and expressions have the following meanings: 2C/2H/2B/2G To Customer/To Home/To Business/To Government 5G 5th generation mobile communication technology 5G-A 5G-Advanced, i.e. evolved and enhan",
     "资本开支": "I revenue4 grew by over 140% year-on-year. International business revenue reached RMB13.6 billion, representing year-on-year growth of over 9%. The Company’ s capital expenditure (CAPEX) for the full year was RMB54.2 bil"
   },
   "missing_fields": [],
@@ -61,63 +61,21 @@
       "entity": "e&",
       "status": "ok",
       "source_urls": [
-        "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
         "https://www.eand.com/en/news/16-mar-26-eand-khalifa-uni-launch-white-paper.html",
         "https://www.eand.com/en/news/28-04-26-eand-financial-results-q1-2026.html",
+        "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
         "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html"
       ],
       "extracted": {
-        "AI": "ml e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carri",
+        "AI": "unch-white-paper.html e& (etisalat and ) | Global technology group | e& and Khalifa University launch white paper Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carri",
         "算力网络": "to support multi-vendor and multi-domain intelligence at scale. The white paper details five enabling pillars for AI-native 6G: pervasive AI/ML frameworks, distributed cloud-edge computing, advanced technologies includin",
-        "云": "diameter and delivers round-trip of latency under 150 ms. The solution supports a diverse range of strategic applications, including enterprise connectivity, government services, cloud-based solutions, and 5G backhauling",
-        "DICT": "th and tenth O3b mPOWER satellites last year. Operating in Medium Earth Orbit approximately 8,000 km above the Earth, the O3b mPOWER system delivers fiber-like performance with predictable low latency and highly scalable",
+        "云": "es designed to support multi-vendor and multi-domain intelligence at scale. The white paper details five enabling pillars for AI-native 6G: pervasive AI/ML frameworks, distributed cloud-edge computing, advanced technolog",
+        "DICT": "tures, and sustainability-driven design. Together, these elements position 6G not simply as a faster network, but as a cognitive infrastructure capable of autonomous operation, predictive optimisation, and intent-based s",
         "资本开支": "the “last-mile problem” — the complex, business-specific integrations and operational nuances that generic AI products cannot address. The announcement comes at a time of rapid AI investment across the region. According ",
         "5G-A": "本轮官方公开来源未发现 e& 对该字段的独立可量化披露；维持后续监测。"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 21,
-          "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-          "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-          "status": 200,
-          "content_type": "text/html;charset=utf-8",
-          "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
-          "bytes": 34132,
-          "elapsed_seconds": 3.276,
-          "method": "httpx",
-          "text_sample": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI O",
-          "evidence_path": "evidence_cache/a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e.txt",
-          "content_hash": "a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-              "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 34132,
-              "text_chars": 6109,
-              "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "AE",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "not_found_allow",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "e&"
-          ]
-        },
         {
           "row": 21,
           "url": "https://www.eand.com/en/news/16-mar-26-eand-khalifa-uni-launch-white-paper.html",
@@ -126,7 +84,7 @@
           "content_type": "text/html;charset=utf-8",
           "title": "e& (etisalat and ) | Global technology group | e& and Khalifa University launch white paper",
           "bytes": 33983,
-          "elapsed_seconds": 3.3,
+          "elapsed_seconds": 2.625,
           "method": "httpx",
           "text_sample": "e& (etisalat and ) | Global technology group | e& and Khalifa University launch white paper Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Our brands UAE life ",
           "evidence_path": "evidence_cache/a0ed992460d7864fd58e089f115a639dc7012db5b6694793c59a01762c5aa543.txt",
@@ -168,7 +126,7 @@
           "content_type": "text/html;charset=utf-8",
           "title": "e& (etisalat and ) | Global technology group | e& reports AED 19.4 billion consolidated revenue",
           "bytes": 33904,
-          "elapsed_seconds": 3.321,
+          "elapsed_seconds": 2.68,
           "method": "httpx",
           "text_sample": "e& (etisalat and ) | Global technology group | e& reports AED 19.4 billion consolidated revenue Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Our brands UAE l",
           "evidence_path": "evidence_cache/f7d7da7a6cb47a113fe7dfaa534905b5a861b295f36f4fb5926f0bc3ecab14a2.txt",
@@ -204,13 +162,55 @@
         },
         {
           "row": 21,
+          "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+          "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+          "status": 200,
+          "content_type": "text/html;charset=utf-8",
+          "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
+          "bytes": 34132,
+          "elapsed_seconds": 2.69,
+          "method": "httpx",
+          "text_sample": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI O",
+          "evidence_path": "evidence_cache/a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e.txt",
+          "content_hash": "a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+              "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 34132,
+              "text_chars": 6109,
+              "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "AE",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "not_found_allow",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "e&"
+          ]
+        },
+        {
+          "row": 21,
           "url": "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
           "final_url": "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
           "status": 200,
           "content_type": "text/html;charset=utf-8",
           "title": "e& (etisalat and ) | Global technology group | e& enterprise and Emergence Partnership",
           "bytes": 35291,
-          "elapsed_seconds": 3.329,
+          "elapsed_seconds": 2.695,
           "method": "httpx",
           "text_sample": "e& (etisalat and ) | Global technology group | e& enterprise and Emergence Partnership Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Our brands UAE life inter",
           "evidence_path": "evidence_cache/3e074049fc4611d8af65a5a19682ca6ccba5310e15e347f21977bf6ae47dac7d.txt",
@@ -245,8 +245,8 @@
           ]
         }
       ],
-      "confidence_score": 0.6,
-      "verification_reason": "The extracted 'AI' and '算力网络' fields contain snippets from the second source article about AI-native 6G, but the source text for that article is truncated. The '云', 'DICT', and '5G-A' fields have partial matches in the first source (cloud, O3b mPOWER, and 5G backhauling), but '资本开支' is noted as undisclosed. Overall, extraction is weakly supported due to truncation and lack of full source coverage."
+      "confidence_score": 0.7,
+      "verification_reason": "Most extracted data (AI, 算力网络, 云, DICT, capital expenditure parts) match or are reasonably inferable from the source text, but '5G-A' is flagged as not independently quantified, and there are minor formatting discrepancies (e.g., duplicated text) that lower confidence."
     },
     {
       "entity": "stc",
@@ -272,7 +272,7 @@
           "content_type": "text/html;charset=utf-8",
           "title": "stc group | investor relations | overview",
           "bytes": 155504,
-          "elapsed_seconds": 6.294,
+          "elapsed_seconds": 4.572,
           "method": "curl_chrome_ua",
           "text_sample": "stc group | investor relations | overview career media center contact us تصفح بالعربية تصفح بالعربية Personal stc revamp stc group Overview stc group group subsidiaries our leadership our strategy academy award our history sustainability Overview sustainability ESG highlights environment social governance we and our society volunteering program our success stories smart truck electronic waste recycling and refurbishment educational grants home renovation Jood Eleskan furniture donation impactU sustainability reports technical enablement investors Overview investors financial information financial statements annual reports interactive annual report interactive financial figures presentations and reports share information stc share investment calculator analysts list and ratings recommendations overview consensus estimates dividends dividends information dividends payment inquiries announc",
           "evidence_path": "evidence_cache/4cb4f01395bfef31a0f82482a613444a8c943dff1a43b242faad5f07cdbb04f1.txt",
@@ -330,7 +330,7 @@
         }
       ],
       "confidence_score": 0.2,
-      "verification_reason": "Extracted data contains fragmented and repetitive text that does not accurately represent the source. The keys 'AI', '算力网络', '云', 'DICT', '资本开支' are not present in the source text. '5G-A' key mentions '未发现 stc 对该字段的独立可量化披露', which is a meta-statement, not extracted data. Overall, most extracted fields have no meaningful correspondence with the source."
+      "verification_reason": "Extracted Data contains fields like 'AI', '算力网络', '云', 'DICT', and '资本开支' which are not present in the Source Text. Additionally, the values for these fields are either irrelevant or truncated text from the source, and '5G-A' is stated as not found in official sources, while no such mention exists in the provided source text. Only minor overlapping text fragments exist, leading to low accuracy."
     },
     {
       "entity": "中国移动",
@@ -357,7 +357,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 240992,
-          "elapsed_seconds": 0.752,
+          "elapsed_seconds": 0.597,
           "method": "httpx",
           "text_sample": "公司简称：中国移动 股票代码：600941 中国移动有限公司 2026年第一季度报告 2026 年第一季度报告 重要提示 中国移动有限公司（“本公司”或“公司”）董事会及董事、高级管理人员保证季度 报告内容的真实、准确、完整，不存在虚假记载、误导性陈述或重大遗漏，并承担个别和 连带的法律责任。 公司负责人陈忠岳、主管会计工作负责人李荣华及会计机构负责人（会计主管人员） 胡宇霆保证季度报告中财务信息的真实、准确、完整。 本公司分别按照中国企业会计准则及国际财务报告会计准则/香港财务报告会计准则 编制财务报告。本季度报告中的财务报表按照中国企业会计准则编制，未经审计。 本季度报告载有若干涉及本公司未来计划、发展战略等事宜的前瞻性陈述，不构成公 司对投资者的实质承诺。该等前瞻性陈述涉及已知和未知的风险、不确定性及其他因素， 而相关因素可能导致本公司的实际表现、财务状况或经营业绩与前瞻性陈述中所暗示的有 重大出入，敬请投资者注意投资风险。 本报告中数据若出现合计值与各分项数值之和尾数不符的情况，均为四舍五入所致。 主要财务数据 主要会计数据 由2026年1月1日 由2025年1月1日 至2026年3月31日 至2025年3月31日 期间／ 期间／ （单位：人民币亿元） 于2026年3月31日 于2025年12月31日 变化 营业收入 2,665 2,638 1.0% 其中：主营业务收入 2,199 2,224 -1.1% 其他业务收入 [REDACTED_PHONE_OR_ID].7% 利润总额 376 393 -4.4% 归属于母公司股东的净利润 293 306 -4.2% 归属于母公司股东的扣除非经常性损益的净 279 289 -3.5% 利润 归属于母公司股东的净利润率 11.0% 11.6% -0.6pp 经营活动产生的现金流量净额 [REDACTED_PHONE_OR_ID].1% 归属于母公司股东权益 14,228 13,932 2.1% 总资产 21,535 20,929 2.9% 1 2026 年第一季度报告 主要财务指标 由2026年1月1日 由2025年1月1日 至2026年3月31日 至2025年3月",
           "evidence_path": "evidence_cache/29bb9c49d90ea535f3c44b3d204a875a00decf05c5991e4f39e00025ab316a12.txt",
@@ -399,7 +399,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 27647004,
-          "elapsed_seconds": 10.301,
+          "elapsed_seconds": 15.906,
           "method": "curl_chrome_ua",
           "text_sample": "Annual Report 2025 智能 通信 AI Communications 算力 Computing China Mobile Limited Stock Codes: 941 (HKD Counter) and 80941 (RMB Counter) Forward-Looking Statements Forward-looking statements contained in this annual report do not constitute and should not be viewed as commitments made by the Company. Such forward-looking statements involve known and unknown risks, uncertainties and other factors, which may cause the actual performance, financial condition or results of operations of the Company to be materially different from those implied by such forward-looking statements. In addition, the Company does not intend to update such forward-looking statements. Investors are cautioned not to unduly rely on such forward-looking statements. CONTENTS 02 Milestones for 2025 73 Independent Auditor’s Report 04 Corporate Information 79 Consolidated Statement of Comprehensive 05 Financial Highlights Inco",
           "evidence_path": "evidence_cache/50c62da432ef01738ac6a0154a59804d26404337373a22aad0f19995dd2507f1.txt",
@@ -457,7 +457,7 @@
         }
       ],
       "confidence_score": 0.2,
-      "verification_reason": "The extracted data appears to be a disorganized compilation of fragments from the source text, with missing context, mismatched sections, and irrelevant terms. Key financial figures (e.g., capital expenditure, AI mentions) are either absent or inaccurately represented. The structure and content do not coherently reflect the source."
+      "verification_reason": "Most extracted data fields contain text that does not appear in the source text at all, or is misattributed. For example, 'AI' includes names and figures from the financial statements, but the term '智能通信 AI Communications' does not match the actual text. '算力网络' and '云' contain fragments of financial statements and URLs that are not present in the source. 'DICT' appears to be random concatenation. '5G-A' text is partially present but 'intelligent 5G-A core network' is not in the source. '资本开支' quote is about margin and capital expenditure but the exact wording 'Capital expenditure totaled RMB150.9 bill' is not found. Only minor overlaps exist; overall accuracy is very low."
     },
     {
       "entity": "中国电信",
@@ -483,7 +483,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 16925920,
-          "elapsed_seconds": 3.675,
+          "elapsed_seconds": 3.539,
           "method": "httpx",
           "text_sample": "CONTENTS 2 Important Notice SECTION I 3 Definitions SECTION II 6 Company Profile SECTION III 8 Management's Discussion and Analysis (Report of the Directors) 50 Recognition and Awards SECTION IV 52 Corporate Governance, Environment and Society 57 Biographical Details of Current Directors and Senior Management ABOUT CHINA TELECOM SECTION V The principal business of China Telecom Corporation 99 Significant Events Limited (“China Telecom” or the “Company”, a joint stock limited company incorporated in the People’s Republic of SECTION VI China with limited liability, together with its subsidiaries, 132 Changes in Shares and Information on Shareholders collectively the “Group”) is digital information services including mobile communications, wireline communications, SECTION VII satellite communications, Internet access, cloud computing 141 Financial Reports and computing power, Big Data, AI, ",
           "evidence_path": "evidence_cache/ab413b976e95e7c4f5d2c4a166e43cbdd6ebb18f11ee276d7ace519ed6fb6ad6.txt",
@@ -518,8 +518,8 @@
           ]
         }
       ],
-      "confidence_score": 0.65,
-      "verification_reason": "Extracted data includes fragments from the source text but is truncated and combined with unrelated sections, leading to inaccuracies. For example, 'AI' appears in the source as part of a list but is not repeated with the same content; '算力网络' is not directly found; '云' appears in 'cloud computing'; 'DICT' is not defined; '5G-A' has a correct definition; '资本开支' appears as 'Capital expenditure' but is taken out of context."
+      "confidence_score": 0.15,
+      "verification_reason": "The extracted data contains segments that partially match the source text but are fragmented and out of context. For example, 'AI' incorrectly includes unrelated text, '算力网络' and '云' include large unrelated portions, 'DICT' is not present as a defined term, '5G-A' matches correctly but is incomplete, and '资本开支' is misaligned with its proper context. Overall, the extraction is highly inaccurate and unreliable."
     },
     {
       "entity": "中国联通",
@@ -545,7 +545,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 8906818,
-          "elapsed_seconds": 3.182,
+          "elapsed_seconds": 3.686,
           "method": "httpx",
           "text_sample": "CHINA UNICOM (HONG KONG) LIMITED STOCK CODE : 762 ANN U A L R E P O R T 2 0 2 5 Strengthening Connectivity Using advanced communication technologies, the Company enhanced the robustness of connectivity, and made preemptive deployments on space-ground integrated network, so as to build an intelligent, ubiquitous, high- speed, efficient, and reliable digital backbone. • Our network coverage continued to deepen, with the number of 4G/5G base stations exceeding 4.7 million. • Net additions of mobile and broadband users reached 20.93 million, hitting a new high in recent years. • Integrated penetration rate increased to ＞78%, with the ARPU of integrated subscribers staying at over RMB100. Enhancing Computing Power The Company continued to promote the integrated development of cloud, network, edge, and devices with new algorithms and technologies, build edge computing clusters, and deploy mult",
           "evidence_path": "evidence_cache/f46cfe5046dbe8967bbe95fa0507b6cb004ba9ae00c07c92d30c7b3175a806ba.txt",
@@ -580,54 +580,12 @@
           ]
         }
       ],
-      "confidence_score": 0.68,
-      "verification_reason": "Extracted data contains truncated or cut-off phrases for most keys, e.g., 'AI' ends with 'with the u', '算力网络' with 'ached 20.93 million', which match source text but are incomplete. '云' and '5G-A' are partially correct but include extra unrelated text. 'DICT' entry quotes content about security, not DICT, and '资本开支' correctly captures the capital expenditure figure but omits surrounding context. Overall, data partially reflects source but has significant truncation and misalignment."
+      "confidence_score": 0.7,
+      "verification_reason": "Most extracted values are verbatim from the source, but some fields (AI, 算力网络, 云, DICT, 5G-A) are fragmented or incomplete sentences; 资本开支 is a standalone snippet, not fully represented. Overall alignment is high but not perfect."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 21,
-      "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-      "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-      "status": 200,
-      "content_type": "text/html;charset=utf-8",
-      "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
-      "bytes": 34132,
-      "elapsed_seconds": 3.276,
-      "method": "httpx",
-      "text_sample": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI O",
-      "evidence_path": "evidence_cache/a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e.txt",
-      "content_hash": "a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-          "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 34132,
-          "text_chars": 6109,
-          "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "AE",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "not_found_allow",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "e&"
-      ]
-    },
     {
       "row": 21,
       "url": "https://www.eand.com/en/news/16-mar-26-eand-khalifa-uni-launch-white-paper.html",
@@ -636,7 +594,7 @@
       "content_type": "text/html;charset=utf-8",
       "title": "e& (etisalat and ) | Global technology group | e& and Khalifa University launch white paper",
       "bytes": 33983,
-      "elapsed_seconds": 3.3,
+      "elapsed_seconds": 2.625,
       "method": "httpx",
       "text_sample": "e& (etisalat and ) | Global technology group | e& and Khalifa University launch white paper Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Our brands UAE life ",
       "evidence_path": "evidence_cache/a0ed992460d7864fd58e089f115a639dc7012db5b6694793c59a01762c5aa543.txt",
@@ -678,7 +636,7 @@
       "content_type": "text/html;charset=utf-8",
       "title": "e& (etisalat and ) | Global technology group | e& reports AED 19.4 billion consolidated revenue",
       "bytes": 33904,
-      "elapsed_seconds": 3.321,
+      "elapsed_seconds": 2.68,
       "method": "httpx",
       "text_sample": "e& (etisalat and ) | Global technology group | e& reports AED 19.4 billion consolidated revenue Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Our brands UAE l",
       "evidence_path": "evidence_cache/f7d7da7a6cb47a113fe7dfaa534905b5a861b295f36f4fb5926f0bc3ecab14a2.txt",
@@ -714,13 +672,55 @@
     },
     {
       "row": 21,
+      "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+      "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
+      "bytes": 34132,
+      "elapsed_seconds": 2.69,
+      "method": "httpx",
+      "text_sample": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI O",
+      "evidence_path": "evidence_cache/a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e.txt",
+      "content_hash": "a24fccee8e9d23d536467e1fcb8bac824c4200f84e2066cd7b51f036fbdefd9e",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+          "final_url": "https://www.eand.com/en/news/10-feb-26-eand-cw-services-and-ses.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 34132,
+          "text_chars": 6109,
+          "title": "e& (etisalat and ) | Global technology group | e& C&W Services and SES deliver 1.25 Gbps low-latency satellite",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "AE",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "e&"
+      ]
+    },
+    {
+      "row": 21,
       "url": "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
       "final_url": "https://www.eand.com/en/news/22-jan-2026-eand-enterprise-and-emergence-partnership.html",
       "status": 200,
       "content_type": "text/html;charset=utf-8",
       "title": "e& (etisalat and ) | Global technology group | e& enterprise and Emergence Partnership",
       "bytes": 35291,
-      "elapsed_seconds": 3.329,
+      "elapsed_seconds": 2.695,
       "method": "httpx",
       "text_sample": "e& (etisalat and ) | Global technology group | e& enterprise and Emergence Partnership Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Since 1976, we have given people the power to come together . Our brands UAE life international enterprise capital At e&, we do more so you can be more. Our mission is to enrich every day, every moment, for everyone we reach. Investors Financial Highlights Share Information Debt Profile Dividends Analyst Coverage Financial Results Annual Reports Financial Calendar Corporate Announcements Invest in e& We operate in 38 countries across Middle East, Asia, Africa and central and eastern Europe Stories Careers عربي Who we are About Us Governance Senior Management Our Strategy Sustainability Awards and recognitions Carrier & Wholesale Responsible AI Our brands UAE life inter",
       "evidence_path": "evidence_cache/3e074049fc4611d8af65a5a19682ca6ccba5310e15e347f21977bf6ae47dac7d.txt",
@@ -762,7 +762,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 240992,
-      "elapsed_seconds": 0.752,
+      "elapsed_seconds": 0.597,
       "method": "httpx",
       "text_sample": "公司简称：中国移动 股票代码：600941 中国移动有限公司 2026年第一季度报告 2026 年第一季度报告 重要提示 中国移动有限公司（“本公司”或“公司”）董事会及董事、高级管理人员保证季度 报告内容的真实、准确、完整，不存在虚假记载、误导性陈述或重大遗漏，并承担个别和 连带的法律责任。 公司负责人陈忠岳、主管会计工作负责人李荣华及会计机构负责人（会计主管人员） 胡宇霆保证季度报告中财务信息的真实、准确、完整。 本公司分别按照中国企业会计准则及国际财务报告会计准则/香港财务报告会计准则 编制财务报告。本季度报告中的财务报表按照中国企业会计准则编制，未经审计。 本季度报告载有若干涉及本公司未来计划、发展战略等事宜的前瞻性陈述，不构成公 司对投资者的实质承诺。该等前瞻性陈述涉及已知和未知的风险、不确定性及其他因素， 而相关因素可能导致本公司的实际表现、财务状况或经营业绩与前瞻性陈述中所暗示的有 重大出入，敬请投资者注意投资风险。 本报告中数据若出现合计值与各分项数值之和尾数不符的情况，均为四舍五入所致。 主要财务数据 主要会计数据 由2026年1月1日 由2025年1月1日 至2026年3月31日 至2025年3月31日 期间／ 期间／ （单位：人民币亿元） 于2026年3月31日 于2025年12月31日 变化 营业收入 2,665 2,638 1.0% 其中：主营业务收入 2,199 2,224 -1.1% 其他业务收入 [REDACTED_PHONE_OR_ID].7% 利润总额 376 393 -4.4% 归属于母公司股东的净利润 293 306 -4.2% 归属于母公司股东的扣除非经常性损益的净 279 289 -3.5% 利润 归属于母公司股东的净利润率 11.0% 11.6% -0.6pp 经营活动产生的现金流量净额 [REDACTED_PHONE_OR_ID].1% 归属于母公司股东权益 14,228 13,932 2.1% 总资产 21,535 20,929 2.9% 1 2026 年第一季度报告 主要财务指标 由2026年1月1日 由2025年1月1日 至2026年3月31日 至2025年3月",
       "evidence_path": "evidence_cache/29bb9c49d90ea535f3c44b3d204a875a00decf05c5991e4f39e00025ab316a12.txt",
@@ -804,7 +804,7 @@
       "content_type": "text/html;charset=utf-8",
       "title": "stc group | investor relations | overview",
       "bytes": 155504,
-      "elapsed_seconds": 6.294,
+      "elapsed_seconds": 4.572,
       "method": "curl_chrome_ua",
       "text_sample": "stc group | investor relations | overview career media center contact us تصفح بالعربية تصفح بالعربية Personal stc revamp stc group Overview stc group group subsidiaries our leadership our strategy academy award our history sustainability Overview sustainability ESG highlights environment social governance we and our society volunteering program our success stories smart truck electronic waste recycling and refurbishment educational grants home renovation Jood Eleskan furniture donation impactU sustainability reports technical enablement investors Overview investors financial information financial statements annual reports interactive annual report interactive financial figures presentations and reports share information stc share investment calculator analysts list and ratings recommendations overview consensus estimates dividends dividends information dividends payment inquiries announc",
       "evidence_path": "evidence_cache/4cb4f01395bfef31a0f82482a613444a8c943dff1a43b242faad5f07cdbb04f1.txt",
@@ -862,55 +862,13 @@
     },
     {
       "row": 21,
-      "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
-      "final_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
-      "status": 200,
-      "content_type": "application/pdf",
-      "title": "PDF extracted by pdftotext",
-      "bytes": 8906818,
-      "elapsed_seconds": 3.182,
-      "method": "httpx",
-      "text_sample": "CHINA UNICOM (HONG KONG) LIMITED STOCK CODE : 762 ANN U A L R E P O R T 2 0 2 5 Strengthening Connectivity Using advanced communication technologies, the Company enhanced the robustness of connectivity, and made preemptive deployments on space-ground integrated network, so as to build an intelligent, ubiquitous, high- speed, efficient, and reliable digital backbone. • Our network coverage continued to deepen, with the number of 4G/5G base stations exceeding 4.7 million. • Net additions of mobile and broadband users reached 20.93 million, hitting a new high in recent years. • Integrated penetration rate increased to ＞78%, with the ARPU of integrated subscribers staying at over RMB100. Enhancing Computing Power The Company continued to promote the integrated development of cloud, network, edge, and devices with new algorithms and technologies, build edge computing clusters, and deploy mult",
-      "evidence_path": "evidence_cache/f46cfe5046dbe8967bbe95fa0507b6cb004ba9ae00c07c92d30c7b3175a806ba.txt",
-      "content_hash": "f46cfe5046dbe8967bbe95fa0507b6cb004ba9ae00c07c92d30c7b3175a806ba",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
-          "final_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 8906818,
-          "text_chars": 258270,
-          "title": "PDF extracted by pdftotext",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "HK/CN",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "not_found_allow",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "中国联通"
-      ]
-    },
-    {
-      "row": 21,
       "url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
       "final_url": "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
       "status": 200,
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 16925920,
-      "elapsed_seconds": 3.675,
+      "elapsed_seconds": 3.539,
       "method": "httpx",
       "text_sample": "CONTENTS 2 Important Notice SECTION I 3 Definitions SECTION II 6 Company Profile SECTION III 8 Management's Discussion and Analysis (Report of the Directors) 50 Recognition and Awards SECTION IV 52 Corporate Governance, Environment and Society 57 Biographical Details of Current Directors and Senior Management ABOUT CHINA TELECOM SECTION V The principal business of China Telecom Corporation 99 Significant Events Limited (“China Telecom” or the “Company”, a joint stock limited company incorporated in the People’s Republic of SECTION VI China with limited liability, together with its subsidiaries, 132 Changes in Shares and Information on Shareholders collectively the “Group”) is digital information services including mobile communications, wireline communications, SECTION VII satellite communications, Internet access, cloud computing 141 Financial Reports and computing power, Big Data, AI, ",
       "evidence_path": "evidence_cache/ab413b976e95e7c4f5d2c4a166e43cbdd6ebb18f11ee276d7ace519ed6fb6ad6.txt",
@@ -946,13 +904,55 @@
     },
     {
       "row": 21,
+      "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+      "final_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+      "status": 200,
+      "content_type": "application/pdf",
+      "title": "PDF extracted by pdftotext",
+      "bytes": 8906818,
+      "elapsed_seconds": 3.686,
+      "method": "httpx",
+      "text_sample": "CHINA UNICOM (HONG KONG) LIMITED STOCK CODE : 762 ANN U A L R E P O R T 2 0 2 5 Strengthening Connectivity Using advanced communication technologies, the Company enhanced the robustness of connectivity, and made preemptive deployments on space-ground integrated network, so as to build an intelligent, ubiquitous, high- speed, efficient, and reliable digital backbone. • Our network coverage continued to deepen, with the number of 4G/5G base stations exceeding 4.7 million. • Net additions of mobile and broadband users reached 20.93 million, hitting a new high in recent years. • Integrated penetration rate increased to ＞78%, with the ARPU of integrated subscribers staying at over RMB100. Enhancing Computing Power The Company continued to promote the integrated development of cloud, network, edge, and devices with new algorithms and technologies, build edge computing clusters, and deploy mult",
+      "evidence_path": "evidence_cache/f46cfe5046dbe8967bbe95fa0507b6cb004ba9ae00c07c92d30c7b3175a806ba.txt",
+      "content_hash": "f46cfe5046dbe8967bbe95fa0507b6cb004ba9ae00c07c92d30c7b3175a806ba",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+          "final_url": "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 8906818,
+          "text_chars": 258270,
+          "title": "PDF extracted by pdftotext",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK/CN",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "中国联通"
+      ]
+    },
+    {
+      "row": 21,
       "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
       "final_url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
       "status": 200,
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 27647004,
-      "elapsed_seconds": 10.301,
+      "elapsed_seconds": 15.906,
       "method": "curl_chrome_ua",
       "text_sample": "Annual Report 2025 智能 通信 AI Communications 算力 Computing China Mobile Limited Stock Codes: 941 (HKD Counter) and 80941 (RMB Counter) Forward-Looking Statements Forward-looking statements contained in this annual report do not constitute and should not be viewed as commitments made by the Company. Such forward-looking statements involve known and unknown risks, uncertainties and other factors, which may cause the actual performance, financial condition or results of operations of the Company to be materially different from those implied by such forward-looking statements. In addition, the Company does not intend to update such forward-looking statements. Investors are cautioned not to unduly rely on such forward-looking statements. CONTENTS 02 Milestones for 2025 73 Independent Auditor’s Report 04 Corporate Information 79 Consolidated Statement of Comprehensive 05 Financial Highlights Inco",
       "evidence_path": "evidence_cache/50c62da432ef01738ac6a0154a59804d26404337373a22aad0f19995dd2507f1.txt",
@@ -1015,6 +1015,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-17T02:56:04.113974+00:00",
-  "fetched_at_hkt": "2026-06-17T10:56:04.113990+08:00"
+  "fetched_at": "2026-06-23T03:33:13.813589+00:00",
+  "fetched_at_hkt": "2026-06-23T11:33:13.813945+08:00"
 }

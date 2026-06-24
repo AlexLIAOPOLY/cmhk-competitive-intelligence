@@ -14,9 +14,9 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
+    "https://www.censtatd.gov.hk/en/scode530.html",
     "https://www.censtatd.gov.hk/en/page_213.html",
     "https://www.censtatd.gov.hk/en/scode200.html",
-    "https://www.censtatd.gov.hk/en/scode530.html",
     "https://apidocs.hkma.gov.hk/abouthkmasapi/",
     "https://data.gov.hk/en-data/dataset/hk-censtatd-commonidds-common-idds",
     "https://www.pmi.spglobal.com/Public/Home/PressRelease/a8f02e53a64c42c7bed05c6df7b1a487"
@@ -31,7 +31,7 @@
   ],
   "extracted": {
     "人口": "ty and Social Welfare Development, Geography and Land Information Education Election and Legislature Employment and Labour Environment Finance Food Health Housing Law and Security Population Recreation, Sports and Cultur",
-    "零售额": "SOURCE: https://www.censtatd.gov.hk/en/page_213.html Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of t",
+    "零售额": "SOURCE: https://www.censtatd.gov.hk/en/scode530.html Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview ",
     "PMI": "Access to save data on the browser is disabled, some functions may not be available. Please enable the access to unlock the full functionality of the website. SOURCE: https://www.pmi.spglobal.com/Public/Home/PressRelease",
     "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an"
   },
@@ -41,21 +41,63 @@
       "entity": "经济资讯（和30行可能存在重合，请Alex考虑是否合并）",
       "status": "ok",
       "source_urls": [
+        "https://www.censtatd.gov.hk/en/scode530.html",
         "https://www.censtatd.gov.hk/en/page_213.html",
         "https://www.censtatd.gov.hk/en/scode200.html",
-        "https://www.censtatd.gov.hk/en/scode530.html",
         "https://apidocs.hkma.gov.hk/abouthkmasapi/",
         "https://data.gov.hk/en-data/dataset/hk-censtatd-commonidds-common-idds",
         "https://www.pmi.spglobal.com/Public/Home/PressRelease/a8f02e53a64c42c7bed05c6df7b1a487"
       ],
       "extracted": {
         "人口": "ty and Social Welfare Development, Geography and Land Information Education Election and Legislature Employment and Labour Environment Finance Food Health Housing Law and Security Population Recreation, Sports and Cultur",
-        "零售额": "SOURCE: https://www.censtatd.gov.hk/en/page_213.html Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of t",
+        "零售额": "SOURCE: https://www.censtatd.gov.hk/en/scode530.html Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview ",
         "PMI": "Access to save data on the browser is disabled, some functions may not be available. Please enable the access to unlock the full functionality of the website. SOURCE: https://www.pmi.spglobal.com/Public/Home/PressRelease",
         "失业率": "Domestic Product by expenditure component 3863 2727 2157 9295 gdp-e@censtatd.gov.hk December 2020 SOURCE: https://www.censtatd.gov.hk/en/scode200.html Labour Force, Employment and Unemployment Labour Force, Employment an"
       },
       "missing_fields": [],
       "raw_records": [
+        {
+          "row": 23,
+          "url": "https://www.censtatd.gov.hk/en/scode530.html",
+          "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
+          "status": 200,
+          "content_type": "text/html",
+          "title": "Retail",
+          "bytes": 26176,
+          "elapsed_seconds": 1.304,
+          "method": "httpx",
+          "text_sample": "Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section Total Retail Sales ( ) Value index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Volume index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Business Performance and Operating Characteristics of Retail Trade ( ) ( ) ( ) ( ) ( ) ( ) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Concepts and Methods Concepts and Methods section Feature Articles on Co",
+          "evidence_path": "evidence_cache/fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6.txt",
+          "content_hash": "fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.censtatd.gov.hk/en/scode530.html",
+              "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 26176,
+              "text_chars": 1135,
+              "title": "Retail",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "government_statistics",
+          "jurisdiction": "HK",
+          "tos_status": "public_information",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "经济资讯（和30行可能存在重合，请Alex考虑是否合并）"
+          ]
+        },
         {
           "row": 23,
           "url": "https://www.censtatd.gov.hk/en/page_213.html",
@@ -64,7 +106,7 @@
           "content_type": "text/html",
           "title": "Retail Sales and Consumer Spending",
           "bytes": 10186,
-          "elapsed_seconds": 3.945,
+          "elapsed_seconds": 1.313,
           "method": "httpx",
           "text_sample": "Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of the sales of goods sold by local establishments primarily engaged in retail trade . Retail sales statistics are compiled using data collected from the Monthly Survey of Retail Sales. Local retail establishments with and without physical shops are covered in the survey and their sales, both through conventional shops and online channels, are included in the retail sales statistics. The Census and Statistics Department selects a scientific sample of around 3 000 retail outlets for enumeration each month. The sales data thus collected are used for estimating the total retail sales value for each type of retail outlet and that of the whole retail sector. The volume of retail sales measures the trend of the sales of goods sold by",
           "evidence_path": "evidence_cache/5ff9a2c78981daab2bac82bec86167052b5cf6ab540adec98dd72a7095fd3c17.txt",
@@ -106,7 +148,7 @@
           "content_type": "text/html",
           "title": "Labour Force, Employment and Unemployment",
           "bytes": 26041,
-          "elapsed_seconds": 3.965,
+          "elapsed_seconds": 1.5,
           "method": "httpx",
           "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
           "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
@@ -142,55 +184,13 @@
         },
         {
           "row": 23,
-          "url": "https://www.censtatd.gov.hk/en/scode530.html",
-          "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
-          "status": 200,
-          "content_type": "text/html",
-          "title": "Retail",
-          "bytes": 26176,
-          "elapsed_seconds": 3.974,
-          "method": "httpx",
-          "text_sample": "Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section Total Retail Sales ( ) Value index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Volume index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Business Performance and Operating Characteristics of Retail Trade ( ) ( ) ( ) ( ) ( ) ( ) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Concepts and Methods Concepts and Methods section Feature Articles on Co",
-          "evidence_path": "evidence_cache/fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6.txt",
-          "content_hash": "fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.censtatd.gov.hk/en/scode530.html",
-              "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 26176,
-              "text_chars": 1135,
-              "title": "Retail",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "government_statistics",
-          "jurisdiction": "HK",
-          "tos_status": "public_information",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "经济资讯（和30行可能存在重合，请Alex考虑是否合并）"
-          ]
-        },
-        {
-          "row": 23,
           "url": "https://apidocs.hkma.gov.hk/abouthkmasapi/",
           "final_url": "https://apidocs.hkma.gov.hk/abouthkmasapi/",
           "status": 200,
           "content_type": "text/html",
           "title": "About HKMA's API – Hong Kong Monetary Authority",
           "bytes": 15036,
-          "elapsed_seconds": 5.06,
+          "elapsed_seconds": 2.537,
           "method": "httpx",
           "text_sample": "About HKMA's API – Hong Kong Monetary Authority Skip to content ENG | 繁 | 简 Decrease font size. Reset font size. Increase font size. Home About HKMA's API Documentation API Data Enquiry Home / About HKMA's API About HKMA's API The HKMA embraces the development and application of Open API. While promoting the wide adoption of Open API by the banking industry in Hong Kong, the HKMA sets an example by launching Open API on its official website. 156 sets of information covering all financial data and important information published on the HKMA's website have been made available for Open API, providing a convenient way for users to retrieve information from the HKMA's website. The use of API is subject to the Terms and Conditions of Use which apply to this site. First-time user? Learn more about HKMA's API and types of information you can access here at API documentation . Benefits User frien",
           "evidence_path": "evidence_cache/6717621e7d29142fdcc0cda70cb5eb2613dbb89c14d3adfd8c55819c99a9732a.txt",
@@ -232,7 +232,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "Common Interactive Data Dissemination Service (Common-IDDS) | DATA.GOV.HK",
           "bytes": 69380,
-          "elapsed_seconds": 1.371,
+          "elapsed_seconds": 1.525,
           "method": "httpx",
           "text_sample": "Common Interactive Data Dissemination Service (Common-IDDS) | DATA.GOV.HK Skip to main content Download Queue Open special announcement Bookmarks Text Size Color Mode Color Mode 繁 简 Open Search box Search box in header Clear Search Close Search Share to Email Facebook X Weibo Open menu Datasets Explore by Categories City Management and Utilities Climate and Weather Commerce and Industry Community and Social Welfare Development, Geography and Land Information Education Election and Legislature Employment and Labour Environment Finance Food Health Housing Law and Security Population Recreation, Sports and Culture Technology and Broadcasting Tourism Transportation Miscellaneous Dataset Announcements Providers Help User Guide FAQs Developer Center API Specification CKAN API Development Guide Community About Open Data City Dashboard Consolidated Annual Open Data Plans (Spatial Data Plans incl",
           "evidence_path": "evidence_cache/0925c1cb8378c0d1c1d1db5a95ce01fe1640b11552ed18627affdc665031cab3.txt",
@@ -274,7 +274,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 101348,
-          "elapsed_seconds": 5.457,
+          "elapsed_seconds": 2.884,
           "method": "httpx",
           "text_sample": "News Release Embargoed until 0830 HKT (0030 UTC) 4 September 2024 ® S&P Global Hong Kong SAR PMI Business activity falls at softer pace in August Key findings S&P Global Hong Kong PMI sa, >50 = improvement since previous month New order contraction eases as growth in 60 export orders renews 55 50 Stocks of purchases decline for first time in 45 seven months 40 Price pressures intensify 35 30 '08 '09 '10 '11 '12 '13 '14 '15 '16 '17 '18 '19 '20 '21 '22 '23 '24 The Hong Kong SAR private sector continued to contract Source: S&P Global PMI. marginally midway through the third quarter of 2024. Data were collected 12-27 August 2024. Incoming new business and output both declined, but at softer rates than in July. This was while new business from Mainland China and abroad both rose. Despite some signs of the downturn easing, sentiment Comment remained subdued. Firms also lowered their staffing l",
           "evidence_path": "evidence_cache/1b9237ffff8c96292a1c7b995309df57f8fafb35a9e60fbe06a855539136cd2c.txt",
@@ -309,12 +309,54 @@
           ]
         }
       ],
-      "confidence_score": 0.3,
-      "verification_reason": "The extracted data contains garbled or irrelevant phrases (e.g., 'ty and Social Welfare...', 'Retail Sales and Consumer Spending...', etc.) which do not clearly and accurately represent the source text. While some terms like '零售额' and '失业率' appear in the source, the extracted values are incomplete, mixed with unrelated text from other sources, and not properly formatted as specific data values."
+      "confidence_score": 0.11,
+      "verification_reason": "The extracted data contains mismatched or irrelevant text for several fields. '人口' includes a long string unrelated to population, '零售额' correctly references retail sales source but includes extra navigation text, 'PMI' text is not clearly supported by source content, and '失业率' mixes GDP contact info with labour force topic. Overall, the extraction fails to accurately capture the predefined fields from the source text."
     }
   ],
   "entity_missing": [],
   "raw_records": [
+    {
+      "row": 23,
+      "url": "https://www.censtatd.gov.hk/en/scode530.html",
+      "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
+      "status": 200,
+      "content_type": "text/html",
+      "title": "Retail",
+      "bytes": 26176,
+      "elapsed_seconds": 1.304,
+      "method": "httpx",
+      "text_sample": "Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section Total Retail Sales ( ) Value index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Volume index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Business Performance and Operating Characteristics of Retail Trade ( ) ( ) ( ) ( ) ( ) ( ) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Concepts and Methods Concepts and Methods section Feature Articles on Co",
+      "evidence_path": "evidence_cache/fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6.txt",
+      "content_hash": "fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.censtatd.gov.hk/en/scode530.html",
+          "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 26176,
+          "text_chars": 1135,
+          "title": "Retail",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_statistics",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "经济资讯（和30行可能存在重合，请Alex考虑是否合并）"
+      ]
+    },
     {
       "row": 23,
       "url": "https://www.censtatd.gov.hk/en/page_213.html",
@@ -323,7 +365,7 @@
       "content_type": "text/html",
       "title": "Retail Sales and Consumer Spending",
       "bytes": 10186,
-      "elapsed_seconds": 3.945,
+      "elapsed_seconds": 1.313,
       "method": "httpx",
       "text_sample": "Retail Sales and Consumer Spending Retail Sales and Consumer Spending What do Retail Sales statistics measure? Retail sales statistics measure the level and trend of the sales of goods sold by local establishments primarily engaged in retail trade . Retail sales statistics are compiled using data collected from the Monthly Survey of Retail Sales. Local retail establishments with and without physical shops are covered in the survey and their sales, both through conventional shops and online channels, are included in the retail sales statistics. The Census and Statistics Department selects a scientific sample of around 3 000 retail outlets for enumeration each month. The sales data thus collected are used for estimating the total retail sales value for each type of retail outlet and that of the whole retail sector. The volume of retail sales measures the trend of the sales of goods sold by",
       "evidence_path": "evidence_cache/5ff9a2c78981daab2bac82bec86167052b5cf6ab540adec98dd72a7095fd3c17.txt",
@@ -365,7 +407,7 @@
       "content_type": "text/html",
       "title": "Labour Force, Employment and Unemployment",
       "bytes": 26041,
-      "elapsed_seconds": 3.965,
+      "elapsed_seconds": 1.5,
       "method": "httpx",
       "text_sample": "Labour Force, Employment and Unemployment Labour Force, Employment and Unemployment Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section ( ) ( ) ( ) ( ) Distribution of Composite Employment Estimates by major industry sector (%) (%) (%) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Study on Earnings Mobility (Labour and Welfare Bureau) Concepts and Methods Concepts and Methods section Feature Articles on Concepts and Methods Feature Articles on Concepts and Methods sectio",
       "evidence_path": "evidence_cache/6bac0b780c2c56d7e32eaa63a2cebccf7750f9b100ec3a93175461ff20930bd7.txt",
@@ -401,55 +443,13 @@
     },
     {
       "row": 23,
-      "url": "https://www.censtatd.gov.hk/en/scode530.html",
-      "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
-      "status": 200,
-      "content_type": "text/html",
-      "title": "Retail",
-      "bytes": 26176,
-      "elapsed_seconds": 3.974,
-      "method": "httpx",
-      "text_sample": "Retail Retail Overview Interactive Statistics Press Releases Tables Reports Datasets Feature Articles Statistics in Other Sites Concepts and Methods Overview overview section Total Retail Sales ( ) Value index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Volume index of retail sales (Average monthly index from Oct 2019 to Sep 2020 = 100) ( ) Business Performance and Operating Characteristics of Retail Trade ( ) ( ) ( ) ( ) ( ) ( ) Interactive Statistics Interactive Statistics section Press Releases Press Release section Latest Release Date Upcoming Release Date Tables Tables & Charts section Reports Reports section Title Latest Issue Release Date File Download Datasets Datasets section Feature Articles Feature Articles section Statistics in Other Sites Statistics in Other Sites section Concepts and Methods Concepts and Methods section Feature Articles on Co",
-      "evidence_path": "evidence_cache/fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6.txt",
-      "content_hash": "fbbf8738b6a3ec076e893c0d7e331cd18e6b75b2185833ba22936107c95cfbf6",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.censtatd.gov.hk/en/scode530.html",
-          "final_url": "https://www.censtatd.gov.hk/en/scode530.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 26176,
-          "text_chars": 1135,
-          "title": "Retail",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_statistics",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "经济资讯（和30行可能存在重合，请Alex考虑是否合并）"
-      ]
-    },
-    {
-      "row": 23,
       "url": "https://apidocs.hkma.gov.hk/abouthkmasapi/",
       "final_url": "https://apidocs.hkma.gov.hk/abouthkmasapi/",
       "status": 200,
       "content_type": "text/html",
       "title": "About HKMA's API – Hong Kong Monetary Authority",
       "bytes": 15036,
-      "elapsed_seconds": 5.06,
+      "elapsed_seconds": 2.537,
       "method": "httpx",
       "text_sample": "About HKMA's API – Hong Kong Monetary Authority Skip to content ENG | 繁 | 简 Decrease font size. Reset font size. Increase font size. Home About HKMA's API Documentation API Data Enquiry Home / About HKMA's API About HKMA's API The HKMA embraces the development and application of Open API. While promoting the wide adoption of Open API by the banking industry in Hong Kong, the HKMA sets an example by launching Open API on its official website. 156 sets of information covering all financial data and important information published on the HKMA's website have been made available for Open API, providing a convenient way for users to retrieve information from the HKMA's website. The use of API is subject to the Terms and Conditions of Use which apply to this site. First-time user? Learn more about HKMA's API and types of information you can access here at API documentation . Benefits User frien",
       "evidence_path": "evidence_cache/6717621e7d29142fdcc0cda70cb5eb2613dbb89c14d3adfd8c55819c99a9732a.txt",
@@ -491,7 +491,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "Common Interactive Data Dissemination Service (Common-IDDS) | DATA.GOV.HK",
       "bytes": 69380,
-      "elapsed_seconds": 1.371,
+      "elapsed_seconds": 1.525,
       "method": "httpx",
       "text_sample": "Common Interactive Data Dissemination Service (Common-IDDS) | DATA.GOV.HK Skip to main content Download Queue Open special announcement Bookmarks Text Size Color Mode Color Mode 繁 简 Open Search box Search box in header Clear Search Close Search Share to Email Facebook X Weibo Open menu Datasets Explore by Categories City Management and Utilities Climate and Weather Commerce and Industry Community and Social Welfare Development, Geography and Land Information Education Election and Legislature Employment and Labour Environment Finance Food Health Housing Law and Security Population Recreation, Sports and Culture Technology and Broadcasting Tourism Transportation Miscellaneous Dataset Announcements Providers Help User Guide FAQs Developer Center API Specification CKAN API Development Guide Community About Open Data City Dashboard Consolidated Annual Open Data Plans (Spatial Data Plans incl",
       "evidence_path": "evidence_cache/0925c1cb8378c0d1c1d1db5a95ce01fe1640b11552ed18627affdc665031cab3.txt",
@@ -533,7 +533,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 101348,
-      "elapsed_seconds": 5.457,
+      "elapsed_seconds": 2.884,
       "method": "httpx",
       "text_sample": "News Release Embargoed until 0830 HKT (0030 UTC) 4 September 2024 ® S&P Global Hong Kong SAR PMI Business activity falls at softer pace in August Key findings S&P Global Hong Kong PMI sa, >50 = improvement since previous month New order contraction eases as growth in 60 export orders renews 55 50 Stocks of purchases decline for first time in 45 seven months 40 Price pressures intensify 35 30 '08 '09 '10 '11 '12 '13 '14 '15 '16 '17 '18 '19 '20 '21 '22 '23 '24 The Hong Kong SAR private sector continued to contract Source: S&P Global PMI. marginally midway through the third quarter of 2024. Data were collected 12-27 August 2024. Incoming new business and output both declined, but at softer rates than in July. This was while new business from Mainland China and abroad both rose. Despite some signs of the downturn easing, sentiment Comment remained subdued. Firms also lowered their staffing l",
       "evidence_path": "evidence_cache/1b9237ffff8c96292a1c7b995309df57f8fafb35a9e60fbe06a855539136cd2c.txt",
@@ -574,6 +574,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:22.260443+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:22.261319+08:00"
+  "fetched_at": "2026-06-24T03:33:49.407277+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:49.407459+08:00"
 }

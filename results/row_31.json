@@ -15,8 +15,8 @@
   "ignored_selected_fields": [],
   "source_urls": [
     "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
-    "https://www.totaltele.com/",
-    "https://www.gsma.com/newsroom/press-releases/"
+    "https://www.gsma.com/newsroom/press-releases/",
+    "https://www.totaltele.com/"
   ],
   "attempted_urls": [
     "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
@@ -27,7 +27,7 @@
     "技术动态": "rowth Strategy “Activate AI for Society” Growth Strategy “Activate AI for Society” TOP Consumer Segment Enterprise Segment Media & EC Segment Financial Segment New Business Fields Technology Strategies Technology Strateg",
     "市场趋势": "t Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin Americ",
     "企业重大合作": "WC Barcelona 2026, SoftBank has announced the following initiatives to realize Telco AI Cloud: Advancing Telecommunications Networks for the Physical AI Era Following the start of collaboration with Yaskawa Electric Corp",
-    "前沿产品": "tlines mobile video pilots with Met... May 28, 2026 Telia and QMill demonstrate a new quantu... May 26, 2026 AION consortium set to build French AI G... May 22, 2026 Bharti Airtel launches commercial networ... May 21, 20"
+    "前沿产品": "and QMill demonstrate a new quantu... May 26, 2026 The Persian Gulf topped our 2026 cable r... May 26, 2026 AION consortium set to build French AI G... May 22, 2026 Bharti Airtel launches commercial networ... May 21, 202"
   },
   "missing_fields": [],
   "entity_results": [
@@ -36,14 +36,14 @@
       "status": "ok",
       "source_urls": [
         "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
-        "https://www.totaltele.com/",
-        "https://www.gsma.com/newsroom/press-releases/"
+        "https://www.gsma.com/newsroom/press-releases/",
+        "https://www.totaltele.com/"
       ],
       "extracted": {
         "技术动态": "rowth Strategy “Activate AI for Society” Growth Strategy “Activate AI for Society” TOP Consumer Segment Enterprise Segment Media & EC Segment Financial Segment New Business Fields Technology Strategies Technology Strateg",
         "市场趋势": "t Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin Americ",
         "企业重大合作": "WC Barcelona 2026, SoftBank has announced the following initiatives to realize Telco AI Cloud: Advancing Telecommunications Networks for the Physical AI Era Following the start of collaboration with Yaskawa Electric Corp",
-        "前沿产品": "tlines mobile video pilots with Met... May 28, 2026 Telia and QMill demonstrate a new quantu... May 26, 2026 AION consortium set to build French AI G... May 22, 2026 Bharti Airtel launches commercial networ... May 21, 20"
+        "前沿产品": "and QMill demonstrate a new quantu... May 26, 2026 The Persian Gulf topped our 2026 cable r... May 26, 2026 AION consortium set to build French AI G... May 22, 2026 Bharti Airtel launches commercial networ... May 21, 202"
       },
       "missing_fields": [],
       "raw_records": [
@@ -55,7 +55,7 @@
           "content_type": "text/html; charset=utf-8",
           "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
           "bytes": 89401,
-          "elapsed_seconds": 3.871,
+          "elapsed_seconds": 1.314,
           "method": "httpx",
           "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
           "evidence_path": "evidence_cache/332566384e1075622dce1561f7cc8560879ee4f6abf2ea2dbb760a983b915d08.txt",
@@ -91,59 +91,17 @@
         },
         {
           "row": 31,
-          "url": "https://www.totaltele.com/",
-          "final_url": "https://totaltele.com/",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "Total Telecom - News, analysis and events for global telecoms",
-          "bytes": 648522,
-          "elapsed_seconds": 4.586,
-          "method": "httpx",
-          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Reliance Jio lining up India’s largest IPO Posted by Harry Baldock | Jun 19, 2026 GoFibre expands Scottish fibre rollout Posted by Harry Baldock | Jun 18, 2026 Subsea cable security: Focusing on reality over fear with Ultramap",
-          "evidence_path": "evidence_cache/18456ce130dee1db5445a7dc978b0e7b7abf42940b825230d530ff3c64315554.txt",
-          "content_hash": "18456ce130dee1db5445a7dc978b0e7b7abf42940b825230d530ff3c64315554",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.totaltele.com/",
-              "final_url": "https://totaltele.com/",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 648522,
-              "text_chars": 7606,
-              "title": "Total Telecom - News, analysis and events for global telecoms",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "media",
-          "jurisdiction": "UK",
-          "tos_status": "approved",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "行业资讯"
-          ]
-        },
-        {
-          "row": 31,
           "url": "https://www.gsma.com/newsroom/press-releases/",
           "final_url": "https://www.gsma.com/newsroom/press-releases/",
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Press Releases - Newsroom",
-          "bytes": 110739,
-          "elapsed_seconds": 4.848,
+          "bytes": 111058,
+          "elapsed_seconds": 1.998,
           "method": "httpx",
           "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
-          "evidence_path": "evidence_cache/78508529a89be0854635951121502ed072148f83468644061c13a78b47605727.txt",
-          "content_hash": "78508529a89be0854635951121502ed072148f83468644061c13a78b47605727",
+          "evidence_path": "evidence_cache/ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41.txt",
+          "content_hash": "ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41",
           "error": "",
           "fetch_attempts": [
             {
@@ -151,8 +109,8 @@
               "final_url": "https://www.gsma.com/newsroom/press-releases/",
               "status": 200,
               "method": "httpx",
-              "bytes": 110739,
-              "text_chars": 4273,
+              "bytes": 111058,
+              "text_chars": 4332,
               "title": "Press Releases - Newsroom",
               "error": "",
               "meta_refresh_url": ""
@@ -172,10 +130,52 @@
           "entity_hits": [
             "行业资讯"
           ]
+        },
+        {
+          "row": 31,
+          "url": "https://www.totaltele.com/",
+          "final_url": "https://totaltele.com/",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Total Telecom - News, analysis and events for global telecoms",
+          "bytes": 647458,
+          "elapsed_seconds": 2.224,
+          "method": "httpx",
+          "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Comarch User Group 2026: Navigating the 2% Growth Trap with Agentic AI and Composable Architecture Posted by Rosie Foster | Jun 22, 2026 Reliance Jio lining up India’s largest IPO Posted by Harry Baldock | Jun 19, 2026 GoFibre",
+          "evidence_path": "evidence_cache/c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872.txt",
+          "content_hash": "c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.totaltele.com/",
+              "final_url": "https://totaltele.com/",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 647458,
+              "text_chars": 7497,
+              "title": "Total Telecom - News, analysis and events for global telecoms",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "media",
+          "jurisdiction": "UK",
+          "tos_status": "approved",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "行业资讯"
+          ]
         }
       ],
-      "confidence_score": 0.15,
-      "verification_reason": "The extracted data contains fragmented and mismatched text (e.g., 'rowth Strategy', 't Places', 'WC Barcelona 2026') that does not accurately represent the source content. The source focuses on SoftBank's Telco AI Cloud vision and related announcements, but the extracted fields are largely incoherent or out of context."
+      "confidence_score": 0.6,
+      "verification_reason": "The extracted data partially matches the source text, but contains significant truncation and errors. '技术动态' (Technology Strategy) is incomplete; '市场趋势' (Market Trends) is mostly absent from source; '企业重大合作' (Enterprise Major Collaboration) is partially accurate but truncated; '前沿产品' (Frontier Products) includes unrelated news items not from source."
     }
   ],
   "entity_missing": [],
@@ -188,7 +188,7 @@
       "content_type": "text/html; charset=utf-8",
       "title": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank",
       "bytes": 89401,
-      "elapsed_seconds": 3.871,
+      "elapsed_seconds": 1.314,
       "method": "httpx",
       "text_sample": "SoftBank Corp. Announces Telco AI Cloud Vision to Build Social Infrastructure for the AI Era, Leveraging Its Telecommunications Foundation | About Us | SoftBank SoftBank About Us JAPANESE News Company Info Vision and Strategy Investor Relations Sustainability Careers Search Close News TOP Press Releases Notices Website Updates Press Conference Materials Press Conference Materials TOP Webcast SoftBank News Company Info TOP CEO Message Corporate Data Corporate Data TOP Board of Directors History ISO Certifications Our Business Our Business TOP SoftBank Corp. Companies Governance Governance TOP Corporate Governance Compliance Risk Management Information Security Personal Information Protection SoftBank's Human Rights Policies Supply Chain Management AI Ethics and Governance Protecting Intellectual Property and Brands Tax Strategy Approach to Information Disclosure Social Contribution Activi",
       "evidence_path": "evidence_cache/332566384e1075622dce1561f7cc8560879ee4f6abf2ea2dbb760a983b915d08.txt",
@@ -224,59 +224,17 @@
     },
     {
       "row": 31,
-      "url": "https://www.totaltele.com/",
-      "final_url": "https://totaltele.com/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Total Telecom - News, analysis and events for global telecoms",
-      "bytes": 648522,
-      "elapsed_seconds": 4.586,
-      "method": "httpx",
-      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Reliance Jio lining up India’s largest IPO Posted by Harry Baldock | Jun 19, 2026 GoFibre expands Scottish fibre rollout Posted by Harry Baldock | Jun 18, 2026 Subsea cable security: Focusing on reality over fear with Ultramap",
-      "evidence_path": "evidence_cache/18456ce130dee1db5445a7dc978b0e7b7abf42940b825230d530ff3c64315554.txt",
-      "content_hash": "18456ce130dee1db5445a7dc978b0e7b7abf42940b825230d530ff3c64315554",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.totaltele.com/",
-          "final_url": "https://totaltele.com/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 648522,
-          "text_chars": 7606,
-          "title": "Total Telecom - News, analysis and events for global telecoms",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "media",
-      "jurisdiction": "UK",
-      "tos_status": "approved",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "行业资讯"
-      ]
-    },
-    {
-      "row": 31,
       "url": "https://www.gsma.com/newsroom/press-releases/",
       "final_url": "https://www.gsma.com/newsroom/press-releases/",
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Press Releases - Newsroom",
-      "bytes": 110739,
-      "elapsed_seconds": 4.848,
+      "bytes": 111058,
+      "elapsed_seconds": 1.998,
       "method": "httpx",
       "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
-      "evidence_path": "evidence_cache/78508529a89be0854635951121502ed072148f83468644061c13a78b47605727.txt",
-      "content_hash": "78508529a89be0854635951121502ed072148f83468644061c13a78b47605727",
+      "evidence_path": "evidence_cache/ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41.txt",
+      "content_hash": "ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41",
       "error": "",
       "fetch_attempts": [
         {
@@ -284,8 +242,8 @@
           "final_url": "https://www.gsma.com/newsroom/press-releases/",
           "status": 200,
           "method": "httpx",
-          "bytes": 110739,
-          "text_chars": 4273,
+          "bytes": 111058,
+          "text_chars": 4332,
           "title": "Press Releases - Newsroom",
           "error": "",
           "meta_refresh_url": ""
@@ -305,6 +263,48 @@
       "entity_hits": [
         "行业资讯"
       ]
+    },
+    {
+      "row": 31,
+      "url": "https://www.totaltele.com/",
+      "final_url": "https://totaltele.com/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Total Telecom - News, analysis and events for global telecoms",
+      "bytes": 647458,
+      "elapsed_seconds": 2.224,
+      "method": "httpx",
+      "text_sample": "Total Telecom - News, analysis and events for global telecoms HOME TOPICS TECHNOLOGY 5G FTTX AI Cloud IoT Open RAN Security INFRASTRUCTURE Subsea Satellite Towers Data Centres Networks Wholesale Virtualisation COMPANY NEWS Investment M&A People Governance Culture SOCIETY Sustainability Smart Places Skills Diversity & Inclusion Digital Divide ENTERPRISE Industry 4.0 Public Sector Products & Services Customer INSIGHT Press Release Video Interviews Viewpoint Whitepaper MARKETS Asia-Pacific Europe Latin America Middle East & Africa North America UK EVENTS ABOUT About us Media kit Sign up for our newsletters Post a press release Contact Us GET OUR NEWSLETTER Select Page Comarch User Group 2026: Navigating the 2% Growth Trap with Agentic AI and Composable Architecture Posted by Rosie Foster | Jun 22, 2026 Reliance Jio lining up India’s largest IPO Posted by Harry Baldock | Jun 19, 2026 GoFibre",
+      "evidence_path": "evidence_cache/c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872.txt",
+      "content_hash": "c972cb7a1b8c00d253368046490a4f66de4667051da441ea073d6e541704f872",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.totaltele.com/",
+          "final_url": "https://totaltele.com/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 647458,
+          "text_chars": 7497,
+          "title": "Total Telecom - News, analysis and events for global telecoms",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "media",
+      "jurisdiction": "UK",
+      "tos_status": "approved",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "行业资讯"
+      ]
     }
   ],
   "live_fetch_status": "ok",
@@ -313,6 +313,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:21.261973+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:21.262142+08:00"
+  "fetched_at": "2026-06-24T03:33:48.427463+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:48.427620+08:00"
 }

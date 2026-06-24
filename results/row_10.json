@@ -55,7 +55,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 3484296,
-          "elapsed_seconds": 5.644,
+          "elapsed_seconds": 2.022,
           "method": "httpx",
           "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
           "evidence_path": "evidence_cache/02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380.txt",
@@ -96,12 +96,12 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
-          "bytes": 245655,
-          "elapsed_seconds": 7.034,
+          "bytes": 244989,
+          "elapsed_seconds": 3.885,
           "method": "curl_chrome_ua",
           "text_sample": "AASTOCKS Financial News - SMARTONE TELE (00315.HK) 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants A",
-          "evidence_path": "evidence_cache/66968750b65b69622124350901c5a4ec8965f9560d3a38d0ce8b09a320269b73.txt",
-          "content_hash": "66968750b65b69622124350901c5a4ec8965f9560d3a38d0ce8b09a320269b73",
+          "evidence_path": "evidence_cache/476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c.txt",
+          "content_hash": "476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c",
           "error": "",
           "fetch_attempts": [
             {
@@ -131,8 +131,8 @@
               "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1",
               "status": 200,
               "method": "curl_chrome_ua",
-              "bytes": 245655,
-              "text_chars": 21357,
+              "bytes": 244989,
+              "text_chars": 21503,
               "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
               "error": "",
               "meta_refresh_url": ""
@@ -154,8 +154,8 @@
           ]
         }
       ],
-      "confidence_score": 0.65,
-      "verification_reason": "The extracted data contains fragments that are present in the source text, but most entries are incomplete or truncated, missing context and key information. For example, '战略合作' captures only part of a longer sentence, and '家宽布局' misattributes ARPU data without correct context. The extraction also includes irrelevant sections like 'Tech Corner' under '中标' and mixes multiple unrelated concepts. Thus, while some content is correct, the overall accuracy is reduced due to significant truncation and misalignment."
+      "confidence_score": 0.95,
+      "verification_reason": "The extracted data accurately captures key phrases and values from the source text, including references to 5G Home Broadband, strategic partnerships, AI services, 5G-Advanced, and detailed financial metrics. Minor truncation and slight reordering do not affect factual accuracy."
     }
   ],
   "entity_missing": [],
@@ -168,7 +168,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 3484296,
-      "elapsed_seconds": 5.644,
+      "elapsed_seconds": 2.022,
       "method": "httpx",
       "text_sample": "SmarTone Telecommunications Holdings Limited FY26 Interim Results Presentation for the six months ended 31 December 2025 24 February 2026 1 Disclaimer Disclaimer It is not the intention to provide, and no reliance should be placed on these materials as providing, a complete or comprehensive analysis of the financial or trading positions or prospects of SmarTone Telecommunications Holdings Limited. Neither SmarTone Telecommunications Holdings Limited or any of its directors, officers, employees, agents, affiliates, advisers or representatives accepts any liability whatsoever in negligence or otherwise for any loss howsoever arising from any information or opinions presented or contained in these materials or otherwise arising in connection with these materials. The information presented or contained in these materials is subject to change without notice. No representations or warranties a",
       "evidence_path": "evidence_cache/02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380.txt",
@@ -209,12 +209,12 @@
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
-      "bytes": 245655,
-      "elapsed_seconds": 7.034,
+      "bytes": 244989,
+      "elapsed_seconds": 3.885,
       "method": "curl_chrome_ua",
       "text_sample": "AASTOCKS Financial News - SMARTONE TELE (00315.HK) 繁 简 Market+ (iPhone) Market+ (Android) Mobile Site US STOCKS FUNDS FX & CRYPTO SH/SZ-HK HK STOCKS Login Register Quote Service Market Market Real-time Futures IPO Plus Company Announcement Top 20 Highs/ Lows Company Dividend Local Indices DTDC RMB Traded Stocks Result Announ. Schedule World Indices BioTech Stocks Research Report China Indices Second Listing Stocks Result Announ. News Index Constituents Short Selling Corp. Event Search H Shares (All) ADR Economic Calendar Red Chips (All) A+H+ADR Economic Database GEM (All) A+H Economic Data Chart Industries Shareholding Disclosures World Interest Rates Quotes Quotes Real-time Quote Real-time Quote Latest Quote Real-time Top 20 Portfolio Anywhere Technical Patterns Detailed Quote Technical Analysis Interactive Chart Real-time Futures Related Warrants Related CBBCs Related Inline Warrants A",
-      "evidence_path": "evidence_cache/66968750b65b69622124350901c5a4ec8965f9560d3a38d0ce8b09a320269b73.txt",
-      "content_hash": "66968750b65b69622124350901c5a4ec8965f9560d3a38d0ce8b09a320269b73",
+      "evidence_path": "evidence_cache/476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c.txt",
+      "content_hash": "476c47dd45b47b77fae5247f6c48d8f3df5c9e39d10e82179a15ca31f816640c",
       "error": "",
       "fetch_attempts": [
         {
@@ -244,8 +244,8 @@
           "final_url": "https://www.aastocks.com/en/stocks/analysis/stock-aafn/00315/0/hk-stock-news/1",
           "status": 200,
           "method": "curl_chrome_ua",
-          "bytes": 245655,
-          "text_chars": 21357,
+          "bytes": 244989,
+          "text_chars": 21503,
           "title": "AASTOCKS Financial News - SMARTONE TELE (00315.HK)",
           "error": "",
           "meta_refresh_url": ""
@@ -273,6 +273,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:23.806161+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:23.806361+08:00"
+  "fetched_at": "2026-06-24T03:32:49.807958+00:00",
+  "fetched_at_hkt": "2026-06-24T11:32:49.808139+08:00"
 }

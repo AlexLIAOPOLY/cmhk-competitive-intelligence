@@ -1,5 +1,249 @@
 [
   {
+    "crawl_run_id": "20260623_113338",
+    "trigger": "api-crawl-stream",
+    "started_at_hkt": "2026-06-23T11:33:45.234031+08:00",
+    "completed_at_hkt": "2026-06-23T11:39:07+08:00",
+    "crawl_return_code": 0,
+    "duration_ms": 429013,
+    "feishu": {
+      "spreadsheet_token": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",
+      "main_sheet_id": "9c638d",
+      "log_sheet_id": "43jdQs",
+      "log_sheet_title": "爬虫日志_20260623_113338",
+      "url": "https://cmhk-try.feishu.cn/sheets/ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA?sheet=43jdQs",
+      "sync_ok": true,
+      "result_columns": {
+        "run_label": "(06-23)",
+        "start_col": "CJ",
+        "mid_col": "CK",
+        "end_col": "CL",
+        "insert_index": 87,
+        "data_range": "9c638d!CJ2:CL34",
+        "header_range": "9c638d!CJ1:CL1"
+      },
+      "compliance_gaps": [
+        "row 26 entity 香港本地监管 has no source url",
+        "row 26 entity 政策 has no source url",
+        "row 27 entity 重点国家 has no source url",
+        "row 27 entity 地区AI与数据监管 has no source url",
+        "row 29 entity 国际组织 has no source url",
+        "row 29 entity 行业权威机构 has no source url",
+        "row 30 entity 宏观经济 has no source url",
+        "row 30 entity 人口 has no source url",
+        "row 30 entity 消费 has no source url"
+      ]
+    },
+    "local_files": {
+      "final_audit": "final_audit.md",
+      "coverage_report": "coverage_report.tsv",
+      "run_log_tsv": "run_log.tsv",
+      "run_log_json": "run_log.json",
+      "daily_validation": "daily_validation.json",
+      "curation_latest": "curation_data/latest.json",
+      "agent_trace": "curation_data/agent_trace.jsonl"
+    },
+    "final_audit": {
+      "generated_at": "2026-06-23T11:33:39.295942",
+      "rows_crawled": "33",
+      "ok_rows": "33",
+      "partial_rows": "0",
+      "failed_rows": "0",
+      "fulfilled": "33/33 (100.0%)",
+      "live_url_success": "165/165 (100.0%)",
+      "live_url_failures": "0",
+      "restored_from_previous_evidence": "0"
+    },
+    "run_log": {
+      "rows": 165,
+      "success_urls": 165,
+      "failed_urls": 0,
+      "fallback_urls": 0
+    },
+    "curation": {
+      "agent_run_id": "20260623_113348_3cad8444",
+      "started_at": "2026-06-23T11:33:48+08:00",
+      "completed_at": "2026-06-23T11:39:00+08:00",
+      "tasks": 208,
+      "accepted": 207,
+      "rejected": 1,
+      "review": 0,
+      "gaps": 1,
+      "recrawl_rows": [],
+      "agent_trace": "curation_data/agent_trace.jsonl",
+      "search_verification": {
+        "checked": 207,
+        "corrected": 2,
+        "review": 0,
+        "conflicts": 28,
+        "workers": 4,
+        "online_search": true,
+        "online_checked": 207,
+        "online_votes": 72
+      }
+    },
+    "metrics_refresh": {
+      "ok": true,
+      "returnCode": 0,
+      "durationMs": 313265,
+      "stdout": "[数据整理][证据接收] 读取 208 条原始指标证据，复用 108 条缓存判断。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"证据接收\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"证据接收 输入已读取。\", \"input\": {\"limit\": null, \"cache_schema\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"证据接收\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"读取 208 条原始指标证据，复用 108 条缓存判断。\", \"output\": {\"tasks\": 208, \"cache_reused\": 108}}\n[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 114、public 86。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"来源分类\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"来源分类 输入已读取。\", \"input\": {\"tasks\": 208}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"来源分类\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"完成来源分级：commercial 2、missing 6、official 114、public 86。\", \"output\": {\"source_tiers\": {\"official\": 114, \"commercial\": 2, \"public\": 86, \"missing\": 6}}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"事实抽取 Agent 收到候选任务和缓存命中情况。\", \"input\": {\"tasks\": 208, \"cached\": 142, \"deterministic\": 49, \"pending\": 66, \"online_ai\": true, \"batch_size\": 25, \"ai_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 1-25 / 66。\", \"input\": {\"batch\": \"1-25 / 66\", \"task_count\": 25, \"sample\": [{\"id\": \"53bc3be41389b062\", \"company\": \"HKT\", \"metric\": \"服务收入\"}, {\"id\": \"ee27d7d7c8cb92f0\", \"company\": \"HKT\", \"metric\": \"EBITDA\"}, {\"id\": \"b4b9a357e9e7b102\", \"company\": \"HKT\", \"metric\": \"净利润\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 26-50 / 66。\", \"input\": {\"batch\": \"26-50 / 66\", \"task_count\": 25, \"sample\": [{\"id\": \"5a789693e1122f94\", \"company\": \"Hutchison\", \"metric\": \"EBITDA\"}, {\"id\": \"a4d8460ea6da1630\", \"company\": \"Hutchison\", \"metric\": \"净利润\"}, {\"id\": \"60ab1b375a5f679c\", \"company\": \"Hutchison\", \"metric\": \"资本开支\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:33:49+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 51-66 / 66。\", \"input\": {\"batch\": \"51-66 / 66\", \"task_count\": 16, \"sample\": [{\"id\": \"ce5c01cd0d81d852\", \"company\": \"通信监管机构\", \"metric\": \"覆盖义务\"}, {\"id\": \"f2efadb547c4afe3\", \"company\": \"通信监管机构\", \"metric\": \"网络安全\"}, {\"id\": \"1f1f75b0a61a56ff\", \"company\": \"通信监管机构\", \"metric\": \"卫星通信\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:04+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 16 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 15475, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"51-66 / 66\", \"returned\": 16, \"sample\": [{\"id\": \"ce5c01cd0d81d852\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅包含网站导航、菜单、栏目名称及通用描述，未提及通信监管机构的具体覆盖义务要求或指标数值。\", \"note\": \"raw_text 为网站导航和栏目列表，无覆盖义务具体内容。\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.1}, {\"id\": \"f2efadb547c4afe3\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅包含网站导航、菜单及ENISA网络安全主题列表，未提供通信监管机构的具体网络安全行动或指标。\", \"note\": \"raw_text 为网站导航和栏目列表，无网络安全具体内容。\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.1}, {\"id\": \"1f1f75b0a61a56ff\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅包含网站导航、菜单及数字地面电视服务等无关内容，未提及通信监管机构的卫星通信具体部署或项目。\", \"note\": \"raw_text 为网站导航和栏目列表，无卫星通信具体内容。\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.1}], \"parallel_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 25 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 20711, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"26-50 / 66\", \"returned\": 25, \"sample\": [{\"id\": \"5a789693e1122f94\", \"status\": \"ok\", \"value\": \"1,508 (2025); 1,511 (2024)\", \"basis\": \"片段中明确列出 'EBITDA (2) 1,508 1,511'，单位为百万港元。\", \"note\": \"\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.95}, {\"id\": \"a4d8460ea6da1630\", \"status\": \"ok\", \"value\": \"亏损25百万港元 (2025)\", \"basis\": \"片段中明确列出 '(Loss)/profit attributable to shareholders (25) 6 –517%'，单位为百万港元。\", \"note\": \"\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.95}, {\"id\": \"60ab1b375a5f679c\", \"status\": \"ok\", \"value\": \"4.33亿港元 (2025)\", \"basis\": \"片段中明确列出 'Capital expenditure ... remained stable at HK$433 million'。\", \"note\": \"\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.95}], \"parallel_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 25 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 21390, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"1-25 / 66\", \"returned\": 25, \"sample\": [{\"id\": \"53bc3be41389b062\", \"status\": \"ok\", \"value\": \"5%\", \"basis\": \"片段中明确提到 'higher roaming revenue contributing to 5% growth in Mobile services revenue'\", \"note\": \"服务收入增长5%\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.95}, {\"id\": \"ee27d7d7c8cb92f0\", \"status\": \"ok\", \"value\": \"HK$13,743 million\", \"basis\": \"片段中明确显示 'Total EBITDA grew by 3% to HK$13,743 million'\", \"note\": \"2024年总EBITDA为137.43亿港元\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.98}, {\"id\": \"b4b9a357e9e7b102\", \"status\": \"ok\", \"value\": \"HK$5,070 million\", \"basis\": \"片段中明确显示 'Profit attributable to holders of Share Stapled Units increased by 2% to HK$5,070 million'\", \"note\": \"2024年归属于股份合订单位持有人的净利润为50.70亿港元\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.98}], \"parallel_workers\": 3}}\n[数据整理][事实抽取] 形成 208 条候选事实；待抽取 66 条，缓存复用 93 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"事实抽取\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"形成 208 条候选事实；待抽取 66 条，缓存复用 93 条。\", \"output\": {\"candidates\": 208, \"newly_extracted\": 66, \"cache_reused\": 93, \"deterministic_extracted\": 49, \"online_ai_used\": true, \"online_batches\": 3, \"fallback_batches\": 0, \"ai_workers\": 3}}\n[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 42 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"主体校验\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"主体校验 输入已读取。\", \"input\": {\"candidates\": 208}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"主体校验\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"主体与指标归属校验完成，预拒绝 42 条。\", \"output\": {\"pre_rejected\": 42, \"candidates\": 208}}\n[数据整理][质量审计] 发布 207 条、证据缺口 0 条、质量拒绝 1 条、待复核 0 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"质量审计\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"质量审计 输入已读取。\", \"input\": {\"candidates\": 208}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"质量审计\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"发布 207 条；0 条因证据未覆盖进入补爬，1 条因质量问题拒绝，0 条待复核。\", \"output\": {\"accepted\": 207, \"evidence_gaps\": 0, \"quality_rejected\": 1, \"review\": 0, \"unpublished\": 1}}\n[数据整理][冲突仲裁] 检查 207 组事实，发现 0 组冲突。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"冲突仲裁\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"冲突仲裁 输入已读取。\", \"input\": {\"accepted_groups\": 207}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"冲突仲裁\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"检查 207 组事实，发现 0 组冲突。\", \"output\": {\"conflicts\": 0}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:34:10+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"搜索验证\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"并行调用搜索验证 Agent，对已通过事实做多来源多数核验。\", \"input\": {\"accepted\": 207, \"rejected_recheck\": 0, \"suspicious_recheck\": 1, \"workers\": 4, \"online_search\": true, \"online_limit\": \"all\"}, \"tool\": \"parallel_search_verifier\"}\n[数据整理][搜索验证] 并行核验 207 条事实，修正 2 条，转人工复核 0 条，发现冲突 28 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"搜索验证\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"搜索验证 Agent 返回多数口径核验结果。\", \"status\": \"success\", \"tool\": \"parallel_search_verifier\", \"result\": {\"checked\": 207, \"corrected\": 2, \"review\": 0, \"conflicts\": 28, \"workers\": 4, \"online_search\": true, \"online_checked\": 207, \"online_votes\": 72}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"缺口规划\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"缺口规划 Agent 读取候选事实和当前最佳通过数。\", \"input\": {\"candidates\": 208, \"accepted_count\": 207, \"best_accepted_count\": 0, \"allow_recrawl\": true, \"recrawl_round\": 0}}\n[数据整理][缺口规划] 识别 1 个事实缺口，安排 0 个定向补爬行。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"缺口规划\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"识别 1 个事实缺口，安排 0 个定向补爬行。\", \"output\": {\"gaps\": 1, \"recrawl_tasks\": [], \"best_accepted_count\": 207}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"编排决策\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"Supervisor 收到质量门禁产生的证据缺口和候选补爬任务。\", \"input\": {\"gaps\": 1, \"candidate_recrawl_rows\": [], \"recrawl_round\": 0, \"max_recrawl_rounds\": 1}}\n[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"编排决策\", \"phase\": \"decision\", \"event_type\": \"agent\", \"message\": \"没有满足补爬条件的候选行，进入发布。\", \"status\": \"success\", \"decision\": \"publish\"}\n[数据整理][发布] 发布层写入 207 条，拒绝 1 条，待人工复核 0 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"发布\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"发布 Agent 汇总候选事实并准备写入发布层。\", \"input\": {\"candidates\": 208, \"accepted\": 207, \"rejected\": 1, \"review\": 0, \"dry_run\": false}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"发布\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"写入 AI 缓存、事实 JSONL、缺口任务、运行摘要和 Agent trace。\", \"input\": {\"targets\": [\"company_metrics_ai_cache.json\", \"curation_data/candidate_facts.jsonl\", \"curation_data/verified_facts.jsonl\", \"curation_data/recrawl_tasks.json\", \"curation_data/latest.json\", \"curation_data/runs/20260623_113348_3cad8444.json\", \"curation_data/agent_trace.jsonl\", \"curation_data/runs/20260623_113348_3cad8444_agent_trace.jsonl\"]}, \"tool\": \"atomic_write_json / atomic_write_jsonl\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"发布\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"发布层文件写入完成。\", \"tool\": \"atomic_write_json / atomic_write_jsonl\", \"result\": {\"targets\": [\"company_metrics_ai_cache.json\", \"curation_data/candidate_facts.jsonl\", \"curation_data/verified_facts.jsonl\", \"curation_data/recrawl_tasks.json\", \"curation_data/latest.json\", \"curation_data/runs/20260623_113348_3cad8444.json\", \"curation_data/agent_trace.jsonl\", \"curation_data/runs/20260623_113348_3cad8444_agent_trace.jsonl\"], \"ok\": true}}\nAGENT_TRACE={\"ts\": \"2026-06-23T11:39:00+08:00\", \"run_id\": \"20260623_113348_3cad8444\", \"node\": \"发布\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"发布完成：发布 207 条，证据缺口 0 条，质量拒绝 1 条，待复核 0 条。\", \"output\": {\"run_id\": \"20260623_113348_3cad8444\", \"started_at\": \"2026-06-23T11:33:48+08:00\", \"completed_at\": \"2026-06-23T11:39:00+08:00\", \"tasks\": 208, \"accepted\": 207, \"rejected\": 1, \"review\": 0, \"gaps\": 1, \"recrawl_rows\": [], \"recrawl_performed\": false, \"online_ai\": true, \"node_events\": [\"[数据整理][证据接收] 读取 208 条原始指标证据，复用 108 条缓存判断。\", \"[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 114、public 86。\", \"[数据整理][事实抽取] 形成 208 条候选事实；待抽取 66 条，缓存复用 93 条。\", \"[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 42 条。\", \"[数据整理][质量审计] 发布 207 条、证据缺口 0 条、质量拒绝 1 条、待复核 0 条。\", \"[数据整理][冲突仲裁] 检查 207 组事实，发现 0 组冲突。\", \"[数据整理][搜索验证] 并行核验 207 条事实，修正 2 条，转人工复核 0 条，发现冲突 28 条。\", \"[数据整理][缺口规划] 识别 1 个事实缺口，安排 0 个定向补爬行。\"], \"extra\": {\"evidence_gaps\": 0, \"quality_rejected\": 1, \"supervisor_decision\": \"publish\", \"supervisor_reason\": \"没有满足补爬条件的候选行，进入发布。\", \"online_batches\": 3, \"fallback_batches\": 0, \"search_verification\": {\"checked\": 207, \"corrected\": 2, \"review\": 0, \"conflicts\": 28, \"workers\": 4, \"online_search\": true, \"online_checked\": 207, \"online_votes\": 72}, \"cache_backup\": \"curation_data/cache_backups/20260623_113348_3cad8444_before_publish.json\"}, \"evidence_gaps\": 0, \"quality_rejected\": 1}}\nCURATION_SUMMARY={\"run_id\": \"20260623_113348_3cad8444\", \"started_at\": \"2026-06-23T11:33:48+08:00\", \"completed_at\": \"2026-06-23T11:39:00+08:00\", \"tasks\": 208, \"accepted\": 207, \"rejected\": 1, \"review\": 0, \"gaps\": 1, \"recrawl_rows\": [], \"recrawl_performed\": false, \"online_ai\": true, \"node_events\": [\"[数据整理][证据接收] 读取 208 条原始指标证据，复用 108 条缓存判断。\", \"[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 114、public 86。\", \"[数据整理][事实抽取] 形成 208 条候选事实；待抽取 66 条，缓存复用 93 条。\", \"[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 42 条。\", \"[数据整理][质量审计] 发布 207 条、证据缺口 0 条、质量拒绝 1 条、待复核 0 条。\", \"[数据整理][冲突仲裁] 检查 207 组事实，发现 0 组冲突。\", \"[数据整理][搜索验证] 并行核验 207 条事实，修正 2 条，转人工复核 0 条，发现冲突 28 条。\", \"[数据整理][缺口规划] 识别 1 个事实缺口，安排 0 个定向补爬行。\", \"[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。\", \"[数据整理][发布] 发布层写入 207 条，拒绝 1 条，待人工复核 0 条。\"], \"extra\": {\"evidence_gaps\": 0, \"quality_rejected\": 1, \"supervisor_decision\": \"publish\", \"supervisor_reason\": \"没有满足补爬条件的候选行，进入发布。\", \"online_batches\": 3, \"fallback_batches\": 0, \"search_verification\": {\"checked\": 207, \"corrected\": 2, \"review\": 0, \"conflicts\": 28, \"workers\": 4, \"online_search\": true, \"online_checked\": 207, \"online_votes\": 72}, \"cache_backup\": \"curation_data/cache_backups/20260623_113348_3cad8444_before_publish.json\", \"agent_trace\": \"curation_data/agent_trace.jsonl\"}}",
+      "stderr": "",
+      "summary": {
+        "companies": 47,
+        "metrics": 74,
+        "records": 295,
+        "verifiedRecords": 95,
+        "crawlRecords": 200,
+        "acceptedAiFacts": 207,
+        "publishableAiFacts": 206,
+        "publishedAiFacts": 200,
+        "aiCleanedRecords": 200,
+        "qualityPassedRecords": 295,
+        "suppressedRecords": 6,
+        "excludedOutOfScopeFacts": 0,
+        "excludedNonFacts": 0,
+        "deduplicatedAiFacts": 1
+      }
+    },
+    "agent_trace_feishu_sync": {
+      "ok": true,
+      "returnCode": 0,
+      "stdout": "{\"ok\": true, \"sheet_id\": \"43jdQs\", \"run_id\": \"20260623_113348_3cad8444\", \"trace_rows\": 28, \"range\": \"43jdQs!A169:K198\", \"problems\": []}",
+      "stderr": "",
+      "result": {
+        "ok": true,
+        "sheet_id": "43jdQs",
+        "run_id": "20260623_113348_3cad8444",
+        "trace_rows": 28,
+        "range": "43jdQs!A169:K198",
+        "problems": []
+      }
+    }
+  },
+  {
+    "crawl_run_id": "20260623_104031",
+    "trigger": "api-crawl-stream",
+    "started_at_hkt": "2026-06-23T10:40:42.201814+08:00",
+    "completed_at_hkt": "2026-06-23T10:46:31+08:00",
+    "crawl_return_code": 0,
+    "duration_ms": 463723,
+    "feishu": {
+      "spreadsheet_token": "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA",
+      "main_sheet_id": "9c638d",
+      "log_sheet_id": "3RKZPO",
+      "log_sheet_title": "爬虫日志_20260623_104031",
+      "url": "https://cmhk-try.feishu.cn/sheets/ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA?sheet=3RKZPO",
+      "sync_ok": true,
+      "result_columns": {
+        "run_label": "(06-23)",
+        "start_col": "CJ",
+        "mid_col": "CK",
+        "end_col": "CL",
+        "insert_index": 87,
+        "data_range": "9c638d!CJ2:CL34",
+        "header_range": "9c638d!CJ1:CL1"
+      },
+      "compliance_gaps": [
+        "row 17 missing fields: ['ARPU'] ['iCable:ARPU']",
+        "row 17 entity iCable status partial",
+        "row 26 entity 香港本地监管 has no source url",
+        "row 26 entity 政策 has no source url",
+        "row 27 entity 重点国家 has no source url",
+        "row 27 entity 地区AI与数据监管 has no source url",
+        "row 29 entity 国际组织 has no source url",
+        "row 29 entity 行业权威机构 has no source url",
+        "row 30 entity 宏观经济 has no source url",
+        "row 30 entity 人口 has no source url",
+        "row 30 entity 消费 has no source url"
+      ]
+    },
+    "local_files": {
+      "final_audit": "final_audit.md",
+      "coverage_report": "coverage_report.tsv",
+      "run_log_tsv": "run_log.tsv",
+      "run_log_json": "run_log.json",
+      "daily_validation": "daily_validation.json",
+      "curation_latest": "curation_data/latest.json",
+      "agent_trace": "curation_data/agent_trace.jsonl"
+    },
+    "final_audit": {
+      "generated_at": "2026-06-23T10:40:32.006135",
+      "rows_crawled": "33",
+      "ok_rows": "32",
+      "partial_rows": "1",
+      "failed_rows": "0",
+      "fulfilled": "33/33 (100.0%)",
+      "live_url_success": "165/166 (99.4%)",
+      "live_url_failures": "1",
+      "restored_from_previous_evidence": "0"
+    },
+    "run_log": {
+      "rows": 166,
+      "success_urls": 165,
+      "failed_urls": 1,
+      "fallback_urls": 0
+    },
+    "curation": {
+      "agent_run_id": "20260623_104045_f4bc4d04",
+      "started_at": "2026-06-23T10:40:45+08:00",
+      "completed_at": "2026-06-23T10:46:22+08:00",
+      "tasks": 211,
+      "accepted": 207,
+      "rejected": 0,
+      "review": 4,
+      "gaps": 4,
+      "recrawl_rows": [],
+      "agent_trace": "curation_data/agent_trace.jsonl",
+      "search_verification": {
+        "checked": 211,
+        "corrected": 0,
+        "review": 4,
+        "conflicts": 37,
+        "workers": 4,
+        "online_search": true,
+        "online_checked": 211,
+        "online_votes": 79
+      }
+    },
+    "metrics_refresh": {
+      "ok": true,
+      "returnCode": 0,
+      "durationMs": 339658,
+      "stdout": "[数据整理][证据接收] 读取 211 条原始指标证据，复用 88 条缓存判断。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"证据接收\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"证据接收 输入已读取。\", \"input\": {\"limit\": null, \"cache_schema\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"证据接收\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"读取 211 条原始指标证据，复用 88 条缓存判断。\", \"output\": {\"tasks\": 211, \"cache_reused\": 88}}\n[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 116、public 87。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"来源分类\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"来源分类 输入已读取。\", \"input\": {\"tasks\": 211}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"来源分类\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"完成来源分级：commercial 2、missing 6、official 116、public 87。\", \"output\": {\"source_tiers\": {\"official\": 116, \"commercial\": 2, \"public\": 87, \"missing\": 6}}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"事实抽取 Agent 收到候选任务和缓存命中情况。\", \"input\": {\"tasks\": 211, \"cached\": 120, \"deterministic\": 49, \"pending\": 91, \"online_ai\": true, \"batch_size\": 25, \"ai_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 1-25 / 91。\", \"input\": {\"batch\": \"1-25 / 91\", \"task_count\": 25, \"sample\": [{\"id\": \"53bc3be41389b062\", \"company\": \"HKT\", \"metric\": \"服务收入\"}, {\"id\": \"ee27d7d7c8cb92f0\", \"company\": \"HKT\", \"metric\": \"EBITDA\"}, {\"id\": \"b4b9a357e9e7b102\", \"company\": \"HKT\", \"metric\": \"净利润\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 26-50 / 91。\", \"input\": {\"batch\": \"26-50 / 91\", \"task_count\": 25, \"sample\": [{\"id\": \"3422c7642c6c2948\", \"company\": \"3HK / Hutchison\", \"metric\": \"漫游\"}, {\"id\": \"f0816d3967e4c1c6\", \"company\": \"3HK / Hutchison\", \"metric\": \"促销折扣\"}, {\"id\": \"056c85c7cf8334f3\", \"company\": \"Hutchison\", \"metric\": \"5G套餐\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 51-75 / 91。\", \"input\": {\"batch\": \"51-75 / 91\", \"task_count\": 25, \"sample\": [{\"id\": \"6f23edacf30fbd0c\", \"company\": \"i-CABLE\", \"metric\": \"宽频线数/家宽用户数\"}, {\"id\": \"f69da08cf41b78a7\", \"company\": \"SK Telecom\", \"metric\": \"云\"}, {\"id\": \"cf1b582ec0402849\", \"company\": \"SK Telecom\", \"metric\": \"Capex方向\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:40:46+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"调用 DeepSeek 清洗批次 76-91 / 91。\", \"input\": {\"batch\": \"76-91 / 91\", \"task_count\": 16, \"sample\": [{\"id\": \"2ba956df3b4a180b\", \"company\": \"通信监管机构\", \"metric\": \"卫星通信\"}, {\"id\": \"e16b8a18efd06577\", \"company\": \"国际组织\", \"metric\": \"宽带指标\"}, {\"id\": \"6fc4ec61cab3814a\", \"company\": \"行业权威机构\", \"metric\": \"宽带指标\"}]}, \"tool\": \"DeepSeek chat/completions\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:09+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 25 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 22927, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"26-50 / 91\", \"returned\": 25, \"sample\": [{\"id\": \"3422c7642c6c2948\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅列出漫游作为免费增值服务之一，无具体漫游收入、用户数或资费数字\", \"note\": \"片段仅提及Roaming Default Call等免费服务名称，无量化数据\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": false, \"confidence\": 0.1}, {\"id\": \"f0816d3967e4c1c6\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅描述公司背景，未提及任何促销折扣信息\", \"note\": \"片段无促销折扣相关内容\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.0}, {\"id\": \"056c85c7cf8334f3\", \"status\": \"ok\", \"value\": \"2026年5月推出三款关爱5G服务套餐\", \"basis\": \"片段中'22 May 2026 Launching Three Caring 5G Service Plans Built Around Family Needs'\", \"note\": \"定性指标，有具体发布行动\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.9}], \"parallel_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:10+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 25 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 23683, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"51-75 / 91\", \"returned\": 25, \"sample\": [{\"id\": \"6f23edacf30fbd0c\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅提及探索与行业合作共享资源和技术以提升宽带服务竞争力，未提供任何宽频线数或家宽用户数的具体数字。\", \"note\": \"\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": false, \"confidence\": 0.1}, {\"id\": \"f69da08cf41b78a7\", \"status\": \"ok\", \"value\": \"SKT计划在韩国使用NVIDIA DSX平台建设吉瓦级AI云，首个AI工厂将于2027年上线\", \"basis\": \"片段中明确提到'SKT plans to build a gigawatt-scale AI Cloud in Korea using the NVIDIA DSX™ platform with the first AI factory coming online in 2027'。\", \"note\": \"\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.9}, {\"id\": \"cf1b582ec0402849\", \"status\": \"ok\", \"value\": \"SKT CEO在MWC26宣布'AI Native'创新战略，包括重组AI基础设施和大规模投资计划\", \"basis\": \"片段中明确提到'SK Telecom CEO Unveils ‘AI Native’ Strategy at MWC26'，并包含'large-scale investment plans'。\", \"note\": \"\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.9}], \"parallel_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:13+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 25 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 27122, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"1-25 / 91\", \"returned\": 25, \"sample\": [{\"id\": \"53bc3be41389b062\", \"status\": \"ok\", \"value\": \"HK$32,031 million (excluding Mobile product sales)\", \"basis\": \"片段中明确提到 'total revenue excluding Mobile product sales rose by 2% to HK$32,031 million'，且 Mobile services revenue 增长5%\", \"note\": \"服务收入指标，片段提供了Mobile services revenue增长5%及排除产品销售的总体收入数据\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.95}, {\"id\": \"ee27d7d7c8cb92f0\", \"status\": \"ok\", \"value\": \"HK$13,743 million\", \"basis\": \"片段中明确列出 'Total EBITDA¹ 6,168 7,575 13,743' 及 'Total EBITDA grew by 3% to HK$13,743 million'\", \"note\": \"EBITDA指标，片段提供了2024年全年总EBITDA为13,743百万港元\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.98}, {\"id\": \"b4b9a357e9e7b102\", \"status\": \"ok\", \"value\": \"HK$5,070 million\", \"basis\": \"片段中明确列出 'Profit attributable to holders of Share Stapled Units 5,070' 及 'Profit attributable to holders of Share Stapled Units... increased by 2% to HK$5,070 million'\", \"note\": \"净利润指标，片段提供了2024年归属于股份合订单位持有人的净利润为5,070百万港元\", \"entity_supported\": true, \"metric_supported\": true, \"value_supported\": true, \"confidence\": 0.98}], \"parallel_workers\": 3}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:21+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"DeepSeek 返回 16 条清洗结果。\", \"status\": \"success\", \"duration_ms\": 12259, \"tool\": \"DeepSeek chat/completions\", \"result\": {\"batch\": \"76-91 / 91\", \"returned\": 16, \"sample\": [{\"id\": \"2ba956df3b4a180b\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段为通信管理局网站导航、CEPA数字电视、大湾区漫游服务介绍及新加坡/ENISA新闻，未提及卫星通信具体指标或数据。\", \"note\": \"公司为通信监管机构，但片段无卫星通信量化数据或具体行动。\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.1}, {\"id\": \"e16b8a18efd06577\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅列出GSMA网络服务、培训、咨询等栏目名称，无宽带指标具体数字或描述。\", \"note\": \"公司为国际组织，但片段无宽带指标数据。\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.1}, {\"id\": \"6fc4ec61cab3814a\", \"status\": \"unavailable\", \"value\": \"未提取到有效数据\", \"basis\": \"片段仅列出GSMA网络服务、培训、咨询等栏目名称，无宽带指标具体数字或描述。\", \"note\": \"公司为行业权威机构，但片段无宽带指标数据。\", \"entity_supported\": true, \"metric_supported\": false, \"value_supported\": false, \"confidence\": 0.1}], \"parallel_workers\": 3}}\n[数据整理][事实抽取] 形成 211 条候选事实；待抽取 91 条，缓存复用 71 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:21+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"事实抽取\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"形成 211 条候选事实；待抽取 91 条，缓存复用 71 条。\", \"output\": {\"candidates\": 211, \"newly_extracted\": 91, \"cache_reused\": 71, \"deterministic_extracted\": 49, \"online_ai_used\": true, \"online_batches\": 4, \"fallback_batches\": 0, \"ai_workers\": 3}}\n[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 43 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:21+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"主体校验\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"主体校验 输入已读取。\", \"input\": {\"candidates\": 211}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:21+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"主体校验\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"主体与指标归属校验完成，预拒绝 43 条。\", \"output\": {\"pre_rejected\": 43, \"candidates\": 211}}\n[数据整理][质量审计] 发布 211 条、证据缺口 0 条、质量拒绝 0 条、待复核 0 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"质量审计\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"质量审计 输入已读取。\", \"input\": {\"candidates\": 211}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"质量审计\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"发布 211 条；0 条因证据未覆盖进入补爬，0 条因质量问题拒绝，0 条待复核。\", \"output\": {\"accepted\": 211, \"evidence_gaps\": 0, \"quality_rejected\": 0, \"review\": 0, \"unpublished\": 0}}\n[数据整理][冲突仲裁] 检查 211 组事实，发现 0 组冲突。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"冲突仲裁\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"冲突仲裁 输入已读取。\", \"input\": {\"accepted_groups\": 211}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"冲突仲裁\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"检查 211 组事实，发现 0 组冲突。\", \"output\": {\"conflicts\": 0}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:41:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"搜索验证\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"并行调用搜索验证 Agent，对已通过事实做多来源多数核验。\", \"input\": {\"accepted\": 211, \"rejected_recheck\": 0, \"suspicious_recheck\": 1, \"workers\": 4, \"online_search\": true, \"online_limit\": \"all\"}, \"tool\": \"parallel_search_verifier\"}\n[数据整理][搜索验证] 并行核验 211 条事实，修正 0 条，转人工复核 4 条，发现冲突 37 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"搜索验证\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"搜索验证 Agent 返回多数口径核验结果。\", \"status\": \"success\", \"tool\": \"parallel_search_verifier\", \"result\": {\"checked\": 211, \"corrected\": 0, \"review\": 4, \"conflicts\": 37, \"workers\": 4, \"online_search\": true, \"online_checked\": 211, \"online_votes\": 79}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"缺口规划\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"缺口规划 Agent 读取候选事实和当前最佳通过数。\", \"input\": {\"candidates\": 211, \"accepted_count\": 207, \"best_accepted_count\": 0, \"allow_recrawl\": true, \"recrawl_round\": 0}}\n[数据整理][缺口规划] 识别 4 个事实缺口，安排 0 个定向补爬行。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"缺口规划\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"识别 4 个事实缺口，安排 0 个定向补爬行。\", \"output\": {\"gaps\": 4, \"recrawl_tasks\": [], \"best_accepted_count\": 207}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"编排决策\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"Supervisor 收到质量门禁产生的证据缺口和候选补爬任务。\", \"input\": {\"gaps\": 4, \"candidate_recrawl_rows\": [], \"recrawl_round\": 0, \"max_recrawl_rounds\": 1}}\n[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"编排决策\", \"phase\": \"decision\", \"event_type\": \"agent\", \"message\": \"没有满足补爬条件的候选行，进入发布。\", \"status\": \"success\", \"decision\": \"publish\"}\n[数据整理][发布] 发布层写入 207 条，拒绝 0 条，待人工复核 4 条。\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"发布\", \"phase\": \"observe\", \"event_type\": \"agent\", \"message\": \"发布 Agent 汇总候选事实并准备写入发布层。\", \"input\": {\"candidates\": 211, \"accepted\": 207, \"rejected\": 0, \"review\": 4, \"dry_run\": false}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:22+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"发布\", \"phase\": \"tool_call\", \"event_type\": \"tool_call\", \"message\": \"写入 AI 缓存、事实 JSONL、缺口任务、运行摘要和 Agent trace。\", \"input\": {\"targets\": [\"company_metrics_ai_cache.json\", \"curation_data/candidate_facts.jsonl\", \"curation_data/verified_facts.jsonl\", \"curation_data/recrawl_tasks.json\", \"curation_data/latest.json\", \"curation_data/runs/20260623_104045_f4bc4d04.json\", \"curation_data/agent_trace.jsonl\", \"curation_data/runs/20260623_104045_f4bc4d04_agent_trace.jsonl\"]}, \"tool\": \"atomic_write_json / atomic_write_jsonl\"}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:24+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"发布\", \"phase\": \"tool_result\", \"event_type\": \"tool_result\", \"message\": \"发布层文件写入完成。\", \"tool\": \"atomic_write_json / atomic_write_jsonl\", \"result\": {\"targets\": [\"company_metrics_ai_cache.json\", \"curation_data/candidate_facts.jsonl\", \"curation_data/verified_facts.jsonl\", \"curation_data/recrawl_tasks.json\", \"curation_data/latest.json\", \"curation_data/runs/20260623_104045_f4bc4d04.json\", \"curation_data/agent_trace.jsonl\", \"curation_data/runs/20260623_104045_f4bc4d04_agent_trace.jsonl\"], \"ok\": true}}\nAGENT_TRACE={\"ts\": \"2026-06-23T10:46:24+08:00\", \"run_id\": \"20260623_104045_f4bc4d04\", \"node\": \"发布\", \"phase\": \"answer\", \"event_type\": \"agent\", \"message\": \"发布完成：发布 207 条，证据缺口 0 条，质量拒绝 0 条，待复核 4 条。\", \"output\": {\"run_id\": \"20260623_104045_f4bc4d04\", \"started_at\": \"2026-06-23T10:40:45+08:00\", \"completed_at\": \"2026-06-23T10:46:22+08:00\", \"tasks\": 211, \"accepted\": 207, \"rejected\": 0, \"review\": 4, \"gaps\": 4, \"recrawl_rows\": [], \"recrawl_performed\": false, \"online_ai\": true, \"node_events\": [\"[数据整理][证据接收] 读取 211 条原始指标证据，复用 88 条缓存判断。\", \"[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 116、public 87。\", \"[数据整理][事实抽取] 形成 211 条候选事实；待抽取 91 条，缓存复用 71 条。\", \"[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 43 条。\", \"[数据整理][质量审计] 发布 211 条、证据缺口 0 条、质量拒绝 0 条、待复核 0 条。\", \"[数据整理][冲突仲裁] 检查 211 组事实，发现 0 组冲突。\", \"[数据整理][搜索验证] 并行核验 211 条事实，修正 0 条，转人工复核 4 条，发现冲突 37 条。\", \"[数据整理][缺口规划] 识别 4 个事实缺口，安排 0 个定向补爬行。\"], \"extra\": {\"evidence_gaps\": 0, \"quality_rejected\": 0, \"supervisor_decision\": \"publish\", \"supervisor_reason\": \"没有满足补爬条件的候选行，进入发布。\", \"online_batches\": 4, \"fallback_batches\": 0, \"search_verification\": {\"checked\": 211, \"corrected\": 0, \"review\": 4, \"conflicts\": 37, \"workers\": 4, \"online_search\": true, \"online_checked\": 211, \"online_votes\": 79}, \"cache_backup\": \"curation_data/cache_backups/20260623_104045_f4bc4d04_before_publish.json\"}, \"evidence_gaps\": 0, \"quality_rejected\": 0}}\nCURATION_SUMMARY={\"run_id\": \"20260623_104045_f4bc4d04\", \"started_at\": \"2026-06-23T10:40:45+08:00\", \"completed_at\": \"2026-06-23T10:46:22+08:00\", \"tasks\": 211, \"accepted\": 207, \"rejected\": 0, \"review\": 4, \"gaps\": 4, \"recrawl_rows\": [], \"recrawl_performed\": false, \"online_ai\": true, \"node_events\": [\"[数据整理][证据接收] 读取 211 条原始指标证据，复用 88 条缓存判断。\", \"[数据整理][来源分类] 完成来源分级：commercial 2、missing 6、official 116、public 87。\", \"[数据整理][事实抽取] 形成 211 条候选事实；待抽取 91 条，缓存复用 71 条。\", \"[数据整理][主体校验] 主体与指标归属校验完成，预拒绝 43 条。\", \"[数据整理][质量审计] 发布 211 条、证据缺口 0 条、质量拒绝 0 条、待复核 0 条。\", \"[数据整理][冲突仲裁] 检查 211 组事实，发现 0 组冲突。\", \"[数据整理][搜索验证] 并行核验 211 条事实，修正 0 条，转人工复核 4 条，发现冲突 37 条。\", \"[数据整理][缺口规划] 识别 4 个事实缺口，安排 0 个定向补爬行。\", \"[数据整理][编排决策] 没有满足补爬条件的候选行，进入发布。\", \"[数据整理][发布] 发布层写入 207 条，拒绝 0 条，待人工复核 4 条。\"], \"extra\": {\"evidence_gaps\": 0, \"quality_rejected\": 0, \"supervisor_decision\": \"publish\", \"supervisor_reason\": \"没有满足补爬条件的候选行，进入发布。\", \"online_batches\": 4, \"fallback_batches\": 0, \"search_verification\": {\"checked\": 211, \"corrected\": 0, \"review\": 4, \"conflicts\": 37, \"workers\": 4, \"online_search\": true, \"online_checked\": 211, \"online_votes\": 79}, \"cache_backup\": \"curation_data/cache_backups/20260623_104045_f4bc4d04_before_publish.json\", \"agent_trace\": \"curation_data/agent_trace.jsonl\"}}",
+      "stderr": "",
+      "summary": {
+        "companies": 47,
+        "metrics": 75,
+        "records": 295,
+        "verifiedRecords": 95,
+        "crawlRecords": 200,
+        "acceptedAiFacts": 207,
+        "publishableAiFacts": 206,
+        "publishedAiFacts": 200,
+        "aiCleanedRecords": 200,
+        "qualityPassedRecords": 295,
+        "suppressedRecords": 6,
+        "excludedOutOfScopeFacts": 0,
+        "excludedNonFacts": 0,
+        "deduplicatedAiFacts": 1
+      }
+    },
+    "agent_trace_feishu_sync": {
+      "ok": true,
+      "returnCode": 0,
+      "stdout": "{\"ok\": true, \"sheet_id\": \"3RKZPO\", \"run_id\": \"20260623_104045_f4bc4d04\", \"trace_rows\": 30, \"range\": \"3RKZPO!A170:K201\", \"problems\": []}",
+      "stderr": "",
+      "result": {
+        "ok": true,
+        "sheet_id": "3RKZPO",
+        "run_id": "20260623_104045_f4bc4d04",
+        "trace_rows": 30,
+        "range": "3RKZPO!A170:K201",
+        "problems": []
+      }
+    }
+  },
+  {
     "crawl_run_id": "20260617_105635",
     "trigger": "api-crawl-stream",
     "started_at_hkt": "2026-06-17T10:56:50.729865+08:00",

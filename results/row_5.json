@@ -79,7 +79,7 @@
           "content_type": "text/html",
           "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
           "bytes": 38720,
-          "elapsed_seconds": 4.274,
+          "elapsed_seconds": 1.492,
           "method": "httpx",
           "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
           "evidence_path": "evidence_cache/36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8.txt",
@@ -122,7 +122,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 12551396,
-          "elapsed_seconds": 5.264,
+          "elapsed_seconds": 2.2,
           "method": "httpx",
           "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
           "evidence_path": "evidence_cache/ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b.txt",
@@ -158,8 +158,8 @@
           ]
         }
       ],
-      "confidence_score": 0.1,
-      "verification_reason": "The extracted data consists of fragmented text snippets from the source documents, but the structured fields (e.g., '运营收入/总收益', '服务收入', 'EBITDA', '净利润', '客户数/用户数', '5G用户数', 'ARPU', '资本开支', '派息', '战略升级', '券商观点', '市场反应') are not clearly defined in the source text; the source includes financial tables and report metadata but lacks explicit labels or values for these specific categories, making the extraction unreliable."
+      "confidence_score": 0.6,
+      "verification_reason": "The extracted data contains financial figures for 2025 and 2024, but lacks clear labels for each metric (e.g., '运营收入/总收益') and includes mixed content from the source text. Key values like revenue and EBITDA appear present but are not fully isolated; some fields (e.g., '客户数/用户数', '战略升级') are not defined or extracted from the provided source. The source primarily contains navigation and structural text, not detailed financial statements, reducing confidence."
     },
     {
       "entity": "Hutchison",
@@ -193,7 +193,7 @@
           "content_type": "text/html",
           "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
           "bytes": 24996,
-          "elapsed_seconds": 4.005,
+          "elapsed_seconds": 1.185,
           "method": "httpx",
           "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar 2026 2025 Annual Results Presentation 08 Aug 2025 2025 Interim Results Presentation 14 Mar 2025 2024 Annual Results Presentation 30 Jul 2024 2024 Interim Results Presentation 05 Mar 2024 2023 Annual Results Presentation 28 Jul 2023 2023 Interim Results Presentation 28 Feb 2023 2022 Annual Results Presentation 29 Jul 2022 2022 Interim Results Presentation 25 Feb 2022 2021 Annual Results Presentation 27 Jul 2021 2021 Interim Results Presentation 26 Feb 2021 2020 Annual Results Presentation 28 Jul 2020 2020 Interim Results Presentation 28 Feb 2020 2019 Annual Results Presentation 30 Jul 2019 2019 Interim Results Presentation 28 Feb 2019 2018 Annual Results Presentation 25 Jul 2018 2018 Interim Results Presentation 26 Feb 2018 2017 Annual Results Presentation 01 Aug 2017 Transcript : Ver",
           "evidence_path": "evidence_cache/fb1f36a00f3aad856cae54350d0ab74d9ba5ae31da0a2381d497b6557d4ad06b.txt",
@@ -235,7 +235,7 @@
           "content_type": "text/html",
           "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
           "bytes": 38720,
-          "elapsed_seconds": 4.274,
+          "elapsed_seconds": 1.492,
           "method": "httpx",
           "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
           "evidence_path": "evidence_cache/36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8.txt",
@@ -278,7 +278,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 12551396,
-          "elapsed_seconds": 5.264,
+          "elapsed_seconds": 2.2,
           "method": "httpx",
           "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
           "evidence_path": "evidence_cache/ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b.txt",
@@ -314,8 +314,8 @@
           ]
         }
       ],
-      "confidence_score": 1.0,
-      "verification_reason": "The extracted data contains textual fragments that are clearly sourced from the provided financial documents, including specific values for total revenue, net customer service revenue, EBITDA, EBIT, profit, loss, capital expenditure, and dividend per share. The source text contains the same financial figures and context, confirming accurate extraction."
+      "confidence_score": 0.35,
+      "verification_reason": "The extracted data contains fragmentary numerical values from financial highlights, but the source text from the three URLs mainly shows presentation listings, navigation menus, and annual report cover pages. Many fields like 'EBITDA', '净利润', 'ARPU', and '资本开支' are partially or inconsistently extracted, and the source lacks the full financial tables needed for complete verification. Additionally, fields such as '战略升级', '券商观点', and '市场反应' have no relevant matches in the source."
     }
   ],
   "entity_missing": [],
@@ -328,7 +328,7 @@
       "content_type": "text/html",
       "title": "Hutchison Telecommunications Hong Kong Holdings Limited",
       "bytes": 24996,
-      "elapsed_seconds": 4.005,
+      "elapsed_seconds": 1.185,
       "method": "httpx",
       "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited Skip to Content Presentations & Transcript 09 Mar 2026 2025 Annual Results Presentation 08 Aug 2025 2025 Interim Results Presentation 14 Mar 2025 2024 Annual Results Presentation 30 Jul 2024 2024 Interim Results Presentation 05 Mar 2024 2023 Annual Results Presentation 28 Jul 2023 2023 Interim Results Presentation 28 Feb 2023 2022 Annual Results Presentation 29 Jul 2022 2022 Interim Results Presentation 25 Feb 2022 2021 Annual Results Presentation 27 Jul 2021 2021 Interim Results Presentation 26 Feb 2021 2020 Annual Results Presentation 28 Jul 2020 2020 Interim Results Presentation 28 Feb 2020 2019 Annual Results Presentation 30 Jul 2019 2019 Interim Results Presentation 28 Feb 2019 2018 Annual Results Presentation 25 Jul 2018 2018 Interim Results Presentation 26 Feb 2018 2017 Annual Results Presentation 01 Aug 2017 Transcript : Ver",
       "evidence_path": "evidence_cache/fb1f36a00f3aad856cae54350d0ab74d9ba5ae31da0a2381d497b6557d4ad06b.txt",
@@ -370,7 +370,7 @@
       "content_type": "text/html",
       "title": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports",
       "bytes": 38720,
-      "elapsed_seconds": 4.274,
+      "elapsed_seconds": 1.492,
       "method": "httpx",
       "text_sample": "Hutchison Telecommunications Hong Kong Holdings Limited - Investor Relations > Annual & Interim Reports Skip to Content Enter keyword to search Overview Vision and Mission Strategy Board of Directors Senior Management Corporate Governance Audit Committee Remuneration Committee Nomination Committee Sustainability Committee Corporate Governance Policies and Report Memorandum & Articles of Association Procedures for Election of Directors Milestones Awards Corporate Information Careers FAQs Hutchison Telecommunications Hong Kong Holdings Limited (HTHKH, stock code: 215) is a leading mobile telecoms operator in Hong Kong. Operating under the 3 , 3SUPREME , 3Business , MO+ and SoSIM brands, HTHKH provides advanced mobile telecoms services and 5G solutions. We leverage the latest technologies to drive innovations that set market trends and steer industry development. HTHKH is a group member of ",
       "evidence_path": "evidence_cache/36eea3cd689ed38df5a82e62222358205afb808b19cb3e616ebb591483fe58c8.txt",
@@ -413,7 +413,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 12551396,
-      "elapsed_seconds": 5.264,
+      "elapsed_seconds": 2.2,
       "method": "httpx",
       "text_sample": "2025 ANNUAL REPORT Transforming Today Empowering Tomorrow The cover design of our 2025 Annual Report serves as a powerful metaphor for vision and progress. The prominent circle, reminiscent of the pupil of an eye, conveys clarity and insight, symbolising the Group’s ability to look beyond today and maintain focus on transformation. The circle also represents a target, reinforcing precision and purpose in achieving our goals. At its centre, the globe signifies the future we aspire to — a world of possibilities that our services help connect. Radiating across space are dots and lines, weaving a network that reflects our global reach and seamless connectivity. Surrounding these are vibrant frames that form a window into innovation, showcasing the breadth and diversity of our products and services. All the elements form an eye that does more than look ahead. It illuminates tomorrow, echoing ",
       "evidence_path": "evidence_cache/ee18766ec622c9fc5f97bd0e1cb769dc800b8a8459e6bfe17ec8bb6465246f8b.txt",
@@ -455,6 +455,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-17T02:55:17.836594+00:00",
-  "fetched_at_hkt": "2026-06-17T10:55:17.836606+08:00"
+  "fetched_at": "2026-06-23T03:32:16.910312+00:00",
+  "fetched_at_hkt": "2026-06-23T11:32:16.910328+08:00"
 }

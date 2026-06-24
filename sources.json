@@ -1,42 +1,23 @@
 [
   {
-    "row": "20",
-    "block": "全球标杆运营商",
-    "object": "亚太运营商",
-    "object_cell": "",
+    "row": "34",
+    "block": "国际资讯",
+    "object": "宏观指标",
+    "object_cell": "宏观指标",
     "entities": [
-      "Vodafone",
-      "Deutsche Telekom",
-      "Orange",
-      "Telefonica",
-      "BT/EE",
-      "TIM",
-      "Verizon",
-      "AT&T",
-      "T-Mobile US"
+      "宏观指标"
     ],
-    "package": "全球趋势案例",
-    "need": "Vodafone、Deutsche Telekom、Orange、Telefonica、BT/EE、TIM、Verizon、AT&T、T-Mobile US 的网络API、Open RAN、边缘计算、FWA、AI网络",
-    "sources": "【Vodafone】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.telefonica.com/en/communication-room/press-room/\n【Deutsche Telekom】\n- https://www.telekom.com/en/media/media-information\n【Orange】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.telefonica.com/en/communication-room/press-room/\n【Telefonica】\n- https://www.telefonica.com/en/communication-room/press-room/\n【BT/EE】\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.bt.com/about/bt/our-company/group-businesses/networks\n【TIM】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.verizon.com/5g/home/\n【Verizon】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://www.verizon.com/5g/home/\n【AT&T】\n- https://www.verizon.com/business/solutions/network-apis/\n- https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/\n- https://www.telekom.com/en/media/media-information\n- https://www.gruppotim.it/en/press-archive.html\n- https://www.telefonica.com/en/communication-room/press-room/\n【T-Mobile US】\n- https://www.telekom.com/en/media/media-information",
-    "channel": "验证-only爬虫：官网/投资者关系/长期产品页优先，必要时使用可靠HTML化财报页；httpx/curl 真实访问，BeautifulSoup/lxml 抽正文并解析组件datamodel；按公司和字段独立抽取证据，保存状态码、标题、正文片段、hash。",
-    "frequency": "每日扫描官方新闻/公告；每周汇总复核",
+    "package": "宏观经济指标",
+    "need": "GDP、进出口、失业率、旅游业数据等",
+    "sources": "【宏观指标】\n- https://www.discoverhongkong.com/eng/hktb/newsroom/tourism-statistics.html\n- https://www.censtatd.gov.hk/en/scode200.html\n- https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5\n- https://www.stats.gov.cn/english/",
+    "channel": "验证-only爬虫：官方HTML/JSON API优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按字段词典抽取证据，保存状态码、标题、正文片段、hash。",
+    "frequency": "月度/季度；官方发布日自动刷新",
     "selected_fields": [
-      "网络API",
-      "Open RAN",
-      "边缘计算",
-      "FWA",
-      "AI网络"
+      "GDP",
+      "进出口",
+      "失业率",
+      "旅游业数据"
     ],
-    "ignored_selected_fields": [
-      "Vodafone",
-      "Deutsche Telekom",
-      "Orange",
-      "Telefonica",
-      "BT/EE",
-      "TIM",
-      "Verizon",
-      "AT&T",
-      "T-Mobile US"
-    ]
+    "ignored_selected_fields": []
   }
 ]

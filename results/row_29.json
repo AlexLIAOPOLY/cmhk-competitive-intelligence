@@ -17,8 +17,8 @@
   "source_urls": [
     "https://www.gsma.com/newsroom/press-releases/",
     "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
-    "https://www.itu.int/",
-    "https://oecd.ai/"
+    "https://oecd.ai/",
+    "https://www.itu.int/"
   ],
   "attempted_urls": [
     "https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5",
@@ -27,9 +27,9 @@
     "https://www.itu.int/"
   ],
   "extracted": {
-    "ITU数字发展": "\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
+    "ITU数字发展": "r, transparent, explainable, robust, secure and safe. Visit the Catalogue © 2026 OECD. All rights reserved Home Terms & conditions Privacy policy Follow us on: SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
     "宽带指标": "Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for G",
-    "OECD数字经济": "sts Spotify Spreaker TikTok Secretary-General's Corner © ITU All Rights Reserved Contact us Terms of Use Privacy notice Accessibility Report misconduct Back to top SOURCE: https://oecd.ai/ The OECD Artificial Intelligenc",
+    "OECD数字经济": "US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://oecd.ai/ The OECD Artificial Intelligenc",
     "World Bank/IMF宏观": "nks IMEI Database Legal © Copyright 2026 GSM Association.The GSM logo is registered and owned by the GSM Association. SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"pa"
   },
   "missing_fields": [],
@@ -39,30 +39,30 @@
       "status": "ok",
       "source_urls": [],
       "extracted": {
-        "ITU数字发展": "\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
+        "ITU数字发展": "r, transparent, explainable, robust, secure and safe. Visit the Catalogue © 2026 OECD. All rights reserved Home Terms & conditions Privacy policy Follow us on: SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
         "宽带指标": "Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for G",
-        "OECD数字经济": "sts Spotify Spreaker TikTok Secretary-General's Corner © ITU All Rights Reserved Contact us Terms of Use Privacy notice Accessibility Report misconduct Back to top SOURCE: https://oecd.ai/ The OECD Artificial Intelligenc",
+        "OECD数字经济": "US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://oecd.ai/ The OECD Artificial Intelligenc",
         "World Bank/IMF宏观": "nks IMEI Database Legal © Copyright 2026 GSM Association.The GSM logo is registered and owned by the GSM Association. SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"pa"
       },
       "missing_fields": [],
       "raw_records": [],
-      "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains fragments from multiple source texts that are not relevant to the specified fields. For example, 'ITU数字发展' and '宽带指标' contain unrelated GSMA press release content and ITU homepage information, while 'OECD数字经济' includes unrelated OECD AI text and ITU footer content. 'World Bank/IMF宏观' correctly references the World Bank API but includes extraneous GSMA IMEI Database text. None of the fields accurately summarize the source texts provided."
+      "confidence_score": 0.35,
+      "verification_reason": "The extracted data contains fragmented, incomplete, and misattributed text from multiple sources (GSMA, World Bank, OECD). The fields 'ITU数字发展', '宽带指标', and 'OECD数字经济' are garbled and not directly found in the provided source text. Only some fragments (e.g., from World Bank and OECD) are partially present, leading to low overall accuracy."
     },
     {
       "entity": "行业权威机构",
       "status": "ok",
       "source_urls": [],
       "extracted": {
-        "ITU数字发展": "\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
+        "ITU数字发展": "r, transparent, explainable, robust, secure and safe. Visit the Catalogue © 2026 OECD. All rights reserved Home Terms & conditions Privacy policy Follow us on: SOURCE: https://www.itu.int/ ITU: Connecting the world and b",
         "宽带指标": "Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for G",
-        "OECD数字经济": "sts Spotify Spreaker TikTok Secretary-General's Corner © ITU All Rights Reserved Contact us Terms of Use Privacy notice Accessibility Report misconduct Back to top SOURCE: https://oecd.ai/ The OECD Artificial Intelligenc",
+        "OECD数字经济": "US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2021\",\"value\":368954169748.818,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0}]] SOURCE: https://oecd.ai/ The OECD Artificial Intelligenc",
         "World Bank/IMF宏观": "nks IMEI Database Legal © Copyright 2026 GSM Association.The GSM logo is registered and owned by the GSM Association. SOURCE: https://api.worldbank.org/v2/country/HKG/indicator/NY.GDP.MKTP.CD?format=json&per_page=5 [{\"pa"
       },
       "missing_fields": [],
       "raw_records": [],
-      "confidence_score": 0.1,
-      "verification_reason": "Extracted data contains fragmented and irrelevant text from various websites (ITU, GSMA, OECD, World Bank) that does not correspond to the provided source text. The source text includes GSMA press releases and World Bank API data, but the extracted fields like 'ITU数字发展', '宽带指标', and 'OECD数字经济' are garbled and lack meaningful structured information from the source."
+      "confidence_score": 0.0,
+      "verification_reason": "The extracted data contains only fragments that do not correspond to the provided source text. The source text includes press releases from GSMA, World Bank GDP data, and OECD AI content, but the extracted fields like 'ITU数字发展', '宽带指标', 'OECD数字经济', and 'World Bank/IMF宏观' contain garbled or unrelated text from other sources (e.g., ITU, OECD) and are not present in the source text. The extracted data appears to be from different web pages (itu.int, oecd.ai, worldbank.org) and is not accurately reflecting the given source text."
     }
   ],
   "entity_missing": [],
@@ -74,12 +74,12 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Press Releases - Newsroom",
-      "bytes": 110739,
-      "elapsed_seconds": 4.791,
+      "bytes": 111058,
+      "elapsed_seconds": 1.978,
       "method": "httpx",
       "text_sample": "Press Releases - Newsroom Skip to content Solutions and impact Solutions and impact Solutions and impact - What we do to help business and society thrive Industry Services Industry Services Device Services Network Services Assurance Services Industry Services Training and consulting Training and consulting GSMA Advance GSMA Capacity Building GSMA Intelligence Training and consulting Connectivity for Good Connectivity for Good External Affairs Government convening Mobile for Development Policy and Regulation Spectrum The Mobile Economy Connectivity for Good Technologies Technologies GSMA Open Gateway 5G and Networks eSIM Mobile identity Internet of things Security Artificial intelligence Quantum Technologies Technologies Industries Industries Connected Fintech and Commerce Connected Manufacturing and Production Smart Mobility Industries Solutions and impact Discover Discover Quickly find ",
-      "evidence_path": "evidence_cache/78508529a89be0854635951121502ed072148f83468644061c13a78b47605727.txt",
-      "content_hash": "78508529a89be0854635951121502ed072148f83468644061c13a78b47605727",
+      "evidence_path": "evidence_cache/ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41.txt",
+      "content_hash": "ed86d836f2e59bfed960576cca200aee325716a8df90aaaf498c81ae72edec41",
       "error": "",
       "fetch_attempts": [
         {
@@ -87,8 +87,8 @@
           "final_url": "https://www.gsma.com/newsroom/press-releases/",
           "status": 200,
           "method": "httpx",
-          "bytes": 110739,
-          "text_chars": 4273,
+          "bytes": 111058,
+          "text_chars": 4332,
           "title": "Press Releases - Newsroom",
           "error": "",
           "meta_refresh_url": ""
@@ -115,7 +115,7 @@
       "content_type": "application/json;charset=utf-8",
       "title": "",
       "bytes": 1179,
-      "elapsed_seconds": 5.387,
+      "elapsed_seconds": 2.041,
       "method": "httpx",
       "text_sample": "[{\"page\":1,\"pages\":14,\"per_page\":5,\"total\":66,\"sourceid\":\"2\",\"lastupdated\":\"[REDACTED_PHONE_OR_ID]\"},[{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2025\",\"value\":null,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2024\",\"value\":406863396487.342,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2023\",\"value\":381043026173.935,\"unit\":\"\",\"obs_status\":\"\",\"decimal\":0},{\"indicator\":{\"id\":\"NY.GDP.MKTP.CD\",\"value\":\"GDP (current US$)\"},\"country\":{\"id\":\"HK\",\"value\":\"Hong Kong SAR, China\"},\"countryiso3code\":\"HKG\",\"date\":\"2022\",\"value",
       "evidence_path": "evidence_cache/27bb6625cc0502f86505b076dc4f3a4b0b635d49f9cacbe14b39ac4feb92c6cd.txt",
@@ -149,53 +149,13 @@
     },
     {
       "row": 29,
-      "url": "https://www.itu.int/",
-      "final_url": "https://www.itu.int/en/Pages/default.aspx",
-      "status": 200,
-      "content_type": "text/html; charset=utf-8",
-      "title": "ITU: Connecting the world and beyond",
-      "bytes": 100503,
-      "elapsed_seconds": 7.025,
-      "method": "httpx",
-      "text_sample": "ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About ITU Media Centre Events Publications Statistics Action areas Regional Presence Careers General Secretariat Radiocommunication Standardization Development News Members' Zone Join ITU Connecting the world and beyond You are here ITU > Homepage Share July in Geneva brings AI Dialogue ​Countries are set to come together in a first-of-its-kind dialogue on artificial intelligence (AI) mandated by the UN General Assembly. Read the blog ​ ​ AI for Good: Young innovators tackle hunger ​Thousands of young people have designed, built and programmed robots to bolster food security in a competitive challenge. Read the blog ​ ​ WSIS Forum: Renewed push for global digital development ​​​Ministers and tech leaders will come together between 6 and 10 July driven by a strengthene",
-      "evidence_path": "evidence_cache/29f70fe8bdb50a48df6bc1a27fefbd4e1b9804e231a929f1e90d3d88a291d4ba.txt",
-      "content_hash": "29f70fe8bdb50a48df6bc1a27fefbd4e1b9804e231a929f1e90d3d88a291d4ba",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.itu.int/",
-          "final_url": "https://www.itu.int/en/Pages/default.aspx",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 100503,
-          "text_chars": 3140,
-          "title": "ITU: Connecting the world and beyond",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "international_org",
-      "jurisdiction": "international",
-      "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": []
-    },
-    {
-      "row": 29,
       "url": "https://oecd.ai/",
       "final_url": "https://oecd.ai/en/",
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "The OECD Artificial Intelligence Policy Observatory - OECD.AI",
       "bytes": 129647,
-      "elapsed_seconds": 20.17,
+      "elapsed_seconds": 2.798,
       "method": "httpx",
       "text_sample": "The OECD Artificial Intelligence Policy Observatory - OECD.AI Going Digital DPP Blog Live data Policies and initiatives Priority issues Tools Resources About Search AI Risk & Accountability AI has risks and all actors must be accountable. AI, Data & Privacy Data and privacy are primary policy issues for AI. Generative AI Managing the risks and benefits of generative AI. Future of Work How AI can and will affect workers and working environments AI Index The OECD AI will be a synthetic measurement framework on Trustworthy Artificial Intelligence (AI) AI Incidents To manage risks, governments must track and understand AI incidents and hazards. AI in Government Governments are not only AI regulators and investors, but also developers and users. Data Governance Expertise on data governance to promote its safe and faire use in AI Responsible AI The responsible development, use and governance o",
       "evidence_path": "evidence_cache/2b45b91861dda92aac4959616a336b4f399b95842466188c7b85623205b1e6a6.txt",
@@ -226,6 +186,46 @@
       "evidence_fallback_used": false,
       "fallback_reason": "",
       "entity_hits": []
+    },
+    {
+      "row": 29,
+      "url": "https://www.itu.int/",
+      "final_url": "https://www.itu.int/en/Pages/default.aspx",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "title": "ITU: Connecting the world and beyond",
+      "bytes": 100573,
+      "elapsed_seconds": 4.75,
+      "method": "httpx",
+      "text_sample": "ITU: Connecting the world and beyond Connecting the world and beyond عربي 中文 Español Français Русский Advanced Search ITU About ITU Media Centre Events Publications Statistics Action areas Regional Presence Careers General Secretariat Radiocommunication Standardization Development News Members' Zone Join ITU Connecting the world and beyond You are here ITU > Homepage Share AI and resilience images herald Geneva Digital Week ​Artwork generated with artificial intelligence (AI) and human-centred photographs are sparking curiosity ahead of key global digital discussions. Read the blog ​ ​ July in Geneva brings AI Dialogue ​Countries are set to come together in a first-of-its-kind dialogue on artificial intelligence (AI) mandated by the UN General Assembly. Read the blog ​ ​ AI for Good: Young innovators tackle hunger ​Thousands of young people have designed, built and programmed robots to b",
+      "evidence_path": "evidence_cache/ed5e6ae2c30e4067528ccdb0b1ed940e813fab4cdc8977f37a2768cf5f7179e3.txt",
+      "content_hash": "ed5e6ae2c30e4067528ccdb0b1ed940e813fab4cdc8977f37a2768cf5f7179e3",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.itu.int/",
+          "final_url": "https://www.itu.int/en/Pages/default.aspx",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 100573,
+          "text_chars": 3146,
+          "title": "ITU: Connecting the world and beyond",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "international_org",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": []
     }
   ],
   "live_fetch_status": "ok",
@@ -234,6 +234,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:42.013200+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:42.013438+08:00"
+  "fetched_at": "2026-06-24T03:33:53.297300+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:53.297484+08:00"
 }

@@ -6,7 +6,7 @@ pycheck:
 	python3 -m py_compile agent.py web_app.py rag_llm.py agent_production.py agent_memory.py
 
 test:
-	python3 -m unittest test_web_app_curation
+	python3 -m unittest test_web_app_curation test_agent_memory
 
 git-health:
 	python3 scripts/git_health_check.py

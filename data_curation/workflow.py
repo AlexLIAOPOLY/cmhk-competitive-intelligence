@@ -893,6 +893,12 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
         _recover_verified_metric_fact(fact)
         _demote_unsupported_ok_fact(fact)
         _close_negative_evidence_gap(fact)
+        fact.value = _normalize_hk_financial_unit(
+            fact.metric,
+            fact.value,
+            fact.sources,
+            f"{fact.basis}；{fact.note}",
+        )
         if (
             fact.status != "ok"
             and fact.entity_supported
@@ -1313,6 +1319,39 @@ def _votes_from_monitoring_closure(fact: CandidateFact) -> list[dict[str, Any]]:
     return [vote] if vote else []
 
 
+def _is_monitoring_closure_fact(fact: CandidateFact) -> bool:
+    return bool(_votes_from_monitoring_closure(fact))
+
+
+def _normalize_hk_financial_unit(
+    metric: str,
+    value: str,
+    sources: list[str],
+    context: str = "",
+) -> str:
+    text = clean_text(value, 220)
+    if not re.search(r"收入|收益|EBITDA|利润|净利润|溢利|资本开支", metric, re.IGNORECASE):
+        return text
+    context_unit = _normalized_unit_from_context(context)
+    if context_unit and not re.search(r"港元|人民币|美元|HKD|HK\\$|RMB|USD", text, re.IGNORECASE):
+        year_values = re.findall(r"([-+]?\d[\d,]*(?:\.\d+)?)\s*\((20\d{2})\)", text)
+        if len(year_values) >= 2:
+            normalized = "；".join(f"{year}: {number}{context_unit}" for number, year in year_values)
+            if _passes_metric_gate(metric, normalized):
+                return normalized
+    if not re.fullmatch(r"[-+]?\d[\d,]*(?:\.\d+)?万", text):
+        return text
+    hk_source = any(
+        re.search(
+            r"hkexnews|/hkg/|i-cablecomm|hthkh|hkt\.com|smartone|hkbn|hgc|aastocks",
+            str(url),
+            re.IGNORECASE,
+        )
+        for url in sources
+    )
+    return f"{text}港元" if hk_source else text
+
+
 def _votes_from_candidate_basis(fact: CandidateFact) -> list[dict[str, Any]]:
     if _is_suspicious_profit_segment_fact(fact):
         return []
@@ -1589,6 +1628,19 @@ def _search_verify_one(
         _official_domain_owners(str(url)) or "financialreports.eu" in str(url)
         for url in fact.sources
     )
+    if (
+        original_vote
+        and has_official_basis_source
+        and str(fact.basis or "").strip()
+        and not re.search(r"候选(?:值|结果|事实)\s*(?:为|是|[:：])", str(fact.basis or ""))
+    ):
+        basis_canonical = _canonical_fact_value(fact.metric, fact.basis)
+        if basis_canonical and _canonical_values_compatible(fact.metric, original_vote["canonical"], basis_canonical):
+            official_vote = dict(original_vote)
+            official_vote["source"] = "官方证据依据"
+            official_vote["kind"] = "basis_in_official_evidence"
+            official_vote["url"] = str(fact.sources[0]) if fact.sources else ""
+            votes.append(official_vote)
     if fact.status != "ok" and basis_votes and (fact.source_score >= 0.8 or has_official_basis_source):
         for basis_vote in basis_votes[:1]:
             evidence_vote = dict(basis_vote)
@@ -1631,6 +1683,13 @@ def _search_verify_one(
         if vote:
             votes.append(vote)
 
+    if _is_monitoring_closure_fact(fact) and original_vote:
+        closure_canonical = original_vote["canonical"]
+        closure_votes = [vote for vote in votes if vote.get("canonical") == closure_canonical]
+        closure_kinds = {vote.get("kind") for vote in closure_votes}
+        if {"candidate", "monitoring_closure"} <= closure_kinds:
+            votes = closure_votes
+
     buckets: dict[str, list[dict[str, Any]]] = {}
     for vote in votes:
         buckets.setdefault(str(vote["canonical"]), []).append(vote)
@@ -1645,7 +1704,12 @@ def _search_verify_one(
     decision = "unchanged"
 
     if has_majority and majority_canonical and majority_canonical != original_canonical:
-        fact.value = clean_text(majority[0].get("normalized_value") or majority[0]["value"], 220)
+        fact.value = _normalize_hk_financial_unit(
+            fact.metric,
+            clean_text(majority[0].get("normalized_value") or majority[0]["value"], 220),
+            fact.sources,
+            f"{fact.basis}；{fact.note}",
+        )
         correction_note = f"搜索验证多数口径修正为：{fact.value}"
         if correction_note not in fact.basis:
             fact.basis = clean_text(f"{fact.basis}；{correction_note}", 600)

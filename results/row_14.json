@@ -16,9 +16,9 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
+    "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
     "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
-    "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
-    "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html"
+    "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
   ],
   "attempted_urls": [
     "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
@@ -26,11 +26,11 @@
     "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html"
   ],
   "extracted": {
-    "宽带套餐": "red stable performance, with revenue remaining steady at $2,333 million, supported by stable customer retention and strategic service enhancements. The total number of residential broadband subscriptions reached 907,000,",
-    "企业ICT": "SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Busi",
-    "云/安全": "dedicated private network service, MetroNet, to 100Gbps, providing enterprise customers with unprecedented network capacity to support critical applications such as generative AI, cloud computing, and ultra-high-definiti",
+    "宽带套餐": "SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Share the news: (From the left) Rex Hui, HKBN Co-Owner and Head of Product Development & Manage",
+    "企业ICT": "acy Statement | Contact Us | Unsubscribe This is a system generated email, please do not reply to it. SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html HKBN Enterprise Solutions Forges Exclusive Di",
+    "云/安全": "e Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet, toget",
     "融合产品": "ters Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging",
-    "重大合作": "SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Busi",
+    "重大合作": "Link Hong Kong & Macau. Dear Friends of HKBN HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled",
     "区域布局": "t $2,333 million, supported by stable customer retention and strategic service enhancements. The total number of residential broadband subscriptions reached 907,000, while network coverage expanded by 2% to 2.65 million "
   },
   "missing_fields": [],
@@ -39,20 +39,62 @@
       "entity": "HKBN",
       "status": "ok",
       "source_urls": [
+        "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
         "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
-        "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
-        "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html"
+        "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results"
       ],
       "extracted": {
-        "宽带套餐": "red stable performance, with revenue remaining steady at $2,333 million, supported by stable customer retention and strategic service enhancements. The total number of residential broadband subscriptions reached 907,000,",
-        "企业ICT": "SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Busi",
-        "云/安全": "dedicated private network service, MetroNet, to 100Gbps, providing enterprise customers with unprecedented network capacity to support critical applications such as generative AI, cloud computing, and ultra-high-definiti",
+        "宽带套餐": "SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Share the news: (From the left) Rex Hui, HKBN Co-Owner and Head of Product Development & Manage",
+        "企业ICT": "acy Statement | Contact Us | Unsubscribe This is a system generated email, please do not reply to it. SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html HKBN Enterprise Solutions Forges Exclusive Di",
+        "云/安全": "e Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet, toget",
         "融合产品": "ters Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging",
-        "重大合作": "SOURCE: https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Busi",
+        "重大合作": "Link Hong Kong & Macau. Dear Friends of HKBN HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled",
         "区域布局": "t $2,333 million, supported by stable customer retention and strategic service enhancements. The total number of residential broadband subscriptions reached 907,000, while network coverage expanded by 2% to 2.65 million "
       },
       "missing_fields": [],
       "raw_records": [
+        {
+          "row": 14,
+          "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+          "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
+          "bytes": 18642,
+          "elapsed_seconds": 0.877,
+          "method": "httpx",
+          "text_sample": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Share the news: (From the left) Rex Hui, HKBN Co-Owner and Head of Product Development & Management, Residential Solutions, Elinor Shiu, Co-Owner & Chief Executive Officer – Residential Solutions of HKBN, Raymond Chan, General Manager of TP-Link Hong Kong and Macau, and Daniel Zhou, Product Director of Solutions and Services of TP-Link Hong Kong & Macau. Dear Friends of HKBN HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet, together with our revolutionary GigaFast broadband services, this collaboration radically enhances the home network experience, providing customers",
+          "evidence_path": "evidence_cache/691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9.txt",
+          "content_hash": "691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+              "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 18642,
+              "text_chars": 3729,
+              "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "HK",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "HKBN"
+          ]
+        },
         {
           "row": 14,
           "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
@@ -60,8 +102,8 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses",
-          "bytes": 18422,
-          "elapsed_seconds": 3.99,
+          "bytes": 18412,
+          "elapsed_seconds": 0.88,
           "method": "httpx",
           "text_sample": "HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses If you cannot view this page properly, please click here . Share the news: Group photo of representatives from HKBN and HIKMICRO. From left: Dr Denis Yip, President and Group COO of HKBN; Samuel Hui, COO of HKBN Enterprise Solutions; Totti Zhu, HIKMICRO Asia General Manager; and David Zhou, General Manager of Hikvision Technology PTE. LTD. Dear Friends of HKBN HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses HKBN Enterprise Solutions (HKBNES) today announced an exclusive distribution partnership 1 with HIKMICRO, a leading provider of infrared thermal imaging solutions under Hikvision. Moreover, HIKMICRO has officially joined the HKBN",
           "evidence_path": "evidence_cache/8064bdd20a7291f4ec8d950fc363821512fb4771ff384a435de50aad3ca63ff5.txt",
@@ -73,7 +115,7 @@
               "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
               "status": 200,
               "method": "httpx",
-              "bytes": 18422,
+              "bytes": 18412,
               "text_chars": 3847,
               "title": "HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses",
               "error": "",
@@ -102,8 +144,8 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "Press Releases | HKBN",
-          "bytes": 81208,
-          "elapsed_seconds": 4.104,
+          "bytes": 81202,
+          "elapsed_seconds": 0.958,
           "method": "httpx",
           "text_sample": "Press Releases | HKBN Press release HKBN Announces FY2025 Annual Results Net Profit Soars with Strong EBITDA Growth, Sustained Dividend Distribution (Hong Kong – 31 October 2025) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational performance and financial results for the year ended 31 August 2025 (“FY25”). Amid a challenging macroeconomic environment, the Group achieved robust growth in its core businesses and continued to create value through diversification, driven by exceptional operational efficiency and strategic execution. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, with a 4% year-on-year growth to $11,129 million. A notable highlight was a 7% increase in core service revenue, after excluding mobile device and other product sales. EBITDA increased by 4% to $2,451 million, due to strong operational performance and strate",
           "evidence_path": "evidence_cache/a3fe46e602fe23baaf516a67b9b1ab6a58daeaf7d086c1ac928c62a5b68e48d7.txt",
@@ -115,7 +157,7 @@
               "final_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
               "status": 200,
               "method": "httpx",
-              "bytes": 81208,
+              "bytes": 81202,
               "text_chars": 4074,
               "title": "Press Releases | HKBN",
               "error": "",
@@ -136,56 +178,56 @@
           "entity_hits": [
             "HKBN"
           ]
-        },
-        {
-          "row": 14,
-          "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-          "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-          "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
-          "bytes": 18652,
-          "elapsed_seconds": 4.372,
-          "method": "httpx",
-          "text_sample": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Share the news: (From the left) Rex Hui, HKBN Co-Owner and Head of Product Development & Management, Residential Solutions, Elinor Shiu, Co-Owner & Chief Executive Officer – Residential Solutions of HKBN, Raymond Chan, General Manager of TP-Link Hong Kong and Macau, and Daniel Zhou, Product Director of Solutions and Services of TP-Link Hong Kong & Macau. Dear Friends of HKBN HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet, together with our revolutionary GigaFast broadband services, this collaboration radically enhances the home network experience, providing customers",
-          "evidence_path": "evidence_cache/691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9.txt",
-          "content_hash": "691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-              "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 18652,
-              "text_chars": 3729,
-              "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "HK",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "HKBN"
-          ]
         }
       ],
-      "confidence_score": 0.7,
-      "verification_reason": "Most extracted fields contain partial or rephrased content from the source texts but mix units or omit key context: '宽带套餐' accurately uses revenue and subscription numbers from the residential results; '企业ICT' and '重大合作' correctly reference the HIKMICRO partnership source URL but the quote is truncated; '云/安全' correctly mentions MetroNet upgrade to 100Gbps and AI/cloud usage; '融合产品' appears related to the Priority Plus Wi-Fi solution with TP-Link but the phrasing is not directly found in provided text; '区域布局' includes network expansion data but the revenue figure is misattributed. Overall, no outright fabrication but several inaccuracies and missing context reduce confidence."
+      "confidence_score": 0.9,
+      "verification_reason": "Most extracted data entries directly match or are clearly supported by the source texts. However, '企业ICT' is partially extracted from a different source and includes unrelated disclaimer text; '云/安全' as a category is not explicitly named in the source; '区域布局' includes financial figures from a separate press release not fully provided; and some entries are truncated mid-sentence, reducing precision."
     }
   ],
   "entity_missing": [],
   "raw_records": [
+    {
+      "row": 14,
+      "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+      "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
+      "bytes": 18642,
+      "elapsed_seconds": 0.877,
+      "method": "httpx",
+      "text_sample": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Share the news: (From the left) Rex Hui, HKBN Co-Owner and Head of Product Development & Management, Residential Solutions, Elinor Shiu, Co-Owner & Chief Executive Officer – Residential Solutions of HKBN, Raymond Chan, General Manager of TP-Link Hong Kong and Macau, and Daniel Zhou, Product Director of Solutions and Services of TP-Link Hong Kong & Macau. Dear Friends of HKBN HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet, together with our revolutionary GigaFast broadband services, this collaboration radically enhances the home network experience, providing customers",
+      "evidence_path": "evidence_cache/691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9.txt",
+      "content_hash": "691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+          "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 18642,
+          "text_chars": 3729,
+          "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "HKBN"
+      ]
+    },
     {
       "row": 14,
       "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
@@ -193,8 +235,8 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses",
-      "bytes": 18422,
-      "elapsed_seconds": 3.99,
+      "bytes": 18412,
+      "elapsed_seconds": 0.88,
       "method": "httpx",
       "text_sample": "HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses If you cannot view this page properly, please click here . Share the news: Group photo of representatives from HKBN and HIKMICRO. From left: Dr Denis Yip, President and Group COO of HKBN; Samuel Hui, COO of HKBN Enterprise Solutions; Totti Zhu, HIKMICRO Asia General Manager; and David Zhou, General Manager of Hikvision Technology PTE. LTD. Dear Friends of HKBN HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses HKBN Enterprise Solutions (HKBNES) today announced an exclusive distribution partnership 1 with HIKMICRO, a leading provider of infrared thermal imaging solutions under Hikvision. Moreover, HIKMICRO has officially joined the HKBN",
       "evidence_path": "evidence_cache/8064bdd20a7291f4ec8d950fc363821512fb4771ff384a435de50aad3ca63ff5.txt",
@@ -206,7 +248,7 @@
           "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20260401_HIKMICRO.html",
           "status": 200,
           "method": "httpx",
-          "bytes": 18422,
+          "bytes": 18412,
           "text_chars": 3847,
           "title": "HKBN Enterprise Solutions Forges Exclusive Distribution Partnership with HIKMICRO Empowering Intelligent Security and Efficient Management for Businesses",
           "error": "",
@@ -235,8 +277,8 @@
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "Press Releases | HKBN",
-      "bytes": 81208,
-      "elapsed_seconds": 4.104,
+      "bytes": 81202,
+      "elapsed_seconds": 0.958,
       "method": "httpx",
       "text_sample": "Press Releases | HKBN Press release HKBN Announces FY2025 Annual Results Net Profit Soars with Strong EBITDA Growth, Sustained Dividend Distribution (Hong Kong – 31 October 2025) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational performance and financial results for the year ended 31 August 2025 (“FY25”). Amid a challenging macroeconomic environment, the Group achieved robust growth in its core businesses and continued to create value through diversification, driven by exceptional operational efficiency and strategic execution. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, with a 4% year-on-year growth to $11,129 million. A notable highlight was a 7% increase in core service revenue, after excluding mobile device and other product sales. EBITDA increased by 4% to $2,451 million, due to strong operational performance and strate",
       "evidence_path": "evidence_cache/a3fe46e602fe23baaf516a67b9b1ab6a58daeaf7d086c1ac928c62a5b68e48d7.txt",
@@ -248,51 +290,9 @@
           "final_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20251031_FY25_Annual_Results",
           "status": 200,
           "method": "httpx",
-          "bytes": 81208,
+          "bytes": 81202,
           "text_chars": 4074,
           "title": "Press Releases | HKBN",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "HK",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "HKBN"
-      ]
-    },
-    {
-      "row": 14,
-      "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-      "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
-      "bytes": 18652,
-      "elapsed_seconds": 4.372,
-      "method": "httpx",
-      "text_sample": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Share the news: (From the left) Rex Hui, HKBN Co-Owner and Head of Product Development & Management, Residential Solutions, Elinor Shiu, Co-Owner & Chief Executive Officer – Residential Solutions of HKBN, Raymond Chan, General Manager of TP-Link Hong Kong and Macau, and Daniel Zhou, Product Director of Solutions and Services of TP-Link Hong Kong & Macau. Dear Friends of HKBN HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers Powered by TP-Link’s Aginet Platform for the Ultimate Home Network Experience In partnership with TP Link, we’re thrilled to launch an upgraded version of our “Priority Plus” one-stop home Wi-Fi solution. Leveraging TP-Link's Wi-Fi cloud management platform, Aginet, together with our revolutionary GigaFast broadband services, this collaboration radically enhances the home network experience, providing customers",
-      "evidence_path": "evidence_cache/691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9.txt",
-      "content_hash": "691c1f8fed99ea722be9fc33dfa038e057fc3fcbc6219553f72cca1efa957db9",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-          "final_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/20241128-TPLink.html",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 18652,
-          "text_chars": 3729,
-          "title": "HKBN Launches GigaFast Broadband with Wi-Fi 7 Routers",
           "error": "",
           "meta_refresh_url": ""
         }
@@ -319,6 +319,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:22.261480+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:22.261646+08:00"
+  "fetched_at": "2026-06-24T03:32:47.553547+00:00",
+  "fetched_at_hkt": "2026-06-24T11:32:47.554749+08:00"
 }

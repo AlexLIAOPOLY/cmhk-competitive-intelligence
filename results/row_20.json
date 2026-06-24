@@ -33,20 +33,21 @@
     "T-Mobile US"
   ],
   "source_urls": [
-    "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
     "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
+    "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+    "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+    "https://developer.orange.com/events/mwc-2026/",
     "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
     "https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd",
-    "https://developer.orange.com/events/mwc-2026/",
-    "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
     "https://www.vodafone.com/news/technology/vodafone-advances-future-ready-radio-access-network",
     "https://www.telefonica.com/en/communication-room/press-room/",
-    "https://www.verizon.com/business/solutions/network-apis/",
-    "https://www.bt.com/about/bt/our-company/group-businesses/networks",
     "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-    "https://www.gruppotim.it/en/press-archive.html",
+    "https://www.verizon.com/business/solutions/network-apis/",
     "https://www.verizon.com/5g/home/",
+    "https://www.bt.com/about/bt/our-company/group-businesses/networks",
+    "https://www.gruppotim.it/en/press-archive.html",
     "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
+    "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
     "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
     "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_8_K_Earnings_801.pdf",
     "https://investors.att.com/~/media/Files/A/ATT-IR-V2/reports-and-presentations/transcript-2024-12-03.pdf"
@@ -72,11 +73,11 @@
     "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html"
   ],
   "extracted": {
-    "网络API": "SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy an",
+    "网络API": "f you use an ad blocker, please deactivate it, to be able to use this functionality. OK SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform laun",
     "Open RAN": "your experience on this site. Read our policy Back to top SOURCE: https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd New Open RAN ready chip tested by Vodafone, S",
-    "边缘计算": "SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy an",
+    "边缘计算": "r, please deactivate it, to be able to use this functionality. OK SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform launched | Deutsche Teleko",
     "FWA": "session, so we ask you to hold your questions until then. The presentations and the Q&A are going to run a little over three hours, and we are going to have a short break about halfway through. With that, I'm going to ge",
-    "AI网络": "ellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Anal"
+    "AI网络": "SOURCE: https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882 6G Innovation Hub to Advance AI-Native Networks | Deutsche Telekom Company Company profile Worldwide Topic specials Data "
   },
   "missing_fields": [],
   "entity_results": [
@@ -104,8 +105,8 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "Deutsche Telekom, Orange, Telefónica, TIM and Vodafone achieve the first pan-European federated Edge Continuum at MWC 2026 – Vodafone",
-          "bytes": 201272,
-          "elapsed_seconds": 5.252,
+          "bytes": 201404,
+          "elapsed_seconds": 5.557,
           "method": "curl_chrome_ua",
           "text_sample": "Deutsche Telekom, Orange, Telefónica, TIM and Vodafone achieve the first pan-European federated Edge Continuum at MWC 2026 – Vodafone skip to main content Vodafone Business Vodafone Foundation Our sites Vodafone websites Are you looking for information about offers, devices or your account? Please choose your local Vodafone website. Africa Egypt مصر Ethiopia Kenya Moçambique Lesotho South Africa RD Congo Tanzania (EN) Asia Pacific India Türkiye Europe Shqipëri Česká Republika Deutschland Ελλάδα Ireland Nederland United Kingdom Portugal România Close Link to Homepage Link to everyone.connected page everyone.connected Connecting People​ Connecting People​ Connecting Businesses Connecting Businesses Connecting Continents​ Connecting Continents​ Connecting Futures Connecting Futures Close Link to Our company page Our company As one of the largest telcos in Europe and Africa, Vodafone's missi",
           "evidence_path": "evidence_cache/d303ae7edba09fc7b51b25d046b1ddec9095845e2a413fa10b9e705673152bec.txt",
@@ -139,7 +140,7 @@
               "final_url": "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
               "status": 200,
               "method": "curl_chrome_ua",
-              "bytes": 201272,
+              "bytes": 201404,
               "text_chars": 14710,
               "title": "Deutsche Telekom, Orange, Telefónica, TIM and Vodafone achieve the first pan-European federated Edge Continuum at MWC 2026 – Vodafone",
               "error": "",
@@ -168,8 +169,8 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "New Open RAN ready chip tested by Vodafone, Samsung and AMD – Vodafone",
-          "bytes": 195887,
-          "elapsed_seconds": 5.268,
+          "bytes": 196019,
+          "elapsed_seconds": 5.945,
           "method": "curl_chrome_ua",
           "text_sample": "New Open RAN ready chip tested by Vodafone, Samsung and AMD – Vodafone skip to main content Vodafone Business Vodafone Foundation Our sites Vodafone websites Are you looking for information about offers, devices or your account? Please choose your local Vodafone website. Africa Egypt مصر Ethiopia Kenya Moçambique Lesotho South Africa RD Congo Tanzania (EN) Asia Pacific India Türkiye Europe Shqipëri Česká Republika Deutschland Ελλάδα Ireland Nederland United Kingdom Portugal România Close Link to Homepage Link to everyone.connected page everyone.connected Connecting People​ Connecting People​ Connecting Businesses Connecting Businesses Connecting Continents​ Connecting Continents​ Connecting Futures Connecting Futures Close Link to Our company page Our company As one of the largest telcos in Europe and Africa, Vodafone's mission is to connect everyone. We're shaping an inclusive, sustaina",
           "evidence_path": "evidence_cache/e2a5faa9457ec2270e8572422bd190298ebd0bd1907b9553333d7f9cd1cd0431.txt",
@@ -203,7 +204,7 @@
               "final_url": "https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd",
               "status": 200,
               "method": "curl_chrome_ua",
-              "bytes": 195887,
+              "bytes": 196019,
               "text_chars": 12316,
               "title": "New Open RAN ready chip tested by Vodafone, Samsung and AMD – Vodafone",
               "error": "",
@@ -232,8 +233,8 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "Vodafone advances future-ready radio access network – Vodafone",
-          "bytes": 196691,
-          "elapsed_seconds": 5.668,
+          "bytes": 196823,
+          "elapsed_seconds": 6.872,
           "method": "curl_chrome_ua",
           "text_sample": "Vodafone advances future-ready radio access network – Vodafone skip to main content Vodafone Business Vodafone Foundation Our sites Vodafone websites Are you looking for information about offers, devices or your account? Please choose your local Vodafone website. Africa Egypt مصر Ethiopia Kenya Moçambique Lesotho South Africa RD Congo Tanzania (EN) Asia Pacific India Türkiye Europe Shqipëri Česká Republika Deutschland Ελλάδα Ireland Nederland United Kingdom Portugal România Close Link to Homepage Link to everyone.connected page everyone.connected Connecting People​ Connecting People​ Connecting Businesses Connecting Businesses Connecting Continents​ Connecting Continents​ Connecting Futures Connecting Futures Close Link to Our company page Our company As one of the largest telcos in Europe and Africa, Vodafone's mission is to connect everyone. We're shaping an inclusive, sustainable and ",
           "evidence_path": "evidence_cache/da05115afc3f009ab0f3bae976b3c4de3361b3c57490d330edfec9d1bb8cd5bb.txt",
@@ -267,7 +268,7 @@
               "final_url": "https://www.vodafone.com/news/newsroom/technology/vodafone-advances-future-ready-radio-access-network",
               "status": 200,
               "method": "curl_chrome_ua",
-              "bytes": 196691,
+              "bytes": 196823,
               "text_chars": 12862,
               "title": "Vodafone advances future-ready radio access network – Vodafone",
               "error": "",
@@ -290,67 +291,25 @@
           ]
         }
       ],
-      "confidence_score": 0.15,
-      "verification_reason": "The extracted data is mostly composed of navigation/menu text and content from unrelated URLs, with only the '边缘计算' entry partially matching the source about pan-European Edge Continuum. The '网络API', 'Open RAN', and 'AI网络' fields do not correspond to the source text at all, and 'FWA' is correctly noted as absent. Overall, the extraction is severely inaccurate."
+      "confidence_score": 0.3,
+      "verification_reason": "Most extracted data fields contain irrelevant or garbled text that does not match the Source Text. For '网络API', the Source Text only mentions 'Connecting Futures' and company info, not an API. 'Open RAN' incorrectly cites a Vodafone URL but the Source Text is about Edge Continuum. 'AI网络' is similarly mismatched. 'FWA' claims no disclosure, which is correct. Only '边缘计算' partially aligns as the Source Text discusses Edge Continuum. Overall, poor accuracy."
     },
     {
       "entity": "Deutsche Telekom",
       "status": "ok",
       "source_urls": [
-        "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-        "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882"
+        "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
+        "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626"
       ],
       "extracted": {
-        "网络API": "SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy an",
+        "网络API": "f you use an ad blocker, please deactivate it, to be able to use this functionality. OK SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform laun",
         "Open RAN": "d of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibilit",
-        "边缘计算": "SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy an",
-        "AI网络": "ellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Anal",
+        "边缘计算": "r, please deactivate it, to be able to use this functionality. OK SOURCE: https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626 Network APIs and T-DevEdge platform launched | Deutsche Teleko",
+        "AI网络": "SOURCE: https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882 6G Innovation Hub to Advance AI-Native Networks | Deutsche Telekom Company Company profile Worldwide Topic specials Data ",
         "FWA": "本轮官方公开来源未发现 Deutsche Telekom 对该字段的独立可量化披露；维持后续监测。"
       },
       "missing_fields": [],
       "raw_records": [
-        {
-          "row": 20,
-          "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-          "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-          "status": 200,
-          "content_type": "text/html;charset=UTF-8",
-          "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
-          "bytes": 66956,
-          "elapsed_seconds": 3.477,
-          "method": "httpx",
-          "text_sample": "Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy and security Digital Responsibility Management unplugged Strategy Management and Corporate Governance Board of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Analysts For tenders Recommended content Environment CO2 Reduction Circular Economy Biodiversity and Water Mobile Communications and Health Certifications Social Commitment Digital society Human Rights Responsible Employer Diversity Governance Sustainable supply chains Compliance Risk Management Data Privacy and Se",
-          "evidence_path": "evidence_cache/41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af.txt",
-          "content_hash": "41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af",
-          "error": "",
-          "fetch_attempts": [
-            {
-              "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-              "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-              "status": 200,
-              "method": "httpx",
-              "bytes": 66956,
-              "text_chars": 10682,
-              "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
-              "error": "",
-              "meta_refresh_url": ""
-            }
-          ],
-          "source_policy": "allow",
-          "source_type": "company_official",
-          "jurisdiction": "DE",
-          "tos_status": "requires_periodic_review",
-          "robots_status": "checked",
-          "robots_allowed": true,
-          "skip_reason": "",
-          "live_fetch_status": "",
-          "cache_hit": false,
-          "evidence_fallback_used": false,
-          "fallback_reason": "",
-          "entity_hits": [
-            "Deutsche Telekom"
-          ]
-        },
         {
           "row": 20,
           "url": "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
@@ -359,7 +318,7 @@
           "content_type": "text/html;charset=UTF-8",
           "title": "6G Innovation Hub to Advance AI-Native Networks | Deutsche Telekom",
           "bytes": 57803,
-          "elapsed_seconds": 3.484,
+          "elapsed_seconds": 3.269,
           "method": "httpx",
           "text_sample": "6G Innovation Hub to Advance AI-Native Networks | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy and security Digital Responsibility Management unplugged Strategy Management and Corporate Governance Board of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Analysts For tenders Recommended content Environment CO2 Reduction Circular Economy Biodiversity and Water Mobile Communications and Health Certifications Social Commitment Digital society Human Rights Responsible Employer Diversity Governance Sustainable supply chains Compliance Risk Management Data Privacy and",
           "evidence_path": "evidence_cache/a5fb750e25725947c24a2e82f7aece725f9b84bf056ad90ec0f789117ba5794c.txt",
@@ -392,50 +351,92 @@
           "entity_hits": [
             "Deutsche Telekom"
           ]
+        },
+        {
+          "row": 20,
+          "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+          "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+          "status": 200,
+          "content_type": "text/html;charset=UTF-8",
+          "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
+          "bytes": 66956,
+          "elapsed_seconds": 3.3,
+          "method": "httpx",
+          "text_sample": "Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy and security Digital Responsibility Management unplugged Strategy Management and Corporate Governance Board of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Analysts For tenders Recommended content Environment CO2 Reduction Circular Economy Biodiversity and Water Mobile Communications and Health Certifications Social Commitment Digital society Human Rights Responsible Employer Diversity Governance Sustainable supply chains Compliance Risk Management Data Privacy and Se",
+          "evidence_path": "evidence_cache/41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af.txt",
+          "content_hash": "41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+              "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 66956,
+              "text_chars": 10682,
+              "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "DE",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "Deutsche Telekom"
+          ]
         }
       ],
-      "confidence_score": 0.45,
-      "verification_reason": "The extracted data for '网络API', '边缘计算', and 'AI网络' contains fragmented text from the source but fails to isolate the concepts clearly. 'Open RAN' is not mentioned in the source, and 'FWA' is correctly noted as not found. The mixing of unrelated content and missing verifiable information lowers confidence."
+      "confidence_score": 0.5,
+      "verification_reason": "The extracted data contains content from the source text and related links, but several fields (Open RAN, AI网络) have irrelevant or mismatched text; FWA explicitly states no disclosure was found, which is consistent. Overall partial match with significant noise."
     },
     {
       "entity": "Orange",
       "status": "ok",
       "source_urls": [
-        "https://developer.orange.com/events/mwc-2026/",
-        "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/"
+        "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+        "https://developer.orange.com/events/mwc-2026/"
       ],
       "extracted": {
-        "网络API": "Network Dynamics Worker Safety Facility Security and Surveillance Documentation Insights Try for free Search Talk to Sales Log in / Register Home Events Mobile World Congress 2026 Network APIs Mobile World Congress 2026 ",
-        "Open RAN": "SOURCE: https://developer.orange.com/events/mwc-2026/ Mobile World Congress 2026 - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap K",
+        "网络API": "SOURCE: https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/ Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer Back to top Loading... Develope",
+        "Open RAN": "SOURCE: https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/ Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer Back to top Loading..",
         "边缘计算": "numbers and precisely control their “network reality” (location, reachability, QoS, KYC, SIM swap, and more). Designed for learning, rapid prototyping, and reproducing real-world edge cases. No setup, no impact on live s",
-        "AI网络": "in / Register Home Events Mobile World Congress 2026 Network APIs Mobile World Congress 2026 Published: February 24, 2026 Share on X Share on Facebook Share on LinkedIn How APIs, AI, and programmable networks are redefin",
+        "AI网络": "re). Designed for learning, rapid prototyping, and reproducing real-world edge cases. No setup, no impact on live systems, no real subscriber data. Watch the short demo or jump straight in with the quick start below. Int",
         "FWA": "本轮官方公开来源未发现 Orange 对该字段的独立可量化披露；维持后续监测。"
       },
       "missing_fields": [],
       "raw_records": [
         {
           "row": 20,
-          "url": "https://developer.orange.com/events/mwc-2026/",
-          "final_url": "https://developer.orange.com/events/mwc-2026/",
+          "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+          "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
-          "title": "Mobile World Congress 2026 - Orange Developer",
-          "bytes": 96338,
-          "elapsed_seconds": 2.138,
+          "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
+          "bytes": 114818,
+          "elapsed_seconds": 1.964,
           "method": "httpx",
-          "text_sample": "Mobile World Congress 2026 - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Place Operator Eligibility RIP Operator E",
-          "evidence_path": "evidence_cache/6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161.txt",
-          "content_hash": "6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161",
+          "text_sample": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Pla",
+          "evidence_path": "evidence_cache/af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173.txt",
+          "content_hash": "af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173",
           "error": "",
           "fetch_attempts": [
             {
-              "url": "https://developer.orange.com/events/mwc-2026/",
-              "final_url": "https://developer.orange.com/events/mwc-2026/",
+              "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+              "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
               "status": 200,
               "method": "httpx",
-              "bytes": 96338,
-              "text_chars": 5647,
-              "title": "Mobile World Congress 2026 - Orange Developer",
+              "bytes": 114818,
+              "text_chars": 12430,
+              "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
               "error": "",
               "meta_refresh_url": ""
             }
@@ -457,27 +458,27 @@
         },
         {
           "row": 20,
-          "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
-          "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+          "url": "https://developer.orange.com/events/mwc-2026/",
+          "final_url": "https://developer.orange.com/events/mwc-2026/",
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
-          "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
-          "bytes": 114810,
-          "elapsed_seconds": 2.161,
+          "title": "Mobile World Congress 2026 - Orange Developer",
+          "bytes": 96346,
+          "elapsed_seconds": 2.033,
           "method": "httpx",
-          "text_sample": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Pla",
-          "evidence_path": "evidence_cache/af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173.txt",
-          "content_hash": "af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173",
+          "text_sample": "Mobile World Congress 2026 - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Place Operator Eligibility RIP Operator E",
+          "evidence_path": "evidence_cache/6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161.txt",
+          "content_hash": "6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161",
           "error": "",
           "fetch_attempts": [
             {
-              "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
-              "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+              "url": "https://developer.orange.com/events/mwc-2026/",
+              "final_url": "https://developer.orange.com/events/mwc-2026/",
               "status": 200,
               "method": "httpx",
-              "bytes": 114810,
-              "text_chars": 12430,
-              "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
+              "bytes": 96346,
+              "text_chars": 5647,
+              "title": "Mobile World Congress 2026 - Orange Developer",
               "error": "",
               "meta_refresh_url": ""
             }
@@ -498,8 +499,8 @@
           ]
         }
       ],
-      "confidence_score": 0.72,
-      "verification_reason": "Most extracted fields are present in the source text, especially '网络API', '边缘计算', and 'AI网络' which contain relevant quotes from the MWC 2026 page. 'Open RAN' field contains a mix of URL and text not directly about Open RAN, and 'FWA' is explicitly stated as not found in official sources, so it is absent from the source. The source does not discuss FWA, and the Open RAN mention is weak, leading to moderate confidence."
+      "confidence_score": 0.95,
+      "verification_reason": "The extracted data for '网络API', 'Open RAN', and 'AI网络' are accurately sourced from the provided source text. '边缘计算' correctly paraphrases the source's mention of 'edge cases' within the context of prototyping. 'FWA' is correctly marked as not found in the source. Minor discrepancies exist: 'Open RAN' and '网络API' have slightly different cut-off points but still reflect the source content. Overall, the extraction is accurate."
     },
     {
       "entity": "Telefonica",
@@ -523,12 +524,12 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "Press releases - Telefónica",
-          "bytes": 234225,
-          "elapsed_seconds": 2.052,
+          "bytes": 259694,
+          "elapsed_seconds": 2.027,
           "method": "httpx",
           "text_sample": "Press releases - Telefónica Skip to content Buscar Close Share in shareholders & investors ES EN Search Home About us About us Mission Strategy Main data Executive Team History Public Policy and Regulation Public positioning Telefónica Policy Lab Our Brands Countries and Emerging Business Units Telefónica Infra Analyst Relations Suppliers Partnerships Contact us We are in solidarity Sustainability and Innovation Sustainability and Innovation How we work Business Principles and Policies Sustainability Strategy Value chain Compliance Society Human Rights Digital inclusion Accessibility Minors and responsible use Sustainable Development Goals: Impact & SDGs Diversity and inclusion Environment Environmental Responsibility Energy and climate change Circular Economy Green digitalisation Electromagnetic fields Innovation Wayra Innovation with public aid Discovering the digital vanguard Quantum-",
-          "evidence_path": "evidence_cache/55b7c02c7513249564c6100fc620d7fb0924267a23ce117bcb29f6d98c0d8f5d.txt",
-          "content_hash": "55b7c02c7513249564c6100fc620d7fb0924267a23ce117bcb29f6d98c0d8f5d",
+          "evidence_path": "evidence_cache/d7c6ba67b24b1168bae4d9c529eff602fe593dbea4257252497fb24eae721b7b.txt",
+          "content_hash": "d7c6ba67b24b1168bae4d9c529eff602fe593dbea4257252497fb24eae721b7b",
           "error": "",
           "fetch_attempts": [
             {
@@ -536,8 +537,8 @@
               "final_url": "https://www.telefonica.com/en/communication-room/press-room/",
               "status": 200,
               "method": "httpx",
-              "bytes": 234225,
-              "text_chars": 7001,
+              "bytes": 259694,
+              "text_chars": 7555,
               "title": "Press releases - Telefónica",
               "error": "",
               "meta_refresh_url": ""
@@ -559,48 +560,48 @@
           ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains terms like '网络API', 'Open RAN', 'AI网络', '边缘计算', and 'FWA' which are not present in the source text. The source text does not mention any of these specific terms or provide related quantifiable disclosures. The extracted values are either garbled text fragments from the source site or placeholder statements indicating no data found, thus failing to accurately reflect the source text."
+      "confidence_score": 0.1,
+      "verification_reason": "The extracted data fields contain nonsensical strings that do not match the source text, which is a long list of navigation links and press releases. For example, '网络API' is not present, and 'hareholders and Investors...' is a broken fragment. Most fields are either garbled or state '未发现' (not found), which contradicts the source text's rich content."
     },
     {
       "entity": "BT/EE",
       "status": "ok",
       "source_urls": [
-        "https://www.bt.com/about/bt/our-company/group-businesses/networks",
-        "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/"
+        "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+        "https://www.bt.com/about/bt/our-company/group-businesses/networks"
       ],
       "extracted": {
         "网络API": "aff mobile devices on separate slices – ensuring that mission-critical applications are prioritised, even during peak network usage. Faster innovation through secure, standardised network APIs NEF enables customers, deve",
         "Open RAN": "ting new optical network technologies – right back to the fundamental physics Developing innovative radio access network (RAN) technologies, including Massive MIMO, small cell and open RAN (O-RAN) technologies Continuing",
-        "边缘计算": "e is what matters to us. It’s what is driving us to modernise the UK’s digital infrastructure, build the most powerful networks at unprecedented speed and scale, and shape cutting-edge connectivity using the latest techn",
-        "AI网络": "SOURCE: https://www.bt.com/about/bt/our-company/group-businesses/networks Networks - Group businesses - Our company | BT Plc Skip to main content Skip to primary navigation Skip to search Skip to footer For the home UK b",
+        "边缘计算": "ns avoid the ‘roar before the score’ as late kick-offs change viewing, EE research reveals 01 Jun 2026 - From the stage to the seaside: EE supercharges summer to give millions the edge with 5G+ BT newsroom 02 March 2026 ",
+        "AI网络": "to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/ BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses Skip to main content Skip to main content Skip to",
         "FWA": "本轮官方公开来源未发现 BT/EE 对该字段的独立可量化披露；维持后续监测。"
       },
       "missing_fields": [],
       "raw_records": [
         {
           "row": 20,
-          "url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
-          "final_url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
+          "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+          "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
           "status": 200,
-          "content_type": "text/html;charset=utf-8",
-          "title": "Networks - Group businesses - Our company | BT Plc",
-          "bytes": 267180,
-          "elapsed_seconds": 2.331,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
+          "bytes": 208962,
+          "elapsed_seconds": 3.054,
           "method": "httpx",
-          "text_sample": "Networks - Group businesses - Our company | BT Plc Skip to main content Skip to primary navigation Skip to search Skip to footer For the home UK business International business For the home UK business International business Menu For the home UK business International business About Investors News & media Research & development Responsible business Careers Contact us About Investors News & media Research & development Responsible business Careers Contact us Menu More About Investors News & media Research & development Responsible business Careers Contact us Our company Our leadership Our businesses Our brands Our strategy Our purpose and behaviours Being trusted: our code Our people Inclusion A better workplace The insider's view UK & worldwide BT in the UK & Ireland Worldwide Policy & Regulation Keeping the UK connected Protecting consumers & delivering content Our governance & strategy",
-          "evidence_path": "evidence_cache/63f5592f23206834e91cf3e4e4b51026aa43d22d3a433de27f1f3c53952e509c.txt",
-          "content_hash": "63f5592f23206834e91cf3e4e4b51026aa43d22d3a433de27f1f3c53952e509c",
+          "text_sample": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses Skip to main content Skip to main content Skip to primary navigation Skip to search Skip to footer For the home For UK and global businesses For the home For UK and global businesses Menu Please enter at least 3 characters to search. Search For the home For UK and global businesses About BT Group Investors News & media Responsible business Careers Contact us About BT Group Investors News & media Responsible business Careers Contact us Menu More About BT Group Investors News & media Responsible business Careers Contact us Please enter at least 3 characters to search. Search Our company Our leadership Our businesses Our strategy Our purpose and values Being trusted: our code Research and development Our people Inclusion A better workplace The insider's view UK & worldwide BT in the U",
+          "evidence_path": "evidence_cache/9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a.txt",
+          "content_hash": "9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a",
           "error": "",
           "fetch_attempts": [
             {
-              "url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
-              "final_url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
+              "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+              "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
               "status": 200,
               "method": "httpx",
-              "bytes": 267180,
-              "text_chars": 11289,
-              "title": "Networks - Group businesses - Our company | BT Plc",
+              "bytes": 208962,
+              "text_chars": 12191,
+              "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
               "error": "",
               "meta_refresh_url": ""
             }
@@ -622,27 +623,27 @@
         },
         {
           "row": 20,
-          "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-          "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+          "url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
+          "final_url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
           "status": 200,
-          "content_type": "text/html; charset=UTF-8",
-          "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
-          "bytes": 208777,
-          "elapsed_seconds": 2.917,
+          "content_type": "text/html;charset=utf-8",
+          "title": "Networks - Group businesses - Our company | BT Plc",
+          "bytes": 267179,
+          "elapsed_seconds": 4.048,
           "method": "httpx",
-          "text_sample": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses Skip to main content Skip to main content Skip to primary navigation Skip to search Skip to footer For the home For UK and global businesses For the home For UK and global businesses Menu Please enter at least 3 characters to search. Search For the home For UK and global businesses About BT Group Investors News & media Responsible business Careers Contact us About BT Group Investors News & media Responsible business Careers Contact us Menu More About BT Group Investors News & media Responsible business Careers Contact us Please enter at least 3 characters to search. Search Our company Our leadership Our businesses Our strategy Our purpose and values Being trusted: our code Research and development Our people Inclusion A better workplace The insider's view UK & worldwide BT in the U",
-          "evidence_path": "evidence_cache/9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a.txt",
-          "content_hash": "9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a",
+          "text_sample": "Networks - Group businesses - Our company | BT Plc Skip to main content Skip to primary navigation Skip to search Skip to footer For the home UK business International business For the home UK business International business Menu For the home UK business International business About Investors News & media Research & development Responsible business Careers Contact us About Investors News & media Research & development Responsible business Careers Contact us Menu More About Investors News & media Research & development Responsible business Careers Contact us Our company Our leadership Our businesses Our brands Our strategy Our purpose and behaviours Being trusted: our code Our people Inclusion A better workplace The insider's view UK & worldwide BT in the UK & Ireland Worldwide Policy & Regulation Keeping the UK connected Protecting consumers & delivering content Our governance & strategy",
+          "evidence_path": "evidence_cache/63f5592f23206834e91cf3e4e4b51026aa43d22d3a433de27f1f3c53952e509c.txt",
+          "content_hash": "63f5592f23206834e91cf3e4e4b51026aa43d22d3a433de27f1f3c53952e509c",
           "error": "",
           "fetch_attempts": [
             {
-              "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-              "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+              "url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
+              "final_url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
               "status": 200,
               "method": "httpx",
-              "bytes": 208777,
-              "text_chars": 12191,
-              "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
+              "bytes": 267179,
+              "text_chars": 11289,
+              "title": "Networks - Group businesses - Our company | BT Plc",
               "error": "",
               "meta_refresh_url": ""
             }
@@ -663,8 +664,8 @@
           ]
         }
       ],
-      "confidence_score": 0.0,
-      "verification_reason": "The Extracted Data contains fragmented text snippets that do not appear in the Source Text verbatim. The Source Text is a webpage about BT Networks without any of the specific extracted phrases such as 'aff mobile devices', 'NEF enables customers', or 'ting new optical network technologies', nor the detailed structured entries for '网络API', 'Open RAN', '边缘计算', 'AI网络', or 'FWA'. The source is entirely in English and lacks the mixed-language content and non-accessible fields of the extracted data."
+      "confidence_score": 0.6,
+      "verification_reason": "The extracted data partially matches the source. '网络API' and '边缘计算' contain fragments from the source, but with errors and out-of-context snippets. 'Open RAN' includes text from the source but not directly about Open RAN. 'AI网络' mixes unrelated source text. 'FWA' is a placeholder stating no disclosure, which is not verifiable from the provided source."
     },
     {
       "entity": "TIM",
@@ -689,7 +690,7 @@
           "content_type": "text/html",
           "title": "TIM Group | Press archive",
           "bytes": 166000,
-          "elapsed_seconds": 3.599,
+          "elapsed_seconds": 3.95,
           "method": "httpx",
           "text_sample": "TIM Group | Press archive Gruppo TIM Group First in Italy for network quality Streaming without interruptions, high-quality video even during peak hours, online gaming and smart working without glitches: these are the user experiences that define network quality. And according to Opensignal’s analysis of connectivity user experience, TIM ranks first in Italy. Read more back About us Activities Organization Governance Infrastructures Services Innovation Other activities Chairwoman Chief Executive Officer The organizational structure Governance tools Board of Directors Committees Board of Statutory Auditors Supervisory Body Remuneration TIM Wholesale Sparkle 5G (in Italian) TIM for individuals and SMB TIM for companies and PA TIM Brasil Olivetti Noovle Telsy International Business Solutions TIM myBroker Code of Ethics Bylaws Regulations Corporate Governance Report Codes, policies and proce",
           "evidence_path": "evidence_cache/4e206ecda776eddbe00073e53d909ca9c43972ef5698c804a9d1fa5263258faa.txt",
@@ -724,8 +725,8 @@
           ]
         }
       ],
-      "confidence_score": 0.1,
-      "verification_reason": "The extracted data contains generic phrases (e.g., 'network quality', 'analysis of connectivity') that appear verbatim or as fragments in the source text, but the key-value mappings (e.g., '网络API', 'Open RAN') are incorrect or not present as separate sections. Several fields are marked as not disclosed, which matches the source's lack of explicit mentions, but the actual extracted text for 'Open RAN' and 'AI网络' contains unrelated content from the source. Overall, the mapping is highly inaccurate."
+      "confidence_score": 0.2,
+      "verification_reason": "The extracted data contains unstructured fragments from the source text without clear boundaries. '网络API' includes a concatenation of unrelated phrases. 'Open RAN' is taken out of context. 'AI网络' is a partial sentence. '边缘计算' and 'FWA' state no disclosure, which matches the source's lack of these terms, but the extraction method is inconsistent and arbitrary."
     },
     {
       "entity": "Verizon",
@@ -750,8 +751,8 @@
           "status": 200,
           "content_type": "text/html; charset=utf-8",
           "title": "Network APIs: Authentication, Fraud Prevention & Security | Verizon",
-          "bytes": 198755,
-          "elapsed_seconds": 2.031,
+          "bytes": 198712,
+          "elapsed_seconds": 1.974,
           "method": "httpx",
           "text_sample": "Network APIs: Authentication, Fraud Prevention & Security | Verizon Accessibility Resource Center Skip to main content Personal Business Contact us Support Stores Close Mobile Mobile Mobile Mobile Deals Smartphones Plans Close Internet Internet Internet Internet Business Internet Close Solutions Solutions Solutions Solutions All products By industry Small business Enterprise Public Sector Solutions overview Close Insights Insights Insights Insights Why Verizon Customer success stories All resources Close Log In Close Log In Close Close Personal Business Contact us Support Stores Close end of navigation menu Home Solution Overview Network APIs [REDACTED_PHONE_OR_ID] Contact sales Network APIs Our Network APIs provide businesses with network level intelligence to help combat fraud, enhance customer experiences and unlock more efficiencies. Overview Benefits Use cases Solutions API resources FAQs Con",
           "evidence_path": "evidence_cache/14de42a6417bce90a9d961be00bd69bffaee73bc025dbfa28bef463c48aa01ce.txt",
@@ -763,7 +764,7 @@
               "final_url": "https://www.verizon.com/business/solutions/network-apis/",
               "status": 200,
               "method": "httpx",
-              "bytes": 198755,
+              "bytes": 198712,
               "text_chars": 7025,
               "title": "Network APIs: Authentication, Fraud Prevention & Security | Verizon",
               "error": "",
@@ -792,8 +793,8 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "5G Home Internet | Plans Starting $35/mo | Verizon",
-          "bytes": 545204,
-          "elapsed_seconds": 2.32,
+          "bytes": 545211,
+          "elapsed_seconds": 2.187,
           "method": "httpx",
           "text_sample": "5G Home Internet | Plans Starting $35/mo | Verizon Accessibility Resource Center Skip to main content Personal Business 1-833-VERIZON Contact us Support Stores Coverage map Español Mobile Mobile Mobile Mobile Simplicity Plan Simplicity Plan Other plans Smartphones More devices More devices More devices Basic phones Unlocked phones Certified pre-owned phones Tablets & laptops Watches Certified pre-owned watches Jetpacks & hotspots Keep your phone Keep your phone Verizon Prepaid Accessories Close Home Home Home Home Shop fast, reliable Wi-Fi Shop TV Move your service Fios accessories Close Save Save Save Save Switch to Verizon Phone deals Discover Verizon Loyalty Verizon One - Mobile & Internet Exclusive perks & services Trade-in your device Earn with Verizon Visa® Card Plan discounts Plan discounts Plan discounts Military discounts First Responder discounts Nurse discounts Teacher discoun",
           "evidence_path": "evidence_cache/a6e2b056ab58889414eb8d46504ae0edb87badcb70e035fef5568c97caf71942.txt",
@@ -805,7 +806,7 @@
               "final_url": "https://www.verizon.com/home/internet/5g/",
               "status": 200,
               "method": "httpx",
-              "bytes": 545204,
+              "bytes": 545211,
               "text_chars": 85815,
               "title": "5G Home Internet | Plans Starting $35/mo | Verizon",
               "error": "",
@@ -828,25 +829,69 @@
           ]
         }
       ],
-      "confidence_score": 0.7,
-      "verification_reason": "The extracted data for '网络API' and 'AI网络' correctly references the URL and a snippet from the first source text. 'FWA' partially matches the second source URL and title but includes an unrelated phone number and '21'. 'Open RAN' contains a fragmented sentence from the first source that is not clearly about Open RAN. '边缘计算' statement about no disclosure is unverifiable as no source mentions it; thus partially accurate."
+      "confidence_score": 0.65,
+      "verification_reason": "Most extracted entries (Network APIs, FWA, AI Network) are partially supported by the source, but Open RAN text is truncated and partially from a different context, and Edge Computing is not mentioned in the provided source at all, reducing overall accuracy."
     },
     {
       "entity": "AT&T",
       "status": "ok",
       "source_urls": [
+        "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
         "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_8_K_Earnings_801.pdf",
         "https://investors.att.com/~/media/Files/A/ATT-IR-V2/reports-and-presentations/transcript-2024-12-03.pdf"
       ],
       "extracted": {
-        "网络API": "trum and densify our network in a much more cost-efficient way. And the third reason that this program is so important is that with our modern network, we will unlock a consistent network API architecture. This will enab",
-        "Open RAN": "curities Exchange Act of 1934 Date of report (Date of earliest event reported) April 22, 2026 ______________________________________________________ AT&T INC. (Exact Name of Registrant as Specified in Charter) __________",
-        "边缘计算": "stor Day And number five, extending our converged broadband network. It's where I plan to spend my time with you this afternoon. I'm going to talk about the fiber and the wireless edge networks. It's where we spend the m",
+        "网络API": "SOURCE: https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis Telcos leaders join to redefine the sector with network APIs Open Gateway en es pt What is open gate",
+        "Open RAN": "etwork APIs Open Gateway en es pt What is open gateway Solutions Discover our solutions for all sectors and boost your business. SEE ALL SOLUTIONS Sectors FINANCIAL SERVICES & INSURANCES SOCIAL & CUSTOMER ENGAGEMENT E-CO",
+        "边缘计算": "ir partners. The new venture shareholders will bring funding and important assets, including Ericsson’s platform and network expertise, global telecom operator relationships, knowledge of the developer community and each",
         "FWA": "session, so we ask you to hold your questions until then. The presentations and the Q&A are going to run a little over three hours, and we are going to have a short break about halfway through. With that, I'm going to ge",
-        "AI网络": "hare, in the first quarter of 2025, which included the following significant items (per share): $0.15 of equity in net income of DIRECTV, offset by $(0.05) of restructuring and impairment charges. Operating revenues in t"
+        "AI网络": "ay Solutions Discover our solutions for all sectors and boost your business. SEE ALL SOLUTIONS Sectors FINANCIAL SERVICES & INSURANCES SOCIAL & CUSTOMER ENGAGEMENT E-COMMERCE & RETAIL DRIVEN DATA MARKETING ICT SERVICES I"
       },
       "missing_fields": [],
       "raw_records": [
+        {
+          "row": 20,
+          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Telcos leaders join to redefine the sector with network APIs",
+          "bytes": 77395,
+          "elapsed_seconds": 2.781,
+          "method": "httpx",
+          "text_sample": "Telcos leaders join to redefine the sector with network APIs Open Gateway en es pt What is open gateway Solutions Discover our solutions for all sectors and boost your business. SEE ALL SOLUTIONS Sectors FINANCIAL SERVICES & INSURANCES SOCIAL & CUSTOMER ENGAGEMENT E-COMMERCE & RETAIL DRIVEN DATA MARKETING ICT SERVICES INDUSTRY & MANUFACTURATING TRANSPORTATION & LOGISTICS MEDIA, ENTERTAINMENT & XR TRAVEL & HOSPITALITY APIs Discover our APIs and how they can power your applications. Know Your Customer - Match API Number Verification API SIM Swap API Home Devices QoD API Device Roaming Status API Location Verification API SEE ALL APIS Services Authentication and fraud prevention Location services Communication quality Payments and charging Partners Developers News Resources Login Back Paper/Article Global telecom leaders join forces to redefine the industry with network APIs Landmark agreem",
+          "evidence_path": "evidence_cache/2719111caa8b2369fa52de008c2da05fe29e91a134a1ba19e38ad7e646f39fc0.txt",
+          "content_hash": "2719111caa8b2369fa52de008c2da05fe29e91a134a1ba19e38ad7e646f39fc0",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+              "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 77395,
+              "text_chars": 6198,
+              "title": "Telcos leaders join to redefine the sector with network APIs",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "ES",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "AT&T",
+            "T-Mobile US"
+          ]
+        },
         {
           "row": 20,
           "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_8_K_Earnings_801.pdf",
@@ -855,7 +900,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 96351,
-          "elapsed_seconds": 5.824,
+          "elapsed_seconds": 5.953,
           "method": "curl_chrome_ua",
           "text_sample": "UNITED STATES SECURITIES AND EXCHANGE COMMISSION WASHINGTON, D.C. 20549 ______________________________________________________ FORM 8-K ______________________________________________________ CURRENT REPORT Pursuant to Section 13 or 15(d) of the Securities Exchange Act of 1934 Date of report (Date of earliest event reported) April 22, 2026 ______________________________________________________ AT&T INC. (Exact Name of Registrant as Specified in Charter) ______________________________________________________ Delaware 001-08610 43-1301883 (State or Other Jurisdiction (Commission (IRS Employer of Incorporation) File Number) Identification No.) 208 S. Akard St., Dallas, Texas 75202 (Address of Principal Executive Offices) (Zip Code) Registrant’s telephone number, including area code (210) 821-4105 (Former Name or Former Address, if Changed Since Last Report) Check the appropriate box below if",
           "evidence_path": "evidence_cache/92074459fd42c2b6e5fdd39804cddbc4524111c12af6e23615fcdb0e80a2d150.txt",
@@ -919,7 +964,7 @@
           "content_type": "application/pdf",
           "title": "PDF extracted by pdftotext",
           "bytes": 302150,
-          "elapsed_seconds": 6.209,
+          "elapsed_seconds": 6.92,
           "method": "curl_chrome_ua",
           "text_sample": "REFINITIV STREETEVENTS EDITED TRANSCRIPT T.N - AT&T Inc Analyst & Investor Day EVENT DATE/TIME: DECEMBER 03, 2024 / 7:00PM GMT OVERVIEW: Company Summary REFINITIV STREETEVENTS | www.refinitiv.com | Contact Us ©2024 Refinitiv. All rights reserved. Republication or redistribution of Refinitiv content, including by framing or similar means, is prohibited without the prior written consent of Refinitiv. 'Refinitiv' and the Refinitiv logo are registered trademarks of Refinitiv and its affiliated companies. DECEMBER 03, 2024 / 7:00PM, T.N - AT&T Inc Analyst & Investor Day CORPORATE PARTICIPANTS Brett Feldman AT&T Inc - Senior Vice President - Finance & Investor Relations John Stankey AT&T Inc - President, Chief Executive Officer, Director Jeff McElfresh AT&T Inc - Chief Operating Officer Jenifer Robertson AT&T Inc - Executive Vice President and General Manager - AT&T Mass Markets Melissa Arnold",
           "evidence_path": "evidence_cache/4ace563ce980d89f38291d3896c579a1c20e2fe82c4436b4d7a11b6df0af095f.txt",
@@ -977,19 +1022,20 @@
         }
       ],
       "confidence_score": 0.0,
-      "verification_reason": "The extracted data contains snippets that are partially present in the source text but are taken out of context, misattributed to specific fields (e.g., '网络API', 'Open RAN', etc.), and the source text does not provide any explicit mention of those technical terms in the extracted form. The extracted values appear to be random or incorrectly copied fragments from different parts of the document, not valid extractions."
+      "verification_reason": "The extracted data contains labels (e.g., '网络API', 'Open RAN', '边缘计算', 'FWA', 'AI网络') that do not appear in the source text. The source text discusses network APIs and related topics but does not include these specific Chinese terms or concepts like Open RAN, edge computing, FWA, or AI networks. The extracted snippets are also disorganized and appear to be randomly selected, failing to represent the source content accurately."
     },
     {
       "entity": "T-Mobile US",
       "status": "ok",
       "source_urls": [
         "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
+        "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
         "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html"
       ],
       "extracted": {
-        "网络API": "ividends Earnings Earnings Forecasts & Projections Financing Agreements Insurance Investments Opinions Joint Ventures Mutual Funds Private Placement Real Estate Restructuring & Recapitalization Sales Reports Shareholder ",
+        "网络API": "ion US Inc. SOURCE: https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis Telcos leaders join to redefine the sector with network APIs Open Gateway en es pt What ",
         "Open RAN": "SOURCE: https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN inn",
-        "边缘计算": "ss at Deutsche Telekom AG Development of business at Deutsche Telekom AG Results of operations of Deutsche Telekom AG Financial position of Deutsche Telekom AG Risk management in hedge accounting Forecast Forecast Statem",
+        "边缘计算": "ir partners. The new venture shareholders will bring funding and important assets, including Ericsson’s platform and network expertise, global telecom operator relationships, knowledge of the developer community and each",
         "AI网络": "SOURCE: https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN inn",
         "FWA": "Deutsche Telekom 2025年报美国业务章节披露，T-Mobile US 5G broadband（原 High Speed Internet）2025年净增客户170万、2024年净增客户150万。"
       },
@@ -1002,12 +1048,12 @@
           "status": 200,
           "content_type": "text/html; charset=UTF-8",
           "title": "T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN innovation",
-          "bytes": 213483,
-          "elapsed_seconds": 0.764,
+          "bytes": 213064,
+          "elapsed_seconds": 0.666,
           "method": "httpx",
           "text_sample": "T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN innovation Accessibility Statement Skip Navigation Resources Investor Relations Journalists Agencies Client Login Send a Release News Products Contact Search Search When typing in this field, a list of search results will appear and be automatically updated as you type. Searching for your content... No results found. Please change your search terms and try again. News in Focus Browse News Releases All News Releases All Public Company English-only News Releases Overview Multimedia Gallery All Multimedia All Photos All Videos Multimedia Gallery Overview Trending Topics All Trending Topics Business & Money Auto & Transportation All Automotive & Transportation Aerospace, Defense Air Freight Airlines & Aviation Automotive Maritime & Shipbuilding Railroads and Intermodal Transportation Supply Chain/Logistics Transportation,",
-          "evidence_path": "evidence_cache/1da0c14f8c005155df5b285a7ce66077103523eea58ab712b66a8e0f59866b7b.txt",
-          "content_hash": "1da0c14f8c005155df5b285a7ce66077103523eea58ab712b66a8e0f59866b7b",
+          "evidence_path": "evidence_cache/d49e232c9f3592f56d0d1d8f6c67d100f6f6beeaeb4b4640ea468fb08e44ca0d.txt",
+          "content_hash": "d49e232c9f3592f56d0d1d8f6c67d100f6f6beeaeb4b4640ea468fb08e44ca0d",
           "error": "",
           "fetch_attempts": [
             {
@@ -1015,8 +1061,8 @@
               "final_url": "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
               "status": 200,
               "method": "httpx",
-              "bytes": 213483,
-              "text_chars": 13444,
+              "bytes": 213064,
+              "text_chars": 13412,
               "title": "T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN innovation",
               "error": "",
               "meta_refresh_url": ""
@@ -1039,13 +1085,56 @@
         },
         {
           "row": 20,
+          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+          "status": 200,
+          "content_type": "text/html; charset=UTF-8",
+          "title": "Telcos leaders join to redefine the sector with network APIs",
+          "bytes": 77395,
+          "elapsed_seconds": 2.781,
+          "method": "httpx",
+          "text_sample": "Telcos leaders join to redefine the sector with network APIs Open Gateway en es pt What is open gateway Solutions Discover our solutions for all sectors and boost your business. SEE ALL SOLUTIONS Sectors FINANCIAL SERVICES & INSURANCES SOCIAL & CUSTOMER ENGAGEMENT E-COMMERCE & RETAIL DRIVEN DATA MARKETING ICT SERVICES INDUSTRY & MANUFACTURATING TRANSPORTATION & LOGISTICS MEDIA, ENTERTAINMENT & XR TRAVEL & HOSPITALITY APIs Discover our APIs and how they can power your applications. Know Your Customer - Match API Number Verification API SIM Swap API Home Devices QoD API Device Roaming Status API Location Verification API SEE ALL APIS Services Authentication and fraud prevention Location services Communication quality Payments and charging Partners Developers News Resources Login Back Paper/Article Global telecom leaders join forces to redefine the industry with network APIs Landmark agreem",
+          "evidence_path": "evidence_cache/2719111caa8b2369fa52de008c2da05fe29e91a134a1ba19e38ad7e646f39fc0.txt",
+          "content_hash": "2719111caa8b2369fa52de008c2da05fe29e91a134a1ba19e38ad7e646f39fc0",
+          "error": "",
+          "fetch_attempts": [
+            {
+              "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+              "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+              "status": 200,
+              "method": "httpx",
+              "bytes": 77395,
+              "text_chars": 6198,
+              "title": "Telcos leaders join to redefine the sector with network APIs",
+              "error": "",
+              "meta_refresh_url": ""
+            }
+          ],
+          "source_policy": "allow",
+          "source_type": "company_official",
+          "jurisdiction": "ES",
+          "tos_status": "requires_periodic_review",
+          "robots_status": "checked",
+          "robots_allowed": true,
+          "skip_reason": "",
+          "live_fetch_status": "",
+          "cache_hit": false,
+          "evidence_fallback_used": false,
+          "fallback_reason": "",
+          "entity_hits": [
+            "AT&T",
+            "T-Mobile US"
+          ]
+        },
+        {
+          "row": 20,
           "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
           "final_url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
           "status": 200,
           "content_type": "text/html",
           "title": "United States - Deutsche Telekom Annual Report 2025",
           "bytes": 221720,
-          "elapsed_seconds": 4.009,
+          "elapsed_seconds": 4.351,
           "method": "httpx",
           "text_sample": "United States - Deutsche Telekom Annual Report 2025 Skip links Jump directly to Jump directly to the main content Deutsche Telekom – Annual Report 2025 Show more reports See other reports of Deutsche Telekom Remuneration Corporate Responsibility Report 2025 Home Close Open search de en Open main navigation Close main navigation Main menu To our shareholders To our shareholders Deutsche Telekom at a glance Letter from the Chair of the Board of Management Supervisory Board’s report Members of the Board of Management of Deutsche Telekom AG in 2024 Members of the Supervisory Board of Deutsche Telekom AG in 2024 The T-Share Development of selected financial data Highlights Management report Management report Introductory remarks Group organization Group organization Business activities Corporate culture Intangible resources Product and technology Segment structure Group strategy Group strateg",
           "evidence_path": "evidence_cache/c61bf87ae838c28e0d1cec01601ae021af916335a5458fc74d9efde159d41076.txt",
@@ -1080,54 +1169,12 @@
           ]
         }
       ],
-      "confidence_score": 0.2,
-      "verification_reason": "The extracted data contains numerous unrelated terms (e.g., 'Dividends Earnings...', 'Deutsche Telekom 2025年报') that are not present in the source text, which is a PRNewswire article about T-Mobile 5G Advanced and Ericsson AI RAN. Only a small portion of the source text appears in the first two entries, but most content is fabricated or misattributed, leading to a low confidence score."
+      "confidence_score": 0.3,
+      "verification_reason": "Most extracted data items are not clearly present in the source text. 'Open RAN', 'AI网络', and '边缘计算' reference a T-Mobile press release about AI RAN innovation but the extracted text is incomplete and lacks direct confirmation. '网络API' mentions Telefonica Open Gateway which is not in the source. 'FWA' references Deutsche Telekom 年报 which is not in the source. Only minimal overlap with the source exists."
     }
   ],
   "entity_missing": [],
   "raw_records": [
-    {
-      "row": 20,
-      "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-      "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-      "status": 200,
-      "content_type": "text/html;charset=UTF-8",
-      "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
-      "bytes": 66956,
-      "elapsed_seconds": 3.477,
-      "method": "httpx",
-      "text_sample": "Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy and security Digital Responsibility Management unplugged Strategy Management and Corporate Governance Board of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Analysts For tenders Recommended content Environment CO2 Reduction Circular Economy Biodiversity and Water Mobile Communications and Health Certifications Social Commitment Digital society Human Rights Responsible Employer Diversity Governance Sustainable supply chains Compliance Risk Management Data Privacy and Se",
-      "evidence_path": "evidence_cache/41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af.txt",
-      "content_hash": "41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-          "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 66956,
-          "text_chars": 10682,
-          "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "DE",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Deutsche Telekom"
-      ]
-    },
     {
       "row": 20,
       "url": "https://www.telekom.com/en/media/media-information/archive/joint-6g-innovation-hub-1102882",
@@ -1136,7 +1183,7 @@
       "content_type": "text/html;charset=UTF-8",
       "title": "6G Innovation Hub to Advance AI-Native Networks | Deutsche Telekom",
       "bytes": 57803,
-      "elapsed_seconds": 3.484,
+      "elapsed_seconds": 3.269,
       "method": "httpx",
       "text_sample": "6G Innovation Hub to Advance AI-Native Networks | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy and security Digital Responsibility Management unplugged Strategy Management and Corporate Governance Board of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Analysts For tenders Recommended content Environment CO2 Reduction Circular Economy Biodiversity and Water Mobile Communications and Health Certifications Social Commitment Digital society Human Rights Responsible Employer Diversity Governance Sustainable supply chains Compliance Risk Management Data Privacy and",
       "evidence_path": "evidence_cache/a5fb750e25725947c24a2e82f7aece725f9b84bf056ad90ec0f789117ba5794c.txt",
@@ -1172,13 +1219,139 @@
     },
     {
       "row": 20,
+      "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+      "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+      "status": 200,
+      "content_type": "text/html;charset=UTF-8",
+      "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
+      "bytes": 66956,
+      "elapsed_seconds": 3.3,
+      "method": "httpx",
+      "text_sample": "Network APIs and T-DevEdge platform launched | Deutsche Telekom Company Company profile Worldwide Topic specials Data privacy and security Digital Responsibility Management unplugged Strategy Management and Corporate Governance Board of Management Supervisory Board Remuneration Reports and declarations Works council Compliance Code of Conduct Whistleblowerportal - TellMe Human resources Diversity Sponsoring Brand Procurement Corporate Responsibility Our approach CR Strategy Corporate Digital Responsibility Corporate Responsibility Awards Sustainability Portfolio Quicklinks For Analysts For tenders Recommended content Environment CO2 Reduction Circular Economy Biodiversity and Water Mobile Communications and Health Certifications Social Commitment Digital society Human Rights Responsible Employer Diversity Governance Sustainable supply chains Compliance Risk Management Data Privacy and Se",
+      "evidence_path": "evidence_cache/41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af.txt",
+      "content_hash": "41d5397e61da1b365660fb9ec39c61fb4e53f522491916cf11ce4a019d30d0af",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+          "final_url": "https://www.telekom.com/en/media/media-information/archive/new-network-apis-1027626",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 66956,
+          "text_chars": 10682,
+          "title": "Network APIs and T-DevEdge platform launched | Deutsche Telekom",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "DE",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Deutsche Telekom"
+      ]
+    },
+    {
+      "row": 20,
+      "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+      "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
+      "bytes": 114818,
+      "elapsed_seconds": 1.964,
+      "method": "httpx",
+      "text_sample": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Pla",
+      "evidence_path": "evidence_cache/af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173.txt",
+      "content_hash": "af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+          "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 114818,
+          "text_chars": 12430,
+          "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "FR",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Orange"
+      ]
+    },
+    {
+      "row": 20,
+      "url": "https://developer.orange.com/events/mwc-2026/",
+      "final_url": "https://developer.orange.com/events/mwc-2026/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Mobile World Congress 2026 - Orange Developer",
+      "bytes": 96346,
+      "elapsed_seconds": 2.033,
+      "method": "httpx",
+      "text_sample": "Mobile World Congress 2026 - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Place Operator Eligibility RIP Operator E",
+      "evidence_path": "evidence_cache/6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161.txt",
+      "content_hash": "6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://developer.orange.com/events/mwc-2026/",
+          "final_url": "https://developer.orange.com/events/mwc-2026/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 96346,
+          "text_chars": 5647,
+          "title": "Mobile World Congress 2026 - Orange Developer",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "FR",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Orange"
+      ]
+    },
+    {
+      "row": 20,
       "url": "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
       "final_url": "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "Deutsche Telekom, Orange, Telefónica, TIM and Vodafone achieve the first pan-European federated Edge Continuum at MWC 2026 – Vodafone",
-      "bytes": 201272,
-      "elapsed_seconds": 5.252,
+      "bytes": 201404,
+      "elapsed_seconds": 5.557,
       "method": "curl_chrome_ua",
       "text_sample": "Deutsche Telekom, Orange, Telefónica, TIM and Vodafone achieve the first pan-European federated Edge Continuum at MWC 2026 – Vodafone skip to main content Vodafone Business Vodafone Foundation Our sites Vodafone websites Are you looking for information about offers, devices or your account? Please choose your local Vodafone website. Africa Egypt مصر Ethiopia Kenya Moçambique Lesotho South Africa RD Congo Tanzania (EN) Asia Pacific India Türkiye Europe Shqipëri Česká Republika Deutschland Ελλάδα Ireland Nederland United Kingdom Portugal România Close Link to Homepage Link to everyone.connected page everyone.connected Connecting People​ Connecting People​ Connecting Businesses Connecting Businesses Connecting Continents​ Connecting Continents​ Connecting Futures Connecting Futures Close Link to Our company page Our company As one of the largest telcos in Europe and Africa, Vodafone's missi",
       "evidence_path": "evidence_cache/d303ae7edba09fc7b51b25d046b1ddec9095845e2a413fa10b9e705673152bec.txt",
@@ -1212,7 +1385,7 @@
           "final_url": "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
           "status": 200,
           "method": "curl_chrome_ua",
-          "bytes": 201272,
+          "bytes": 201404,
           "text_chars": 14710,
           "title": "Deutsche Telekom, Orange, Telefónica, TIM and Vodafone achieve the first pan-European federated Edge Continuum at MWC 2026 – Vodafone",
           "error": "",
@@ -1241,8 +1414,8 @@
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "New Open RAN ready chip tested by Vodafone, Samsung and AMD – Vodafone",
-      "bytes": 195887,
-      "elapsed_seconds": 5.268,
+      "bytes": 196019,
+      "elapsed_seconds": 5.945,
       "method": "curl_chrome_ua",
       "text_sample": "New Open RAN ready chip tested by Vodafone, Samsung and AMD – Vodafone skip to main content Vodafone Business Vodafone Foundation Our sites Vodafone websites Are you looking for information about offers, devices or your account? Please choose your local Vodafone website. Africa Egypt مصر Ethiopia Kenya Moçambique Lesotho South Africa RD Congo Tanzania (EN) Asia Pacific India Türkiye Europe Shqipëri Česká Republika Deutschland Ελλάδα Ireland Nederland United Kingdom Portugal România Close Link to Homepage Link to everyone.connected page everyone.connected Connecting People​ Connecting People​ Connecting Businesses Connecting Businesses Connecting Continents​ Connecting Continents​ Connecting Futures Connecting Futures Close Link to Our company page Our company As one of the largest telcos in Europe and Africa, Vodafone's mission is to connect everyone. We're shaping an inclusive, sustaina",
       "evidence_path": "evidence_cache/e2a5faa9457ec2270e8572422bd190298ebd0bd1907b9553333d7f9cd1cd0431.txt",
@@ -1276,7 +1449,7 @@
           "final_url": "https://www.vodafone.com/news/newsroom/technology/new-open-ran-ready-chip-tested-by-vodafone-samsung-and-amd",
           "status": 200,
           "method": "curl_chrome_ua",
-          "bytes": 195887,
+          "bytes": 196019,
           "text_chars": 12316,
           "title": "New Open RAN ready chip tested by Vodafone, Samsung and AMD – Vodafone",
           "error": "",
@@ -1300,97 +1473,13 @@
     },
     {
       "row": 20,
-      "url": "https://developer.orange.com/events/mwc-2026/",
-      "final_url": "https://developer.orange.com/events/mwc-2026/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Mobile World Congress 2026 - Orange Developer",
-      "bytes": 96338,
-      "elapsed_seconds": 2.138,
-      "method": "httpx",
-      "text_sample": "Mobile World Congress 2026 - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Place Operator Eligibility RIP Operator E",
-      "evidence_path": "evidence_cache/6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161.txt",
-      "content_hash": "6ed9859ce9de6f5a83967d9a4b6cba015ba6f03873dd4fb5d71aae524f2c4161",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://developer.orange.com/events/mwc-2026/",
-          "final_url": "https://developer.orange.com/events/mwc-2026/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 96338,
-          "text_chars": 5647,
-          "title": "Mobile World Congress 2026 - Orange Developer",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "FR",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Orange"
-      ]
-    },
-    {
-      "row": 20,
-      "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
-      "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
-      "bytes": 114810,
-      "elapsed_seconds": 2.161,
-      "method": "httpx",
-      "text_sample": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer Back to top Loading... Developer Products Digital Identity and Fraud Prevention Number Verification SIM Swap KYC Tenure KYC Match Device Swap Live Identity Captcha Live Identity Verify Consent Info Communication Services SMS Middle East and Africa Branded Calling Alias Number Messaging Pro Cameroon Voice as a Service Business Talk Contact Everyone Network Dynamics Population Density Data Quality on Demand Device Reachability Status Device Roaming Status Payment Orange Money Pay with Orange Bill Cloud Connectivity Cloud Avenue Evolution Platform EVPL Online Content Delivery Boost Internet of Things IoT Managed Global Connectivity Live Objects Location Services Device Location Retrieval Device Location Verification Geofencing Offer Management Core Information Ordering Order Tracking Billing Incident API Pla",
-      "evidence_path": "evidence_cache/af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173.txt",
-      "content_hash": "af215621ed90941b1348e96d46d8e67d6e561e10eb097004f567666467aca173",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
-          "final_url": "https://developer.orange.com/blog/meet-the-network-apis-playground-safely-build-break-and-learn/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 114810,
-          "text_chars": 12430,
-          "title": "Meet the Network APIs Playground: Safely build, break, and learn - Orange Developer",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "FR",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Orange"
-      ]
-    },
-    {
-      "row": 20,
       "url": "https://www.vodafone.com/news/technology/vodafone-advances-future-ready-radio-access-network",
       "final_url": "https://www.vodafone.com/news/newsroom/technology/vodafone-advances-future-ready-radio-access-network",
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "Vodafone advances future-ready radio access network – Vodafone",
-      "bytes": 196691,
-      "elapsed_seconds": 5.668,
+      "bytes": 196823,
+      "elapsed_seconds": 6.872,
       "method": "curl_chrome_ua",
       "text_sample": "Vodafone advances future-ready radio access network – Vodafone skip to main content Vodafone Business Vodafone Foundation Our sites Vodafone websites Are you looking for information about offers, devices or your account? Please choose your local Vodafone website. Africa Egypt مصر Ethiopia Kenya Moçambique Lesotho South Africa RD Congo Tanzania (EN) Asia Pacific India Türkiye Europe Shqipëri Česká Republika Deutschland Ελλάδα Ireland Nederland United Kingdom Portugal România Close Link to Homepage Link to everyone.connected page everyone.connected Connecting People​ Connecting People​ Connecting Businesses Connecting Businesses Connecting Continents​ Connecting Continents​ Connecting Futures Connecting Futures Close Link to Our company page Our company As one of the largest telcos in Europe and Africa, Vodafone's mission is to connect everyone. We're shaping an inclusive, sustainable and ",
       "evidence_path": "evidence_cache/da05115afc3f009ab0f3bae976b3c4de3361b3c57490d330edfec9d1bb8cd5bb.txt",
@@ -1424,7 +1513,7 @@
           "final_url": "https://www.vodafone.com/news/newsroom/technology/vodafone-advances-future-ready-radio-access-network",
           "status": 200,
           "method": "curl_chrome_ua",
-          "bytes": 196691,
+          "bytes": 196823,
           "text_chars": 12862,
           "title": "Vodafone advances future-ready radio access network – Vodafone",
           "error": "",
@@ -1453,12 +1542,12 @@
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "Press releases - Telefónica",
-      "bytes": 234225,
-      "elapsed_seconds": 2.052,
+      "bytes": 259694,
+      "elapsed_seconds": 2.027,
       "method": "httpx",
       "text_sample": "Press releases - Telefónica Skip to content Buscar Close Share in shareholders & investors ES EN Search Home About us About us Mission Strategy Main data Executive Team History Public Policy and Regulation Public positioning Telefónica Policy Lab Our Brands Countries and Emerging Business Units Telefónica Infra Analyst Relations Suppliers Partnerships Contact us We are in solidarity Sustainability and Innovation Sustainability and Innovation How we work Business Principles and Policies Sustainability Strategy Value chain Compliance Society Human Rights Digital inclusion Accessibility Minors and responsible use Sustainable Development Goals: Impact & SDGs Diversity and inclusion Environment Environmental Responsibility Energy and climate change Circular Economy Green digitalisation Electromagnetic fields Innovation Wayra Innovation with public aid Discovering the digital vanguard Quantum-",
-      "evidence_path": "evidence_cache/55b7c02c7513249564c6100fc620d7fb0924267a23ce117bcb29f6d98c0d8f5d.txt",
-      "content_hash": "55b7c02c7513249564c6100fc620d7fb0924267a23ce117bcb29f6d98c0d8f5d",
+      "evidence_path": "evidence_cache/d7c6ba67b24b1168bae4d9c529eff602fe593dbea4257252497fb24eae721b7b.txt",
+      "content_hash": "d7c6ba67b24b1168bae4d9c529eff602fe593dbea4257252497fb24eae721b7b",
       "error": "",
       "fetch_attempts": [
         {
@@ -1466,8 +1555,8 @@
           "final_url": "https://www.telefonica.com/en/communication-room/press-room/",
           "status": 200,
           "method": "httpx",
-          "bytes": 234225,
-          "text_chars": 7001,
+          "bytes": 259694,
+          "text_chars": 7555,
           "title": "Press releases - Telefónica",
           "error": "",
           "meta_refresh_url": ""
@@ -1490,13 +1579,55 @@
     },
     {
       "row": 20,
+      "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+      "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
+      "bytes": 208962,
+      "elapsed_seconds": 3.054,
+      "method": "httpx",
+      "text_sample": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses Skip to main content Skip to main content Skip to primary navigation Skip to search Skip to footer For the home For UK and global businesses For the home For UK and global businesses Menu Please enter at least 3 characters to search. Search For the home For UK and global businesses About BT Group Investors News & media Responsible business Careers Contact us About BT Group Investors News & media Responsible business Careers Contact us Menu More About BT Group Investors News & media Responsible business Careers Contact us Please enter at least 3 characters to search. Search Our company Our leadership Our businesses Our strategy Our purpose and values Being trusted: our code Research and development Our people Inclusion A better workplace The insider's view UK & worldwide BT in the U",
+      "evidence_path": "evidence_cache/9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a.txt",
+      "content_hash": "9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+          "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 208962,
+          "text_chars": 12191,
+          "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "UK",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "BT/EE"
+      ]
+    },
+    {
+      "row": 20,
       "url": "https://www.verizon.com/business/solutions/network-apis/",
       "final_url": "https://www.verizon.com/business/solutions/network-apis/",
       "status": 200,
       "content_type": "text/html; charset=utf-8",
       "title": "Network APIs: Authentication, Fraud Prevention & Security | Verizon",
-      "bytes": 198755,
-      "elapsed_seconds": 2.031,
+      "bytes": 198712,
+      "elapsed_seconds": 1.974,
       "method": "httpx",
       "text_sample": "Network APIs: Authentication, Fraud Prevention & Security | Verizon Accessibility Resource Center Skip to main content Personal Business Contact us Support Stores Close Mobile Mobile Mobile Mobile Deals Smartphones Plans Close Internet Internet Internet Internet Business Internet Close Solutions Solutions Solutions Solutions All products By industry Small business Enterprise Public Sector Solutions overview Close Insights Insights Insights Insights Why Verizon Customer success stories All resources Close Log In Close Log In Close Close Personal Business Contact us Support Stores Close end of navigation menu Home Solution Overview Network APIs [REDACTED_PHONE_OR_ID] Contact sales Network APIs Our Network APIs provide businesses with network level intelligence to help combat fraud, enhance customer experiences and unlock more efficiencies. Overview Benefits Use cases Solutions API resources FAQs Con",
       "evidence_path": "evidence_cache/14de42a6417bce90a9d961be00bd69bffaee73bc025dbfa28bef463c48aa01ce.txt",
@@ -1508,9 +1639,51 @@
           "final_url": "https://www.verizon.com/business/solutions/network-apis/",
           "status": 200,
           "method": "httpx",
-          "bytes": 198755,
+          "bytes": 198712,
           "text_chars": 7025,
           "title": "Network APIs: Authentication, Fraud Prevention & Security | Verizon",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "US",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "Verizon"
+      ]
+    },
+    {
+      "row": 20,
+      "url": "https://www.verizon.com/5g/home/",
+      "final_url": "https://www.verizon.com/home/internet/5g/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "5G Home Internet | Plans Starting $35/mo | Verizon",
+      "bytes": 545211,
+      "elapsed_seconds": 2.187,
+      "method": "httpx",
+      "text_sample": "5G Home Internet | Plans Starting $35/mo | Verizon Accessibility Resource Center Skip to main content Personal Business 1-833-VERIZON Contact us Support Stores Coverage map Español Mobile Mobile Mobile Mobile Simplicity Plan Simplicity Plan Other plans Smartphones More devices More devices More devices Basic phones Unlocked phones Certified pre-owned phones Tablets & laptops Watches Certified pre-owned watches Jetpacks & hotspots Keep your phone Keep your phone Verizon Prepaid Accessories Close Home Home Home Home Shop fast, reliable Wi-Fi Shop TV Move your service Fios accessories Close Save Save Save Save Switch to Verizon Phone deals Discover Verizon Loyalty Verizon One - Mobile & Internet Exclusive perks & services Trade-in your device Earn with Verizon Visa® Card Plan discounts Plan discounts Plan discounts Military discounts First Responder discounts Nurse discounts Teacher discoun",
+      "evidence_path": "evidence_cache/a6e2b056ab58889414eb8d46504ae0edb87badcb70e035fef5568c97caf71942.txt",
+      "content_hash": "a6e2b056ab58889414eb8d46504ae0edb87badcb70e035fef5568c97caf71942",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.verizon.com/5g/home/",
+          "final_url": "https://www.verizon.com/home/internet/5g/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 545211,
+          "text_chars": 85815,
+          "title": "5G Home Internet | Plans Starting $35/mo | Verizon",
           "error": "",
           "meta_refresh_url": ""
         }
@@ -1537,8 +1710,8 @@
       "status": 200,
       "content_type": "text/html;charset=utf-8",
       "title": "Networks - Group businesses - Our company | BT Plc",
-      "bytes": 267180,
-      "elapsed_seconds": 2.331,
+      "bytes": 267179,
+      "elapsed_seconds": 4.048,
       "method": "httpx",
       "text_sample": "Networks - Group businesses - Our company | BT Plc Skip to main content Skip to primary navigation Skip to search Skip to footer For the home UK business International business For the home UK business International business Menu For the home UK business International business About Investors News & media Research & development Responsible business Careers Contact us About Investors News & media Research & development Responsible business Careers Contact us Menu More About Investors News & media Research & development Responsible business Careers Contact us Our company Our leadership Our businesses Our brands Our strategy Our purpose and behaviours Being trusted: our code Our people Inclusion A better workplace The insider's view UK & worldwide BT in the UK & Ireland Worldwide Policy & Regulation Keeping the UK connected Protecting consumers & delivering content Our governance & strategy",
       "evidence_path": "evidence_cache/63f5592f23206834e91cf3e4e4b51026aa43d22d3a433de27f1f3c53952e509c.txt",
@@ -1550,51 +1723,9 @@
           "final_url": "https://www.bt.com/about/bt/our-company/group-businesses/networks",
           "status": 200,
           "method": "httpx",
-          "bytes": 267180,
+          "bytes": 267179,
           "text_chars": 11289,
           "title": "Networks - Group businesses - Our company | BT Plc",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "UK",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "BT/EE"
-      ]
-    },
-    {
-      "row": 20,
-      "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-      "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
-      "bytes": 208777,
-      "elapsed_seconds": 2.917,
-      "method": "httpx",
-      "text_sample": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses Skip to main content Skip to main content Skip to primary navigation Skip to search Skip to footer For the home For UK and global businesses For the home For UK and global businesses Menu Please enter at least 3 characters to search. Search For the home For UK and global businesses About BT Group Investors News & media Responsible business Careers Contact us About BT Group Investors News & media Responsible business Careers Contact us Menu More About BT Group Investors News & media Responsible business Careers Contact us Please enter at least 3 characters to search. Search Our company Our leadership Our businesses Our strategy Our purpose and values Being trusted: our code Research and development Our people Inclusion A better workplace The insider's view UK & worldwide BT in the U",
-      "evidence_path": "evidence_cache/9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a.txt",
-      "content_hash": "9fca86e360deebbe2a43e861cf8b9aa331142a1c1b8305f26a6eb9f38b552b7a",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-          "final_url": "https://newsroom.bt.com/bt-group-and-ericsson-strengthen-partnership-to-unlock-smarter-more-reliable-5g-services-for-uk-businesses/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 208777,
-          "text_chars": 12191,
-          "title": "BT Group and Ericsson strengthen partnership to unlock smarter, more reliable 5G services for UK businesses",
           "error": "",
           "meta_refresh_url": ""
         }
@@ -1622,7 +1753,7 @@
       "content_type": "text/html",
       "title": "TIM Group | Press archive",
       "bytes": 166000,
-      "elapsed_seconds": 3.599,
+      "elapsed_seconds": 3.95,
       "method": "httpx",
       "text_sample": "TIM Group | Press archive Gruppo TIM Group First in Italy for network quality Streaming without interruptions, high-quality video even during peak hours, online gaming and smart working without glitches: these are the user experiences that define network quality. And according to Opensignal’s analysis of connectivity user experience, TIM ranks first in Italy. Read more back About us Activities Organization Governance Infrastructures Services Innovation Other activities Chairwoman Chief Executive Officer The organizational structure Governance tools Board of Directors Committees Board of Statutory Auditors Supervisory Body Remuneration TIM Wholesale Sparkle 5G (in Italian) TIM for individuals and SMB TIM for companies and PA TIM Brasil Olivetti Noovle Telsy International Business Solutions TIM myBroker Code of Ethics Bylaws Regulations Corporate Governance Report Codes, policies and proce",
       "evidence_path": "evidence_cache/4e206ecda776eddbe00073e53d909ca9c43972ef5698c804a9d1fa5263258faa.txt",
@@ -1658,59 +1789,17 @@
     },
     {
       "row": 20,
-      "url": "https://www.verizon.com/5g/home/",
-      "final_url": "https://www.verizon.com/home/internet/5g/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "5G Home Internet | Plans Starting $35/mo | Verizon",
-      "bytes": 545204,
-      "elapsed_seconds": 2.32,
-      "method": "httpx",
-      "text_sample": "5G Home Internet | Plans Starting $35/mo | Verizon Accessibility Resource Center Skip to main content Personal Business 1-833-VERIZON Contact us Support Stores Coverage map Español Mobile Mobile Mobile Mobile Simplicity Plan Simplicity Plan Other plans Smartphones More devices More devices More devices Basic phones Unlocked phones Certified pre-owned phones Tablets & laptops Watches Certified pre-owned watches Jetpacks & hotspots Keep your phone Keep your phone Verizon Prepaid Accessories Close Home Home Home Home Shop fast, reliable Wi-Fi Shop TV Move your service Fios accessories Close Save Save Save Save Switch to Verizon Phone deals Discover Verizon Loyalty Verizon One - Mobile & Internet Exclusive perks & services Trade-in your device Earn with Verizon Visa® Card Plan discounts Plan discounts Plan discounts Military discounts First Responder discounts Nurse discounts Teacher discoun",
-      "evidence_path": "evidence_cache/a6e2b056ab58889414eb8d46504ae0edb87badcb70e035fef5568c97caf71942.txt",
-      "content_hash": "a6e2b056ab58889414eb8d46504ae0edb87badcb70e035fef5568c97caf71942",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.verizon.com/5g/home/",
-          "final_url": "https://www.verizon.com/home/internet/5g/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 545204,
-          "text_chars": 85815,
-          "title": "5G Home Internet | Plans Starting $35/mo | Verizon",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "US",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": [
-        "Verizon"
-      ]
-    },
-    {
-      "row": 20,
       "url": "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
       "final_url": "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
       "status": 200,
       "content_type": "text/html; charset=UTF-8",
       "title": "T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN innovation",
-      "bytes": 213483,
-      "elapsed_seconds": 0.764,
+      "bytes": 213064,
+      "elapsed_seconds": 0.666,
       "method": "httpx",
       "text_sample": "T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN innovation Accessibility Statement Skip Navigation Resources Investor Relations Journalists Agencies Client Login Send a Release News Products Contact Search Search When typing in this field, a list of search results will appear and be automatically updated as you type. Searching for your content... No results found. Please change your search terms and try again. News in Focus Browse News Releases All News Releases All Public Company English-only News Releases Overview Multimedia Gallery All Multimedia All Photos All Videos Multimedia Gallery Overview Trending Topics All Trending Topics Business & Money Auto & Transportation All Automotive & Transportation Aerospace, Defense Air Freight Airlines & Aviation Automotive Maritime & Shipbuilding Railroads and Intermodal Transportation Supply Chain/Logistics Transportation,",
-      "evidence_path": "evidence_cache/1da0c14f8c005155df5b285a7ce66077103523eea58ab712b66a8e0f59866b7b.txt",
-      "content_hash": "1da0c14f8c005155df5b285a7ce66077103523eea58ab712b66a8e0f59866b7b",
+      "evidence_path": "evidence_cache/d49e232c9f3592f56d0d1d8f6c67d100f6f6beeaeb4b4640ea468fb08e44ca0d.txt",
+      "content_hash": "d49e232c9f3592f56d0d1d8f6c67d100f6f6beeaeb4b4640ea468fb08e44ca0d",
       "error": "",
       "fetch_attempts": [
         {
@@ -1718,8 +1807,8 @@
           "final_url": "https://www.prnewswire.com/news-releases/t-mobile-5g-advanced-network-achieves-world-first-with-ericsson-ai-ran-innovation-302766471.html",
           "status": 200,
           "method": "httpx",
-          "bytes": 213483,
-          "text_chars": 13444,
+          "bytes": 213064,
+          "text_chars": 13412,
           "title": "T-Mobile 5G Advanced network achieves world first with Ericsson AI RAN innovation",
           "error": "",
           "meta_refresh_url": ""
@@ -1742,13 +1831,56 @@
     },
     {
       "row": 20,
+      "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+      "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Telcos leaders join to redefine the sector with network APIs",
+      "bytes": 77395,
+      "elapsed_seconds": 2.781,
+      "method": "httpx",
+      "text_sample": "Telcos leaders join to redefine the sector with network APIs Open Gateway en es pt What is open gateway Solutions Discover our solutions for all sectors and boost your business. SEE ALL SOLUTIONS Sectors FINANCIAL SERVICES & INSURANCES SOCIAL & CUSTOMER ENGAGEMENT E-COMMERCE & RETAIL DRIVEN DATA MARKETING ICT SERVICES INDUSTRY & MANUFACTURATING TRANSPORTATION & LOGISTICS MEDIA, ENTERTAINMENT & XR TRAVEL & HOSPITALITY APIs Discover our APIs and how they can power your applications. Know Your Customer - Match API Number Verification API SIM Swap API Home Devices QoD API Device Roaming Status API Location Verification API SEE ALL APIS Services Authentication and fraud prevention Location services Communication quality Payments and charging Partners Developers News Resources Login Back Paper/Article Global telecom leaders join forces to redefine the industry with network APIs Landmark agreem",
+      "evidence_path": "evidence_cache/2719111caa8b2369fa52de008c2da05fe29e91a134a1ba19e38ad7e646f39fc0.txt",
+      "content_hash": "2719111caa8b2369fa52de008c2da05fe29e91a134a1ba19e38ad7e646f39fc0",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 77395,
+          "text_chars": 6198,
+          "title": "Telcos leaders join to redefine the sector with network APIs",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "company_official",
+      "jurisdiction": "ES",
+      "tos_status": "requires_periodic_review",
+      "robots_status": "checked",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": [
+        "AT&T",
+        "T-Mobile US"
+      ]
+    },
+    {
+      "row": 20,
       "url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
       "final_url": "https://report.telekom.com/annual-report-2025/management-report/development-of-business-in-the-operating-segments/united-states.html",
       "status": 200,
       "content_type": "text/html",
       "title": "United States - Deutsche Telekom Annual Report 2025",
       "bytes": 221720,
-      "elapsed_seconds": 4.009,
+      "elapsed_seconds": 4.351,
       "method": "httpx",
       "text_sample": "United States - Deutsche Telekom Annual Report 2025 Skip links Jump directly to Jump directly to the main content Deutsche Telekom – Annual Report 2025 Show more reports See other reports of Deutsche Telekom Remuneration Corporate Responsibility Report 2025 Home Close Open search de en Open main navigation Close main navigation Main menu To our shareholders To our shareholders Deutsche Telekom at a glance Letter from the Chair of the Board of Management Supervisory Board’s report Members of the Board of Management of Deutsche Telekom AG in 2024 Members of the Supervisory Board of Deutsche Telekom AG in 2024 The T-Share Development of selected financial data Highlights Management report Management report Introductory remarks Group organization Group organization Business activities Corporate culture Intangible resources Product and technology Segment structure Group strategy Group strateg",
       "evidence_path": "evidence_cache/c61bf87ae838c28e0d1cec01601ae021af916335a5458fc74d9efde159d41076.txt",
@@ -1790,7 +1922,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 96351,
-      "elapsed_seconds": 5.824,
+      "elapsed_seconds": 5.953,
       "method": "curl_chrome_ua",
       "text_sample": "UNITED STATES SECURITIES AND EXCHANGE COMMISSION WASHINGTON, D.C. 20549 ______________________________________________________ FORM 8-K ______________________________________________________ CURRENT REPORT Pursuant to Section 13 or 15(d) of the Securities Exchange Act of 1934 Date of report (Date of earliest event reported) April 22, 2026 ______________________________________________________ AT&T INC. (Exact Name of Registrant as Specified in Charter) ______________________________________________________ Delaware 001-08610 43-1301883 (State or Other Jurisdiction (Commission (IRS Employer of Incorporation) File Number) Identification No.) 208 S. Akard St., Dallas, Texas 75202 (Address of Principal Executive Offices) (Zip Code) Registrant’s telephone number, including area code (210) 821-4105 (Former Name or Former Address, if Changed Since Last Report) Check the appropriate box below if",
       "evidence_path": "evidence_cache/92074459fd42c2b6e5fdd39804cddbc4524111c12af6e23615fcdb0e80a2d150.txt",
@@ -1854,7 +1986,7 @@
       "content_type": "application/pdf",
       "title": "PDF extracted by pdftotext",
       "bytes": 302150,
-      "elapsed_seconds": 6.209,
+      "elapsed_seconds": 6.92,
       "method": "curl_chrome_ua",
       "text_sample": "REFINITIV STREETEVENTS EDITED TRANSCRIPT T.N - AT&T Inc Analyst & Investor Day EVENT DATE/TIME: DECEMBER 03, 2024 / 7:00PM GMT OVERVIEW: Company Summary REFINITIV STREETEVENTS | www.refinitiv.com | Contact Us ©2024 Refinitiv. All rights reserved. Republication or redistribution of Refinitiv content, including by framing or similar means, is prohibited without the prior written consent of Refinitiv. 'Refinitiv' and the Refinitiv logo are registered trademarks of Refinitiv and its affiliated companies. DECEMBER 03, 2024 / 7:00PM, T.N - AT&T Inc Analyst & Investor Day CORPORATE PARTICIPANTS Brett Feldman AT&T Inc - Senior Vice President - Finance & Investor Relations John Stankey AT&T Inc - President, Chief Executive Officer, Director Jeff McElfresh AT&T Inc - Chief Operating Officer Jenifer Robertson AT&T Inc - Executive Vice President and General Manager - AT&T Mass Markets Melissa Arnold",
       "evidence_path": "evidence_cache/4ace563ce980d89f38291d3896c579a1c20e2fe82c4436b4d7a11b6df0af095f.txt",
@@ -1909,98 +2041,14 @@
       "entity_hits": [
         "AT&T"
       ]
-    },
-    {
-      "row": 20,
-      "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-      "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-      "status": 0,
-      "content_type": "",
-      "title": "",
-      "bytes": 0,
-      "elapsed_seconds": 268.704,
-      "method": "curl_direct_chrome_ua",
-      "text_sample": "",
-      "evidence_path": "",
-      "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "error": "TimeoutExpired(['/usr/bin/curl', '--http1.1', '-L', '--retry', '1', '--connect-timeout', '12', '--max-time', '45', '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36', '-H', 'Accept-Language: en,zh-CN;q=0.9,zh;q=0.8', '-sS', '-o', '/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk_curl_c2hq6cpx', '-w', '%{http_code}\\t%{size_download}\\t%{content_type}\\t%{url_effective}', 'https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis'], 55)",
-      "fetch_attempts": [
-        {
-          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "status": 0,
-          "method": "httpx",
-          "bytes": 0,
-          "text_chars": 0,
-          "title": "",
-          "error": "ReadTimeout('The read operation timed out')",
-          "meta_refresh_url": ""
-        },
-        {
-          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "status": 0,
-          "method": "curl_crawler_ua",
-          "bytes": 0,
-          "text_chars": 0,
-          "title": "",
-          "error": "TimeoutExpired(['/usr/bin/curl', '--http1.1', '-L', '--retry', '1', '--connect-timeout', '12', '--max-time', '45', '-A', 'CMHK-Internal-ResearchBot/1.0 (+internal competitive intelligence; contact: legal-review-required)', '-H', 'Accept-Language: en,zh-CN;q=0.9,zh;q=0.8', '-sS', '-o', '/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk_curl_sfrrcfv8', '-w', '%{http_code}\\t%{size_download}\\t%{content_type}\\t%{url_effective}', 'https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis'], 55)",
-          "meta_refresh_url": ""
-        },
-        {
-          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "status": 0,
-          "method": "curl_chrome_ua",
-          "bytes": 0,
-          "text_chars": 0,
-          "title": "",
-          "error": "TimeoutExpired(['/usr/bin/curl', '--http1.1', '-L', '--retry', '1', '--connect-timeout', '12', '--max-time', '45', '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36', '-H', 'Accept-Language: en,zh-CN;q=0.9,zh;q=0.8', '-sS', '-o', '/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk_curl_6axzdcjx', '-w', '%{http_code}\\t%{size_download}\\t%{content_type}\\t%{url_effective}', 'https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis'], 55)",
-          "meta_refresh_url": ""
-        },
-        {
-          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "status": 0,
-          "method": "curl_direct_crawler_ua",
-          "bytes": 0,
-          "text_chars": 0,
-          "title": "",
-          "error": "TimeoutExpired(['/usr/bin/curl', '--http1.1', '-L', '--retry', '1', '--connect-timeout', '12', '--max-time', '45', '-A', 'CMHK-Internal-ResearchBot/1.0 (+internal competitive intelligence; contact: legal-review-required)', '-H', 'Accept-Language: en,zh-CN;q=0.9,zh;q=0.8', '-sS', '-o', '/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk_curl_aot627jl', '-w', '%{http_code}\\t%{size_download}\\t%{content_type}\\t%{url_effective}', 'https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis'], 55)",
-          "meta_refresh_url": ""
-        },
-        {
-          "url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "final_url": "https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis",
-          "status": 0,
-          "method": "curl_direct_chrome_ua",
-          "bytes": 0,
-          "text_chars": 0,
-          "title": "",
-          "error": "TimeoutExpired(['/usr/bin/curl', '--http1.1', '-L', '--retry', '1', '--connect-timeout', '12', '--max-time', '45', '-A', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36', '-H', 'Accept-Language: en,zh-CN;q=0.9,zh;q=0.8', '-sS', '-o', '/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk_curl_c2hq6cpx', '-w', '%{http_code}\\t%{size_download}\\t%{content_type}\\t%{url_effective}', 'https://opengateway.telefonica.com/en/news/article/telcos-leaders-join-to-redefine-the-sector-with-network-apis'], 55)",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "company_official",
-      "jurisdiction": "ES",
-      "tos_status": "requires_periodic_review",
-      "robots_status": "robots_error",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": []
     }
   ],
-  "live_fetch_status": "partial",
-  "live_fetch_success_count": 17,
+  "live_fetch_status": "ok",
+  "live_fetch_success_count": 18,
   "evidence_fallback_count": 0,
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T03:08:09.674142+00:00",
-  "fetched_at_hkt": "2026-06-22T11:08:09.675024+08:00"
+  "fetched_at": "2026-06-24T03:34:16.223812+00:00",
+  "fetched_at_hkt": "2026-06-24T11:34:16.224169+08:00"
 }

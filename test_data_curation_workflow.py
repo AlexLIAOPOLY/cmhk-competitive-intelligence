@@ -1243,7 +1243,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
         fact = result["candidates"][0]
         self.assertEqual(fact["decision"], "accepted")
         self.assertEqual(fact["status"], "ok")
-        self.assertEqual(fact["value"], "-48998万")
+        self.assertEqual(fact["value"], "-48998万港元")
         self.assertEqual(fact["search_verification"]["decision"], "majority_corrected")
 
     def test_search_verifier_rechecks_suspicious_accepted_profit_segment(self) -> None:
@@ -1312,7 +1312,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
         votes = fact["search_verification"]["votes"]
         self.assertEqual(fact["decision"], "accepted")
         self.assertEqual(fact["status"], "ok")
-        self.assertEqual(fact["value"], "-48998万")
+        self.assertEqual(fact["value"], "-48998万港元")
         self.assertEqual(fact["search_verification"]["decision"], "majority_corrected")
         self.assertTrue(fact["search_verification"]["online_search"]["enabled"])
         self.assertNotIn("candidate", {vote["kind"] for vote in votes})
@@ -1388,6 +1388,151 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["candidates"][0]["decision"], "accepted")
         self.assertGreaterEqual(verification["vote_count"], 2)
         self.assertEqual(verification["decision"], "majority_confirmed")
+
+    def test_search_verifier_trusts_official_basis_over_unrelated_same_page_numbers(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 1,
+                "tasks": [
+                    {
+                        "id": "hutchison-customers",
+                        "raw_text": "customers to total customer base (%) 16%; customer service revenue (%) 76%; customers (%) 0.9%",
+                        "sources": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"],
+                    }
+                ],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "hutchison-customers",
+                        "company": "Hutchison",
+                        "metric": "客户数/用户数",
+                        "value": "后付费客户128.9万；预付费客户684.3万；客户总数813.2万",
+                        "basis": "后付费客户128.9万；预付费客户684.3万；客户总数813.2万",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.96,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_5",
+                        "sources": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040102176.pdf"],
+                        "quality_score": 0.996,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["search_verification"]["decision"], "majority_confirmed")
+        self.assertIn("basis_in_official_evidence", {vote["kind"] for vote in fact["search_verification"]["votes"]})
+
+    def test_search_verifier_keeps_monitoring_closure_when_source_page_has_noise(self) -> None:
+        result = search_verify_facts(
+            {
+                "run_id": "unit-test",
+                "search_verify_workers": 1,
+                "tasks": [
+                    {
+                        "id": "smartone-roaming",
+                        "raw_text": "Roaming data pack $178. APAC worldwide roaming data pack $99 1GB.",
+                        "sources": ["https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"],
+                    }
+                ],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "smartone-roaming",
+                        "company": "SmarTone",
+                        "metric": "漫游",
+                        "value": "本轮公开来源未发现SmarTone关于漫游的可核验披露；维持后续监测。",
+                        "basis": "已检查本轮抓取来源，现有证据显示该指标未披露或仅出现导航/栏目/泛化描述。",
+                        "note": "缺口闭环为未披露监测结论",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.9,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_9",
+                        "sources": ["https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp"],
+                        "quality_score": 0.985,
+                        "decision": "accepted",
+                    }
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["search_verification"]["decision"], "majority_confirmed")
+        self.assertEqual(fact["search_verification"]["conflict_count"], 0)
+
+    def test_quality_audit_adds_hkd_unit_to_hk_financial_wan_value(self) -> None:
+        result = audit_quality(
+            {
+                "run_id": "unit-test",
+                "candidates": [
+                    {
+                        "id": "icable-profit",
+                        "company": "i-CABLE",
+                        "metric": "净利润",
+                        "value": "-48998万",
+                        "basis": "Net Income -489.98M, currency HKD.",
+                        "note": "",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.95,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_17",
+                        "sources": ["https://stockanalysis.com/quote/hkg/1097/financials/"],
+                        "quality_score": 0.99,
+                        "decision": "accepted",
+                    },
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["value"], "-48998万港元")
+        self.assertNotIn("未通过指标格式与单位门禁", fact["reasons"])
+
+    def test_quality_audit_adds_context_unit_to_multi_year_financial_values(self) -> None:
+        result = audit_quality(
+            {
+                "run_id": "unit-test",
+                "candidates": [
+                    {
+                        "id": "hutchison-ebitda",
+                        "company": "Hutchison",
+                        "metric": "EBITDA",
+                        "value": "1,508 (2025); 1,511 (2024)",
+                        "basis": "片段中明确列出 'EBITDA (2) 1,508 1,511'，单位为百万港元。",
+                        "note": "",
+                        "status": "ok",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": True,
+                        "confidence": 0.95,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_5",
+                        "sources": ["https://www.hthkh.com/en/ir/reports.php"],
+                        "quality_score": 0.99,
+                        "decision": "accepted",
+                    },
+                ],
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertEqual(fact["value"], "2025: 1,508百万港元；2024: 1,511百万港元")
+        self.assertNotIn("未通过指标格式与单位门禁", fact["reasons"])
 
     def test_gap_targets_restrict_recrawl_entities_and_metrics(self) -> None:
         rows = [

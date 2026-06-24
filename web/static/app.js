@@ -525,33 +525,20 @@ function toolFriendlyName(toolName) {
     trigger_report_generation: "生成报告",
     render_python_chart: "生成图表",
     get_system_status: "系统状态",
-    load_agent_skills: "载入 Agent Skill",
     read_agent_skill: "读取 Agent Skill",
-    select_agent_databases: "确认数据库选择",
+    search_chat_history: "搜索历史聊天",
+    search_agent_memory: "搜索长期记忆",
+    remember_agent_memory: "写入长期记忆",
+    list_agent_memory: "查看长期记忆",
+    forecast_quarterly_metric: "季度趋势预测",
+    list_database_lineage: "查看数据库血缘",
+    list_report_outputs: "查看报告输出",
   };
   return labels[name] || name || "工具";
 }
 
 function toolNarrationText(toolName) {
-  const name = String(toolName || "");
-  const labels = {
-    load_agent_skills: "我先载入本轮需要的 Agent Skill。",
-    read_agent_skill: "我读取相关 Agent Skill 的完整指令。",
-    select_agent_databases: "我确认本轮数据库选择。",
-    list_local_datasets: "我读取本轮已选数据库列表。",
-    search_local_reports: "我读取已选数据库并检索摘要片段。",
-    read_local_reference: "我读取命中的数据库原文。",
-    web_search: "我同步联网检索公开来源。",
-    read_webpage: "我打开关键网页核对原文。",
-    render_python_chart: "我把核验后的数据生成图表。",
-    get_system_status: "我先读取系统当前状态。",
-    list_report_outputs: "我先查看已有报告输出。",
-    list_crawl_runs: "我先读取爬虫运行日志。",
-    trigger_crawl: "我开始触发爬虫任务。",
-    trigger_report_generation: "我开始触发报告生成。",
-    forecast_quarterly_metric: "我调用趋势预测工具生成预测结果。",
-  };
-  return labels[name] || `我调用 ${toolFriendlyName(name)} 工具。`;
+  return "";
 }
 
 function fileDescription(file) {
@@ -1894,6 +1881,8 @@ function inlineMarkdown(value) {
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/&#42;&#42;(.+?)&#42;&#42;/g, "<strong>$1</strong>")
+    .replace(/^\*\*([^*\n]+)$/g, "<strong>$1</strong>")
+    .replace(/^&#42;&#42;([^*\n]+)$/g, "<strong>$1</strong>")
     .replace(/`(.+?)`/g, "<code>$1</code>");
 }
 
@@ -1927,13 +1916,6 @@ function markdownToHtml(markdown) {
     const rows = tableRows;
     tableRows = null;
     if (!rows.length) return;
-    if (rows.length < 2) {
-      // Don't silently discard — output as plain text so partial tables are visible during streaming
-      rows.forEach(cells => {
-        html.push(`<p>${inlineMarkdown("| " + cells.join(" | ") + " |")}</p>`);
-      });
-      return;
-    }
     html.push('<div class="chat-table-wrap"><table class="chat-data-table">');
     rows.forEach((cells, rowIndex) => {
       const tag = rowIndex === 0 ? "th" : "td";
@@ -1966,7 +1948,7 @@ function markdownToHtml(markdown) {
       if (expectedCells && cells.length < expectedCells) {
         continue;
       }
-      if (cells.every((cell) => /^:?-{3,}:?$/.test(cell.trim()))) {
+      if (cells.every((cell) => /^:?-{2,}:?$/.test(cell.trim()))) {
         continue;
       }
       closeList();
@@ -2293,10 +2275,32 @@ function stripAssistantControlText(content) {
   return text;
 }
 
-function renderCitationMarkers(html, node) {
-  const citationPattern = /\[(?:来源\s*)?(\d+)(?:\s*[,，:：;；]\s*[^\]\n]+)?\]/g;
-  return html.replace(citationPattern, (match, p1) => {
-    const idx = parseInt(p1, 10);
+function expandCitationIndexes(expression) {
+  const indexes = [];
+  String(expression || "")
+    .split(/[，,；;]/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .forEach((part) => {
+      const range = part.match(/^(\d+)\s*[-–—]\s*(\d+)$/);
+      if (range) {
+        const start = Number(range[1]);
+        const end = Number(range[2]);
+        if (!Number.isFinite(start) || !Number.isFinite(end)) return;
+        const step = start <= end ? 1 : -1;
+        for (let value = start; value !== end + step; value += step) {
+          if (indexes.length >= 40) break;
+          indexes.push(value);
+        }
+        return;
+      }
+      const single = part.match(/^\d+$/);
+      if (single && indexes.length < 40) indexes.push(Number(part));
+    });
+  return [...new Set(indexes)].filter((idx) => idx > 0);
+}
+
+function citationMarkerHtml(idx, node) {
     let href = null;
     let label = `来源 ${idx}`;
     if (node.dataset.references) {
@@ -2315,7 +2319,62 @@ function renderCitationMarkers(html, node) {
       return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="citation-marker" data-ref-id="${idx}" title="${escapeHtml(label)}" style="text-decoration:none;">${idx}</a>`;
     }
     return `<sup class="citation-marker" data-ref-id="${idx}" title="${escapeHtml(label)}">${idx}</sup>`;
+}
+
+function normalizeCitationLabel(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[\s"'“”‘’`]+/g, "")
+    .replace(/[，,。.;；:：()[\]{}<>《》]+/g, "")
+    .trim();
+}
+
+function citationIndexForSourceLabel(label, node) {
+  const target = normalizeCitationLabel(label)
+    .replace(/^来源/, "")
+    .replace(/^source/, "");
+  if (!target || !node.dataset.references) return null;
+  try {
+    const refs = JSON.parse(node.dataset.references);
+    const candidates = refs
+      .map((ref) => {
+        const labels = [
+          ref.source,
+          ref.originalIndex,
+          ...(Array.isArray(ref.links) ? ref.links.flatMap((link) => [link.label, link.url]) : []),
+        ]
+          .filter(Boolean)
+          .map(normalizeCitationLabel);
+        return { index: Number(ref.index), labels };
+      })
+      .filter((item) => Number.isFinite(item.index) && item.index > 0);
+    const exact = candidates.find((item) => item.labels.some((itemLabel) => itemLabel === target));
+    if (exact) return exact.index;
+    const contains = candidates.find((item) =>
+      item.labels.some((itemLabel) => itemLabel && (itemLabel.includes(target) || target.includes(itemLabel)))
+    );
+    return contains ? contains.index : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderCitationMarkers(html, node) {
+  const citationPattern = /\[(?:来源\s*)?(\d+(?:\s*[-–—]\s*\d+)?(?:\s*[,，；;]\s*\d+(?:\s*[-–—]\s*\d+)?)*)(?:\s*[,，:：;；]\s*[^\]\n]+)?\]/g;
+  let rendered = html.replace(citationPattern, (match, expression) => {
+    const indexes = expandCitationIndexes(expression);
+    if (!indexes.length) return match;
+    return indexes.map((idx) => citationMarkerHtml(idx, node)).join("");
   });
+  const namedCitationPattern = /\[来源\s*[:：]\s*([^\]\n]+?)\]/g;
+  rendered = rendered.replace(namedCitationPattern, (match, label) => {
+    const idx = citationIndexForSourceLabel(label, node);
+    return idx ? citationMarkerHtml(idx, node) : match;
+  });
+  return rendered;
 }
 
 function readStoredJson(node, key, fallback = []) {
@@ -2432,6 +2491,7 @@ function appendRunSummary(node, event) {
 
 function setMessageContent(node, content, markdown = false) {
   const text = node.querySelector(".message-text") || node.querySelector(".markdown-body");
+  if (!text) return;
   if (markdown) {
     if (text.className === "message-text") text.className = "markdown-body";
     const cleaned = stripAssistantControlText(content);
@@ -2463,7 +2523,17 @@ function addMessage(role, content, markdown = false) {
   const text = document.createElement("div");
   text.className = "message-text";
   if (role === "assistant" && content === "正在连接...") {
+    body.classList.add("is-typing");
+    text.className = "typing-ellipsis";
     text.dataset.placeholder = "connecting";
+    text.setAttribute("role", "status");
+    text.setAttribute("aria-live", "polite");
+    text.innerHTML = `<span aria-hidden="true"><i>.</i><i>.</i><i>.</i></span><span class="sr-only">正在回复</span>`;
+    body.appendChild(text);
+    node.append(avatar, body);
+    els.messages.appendChild(node);
+    scrollMessagesToBottom();
+    return node;
   }
   body.appendChild(text);
   node.append(avatar, body);
@@ -2710,8 +2780,10 @@ function setChatThreadSearchOpen(open, focus = false) {
 }
 
 function clearConnectingPlaceholder(node) {
-  const placeholder = node.querySelector('.message-body > [data-placeholder="connecting"]');
+  const body = messageBody(node);
+  const placeholder = body?.querySelector('[data-placeholder="connecting"]');
   if (placeholder) placeholder.remove();
+  if (body) body.classList.remove("is-typing");
 }
 
 function messageBody(node) {
@@ -2746,6 +2818,7 @@ function currentMessageTextNode(node) {
     text.classList.contains("assistant-action-line") ||
     (!text.classList.contains("message-text") && !text.classList.contains("markdown-body"))
   ) {
+    clearConnectingPlaceholder(node);
     text = document.createElement("div");
     text.className = "message-text";
     text._rawMarkdown = "";
@@ -2782,6 +2855,8 @@ function appendStableChartImage(node, chartImage) {
 function appendAssistantActionLine(node, event) {
   const body = messageBody(node);
   if (!body || !event || event.type !== "tool_call_start") return;
+  const label = event.processText || toolNarrationText(event.name);
+  if (!label) return;
   const id = event.id || `${event.name || "tool"}-${node.querySelectorAll(".assistant-action-line").length}`;
   const existing = node.querySelector(`.assistant-action-line[data-tool-id="${CSS.escape(id)}"]`);
   if (existing) return;
@@ -2789,7 +2864,6 @@ function appendAssistantActionLine(node, event) {
   line.className = "assistant-action-line";
   line.dataset.toolId = id;
   line.dataset.toolName = event.name || "";
-  const label = event.processText || toolNarrationText(event.name);
   line.innerHTML = inlineMarkdown(label);
   appendStreamBlock(node, line);
 }
@@ -3103,7 +3177,7 @@ async function sendChat(message, options = {}) {
     const selectedSkillIds = Array.from(state.selectedSkillIds);
     const selectedDatasetIds = Array.from(state.selectedDatasetIds);
     const contextKey = currentAgentContextKey(selectedSkillIds, selectedDatasetIds);
-    const emitContextEvents = contextKey !== state.agentContextKey;
+    const emitContextEvents = false;
     const loadedSkillIds = Array.from(state.loadedSkillIds);
     const approvedActionIds = Array.isArray(options.approvedActionIds) ? options.approvedActionIds : [];
     const response = await fetch("/api/chat-stream", {
@@ -3128,19 +3202,6 @@ async function sendChat(message, options = {}) {
     let answer = "";
     const insertedChartUrls = new Set();
     let isDone = false;
-
-    const bodyContainer = messageBody(assistantNode);
-
-    const showImmediateStatus = () => {
-      if (answer.trim()) return;
-      if (!assistantNode.querySelector(".assistant-status-line")) {
-        const statusNode = document.createElement("div");
-        statusNode.className = "assistant-status-line";
-        statusNode.textContent = "正在分析请求，并调用相关工具获取依据。";
-        if (bodyContainer) bodyContainer.appendChild(statusNode);
-      }
-      scrollMessagesToBottom();
-    };
 
     const renderToolEvent = (event) => {
       if (event.type === "tool_call_start") {
@@ -3172,7 +3233,6 @@ async function sendChat(message, options = {}) {
         const line = part.split("\n").find((item) => item.startsWith("data:"));
         if (!line) continue;
         const event = JSON.parse(line.replace(/^data:\s*/, ""));
-        if (event.type !== "done") clearConnectingPlaceholder(assistantNode);
         
         if (event.type === "done") {
           isDone = true;
@@ -3186,7 +3246,13 @@ async function sendChat(message, options = {}) {
         } else if (event.type === "run_summary") {
           if (thinkingEnabled) appendRunSummary(assistantNode, event);
         } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
-          if (!answer.trim()) showImmediateStatus();
+          if (event.type === "tool_call_result" && event.name === "read_agent_skill" && event.args) {
+            try {
+              const parsedArgs = JSON.parse(event.args);
+              if (parsedArgs && parsedArgs.skill_id) state.loadedSkillIds.add(String(parsedArgs.skill_id));
+            } catch (e) {}
+          }
+          clearConnectingPlaceholder(assistantNode);
           renderToolEvent(event);
           scrollMessagesToBottom();
         } else if (event.type === "delta" || event.type === "error" || event.type === "tool_start") {
@@ -3331,6 +3397,7 @@ async function sendChat(message, options = {}) {
     }
     await fetchStatus();
   } catch (error) {
+    clearConnectingPlaceholder(assistantNode);
     addMessage("assistant", `处理失败：${error.message}`);
     state.chatHistory.push({ role: "assistant", content: `处理失败：${error.message}` });
     state.chatHistory = state.chatHistory.slice(-80);

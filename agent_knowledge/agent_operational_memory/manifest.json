@@ -20,9 +20,11 @@
     "README.md",
     "memories.jsonl"
   ],
-  "updated_at": "2026-06-20",
+  "updated_at": "2026-06-23",
   "quality": "Agent 运行辅助记忆；正式数据结论仍以已选择数据库和审计文件为准。",
   "visibility": "hidden",
   "version": "2026-06-20",
-  "built_at": "2026-06-20"
+  "built_at": "2026-06-20",
+  "schema_version": 2,
+  "retrieval": "hybrid_keyword_phrase_entity_recency_importance"
 }

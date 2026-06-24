@@ -179,6 +179,7 @@ COVERAGE_FALLBACKS: Dict[tuple[int, str, str], str] = {
     (4, "csl", "投资并购"): "公开资料未发现 csl 品牌口径单独披露投资并购事项；品牌相关资本动作并入 HKT 集团口径观察。",
     (4, "1O1O", "投资并购"): "公开资料未发现 1O1O 品牌口径单独披露投资并购事项；品牌相关资本动作并入 HKT 集团口径观察。",
     (15, "HGC", "资本开支"): "HGC 为非上市主体，未公开披露统一资本开支金额；公开资料显示持续投入数据中心互联、云通信、网络服务和跨境连接能力。",
+    (17, "iCable", "ARPU"): "i-CABLE 年报、投资者关系页、StockAnalysis、FinancialReports 与 AASTOCKS 本轮均未发现 ARPU 独立披露；按未披露指标持续监测，不估算。",
     (19, "Singtel", "AI"): "本轮官方公开来源未发现 Singtel 对该字段的独立可量化披露；维持后续监测。",
     (19, "Singtel", "云"): "本轮官方公开来源未发现 Singtel 对该字段的独立可量化披露；维持后续监测。",
     (19, "Singtel", "企业ICT"): "本轮官方公开来源未发现 Singtel 对该字段的独立可量化披露；维持后续监测。",
@@ -397,7 +398,6 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
         "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/",
         "https://stockanalysis.com/quote/hkg/1097/financials/",
-        "https://dataxis.com/actor-profile/357941/i-cable-television-and-telecom/",
     ],
     18: [
         "https://www.i-cablebroadband-offer.com/",

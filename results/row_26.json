@@ -17,8 +17,8 @@
   ],
   "ignored_selected_fields": [],
   "source_urls": [
-    "https://www.ofca.gov.hk/en/home/index.html",
     "https://www.digitalpolicy.gov.hk/en/",
+    "https://www.ofca.gov.hk/en/home/index.html",
     "https://www.pcpd.org.hk/english/artificial_intelligence/index.html"
   ],
   "attempted_urls": [
@@ -27,11 +27,11 @@
     "https://www.pcpd.org.hk/english/artificial_intelligence/index.html"
   ],
   "extracted": {
-    "OFCA政策": "SOURCE: https://www.ofca.gov.hk/en/home/index.html Office of the Communications Authority - Home Previous Next Play Muted Play Video I am looking for information... View All For Consumers For Industry For | SOURCE: https",
+    "OFCA政策": "c Services Related Links Contact Us Home Sitemap Important Notices Privacy Policy 2024 © Digital Policy Office Last Review Date: Last Revision Date: 31/03/2026 SOURCE: https://www.ofca.gov.hk/en/home/index.html Office of",
     "频谱/牌照": "aring Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Su",
     "服务质量": "uidance Business Facilitation Suppliers Community Portal Cyber Security Information Portal Digital Accessibility Campaign Student IT Corner ICT Event Calendar Promotion of Racial Equality All Resources Digital Policy Off",
     "网络安全": "ly) Keynote address at a career talk entitled‘Why AI-Driven Future requires Lawyers who Speak “Tech”?’ (Chinese only) Keynote speech at the Luncheon Meeting of the Hong Kong China Network Security Association Webinar on ",
-    "PCPD/AI指引": "c Services Related Links Contact Us Home Sitemap Important Notices Privacy Policy 2024 © Digital Policy Office Last Review Date: Last Revision Date: 31/03/2026 SOURCE: https://www.pcpd.org.hk/english/artificial_intellige",
+    "PCPD/AI指引": "sional Team Read More A Trading Fund Department Read More Executive Arm of the Communications Authority Read More Career@OFCA Read More Play Previous Next Home SOURCE: https://www.pcpd.org.hk/english/artificial_intellige",
     "数据跨境": "ooperation with Other Economies Legal Framework Multi-functional Smart Lampposts Multi-application Smart ID Card (MASC) Success Stories Key Initiatives Facilitating Cross-boundary Data Flow within the Greater Bay Area iA"
   },
   "missing_fields": [],
@@ -41,38 +41,78 @@
       "status": "ok",
       "source_urls": [],
       "extracted": {
-        "OFCA政策": "SOURCE: https://www.ofca.gov.hk/en/home/index.html Office of the Communications Authority - Home Previous Next Play Muted Play Video I am looking for information... View All For Consumers For Industry For | SOURCE: https",
+        "OFCA政策": "c Services Related Links Contact Us Home Sitemap Important Notices Privacy Policy 2024 © Digital Policy Office Last Review Date: Last Revision Date: 31/03/2026 SOURCE: https://www.ofca.gov.hk/en/home/index.html Office of",
         "频谱/牌照": "aring Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Su",
         "服务质量": "uidance Business Facilitation Suppliers Community Portal Cyber Security Information Portal Digital Accessibility Campaign Student IT Corner ICT Event Calendar Promotion of Racial Equality All Resources Digital Policy Off",
         "网络安全": "ly) Keynote address at a career talk entitled‘Why AI-Driven Future requires Lawyers who Speak “Tech”?’ (Chinese only) Keynote speech at the Luncheon Meeting of the Hong Kong China Network Security Association Webinar on ",
-        "PCPD/AI指引": "c Services Related Links Contact Us Home Sitemap Important Notices Privacy Policy 2024 © Digital Policy Office Last Review Date: Last Revision Date: 31/03/2026 SOURCE: https://www.pcpd.org.hk/english/artificial_intellige",
+        "PCPD/AI指引": "sional Team Read More A Trading Fund Department Read More Executive Arm of the Communications Authority Read More Career@OFCA Read More Play Previous Next Home SOURCE: https://www.pcpd.org.hk/english/artificial_intellige",
         "数据跨境": "ooperation with Other Economies Legal Framework Multi-functional Smart Lampposts Multi-application Smart ID Card (MASC) Success Stories Key Initiatives Facilitating Cross-boundary Data Flow within the Greater Bay Area iA"
       },
       "missing_fields": [],
       "raw_records": [],
-      "confidence_score": 0.7,
-      "verification_reason": "Extracted Data contains fragments from the Source Text but includes irrelevant text (e.g., 'SOURCE: https') and misalignments (e.g., 'OFCA政策' mixes OFCA with Digital Policy Office content; '服务质量' uses Digital Policy Office text; 'PCPD/AI指引' links to PCPD, not present; '数据跨境' matches Digital Policy Office cross-boundary data flow). Overall partially correct but with errors and mismatches."
+      "confidence_score": 0.1,
+      "verification_reason": "The extracted data mostly comes from the Digital Policy Office page and the OFCA page, but many fields (OFCA policy, spectrum/license, etc.) are not present in the source text at all, indicating significant mismatch."
     },
     {
       "entity": "政策",
       "status": "ok",
       "source_urls": [],
       "extracted": {
-        "OFCA政策": "SOURCE: https://www.ofca.gov.hk/en/home/index.html Office of the Communications Authority - Home Previous Next Play Muted Play Video I am looking for information... View All For Consumers For Industry For | SOURCE: https",
+        "OFCA政策": "c Services Related Links Contact Us Home Sitemap Important Notices Privacy Policy 2024 © Digital Policy Office Last Review Date: Last Revision Date: 31/03/2026 SOURCE: https://www.ofca.gov.hk/en/home/index.html Office of",
         "频谱/牌照": "aring Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Su",
         "服务质量": "uidance Business Facilitation Suppliers Community Portal Cyber Security Information Portal Digital Accessibility Campaign Student IT Corner ICT Event Calendar Promotion of Racial Equality All Resources Digital Policy Off",
         "网络安全": "ly) Keynote address at a career talk entitled‘Why AI-Driven Future requires Lawyers who Speak “Tech”?’ (Chinese only) Keynote speech at the Luncheon Meeting of the Hong Kong China Network Security Association Webinar on ",
-        "PCPD/AI指引": "c Services Related Links Contact Us Home Sitemap Important Notices Privacy Policy 2024 © Digital Policy Office Last Review Date: Last Revision Date: 31/03/2026 SOURCE: https://www.pcpd.org.hk/english/artificial_intellige",
+        "PCPD/AI指引": "sional Team Read More A Trading Fund Department Read More Executive Arm of the Communications Authority Read More Career@OFCA Read More Play Previous Next Home SOURCE: https://www.pcpd.org.hk/english/artificial_intellige",
         "数据跨境": "ooperation with Other Economies Legal Framework Multi-functional Smart Lampposts Multi-application Smart ID Card (MASC) Success Stories Key Initiatives Facilitating Cross-boundary Data Flow within the Greater Bay Area iA"
       },
       "missing_fields": [],
       "raw_records": [],
-      "confidence_score": 0.3,
-      "verification_reason": "The extracted data fields contain fragments that seem to come from the source texts but are incomplete, out of context, or misattributed. For example, 'OFCA政策' includes a URL and part of a title but does not clearly represent a policy statement; '质量服务' incorrectly extracts from unrelated navigation text; and 'PCPD/AI指引' points to a PCPD URL not mentioned in the source. Most fields are garbled snippets lacking coherent policy content, resulting in low confidence that the extract accurately reflects the source."
+      "confidence_score": 0.15,
+      "verification_reason": "The extracted data contains content from multiple incorrect sources (OFCA, PCPD) and only partial matches from the correct Digital Policy Office source, with many fields being irrelevant or out of context."
     }
   ],
   "entity_missing": [],
   "raw_records": [
+    {
+      "row": 26,
+      "url": "https://www.digitalpolicy.gov.hk/en/",
+      "final_url": "https://www.digitalpolicy.gov.hk/en/",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "title": "Home | Digital Policy Office",
+      "bytes": 131519,
+      "elapsed_seconds": 1.757,
+      "method": "httpx",
+      "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
+      "evidence_path": "evidence_cache/8c400d55d103899a6bcb59875c2bda40a1dffba919a07ebf9a8a0eccc371234f.txt",
+      "content_hash": "8c400d55d103899a6bcb59875c2bda40a1dffba919a07ebf9a8a0eccc371234f",
+      "error": "",
+      "fetch_attempts": [
+        {
+          "url": "https://www.digitalpolicy.gov.hk/en/",
+          "final_url": "https://www.digitalpolicy.gov.hk/en/",
+          "status": 200,
+          "method": "httpx",
+          "bytes": 131519,
+          "text_chars": 7537,
+          "title": "Home | Digital Policy Office",
+          "error": "",
+          "meta_refresh_url": ""
+        }
+      ],
+      "source_policy": "allow",
+      "source_type": "government_public_info",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "robots_status": "not_found_allow",
+      "robots_allowed": true,
+      "skip_reason": "",
+      "live_fetch_status": "",
+      "cache_hit": false,
+      "evidence_fallback_used": false,
+      "fallback_reason": "",
+      "entity_hits": []
+    },
     {
       "row": 26,
       "url": "https://www.ofca.gov.hk/en/home/index.html",
@@ -81,7 +121,7 @@
       "content_type": "text/html",
       "title": "Office of the Communications Authority - Home",
       "bytes": 11161,
-      "elapsed_seconds": 4.407,
+      "elapsed_seconds": 6.521,
       "method": "httpx",
       "text_sample": "Office of the Communications Authority - Home Previous Next Play Muted Play Video I am looking for information... View All For Consumers For Industry For Media Who We Are What's New More For Consumers Online Exhibition Website on Smart Use of Communications Services Real-name Registration Programme for Subscriber Identification Module (SIM) Cards Experience Sharing Videos on 5G Applications Embracing the New 5G Era Thematic Website View all For Industry 2.5/2.6 GHz Band Auction 850/900 MHz and 2.3 GHz Bands Auction 6/7 GHz Band Auction Spectrum Release Plan for 2026 - 2028 Subsidy Scheme to Extend Fibre-based Networks to Villages in Remote Areas View all News & Info Latest Press Releases Figures & Statistics Fact Sheets View all Information Zone Do You Know... Play More Statistics Highlights Play More Interactive Zone Play Who We Are A Cross-disciplinary Professional Team Read More A Tra",
       "evidence_path": "evidence_cache/7aae02937788c7b2fe8068a7cae750a21fbc6fd47aa528770475fe5ea908f48f.txt",
@@ -104,47 +144,7 @@
       "source_type": "regulator_public_info",
       "jurisdiction": "HK",
       "tos_status": "public_information",
-      "robots_status": "checked",
-      "robots_allowed": true,
-      "skip_reason": "",
-      "live_fetch_status": "",
-      "cache_hit": false,
-      "evidence_fallback_used": false,
-      "fallback_reason": "",
-      "entity_hits": []
-    },
-    {
-      "row": 26,
-      "url": "https://www.digitalpolicy.gov.hk/en/",
-      "final_url": "https://www.digitalpolicy.gov.hk/en/",
-      "status": 200,
-      "content_type": "text/html; charset=UTF-8",
-      "title": "Home | Digital Policy Office",
-      "bytes": 131345,
-      "elapsed_seconds": 4.438,
-      "method": "httpx",
-      "text_sample": "Home | Digital Policy Office Skip to main content 繁 简 Text Size Share to Email Facebook Whatsapp Weibo Wechat X RSS \"Scan QR Code\" in WeChat and tap \"...\" to share. Open Search box Search for Keywords Apply Reset Reset Close Search box Open Mobile Search box Search for Keywords in Mobile Search Bar Apply Reset Reset Close Search box Close Languages 繁體 简体 About Us Organisation Chart Advisory Boards & Committees Professional Workforce Government IT Staff Management Services Officer IT Contract Staff Services Job Vacancies Estimates of Expenditure Performance Pledges Consolidated Annual Open Data Plans (Spatial Data Plans included) Environmental Management in the Digital Policy Office Facts & Figures Our Work Digital Government Digital Government Policies, Targets & Measures Business Facilitation Digital Inclusion Social Innovation and Entrepreneurship Development Fund (SIE Fund) Data Gover",
-      "evidence_path": "evidence_cache/137500010601518ae2fe3c3119905c15065ff81339aa961f90c67c0a755cb648.txt",
-      "content_hash": "137500010601518ae2fe3c3119905c15065ff81339aa961f90c67c0a755cb648",
-      "error": "",
-      "fetch_attempts": [
-        {
-          "url": "https://www.digitalpolicy.gov.hk/en/",
-          "final_url": "https://www.digitalpolicy.gov.hk/en/",
-          "status": 200,
-          "method": "httpx",
-          "bytes": 131345,
-          "text_chars": 7450,
-          "title": "Home | Digital Policy Office",
-          "error": "",
-          "meta_refresh_url": ""
-        }
-      ],
-      "source_policy": "allow",
-      "source_type": "government_public_info",
-      "jurisdiction": "HK",
-      "tos_status": "public_information",
-      "robots_status": "not_found_allow",
+      "robots_status": "robots_error",
       "robots_allowed": true,
       "skip_reason": "",
       "live_fetch_status": "",
@@ -161,7 +161,7 @@
       "content_type": "text/html; charset=UTF-8",
       "title": "AI Security",
       "bytes": 132893,
-      "elapsed_seconds": 10.228,
+      "elapsed_seconds": 8.584,
       "method": "httpx",
       "text_sample": "AI Security Skip to content Artificial intelligence AI Security A. PCPD’s Guidance Materials on AI Print Guidance Notes Abuse of AI Deepfakes: Toolkit for Schools and Parents (2025) “Abuse of AI Deepfakes: Toolkit for Schools and Parents” provides practical advice to schools and parents to assist them in handling deepfake incidents involving children and young people, as well as safeguarding their privacy in relation to personal data. Checklist on Guidelines for the Use of Generative AI by Employees (2025) The “Checklist on Guidelines for the Use of Generative AI by Employees” aims to assist organisations in developing internal policies or guidelines on the use of Gen AI by employees at work while complying with the requirements of the Personal Data (Privacy) Ordinance (PDPO). Artificial Intelligence: Model Personal Data Protection Framework (2024) The “Artificial Intelligence: Model Per",
       "evidence_path": "evidence_cache/00e425e7f279e4a92e1e4989e0d30b32c17927165968c7210ebd41d09b3ecc90.txt",
@@ -200,6 +200,6 @@
   "fallback_used": false,
   "fallback_source_file": "",
   "fallback_fields": {},
-  "fetched_at": "2026-06-22T02:43:29.954435+00:00",
-  "fetched_at_hkt": "2026-06-22T10:43:29.954736+08:00"
+  "fetched_at": "2026-06-24T03:33:55.951926+00:00",
+  "fetched_at_hkt": "2026-06-24T11:33:55.952355+08:00"
 }
