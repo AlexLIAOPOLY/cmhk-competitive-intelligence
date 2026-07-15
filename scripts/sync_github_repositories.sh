@@ -95,7 +95,7 @@ cat > "$TMP_DIR/PRIVATE_SNAPSHOT.md" <<EOF
 
 This snapshot includes project source, documents, current structured data, evidence cache, Agent knowledge and operational records. It excludes credentials, local runtimes, models, audio/cache output, temporary files, logs and historical backup directories.
 
-`SNAPSHOT_FILE_MANIFEST.tsv` records the copied source bytes before Git line-ending normalization.
+SNAPSHOT_FILE_MANIFEST.tsv records the copied source bytes before Git line-ending normalization.
 EOF
 
 MANIFEST="$TMP_DIR/SNAPSHOT_FILE_MANIFEST.tsv"
