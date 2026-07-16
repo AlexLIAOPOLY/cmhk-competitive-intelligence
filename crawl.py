@@ -91,6 +91,20 @@ RECOVERABLE_URL_ALTERNATIVES: Dict[str, List[str]] = {
     "https://www.mobileworldlive.com/operators/smartone-turns-to-ericsson-for-5g-a-gear/": [
         "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
     ],
+    "https://www.smartoneholdings.com/jsp/site/media_room/press_release/english/index.jsp": [
+        "https://www.smartoneholdings.com/about/media_centre/press_release/press/2026/01/2026_01_06_525.pdf",
+    ],
+    "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/": [
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/financials/",
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/revenue/",
+    ],
+    "https://www.airtel.in/press-release": [
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/statistics/",
+    ],
+    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf": [
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/financials/",
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/revenue/",
+    ],
     "https://about.att.com/blogs/2026/5g-network-apis.html": [
         "https://investors.att.com/financial-reports/annual-reports/2025",
     ],
@@ -356,7 +370,6 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2025/17900712/",
     ],
     9: [
-        "https://5g.smartone.com/en/mobile_and_price_plans/subscription-offers/",
         "https://5g.smartone.com/en/mobile_and_price_plans/roaming/apac_worldwide_roaming_data_pack/charges.jsp",
     ],
     10: [
@@ -446,9 +459,9 @@ EXTRA_CANDIDATES: Dict[int, List[str]] = {
         "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260302_03/",
         "https://www.softbank.jp/en/corp/news/press/sbkk/2026/20260416_02/",
         "https://www.jio.com/",
-        "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-        "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
-        "https://www.airtel.in/press-release",
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/financials/",
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/revenue/",
+        "https://stockanalysis.com/quote/nse/BHARTIARTL/statistics/",
     ],
     20: [
         "https://www.vodafone.com/news/newsroom/technology/pan-european-federated-edge-continuum",
@@ -565,9 +578,9 @@ ENTITY_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
             "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
         ],
         "Airtel": [
-            "https://www.airtel.in/press-release/03-2026/airtel-announces-us1-billion-investment-in-nxtra-led-by-alpha-wave-global-and-existing-investor-carlyle-bharti-airtel-will-also-participate/",
-            "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Press-Release.pdf",
-            "https://www.airtel.in/press-release",
+            "https://stockanalysis.com/quote/nse/BHARTIARTL/financials/",
+            "https://stockanalysis.com/quote/nse/BHARTIARTL/revenue/",
+            "https://stockanalysis.com/quote/nse/BHARTIARTL/statistics/",
         ],
     },
     20: {
@@ -806,7 +819,10 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def urls_from_sources(source_text: str) -> List[str]:
-    urls = re.findall(r"https?://[^\s（）()]+", source_text or "")
+    # ASCII parentheses can be part of a valid URL, for example an annual
+    # report named ``(ENG).pdf``. Human-readable titles are separated by
+    # whitespace or full-width Chinese parentheses in the Feishu source cell.
+    urls = re.findall(r"https?://[^\s（）]+", source_text or "")
     clean: List[str] = []
     for url in urls:
         url = url.strip().rstrip("。；;,")

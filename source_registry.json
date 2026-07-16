@@ -307,6 +307,13 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public investor pages only."
     },
+    "cdn.prod.website-files.com": {
+      "policy": "allow",
+      "type": "company_official_asset",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Issuer-linked i-CABLE annual report assets only."
+    },
     "reg.hkbn.net": {
       "policy": "allow",
       "type": "company_official",

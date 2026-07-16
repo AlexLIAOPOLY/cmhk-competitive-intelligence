@@ -34,6 +34,8 @@
     <string>1</string>
     <key>LARK_CLI_NO_PROXY</key>
     <string>1</string>
+    <key>CMHK_STRATEGIC_GROUP_NOTIFICATIONS</key>
+    <string>1</string>
     <key>TTS_BACKEND</key>
     <string>internal</string>
     <key>INTERNAL_TTS_MODEL</key>

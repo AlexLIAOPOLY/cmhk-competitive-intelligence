@@ -60,6 +60,10 @@ def _now_iso() -> str:
     return datetime.now(HKT).isoformat(timespec="seconds")
 
 
+def _group_notifications_paused() -> bool:
+    return os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1"
+
+
 def _read_json(path: Path, default: Any) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -794,7 +798,7 @@ def sync_candidates(
                 "last_new_count": new_count,
                 "last_ai_processed_count": len(prepared_items),
                 "last_sync_at": _now_iso(),
-                "group_notifications_paused": True,
+                "group_notifications_paused": _group_notifications_paused(),
             }
         )
         _write_json(STATE_PATH, state)
@@ -1145,7 +1149,7 @@ def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "filtered_count": raw_success_count - len(items),
             "failed_count": len(records) - raw_success_count,
             "filtered_reasons": dict(filtered_reasons),
-            "group_notifications_paused": True,
+            "group_notifications_paused": _group_notifications_paused(),
         }
     return [], {
         "generated_at": _now_iso(),
@@ -1156,7 +1160,7 @@ def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         "filtered_count": 0,
         "failed_count": 0,
         "filtered_reasons": {},
-        "group_notifications_paused": True,
+        "group_notifications_paused": _group_notifications_paused(),
     }
 
 _LOCAL_COMPETITOR_RE = re.compile(
@@ -1634,7 +1638,7 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "region_counts": dict(region_counts),
             "source_count": len(sources),
             "source_path": ", ".join(source_paths),
-            "group_notifications_paused": True,
+            "group_notifications_paused": _group_notifications_paused(),
         }
     return [], {
         "generated_at": _now_iso(),
@@ -1646,7 +1650,7 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         "category_counts": {},
         "region_counts": {},
         "source_count": 0,
-        "group_notifications_paused": True,
+        "group_notifications_paused": _group_notifications_paused(),
     }
 
 def run_cycle(*, force: bool = False) -> dict[str, Any]:
@@ -1685,7 +1689,12 @@ def build_notice_cards(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
     )
     apply_reviews(result["sheet_id"])
     state = _read_json(STATE_PATH, {})
-    state["group_notifications_paused"] = True
-    state["group_notifications_paused_at"] = _now_iso()
+    paused = _group_notifications_paused()
+    state["group_notifications_paused"] = paused
+    if paused:
+        state["group_notifications_paused_at"] = _now_iso()
+    else:
+        state.pop("group_notifications_paused_at", None)
+        state["group_notifications_resumed_at"] = _now_iso()
     _write_json(STATE_PATH, state)
     return []
