@@ -111,6 +111,48 @@
       "tos_status": "public_information",
       "notes": "InvestHK public news pages."
     },
+    "www.extrabux.com": {
+      "policy": "allow",
+      "type": "public_third_party_product_guide",
+      "jurisdiction": "US/HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public consumer guide pages used only as third-party corroboration for Hong Kong telco product tariffs; not treated as official values."
+    },
+    "www.pcmarket.com.hk": {
+      "policy": "allow",
+      "type": "public_media_product_report",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public Hong Kong technology media reports used only to corroborate historical tariff details; not treated as official values."
+    },
+    "techent.tv": {
+      "policy": "allow",
+      "type": "public_press_release_syndication",
+      "jurisdiction": "MY/HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public press release syndication used as an independent accessible copy for tariff cross-checking; official source remains authoritative."
+    },
+    "corporate.tvb.com": {
+      "policy": "allow",
+      "type": "public_partner_press_release",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "TVB corporate public press releases; use only when the page names the telco/product and disclosed tariff."
+    },
+    "promo.mytvsuper.com": {
+      "policy": "allow",
+      "type": "public_partner_service_fee",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "myTV SUPER public service-fee pages used as partner/channel evidence for HGC broadband bundles; not treated as HGC official standard price."
+    },
+    "www.fhkpuaa.org.hk": {
+      "policy": "allow",
+      "type": "public_member_offer_pdf",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public association member offer PDFs; use only as partner/channel tariff evidence and not as official standard price."
+    },
     "www.housingauthority.gov.hk": {
       "policy": "allow",
       "type": "government_public_info",
@@ -146,6 +188,13 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official company pages only; no login or restricted pages."
     },
+    "hkt-homephone.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official HKT Home Phone public product and value-added service pages only."
+    },
     "www.hkcsl.com": {
       "policy": "allow",
       "type": "company_official",
@@ -166,6 +215,13 @@
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
       "notes": "Official public product pages only."
+    },
+    "1010.com.hk": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official 1O1O public product pages only."
     },
     "www.1010corporate.com": {
       "policy": "allow",
@@ -188,12 +244,26 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public enterprise pages only."
     },
+    "www.hkt-sme.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official HKT SME public product pages only."
+    },
     "web.three.com.hk": {
       "policy": "allow",
       "type": "company_official",
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
       "notes": "Official public product pages only."
+    },
+    "qooah.com": {
+      "policy": "allow",
+      "type": "public_media",
+      "jurisdiction": "HK",
+      "tos_status": "public_page_reviewed",
+      "notes": "Public Hong Kong technology-media pages; only specific historical product reports may be used as independent corroboration at low request volume."
     },
     "www.hthkh.com": {
       "policy": "allow",
@@ -209,12 +279,26 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public pages only."
     },
+    "www.sosimhk.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public SoSIM product pages only."
+    },
     "5g.smartone.com": {
       "policy": "allow",
       "type": "company_official",
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
       "notes": "Official public product pages only."
+    },
+    "www.smartone.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public SmarTone product pages only."
     },
     "www.smartoneholdings.com": {
       "policy": "allow",
@@ -230,6 +314,27 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official HKBN report assets."
     },
+    "images.hkbn.net": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official HKBN static product and offer assets."
+    },
+    "webcast.irasia.com": {
+      "policy": "allow",
+      "type": "listed_company_public_disclosure_mirror",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Public HKBN webcast/IR presentation mirror; use low request volume and prefer issuer assets where available."
+    },
+    "www.media-outreach.com": {
+      "policy": "allow",
+      "type": "public_news_release",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public corporate news release distribution pages; use as non-official public evidence unless issuer-owned."
+    },
     "www.hkbn.net": {
       "policy": "allow",
       "type": "company_official",
@@ -237,12 +342,103 @@
       "tos_status": "requires_periodic_review",
       "notes": "Official public company pages only."
     },
+    "www.hkbnes.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public HKBN Enterprise Solutions pages only."
+    },
+    "www.hkbnes.net": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public HKBN Enterprise Solutions offer pages only."
+    },
     "www.hgc-intl.com": {
       "policy": "allow",
       "type": "company_official",
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
       "notes": "Official public company pages only."
+    },
+    "www.hgc.com.hk": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public HGC broadband and press pages only."
+    },
+    "www.hgcbroadband.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public HGC broadband product pages only."
+    },
+    "en.prnasia.com": {
+      "policy": "allow",
+      "type": "public_press_release",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "notes": "Public press release pages used only when the named company is the release source."
+    },
+    "enmobile.prnasia.com": {
+      "policy": "allow",
+      "type": "public_press_release",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "notes": "Public press release pages used only when the named company is the release source."
+    },
+    "www.prnewswire.com": {
+      "policy": "allow",
+      "type": "public_press_release",
+      "jurisdiction": "international",
+      "tos_status": "public_information",
+      "notes": "Public press release pages used only when the named company is the release source."
+    },
+    "www.etnet.com.hk": {
+      "policy": "allow",
+      "type": "public_press_release_syndication",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Public news/press-release syndication pages used only when the named company is the release source."
+    },
+    "newswire.telecomramblings.com": {
+      "policy": "allow",
+      "type": "public_press_release_syndication",
+      "jurisdiction": "US",
+      "tos_status": "public_information",
+      "notes": "Public telecom newswire/press-release syndication pages used only when the named company is the release source."
+    },
+    "www.telecomreviewamericas.com": {
+      "policy": "allow",
+      "type": "public_press_release_syndication",
+      "jurisdiction": "US",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public telecom industry news/press-release syndication pages used only as corroboration when the named company is the release source."
+    },
+    "hub.hgc.com.hk": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public HGC product and order pages only."
+    },
+    "service.i-cable.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public i-CABLE service pages only."
+    },
+    "apps5.i-cable.com": {
+      "policy": "allow",
+      "type": "company_official",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "Official public i-CABLE PDF service charge pages only."
     },
     "www.i-cablecomm.com": {
       "policy": "allow",
@@ -257,6 +453,153 @@
       "jurisdiction": "HK",
       "tos_status": "requires_periodic_review",
       "notes": "Official public product pages only."
+    },
+    "findplanking.com": {
+      "policy": "allow",
+      "type": "public_third_party_offer_listing",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public telecom plan listing pages; use only as third-party/channel tariff evidence and not as official standard price."
+    },
+    "www.broadbandqueen.com": {
+      "policy": "allow",
+      "type": "public_third_party_offer_listing",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Public broadband comparison and offer guide pages; use only as non-official third-party evidence."
+    },
+    "www.moneyhero.com.hk": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband comparison pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "www.thriftyhk.com": {
+      "policy": "allow",
+      "type": "public_third_party_mobile_plan_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public mobile plan comparison pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "blog.moneysmart.hk": {
+      "policy": "allow",
+      "type": "public_third_party_mobile_plan_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public mobile plan comparison pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "booga.com.hk": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband comparison pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "www.investbrother.com": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband comparison pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "fibrebroadbandprice.com": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public FibreHK broadband comparison and coverage pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "hk.news.yahoo.com": {
+      "policy": "allow",
+      "type": "public_media_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public Yahoo Hong Kong broadband comparison article; crawl at low volume and use only as non-official reference evidence."
+    },
+    "kuan.shangtaika.com": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public Hong Kong broadband comparison platform; use only as non-official reference evidence and not as official standard price."
+    },
+    "www.quoquoapp.com": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public QuoQuo broadband comparison article; crawl at low volume and use only as non-official reference evidence, not as official standard price."
+    },
+    "www.hk01.com": {
+      "policy": "allow",
+      "type": "public_media_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public Hong Kong broadband comparison article; crawl at low volume and use only as non-official reference evidence."
+    },
+    "hktechreview.com": {
+      "policy": "allow",
+      "type": "public_third_party_broadband_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband comparison pages; use only as non-official reference evidence and not as official standard price."
+    },
+    "www.broadband-pricequote.com": {
+      "policy": "allow",
+      "type": "public_third_party_offer_listing",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband offer listing; use only as third-party/channel tariff evidence and not as official standard price."
+    },
+    "www.broadband-quote.com": {
+      "policy": "allow",
+      "type": "public_third_party_offer_listing",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband offer listing; use only as third-party/channel tariff evidence and not as official standard price."
+    },
+    "www.kennechu.info": {
+      "policy": "allow",
+      "type": "public_blog_market_guide",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public blog market guide pages; use only as non-official market evidence and keep single-source status unless corroborated."
+    },
+    "www.hkepc.com": {
+      "policy": "allow",
+      "type": "public_forum_market_observation",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public forum discussion pages; use only as weak historical market observation evidence and never as official standard pricing."
+    },
+    "www.discuss.com.hk": {
+      "policy": "allow",
+      "type": "public_forum_market_observation",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public forum archive pages; use only as weak historical market observation evidence and never as official standard pricing."
+    },
+    "collection.news": {
+      "policy": "allow",
+      "type": "public_media_archive",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public media archive pages; use only as public media market comparison evidence and keep non-official status."
+    },
+    "broadband-pro.weebly.com": {
+      "policy": "allow",
+      "type": "public_referral_case_page",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public broadband referral case pages; use only as single-source historical market evidence and never as official standard pricing."
+    },
+    "ezone.hk": {
+      "policy": "allow",
+      "type": "public_media_comparison",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public media comparison pages; use only as third-party market evidence and keep source-gap/single-source status unless corroborated."
     },
     "www.singtel.com": {
       "policy": "allow",
@@ -594,6 +937,13 @@
       "tos_status": "approved",
       "notes": "Media content; use links only or obtain permission."
     },
+    "www.mobilemagazinehk.com": {
+      "policy": "allow",
+      "type": "public_media_product_report",
+      "jurisdiction": "HK",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public Hong Kong telecom product reporting; use only as corroborating evidence and keep source links."
+    },
     "www.totaltele.com": {
       "policy": "allow",
       "type": "media",
@@ -642,6 +992,34 @@
       "jurisdiction": "CN",
       "tos_status": "approved",
       "notes": "News media content; use official government/company pages where possible."
+    },
+    "www.hkis.org.hk": {
+      "policy": "allow",
+      "type": "public_professional_association_member_welfare",
+      "jurisdiction": "HK",
+      "tos_status": "requires_periodic_review",
+      "notes": "HKIS public member welfare pages and PDF handbills; use low-volume retrieval and keep source links."
+    },
+    "www.linkedin.com": {
+      "policy": "allow",
+      "type": "public_official_social_post",
+      "jurisdiction": "international",
+      "tos_status": "public_information_requires_review",
+      "notes": "Public company social posts used only as corroborating evidence; do not crawl private or login-gated content."
+    },
+    "www.8ra.com": {
+      "policy": "allow",
+      "type": "official_public_initiative",
+      "jurisdiction": "EU-DE",
+      "tos_status": "public_information_requires_review",
+      "notes": "8ra/DLR official public news and project pages. robots.txt reviewed 2026-07-14: no disallowed paths. Use low-volume retrieval for internal monitoring, retain source links, and do not republish full copyrighted text, images, or video."
+    },
+    "8ra.com": {
+      "policy": "allow",
+      "type": "official_public_initiative",
+      "jurisdiction": "EU-DE",
+      "tos_status": "public_information_requires_review",
+      "notes": "Apex-domain alias for 8ra/DLR official public pages. Apply the same low-volume, attribution, copyright, and periodic-review controls as www.8ra.com."
     }
   }
 }

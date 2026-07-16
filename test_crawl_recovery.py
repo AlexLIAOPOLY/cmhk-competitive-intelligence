@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -10,6 +12,33 @@ import crawl
 
 
 class CrawlRecoveryTests(unittest.TestCase):
+    def test_product_tariff_sync_runs_hkt_and_all_hk_competitors(self):
+        shared_client = object()
+        hkt_crawl = mock.Mock(return_value={"ok": True, "dataset_dir": "hkt"})
+        competitor_crawl = mock.Mock(
+            return_value={
+                "ok": True,
+                "brands": ["3HK / Hutchison", "SmarTone", "HKBN", "HGC", "i-CABLE"],
+                "source_count": 80,
+            }
+        )
+        hkt_module = types.SimpleNamespace(crawl_hkt_products=hkt_crawl)
+        competitor_module = types.SimpleNamespace(crawl_competitor_products=competitor_crawl)
+
+        with mock.patch.dict(
+            sys.modules,
+            {
+                "hkt_product_crawl": hkt_module,
+                "hk_competitor_product_crawl": competitor_module,
+            },
+        ):
+            statuses = crawl.sync_product_tariff_databases(shared_client)
+
+        self.assertTrue(statuses["hkt"]["ok"])
+        self.assertTrue(statuses["hk_competitors"]["ok"])
+        hkt_crawl.assert_called_once_with(client=shared_client)
+        competitor_crawl.assert_called_once_with(client=shared_client)
+
     def test_dns_failure_detection_includes_nested_attempts(self):
         result = {
             "status": 0,

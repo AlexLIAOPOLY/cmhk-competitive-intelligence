@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import fcntl
 import shutil
 import socket
 import subprocess
@@ -24,7 +25,6 @@ from urllib.robotparser import RobotFileParser
 import httpx
 from bs4 import BeautifulSoup
 
-from crawl_settings import apply_selected_fields, selected_row_config
 from extractors import compact_extracted, find_field_snippets, normalize_text, row_fields, snippet_around
 
 ROOT = Path(__file__).resolve().parent
@@ -637,6 +637,41 @@ def cell_text(value: Any) -> str:
     return str(value)
 
 
+def refresh_live_sheet_snapshot() -> None:
+    env = os.environ.copy()
+    for key in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY", "https_proxy", "http_proxy", "all_proxy"):
+        env.pop(key, None)
+    env["LARK_CLI_NO_PROXY"] = "1"
+    proc = subprocess.run(
+        [
+            LARK_CLI,
+            "sheets",
+            "+read",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--range",
+            f"{MAIN_SHEET_ID}!A1:Z200",
+            "--value-render-option",
+            "FormattedValue",
+        ],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        timeout=120,
+    )
+    if proc.returncode:
+        raise RuntimeError(f"飞书主表刷新失败：{proc.stderr or proc.stdout}")
+    payload = json.loads(proc.stdout)
+    if not payload.get("ok") or not payload.get("data", {}).get("valueRange", {}).get("values"):
+        raise RuntimeError("飞书主表刷新失败：返回数据为空")
+    snapshot_tmp = SPREADSHEET_JSON.with_suffix(".json.tmp")
+    snapshot_tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    snapshot_tmp.replace(SPREADSHEET_JSON)
+    revision = payload.get("data", {}).get("revision") or payload.get("data", {}).get("valueRange", {}).get("revision")
+    print(f"refreshed Feishu crawl configuration: revision={revision}", flush=True)
+
+
 def parse_latest_sheet() -> List[Dict[str, Any]]:
     data = json.loads(SPREADSHEET_JSON.read_text(encoding="utf-8"))
     values = data["data"]["valueRange"]["values"]
@@ -669,7 +704,7 @@ def parse_latest_sheet() -> List[Dict[str, Any]]:
     col_idx["object"] = find_idx(["对象/内部大类"], 2)
     col_idx["package"] = find_idx(["指标包/数据类"], 3)
     col_idx["need"] = find_idx(["具体需要收集的数据"], 4)
-    col_idx["sources"] = find_idx(["可能来源/系统", "可能来源"], 5)
+    col_idx["sources"] = find_idx(["待爬链接", "来源/系统", "可能来源/系统", "可能来源"], 5)
     col_idx["channel"] = find_idx(["信息获取渠道", "渠道"], 6)
     col_idx["frequency"] = find_idx(["更新频率", "更新频次"], 7)
 
@@ -719,6 +754,18 @@ def apply_row_filter(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return [row for row in rows if row["row"] in wanted]
 
 
+def apply_selected_fields(
+    extracted: Dict[str, Any], missing: List[str], selected_fields: List[str] | None
+) -> tuple[Dict[str, Any], List[str]]:
+    fields = [field for field in selected_fields or [] if field]
+    if not fields:
+        return extracted, list(missing)
+    allowed = set(fields)
+    return {key: value for key, value in extracted.items() if key in allowed}, [
+        field for field in missing if field in allowed
+    ]
+
+
 def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     try:
         gap_targets = json.loads(os.environ.get("CMHK_GAP_TARGETS", "") or "{}")
@@ -729,11 +776,6 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     configured: List[Dict[str, Any]] = []
     for row in rows:
         row_no = int(row["row"])
-        cfg = selected_row_config(row_no)
-        if cfg.get("enabled", True) is False:
-            continue
-
-        selected_entities = [str(item).strip() for item in cfg.get("entities", []) if str(item).strip()]
         target = gap_targets.get(str(row_no)) or {}
         target_entities = [
             str(item).strip()
@@ -741,20 +783,17 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             if str(item).strip()
         ] if isinstance(target, dict) else []
         if target_entities:
-            selected_entities = target_entities
-        if selected_entities:
-            row["entities"] = selected_entities
+            row["entities"] = target_entities
 
         available_fields = list(row_fields(row_no))
-        selected_fields = [str(item).strip() for item in cfg.get("fields", []) if str(item).strip()]
         target_fields = [
             str(item).strip()
             for item in target.get("metrics", [])
             if str(item).strip()
         ] if isinstance(target, dict) else []
-        if target_fields:
-            selected_fields = target_fields
-        filtered_fields, ignored_fields = filter_metric_fields(row_no, selected_fields or available_fields, row["entities"])
+        filtered_fields, ignored_fields = filter_metric_fields(
+            row_no, target_fields or available_fields, row["entities"]
+        )
         row["selected_fields"] = filtered_fields or available_fields
         row["ignored_selected_fields"] = ignored_fields
         if target_fields or target_entities:
@@ -762,15 +801,12 @@ def apply_crawl_settings(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "companies": target_entities,
                 "metrics": target_fields,
             }
-        extra_urls = [str(item).strip() for item in cfg.get("sourceUrls", []) if str(item).strip()]
-        if extra_urls:
-            row["sources"] = "\n".join([str(row.get("sources") or ""), *extra_urls]).strip()
         configured.append(row)
     return configured
 
 
 def urls_from_sources(source_text: str) -> List[str]:
-    urls = re.findall(r"https?://[^\s]+", source_text or "")
+    urls = re.findall(r"https?://[^\s（）()]+", source_text or "")
     clean: List[str] = []
     for url in urls:
         url = url.strip().rstrip("。；;,")
@@ -926,30 +962,24 @@ def candidate_targets(
         target_index[url] = len(targets)
         targets.append((url, expected))
 
-    entity_candidates = ENTITY_CANDIDATES.get(row)
-    if entity_candidates:
-        allowed_entities = set(entities or entity_candidates)
-        for entity, urls in entity_candidates.items():
-            if entity not in allowed_entities:
-                continue
-            for url in urls:
-                append_url(url, [entity])
-        return targets
+    def append_recovered_url(
+        url: str,
+        expected_entities: List[str] | None = None,
+    ) -> None:
+        alternatives = RECOVERABLE_URL_ALTERNATIVES.get(url)
+        if alternatives:
+            for alternative in alternatives:
+                append_url(alternative, expected_entities)
+            return
+        append_url(RECOVERABLE_URL_REWRITES.get(url, url), expected_entities)
 
     for url in urls_from_sources(sources):
-        alternatives = RECOVERABLE_URL_ALTERNATIVES.get(url, [])
-        if alternatives:
-            for alt in alternatives:
-                append_url(alt)
-            continue
-        append_url(url)
+        append_recovered_url(url)
     for url in EXTRA_CANDIDATES.get(row, []):
-        alternatives = RECOVERABLE_URL_ALTERNATIVES.get(url, [])
-        if alternatives:
-            for alt in alternatives:
-                append_url(alt)
-            continue
-        append_url(url)
+        append_recovered_url(url)
+    for entity in entities or []:
+        for url in ENTITY_CANDIDATES.get(row, {}).get(entity, []):
+            append_recovered_url(url, [entity])
     return targets
 
 
@@ -1387,7 +1417,7 @@ def fetch_url_uncached(client: httpx.Client, url: str, started: float | None = N
                 result = follow
 
     proxy_dns_failed = is_dns_failure(result)
-    rewrite_url = RECOVERABLE_URL_REWRITES.get(url)
+    rewrite_url = None
     if rewrite_url:
         rewrite_policy = compliance_decision(client, rewrite_url)
         if rewrite_policy.get("compliance_allowed"):
@@ -2112,7 +2142,9 @@ def compact_log_cell(row_result: Dict[str, Any]) -> str:
         f"累计请求耗时：{elapsed:.1f}s",
         f"本地结果：results/row_{row_result['row']}.json",
     ]
-    if row_result.get("log_sheet_title"):
+    if row_result.get("log_spreadsheet_url"):
+        lines.append(f"本轮日志表格：{row_result['log_spreadsheet_url']}")
+    elif row_result.get("log_sheet_title"):
         lines.append(f"飞书日志子表：{row_result['log_sheet_title']}")
     if row_result.get("fallback_used"):
         lines.append(
@@ -2129,6 +2161,24 @@ def compact_log_cell(row_result: Dict[str, Any]) -> str:
     return "\n".join(lines)[:4800]
 
 
+def source_title_for_url(
+    url: str,
+    row_result: Dict[str, Any],
+    entity_result: Dict[str, Any] | None = None,
+) -> str:
+    records = []
+    if entity_result:
+        records.extend(entity_result.get("raw_records") or [])
+    records.extend(row_result.get("raw_records") or [])
+    for record in records:
+        if str(record.get("url") or "").strip() != url:
+            continue
+        title = normalize_text(str(record.get("title") or ""))
+        if title:
+            return title
+    return re.sub(r"^https?://(?:www\.)?", "", url).split("/", 1)[0]
+
+
 def compact_f_cell(row_result: Dict[str, Any]) -> str:
     entity_results = row_result.get("entity_results") or []
     if entity_results:
@@ -2137,10 +2187,12 @@ def compact_f_cell(row_result: Dict[str, Any]) -> str:
             lines.append(f"【{entity_result['entity']}】")
             urls = urls_for_entity(entity_result) or display_source_urls(row_result.get("source_urls", []))
             for url in urls[:5]:
-                lines.append(f"- {url}")
+                title = source_title_for_url(url, row_result, entity_result)
+                lines.append(f"- {url}（{title}）")
         return "\n".join(lines)[:12000]
     display_urls = display_source_urls(row_result["source_urls"])
-    return "\n".join(display_urls) if display_urls else "\n".join(row_result["attempted_urls"])
+    urls = display_urls or row_result["attempted_urls"]
+    return "\n".join(f"{url}（{source_title_for_url(url, row_result)}）" for url in urls)
 
 
 def write_outputs(row_results: List[Dict[str, Any]]) -> None:
@@ -2207,7 +2259,17 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
             )
 
     (ROOT / "write_payload.json").write_text(
-        json.dumps({"sources_payload": f_values, "results_payload": ij_values, "F2:F34": f_values, "I2:K34": ij_values}, ensure_ascii=False, indent=2),
+        json.dumps(
+            {
+                "successful_sources_payload": f_values,
+                "sources_payload": f_values,
+                "results_payload": ij_values,
+                "F2:F34": f_values,
+                "I2:K34": ij_values,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
         encoding="utf-8",
     )
     with (ROOT / "coverage_report.tsv").open("w", encoding="utf-8", newline="") as fh:
@@ -2363,7 +2425,31 @@ def crawl_rows(client: httpx.Client, rows: List[Dict[str, Any]], deadline: float
     return sorted(results, key=lambda item: int(item.get("row") or 0))
 
 
+def sync_product_tariff_databases(client: httpx.Client) -> Dict[str, Dict[str, Any]]:
+    """Refresh HKT and all configured Hong Kong competitor product databases."""
+    statuses: Dict[str, Dict[str, Any]] = {}
+    try:
+        from hkt_product_crawl import crawl_hkt_products
+
+        statuses["hkt"] = crawl_hkt_products(client=client)
+    except Exception as exc:
+        statuses["hkt"] = {"ok": False, "error": repr(exc)}
+
+    try:
+        from hk_competitor_product_crawl import crawl_competitor_products
+
+        statuses["hk_competitors"] = crawl_competitor_products(client=client)
+    except Exception as exc:
+        statuses["hk_competitors"] = {"ok": False, "error": repr(exc)}
+    return statuses
+
+
 def main() -> None:
+    lock_handle = (ROOT / ".crawl_process.lock").open("w")
+    try:
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        raise SystemExit("已有爬虫任务正在运行，请等待完成后重试。")
     RAW_DIR.mkdir(exist_ok=True)
     RESULTS_DIR.mkdir(exist_ok=True)
     chosen_proxy = normalize_proxy_env(os.environ)
@@ -2371,6 +2457,7 @@ def main() -> None:
         print(f"using local proxy: {chosen_proxy}", flush=True)
     else:
         print("no reachable local proxy detected; using direct network path", flush=True)
+    refresh_live_sheet_snapshot()
     rows = apply_crawl_settings(apply_row_filter(parse_latest_sheet()))
     (ROOT / "sources.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
     deadline = time.monotonic() + MAX_RUN_SECONDS
@@ -2386,8 +2473,78 @@ def main() -> None:
         trust_env=True,
     )
     results = crawl_rows(client, rows, deadline)
+    product_tariff_statuses = sync_product_tariff_databases(client)
+    hkt_product_status = product_tariff_statuses["hkt"]
+    if hkt_product_status.get("ok"):
+        print(
+            "wrote HKT product tariff database: "
+            f"{hkt_product_status.get('dataset_dir')} "
+            f"latest={hkt_product_status.get('latest_count')} "
+            f"parsed={hkt_product_status.get('parsed_count')}",
+            flush=True,
+        )
+    else:
+        print(f"HKT product tariff crawl failed: {hkt_product_status.get('error')}", flush=True)
+    hk_competitor_product_status = product_tariff_statuses["hk_competitors"]
+    if hk_competitor_product_status.get("ok"):
+        print(
+            "wrote HK competitor product tariff database: "
+            f"{hk_competitor_product_status.get('dataset_dir')} "
+            f"brands={','.join(hk_competitor_product_status.get('brands') or [])} "
+            f"sources={hk_competitor_product_status.get('source_count')} "
+            f"current={hk_competitor_product_status.get('current_count')} "
+            f"historical={hk_competitor_product_status.get('historical_count')} "
+            f"gaps={hk_competitor_product_status.get('source_gap_count')}",
+            flush=True,
+        )
+    else:
+        print(f"HK competitor product tariff crawl failed: {hk_competitor_product_status.get('error')}", flush=True)
+    if hkt_product_status.get("ok") and hk_competitor_product_status.get("ok"):
+        try:
+            from scripts.build_combined_product_tariff_workbook import build as build_combined_product_tariff_workbook
+
+            combined_product_status = build_combined_product_tariff_workbook()
+            product_tariff_statuses["combined"] = {"ok": True, **combined_product_status}
+            print(
+                "wrote combined product tariff agent package: "
+                f"formal={combined_product_status.get('formal_plans')} "
+                f"gaps={combined_product_status.get('source_gaps')}",
+                flush=True,
+            )
+        except Exception as exc:
+            product_tariff_statuses["combined"] = {"ok": False, "error": repr(exc)}
+            print(f"combined product tariff package failed: {exc!r}", flush=True)
     client.close()
     write_outputs(results)
+    if hkt_product_status:
+        audit_path = ROOT / "final_audit.md"
+        with audit_path.open("a", encoding="utf-8") as fh:
+            fh.write("\n\n## HKT 产品资费补充抓取\n\n")
+            if hkt_product_status.get("ok"):
+                fh.write(
+                    "- 状态：ok；"
+                    f"最新记录 {hkt_product_status.get('latest_count')} 条；"
+                    f"结构化解析 {hkt_product_status.get('parsed_count')} 条；"
+                    f"输出目录 `{hkt_product_status.get('dataset_dir')}`。\n"
+                )
+            else:
+                fh.write(f"- 状态：failed；错误：{hkt_product_status.get('error')}。\n")
+    if hk_competitor_product_status:
+        audit_path = ROOT / "final_audit.md"
+        with audit_path.open("a", encoding="utf-8") as fh:
+            fh.write("\n\n## 香港竞对产品资费全量同步\n\n")
+            if hk_competitor_product_status.get("ok"):
+                fh.write(
+                    "- 状态：ok；"
+                    f"覆盖品牌 {', '.join(hk_competitor_product_status.get('brands') or [])}；"
+                    f"配置来源 {hk_competitor_product_status.get('source_count')} 个；"
+                    f"当前记录 {hk_competitor_product_status.get('current_count')} 条；"
+                    f"历史记录 {hk_competitor_product_status.get('historical_count')} 条；"
+                    f"来源缺口 {hk_competitor_product_status.get('source_gap_count')} 条；"
+                    f"输出目录 `{hk_competitor_product_status.get('dataset_dir')}`。\n"
+                )
+            else:
+                fh.write(f"- 状态：failed；错误：{hk_competitor_product_status.get('error')}。\n")
     print(f"wrote {ROOT / 'write_payload.json'}")
     print(f"wrote {ROOT / 'coverage_report.tsv'}")
     print(f"wrote {ROOT / 'final_audit.md'}")

@@ -34,7 +34,7 @@ from agent_production import (
 )
 from crawl_run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
-from rag_llm import build_context_package, list_knowledge_datasets, retrieve_context
+from rag_llm import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, retrieve_context
 from chart_renderer import render_chart
 
 ROOT = Path(__file__).resolve().parent
@@ -46,6 +46,7 @@ FRONTEND_SKILL_ORDER = [
     "cloud-vendor-metrics",
     "macro-policy-context",
     "trend-forecasting",
+    "financial-visual-analytics",
 ]
 SKILL_ROUTING_RULES = [
     (
@@ -63,6 +64,10 @@ SKILL_ROUTING_RULES = [
     (
         "trend-forecasting",
         r"预测|趋势|未来|forecast|Holt|Winters|回测|naive|seasonal|模型|适用性|风险边界",
+    ),
+    (
+        "financial-visual-analytics",
+        r"画图|图表|可视化|趋势图|柱状图|折线图|历史数据|过去数据|历年|历史走势|时间序列|同比|环比|变化趋势|趋势分析|数据对比",
     ),
     (
         "executive-briefing",
@@ -307,6 +312,15 @@ def _skill_routing_instruction(
     for skill_id, pattern in SKILL_ROUTING_RULES:
         if skill_id in selected and re.search(pattern, clean_message, re.IGNORECASE):
             matched.append(skill_id)
+    explicit_forecast = bool(
+        re.search(r"预测|未来|forecast|Holt|Winters|回测|naive|seasonal|模型预测", clean_message, re.IGNORECASE)
+    )
+    if "financial-visual-analytics" in matched and not explicit_forecast:
+        matched = ["financial-visual-analytics"] + [
+            skill_id
+            for skill_id in matched
+            if skill_id not in {"financial-visual-analytics", "trend-forecasting"}
+        ]
     if not matched:
         return (
             "Skill 路由判断：本轮未明显命中已选 Skill 的领域任务。"
@@ -542,6 +556,10 @@ def _selected_dataset_ids() -> set[str] | None:
     return SELECTED_DATASET_IDS.get()
 
 
+def _effective_selected_dataset_ids() -> set[str] | None:
+    return effective_dataset_ids(_selected_dataset_ids())
+
+
 def _dataset_id_for_agent_knowledge_source(source: str) -> str:
     clean = str(source or "").strip().removeprefix("/references/")
     parts = clean.split("/")
@@ -556,7 +574,7 @@ def _dataset_id_for_agent_knowledge_source(source: str) -> str:
 
 
 def _dataset_is_selected(source: str) -> bool:
-    selected = _selected_dataset_ids()
+    selected = _effective_selected_dataset_ids()
     if selected is None:
         return True
     dataset_id = _dataset_id_for_agent_knowledge_source(source)
@@ -631,22 +649,27 @@ def list_local_datasets() -> str:
     """列出小竞 AI 后端当前可检索和读取的本地数据集。
     当用户问“你能访问哪些数据”“数据放哪里”“有哪些内部/外部数据”，或你准备做趋势分析、问数、核验前需要了解可用数据时，先使用此工具。
     """
-    selected_ids = _selected_dataset_ids()
+    selected_ids = _effective_selected_dataset_ids()
     datasets = list_knowledge_datasets(dataset_ids=selected_ids)
     if not datasets:
-        return "当前未选择任何本地数据库；本轮 AI 不会读取、列举或猜测未选择的数据库内容。请在前端数据库按钮中选择需要发送给 AI 的数据库。"
-    lines = ["本轮已选择并可发送给 AI 的本地数据库："]
-    references = []
-    links = []
+        return "当前没有可用的本地数据库。"
+    background_ids = default_background_dataset_ids()
+    lines = ["本轮可检索的本地数据库："]
+    visible_count = sum(1 for dataset in datasets if dataset.get("id") not in background_ids)
+    if background_ids:
+        lines.append(
+            "说明：前端只展示用户可选的主数据库；爬虫日志、运行审计等支撑库由后端默认加载，用于追溯和排错。"
+        )
+    if visible_count:
+        lines.append(f"用户已选择主数据库 {visible_count} 个。")
     for index, dataset in enumerate(datasets, 1):
+        background_label = "（后台默认加载）" if dataset.get("id") in background_ids else ""
         entrypoints = dataset.get("entrypoints") or []
         files = dataset.get("files") or []
-        primary = next((item for item in files if item.get("name") in entrypoints), files[0] if files else None)
-        primary_link = {"label": dataset.get("title") or dataset.get("id"), "url": primary.get("url")} if primary else None
         lines.append(
             "\n".join(
                 [
-                    f"[数据集 {index}] {dataset.get('title') or dataset.get('id')}",
+                    f"[数据集 {index}] {dataset.get('title') or dataset.get('id')}{background_label}",
                     f"- id: {dataset.get('id')}",
                     f"- 类型: {dataset.get('source_type') or 'local'}",
                     f"- 范围: {dataset.get('scope') or '未说明'}",
@@ -657,10 +680,10 @@ def list_local_datasets() -> str:
                 ]
             )
         )
-        if primary_link:
-            links.append(primary_link)
-            references.append({"index": index, "source": dataset.get("title") or dataset.get("id"), "links": [primary_link]})
-    meta_data = {"type": "meta", "sources": [d.get("title") for d in datasets], "links": links, "references": references}
+    # Dataset enumeration is UI/context metadata, not evidence. Do not emit
+    # citation references here; otherwise later RAG results that also start at
+    # [1] create duplicate footer numbers and ambiguous inline citations.
+    meta_data = {"type": "meta", "sources": [d.get("title") for d in datasets], "links": [], "references": []}
     return "\n\n".join(lines) + f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
 
 
@@ -682,7 +705,7 @@ def search_local_reports(query: str) -> str:
     limit_message = _register_tool_invocation("search_local_reports", 6)
     if limit_message:
         return limit_message
-    chunks = retrieve_context(query, limit=10, dataset_ids=_selected_dataset_ids())
+    chunks = retrieve_context(query, limit=10, dataset_ids=_effective_selected_dataset_ids())
     if not chunks:
         return "没有找到相关的本地报告信息。"
     context_package = build_context_package(chunks, token_budget=6500, model=_agent_model_name())
@@ -882,39 +905,6 @@ def trigger_full_crawl() -> str:
     )
 
 @tool
-def feishu_cli(command_args: str) -> str:
-    """执行飞书命令行工具 (lark-cli)。
-    当你需要与飞书表格进行同步、写入数据，或者查询飞书记录时，请使用此工具。
-    由于安全限制，你只需提供 'lark-cli' 后面的参数，例如: 'sheets +read --range 9c638d!A1:B2'
-    """
-    import shutil
-    lowered = str(command_args or "").lower()
-    mutating = any(token in lowered for token in ["+write", "+update", "+append", "+delete", "+clear"])
-    if mutating:
-        payload = {"command_args": command_args}
-        confirmation = _require_action_confirmation("feishu_cli", payload, "执行会写入或修改飞书表格的命令。")
-        if confirmation:
-            return confirmation
-    LARK_CLI = shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
-    
-    # Simple shell-like splitting for arguments
-    import shlex
-    try:
-        args = shlex.split(command_args)
-    except Exception as e:
-        return f"参数解析错误: {e}"
-        
-    cmd = [LARK_CLI] + args
-    try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-        if proc.returncode == 0:
-            return f"执行成功:\n{proc.stdout}"
-        else:
-            return f"执行失败:\n{proc.stderr}"
-    except Exception as e:
-        return f"执行出错: {str(e)}"
-
-@tool
 def trigger_report_generation() -> str:
     """触发本地周报生成任务。
     当用户明确要求生成战略内参周报、重新生成周报或输出 Word 周报时使用。它会调用 Web 层生成流程，生成 docx 并同步生成音频摘要。
@@ -1033,7 +1023,7 @@ def get_crawl_settings_summary() -> str:
         f"- 启用行：{summary.get('enabledRows')} / {summary.get('totalRows')}\n"
         f"- 已选主体：{summary.get('selectedEntities')}\n"
         f"- 已选字段：{summary.get('selectedFields')}\n"
-        f"- 设置文件：crawl_settings.json\n"
+        f"- 配置来源：飞书主表\n"
         + "\n".join(preview)
     )
 
@@ -1520,6 +1510,7 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
         return []
     clean_query = _clean_search_text(query, 300)
     query_terms = {term for term in re.split(r"[\s,，。；;:：!?！？、]+", clean_query.lower()) if term}
+    profile_query = _is_user_profile_query(clean_query)
     rows: list[dict[str, Any]] = []
     for thread in threads:
         if not isinstance(thread, dict):
@@ -1532,11 +1523,21 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
             content = _chat_message_content(message, 1200)
             if not content:
                 continue
+            role = str(message.get("role") or "").lower()
+            if profile_query and role != "user":
+                continue
             haystack = f"{thread_title} {content}".lower()
             score = 0
             if clean_query and clean_query.lower() in haystack:
                 score += 20
             score += sum(2 for term in query_terms if term in haystack)
+            if profile_query:
+                low_content = content.strip().lower()
+                if low_content in {"你好", "您好", "hi", "hello", "hey", "ok", "好的", "谢谢"}:
+                    continue
+                score += 6
+                if score > 0 and thread_title:
+                    score += 2
             if score <= 0:
                 continue
             start = max(0, index - max(0, int(context_window or 0)))
@@ -1546,8 +1547,13 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
                 context_message = messages[context_index]
                 if not isinstance(context_message, dict):
                     continue
+                context_role_raw = str(context_message.get("role") or "").lower()
+                if profile_query and context_role_raw != "user":
+                    continue
                 context_content = _chat_message_content(context_message, 1200)
                 if not context_content:
+                    continue
+                if profile_query and context_content.strip().lower() in {"你好", "您好", "hi", "hello", "hey", "ok", "好的", "谢谢"}:
                     continue
                 context_messages.append(
                     {
@@ -1651,7 +1657,7 @@ def list_database_lineage() -> str:
     """列出本轮已选择数据库的版本、血缘、manifest、文件数量和指纹。
     当用户问数据库来源、版本、是否过期、数据血缘、可审计性，或需要正式说明当前答案基于哪个数据包时使用。
     """
-    rows = dataset_lineage(_selected_dataset_ids())
+    rows = dataset_lineage(_effective_selected_dataset_ids())
     if not rows:
         return "当前未选择任何可见数据库，无法生成数据库血缘。"
     lines = ["本轮已选择数据库血缘："]
@@ -1675,21 +1681,14 @@ def list_database_lineage() -> str:
     return "\n\n".join(lines)
 
 def _thinking_model_name(model_name: str) -> str:
-    configured = (os.environ.get("AI_THINKING_MODEL") or os.environ.get("DEEPSEEK_THINKING_MODEL") or "").strip()
-    if configured:
-        return configured
-    if "deepseek" in model_name.lower():
-        return "deepseek-reasoner"
     return model_name
 
 
 def _agent_model_name(thinking_enabled: bool = False) -> str:
     config = load_ai_config()
-    model_name = config.get("model", "deepseek-chat")
+    model_name = config.get("model", "deepseek-v4")
     if thinking_enabled:
         return _thinking_model_name(str(model_name))
-    if "reasoner" in str(model_name):
-        return "deepseek-chat"
     return str(model_name)
 
 
@@ -1702,7 +1701,6 @@ def _agent_tools(allow_web_search: bool = True):
         read_local_reference,
         trigger_crawl,
         trigger_full_crawl,
-        feishu_cli,
         trigger_report_generation,
         trigger_carrier_performance_report_generation,
         list_report_outputs,
@@ -1724,8 +1722,8 @@ def _agent_tools(allow_web_search: bool = True):
 
 def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, runtime_context: dict[str, Any] | None = None):
     config = load_ai_config()
-    api_key = config.get("api_key", "") or os.environ.get("OPENAI_API_KEY", "")
-    base_url = config.get("base_url", "") or os.environ.get("OPENAI_API_BASE", "")
+    api_key = config.get("api_key", "")
+    base_url = config.get("base_url", "")
     model_name = _agent_model_name(thinking_enabled=thinking_enabled)
 
     from network_utils import _available_proxy_urls
@@ -1738,6 +1736,7 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
         model=model_name,
         api_key=api_key,
         api_base=base_url,
+        extra_body=dict(config.get("extra_parameters") or {}),
         max_retries=3,
     )
     
@@ -1772,20 +1771,18 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
         "你是中国移动战略部公开信息监测系统的智能 RAG 和运维助手。\n"
         "【当前运行上下文】以下信息由后端按本次请求实时注入。凡用户提到“今天、现在、目前、最新、上个季度、上一季度、最近”等相对时间，必须优先用这里的当前时间和时区定位；涉及地域、网络可达性或本地/公网判断时，可参考请求 IP 和位置推断，但不要把粗略位置当作精确地理定位。\n"
         f"{runtime_context_text}\n"
-        "调用 `feishu_cli` 时必须使用完整参数 `--spreadsheet-token ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA`，不要使用 `-t` 简写或位置参数。例如查询数据使用：`sheets +read --spreadsheet-token ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA --range 9c638d!A1:C10`。\n"
-        "【核心法则】如果你不确定某个 CLI 命令（特别是 `+update`、`+write` 等子命令）的具体用法和参数格式，**绝对不允许瞎猜尝试**！你必须先执行 `feishu_cli sheets +update --help` 等命令查阅帮助文档，然后再进行真正的调用。\n"
-        "【重要】核心数据表的工作表名称是\"主表\"，其对应的 sheet_id 为 9c638d。当查询或修改\"主表\"时，务必使用 9c638d 作为 range 前缀，例如 `--range 9c638d!A2:Z2`。\n"
-        "【极度重要】表格的列结构可能随时发生变化（用户会动态插入或删除列）。如果你需要读取或写入特定字段的数据，**严禁直接凭记忆写死列号**（例如想当然地认为H列必定是更新频率）。你必须先使用 lark-cli 读取第一行表头（例如 `--range 9c638d!A1:Z1`），精确查明各个字段当前实际所在的字母列后，再执行后续的行列操作！\n"
         f"{source_rule}"
         "【本地数据边界】你能接触到的本地数据不是无限的，必须以工具返回为准：`list_local_datasets` 用于列出标准化数据集，`search_local_reports` 用于检索标准化数据集、周报、审计日志和爬取结果，`read_local_reference` 用于读取可点击引用原文。用户问“你能访问哪些数据”“数据放哪里”“内部/外部数据怎么接入”“后端有哪些数据”时，必须先调用 `list_local_datasets` 再回答。做趋势分析、问数、财报对比、口径核验、图表之前，如果不确定可用数据，也要先调用 `list_local_datasets`。\n"
         "【上下文预算审计】`search_local_reports` 会返回 contextAudit，包含 token_budget、token_estimate、retained_chunks、compressed_chunks、skipped_chunks。若 compressed_chunks 或 skipped_chunks 大于 0，正式回答必须把结论限定在已保留上下文内，并在必要时说明仍需读取原文或缩小问题范围。不要声称已完整读取未进入上下文预算的全部文件。\n"
         "【长期记忆边界】`search_agent_memory`、`remember_agent_memory`、`list_agent_memory` 只用于小竞AI运行偏好、长期规则和已验证流程。长期记忆不能替代本轮用户指令、前端数据库选择、官方来源、审计文件或工具返回结果；若记忆与本轮上下文冲突，必须以本轮上下文为准。\n"
         "【历史聊天边界】当用户询问此前聊天、上一轮、早先说过什么、某个历史对话内容或要求核对聊天记录时，必须调用 `search_chat_history` 检索已保存聊天线程；不要只凭最近 8 条上下文或长期记忆猜测。回答要区分“历史聊天记录命中”和“长期记忆命中”。\n"
+        "【用户画像边界】当用户问“我是谁”“你了解我什么”“我对什么感兴趣”“我的偏好/关注点是什么”等身份、偏好或用户画像问题时，必须优先调用 `search_agent_memory` 和 `search_chat_history`。只把明确记忆和历史聊天中用户自己发出的消息当证据；历史里 AI 曾经做过的猜测、当前选择的数据库、项目环境或最近一次数据主题不能作为个人身份或兴趣证据。若没有明确证据，必须说“不确定”，并把基于用户历史问题的判断标成“可能/倾向”。\n"
         "【Agent Skill 渐进加载】前端选择的 Skill 不是固定开场流程，但它们是专业分析方法。历史聊天查询、寒暄、简单问答、纯记忆审计和无需领域规则的问题，不要为了流程感读取 Skill；但当用户要求分析竞对经营数据、云厂商数据、宏观政策、趋势预测或战略简报时，应优先读取最相关的 1-2 个已选 Skill，再按 Skill 方法调用数据库检索、原文核验、预测或图表工具。不要把所有已选 Skill 全部读一遍。\n"
         "【新增数据规范】后续新增内部或外部数据时，默认放入项目根目录 `agent_knowledge/<dataset_id>/`。每个数据集至少提供 `manifest.json`，建议同时提供 `README.md`、结构化 `data.csv` 或 `data.json`、摘要 `summary.md`、来源 `sources.json`。允许被后端索引和引用的文本文件扩展名只有 `.md`、`.txt`、`.json`、`.csv`、`.tsv`。`manifest.json` 应写明 id、title、summary、source_type、scope、tags、keywords、entrypoints、updated_at、quality。除非工具列出，否则不要声称自己能读取其他本地目录。\n"
         "【数据库选择边界】前端数据库按钮是强访问边界。只有本轮用户已选择的 `agent_knowledge` 数据库才允许被 `list_local_datasets`、`search_local_reports` 和 `read_local_reference` 读取或引用；未选择的数据集不可见。不得根据历史提示、路径记忆或未调用工具的信息声称知道未选择数据库的内容。若季度、核心公司或云厂商数据集被选择，按工具返回的 manifest、CSV/JSON 行和引用原文回答；`verification_count>=2` 表示该行已完成多来源核验，`official_conflict` 表示正式回答采用 `official_value` 并说明标准化值与官方披露冲突。\n"
         "【目标级审计优先】当用户询问“现在数据是否完整/准确/能否预测/数据库是否正常/来源是否可靠/目标完成到哪一步”或要求给出正式数据质量结论时，如果已选择 `goal_readiness_audits`、`knowledge_integrity_audits`、`source_evidence_audits`、`source_url_reachability_audits`、`forecast_readiness_audits` 或 `agent_dataset_visibility_audits`，必须先检索并读取相关审计。正式回答要以这些审计中的 pass/fail、row_count、verification_count、official_value/source_gap 和 API 可见性结果为准；不要只凭主数据包或历史记忆判断完成度。被 manifest 标记为 `superseded`、`hidden` 或 `archived` 的数据包不得作为默认数据库或正式结论来源。\n"
         "【宏观政策数据包】若用户询问 CMHK 预测、趋势判断、香港电信市场、5G、频谱、移动用户、宽带渗透率、SIM 实名、监管政策或宏观环境，并且已选择 `cmhk_macro_policy_*` 数据库，必须检索并读取该数据包。宏观政策包用于解释市场背景、外生变量和政策事件；年度/事件粒度记录不得替代公司季度数据，也不得把政策事件直接当作收入/利润预测目标。正式结论仍使用 `official_value`，`source_gap_confirmed` 不得估算。\n"
+        "【竞对产品资费数据库】若已选择 `competitor_product_tariffs`，在回答套餐价格、历史资费、产品比较、覆盖或缺口问题前，必须先检索 `product_tariffs_agent_context.md` 理解字段和边界。价格与套餐结论只可使用 `product_tariffs_formal_agent_records.csv` 中 `record_class=formal_product_tariff` 的行；来源可得性、缺口或未入正式表原因才读取 `product_tariffs_source_gaps_agent_records.csv` 和 `product_tariffs_followup_agent_records.csv`。不得把 source-gap、单源候选或近似报价作为正式价格、趋势样本或预测输入；不同品牌、期间、合约期、客户分段、数据量/速率和附加条件不可因价格相同而强行合并。HKT/csl/1O1O 的 `official_public_source_structured` 表示官方公开来源结构化，不得伪称它等于双来源核验。产品资费包不是财务或季度经营指标包，不得用其替代收入、用户数或财务预测数据。\n"
         "【精确指标边界】问数时必须严格保持用户要的指标，不得把派生指标改写成基础指标。尤其是：`收入同比`、`营收同比`、`营业收入同比`、`收入增长`、`revenue_growth_yoy`、`YoY` 对应 `metric_key=revenue_growth_yoy`，不是 `revenue`；`EBITDA率` 对应 `metric_key=ebitda_margin`，不是 `ebitda`；`经营利润率` 对应 `operating_margin`，不是 `operating_income`；`毛利率` 对应 `gross_margin`，不是 `gross_profit`。调用 `search_local_reports` 时必须把这些关键词原样带入 query，最终回答也必须引用命中的同一指标行。\n"
         "【表格输出限制】除非用户明确要求导出完整 CSV/Excel，否则最终回答中的 Markdown 表格最多输出 30 行、8 列；超过范围时先给摘要和关键行，并提示用户缩小范围或导出文件。Markdown 表格必须一次性输出完整表头、分隔行和完整数据行，每一行都以 `|` 结尾；单个指标优先用项目符号，不要为了一个数值强行输出表格。后端会对超限表格做截断，不要把大表格分批塞进同一条回答。\n"
         "【爬虫日志调度】每次全量爬虫完成后，系统会登记 `agent_knowledge/crawl_run_logs/`：本地只保存运行索引和摘要，完整逐 URL 日志与 Agent 处理流程写入飞书日志子表。用户问上次爬虫、失败链接、覆盖率、日志在哪、Agent 是否处理完成时，必须先调用 `list_crawl_runs`；需要更细节再用 `search_local_reports` 或 `read_local_reference` 读取 `run_log.tsv`、`coverage_report.tsv`、`final_audit.md`。\n"
@@ -1796,6 +1793,7 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
         f"{cross_check_rule}"
         f"{quarterly_crosscheck_sentence}"
         "【Python 图表工具】当用户要求画图、趋势图、柱状图、表格+图表或可视化时，在完成数据检索和核验后必须优先调用 `render_python_chart` 生成 PNG 图表。`chart_spec` 必须是 JSON 对象字符串，结构为 `{\"type\":\"line|bar\",\"title\":\"...\",\"unit\":\"...\",\"x\":[\"2024Q1\"],\"series\":[{\"name\":\"收入\",\"data\":[123]}]}`；series 使用 `data` 数组，不要使用其他字段名。不要把 `<chart>` JSON 当作主要输出，也不要在正文里手写 `<chart>` 块。图表 JSON 的中文标题、图例和备注必须直接写中文，工具会处理中文字体渲染。注意：光画图就行，图片中不要放底部的解释性长段文字（例如详细结论或分析），以防遮挡图例或影响美观。若 `render_python_chart` 返回“停止”或同一参数失败过，必须立即停止图表工具调用，改用文字结论或简表回答。\n"
+        "【历史与趋势可视化】当用户询问趋势预测、历史/过去/历年数据、时间序列、同比环比、变化趋势或多期对比时，如果本轮已选择 `financial-visual-analytics`，应优先调用 `read_agent_skill` 读取该 Skill。只要已有至少两个可比较时期、指标口径和单位一致、数据经过检索核验，并且图表能比纯文字更清楚地说明变化，就尽量调用 `render_python_chart` 辅助解释：时间变化优先折线图，同期主体比较优先柱状图；图后仍需给出关键数值、3-5 条结论、口径和必要的不确定性。图表只能使用已检索或已读取的数值，不得补造缺失点。若数据只有单点、口径不可比、证据不足或工具已失败，则不要强行画图，改用文字或简表并说明限制。`forecast_quarterly_metric` 已返回预测 PNG 时，直接使用该图，不要再生成内容相同的第二张图。\n"
         "【趋势预测工具】当用户要求“预测未来”“趋势预测”“forecast”“未来4个季度”“未来几个季度/半年”等，并且问题涉及 quarterly_competitor_metrics 数据库中的季度指标时，必须优先调用 `forecast_quarterly_metric`，不要只靠模型心算或简单均值口算。预测工具使用已选数据库、官方优先数值和 Holt-Winters 加性季节模型，并且已经返回预测表和 PNG 图表；除非用户明确要求第二张不同图，否则不要再调用 `render_python_chart` 重复画同一预测图。如果用户同时选择宏观政策包，可用其解释外部背景和风险，但不能把年度/事件粒度宏观政策行混入季度模型拟合。如果用户要求解释，再说明模型局限和非投资建议。\n"
         f"{web_rule}"
         "【强制规则 - 无图标/Emoji】所有的文字输出中绝对禁止使用任何 Emoji、表情符号或特殊排版图标。保持极其严肃、专业的纯文本风格。\n"
@@ -1828,10 +1826,11 @@ def _selected_skill_summaries(skill_ids: list[str] | None) -> list[dict[str, str
 
 
 def _selected_dataset_summaries(dataset_ids: set[str]) -> list[dict[str, str]]:
-    if not dataset_ids:
+    effective_ids = effective_dataset_ids(dataset_ids)
+    if not effective_ids:
         return []
     rows = []
-    for item in list_knowledge_datasets(dataset_ids=dataset_ids):
+    for item in list_knowledge_datasets(dataset_ids=effective_ids):
         rows.append({
             "id": str(item.get("id") or ""),
             "title": str(item.get("title") or item.get("id") or ""),
@@ -1875,6 +1874,19 @@ def _format_conversation_history(history: list[dict[str, Any]] | None) -> str:
     return "同一聊天线程的最近对话如下，用于理解代词、继续追问和上一轮结论；若与本轮用户新指令冲突，以本轮新指令为准。\n" + "\n".join(lines)
 
 
+def _format_background_conversation_history(history: list[dict[str, Any]] | None) -> str:
+    base = _format_conversation_history(history)
+    if not base:
+        return ""
+    return (
+        "同一聊天线程的最近对话如下，只能作为背景。"
+        "本轮用户输入很短，不能自动把历史主题补全为本轮问题；"
+        "除非本轮短句明确包含“继续/上面/这个/刚才/它/该公司/那个数据”等承接词，"
+        "否则应按本轮字面意思回答。\n"
+        f"{base}"
+    )
+
+
 def _tool_process_text(tool_name: str) -> str:
     labels = {
         "read_agent_skill": "我读取相关 Agent Skill 的完整指令。",
@@ -1894,6 +1906,68 @@ def _tool_process_text(tool_name: str) -> str:
     return labels.get(tool_name, f"我调用 {tool_name or '工具'} 获取依据。")
 
 
+def _is_plain_conversational_query(message: str) -> bool:
+    text = re.sub(r"\s+", "", str(message or "")).strip().lower()
+    if not text:
+        return False
+    domain_terms = (
+        "收入",
+        "营收",
+        "趋势",
+        "预测",
+        "数据",
+        "图表",
+        "来源",
+        "报告",
+        "周报",
+        "铁塔",
+        "移动",
+        "联通",
+        "电信",
+        "云厂商",
+        "宏观",
+        "政策",
+        "aws",
+        "azure",
+        "hkt",
+    )
+    if any(term in text for term in domain_terms):
+        return False
+    greetings = {"你好", "您好", "hi", "hello", "hey", "在吗", "谢谢", "好的", "ok", "嗯", "嗨"}
+    identity_questions = {"你是", "你是谁", "你叫什么", "你能做什么", "介绍一下你自己", "自我介绍"}
+    return text in greetings or text in identity_questions or (len(text) <= 12 and any(item in text for item in identity_questions))
+
+
+def _is_user_profile_query(message: str) -> bool:
+    text = re.sub(r"\s+", "", str(message or "")).strip().lower()
+    if not text:
+        return False
+    profile_markers = (
+        "我是谁",
+        "我的身份",
+        "了解我",
+        "你了解我",
+        "认识我",
+        "知道我",
+        "我对什么感兴趣",
+        "我感兴趣",
+        "感兴趣",
+        "兴趣",
+        "我的兴趣",
+        "我的偏好",
+        "我偏好",
+        "偏好",
+        "我关注什么",
+        "我关心什么",
+        "关注方向",
+        "我常问什么",
+        "我之前问过什么",
+        "我的画像",
+        "用户画像",
+    )
+    return any(marker in text for marker in profile_markers)
+
+
 def stream_agent(
     message: str,
     force_web_search: bool = False,
@@ -1907,11 +1981,24 @@ def stream_agent(
     runtime_context: dict[str, Any] | None = None,
 ) -> Generator[dict[str, Any], None, None]:
     _reset_web_search_indexes()
+    original_user_message = message
+    plain_conversation = _is_plain_conversational_query(message)
+    profile_query = _is_user_profile_query(message)
+    if plain_conversation:
+        force_web_search = False
+        selected_skill_ids = []
+        selected_dataset_ids = []
+        loaded_skill_ids = []
+    if profile_query:
+        force_web_search = False
+        selected_skill_ids = []
+        selected_dataset_ids = []
+        loaded_skill_ids = []
     try:
-        captured_memory = auto_capture_user_memory(message)
+        captured_memory = None if (plain_conversation or profile_query) else auto_capture_user_memory(message)
     except Exception:
         captured_memory = None
-    recalled_memory = memory_context(message, limit=5)
+    recalled_memory = "" if (plain_conversation or profile_query) else memory_context(message, limit=5)
     selected_dataset_set = {
         re.sub(r"[^A-Za-z0-9_.\-\u4e00-\u9fff]", "", str(item or ""))
         for item in (selected_dataset_ids or [])
@@ -1968,7 +2055,11 @@ def stream_agent(
     # rendered as fake tool calls; the UI should only show tools the Agent chose.
     if recalled_memory:
         message = f"{recalled_memory}\n\n用户问题：{message}"
-    history_context = _format_conversation_history(conversation_history)
+    history_context = (
+        _format_background_conversation_history(conversation_history)
+        if plain_conversation
+        else _format_conversation_history(conversation_history)
+    )
     if history_context:
         message = f"{history_context}\n\n本轮用户问题：{message}"
     if skill_context:
@@ -1991,20 +2082,59 @@ def stream_agent(
             f"{skill_routing_instruction}\n\n"
             f"用户问题：{message}"
         )
+    background_dataset_ids = default_background_dataset_ids()
     if selected_dataset_set:
+        background_note = ""
+        if background_dataset_ids:
+            background_note = (
+                "\n后台还会默认加载以下支撑数据库，仅用于运行追溯、历史记录、爬虫审计和排错，"
+                "不要把它们展示为用户需要手动选择的主数据库："
+                f"{', '.join(sorted(background_dataset_ids))}。\n"
+            )
         message = (
             "用户已在前端数据库按钮中选择以下本地数据库。本轮只能把这些数据库发送给 AI；"
-            "未列出的 agent_knowledge 数据库视为不可见，不能读取、引用或声称知道。\n"
+            "除后台默认支撑库外，未列出的 agent_knowledge 数据库视为不可见，不能读取、引用或声称知道。\n"
             f"已选择数据库 id：{', '.join(sorted(selected_dataset_set))}\n\n"
+            f"{background_note}"
             f"用户问题：{message}"
         )
     else:
+        background_note = ""
+        if background_dataset_ids:
+            background_note = (
+                "后端仍会默认加载支撑数据库，用于运行追溯、历史记录、爬虫审计和排错："
+                f"{', '.join(sorted(background_dataset_ids))}。"
+                "这些不是用户主动选择的业务主数据库，不得用来替代用户未选择的业务数据。\n"
+            )
         message = (
             "用户本轮没有在前端数据库按钮中选择任何本地数据库。"
-            "后端不会发送任何前端数据库内容；不得列举、猜测、引用或声称知道未选择数据库的名称、路径或内容。"
+            "后端不会发送任何前端业务数据库内容；不得列举、猜测、引用或声称知道未选择业务数据库的名称、路径或内容。"
             "如需数据库内容，只能提示用户先在前端数据库按钮中选择。"
-            "仍可使用周报、审计日志、运行日志等基础本地引用和其他被允许工具。\n\n"
+            "仍可使用周报、审计日志、运行日志等基础本地引用和其他被允许工具。"
+            f"{background_note}\n"
             f"用户问题：{message}"
+        )
+    if plain_conversation:
+        background_context = f"{history_context}\n\n" if history_context else ""
+        message = (
+            "本轮用户只是普通寒暄或询问你的身份能力。请由模型自然生成简洁中文回答，"
+            "不要调用任何工具，不要检索数据库，不要引用长期记忆。你可以看到同线程历史，"
+            "但历史只用于理解对话背景；不要把历史里的公司、指标或数据主题当成本轮问题，"
+            "除非本轮短句明确是在继续上一个问题。\n\n"
+            f"{background_context}"
+            f"用户问题：{original_user_message}"
+        )
+    elif profile_query:
+        background_context = f"{history_context}\n\n" if history_context else ""
+        message = (
+            "本轮用户在询问自己的身份、偏好、兴趣或用户画像。"
+            "请先调用 `search_agent_memory` 查找明确长期记忆，再调用 `search_chat_history` 检索已保存聊天线程；"
+            "不要调用数据库检索、不要读取 Agent Skill、不要联网搜索。"
+            "回答时必须把“明确证据”和“基于历史用户问题的推断”分开；"
+            "如果没有明确身份证据，不要根据当前项目、当前数据库选择或上一次问题断言用户身份，"
+            "也不要把历史里 AI 曾经说过的猜测当证据；只能根据用户自己发过的问题说明可能的关注方向和证据来源。\n\n"
+            f"{background_context}"
+            f"用户问题：{original_user_message}"
         )
     if force_web_search:
         message = (

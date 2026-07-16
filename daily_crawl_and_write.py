@@ -13,6 +13,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import crawl
+from crawl_log_formatter import write_and_format_crawl_log_sheet
 
 
 ROOT = Path(__file__).resolve().parent
@@ -23,6 +24,9 @@ RESULT_HEADER_PREFIXES = ("数据爬取更新", "本轮爬虫日志摘要", "原
 PERFORMANCE_SYNC_SCRIPT = ROOT / "sync_carrier_performance_feishu.py"
 AGENT_TRACE_PATH = ROOT / "curation_data" / "agent_trace.jsonl"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
+LOG_INDEX_SHEET_TITLE = "爬虫历史记录链接"
+INPUT_SOURCE_HEADERS = ("待爬链接", "来源/系统", "可能来源/系统", "可能来源")
+SUCCESS_SOURCE_HEADER = "本轮成功来源"
 AGENT_TRACE_HEADERS = [
     "时间",
     "运行ID",
@@ -153,33 +157,94 @@ def refresh_sheet_snapshot() -> None:
     (ROOT / "feishu_latest_AJ.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def create_log_sheet() -> tuple[str, str]:
-    title = "爬虫日志_" + datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y%m%d_%H%M%S")
-    payload = {"requests": [{"addSheet": {"properties": {"title": title}}}]}
-    output = run_cmd(
-        [
-            LARK_CLI,
-            "api",
-            "POST",
-            f"/open-apis/sheets/v2/spreadsheets/{SPREADSHEET_TOKEN}/sheets_batch_update",
-            "--data",
-            json.dumps(payload, ensure_ascii=False),
-        ],
+def create_log_spreadsheet() -> dict[str, str]:
+    timestamp = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y%m%d_%H%M%S")
+    sheet_title = os.environ.get("CMHK_LOG_SHEET_TITLE") or f"爬虫日志_{timestamp}"
+    spreadsheet_title = os.environ.get("CMHK_LOG_SPREADSHEET_TITLE") or f"CMHK爬虫日志_{timestamp}"
+    spreadsheet_token = os.environ.get("CMHK_LOG_SPREADSHEET_TOKEN", "").strip()
+
+    if not spreadsheet_token:
+        output = run_cmd(
+            [LARK_CLI, "sheets", "+create", "--title", spreadsheet_title],
+            timeout=120,
+        )
+        created = json_from_output(output)["data"]
+        spreadsheet_token = str(created["spreadsheet_token"])
+
+    info_output = run_cmd(
+        [LARK_CLI, "sheets", "+info", "--spreadsheet-token", spreadsheet_token],
         timeout=120,
     )
-    data = json_from_output(output)
-    sheet_id = data["data"]["replies"][0]["addSheet"]["properties"]["sheetId"]
-    return sheet_id, title
+    info = json_from_output(info_output)["data"]
+    spreadsheet = info["spreadsheet"]["spreadsheet"]
+    sheet = info["sheets"]["sheets"][0]
+    sheet_id = str(sheet["sheet_id"])
+    spreadsheet_url = str(spreadsheet["url"])
+
+    if str(sheet.get("title") or "") != sheet_title:
+        run_cmd(
+            [
+                LARK_CLI,
+                "sheets",
+                "+update-sheet",
+                "--spreadsheet-token",
+                spreadsheet_token,
+                "--sheet-id",
+                sheet_id,
+                "--title",
+                sheet_title,
+            ],
+            timeout=120,
+        )
+
+    grid = sheet.get("grid_properties") or {}
+    row_count = int(grid.get("row_count") or 0)
+    column_count = int(grid.get("column_count") or 0)
+    for dimension, missing in (
+        ("ROWS", max(0, 1000 - row_count)),
+        ("COLUMNS", max(0, 30 - column_count)),
+    ):
+        if not missing:
+            continue
+        run_cmd(
+            [
+                LARK_CLI,
+                "sheets",
+                "+add-dimension",
+                "--spreadsheet-token",
+                spreadsheet_token,
+                "--sheet-id",
+                sheet_id,
+                "--dimension",
+                dimension,
+                "--length",
+                str(missing),
+            ],
+            timeout=120,
+        )
+
+    return {
+        "spreadsheet_token": spreadsheet_token,
+        "spreadsheet_title": str(spreadsheet.get("title") or spreadsheet_title),
+        "spreadsheet_url": spreadsheet_url,
+        "sheet_id": sheet_id,
+        "sheet_title": sheet_title,
+    }
 
 
-def write_range(cell_range: str, values: list[list[str]]) -> None:
+def write_range(
+    cell_range: str,
+    values: list[list[str]],
+    *,
+    spreadsheet_token: str = SPREADSHEET_TOKEN,
+) -> None:
     run_cmd(
         [
             LARK_CLI,
             "sheets",
             "+write",
             "--spreadsheet-token",
-            SPREADSHEET_TOKEN,
+            spreadsheet_token,
             "--range",
             cell_range,
             "--values",
@@ -189,14 +254,19 @@ def write_range(cell_range: str, values: list[list[str]]) -> None:
     )
 
 
-def set_style(cell_range: str, style: dict) -> None:
+def set_style(
+    cell_range: str,
+    style: dict,
+    *,
+    spreadsheet_token: str = SPREADSHEET_TOKEN,
+) -> None:
     run_cmd(
         [
             LARK_CLI,
             "sheets",
             "+set-style",
             "--spreadsheet-token",
-            SPREADSHEET_TOKEN,
+            spreadsheet_token,
             "--range",
             cell_range,
             "--style",
@@ -229,14 +299,18 @@ def insert_columns(start_index: int, count: int = 3) -> None:
     )
 
 
-def read_range(cell_range: str) -> list[list[object]]:
+def read_range(
+    cell_range: str,
+    *,
+    spreadsheet_token: str = SPREADSHEET_TOKEN,
+) -> list[list[object]]:
     output = run_cmd(
         [
             LARK_CLI,
             "sheets",
             "+read",
             "--spreadsheet-token",
-            SPREADSHEET_TOKEN,
+            spreadsheet_token,
             "--range",
             cell_range,
             "--value-render-option",
@@ -272,14 +346,17 @@ def current_headers() -> list[str]:
 
 
 def find_result_insert_index(headers: list[str]) -> int:
-    """Return 0-based column insertion index immediately after the latest crawl result triplet."""
-    last_group_start: int | None = None
+    """Return the 0-based insertion index after the latest crawl result column."""
+    last_result_end: int | None = None
     for i in range(0, len(headers) - 2):
         triple = headers[i : i + 3]
         if all(triple[j].startswith(RESULT_HEADER_PREFIXES[j]) for j in range(3)):
-            last_group_start = i
-    if last_group_start is not None:
-        return last_group_start + 3
+            last_result_end = i + 3
+    for i, header in enumerate(headers):
+        if header.startswith("爬虫日志("):
+            last_result_end = max(last_result_end or 0, i + 1)
+    if last_result_end is not None:
+        return last_result_end
     # Fallback for a fresh sheet: insert after the last existing column
     return len(headers)
 
@@ -287,56 +364,55 @@ def find_result_insert_index(headers: list[str]) -> int:
 def prepare_result_columns(run_label: str) -> dict:
     headers = current_headers()
     insert_index = find_result_insert_index(headers)
+    expected_header = f"爬虫日志{run_label}"
 
-    expected_headers = [f"数据爬取更新{run_label}", f"本轮爬虫日志摘要{run_label}", f"原始数据{run_label}"]
-
-    # Check if the previous group matches the run_label
-    if insert_index >= 3 and headers[insert_index - 3:insert_index] == expected_headers:
-        # Reuse existing columns
-        start_col = col_to_a1(insert_index - 2)
-        mid_col = col_to_a1(insert_index - 1)
-        end_col = col_to_a1(insert_index)
+    if insert_index >= 1 and headers[insert_index - 1] == expected_header:
+        log_col = col_to_a1(insert_index)
         is_new = False
-        target_index = insert_index - 3
+        target_index = insert_index - 1
     else:
-        # Insert 3 new columns
-        insert_columns(insert_index, 3)
-        start_col = col_to_a1(insert_index + 1)
-        mid_col = col_to_a1(insert_index + 2)
-        end_col = col_to_a1(insert_index + 3)
+        insert_columns(insert_index, 1)
+        log_col = col_to_a1(insert_index + 1)
         is_new = True
         target_index = insert_index
 
     if is_new:
-        write_range(f"{MAIN_SHEET_ID}!{start_col}1:{end_col}1", [expected_headers])
+        write_range(f"{MAIN_SHEET_ID}!{log_col}1:{log_col}1", [[expected_header]])
         set_style(
-            f"{MAIN_SHEET_ID}!{start_col}1:{end_col}34",
+            f"{MAIN_SHEET_ID}!{log_col}1:{log_col}34",
             {"backColor": "#F3F8FF", "borderType": "FULL_BORDER", "borderColor": "#2F54EB"},
         )
         set_style(
-            f"{MAIN_SHEET_ID}!{start_col}1:{end_col}1",
+            f"{MAIN_SHEET_ID}!{log_col}1:{log_col}1",
             {"backColor": "#DCEBFF", "font": {"bold": True}, "borderType": "FULL_BORDER", "borderColor": "#1D4ED8"},
         )
 
     return {
         "run_label": run_label,
-        "start_col": start_col,
-        "mid_col": mid_col,
-        "end_col": end_col,
+        "log_col": log_col,
         "insert_index": target_index,
-        "data_range": f"{MAIN_SHEET_ID}!{start_col}2:{end_col}34",
-        "header_range": f"{MAIN_SHEET_ID}!{start_col}1:{end_col}1",
+        "data_range": f"{MAIN_SHEET_ID}!{log_col}2:{log_col}34",
+        "header_range": f"{MAIN_SHEET_ID}!{log_col}1:{log_col}1",
     }
 
 
-def write_log_sheet(sheet_id: str) -> None:
+def write_log_sheet(sheet_id: str, spreadsheet_token: str) -> None:
     with (ROOT / "run_log.tsv").open(encoding="utf-8", newline="") as fh:
-        rows = list(csv.reader(fh, delimiter="\t"))
+        rows = list(csv.DictReader(fh, delimiter="\t"))
     if not rows:
         raise RuntimeError("run_log.tsv is empty")
-    end_row = len(rows)
-    end_col = chr(ord("A") + len(rows[0]) - 1)
-    write_range(f"{sheet_id}!A1:{end_col}{end_row}", rows)
+    result = write_and_format_crawl_log_sheet(
+        root=ROOT,
+        sheet_id=sheet_id,
+        spreadsheet_token=spreadsheet_token,
+        source_rows=rows,
+        write_range=write_range,
+        read_range=read_range,
+        set_style=set_style,
+        run_cmd=run_cmd,
+        lark_cli=LARK_CLI,
+    )
+    print(json.dumps({"crawl_log_format": result}, ensure_ascii=False))
 
 
 def compact_json_cell(value: object, limit: int = 12000) -> str:
@@ -431,7 +507,16 @@ def load_agent_trace_rows(run_id: str = "") -> tuple[str, list[list[str]]]:
     return run_id, rows
 
 
-def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
+def append_agent_trace_to_log_sheet(
+    sheet_id: str,
+    run_id: str = "",
+    spreadsheet_token: str = "",
+) -> dict:
+    if not spreadsheet_token and (ROOT / "daily_validation.json").exists():
+        validation = json.loads((ROOT / "daily_validation.json").read_text(encoding="utf-8"))
+        if str(validation.get("log_sheet_id") or "") == sheet_id:
+            spreadsheet_token = str(validation.get("log_spreadsheet_token") or "")
+    spreadsheet_token = spreadsheet_token or SPREADSHEET_TOKEN
     run_id, trace_rows = load_agent_trace_rows(run_id)
     with (ROOT / "run_log.tsv").open(encoding="utf-8", newline="") as fh:
         crawl_rows = list(csv.reader(fh, delimiter="\t"))
@@ -450,7 +535,11 @@ def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
         batch = all_rows[offset : offset + 8]
         batch_start = start_row + offset
         batch_end = batch_start + len(batch) - 1
-        write_range(f"{sheet_id}!A{batch_start}:{end_col}{batch_end}", batch)
+        write_range(
+            f"{sheet_id}!A{batch_start}:{end_col}{batch_end}",
+            batch,
+            spreadsheet_token=spreadsheet_token,
+        )
     set_style(
         f"{sheet_id}!A{start_row}:{end_col}{start_row}",
         {
@@ -459,6 +548,7 @@ def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
             "borderType": "FULL_BORDER",
             "borderColor": "#0B5CAD",
         },
+        spreadsheet_token=spreadsheet_token,
     )
     set_style(
         f"{sheet_id}!A{header_row}:{end_col}{header_row}",
@@ -468,6 +558,7 @@ def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
             "borderType": "FULL_BORDER",
             "borderColor": "#8DBBE8",
         },
+        spreadsheet_token=spreadsheet_token,
     )
     set_style(
         f"{sheet_id}!A{data_start_row}:{end_col}{data_end_row}",
@@ -476,9 +567,13 @@ def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
             "borderType": "FULL_BORDER",
             "borderColor": "#D7E6F5",
         },
+        spreadsheet_token=spreadsheet_token,
     )
 
-    readback = read_range(f"{sheet_id}!A{start_row}:{end_col}{data_end_row}")
+    readback = read_range(
+        f"{sheet_id}!A{start_row}:{end_col}{data_end_row}",
+        spreadsheet_token=spreadsheet_token,
+    )
     readback_run_ids = {
         cell_text(row[1]).strip()
         for row in readback[2:]
@@ -492,6 +587,7 @@ def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
     result = {
         "ok": not problems,
         "sheet_id": sheet_id,
+        "spreadsheet_token": spreadsheet_token,
         "run_id": run_id,
         "trace_rows": len(trace_rows),
         "range": f"{sheet_id}!A{start_row}:{end_col}{data_end_row}",
@@ -503,17 +599,125 @@ def append_agent_trace_to_log_sheet(sheet_id: str, run_id: str = "") -> dict:
     return result
 
 
-def regenerate_payload_with_log_title(log_sheet_title: str) -> None:
+def regenerate_payload_with_log_title(log_sheet_title: str, log_spreadsheet_url: str) -> None:
     results = []
     for row in range(2, 35):
         result = json.loads((ROOT / "results" / f"row_{row}.json").read_text(encoding="utf-8"))
         result["log_sheet_title"] = log_sheet_title
+        result["log_spreadsheet_url"] = log_spreadsheet_url
         results.append(result)
     crawl.write_outputs(results)
 
 
-def get_sources_column(headers: list[str]) -> str:
-    for name in ["可能来源/系统", "可能来源"]:
+def build_log_link_payload(log_spreadsheet_url: str) -> list[list[str]]:
+    values: list[list[str]] = []
+    for row_no in range(2, 35):
+        result = json.loads((ROOT / "results" / f"row_{row_no}.json").read_text(encoding="utf-8"))
+        status = "成功" if result.get("status") == "ok" else str(result.get("status") or "待检查")
+        attempted = len(result.get("raw_records") or [])
+        succeeded = int(result.get("live_fetch_success_count") or len(result.get("source_urls") or []))
+        values.append([f"{status}｜URL {succeeded}/{attempted}\n{log_spreadsheet_url}"])
+    return values
+
+
+def current_crawl_scope() -> str:
+    explicit_scope = os.environ.get("CMHK_CRAWL_SCOPE", "").strip()
+    if explicit_scope:
+        return explicit_scope
+    rows = sorted(
+        {
+            int(value)
+            for value in re.findall(r"\d+", os.environ.get("CMHK_ROWS", ""))
+            if 2 <= int(value) <= 34
+        }
+    )
+    if not rows:
+        return "全量（第2-34行）"
+    return "指定行（" + "、".join(f"第{row}行" for row in rows) + "）"
+
+
+def current_crawl_trigger() -> str:
+    explicit_trigger = os.environ.get("CMHK_CRAWL_TRIGGER", "").strip()
+    if explicit_trigger:
+        return explicit_trigger
+    return "定时爬虫" if os.environ.get("CMHK_ROWS", "").strip() else "手动全量"
+
+
+def append_log_index(log_target: dict[str, str]) -> dict:
+    info = json_from_output(
+        run_cmd(
+            [LARK_CLI, "sheets", "+info", "--spreadsheet-token", SPREADSHEET_TOKEN],
+            timeout=120,
+        )
+    )["data"]
+    sheets = info.get("sheets", {}).get("sheets", [])
+    index_sheet = next((sheet for sheet in sheets if sheet.get("title") == LOG_INDEX_SHEET_TITLE), None)
+    if not index_sheet:
+        created = json_from_output(
+            run_cmd(
+                [
+                    LARK_CLI,
+                    "sheets",
+                    "+create-sheet",
+                    "--spreadsheet-token",
+                    SPREADSHEET_TOKEN,
+                    "--title",
+                    LOG_INDEX_SHEET_TITLE,
+                ],
+                timeout=120,
+            )
+        )["data"]
+        index_sheet = {"sheet_id": created["sheet_id"]}
+        write_range(
+            f"{created['sheet_id']}!A1:F1",
+            [["执行时间（香港）", "触发方式", "日志名称", "存储位置", "打开日志", "爬取范围"]],
+        )
+
+    sheet_id = str(index_sheet["sheet_id"])
+    rows = read_range(f"{sheet_id}!A1:F1000")
+    if not rows or len(rows[0]) < 6 or cell_text(rows[0][5]) != "爬取范围":
+        write_range(
+            f"{sheet_id}!A1:F1",
+            [["执行时间（香港）", "触发方式", "日志名称", "存储位置", "打开日志", "爬取范围"]],
+        )
+    log_url = log_target["spreadsheet_url"]
+    if any(log_url in cell_text(cell) for row in rows for cell in row):
+        return {"ok": True, "sheet_id": sheet_id, "url": log_url, "inserted": False}
+
+    run_cmd(
+        [
+            LARK_CLI,
+            "sheets",
+            "+insert-dimension",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--sheet-id",
+            sheet_id,
+            "--dimension",
+            "ROWS",
+            "--start-index",
+            "1",
+            "--end-index",
+            "2",
+            "--inherit-style",
+            "AFTER",
+        ],
+        timeout=120,
+    )
+    timestamp_match = re.search(r"([0-9]{8})_([0-9]{6})", log_target["sheet_title"])
+    if timestamp_match:
+        timestamp = datetime.strptime("".join(timestamp_match.groups()), "%Y%m%d%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        timestamp = datetime.now(ZoneInfo("Asia/Hong_Kong")).strftime("%Y-%m-%d %H:%M:%S")
+    write_range(
+        f"{sheet_id}!A2:F2",
+        [[timestamp, current_crawl_trigger(), log_target["spreadsheet_title"], "独立日志", log_url, current_crawl_scope()]],
+    )
+    return {"ok": True, "sheet_id": sheet_id, "url": log_url, "inserted": True}
+
+
+def get_input_sources_column(headers: list[str]) -> str:
+    for name in INPUT_SOURCE_HEADERS:
         try:
             return col_to_a1(headers.index(name) + 1)
         except ValueError:
@@ -521,16 +725,39 @@ def get_sources_column(headers: list[str]) -> str:
     return "F"
 
 
-def validate_payload_and_readback(result_columns: dict, sources_col: str, payload: dict) -> dict:
+def get_success_sources_column(headers: list[str]) -> str:
+    try:
+        return col_to_a1(headers.index(SUCCESS_SOURCE_HEADER) + 1)
+    except ValueError:
+        pass
+
+    insert_index = len(headers)
+    for name in INPUT_SOURCE_HEADERS:
+        if name in headers:
+            insert_index = headers.index(name) + 1
+            break
+    insert_columns(insert_index, 1)
+    success_col = col_to_a1(insert_index + 1)
+    write_range(f"{MAIN_SHEET_ID}!{success_col}1:{success_col}1", [[SUCCESS_SOURCE_HEADER]])
+    set_style(
+        f"{MAIN_SHEET_ID}!{success_col}1:{success_col}34",
+        {"backColor": "#F6FFED", "borderType": "FULL_BORDER", "borderColor": "#52C41A"},
+    )
+    set_style(
+        f"{MAIN_SHEET_ID}!{success_col}1:{success_col}1",
+        {"backColor": "#D9F7BE", "font": {"bold": True}, "borderType": "FULL_BORDER", "borderColor": "#389E0D"},
+    )
+    return success_col
+
+
+def validate_payload(payload: dict) -> dict:
     rows = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
     entity_rows = {int(row["row"]): row.get("entities", []) for row in rows if len(row.get("entities", [])) > 1}
     problems: list[str] = []
     compliance_gaps: list[str] = []
 
-    f_payload = payload.get("sources_payload") or payload.get("F2:F34")
-    ij_payload = payload.get("results_payload") or payload.get("I2:K34")
-
-    if len(f_payload) != 33 or len(ij_payload) != 33:
+    f_payload = payload.get("successful_sources_payload") or payload.get("sources_payload") or payload.get("F2:F34")
+    if len(f_payload) != 33:
         problems.append("payload row count is not 33")
     for row_no in range(2, 35):
         result = json.loads((ROOT / "results" / f"row_{row_no}.json").read_text(encoding="utf-8"))
@@ -550,76 +777,38 @@ def validate_payload_and_readback(result_columns: dict, sources_col: str, payloa
     for row_no, entities in entity_rows.items():
         idx = row_no - 2
         f_cell = f_payload[idx][0]
-        i_cell, log_cell, raw_cell = ij_payload[idx]
         for entity in entities:
             if f"【{entity}】" not in f_cell:
                 problems.append(f"row {row_no} entity {entity} missing labeled block in F payload")
-            if f"【{entity}】" not in i_cell:
-                problems.append(f"row {row_no} entity {entity} missing labeled block in I payload")
-            for label, cell in [("J", log_cell), ("K", raw_cell)]:
-                if entity not in cell:
-                    problems.append(f"row {row_no} entity {entity} missing in {label} payload")
-    readback_f = read_range(f"{MAIN_SHEET_ID}!{sources_col}2:{sources_col}34")
-    readback_results = read_range(result_columns["data_range"])
-    readback_headers = read_range(result_columns["header_range"])
-    header_text = [cell_text(value) for value in readback_headers[0]] if readback_headers else []
-    expected_headers = [
-        f"数据爬取更新{result_columns['run_label']}",
-        f"本轮爬虫日志摘要{result_columns['run_label']}",
-        f"原始数据{result_columns['run_label']}",
-    ]
-    if header_text != expected_headers:
-        problems.append(f"result headers mismatch: {header_text} != {expected_headers}")
-    readback = []
-    for idx in range(33):
-        f_row = readback_f[idx] if idx < len(readback_f) else []
-        r_row = readback_results[idx] if idx < len(readback_results) else []
-        readback.append([(f_row[0] if f_row else ""), *r_row])
-    if len(readback) != 33:
-        problems.append(f"readback row count is {len(readback)}, expected 33")
-    for idx, row in enumerate(readback, start=2):
-        f_cell = cell_text(row[0]) if len(row) > 0 else ""
-        i_cell = cell_text(row[1]) if len(row) > 1 else ""
-        j_cell = cell_text(row[2]) if len(row) > 2 else ""
-        k_cell = cell_text(row[3]) if len(row) > 3 else ""
-        if not all([f_cell, i_cell, j_cell, k_cell]):
-            problems.append(f"row {idx} readback has empty F/I/J/K")
-        for entity in entity_rows.get(idx, []):
-            if f"【{entity}】" not in f_cell:
-                problems.append(f"row {idx} entity {entity} missing labeled block in readback F")
-            if f"【{entity}】" not in i_cell:
-                problems.append(f"row {idx} entity {entity} missing labeled block in readback I")
-            for label, cell in [("J", j_cell), ("K", k_cell)]:
-                if entity not in cell:
-                    problems.append(f"row {idx} entity {entity} missing in readback {label}")
     return {
         "ok": not problems,
         "problems": problems,
         "compliance_gaps": compliance_gaps,
         "checked_at_hkt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(),
-        "result_columns": result_columns,
     }
 
 
 def sync_to_feishu() -> None:
-    run_label = f"({datetime.now(ZoneInfo('Asia/Hong_Kong')).strftime('%m-%d')})"
-    log_sheet_id, log_sheet_title = create_log_sheet()
-    regenerate_payload_with_log_title(log_sheet_title)
+    log_target = create_log_spreadsheet()
+    log_sheet_id = log_target["sheet_id"]
+    log_sheet_title = log_target["sheet_title"]
+    regenerate_payload_with_log_title(log_sheet_title, log_target["spreadsheet_url"])
 
     headers = current_headers()
-    sources_col = get_sources_column(headers)
+    input_sources_col = get_input_sources_column(headers)
 
     payload = json.loads((ROOT / "write_payload.json").read_text(encoding="utf-8"))
-    f_payload = payload.get("sources_payload") or payload.get("F2:F34")
-    ij_payload = payload.get("results_payload") or payload.get("I2:K34")
 
-    result_columns = prepare_result_columns(run_label)
-    write_range(f"{MAIN_SHEET_ID}!{sources_col}2:{sources_col}34", f_payload)
-    write_range(result_columns["data_range"], ij_payload)
-    write_log_sheet(log_sheet_id)
-    validation = validate_payload_and_readback(result_columns, sources_col, payload)
+    write_log_sheet(log_sheet_id, log_target["spreadsheet_token"])
+    log_index = append_log_index(log_target)
+    validation = validate_payload(payload)
+    validation["input_sources_range"] = f"{MAIN_SHEET_ID}!{input_sources_col}2:{input_sources_col}34"
     validation["log_sheet_id"] = log_sheet_id
     validation["log_sheet_title"] = log_sheet_title
+    validation["log_spreadsheet_token"] = log_target["spreadsheet_token"]
+    validation["log_spreadsheet_title"] = log_target["spreadsheet_title"]
+    validation["log_spreadsheet_url"] = log_target["spreadsheet_url"]
+    validation["log_index"] = log_index
     (ROOT / "daily_validation.json").write_text(json.dumps(validation, ensure_ascii=False, indent=2), encoding="utf-8")
     if not validation["ok"]:
         raise SystemExit(json.dumps(validation, ensure_ascii=False, indent=2))
@@ -664,6 +853,7 @@ def main() -> None:
         append_agent_trace_to_log_sheet(
             sys.argv[2],
             sys.argv[3] if len(sys.argv) > 3 else "",
+            sys.argv[4] if len(sys.argv) > 4 else "",
         )
         return
 

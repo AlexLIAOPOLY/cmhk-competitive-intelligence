@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from ai_config import load_ai_config
+from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from rag_llm import estimate_tokens
 from network_utils import urlopen_with_local_proxy_fallback
 from company_metrics import (
@@ -1831,11 +1831,11 @@ def extract_json(text: str) -> Any:
 
 def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     config = load_ai_config(include_key=True)
-    api_key = str(config.get("api_key") or os.environ.get("DEEPSEEK_API_KEY") or "").strip()
+    api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         raise RuntimeError("未配置 DeepSeek API Key")
-    base_url = str(config.get("base_url") or "https://api.deepseek.com").rstrip("/")
-    model = str(config.get("model") or "deepseek-chat")
+    base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
+    model = str(config.get("model") or "deepseek-v4")
 
     system_prompt = (
         "你是电信行业数据清洗助手。你的任务是把网页抓取片段整理成可直接放入表格的短数据。"

@@ -21,7 +21,6 @@ DANGEROUS_ACTIONS = {
     "trigger_full_crawl": "全量爬虫",
     "trigger_report_generation": "生成周报",
     "trigger_carrier_performance_report_generation": "生成业绩摘要",
-    "feishu_cli": "飞书命令",
 }
 
 

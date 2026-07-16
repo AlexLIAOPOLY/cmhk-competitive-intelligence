@@ -1,7 +1,7 @@
 {
   "id": "quarterly_competitor_metrics_2026-06-18",
-  "title": "竞对数据",
-  "summary": "面向用户的竞对数据入口，覆盖中国移动、中国电信、中国联通、中国铁塔、HKT / csl / 1O1O、3HK / Hutchison、SmarTone、HKBN、HGC、i-CABLE 等竞对主体的季度/半年度经营数据、年度核心指标、来源核验和预测边界。",
+  "title": "竞对财务数据",
+  "summary": "面向用户的竞对财务与经营数据入口，覆盖中国移动、中国电信、中国联通、中国铁塔、HKT / csl / 1O1O、3HK / Hutchison、SmarTone、HKBN、HGC、i-CABLE 等竞对主体的季度/半年度经营数据、年度核心指标、来源核验和预测边界。",
   "source_type": "external_standardized_and_official_public",
   "scope": "季度/半年度财务表、官方季报/中报/年报/业绩公告；云厂商分部数据需官方 segment/product-line 表核验。",
   "tags": [
@@ -72,7 +72,9 @@
     "prediction_history_coverage_2026-06-18.csv",
     "prediction_history_source_plan_2026-06-18.md",
     "cloud_source_gap_integrity_2026-06-18.md",
-    "cloud_source_gap_integrity_2026-06-18.csv"
+    "cloud_source_gap_integrity_2026-06-18.csv",
+    "corporate_action_risk_annotations_2026-07-03.md",
+    "corporate_action_risk_annotations_2026-07-03.csv"
   ],
   "updated_at": "2026-06-19T09:50:20",
   "quality": {
@@ -84,7 +86,8 @@
       "不估算缺失季度或半年度。",
       "半年度披露主体必须标记为 half_year。",
       "HGC 等非上市主体若未发现公开周期财务表，只登记 source_gap_confirmed，不估算。",
-      "云厂商缺失季度以 documented source gap、annual-only 或 non-forecast legacy 口径登记，不计入预测值覆盖。"
+      "云厂商缺失季度以 documented source gap、annual-only 或 non-forecast legacy 口径登记，不计入预测值覆盖。",
+      "公司合并、重组、分部重分类、代理口径和披露边界导致的趋势跳变风险见 corporate_action_risk_annotations_2026-07-03.md/csv。"
     ]
   },
   "version": "2026-06-19T09:50:20",

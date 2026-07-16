@@ -210,7 +210,6 @@ def normalize_for_speech(value: str) -> str:
         "OFCA": "通讯事务管理局办公室",
         "ARPU": "每用户平均收入",
         "EBITDA": "息税折旧及摊销前利润",
-        "5G": "五 G",
         "AI": "人工智能",
         "HKT": "香港电讯",
         "csl": "C S L",
@@ -223,6 +222,16 @@ def normalize_for_speech(value: str) -> str:
     }
     for source, target in replacements.items():
         text = text.replace(source, target)
+    for source, target in {
+        "SmarTone": "数码通",
+        "3HK": "Three香港",
+        "HKBN": "香港宽频",
+        "MoU": "合作备忘录",
+    }.items():
+        text = text.replace(source, target)
+    text = re.sub(r"(?<!\d)5G-Advanced(?![A-Za-z])", "五G增强版", text, flags=re.IGNORECASE)
+    text = re.sub(r"(?<!\d)5G-A(?![A-Za-z])", "五G增强版", text, flags=re.IGNORECASE)
+    text = re.sub(r"(?<!\d)5G(?![A-Za-z])", "五 G", text, flags=re.IGNORECASE)
     text = text.replace("/", "和")
     text = text.replace("&", "和")
     text = text.replace("欧盟 数据法案", "欧盟数据法案")
@@ -231,31 +240,38 @@ def normalize_for_speech(value: str) -> str:
     text = re.sub(r"\([^)]*\)", "", text)
     text = re.sub(r"（[^）]*）", "", text)
     text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"五\s*G(?:-Advanced|-A)", "五G增强版", text, flags=re.IGNORECASE)
+    text = re.sub(r"五\s*G", "五G", text, flags=re.IGNORECASE)
     text = text.replace("；；", "；").replace("。。", "。")
     return text.strip(" ，。；")
 
 
 def _generate_audio_summary_with_llm(text: str) -> str | None:
-    from ai_config import load_ai_config
+    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     import urllib.request
     import json
     import os
 
     config = load_ai_config(include_key=True)
-    api_key = (os.environ.get("OPENAI_API_KEY") or str(config.get("api_key") or "")).strip()
+    api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         return None
 
     provider = str(config.get("provider") or "deepseek").lower()
-    model = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-v4-flash")
-    base_url = str(config.get("base_url") or "https://api.deepseek.com").rstrip("/")
+    model = str(config.get("model") or "deepseek-v4")
+    base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
 
-    system_prompt = "你是一个专业的数据分析师和播音员。请根据以下的周报全文，撰写一段约60秒的精简汇报脱口秀脚本。字数控制在250-300字左右。要求：逻辑清晰，口语化，适合直接用于语音播报，直接输出播报文案，不要输出多余解释或开头语。"
+    system_prompt = (
+        "你是中国移动战略部门的资深分析师和正式播音员。根据周报全文撰写管理层语音摘要，控制在300至380个汉字。"
+        "要求结论先行、事实准确、语气正式克制，依次概括香港竞对、内地运营商及关键风险或行动建议。"
+        "保留重要公司、百分比和业务变化，不得编造；不得使用脱口秀、夸张、网络流行语、闲聊、寒暄或主观揣测。"
+        "直接输出可播报正文，不要标题、项目符号或解释。"
+    )
     user_prompt = f"周报全文如下：\n{text[:12000]}"
 
     if provider == "openai":
         body = {"model": model, "instructions": system_prompt, "input": user_prompt}
-        url = f"{base_url or 'https://api.openai.com/v1'}/responses"
+        url = f"{base_url}/responses"
     else:
         body = {
             "model": model,
@@ -266,6 +282,7 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
             "temperature": 0.2,
         }
         url = f"{base_url}/chat/completions"
+    body.update(config.get("extra_parameters") or {})
 
     req = urllib.request.Request(
         url,
@@ -287,7 +304,7 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
     return None
 
 
-def build_audio_summary(report_path: Path, max_chars: int = 1500) -> str:
+def build_audio_summary(report_path: Path, max_chars: int = 1100) -> str:
     text = _source_text(report_path)
 
     llm_summary = _generate_audio_summary_with_llm(text)
@@ -579,6 +596,25 @@ def _integer_to_chinese(n: int) -> str:
 def prepare_tts_text(value: str) -> str:
     # Remove markdown bold/heading/code symbols
     text = re.sub(r"[*#`]+", "", value)
+    spoken_terms = [
+        (r"五\s*G-Advanced", "五G增强版"),
+        (r"五\s*G-A", "五G增强版"),
+        (r"五\s*G", "五G"),
+        (r"(?<!\d)5G-Advanced(?![A-Za-z])", "五G增强版"),
+        (r"(?<!\d)5G-A(?![A-Za-z])", "五G增强版"),
+        (r"(?<!\d)5G(?![A-Za-z])", "五G"),
+        (r"3HK", "Three香港"),
+        (r"SmarTone", "数码通"),
+        (r"HKBN", "香港宽频"),
+        (r"HKT", "香港电讯"),
+        (r"Hutchison", "和记电讯"),
+        (r"i-CABLE", "有线宽频"),
+        (r"MoU", "合作备忘录"),
+        (r"EBITDA", "息税折旧及摊销前利润"),
+        (r"ARPU", "每用户平均收入"),
+    ]
+    for pattern, replacement in spoken_terms:
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
     text = text.replace("：", "，").replace("；", "。").replace("、", "，")
     
     # 1. Convert time format (e.g. 17:30 -> 十七时三十分)
@@ -668,6 +704,169 @@ def _synthesize_with_kokoro(text: str, output_path: Path) -> str | None:
     audio, sample_rate = kokoro.create(text, voice=voice, speed=speed, lang=lang)
     sf.write(str(output_path), audio, sample_rate)
     return f"kokoro-onnx:{voice}"
+
+
+def _internal_tts_acoustic_profile(audio_path: Path, ffmpeg: str) -> tuple[float, float | None]:
+    """Return decoded duration and a robust median pitch estimate."""
+    decoded = subprocess.run(
+        [ffmpeg, "-v", "error", "-i", str(audio_path), "-ac", "1", "-ar", "16000", "-f", "f32le", "-"],
+        check=True,
+        capture_output=True,
+        timeout=240,
+    ).stdout
+    duration = len(decoded) / 4 / 16000
+    try:
+        import numpy as np
+    except Exception:
+        return duration, None
+
+    samples = np.frombuffer(decoded, dtype="<f4").astype(np.float64)
+    frame_size = 400
+    if samples.size < frame_size:
+        return duration, None
+    window = np.hanning(frame_size)
+    pitches: list[float] = []
+    min_lag = int(16000 / 350)
+    max_lag = int(16000 / 70)
+    for start in range(0, samples.size - frame_size, 1600):
+        frame = samples[start : start + frame_size]
+        if float(np.sqrt(np.mean(frame * frame) + 1e-12)) <= 0.01:
+            continue
+        frame = frame * window
+        correlation = np.correlate(frame, frame, mode="full")[frame_size - 1 :]
+        lag = min_lag + int(np.argmax(correlation[min_lag : max_lag + 1]))
+        if correlation[lag] > 0.25 * correlation[0]:
+            pitches.append(16000 / lag)
+    return duration, float(np.median(pitches)) if pitches else None
+
+
+def _internal_tts_consistency_filter(text: str, audio_path: Path, ffmpeg: str) -> str:
+    duration, median_pitch = _internal_tts_acoustic_profile(audio_path, ffmpeg)
+    target_rate = max(1.0, float(os.environ.get("INTERNAL_TTS_TARGET_UNITS_PER_SECOND", "4.15")))
+    target_duration = _subtitle_sentence_weight(text) / target_rate
+    tempo = duration / max(target_duration, 1.0)
+    tempo = max(0.75, min(1.40, tempo))
+
+    target_pitch = max(100.0, float(os.environ.get("INTERNAL_TTS_TARGET_PITCH_HZ", "225")))
+    pitch = target_pitch / median_pitch if median_pitch else 1.0
+    pitch = max(0.80, min(1.20, pitch))
+
+    filters = subprocess.run(
+        [ffmpeg, "-hide_banner", "-filters"],
+        check=False,
+        capture_output=True,
+        timeout=20,
+    ).stdout.decode("utf-8", errors="ignore")
+    if "rubberband" in filters:
+        return f"rubberband=tempo={tempo:.5f}:pitch={pitch:.5f},loudnorm=I=-16:LRA=5:TP=-1.5"
+    return f"atempo={tempo:.5f},loudnorm=I=-16:LRA=5:TP=-1.5"
+
+
+def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
+    import urllib.error
+    import urllib.request
+
+    from ai_config import is_internal_ai_base_url, load_ai_config
+
+    config = load_ai_config(include_key=True)
+    base_url = str(config.get("base_url") or "").rstrip("/")
+    api_key = str(config.get("api_key") or "").strip()
+    if not is_internal_ai_base_url(base_url):
+        raise RuntimeError("TTS 只允许使用公司内网模型服务")
+    if not api_key:
+        raise RuntimeError("公司内网 TTS 未配置 API Key")
+
+    model = os.environ.get("INTERNAL_TTS_MODEL", "Qwen3TTS").strip() or "Qwen3TTS"
+    voice = os.environ.get("INTERNAL_TTS_VOICE", "vivian").strip() or "vivian"
+    language = os.environ.get("INTERNAL_TTS_LANGUAGE", "Chinese").strip() or "Chinese"
+    instruct = os.environ.get(
+        "INTERNAL_TTS_INSTRUCT",
+        "使用稳定一致、正式克制的企业新闻播报风格；语速自然适中、清晰利落且恒定，句间停顿简短均匀，音调平稳，不随内容改变情绪或声线。",
+    ).strip()
+    # Generated summaries are capped below this value, so normal reports stay
+    # in one request and retain one continuous voice/prosody conditioning pass.
+    max_chars = max(120, int(os.environ.get("INTERNAL_TTS_CHUNK_CHARS", "1200")))
+    sentences = [part.strip() for part in re.split(r"(?<=[。！？；!?;])", text) if part.strip()]
+    chunks: list[str] = []
+    current = ""
+    for sentence in sentences or [text]:
+        if current and len(current) + len(sentence) > max_chars:
+            chunks.append(current)
+            current = sentence
+        else:
+            current += sentence
+    if current:
+        chunks.append(current)
+
+    with tempfile.TemporaryDirectory(prefix="cmhk_internal_tts_") as tmp_dir:
+        tmp = Path(tmp_dir)
+        parts: list[Path] = []
+        for index, chunk in enumerate(chunks, 1):
+            body = {
+                "model": model,
+                "input": chunk,
+                "voice": voice,
+                "response_format": "mp3",
+                "speed": float(os.environ.get("INTERNAL_TTS_SPEED", "1.0")),
+                "language": language,
+                "instruct": instruct,
+            }
+            request = urllib.request.Request(
+                f"{base_url}/audio/speech",
+                data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=180) as response:
+                    audio_bytes = response.read()
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="ignore")[:600]
+                raise RuntimeError(f"公司内网 TTS 返回 HTTP {exc.code}: {detail}") from exc
+            if audio_bytes[:1] in {b"{", b"["}:
+                raise RuntimeError(f"公司内网 TTS 未返回音频: {audio_bytes.decode('utf-8', errors='ignore')[:600]}")
+            if len(audio_bytes) < 1024:
+                raise RuntimeError(f"公司内网 TTS 音频异常短: {len(audio_bytes)} bytes")
+            part_path = tmp / f"part_{index:03d}.mp3"
+            part_path.write_bytes(audio_bytes)
+            parts.append(part_path)
+
+        concat_file = tmp / "concat.txt"
+        concat_file.write_text("".join(f"file '{path.as_posix()}'\n" for path in parts), encoding="utf-8")
+        merged = tmp / "merged.mp3"
+        ffmpeg = shutil.which("ffmpeg")
+        if ffmpeg:
+            subprocess.run(
+                [ffmpeg, "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file), "-c", "copy", str(merged)],
+                check=True,
+                capture_output=True,
+                timeout=240,
+            )
+            subprocess.run(
+                [
+                    ffmpeg,
+                    "-y",
+                    "-i",
+                    str(merged),
+                    "-af",
+                    _internal_tts_consistency_filter(text, merged, ffmpeg),
+                    "-ar",
+                    "24000",
+                    "-ac",
+                    "1",
+                    "-b:a",
+                    "96k",
+                    str(output_path),
+                ],
+                check=True,
+                capture_output=True,
+                timeout=240,
+            )
+        elif len(parts) == 1:
+            shutil.copy2(parts[0], output_path)
+        else:
+            raise RuntimeError("合并多段公司内网 TTS 音频需要 ffmpeg")
+    return f"internal-tts:{model}:{voice}"
 
 
 def _synthesize_with_edge(text: str, output_path: Path) -> str | None:
@@ -780,31 +979,17 @@ def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
 
     summary = build_audio_summary(report_path)
     tts_text = prepare_tts_text(summary)
-    backend = os.environ.get("TTS_BACKEND", "auto").strip().lower() or "auto"
+    backend = "internal"
     last_error = ""
     try:
         delete_audio_for_report(report_path)
         used = None
         output_path = audio_path_for_report_ext(report_path, ".wav")
-        if backend in {"auto", "moss", "moss-tts", "moss-tts-nano"}:
-            used = _synthesize_with_moss(tts_text, output_path)
-        if not used and backend in {"auto", "sherpa", "sherpa-melo", "melotts", "melo"}:
-            used = _synthesize_with_sherpa_melo(tts_text, output_path)
-        if not used and backend in {"auto", "edge", "edge-tts"}:
-            output_path = audio_path_for_report_ext(report_path, ".mp3")
-            used = _synthesize_with_edge(tts_text, output_path)
-        if not used and backend in {"auto", "kokoro", "kokoro-onnx"}:
-            output_path = audio_path_for_report_ext(report_path, ".wav")
-            used = _synthesize_with_kokoro(tts_text, output_path)
-        if not used and backend in {"auto", "piper"}:
-            output_path = audio_path_for_report_ext(report_path, ".wav")
-            used = _synthesize_with_piper(tts_text, output_path)
-        if not used and backend in {"auto", "say", "macos-say"}:
-            output_path = audio_path_for_report_ext(report_path, ".wav")
-            used = _synthesize_with_macos_say(tts_text, output_path)
+        output_path = audio_path_for_report_ext(report_path, ".mp3")
+        used = _synthesize_with_internal_tts(tts_text, output_path)
         if not used:
             raise RuntimeError(
-                "未找到可用 TTS 后端。生产环境建议配置 Piper/MeloTTS/Kokoro；本机兜底需要 macOS say。"
+                "公司内网 TTS 不可用，请检查内部模型网关、API Key、Qwen3TTS 和音色配置。"
             )
     except Exception as exc:
         last_error = str(exc)

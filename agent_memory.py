@@ -30,6 +30,8 @@ STOPWORDS = {
     "以后",
     "必须",
     "不要",
+    "请",
+    "一下",
 }
 
 
@@ -338,6 +340,9 @@ def _score_memory(query: str, item: dict[str, Any], now: float) -> float:
     query_entities = {entity.lower() for entity in _extract_entities(query)}
     item_entities = {str(entity).lower() for entity in (item.get("entities") or [])}
     entity_score = len(query_entities & item_entities) * 8
+    lexical_relevance = token_score + phrase_score + entity_score
+    if lexical_relevance <= 0:
+        return -100.0
     kind = str(item.get("kind") or "")
     kind_score = 0.0
     if ("怎么" in query or "流程" in query or "规则" in query) and kind == "procedural":
@@ -352,7 +357,7 @@ def _score_memory(query: str, item: dict[str, Any], now: float) -> float:
     confidence_score = float(item.get("confidence") or 0.8) * 3
     access_score = min(int(item.get("access_count") or 0), 10) * 0.25
     status_penalty = -100 if item.get("status") != "active" else 0
-    return token_score + phrase_score + entity_score + kind_score + recency_score + importance_score + confidence_score + access_score + status_penalty
+    return lexical_relevance + kind_score + recency_score + importance_score + confidence_score + access_score + status_penalty
 
 
 def _mark_accessed(memory_ids: set[str]) -> None:
@@ -376,7 +381,7 @@ def search_memories(query: str, *, limit: int = 5) -> list[dict[str, Any]]:
     now = time.time()
     for item in rows:
         score = _score_memory(query, item, now)
-        if score <= 0 and _tokens(query):
+        if score < 12 and _tokens(query):
             continue
         scored.append((score, item))
     scored.sort(key=lambda pair: pair[0], reverse=True)
@@ -417,8 +422,8 @@ def auto_capture_user_memory(message: str) -> dict[str, Any] | None:
     read_only_terms = ["列出", "查看", "查询", "搜索", "说明", "展示", "当前", "多少", "数量", "详情", "kind", "entities", "access_count"]
     if any(term.lower() in lowered for term in memory_terms) and any(term in text for term in read_only_terms):
         return None
-    cues = ["记住", "以后", "默认", "不要", "每次", "偏好", "规则", "必须", "流程"]
-    if not any(cue in text for cue in cues):
+    durable_cues = ["记住", "以后", "默认", "每次", "偏好", "规则", "流程", "长期"]
+    if not any(cue in text for cue in durable_cues):
         return None
     if len(text) > 900:
         return None

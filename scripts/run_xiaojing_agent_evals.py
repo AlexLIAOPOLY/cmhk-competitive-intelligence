@@ -26,7 +26,7 @@ def main() -> int:
     selected = {"quarterly_competitor_metrics_2026-06-18", "cloud_vendor_database", "cmhk_macro_policy_2026-06-19"}
 
     chunks = retrieve_context("中国移动 2026Q1 收入 official_value verification_count", limit=10, dataset_ids=selected)
-    package = build_context_package(chunks, token_budget=6500, model="deepseek-chat")
+    package = build_context_package(chunks, token_budget=6500, model="deepseek-v4")
     ctx = package["context"]
     rows.append(
         case(

@@ -357,6 +357,26 @@ class DataCurationTests(unittest.TestCase):
         self.assertEqual(fact["decision"], "accepted")
         self.assertNotIn("未通过指标格式与单位门禁", fact["reasons"])
 
+    def test_customer_count_plain_number_with_thousands_separator_passes(self):
+        result = audit_quality(
+            {
+                "candidates": [
+                    candidate(
+                        company="SmarTone",
+                        metric="客户数/用户数",
+                        value="3,158,000",
+                        basis='片段中“Customer Number”图表显示 Dec-25 为 3,158,000。',
+                        sources=[
+                            "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf"
+                        ],
+                    )
+                ]
+            }
+        )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "accepted")
+        self.assertNotIn("未通过指标格式与单位门禁", fact["reasons"])
+
     def test_negative_evidence_is_not_recovered_as_qualitative_fact(self):
         result = audit_quality(
             {

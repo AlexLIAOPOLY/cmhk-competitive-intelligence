@@ -73,12 +73,30 @@ class AgentMemoryTests(unittest.TestCase):
         self.assertEqual(render_row["access_count"], 1)
         self.assertGreater(render_row["last_accessed_at"], 0)
 
+    def test_search_does_not_recall_unrelated_task_memory_for_greeting(self) -> None:
+        agent_memory.add_memory(
+            "请分析中国铁塔6年收入趋势，生成图表，并直接给结论、数据依据和风险，不要输出过程旁白。",
+            kind="procedural",
+            tags=["user-preference", "auto-captured"],
+            source="user-message",
+        )
+
+        self.assertEqual(agent_memory.search_memories("你好", limit=5), [])
+        self.assertEqual(agent_memory.search_memories("你是", limit=5), [])
+
     def test_auto_capture_classifies_procedural_rules(self) -> None:
         item = agent_memory.auto_capture_user_memory("以后每次新增来源都必须先点开验证，不要直接引用搜索摘要。")
         self.assertIsNotNone(item)
         self.assertEqual(item["kind"], "procedural")
         self.assertIn("user-preference", item["tags"])
         self.assertGreaterEqual(item["importance"], 0.8)
+
+    def test_auto_capture_ignores_one_off_analysis_tasks(self) -> None:
+        item = agent_memory.auto_capture_user_memory(
+            "请分析中国铁塔6年收入趋势，生成图表，并直接给结论、数据依据和风险，不要输出过程旁白。"
+        )
+        self.assertIsNone(item)
+        self.assertEqual(agent_memory.load_memories(), [])
 
     def test_auto_capture_ignores_memory_read_only_queries(self) -> None:
         item = agent_memory.auto_capture_user_memory(

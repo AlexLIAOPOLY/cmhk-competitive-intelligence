@@ -20,9 +20,17 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import crawl
-from crawl_run_registry import latest_crawl_run_summary, load_index as load_crawl_run_index, register_crawl_run
-from ai_config import load_ai_config, save_ai_config
-from crawl_settings import SETTINGS_PATH, load_settings, save_settings
+from crawl_run_registry import (
+    heartbeat_crawl_run,
+    latest_crawl_run_summary,
+    load_crawl_run_log,
+    load_index as load_crawl_run_index,
+    mark_crawl_run_interrupted,
+    reconcile_interrupted_crawl_runs,
+    register_crawl_run,
+    start_crawl_run,
+)
+from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
 from company_metrics import build_company_metrics_payload
 from extractors import row_fields
 from rag_llm import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
@@ -40,6 +48,9 @@ from tts_service import (
 
 
 ROOT = Path(__file__).resolve().parent
+CRAWL_PIPELINE_LOCK = threading.Lock()
+CRAWL_PIPELINE_STATE: dict[str, object] = {}
+TASK_HEARTBEAT_INTERVAL_SECONDS = 10
 STATIC_DIR = ROOT / "web" / "static"
 RESULTS_DIR = ROOT / "results"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
@@ -48,7 +59,9 @@ CURATION_AGENT_TRACE_PATH = ROOT / "curation_data" / "agent_trace.jsonl"
 LOCAL_TEMPLATE_PATH = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_TEMPLATE_PATH = ROOT / "weekly_report_template.docx"
 TEMPLATE_PATH = LOCAL_TEMPLATE_PATH if LOCAL_TEMPLATE_PATH.exists() else REPO_TEMPLATE_PATH
-REPORT_FILE_RE = re.compile(r"^\d{1,2}月\d{1,2}日周报(?: \(\d+\))?\.docx$")
+REPORT_FILE_RE = re.compile(
+    r"^\d{1,2}月\d{1,2}日周报(?:（草稿，截至\d{1,2}月\d{1,2}日）)?(?: \(\d+\))?\.docx$"
+)
 REPORT_METADATA_PATH = ROOT / "report_file_metadata.json"
 EXCLUDED_REPORT_NAMES = {
     "weekly_report.docx",
@@ -103,7 +116,48 @@ def _clean_chat_message(item: dict) -> dict | None:
     content = str(item.get("content") or "").strip()
     if not content:
         return None
-    return {"role": role, "content": content[:20000]}
+    clean = {"role": role, "content": content[:20000]}
+    if role == "assistant":
+        references = item.get("references")
+        links = item.get("links")
+        suggestions = item.get("suggestions")
+        timeline = item.get("timeline")
+        if isinstance(references, list):
+            clean["references"] = references[:30]
+        if isinstance(links, list):
+            clean["links"] = links[:30]
+        if isinstance(suggestions, list):
+            clean["suggestions"] = [str(s).strip()[:160] for s in suggestions if str(s).strip()][:3]
+        if isinstance(timeline, list):
+            clean_timeline = []
+            timeline_size = 0
+            for raw_event in timeline[:240]:
+                if not isinstance(raw_event, dict):
+                    continue
+                event_type = str(raw_event.get("type") or "")
+                if event_type == "text":
+                    event = {"type": "text", "text": str(raw_event.get("text") or "")[:20000]}
+                    if not event["text"]:
+                        continue
+                elif event_type in {"tool_call_start", "tool_call_result"}:
+                    event = {
+                        "type": event_type,
+                        "id": str(raw_event.get("id") or "")[:160],
+                        "name": str(raw_event.get("name") or "")[:120],
+                        "processText": str(raw_event.get("processText") or "")[:500],
+                        "args": str(raw_event.get("args") or "")[:6000],
+                        "content": str(raw_event.get("content") or "")[:16000],
+                    }
+                else:
+                    continue
+                event_size = len(json.dumps(event, ensure_ascii=False))
+                if timeline_size + event_size > 120000:
+                    break
+                timeline_size += event_size
+                clean_timeline.append(event)
+            if clean_timeline:
+                clean["timeline"] = clean_timeline
+    return clean
 
 
 def load_chat_threads() -> list[dict]:
@@ -183,12 +237,15 @@ def generate_chat_thread_title(first_user: str) -> str:
     if not first_user:
         return "新对话"
     config = load_ai_config(include_key=True)
-    api_key = (os.environ.get("OPENAI_API_KEY") or str(config.get("api_key") or "")).strip()
+    api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         return _fallback_thread_title(first_user)
     provider = str(config.get("provider") or "deepseek").lower()
-    model = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-v4-flash")
-    base_url = str(config.get("base_url") or ("https://api.openai.com/v1" if provider == "openai" else "https://api.deepseek.com")).rstrip("/")
+    model = (
+        os.environ.get("CMHK_CHAT_TITLE_MODEL", "").strip()
+        or "Qwen3-30B-A3B-Instruct-2507"
+    )
+    base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
     prompt = (
         "请根据用户第一条问题生成一个中文对话标题。"
         "要求：6到12个汉字或短词；不要照抄原句；不要加引号、标点、解释或前缀。\n\n"
@@ -201,7 +258,7 @@ def generate_chat_thread_title(first_user: str) -> str:
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.1,
-        "max_tokens": 24,
+        "max_tokens": 48,
     }
     req = urllib.request.Request(
         f"{base_url}/chat/completions",
@@ -212,9 +269,15 @@ def generate_chat_thread_title(first_user: str) -> str:
     try:
         with urllib.request.urlopen(req, timeout=12) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
-        content = payload.get("choices", [{}])[0].get("message", {}).get("content", "")
-        return _sanitize_thread_title(content) or _fallback_thread_title(first_user)
-    except Exception:
+        content = str(payload.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+        if not content:
+            return _fallback_thread_title(first_user)
+        title = _sanitize_thread_title(content)
+        if title in {"新对话", "未命名对话"}:
+            return _fallback_thread_title(first_user)
+        return title
+    except Exception as exc:
+        print(f"chat thread title generation failed: {exc}", flush=True)
         return _fallback_thread_title(first_user)
 
 
@@ -240,7 +303,15 @@ def upsert_chat_thread(payload: dict) -> dict:
         title = _sanitize_thread_title(title)
     title_source = _thread_title_source(messages)
     first_user = next((item["content"] for item in messages if item["role"] == "user"), "")
-    if existing_title and existing_title not in {first_user[:24], _fallback_thread_title(first_user), "你好", "看看"}:
+    placeholder_titles = {
+        "新对话",
+        "未命名对话",
+        "你好",
+        "看看",
+        first_user[:24],
+        _fallback_thread_title(first_user),
+    }
+    if existing_title and existing_title not in placeholder_titles:
         title = existing_title
     else:
         title = generate_chat_thread_title(title_source or first_user)
@@ -343,20 +414,11 @@ def read_display_text(path: Path) -> str:
 
 
 def settings_rows() -> list[dict]:
-    settings = load_settings()
-    configured = settings.get("rows", {})
     rows = []
     for source_row in crawl.parse_latest_sheet():
         row_no = str(source_row["row"])
-        cfg = configured.get(row_no, {}) if isinstance(configured, dict) else {}
-        cfg_entities = [str(item).strip() for item in cfg.get("entities", []) if str(item).strip()]
-        cfg_fields = [str(item).strip() for item in cfg.get("fields", []) if str(item).strip()]
-        cfg_urls = [str(item).strip() for item in cfg.get("sourceUrls", []) if str(item).strip()]
-        available_entities = list(dict.fromkeys([*(source_row.get("entities") or []), *cfg_entities]))
-        available_fields = list(dict.fromkeys([*list(row_fields(int(row_no))), *cfg_fields]))
-        cfg = configured.get(row_no, {}) if isinstance(configured, dict) else {}
-        selected_entities = [item for item in cfg_entities if item in available_entities]
-        selected_fields = [item for item in cfg_fields if item in available_fields]
+        available_entities = list(dict.fromkeys(source_row.get("entities") or []))
+        available_fields = list(dict.fromkeys(row_fields(int(row_no))))
         rows.append(
             {
                 "row": row_no,
@@ -365,12 +427,11 @@ def settings_rows() -> list[dict]:
                 "package": source_row.get("package", ""),
                 "need": source_row.get("need", ""),
                 "sources": source_row.get("sources", ""),
-                "sourceUrls": cfg_urls,
                 "entities": available_entities,
                 "fields": available_fields,
-                "enabled": bool(cfg.get("enabled", True)),
-                "selectedEntities": selected_entities or available_entities,
-                "selectedFields": selected_fields or available_fields,
+                "enabled": True,
+                "selectedEntities": available_entities,
+                "selectedFields": available_fields,
             }
         )
     return rows
@@ -380,8 +441,7 @@ def build_settings_payload() -> dict:
     rows = settings_rows()
     enabled = [row for row in rows if row["enabled"]]
     return {
-        "path": str(SETTINGS_PATH),
-        "exists": SETTINGS_PATH.exists(),
+        "source": "飞书主表",
         "rows": rows,
         "summary": {
             "totalRows": len(rows),
@@ -390,86 +450,6 @@ def build_settings_payload() -> dict:
             "selectedFields": sum(len(row["selectedFields"]) for row in enabled),
         },
     }
-
-
-def save_settings_payload(payload: dict) -> dict:
-    source_rows = {str(row["row"]): row for row in crawl.parse_latest_sheet()}
-    incoming = payload.get("rows", [])
-    if not isinstance(incoming, list):
-        raise ValueError("rows must be a list")
-    next_rows: dict[str, dict] = {}
-    for item in incoming:
-        if not isinstance(item, dict):
-            continue
-        row_no = str(item.get("row") or "").strip()
-        if row_no not in source_rows:
-            continue
-        source_entities = list(source_rows[row_no].get("entities") or [])
-        source_fields = list(row_fields(int(row_no)))
-        incoming_entities = [str(value).strip() for value in item.get("selectedEntities", []) if str(value).strip()]
-        incoming_fields = [str(value).strip() for value in item.get("selectedFields", []) if str(value).strip()]
-        entities = list(dict.fromkeys(incoming_entities))
-        fields = list(dict.fromkeys(incoming_fields))
-        source_urls = []
-        for value in item.get("sourceUrls", []):
-            url = str(value).strip()
-            if not url:
-                continue
-            if not re.match(r"^https?://", url):
-                raise ValueError("目标链接必须以 http:// 或 https:// 开头")
-            if url not in source_urls:
-                source_urls.append(url)
-        next_rows[row_no] = {
-            "enabled": bool(item.get("enabled", True)),
-            "entities": entities or source_entities,
-            "fields": fields or source_fields,
-            "sourceUrls": source_urls,
-        }
-    save_settings(next_rows)
-    return build_settings_payload()
-
-
-def save_settings_row_payload(payload: dict) -> dict:
-    row_no = str(payload.get("row") or "").strip()
-    if not row_no:
-        raise ValueError("row is required")
-    source_rows = {str(row["row"]): row for row in crawl.parse_latest_sheet()}
-    if row_no not in source_rows:
-        raise ValueError("row not found")
-
-    settings = load_settings()
-    rows = settings.get("rows", {})
-    if not isinstance(rows, dict):
-        rows = {}
-
-    source_entities = list(source_rows[row_no].get("entities") or [])
-    source_fields = list(row_fields(int(row_no)))
-    incoming_entities = [str(value).strip() for value in payload.get("selectedEntities", []) if str(value).strip()]
-    incoming_fields = [str(value).strip() for value in payload.get("selectedFields", []) if str(value).strip()]
-    source_urls = []
-    for value in payload.get("sourceUrls", []):
-        url = str(value).strip()
-        if not url:
-            continue
-        if not re.match(r"^https?://", url):
-            raise ValueError("目标链接必须以 http:// 或 https:// 开头")
-        if url not in source_urls:
-            source_urls.append(url)
-
-    rows[row_no] = {
-        "enabled": bool(payload.get("enabled", True)),
-        "entities": list(dict.fromkeys(incoming_entities)) or source_entities,
-        "fields": list(dict.fromkeys(incoming_fields)) or source_fields,
-        "sourceUrls": source_urls,
-    }
-    save_settings(rows)
-    return build_settings_payload()
-
-
-def reset_settings() -> dict:
-    if SETTINGS_PATH.exists():
-        SETTINGS_PATH.unlink()
-    return build_settings_payload()
 
 
 def json_response(handler: BaseHTTPRequestHandler, payload: dict, status: int = 200) -> None:
@@ -628,11 +608,36 @@ def safe_dataset_slug(value: str) -> str:
     return slug[:48] or "upload"
 
 
+def clean_upload_text(value: object, limit: int = 500) -> str:
+    return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
+
+
+def split_upload_tags(value: object, limit: int = 12) -> list[str]:
+    tags: list[str] = []
+    for part in re.split(r"[,，;；\n]+", str(value or "")):
+        tag = clean_upload_text(part, 32)
+        if tag and tag not in tags:
+            tags.append(tag)
+        if len(tags) >= limit:
+            break
+    return tags
+
+
 def write_uploaded_knowledge_dataset(payload: dict) -> dict:
     filename = str(payload.get("filename") or "").strip()
     encoded = str(payload.get("contentBase64") or "").strip()
+    title = clean_upload_text(payload.get("title"), 80)
+    summary = clean_upload_text(payload.get("summary"), 600)
+    scope = clean_upload_text(payload.get("scope"), 600)
+    source_type = clean_upload_text(payload.get("sourceType") or payload.get("source_type"), 40) or "user_uploaded_file"
+    quality_note = clean_upload_text(payload.get("quality"), 600)
+    user_tags = split_upload_tags(payload.get("tags"))
     if not filename:
         raise ValueError("缺少文件名")
+    if not title:
+        raise ValueError("请填写知识库名称")
+    if not summary:
+        raise ValueError("请填写知识库说明")
     suffix = Path(filename).suffix.lower()
     if suffix not in UPLOAD_ALLOWED_SUFFIXES:
         raise ValueError("暂不支持该文件类型；请上传 txt、md、csv、tsv、json、docx 或 pdf。")
@@ -649,7 +654,7 @@ def write_uploaded_knowledge_dataset(payload: dict) -> dict:
 
     now = datetime.now().astimezone()
     timestamp = now.strftime("%Y%m%d_%H%M%S")
-    slug = safe_dataset_slug(filename)
+    slug = safe_dataset_slug(title or filename)
     dataset_id = f"{UPLOAD_DATASET_PREFIX}-{timestamp}-{slug}"
     folder = ROOT / "agent_knowledge" / dataset_id
     folder.mkdir(parents=True, exist_ok=False)
@@ -668,11 +673,16 @@ def write_uploaded_knowledge_dataset(payload: dict) -> dict:
     knowledge_path.write_text(
         "\n".join(
             [
-                f"# {filename}",
+                f"# {title}",
                 "",
                 f"- 上传时间：{now.isoformat(timespec='seconds')}",
                 f"- 原始文件：{original_name}",
                 f"- 文件大小：{len(raw)} bytes",
+                f"- 知识库说明：{summary}",
+                f"- 范围/口径：{scope or '用户未填写'}",
+                f"- 来源类型：{source_type}",
+                f"- 标签：{', '.join(user_tags) if user_tags else '用户未填写'}",
+                f"- 质量备注：{quality_note or '用户未填写'}",
                 "",
                 "## 可检索正文",
                 "",
@@ -685,11 +695,16 @@ def write_uploaded_knowledge_dataset(payload: dict) -> dict:
     readme_path.write_text(
         "\n".join(
             [
-                f"# 用户上传知识库：{filename}",
+                f"# {title}",
                 "",
                 "该数据集由前端上传文件生成。只有用户在数据库按钮中选中本数据集时，后端才会把它发送给小竞AI检索。",
                 "",
                 f"- 数据集 id：`{dataset_id}`",
+                f"- 说明：{summary}",
+                f"- 范围/口径：{scope or '用户未填写'}",
+                f"- 来源类型：{source_type}",
+                f"- 标签：{', '.join(user_tags) if user_tags else '用户未填写'}",
+                f"- 质量备注：{quality_note or '用户未填写'}",
                 f"- 原始文件：`{original_name}`",
                 "- 检索入口：`uploaded_knowledge.md`",
             ]
@@ -698,15 +713,15 @@ def write_uploaded_knowledge_dataset(payload: dict) -> dict:
     )
     manifest = {
         "id": dataset_id,
-        "title": f"用户上传：{filename}",
-        "summary": f"用户上传文件生成的临时知识库，原始文件 {filename}，已抽取为可检索文本。",
-        "source_type": "user_uploaded_file",
-        "scope": "用户手动上传给小竞AI的知识库文件",
-        "tags": ["user-upload", "knowledge-base"],
-        "keywords": [Path(filename).stem, filename, "用户上传", "知识库"],
+        "title": title,
+        "summary": summary,
+        "source_type": source_type,
+        "scope": scope or "用户手动上传给小竞AI的知识库文件",
+        "tags": ["user-upload", "knowledge-base", *user_tags],
+        "keywords": [title, Path(filename).stem, filename, summary, *user_tags, "用户上传", "知识库"],
         "entrypoints": ["README.md", "uploaded_knowledge.md"],
         "updated_at": now.isoformat(timespec="seconds"),
-        "quality": "user_uploaded_unverified; visible to AI only when selected in the database picker",
+        "quality": quality_note or "user_uploaded_unverified; visible to AI only when selected in the database picker",
         "original_file": original_name,
     }
     (folder / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -731,13 +746,17 @@ def save_report_metadata(data: dict) -> None:
 def is_report_path(path: Path) -> bool:
     if not path.exists() or not path.is_file() or path.suffix.lower() != ".docx":
         return False
-    if path.name in EXCLUDED_REPORT_NAMES:
+    if path.name.startswith("~$") or path.name in EXCLUDED_REPORT_NAMES:
         return False
     try:
         path.relative_to(ROOT)
     except ValueError:
         return False
     return path.parent == ROOT or ROOT / "archives" in path.parents
+
+
+def quality_sidecar_for_report(path: Path) -> Path:
+    return Path(str(path) + ".quality.json")
 
 
 def file_info(path: Path, url: str = None) -> dict:
@@ -792,11 +811,27 @@ def update_report_file(payload: dict) -> dict:
     new_target = target.with_name(new_name)
     if new_target != target and new_target.exists():
         raise ValueError("同名文件已存在")
+    old_quality = quality_sidecar_for_report(target)
+    new_quality = quality_sidecar_for_report(new_target)
+    if new_target != target and new_quality.exists():
+        raise ValueError("同名质量审计文件已存在")
 
     metadata = load_report_metadata()
     old_rel = str(target.relative_to(ROOT))
     if new_target != target:
         target.rename(new_target)
+        if old_quality.exists():
+            old_quality.rename(new_quality)
+            try:
+                quality_payload = json.loads(new_quality.read_text(encoding="utf-8"))
+                if isinstance(quality_payload, dict):
+                    quality_payload["reportFile"] = new_target.name
+                    new_quality.write_text(
+                        json.dumps(quality_payload, ensure_ascii=False, indent=2),
+                        encoding="utf-8",
+                    )
+            except Exception:
+                pass
         rename_audio_for_report(target, new_target)
         existing = metadata.pop(old_rel, {})
     else:
@@ -820,6 +855,9 @@ def delete_report_files(paths: list[str]) -> dict:
             continue
         rel_path = str(target.relative_to(ROOT))
         target.unlink()
+        quality_sidecar = quality_sidecar_for_report(target)
+        if quality_sidecar.exists():
+            quality_sidecar.unlink()
         delete_audio_for_report(target)
         metadata.pop(rel_path, None)
         deleted += 1
@@ -831,9 +869,6 @@ def build_status() -> dict:
     result_files = sorted(RESULTS_DIR.glob("row_*.json"), key=lambda p: int(p.stem.split("_")[1]))
     
     outputs = [file_info(path) for path in current_report_files()]
-    
-    settings = build_settings_payload()
-    enabled_rows = {str(r["row"]) for r in settings["rows"] if r.get("enabled")}
     
     ok_count = 0
     partial_count = 0
@@ -849,9 +884,6 @@ def build_status() -> dict:
     
     valid_results_count = 0
     for path in result_files:
-        row_str = path.stem.split("_")[1] if "_" in path.stem else ""
-        if row_str not in enabled_rows:
-            continue
         valid_results_count += 1
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -969,11 +1001,75 @@ def build_status() -> dict:
     }
 
 
+def start_scheduler_with_backend() -> None:
+    """Run the Feishu scheduler and strategic briefing monitor with the APP backend."""
+    import threading as scheduler_threading
+    import traceback as scheduler_traceback
+
+    if os.environ.get("CMHK_DISABLE_EMBEDDED_SCHEDULER", "").strip().lower() in {"1", "true", "yes"}:
+        return
+
+    def scheduler_worker() -> None:
+        import scheduler
+
+        while True:
+            try:
+                scheduler.main()
+            except Exception:
+                scheduler_traceback.print_exc()
+            time.sleep(10)
+
+    thread = scheduler_threading.Thread(target=scheduler_worker, name="feishu-frequency-scheduler", daemon=True)
+    thread.start()
+    print("Feishu frequency scheduler started with APP backend", flush=True)
+
+    if os.environ.get("CMHK_DISABLE_STRATEGIC_BRIEFING_MONITOR", "").strip().lower() not in {"1", "true", "yes"}:
+        def strategic_briefing_worker() -> None:
+            import strategic_briefing
+
+            while True:
+                try:
+                    strategic_briefing.main()
+                except Exception:
+                    scheduler_traceback.print_exc()
+                time.sleep(10)
+
+        briefing_thread = scheduler_threading.Thread(
+            target=strategic_briefing_worker,
+            name="strategic-briefing-monitor",
+            daemon=True,
+        )
+        briefing_thread.start()
+
+        def strategic_news_digest_worker() -> None:
+            import news_discovery_vote_digest
+
+            while True:
+                try:
+                    news_discovery_vote_digest.main()
+                except Exception:
+                    scheduler_traceback.print_exc()
+                time.sleep(10)
+
+        news_digest_thread = scheduler_threading.Thread(
+            target=strategic_news_digest_worker,
+            name="strategic-news-digest-monitor",
+            daemon=True,
+        )
+        news_digest_thread.start()
+        print("Strategic briefing monitor started with APP backend", flush=True)
+
+
 def run_crawl() -> dict:
     started = time.time()
+    crawl_env = os.environ.copy()
+    crawl_env.pop("CMHK_ROWS", None)
+    crawl_env["CMHK_CRAWL_TRIGGER"] = "手动全量"
+    crawl_env["CMHK_CRAWL_SCOPE"] = "全量（第2-34行）"
     proc = subprocess.run(
         [sys.executable, str(ROOT / "crawl.py")],
         cwd=str(ROOT),
+        env=crawl_env,
         text=True,
         capture_output=True,
         timeout=1200,
@@ -986,6 +1082,7 @@ def run_crawl() -> dict:
         main_sync = subprocess.run(
             [sys.executable, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"],
             cwd=str(ROOT),
+            env=crawl_env,
             text=True,
             capture_output=True,
             timeout=600,
@@ -1317,10 +1414,27 @@ def latest_output_path(status: dict, report_type: str) -> Path:
     return ROOT / output["path_str"]
 
 
-def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> bool:
     body = json.dumps(payload, ensure_ascii=False)
-    handler.wfile.write(f"data: {body}\n\n".encode("utf-8"))
-    handler.wfile.flush()
+    log_paths = [
+        getattr(handler, "_crawl_stream_log_path", None),
+        getattr(handler, "_crawl_stream_mirror_path", None),
+    ]
+    for log_path in dict.fromkeys(path for path in log_paths if path):
+        try:
+            with Path(log_path).open("a", encoding="utf-8") as fh:
+                fh.write(body + "\n")
+        except OSError:
+            pass
+    try:
+        handler.wfile.write(f"data: {body}\n\n".encode("utf-8"))
+        handler.wfile.flush()
+        return True
+    except (BrokenPipeError, ConnectionResetError, OSError):
+        # The crawl and its post-processing must outlive the browser's SSE
+        # connection. A refresh, navigation or laptop sleep must not skip
+        # Feishu sync, curation or run registration.
+        return False
 
 
 def json_object_from_output(output: str) -> dict:
@@ -1388,6 +1502,9 @@ def stream_report_generation(
         text=True,
         bufsize=1,
     )
+    handler._task_worker_pid = proc.pid
+    handler._task_monitor_phase = "报告生成"
+    handler._task_monitor_detail = "报告生成进程正在执行。"
     created_path = None
     if proc.stdout:
         for line in proc.stdout:
@@ -1398,6 +1515,7 @@ def stream_report_generation(
                 if candidate.exists() and candidate.name.endswith(".docx") and "template" not in candidate.name:
                     created_path = candidate
     proc.wait()
+    handler._task_worker_pid = 0
 
     status = build_status()
     audio_result = None
@@ -1406,27 +1524,42 @@ def stream_report_generation(
             latest_path = created_path if created_path and created_path.exists() else latest_output_path(status, report_type)
             write_sse(handler, {"type": "log", "text": "报告生成完成。开始生成语音摘要..."})
             code = "import sys, json\nfrom pathlib import Path\nfrom tts_service import synthesize_report_audio\ntry:\n    res = synthesize_report_audio(Path(sys.argv[1]), force=sys.argv[2] == 'True')\n    print(json.dumps({'ok': True, 'result': res}))\nexcept Exception as e:\n    print(json.dumps({'ok': False, 'error': str(e)}))"
-            proc_audio = subprocess.run([sys.executable, "-c", code, str(latest_path), "True"], capture_output=True, text=True)
+            handler._task_monitor_phase = "生成语音摘要"
+            handler._task_monitor_detail = "报告文档已完成，正在调用公司内部语音模型。"
+            proc_audio = subprocess.Popen(
+                [sys.executable, "-c", code, str(latest_path), "True"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            handler._task_worker_pid = proc_audio.pid
+            audio_stdout, audio_stderr = proc_audio.communicate()
+            handler._task_worker_pid = 0
             try:
-                out = json.loads(proc_audio.stdout)
+                out = json.loads(audio_stdout)
                 if not out.get("ok"):
                     raise Exception(out.get("error"))
                 audio_result = out.get("result")
                 if not audio_result.get("ok"):
                     raise Exception(audio_result.get("error"))
             except Exception as e:
-                raise Exception(f"Audio generation failed: {proc_audio.stderr} | {e}")
+                raise Exception(f"Audio generation failed: {audio_stderr} | {e}")
             status = build_status()
             write_sse(handler, {"type": "log", "text": "✅ 语音摘要生成完成。"})
         except Exception as exc:
             audio_result = {"ok": False, "error": str(exc)}
             write_sse(handler, {"type": "log", "text": f"❌ 语音摘要生成失败: {exc}"})
 
+    audio_failed = isinstance(audio_result, dict) and audio_result.get("ok") is False
+    task_ok = proc.returncode == 0 and not audio_failed
+    failure_detail = str((audio_result or {}).get("error") or "") if audio_failed else ""
     write_sse(
         handler,
         {
             "type": "done",
-            "ok": proc.returncode == 0,
+            "ok": task_ok,
+            "error": failure_detail,
+            "message": "报告及语音摘要均已生成。" if task_ok else failure_detail,
             "durationMs": round((time.time() - started) * 1000),
             "audio": audio_result,
             "status": status,
@@ -1507,6 +1640,759 @@ def check_local_action(message: str) -> dict | None:
     return None
 
 
+
+def _curation_quality_text(value: object) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
+def load_curation_quality_records(run_id: str) -> dict:
+    run_id = str(run_id or "").strip()
+    if not 8 <= len(run_id) <= 80 or any(
+        not (character.isalnum() or character in "_-") for character in run_id
+    ):
+        return {"ok": False, "error": "无效的审核运行编号。", "runId": run_id}
+
+    snapshot_path = ROOT / "curation_data" / "runs" / f"{run_id}_candidate_facts.jsonl"
+    source_path = snapshot_path
+    source_kind = "run-snapshot"
+
+    if not source_path.exists():
+        latest_run_id = ""
+        try:
+            latest_payload = json.loads(CURATION_LATEST_PATH.read_text(encoding="utf-8"))
+            latest_run_id = str(latest_payload.get("run_id") or "")
+        except (OSError, ValueError, TypeError):
+            latest_run_id = ""
+        if latest_run_id == run_id and CURATION_CANDIDATE_FACTS_PATH.exists():
+            source_path = CURATION_CANDIDATE_FACTS_PATH
+            source_kind = "current-run"
+        else:
+            return {
+                "ok": False,
+                "pending": True,
+                "error": "本轮逐条质量明细尚未生成；质量审计完成后会自动出现。",
+                "runId": run_id,
+                "records": [],
+            }
+
+    records: list[dict] = []
+    try:
+        with source_path.open("r", encoding="utf-8") as handle:
+            for raw_line in handle:
+                raw_line = raw_line.strip()
+                if not raw_line:
+                    continue
+                item = json.loads(raw_line)
+                if not isinstance(item, dict):
+                    continue
+
+                raw_sources = item.get("sources")
+                sources: list[dict] = []
+                if isinstance(raw_sources, list):
+                    for source in raw_sources:
+                        if isinstance(source, dict):
+                            url = _curation_quality_text(
+                                source.get("url")
+                                or source.get("source_url")
+                                or source.get("href")
+                                or source.get("link")
+                            )
+                            title = _curation_quality_text(
+                                source.get("title")
+                                or source.get("name")
+                                or source.get("source")
+                            )
+                            source_type = _curation_quality_text(
+                                source.get("type")
+                                or source.get("source_type")
+                                or source.get("tier")
+                            )
+                            sources.append({"url": url, "title": title, "type": source_type})
+                        else:
+                            sources.append({"url": _curation_quality_text(source), "title": "", "type": ""})
+
+                verification = item.get("search_verification")
+                if not isinstance(verification, dict):
+                    verification = {}
+                online_search = verification.get("online_search")
+                if not isinstance(online_search, dict):
+                    online_search = {}
+
+                raw_votes = verification.get("votes")
+                raw_conflicts = verification.get("conflicts")
+                verification_summary = {
+                    "status": _curation_quality_text(verification.get("status")),
+                    "decision": _curation_quality_text(verification.get("decision")),
+                    "vote_count": int(verification.get("vote_count") or (len(raw_votes) if isinstance(raw_votes, list) else 0)),
+                    "majority_count": int(verification.get("majority_count") or 0),
+                    "majority_source_types": verification.get("majority_source_types") or [],
+                    "conflict_count": int(verification.get("conflict_count") or (len(raw_conflicts) if isinstance(raw_conflicts, list) else 0)),
+                    "online_search": {
+                        "enabled": bool(online_search.get("enabled")),
+                        "provider": _curation_quality_text(online_search.get("provider")),
+                        "result_count": int(online_search.get("result_count") or 0),
+                        "duration_ms": int(online_search.get("duration_ms") or 0),
+                        "query": _curation_quality_text(online_search.get("query")),
+                    },
+                }
+
+                reasons = item.get("reasons")
+                if not isinstance(reasons, list):
+                    reasons = [reasons] if reasons else []
+
+                records.append(
+                    {
+                        "id": _curation_quality_text(item.get("id")),
+                        "company": _curation_quality_text(item.get("company")),
+                        "metric": _curation_quality_text(item.get("metric")),
+                        "value": _curation_quality_text(item.get("value")),
+                        "basis": _curation_quality_text(item.get("basis")),
+                        "note": _curation_quality_text(item.get("note")),
+                        "status": _curation_quality_text(item.get("status")),
+                        "entity_supported": bool(item.get("entity_supported")),
+                        "metric_supported": bool(item.get("metric_supported")),
+                        "value_supported": bool(item.get("value_supported")),
+                        "confidence": item.get("confidence"),
+                        "source_score": item.get("source_score"),
+                        "source_tier": _curation_quality_text(item.get("source_tier")),
+                        "row_ref": item.get("row_ref"),
+                        "sources": sources,
+                        "quality_score": item.get("quality_score"),
+                        "decision": _curation_quality_text(item.get("decision")),
+                        "reasons": [_curation_quality_text(reason) for reason in reasons if reason is not None],
+                        "search_verification": verification_summary,
+                    }
+                )
+    except (OSError, ValueError, TypeError) as exc:
+        return {"ok": False, "error": f"逐条质量明细读取失败：{exc}", "runId": run_id}
+
+    decisions: dict[str, int] = {}
+    source_tiers: dict[str, int] = {}
+    quality_values: list[float] = []
+    for record in records:
+        decision = record.get("decision") or "unknown"
+        decisions[decision] = decisions.get(decision, 0) + 1
+        source_tier = record.get("source_tier") or "unknown"
+        source_tiers[source_tier] = source_tiers.get(source_tier, 0) + 1
+        try:
+            quality_values.append(float(record.get("quality_score")))
+        except (TypeError, ValueError):
+            pass
+
+    return {
+        "ok": True,
+        "runId": run_id,
+        "source": source_kind,
+        "records": records,
+        "summary": {
+            "total": len(records),
+            "decisions": decisions,
+            "sourceTiers": source_tiers,
+            "averageQuality": round(sum(quality_values) / len(quality_values), 4) if quality_values else None,
+        },
+    }
+
+
+
+# Unified task archive v144
+TASK_RUNS_DIR = ROOT / "task_runs"
+TASK_RUNS_LOG_DIR = TASK_RUNS_DIR / "logs"
+TASK_RUNS_INDEX_PATH = TASK_RUNS_DIR / "index.json"
+TASK_RUNS_LOCK = threading.Lock()
+
+
+def _task_atomic_json(path: Path, payload: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(temporary, path)
+
+
+def _task_read_local_index() -> list[dict]:
+    if not TASK_RUNS_INDEX_PATH.exists():
+        return []
+    try:
+        payload = json.loads(TASK_RUNS_INDEX_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        return []
+    if isinstance(payload, dict):
+        payload = payload.get("tasks")
+    return [item for item in payload if isinstance(item, dict)] if isinstance(payload, list) else []
+
+
+def _task_log_stats(record: dict) -> tuple[int, int]:
+    relative_path = str(record.get("log_path") or "")
+    path = ROOT / relative_path if relative_path else None
+    if not path or not path.exists():
+        return 0, 0
+    try:
+        content = path.read_text(encoding="utf-8", errors="replace")
+        return len(content.splitlines()), path.stat().st_size
+    except OSError:
+        return 0, 0
+
+
+def _task_public_record(record: dict) -> dict:
+    public = dict(record)
+    lines, size = _task_log_stats(record)
+    public["lines"] = lines
+    public["bytes"] = size
+    public["run_status"] = str(public.get("run_status") or "completed")
+    if public["run_status"] == "running" and int(public.get("backend_pid") or 0) != os.getpid():
+        public["run_status"] = "failed"
+        public["status_detail"] = "后端重启后任务已中断"
+    return public
+
+
+def start_general_task_run(kind: str, title: str, scope: str, script_name: str = "") -> dict:
+    now = datetime.now().astimezone()
+    raw_id = now.strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:8]
+    task_id = "task:" + raw_id
+    log_path = TASK_RUNS_LOG_DIR / (raw_id + ".log")
+    kind_labels = {
+        "weekly-report": "周报生成",
+        "carrier-performance": "业绩摘要",
+        "audio-generation": "音频生成",
+    }
+    record = {
+        "task_id": task_id,
+        "task_run_id": raw_id,
+        "kind": kind,
+        "kind_label": kind_labels.get(kind, "后台任务"),
+        "title": title,
+        "scope": scope,
+        "script": script_name,
+        "run_status": "running",
+        "started_at_hkt": now.isoformat(timespec="seconds"),
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "backend_pid": os.getpid(),
+        "worker_pid": 0,
+        "phase": "任务启动",
+        "progress_detail": "后台已接收任务，正在准备执行。",
+        "heartbeat_at_hkt": now.isoformat(timespec="seconds"),
+        "log_path": str(log_path.relative_to(ROOT)),
+    }
+    with TASK_RUNS_LOCK:
+        TASK_RUNS_DIR.mkdir(parents=True, exist_ok=True)
+        TASK_RUNS_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        tasks = _task_read_local_index()
+        tasks.insert(0, record)
+        _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+        _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), record)
+        log_path.write_text(
+            "[" + now.isoformat(timespec="seconds") + "] 任务启动：" + title + "\n",
+            encoding="utf-8",
+        )
+    return record
+
+
+def append_general_task_log(task_id: str, text: object) -> None:
+    raw_id = str(task_id or "").removeprefix("task:")
+    if not raw_id or any(not (char.isalnum() or char in "_-") for char in raw_id):
+        return
+    log_path = TASK_RUNS_LOG_DIR / (raw_id + ".log")
+    value = str(text or "")
+    if not value:
+        return
+    with TASK_RUNS_LOCK:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with log_path.open("a", encoding="utf-8") as handle:
+            handle.write(value)
+            if not value.endswith("\n"):
+                handle.write("\n")
+
+
+def finish_general_task_run(task_id: str, ok: bool, detail: str = "") -> dict | None:
+    now = datetime.now().astimezone()
+    raw_id = str(task_id or "").removeprefix("task:")
+    updated = None
+    with TASK_RUNS_LOCK:
+        tasks = _task_read_local_index()
+        for task in tasks:
+            if str(task.get("task_id") or "") != task_id:
+                continue
+            started_text = str(task.get("started_at_hkt") or "")
+            try:
+                started = datetime.fromisoformat(started_text)
+                duration_ms = max(0, int((now - started).total_seconds() * 1000))
+            except (TypeError, ValueError):
+                duration_ms = 0
+            task["run_status"] = "completed" if ok else "failed"
+            task["completed_at_hkt"] = now.isoformat(timespec="seconds")
+            task["duration_ms"] = duration_ms
+            task["status_detail"] = detail
+            task["worker_pid"] = 0
+            task["phase"] = "已完成" if ok else "失败"
+            task["progress_detail"] = detail or ("任务全部步骤已完成。" if ok else "任务执行失败，请查看日志。")
+            task["heartbeat_at_hkt"] = now.isoformat(timespec="seconds")
+            updated = dict(task)
+            break
+        if updated:
+            _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+            _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), updated)
+    return updated
+
+
+def heartbeat_general_task_run(
+    task_id: str,
+    phase: str,
+    detail: str,
+    *,
+    worker_pid: int = 0,
+    append_log: bool = True,
+) -> dict | None:
+    """Persist report-task liveness even when the browser connection disappears."""
+    now = datetime.now().astimezone()
+    raw_id = str(task_id or "").removeprefix("task:")
+    updated = None
+    with TASK_RUNS_LOCK:
+        tasks = _task_read_local_index()
+        for task in tasks:
+            if str(task.get("task_id") or "") != task_id or task.get("run_status") != "running":
+                continue
+            task.update(
+                {
+                    "backend_pid": os.getpid(),
+                    "worker_pid": int(worker_pid or 0),
+                    "phase": str(phase or task.get("phase") or "执行中"),
+                    "progress_detail": str(detail or task.get("progress_detail") or "任务仍在执行。"),
+                    "heartbeat_at_hkt": now.isoformat(timespec="seconds"),
+                }
+            )
+            updated = dict(task)
+            break
+        if updated:
+            _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+            _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), updated)
+            if append_log:
+                log_path = TASK_RUNS_LOG_DIR / (raw_id + ".log")
+                with log_path.open("a", encoding="utf-8") as handle:
+                    handle.write(
+                        f"[监控心跳 {now.strftime('%H:%M:%S')}] 阶段：{updated['phase']}；"
+                        f"状态：{updated['progress_detail']}\n"
+                    )
+    return updated
+
+
+def reconcile_interrupted_general_tasks() -> list[dict]:
+    """Persistently close report tasks left running by an earlier backend process."""
+    now = datetime.now().astimezone()
+    reconciled: list[dict] = []
+    with TASK_RUNS_LOCK:
+        tasks = _task_read_local_index()
+        for task in tasks:
+            if task.get("run_status") != "running":
+                continue
+            raw_id = str(task.get("task_run_id") or str(task.get("task_id") or "").removeprefix("task:"))
+            log_path = ROOT / str(task.get("log_path") or "")
+            completed = now
+            if log_path.exists():
+                try:
+                    completed = datetime.fromtimestamp(log_path.stat().st_mtime, now.tzinfo)
+                except OSError:
+                    completed = now
+            try:
+                started = datetime.fromisoformat(str(task.get("started_at_hkt") or ""))
+                duration_ms = max(0, int((completed - started).total_seconds() * 1000))
+            except (TypeError, ValueError):
+                duration_ms = 0
+            detail = "后台服务已重新启动，原任务执行进程已不存在；已按最后心跳明确收尾。"
+            task.update(
+                {
+                    "run_status": "failed",
+                    "interrupted": True,
+                    "status_detail": detail,
+                    "completed_at_hkt": completed.isoformat(timespec="seconds"),
+                    "duration_ms": duration_ms,
+                    "worker_pid": 0,
+                    "phase": "已中断",
+                    "progress_detail": detail,
+                    "heartbeat_at_hkt": completed.isoformat(timespec="seconds"),
+                }
+            )
+            if log_path:
+                log_path.parent.mkdir(parents=True, exist_ok=True)
+                with log_path.open("a", encoding="utf-8") as handle:
+                    handle.write("[任务中断] " + detail + "\n")
+            _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), task)
+            reconciled.append(dict(task))
+        if reconciled:
+            _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+    return reconciled
+
+
+def reconcile_misclassified_general_tasks() -> list[dict]:
+    """Correct legacy report tasks that completed the DOCX but failed required audio generation."""
+    corrected: list[dict] = []
+    with TASK_RUNS_LOCK:
+        tasks = _task_read_local_index()
+        for task in tasks:
+            if task.get("run_status") != "completed" or task.get("kind") not in {"weekly-report", "carrier-performance"}:
+                continue
+            relative_log = str(task.get("log_path") or "")
+            if not relative_log:
+                continue
+            log_path = ROOT / relative_log
+            try:
+                content = log_path.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            failure_index = max(
+                content.rfind("❌ 语音摘要生成失败"),
+                content.rfind("Audio generation failed"),
+            )
+            success_index = content.rfind("语音摘要生成完成")
+            if failure_index < 0 or success_index > failure_index:
+                continue
+            failure_line = content[failure_index:].splitlines()[0].strip()
+            detail = failure_line or "语音摘要生成失败。"
+            task.update(
+                {
+                    "run_status": "failed",
+                    "status_detail": detail,
+                    "phase": "失败",
+                    "progress_detail": detail,
+                    "worker_pid": 0,
+                }
+            )
+            raw_id = str(task.get("task_run_id") or str(task.get("task_id") or "").removeprefix("task:"))
+            _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), task)
+            corrected.append(dict(task))
+        if corrected:
+            _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+    return corrected
+
+
+def _normalize_crawl_task(run: dict) -> dict:
+    crawl_id = str(run.get("crawl_run_id") or "")
+    stream = run.get("stream_log") if isinstance(run.get("stream_log"), dict) else {}
+    return {
+        "task_id": "crawl:" + crawl_id,
+        "task_run_id": crawl_id,
+        "kind": "crawl",
+        "kind_label": "爬虫",
+        "title": str(run.get("trigger") or "爬虫任务"),
+        "scope": str(run.get("scope") or "未记录范围"),
+        "run_status": str(run.get("run_status") or "completed"),
+        "started_at_hkt": str(run.get("started_at_hkt") or ""),
+        "completed_at_hkt": str(run.get("completed_at_hkt") or ""),
+        "duration_ms": int(run.get("duration_ms") or 0),
+        "lines": int(stream.get("lines") or 0),
+        "bytes": int(stream.get("bytes") or 0),
+        "status_detail": str(run.get("status_detail") or ""),
+        "interrupted": bool(run.get("interrupted")),
+        "backend_pid": int(run.get("backend_pid") or 0),
+        "worker_pid": int(run.get("worker_pid") or 0),
+        "phase": str(run.get("phase") or ""),
+        "progress_detail": str(run.get("progress_detail") or ""),
+        "heartbeat_at_hkt": str(run.get("heartbeat_at_hkt") or ""),
+        "source": "crawl-archive",
+    }
+
+
+def load_unified_task_index(limit: int = 50) -> list[dict]:
+    tasks = [_task_public_record(item) for item in _task_read_local_index()]
+    tasks.extend(
+        _normalize_crawl_task(item)
+        for item in load_crawl_run_index()
+        if isinstance(item, dict) and item.get("crawl_run_id")
+    )
+    tasks.sort(
+        key=lambda item: str(item.get("started_at_hkt") or item.get("completed_at_hkt") or ""),
+        reverse=True,
+    )
+    return tasks[:limit]
+
+
+def load_unified_task_log(task_id: str) -> dict:
+    task_id = str(task_id or "").strip()
+    if task_id.startswith("crawl:"):
+        crawl_id = task_id.removeprefix("crawl:")
+        result = load_crawl_run_log(crawl_id)
+        if result.get("ok"):
+            run = result.get("run") if isinstance(result.get("run"), dict) else {}
+            result["task"] = _normalize_crawl_task(run)
+        return result
+    if not task_id.startswith("task:"):
+        return {"ok": False, "error": "无效的任务编号。"}
+    record = next(
+        (item for item in _task_read_local_index() if str(item.get("task_id") or "") == task_id),
+        None,
+    )
+    if not record:
+        return {"ok": False, "error": "未找到该任务记录。"}
+    task = _task_public_record(record)
+    relative_path = str(record.get("log_path") or "")
+    log_path = ROOT / relative_path if relative_path else None
+    try:
+        content = log_path.read_text(encoding="utf-8", errors="replace") if log_path and log_path.exists() else ""
+    except OSError as exc:
+        return {"ok": False, "error": "任务日志读取失败：" + str(exc)}
+    run = {
+        "run_status": task.get("run_status"),
+        "started_at_hkt": task.get("started_at_hkt"),
+        "completed_at_hkt": task.get("completed_at_hkt"),
+        "duration_ms": task.get("duration_ms"),
+    }
+    return {
+        "ok": True,
+        "task": task,
+        "run": run,
+        "content": content,
+        "lines": int(task.get("lines") or 0),
+        "bytes": int(task.get("bytes") or 0),
+    }
+
+
+def _task_phase_from_payload(payload: dict, current: str) -> tuple[str, str]:
+    event_type = str(payload.get("type") or "")
+    if event_type == "agent_trace":
+        trace = payload.get("trace") if isinstance(payload.get("trace"), dict) else {}
+        return str(trace.get("node") or "Agent 审核"), str(trace.get("message") or "Agent 正在处理审核节点。")
+    if event_type == "done":
+        return "任务收尾", str(payload.get("message") or "执行步骤已结束，正在持久化最终状态。")
+    text = str(payload.get("text") or payload.get("message") or "").strip()
+    if not text:
+        return current or "执行中", "任务仍在执行，等待下一条业务进度。"
+    if "语音" in text or "TTS" in text:
+        phase = "生成语音摘要"
+    elif "飞书" in text or "同步" in text:
+        phase = "飞书同步"
+    elif any(token in text for token in ("搜索验证", "事实抽取", "质量审计", "冲突仲裁", "主体校验", "Agent")):
+        phase = "Agent 审核"
+    elif "补爬" in text:
+        phase = "缺口补爬"
+    elif any(token in text for token in ("crawl row", "抓取", "状态码", "URL")):
+        phase = "网页抓取"
+    elif any(token in text for token in ("报告", "模板", "周报", "业绩摘要")):
+        phase = "报告生成"
+    else:
+        phase = current or "执行中"
+    return phase, text[:360]
+
+
+def observe_task_progress(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+    if not isinstance(payload, dict) or not getattr(handler, "_task_monitor_kind", ""):
+        return
+    phase, detail = _task_phase_from_payload(payload, str(getattr(handler, "_task_monitor_phase", "") or ""))
+    handler._task_monitor_phase = phase
+    handler._task_monitor_detail = detail
+    if getattr(handler, "_task_monitor_kind", "") == "crawl":
+        CRAWL_PIPELINE_STATE.update({"phase": phase, "detail": detail})
+
+
+def _task_monitor_loop(handler: BaseHTTPRequestHandler, owner: threading.Thread) -> None:
+    stop_event = handler._task_monitor_stop
+    while not stop_event.wait(TASK_HEARTBEAT_INTERVAL_SECONDS):
+        task_id = str(getattr(handler, "_task_monitor_id", "") or "")
+        kind = str(getattr(handler, "_task_monitor_kind", "") or "")
+        phase = str(getattr(handler, "_task_monitor_phase", "") or "执行中")
+        detail = str(getattr(handler, "_task_monitor_detail", "") or "任务仍在执行，等待下一条业务进度。")
+        worker_pid = int(getattr(handler, "_task_worker_pid", 0) or 0)
+        if not owner.is_alive():
+            reason = f"任务执行线程意外结束；最后阶段：{phase}；最后进度：{detail}"
+            if kind == "crawl":
+                mark_crawl_run_interrupted(task_id, reason)
+            elif kind == "general":
+                append_general_task_log(task_id, "[任务中断] " + reason)
+                finish_general_task_run(task_id, False, reason)
+            return
+        if kind == "crawl":
+            heartbeat_crawl_run(task_id, phase, detail, worker_pid=worker_pid, append_log=True)
+        elif kind == "general":
+            heartbeat_general_task_run(task_id, phase, detail, worker_pid=worker_pid, append_log=True)
+
+
+def start_task_lifecycle_monitor(
+    handler: BaseHTTPRequestHandler,
+    kind: str,
+    task_id: str,
+    phase: str,
+) -> None:
+    handler._task_monitor_kind = kind
+    handler._task_monitor_id = task_id
+    handler._task_monitor_phase = phase
+    handler._task_monitor_detail = "后台任务已启动，持续监控中。"
+    handler._task_worker_pid = 0
+    handler._task_monitor_stop = threading.Event()
+    if kind == "crawl":
+        heartbeat_crawl_run(task_id, phase, handler._task_monitor_detail, append_log=False)
+    else:
+        heartbeat_general_task_run(task_id, phase, handler._task_monitor_detail, append_log=False)
+    monitor = threading.Thread(
+        target=_task_monitor_loop,
+        args=(handler, threading.current_thread()),
+        name=f"task-monitor-{task_id}",
+        daemon=True,
+    )
+    handler._task_monitor_thread = monitor
+    monitor.start()
+
+
+def stop_task_lifecycle_monitor(handler: BaseHTTPRequestHandler) -> None:
+    stop_event = getattr(handler, "_task_monitor_stop", None)
+    if stop_event:
+        stop_event.set()
+
+
+_ORIGINAL_WRITE_SSE = write_sse
+_ORIGINAL_STREAM_REPORT_GENERATION = stream_report_generation
+
+
+def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+    observe_task_progress(handler, payload)
+    task_id = str(getattr(handler, "_general_task_run_id", "") or "")
+    if task_id and isinstance(payload, dict):
+        event_type = str(payload.get("type") or "")
+        if event_type == "log" and payload.get("text"):
+            append_general_task_log(task_id, payload.get("text"))
+        elif event_type == "done":
+            ok = bool(payload.get("ok", True))
+            detail = str(payload.get("error") or payload.get("message") or "")
+            append_general_task_log(task_id, "任务完成。" if ok else "任务失败：" + (detail or "未提供原因"))
+            finish_general_task_run(task_id, ok, detail)
+            handler._general_task_finished = True
+    _ORIGINAL_WRITE_SSE(handler, payload)
+
+
+def stream_report_generation(handler: BaseHTTPRequestHandler, script_name: str, report_kind: str) -> None:
+    if report_kind == "weekly":
+        kind = "weekly-report"
+        title = "生成周报"
+        scope = "战略部每周周报"
+    else:
+        kind = "carrier-performance"
+        title = "生成业绩摘要"
+        scope = "运营商业绩摘要"
+    task = start_general_task_run(kind, title, scope, script_name)
+    task_id = str(task["task_id"])
+    handler._general_task_run_id = task_id
+    handler._general_task_finished = False
+    start_task_lifecycle_monitor(handler, "general", task_id, "报告生成")
+    try:
+        result = _ORIGINAL_STREAM_REPORT_GENERATION(handler, script_name, report_kind)
+        if not handler._general_task_finished:
+            append_general_task_log(task_id, "任务执行结束。")
+            finish_general_task_run(task_id, True, "")
+            handler._general_task_finished = True
+        return result
+    except Exception as exc:
+        append_general_task_log(task_id, "任务异常：" + str(exc))
+        finish_general_task_run(task_id, False, str(exc))
+        handler._general_task_finished = True
+        raise
+    finally:
+        stop_task_lifecycle_monitor(handler)
+        handler._general_task_run_id = ""
+
+
+def start_audio_generation_task(target: Path, force: bool = True) -> tuple[dict, bool]:
+    target_key = str(target.resolve())
+    with TASK_RUNS_LOCK:
+        existing = next(
+            (
+                task
+                for task in _task_read_local_index()
+                if task.get("kind") == "audio-generation"
+                and task.get("run_status") == "running"
+                and str(task.get("target_path") or "") == target_key
+            ),
+            None,
+        )
+    if existing:
+        return _task_public_record(existing), False
+
+    task = start_general_task_run(
+        "audio-generation",
+        "生成音频摘要",
+        target.name,
+        "tts_service.py",
+    )
+    task_id = str(task["task_id"])
+    raw_id = str(task["task_run_id"])
+    with TASK_RUNS_LOCK:
+        tasks = _task_read_local_index()
+        for record in tasks:
+            if str(record.get("task_id") or "") == task_id:
+                record["target_path"] = target_key
+                task = dict(record)
+                break
+        _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+        _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), task)
+
+    def worker() -> None:
+        code = (
+            "import sys, json\n"
+            "from pathlib import Path\n"
+            "from tts_service import synthesize_report_audio\n"
+            "try:\n"
+            "    res = synthesize_report_audio(Path(sys.argv[1]), force=sys.argv[2] == 'True')\n"
+            "    print(json.dumps({'ok': True, 'result': res}))\n"
+            "except Exception as e:\n"
+            "    print(json.dumps({'ok': False, 'error': str(e)}))\n"
+        )
+        proc_audio: subprocess.Popen[str] | None = None
+        try:
+            append_general_task_log(task_id, f"开始为报告生成音频摘要：{target.name}")
+            proc_audio = subprocess.Popen(
+                [sys.executable, "-c", code, str(target), str(bool(force))],
+                cwd=str(ROOT),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            heartbeat_general_task_run(
+                task_id,
+                "生成语音摘要",
+                "公司内网 TTS 正在生成并统一处理音频。",
+                worker_pid=proc_audio.pid,
+                append_log=True,
+            )
+            while proc_audio.poll() is None:
+                try:
+                    proc_audio.wait(timeout=TASK_HEARTBEAT_INTERVAL_SECONDS)
+                except subprocess.TimeoutExpired:
+                    heartbeat_general_task_run(
+                        task_id,
+                        "生成语音摘要",
+                        "公司内网 TTS 仍在处理，任务持续跟踪中。",
+                        worker_pid=proc_audio.pid,
+                        append_log=False,
+                    )
+            stdout, stderr = proc_audio.communicate()
+            try:
+                payload = json.loads(stdout or "{}")
+            except json.JSONDecodeError as exc:
+                raise RuntimeError(f"音频服务返回无法解析：{stderr.strip() or stdout.strip() or exc}") from exc
+            if proc_audio.returncode != 0 or not payload.get("ok"):
+                raise RuntimeError(str(payload.get("error") or stderr.strip() or "音频生成失败"))
+            result = payload.get("result") if isinstance(payload.get("result"), dict) else {}
+            if not result.get("ok"):
+                raise RuntimeError(str(result.get("error") or "音频生成失败"))
+            audio = result.get("audio") if isinstance(result.get("audio"), dict) else {}
+            backend = str(result.get("backend") or "unknown")
+            audio_name = str(audio.get("name") or "音频摘要")
+            detail = f"音频摘要已生成：{audio_name}（{backend}）"
+            append_general_task_log(task_id, detail)
+            finish_general_task_run(task_id, True, detail)
+        except Exception as exc:
+            detail = str(exc) or "音频生成失败"
+            append_general_task_log(task_id, "音频生成失败：" + detail)
+            finish_general_task_run(task_id, False, detail)
+
+    threading.Thread(
+        target=worker,
+        name="audio-task-" + raw_id,
+        daemon=True,
+    ).start()
+    return _task_public_record(task), True
+
+
 class AppHandler(BaseHTTPRequestHandler):
     server_version = "WeeklyReportUI/1.0"
 
@@ -1520,9 +2406,6 @@ class AppHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/":
             self.serve_head(STATIC_DIR / "index.html")
-            return
-        if parsed.path in {"/settings", "/settings.html"}:
-            self.serve_head(STATIC_DIR / "settings.html")
             return
         if parsed.path in {"/company-data", "/company-data.html"}:
             self.serve_head(STATIC_DIR / "company-data.html")
@@ -1571,20 +2454,23 @@ class AppHandler(BaseHTTPRequestHandler):
         if path == "/":
             self.serve_file(STATIC_DIR / "index.html")
             return
-        if path in {"/settings", "/settings.html"}:
-            self.serve_file(STATIC_DIR / "settings.html")
-            return
         if path in {"/company-data", "/company-data.html"}:
             self.serve_file(STATIC_DIR / "company-data.html")
-            return
-        if path in {"/schedule", "/schedule.html"}:
-            self.serve_file(STATIC_DIR / "schedule.html")
             return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
             return
-        if path == "/api/settings":
-            json_response(self, {"ok": True, "settings": build_settings_payload()})
+        if path == "/api/strategic-briefs":
+            try:
+                from strategic_briefing import public_snapshot
+
+                json_response(self, {"ok": True, **public_snapshot()})
+            except Exception as exc:
+                json_response(
+                    self,
+                    {"ok": False, "error": str(exc), "items": []},
+                    status=500,
+                )
             return
         if path == "/api/company-metrics":
             json_response(
@@ -1659,6 +2545,20 @@ class AppHandler(BaseHTTPRequestHandler):
                 },
             )
             return
+        if path == "/api/task-runs":
+            query = parse_qs(parsed.query)
+            try:
+                limit = max(1, min(100, int(query.get("limit", ["50"])[0])))
+            except Exception:
+                limit = 50
+            json_response(self, {"ok": True, "tasks": load_unified_task_index(limit)})
+            return
+        if path == "/api/task-run-log":
+            query = parse_qs(parsed.query)
+            task_id = str(query.get("id", [""])[0] or "")
+            result = load_unified_task_log(task_id)
+            json_response(self, result, 200 if result.get("ok") else 404)
+            return
         if path == "/api/crawl-runs":
             query = parse_qs(parsed.query)
             try:
@@ -1667,6 +2567,20 @@ class AppHandler(BaseHTTPRequestHandler):
                 limit = 20
             json_response(self, {"ok": True, "runs": load_crawl_run_index()[:limit]})
             return
+        if path == "/api/crawl-run-log":
+            query = parse_qs(parsed.query)
+            crawl_run_id = str(query.get("id", [""])[0] or "")
+            result = load_crawl_run_log(crawl_run_id)
+            json_response(self, result, 200 if result.get("ok") else 404)
+            return
+        if path == "/api/curation-quality-records":
+            query = parse_qs(parsed.query)
+            run_id = str(query.get("runId", [""])[0] or "")
+            result = load_curation_quality_records(run_id)
+            status = 200 if result.get("ok") else (202 if result.get("pending") else 400)
+            json_response(self, result, status)
+            return
+
         if path == "/api/dashboard":
             try:
                 # Check cache first
@@ -1911,21 +2825,6 @@ class AppHandler(BaseHTTPRequestHandler):
                 traceback.print_exc()
                 json_response(self, {"ok": False, "error": str(exc)}, 500)
             return
-        if path == "/api/schedule":
-            try:
-                rows = crawl.parse_latest_sheet()
-                for r in rows:
-                    res_path = ROOT / "results" / f"row_{r['row']}.json"
-                    if res_path.exists():
-                        try:
-                            data = json.loads(res_path.read_text(encoding="utf-8"))
-                            r["last_fetched"] = data.get("fetched_at_hkt")
-                        except Exception:
-                            pass
-                json_response(self, {"ok": True, "rows": rows})
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
         if path == "/api/ai-config":
             json_response(self, {"ok": True, "config": load_ai_config(include_key=False)})
             return
@@ -1974,267 +2873,369 @@ class AppHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
         if parsed.path == "/api/crawl":
-            json_response(self, run_crawl())
+            if not CRAWL_PIPELINE_LOCK.acquire(blocking=False):
+                json_response(
+                    self,
+                    {"ok": False, "error": "已有手动全量爬虫正在运行，请等待其完成。", "active": dict(CRAWL_PIPELINE_STATE)},
+                    409,
+                )
+                return
+            CRAWL_PIPELINE_STATE.clear()
+            CRAWL_PIPELINE_STATE.update({"status": "running", "startedAt": datetime.now().astimezone().isoformat(timespec="seconds")})
+            try:
+                json_response(self, run_crawl())
+            finally:
+                CRAWL_PIPELINE_STATE.clear()
+                CRAWL_PIPELINE_LOCK.release()
             return
         if parsed.path == "/api/crawl-stream":
-            self.send_response(200)
-            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
-            self.send_header("Cache-Control", "no-cache")
-            self.end_headers()
-            
-            started = time.time()
-            proc = subprocess.Popen(
-                [sys.executable, "-u", str(ROOT / "crawl.py")],
-                cwd=str(ROOT),
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1,
-            )
-            for line in proc.stdout:
-                payload = json.dumps(sse_payload_from_process_line(line.strip()), ensure_ascii=False)
-                self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                self.wfile.flush()
-
-            proc.wait()
-            log_sheet_id = ""
-            log_sheet_title = ""
-            crawl_failed_count = 0
-            sync_result = {}
-            metrics_refresh = {}
-            trace_sync = {}
-
-            # Sync to Feishu after full crawl
-            if proc.returncode == 0 and (ROOT / "write_payload.json").exists():
-                sync_proc = subprocess.run([sys.executable, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"], capture_output=True, text=True)
-                if sync_proc.returncode != 0:
-                    payload = json.dumps({"type": "log", "text": f"同步飞书失败: {sync_proc.stderr[-500:]}"}, ensure_ascii=False)
-                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-                    proc.returncode = sync_proc.returncode
-                else:
-                    sync_result = json_object_from_output(sync_proc.stdout)
-                    log_sheet_id = str(sync_result.get("log_sheet_id") or "")
-                    log_sheet_title = str(sync_result.get("log_sheet_title") or "")
-                    payload = json.dumps(
-                        {
-                            "type": "log",
-                            "text": "✅ 飞书表格同步成功！"
-                            + (f" 日志页：{log_sheet_title}" if log_sheet_title else ""),
-                        },
-                        ensure_ascii=False,
-                    )
-                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-
-                # Update supplementary JSON configs with newly extracted data
-                update_proc = subprocess.run([sys.executable, str(ROOT / "update_sources_from_crawl.py")], capture_output=True, text=True)
-                if update_proc.returncode != 0:
-                    payload = json.dumps({"type": "log", "text": f"⚠️ 业绩补充桥接更新异常: {update_proc.stderr[-200:]}"}, ensure_ascii=False)
-                    self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-                else:
-                    if update_proc.stdout.strip():
-                        payload = json.dumps({"type": "log", "text": f"ℹ️ 业绩补充配置同步：{update_proc.stdout.strip()}"}, ensure_ascii=False)
-                        self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                        self.wfile.flush()
-
-                performance_sync = run_carrier_performance_sync()
-                if performance_sync["ok"]:
-                    payload = json.dumps(
-                        {"type": "log", "text": "✅ 运营商业绩摘要补充页已同步并通过五类字段校验。"},
-                        ensure_ascii=False,
-                    )
-                else:
-                    payload = json.dumps(
-                        {
-                            "type": "log",
-                            "text": "运营商业绩摘要补充页同步失败: "
-                            + (performance_sync["stderr"] or performance_sync["stdout"])[-500:],
-                        },
-                        ensure_ascii=False,
-                    )
-                    proc.returncode = proc.returncode or performance_sync["returnCode"]
-                self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                self.wfile.flush()
-
-                payload = json.dumps(
-                    {
-                        "type": "log",
-                        "text": "开始多 Agent 数据整理：来源分类、事实抽取、主体校验、质量审计、冲突仲裁和缺口补爬...",
-                    },
-                    ensure_ascii=False,
+            # crawl-pipeline-lock:v1
+            if not CRAWL_PIPELINE_LOCK.acquire(blocking=False):
+                json_response(
+                    self,
+                    {"ok": False, "error": "已有手动全量爬虫正在运行，请等待其完成。", "active": dict(CRAWL_PIPELINE_STATE)},
+                    409,
                 )
-                self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                self.wfile.flush()
-                metrics_refresh = stream_company_metrics_refresh(self)
-                if metrics_refresh["ok"]:
-                    summary = metrics_refresh["summary"]
-                    payload = json.dumps(
-                        {
-                            "type": "log",
-                            "text": (
-                                "✅ 公司指标页已更新："
-                                f"{summary.get('companies', 0)} 家公司、"
-                                f"{summary.get('metrics', 0)} 类指标、"
-                                f"{summary.get('records', 0)} 条通过校验的记录。"
-                            ),
-                        },
-                        ensure_ascii=False,
-                    )
-                else:
-                    payload = json.dumps(
-                        {
-                            "type": "log",
-                            "text": "❌ 公司指标页 AI 整理失败: "
-                            + (metrics_refresh["stderr"] or metrics_refresh["stdout"])[-500:],
-                        },
-                        ensure_ascii=False,
-                    )
-                    proc.returncode = proc.returncode or metrics_refresh["returnCode"]
-                self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-                self.wfile.flush()
+                return
+            CRAWL_PIPELINE_STATE.clear()
+            CRAWL_PIPELINE_STATE.update({"status": "starting", "startedAt": datetime.now().astimezone().isoformat(timespec="seconds")})
+            crawl_run_id = ""
+            proc = None
+            try:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+                self.send_header("Cache-Control", "no-cache")
+                self.end_headers()
 
-                if metrics_refresh["ok"] and log_sheet_id:
-                    latest_curation = load_curation_status()
-                    agent_run_id = str(latest_curation.get("run_id") or "")
-                    write_sse(
-                        self,
-                        {
-                            "type": "agent_trace",
-                            "trace": {
-                                "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
-                                "run_id": agent_run_id,
-                                "node": "飞书审计日志",
-                                "phase": "tool_call",
-                                "event_type": "tool_call",
-                                "message": f"将 Agent 处理流程和结果写入飞书日志页 {log_sheet_title or log_sheet_id}。",
-                                "tool": "daily_crawl_and_write.py --append-agent-trace",
-                                "input": {
-                                    "sheetId": log_sheet_id,
-                                    "sheetTitle": log_sheet_title,
-                                    "runId": agent_run_id,
-                                },
-                            },
-                        },
+                started = time.time()
+                started_at_hkt = datetime.now().astimezone().isoformat(timespec="seconds")
+                crawl_scope = "全量（第2-34行）"
+                started_record = start_crawl_run(trigger="手动全量", scope=crawl_scope)
+                crawl_run_id = str(started_record["crawl_run_id"])
+                CRAWL_PIPELINE_STATE.update({"status": "running", "crawlRunId": crawl_run_id, "startedAt": started_at_hkt, "scope": crawl_scope})
+                self._crawl_stream_log_path = Path(started_record["stream_log_path"])
+                self._crawl_stream_mirror_path = ROOT / "latest_crawl_stream.log"
+                start_task_lifecycle_monitor(self, "crawl", crawl_run_id, "网页抓取")
+                try:
+                    self._crawl_stream_mirror_path.write_text("", encoding="utf-8")
+                except OSError:
+                    pass
+                write_sse(
+                    self,
+                    {
+                        "type": "run_start",
+                        "crawlRunId": crawl_run_id,
+                        "startedAt": started_at_hkt,
+                        "trigger": "手动全量",
+                        "scope": crawl_scope,
+                    },
+                )
+                crawl_env = os.environ.copy()
+                crawl_env.pop("CMHK_ROWS", None)
+                crawl_env["CMHK_CRAWL_TRIGGER"] = "手动全量"
+                crawl_env["CMHK_CRAWL_SCOPE"] = "全量（第2-34行）"
+                proc = subprocess.Popen(
+                    [sys.executable, "-u", str(ROOT / "crawl.py")],
+                    cwd=str(ROOT),
+                    env=crawl_env,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                )
+                self._task_worker_pid = proc.pid
+                for line in proc.stdout:
+                    write_sse(self, sse_payload_from_process_line(line.strip()))
+
+                proc.wait()
+                self._task_worker_pid = 0
+                self._task_monitor_phase = "飞书同步"
+                self._task_monitor_detail = "网页抓取进程已结束，正在同步结果并执行后续审核。"
+                log_sheet_id = ""
+                log_sheet_title = ""
+                crawl_failed_count = 0
+                sync_result = {}
+                metrics_refresh = {}
+                trace_sync = {}
+
+                # Sync to Feishu after full crawl
+                if proc.returncode == 0 and (ROOT / "write_payload.json").exists():
+                    sync_proc = subprocess.run(
+                        [sys.executable, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"],
+                        env=crawl_env,
+                        capture_output=True,
+                        text=True,
                     )
-                    trace_sync = append_agent_trace_to_feishu_log(log_sheet_id, agent_run_id)
-                    trace_result = trace_sync.get("result") or {}
-                    write_sse(
-                        self,
+                    if sync_proc.returncode != 0:
+                        write_sse(self, {"type": "log", "text": f"同步飞书失败: {sync_proc.stderr[-500:]}"})
+                        proc.returncode = sync_proc.returncode
+                    else:
+                        sync_result = json_object_from_output(sync_proc.stdout)
+                        log_sheet_id = str(sync_result.get("log_sheet_id") or "")
+                        log_sheet_title = str(sync_result.get("log_sheet_title") or "")
+                        write_sse(
+                            self,
+                            {
+                                "type": "log",
+                                "text": "✅ 飞书表格同步成功！"
+                                + (f" 日志页：{log_sheet_title}" if log_sheet_title else ""),
+                            },
+                        )
+
+                    # Update supplementary JSON configs with newly extracted data
+                    update_proc = subprocess.run([sys.executable, str(ROOT / "update_sources_from_crawl.py")], capture_output=True, text=True)
+                    if update_proc.returncode != 0:
+                        write_sse(self, {"type": "log", "text": f"⚠️ 业绩补充桥接更新异常: {update_proc.stderr[-200:]}"})
+                    else:
+                        if update_proc.stdout.strip():
+                            write_sse(self, {"type": "log", "text": f"ℹ️ 业绩补充配置同步：{update_proc.stdout.strip()}"})
+
+                    performance_sync = run_carrier_performance_sync()
+                    if performance_sync["ok"]:
+                        payload = json.dumps(
+                            {"type": "log", "text": "✅ 运营商业绩摘要补充页已同步并通过五类字段校验。"},
+                            ensure_ascii=False,
+                        )
+                    else:
+                        payload = json.dumps(
+                            {
+                                "type": "log",
+                                "text": "运营商业绩摘要补充页同步失败: "
+                                + (performance_sync["stderr"] or performance_sync["stdout"])[-500:],
+                            },
+                            ensure_ascii=False,
+                        )
+                        proc.returncode = proc.returncode or performance_sync["returnCode"]
+                    write_sse(self, json.loads(payload))
+
+                    payload = json.dumps(
                         {
-                            "type": "agent_trace",
-                            "trace": {
-                                "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
-                                "run_id": agent_run_id,
-                                "node": "飞书审计日志",
-                                "phase": "tool_result",
-                                "event_type": "tool_result",
-                                "message": (
-                                    f"Agent 流程已写入飞书，共 {trace_result.get('trace_rows', 0)} 条并完成回读校验。"
-                                    if trace_sync["ok"]
-                                    else "Agent 流程写入飞书失败。"
+                            "type": "log",
+                            "text": "开始多 Agent 数据整理：来源分类、事实抽取、主体校验、质量审计、冲突仲裁和缺口补爬...",
+                        },
+                        ensure_ascii=False,
+                    )
+                    write_sse(self, json.loads(payload))
+                    metrics_refresh = stream_company_metrics_refresh(self)
+                    if metrics_refresh["ok"]:
+                        summary = metrics_refresh["summary"]
+                        payload = json.dumps(
+                            {
+                                "type": "log",
+                                "text": (
+                                    "✅ 公司指标页已更新："
+                                    f"{summary.get('companies', 0)} 家公司、"
+                                    f"{summary.get('metrics', 0)} 类指标、"
+                                    f"{summary.get('records', 0)} 条通过校验的记录。"
                                 ),
-                                "tool": "daily_crawl_and_write.py --append-agent-trace",
-                                "result": {
-                                    "ok": trace_sync["ok"],
-                                    "sheetId": log_sheet_id,
-                                    "sheetTitle": log_sheet_title,
-                                    "range": trace_result.get("range", ""),
-                                    "traceRows": trace_result.get("trace_rows", 0),
-                                    "error": (trace_sync["stderr"] or trace_sync["stdout"])[-500:]
-                                    if not trace_sync["ok"]
-                                    else "",
+                            },
+                            ensure_ascii=False,
+                        )
+                    else:
+                        payload = json.dumps(
+                            {
+                                "type": "log",
+                                "text": "❌ 公司指标页 AI 整理失败: "
+                                + (metrics_refresh["stderr"] or metrics_refresh["stdout"])[-500:],
+                            },
+                            ensure_ascii=False,
+                        )
+                        proc.returncode = proc.returncode or metrics_refresh["returnCode"]
+                    write_sse(self, json.loads(payload))
+
+                    if metrics_refresh["ok"] and log_sheet_id:
+                        latest_curation = load_curation_status()
+                        agent_run_id = str(latest_curation.get("run_id") or "")
+                        write_sse(
+                            self,
+                            {
+                                "type": "agent_trace",
+                                "trace": {
+                                    "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
+                                    "run_id": agent_run_id,
+                                    "node": "飞书审计日志",
+                                    "phase": "tool_call",
+                                    "event_type": "tool_call",
+                                    "message": f"将 Agent 处理流程和结果写入飞书日志页 {log_sheet_title or log_sheet_id}。",
+                                    "tool": "daily_crawl_and_write.py --append-agent-trace",
+                                    "input": {
+                                        "sheetId": log_sheet_id,
+                                        "sheetTitle": log_sheet_title,
+                                        "runId": agent_run_id,
+                                    },
                                 },
                             },
-                        },
-                    )
-                    if not trace_sync["ok"]:
+                        )
+                        trace_sync = append_agent_trace_to_feishu_log(log_sheet_id, agent_run_id)
+                        trace_result = trace_sync.get("result") or {}
+                        write_sse(
+                            self,
+                            {
+                                "type": "agent_trace",
+                                "trace": {
+                                    "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
+                                    "run_id": agent_run_id,
+                                    "node": "飞书审计日志",
+                                    "phase": "tool_result",
+                                    "event_type": "tool_result",
+                                    "message": (
+                                        f"Agent 流程已写入飞书，共 {trace_result.get('trace_rows', 0)} 条并完成回读校验。"
+                                        if trace_sync["ok"]
+                                        else "Agent 流程写入飞书失败。"
+                                    ),
+                                    "tool": "daily_crawl_and_write.py --append-agent-trace",
+                                    "result": {
+                                        "ok": trace_sync["ok"],
+                                        "sheetId": log_sheet_id,
+                                        "sheetTitle": log_sheet_title,
+                                        "range": trace_result.get("range", ""),
+                                        "traceRows": trace_result.get("trace_rows", 0),
+                                        "error": (trace_sync["stderr"] or trace_sync["stdout"])[-500:]
+                                        if not trace_sync["ok"]
+                                        else "",
+                                    },
+                                },
+                            },
+                        )
+                        if not trace_sync["ok"]:
+                            write_sse(
+                                self,
+                                {
+                                    "type": "log",
+                                    "text": (
+                                        "⚠️ 爬取、主表同步和 Agent 整理均已完成；"
+                                        "仅飞书审计日志追加失败，可稍后重试，不影响本轮数据结果。"
+                                    ),
+                                },
+                            )
+                    elif metrics_refresh["ok"]:
+                        write_sse(
+                            self,
+                            {
+                                "type": "log",
+                                "text": "⚠️ Agent 已完成，但未取得本次飞书日志页 ID，未能追加 Agent 审计区块。",
+                            },
+                        )
+
+                try:
+                    run_log_path = ROOT / "run_log.json"
+                    if run_log_path.exists():
+                        with run_log_path.open("r", encoding="utf-8") as f:
+                            run_log_data = json.load(f)
+                        success_items = []
+                        failure_items = []
+                        for item in run_log_data:
+                            url = item.get("url", "")
+                            status = int(item.get("http_status") or 0)
+                            used_fallback = str(
+                                item.get("evidence_fallback_used") or ""
+                            ).lower() in {"1", "true", "yes"}
+                            if 200 <= status < 400 and not used_fallback:
+                                success_items.append({"url": url, "reason": "OK"})
+                            else:
+                                reason = (
+                                    item.get("fallback_reason")
+                                    if used_fallback
+                                    else item.get("error")
+                                    or item.get("skip_reason")
+                                    or f"HTTP {status}"
+                                )
+                                failure_items.append({"url": url, "reason": reason})
+                        crawl_failed_count = len(failure_items)
+                        summary_payload = json.dumps({
+                            "type": "crawl_summary",
+                            "success": success_items,
+                            "failed": failure_items,
+                            "total": len(run_log_data)
+                        }, ensure_ascii=False)
+                        write_sse(self, json.loads(summary_payload))
+                except Exception as e:
+                    pass
+
+                duration_ms = round((time.time() - started) * 1000)
+                runtime_sync_script = ROOT / "sync_scheduler_runtime.sh"
+                if proc.returncode == 0 and runtime_sync_script.exists():
+                    try:
+                        runtime_sync = subprocess.run(
+                            [str(runtime_sync_script)],
+                            cwd=str(ROOT),
+                            capture_output=True,
+                            text=True,
+                            timeout=120,
+                        )
+                    except Exception as exc:
                         write_sse(
                             self,
                             {
                                 "type": "log",
                                 "text": (
-                                    "⚠️ 爬取、主表同步和 Agent 整理均已完成；"
-                                    "仅飞书审计日志追加失败，可稍后重试，不影响本轮数据结果。"
+                                    "后台调度运行副本同步异常，已保留本轮结果并继续登记："
+                                    f"{type(exc).__name__}: {exc}"
                                 ),
                             },
                         )
-                elif metrics_refresh["ok"]:
-                    write_sse(
-                        self,
-                        {
-                            "type": "log",
-                            "text": "⚠️ Agent 已完成，但未取得本次飞书日志页 ID，未能追加 Agent 审计区块。",
-                        },
-                    )
-
-            try:
-                run_log_path = ROOT / "run_log.json"
-                if run_log_path.exists():
-                    with run_log_path.open("r", encoding="utf-8") as f:
-                        run_log_data = json.load(f)
-                    success_items = []
-                    failure_items = []
-                    for item in run_log_data:
-                        url = item.get("url", "")
-                        status = int(item.get("http_status") or 0)
-                        used_fallback = str(
-                            item.get("evidence_fallback_used") or ""
-                        ).lower() in {"1", "true", "yes"}
-                        if 200 <= status < 400 and not used_fallback:
-                            success_items.append({"url": url, "reason": "OK"})
-                        else:
-                            reason = (
-                                item.get("fallback_reason")
-                                if used_fallback
-                                else item.get("error")
-                                or item.get("skip_reason")
-                                or f"HTTP {status}"
+                    else:
+                        if runtime_sync.returncode != 0:
+                            write_sse(
+                                self,
+                                {
+                                    "type": "log",
+                                    "text": f"后台调度运行副本同步失败，已继续登记：{runtime_sync.stderr[-500:]}",
+                                },
                             )
-                            failure_items.append({"url": url, "reason": reason})
-                    crawl_failed_count = len(failure_items)
-                    summary_payload = json.dumps({
-                        "type": "crawl_summary",
-                        "success": success_items,
-                        "failed": failure_items,
-                        "total": len(run_log_data)
-                    }, ensure_ascii=False)
-                    self.wfile.write(f"data: {summary_payload}\n\n".encode("utf-8"))
-                    self.wfile.flush()
-            except Exception as e:
-                pass
-
-            duration_ms = round((time.time() - started) * 1000)
-            crawl_run_record = register_crawl_run(
-                crawl_return_code=proc.returncode,
-                duration_ms=duration_ms,
-                sync_result=sync_result,
-                metrics_refresh=metrics_refresh,
-                trace_sync=trace_sync,
-                trigger="api-crawl-stream",
-            )
-            write_sse(
-                self,
-                {
-                    "type": "log",
-                    "text": (
-                        "爬虫运行日志索引已保存："
-                        f"{crawl_run_record.get('crawl_run_id')}；"
-                        f"飞书日志页：{(crawl_run_record.get('feishu') or {}).get('log_sheet_title') or '未写入'}。"
-                    ),
-                },
-            )
-            payload = json.dumps({
-                "type": "done",
-                "ok": proc.returncode == 0 and crawl_failed_count == 0,
-                "durationMs": duration_ms,
-                "status": build_status(),
-                "crawlRunRegistry": crawl_run_record,
-            }, ensure_ascii=False)
-            self.wfile.write(f"data: {payload}\n\n".encode("utf-8"))
-            self.wfile.flush()
-            return
+                crawl_run_record = register_crawl_run(
+                    crawl_return_code=proc.returncode,
+                    duration_ms=duration_ms,
+                    sync_result=sync_result,
+                    metrics_refresh=metrics_refresh,
+                    trace_sync=trace_sync,
+                    trigger="手动全量",
+                    scope=crawl_scope,
+                    crawl_run_id=crawl_run_id,
+                    started_at_hkt=started_at_hkt,
+                    stream_log_path=self._crawl_stream_log_path,
+                )
+                write_sse(
+                    self,
+                    {
+                        "type": "log",
+                        "text": (
+                            "爬虫运行日志索引已保存："
+                            f"{crawl_run_record.get('crawl_run_id')}；"
+                            f"飞书日志页：{(crawl_run_record.get('feishu') or {}).get('log_sheet_title') or '未写入'}。"
+                        ),
+                    },
+                )
+                write_sse(self, {
+                    "type": "done",
+                    "ok": proc.returncode == 0,
+                    "completedWithWarnings": proc.returncode == 0 and crawl_failed_count > 0,
+                    "failedUrlCount": crawl_failed_count,
+                    "durationMs": duration_ms,
+                    "status": build_status(),
+                    "crawlRunRegistry": crawl_run_record,
+                })
+                return
+            except Exception as exc:
+                if proc is not None and proc.poll() is None:
+                    proc.terminate()
+                    try:
+                        proc.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        proc.kill()
+                detail = f"爬虫流水线异常中断：{type(exc).__name__}: {exc}"
+                if crawl_run_id:
+                    mark_crawl_run_interrupted(crawl_run_id, detail)
+                try:
+                    write_sse(self, {"type": "log", "text": "[任务中断] " + detail})
+                    write_sse(self, {"type": "done", "ok": False, "interrupted": True, "message": detail})
+                except (BrokenPipeError, ConnectionResetError, OSError):
+                    pass
+                return
+            finally:
+                stop_task_lifecycle_monitor(self)
+                CRAWL_PIPELINE_STATE.clear()
+                CRAWL_PIPELINE_LOCK.release()
         if parsed.path == "/api/generate-stream":
             stream_report_generation(self, "generate_weekly_report.py", "weekly")
             return
@@ -2269,17 +3270,17 @@ class AppHandler(BaseHTTPRequestHandler):
                 target = report_target_from_rel(str(body.get("path") or ""))
                 if not target:
                     raise ValueError("文件不存在或不允许生成音频")
-                force_str = str(bool(body.get("force", False)))
-                code = "import sys, json\nfrom pathlib import Path\nfrom tts_service import synthesize_report_audio\ntry:\n    res = synthesize_report_audio(Path(sys.argv[1]), force=sys.argv[2] == 'True')\n    print(json.dumps({'ok': True, 'result': res}))\nexcept Exception as e:\n    print(json.dumps({'ok': False, 'error': str(e)}))"
-                proc_audio = subprocess.run([sys.executable, "-c", code, str(target), force_str], capture_output=True, text=True)
-                try:
-                    out = json.loads(proc_audio.stdout)
-                    if not out.get("ok"):
-                        raise Exception(out.get("error"))
-                    result = out.get("result")
-                except Exception as e:
-                    raise Exception(f"Audio generation failed: {proc_audio.stderr} | {e}")
-                json_response(self, {"ok": bool(result.get("ok")), "result": result, "status": build_status()}, 200 if result.get("ok") else 500)
+                task, created = start_audio_generation_task(target, bool(body.get("force", False)))
+                json_response(
+                    self,
+                    {
+                        "ok": True,
+                        "queued": created,
+                        "alreadyRunning": not created,
+                        "task": task,
+                    },
+                    202,
+                )
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
@@ -2297,95 +3298,90 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
-        if parsed.path == "/api/settings":
-            try:
-                json_response(self, {"ok": True, "settings": save_settings_payload(read_request_json(self))})
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            return
-        if parsed.path == "/api/settings/row":
-            try:
-                json_response(self, {"ok": True, "settings": save_settings_row_payload(read_request_json(self))})
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            return
-        if parsed.path == "/api/schedule":
-            try:
-                payload = read_request_json(self)
-                rows = payload.get("rows", [])
-                freq_map = {str(r["row"]): r.get("frequency", "") for r in rows}
-                values = [[freq_map.get(str(idx), "")] for idx in range(2, 35)]
-                
-                import daily_crawl_and_write
-                headers = daily_crawl_and_write.current_headers()
-                freq_col = "H"
-                for name in ["每隔多长时间收集一轮", "收集频率", "排期频率"]:
-                    try:
-                        freq_col = daily_crawl_and_write.col_to_a1(headers.index(name) + 1)
-                        break
-                    except ValueError:
-                        pass
-
-                cmd = [
-                    crawl.LARK_CLI, "sheets", "+write",
-                    "--spreadsheet-token", crawl.SPREADSHEET_TOKEN,
-                    "--range", f"{crawl.MAIN_SHEET_ID}!{freq_col}2:{freq_col}34",
-                    "--values", json.dumps(values, ensure_ascii=False)
-                ]
-                proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-                if proc.returncode != 0:
-                    json_response(self, {"ok": False, "error": f"Feishu API failed: {proc.stderr}"}, 500)
-                    return
-                json_response(self, {"ok": True, "feishu_result": json.loads(proc.stdout)})
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            return
-        if parsed.path == "/api/crawl-row":
-            try:
-                payload = read_request_json(self)
-                row_id = str(payload.get("row"))
-                if not row_id.isdigit():
-                    raise ValueError("Invalid row ID")
-                env = os.environ.copy()
-                env["CMHK_ROWS"] = row_id
-                proc = subprocess.run([sys.executable, str(ROOT / "crawl.py")], env=env, capture_output=True, text=True)
-                if proc.returncode != 0:
-                    json_response(self, {"ok": False, "error": f"Crawl failed: {proc.stderr[-500:]}"}, 500)
-                    return
-                # Trigger Feishu sync after crawling
-                result_text = ""
-                if (ROOT / "write_payload.json").exists():
-                    sync_proc = subprocess.run([sys.executable, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"], capture_output=True, text=True)
-                    if sync_proc.returncode != 0:
-                        json_response(self, {"ok": False, "error": f"Sync failed: {sync_proc.stderr[-500:]}"}, 500)
-                        return
-                    try:
-                        payload_data = json.loads((ROOT / "write_payload.json").read_text(encoding="utf-8"))
-                        ij_payload = payload_data.get("results_payload") or payload_data.get("I2:K34", [])
-                        if len(ij_payload) == 1:
-                            i_cell = ij_payload[0][0]
-                        else:
-                            row_idx = int(row_id) - 2
-                            i_cell = ij_payload[row_idx][0]
-                        result_text = i_cell
-                    except Exception as e:
-                        result_text = f"读取爬虫结果失败: {e}"
-                json_response(self, {"ok": True, "result_text": result_text})
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            return
-        if parsed.path == "/api/settings/reset":
-            json_response(self, {"ok": True, "settings": reset_settings()})
-            return
         if parsed.path == "/api/ai-config":
             try:
                 json_response(self, {"ok": True, "config": save_ai_config(read_request_json(self)), "status": build_status()})
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
+        if parsed.path == "/api/ai-models":
+            try:
+                payload = read_request_json(self)
+                base_url = str(payload.get("base_url") or "").strip().rstrip("/")
+                if not re.match(r"^https?://", base_url, flags=re.I):
+                    raise ValueError("Base URL 必须以 http:// 或 https:// 开头")
+                if not is_internal_ai_base_url(base_url):
+                    raise ValueError("只能访问公司内网模型服务")
+                saved = load_ai_config(include_key=True)
+                api_key = str(payload.get("api_key") or saved.get("api_key") or "").strip()
+                if not api_key:
+                    raise ValueError("请输入 API Key，或先保存一个有效 Key")
+                request = urllib.request.Request(
+                    f"{base_url}/models",
+                    headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"},
+                    method="GET",
+                )
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    model_payload = json.loads(response.read().decode("utf-8"))
+                models = sorted(
+                    {
+                        str(item.get("id") or "").strip()
+                        for item in (model_payload.get("data") or [])
+                        if isinstance(item, dict) and str(item.get("id") or "").strip()
+                    },
+                    key=str.lower,
+                )
+                if not models:
+                    raise ValueError("服务已连接，但没有返回可用模型")
+                json_response(self, {"ok": True, "models": models, "count": len(models)})
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="ignore")[:600]
+                json_response(self, {"ok": False, "error": f"模型服务返回 HTTP {exc.code}：{detail}"}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
         if parsed.path == "/api/ai-test":
-            result = ask_llm_with_rag("请用一句话确认 RAG 助手已连接，并说明你会基于哪些本地文件回答。")
-            json_response(self, {"ok": bool(result.get("ok")), "result": result, "status": build_status()})
+            started = time.monotonic()
+            try:
+                config = load_ai_config(include_key=True)
+                provider = str(config.get("provider") or "deepseek").lower()
+                base_url = str(config.get("base_url") or "").rstrip("/")
+                model = str(config.get("model") or "").strip()
+                api_key = str(config.get("api_key") or "").strip()
+                if not base_url or not model or not api_key:
+                    raise ValueError("Base URL、模型和 API Key 均不能为空")
+                if provider == "openai":
+                    url = f"{base_url}/responses"
+                    body = {"model": model, "input": "Reply OK", "max_output_tokens": 16}
+                else:
+                    url = f"{base_url}/chat/completions"
+                    body = {
+                        "model": model,
+                        "messages": [{"role": "user", "content": "只回复OK"}],
+                        "max_tokens": 32,
+                        "stream": False,
+                    }
+                body.update(config.get("extra_parameters") or {})
+                request = urllib.request.Request(
+                    url,
+                    data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(request, timeout=45) as response:
+                    response.read()
+                result = {
+                    "ok": True,
+                    "provider": provider,
+                    "model": model,
+                    "latency_ms": round((time.monotonic() - started) * 1000),
+                }
+                json_response(self, {"ok": True, "result": result, "status": build_status()})
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="ignore")[:600]
+                json_response(self, {"ok": False, "error": f"模型服务返回 HTTP {exc.code}：{detail}"}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
         if parsed.path == "/api/rag-token-estimate":
             payload = read_request_json(self)
@@ -2566,6 +3562,16 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    interrupted = reconcile_interrupted_crawl_runs()
+    if interrupted:
+        print(f"Reconciled {len(interrupted)} interrupted crawl run(s)", flush=True)
+    interrupted_tasks = reconcile_interrupted_general_tasks()
+    if interrupted_tasks:
+        print(f"Reconciled {len(interrupted_tasks)} interrupted report task(s)", flush=True)
+    corrected_tasks = reconcile_misclassified_general_tasks()
+    if corrected_tasks:
+        print(f"Corrected {len(corrected_tasks)} misclassified report task(s)", flush=True)
+    start_scheduler_with_backend()
     port = int(os.environ.get("PORT", "8765"))
     host = os.environ.get("HOST", "0.0.0.0")
     server = ThreadingHTTPServer((host, port), AppHandler)

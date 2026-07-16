@@ -9,7 +9,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from ai_config import load_ai_config
+from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 
 
 ROOT = Path(__file__).resolve().parent
@@ -193,12 +193,30 @@ def _knowledge_manifest(folder: Path) -> dict[str, Any]:
     tags = manifest.get("tags") if isinstance(manifest.get("tags"), list) else []
     keywords = manifest.get("keywords") if isinstance(manifest.get("keywords"), list) else []
     entrypoints = manifest.get("entrypoints") if isinstance(manifest.get("entrypoints"), list) else []
+    include_datasets = manifest.get("include_datasets") if isinstance(manifest.get("include_datasets"), list) else []
     source_type = str(manifest.get("source_type") or manifest.get("sourceType") or "local").strip()
     scope = str(manifest.get("scope") or "").strip()
     updated_at = str(manifest.get("updated_at") or manifest.get("updatedAt") or "").strip()
-    quality = str(manifest.get("quality") or manifest.get("quality_note") or "").strip()
+    raw_quality = manifest.get("quality") or manifest.get("quality_note") or ""
+    if isinstance(raw_quality, dict):
+        quality = json.dumps(
+            {
+                key: raw_quality.get(key)
+                for key in (
+                    "status", "row_count", "parsed_count", "current_count", "historical_count",
+                    "source_gap_count", "unresolved_source_gap_count", "verification_backlog_count",
+                    "multi_verified_count", "verification_followup",
+                )
+                if raw_quality.get(key) not in (None, "", [], {})
+            },
+            ensure_ascii=False,
+        )
+    else:
+        quality = str(raw_quality).strip()
     visibility = str(manifest.get("visibility") or "").strip().lower()
     superseded_by = str(manifest.get("superseded_by") or manifest.get("supersededBy") or "").strip()
+    default_load = bool(manifest.get("default_load") or manifest.get("defaultLoad"))
+    rag_prefer_parent_entrypoints = bool(manifest.get("rag_prefer_parent_entrypoints"))
     return {
         "id": dataset_id,
         "title": title,
@@ -206,12 +224,15 @@ def _knowledge_manifest(folder: Path) -> dict[str, Any]:
         "tags": [str(item).strip() for item in tags if str(item).strip()],
         "keywords": [str(item).strip() for item in keywords if str(item).strip()],
         "entrypoints": [str(item).strip() for item in entrypoints if str(item).strip()],
+        "include_datasets": [str(item).strip() for item in include_datasets if str(item).strip()],
         "source_type": source_type,
         "scope": scope,
         "updated_at": updated_at,
         "quality": quality,
         "visibility": visibility,
         "superseded_by": superseded_by,
+        "default_load": default_load,
+        "rag_prefer_parent_entrypoints": rag_prefer_parent_entrypoints,
         "folder": folder.relative_to(ROOT).as_posix(),
         "manifest_path": (folder / "manifest.json").relative_to(ROOT).as_posix() if (folder / "manifest.json").exists() else "",
     }
@@ -240,14 +261,44 @@ def list_knowledge_datasets(dataset_ids: set[str] | None = None) -> list[dict[st
                     "name": path.name,
                     "url": _local_ref(rel),
                     "size": path.stat().st_size,
-                    "entrypoint": path.name in set(manifest.get("entrypoints") or []),
+                    "entrypoint": path.name in set(manifest.get("entrypoints") or []) or rel in set(manifest.get("entrypoints") or []),
                 }
             )
+        include_ids = {str(item).strip() for item in manifest.get("include_datasets") or [] if str(item).strip()}
+        if include_ids:
+            child_paths = {item["path"] for item in files}
+            for child_dataset in list_knowledge_datasets(dataset_ids=include_ids):
+                for item in child_dataset.get("files", []):
+                    if item.get("path") in child_paths:
+                        continue
+                    child_paths.add(item.get("path"))
+                    files.append(dict(item))
         if not files and not manifest.get("manifest_path"):
             continue
         manifest["files"] = files
         datasets.append(manifest)
     return datasets
+
+
+def default_background_dataset_ids() -> set[str]:
+    """Hidden operational datasets that should be available without UI exposure."""
+    ids: set[str] = set()
+    if not AGENT_KNOWLEDGE_ROOT.exists():
+        return ids
+    for folder in sorted(AGENT_KNOWLEDGE_ROOT.iterdir()):
+        if not folder.is_dir() or folder.name.startswith("."):
+            continue
+        manifest = _knowledge_manifest(folder)
+        if manifest.get("default_load"):
+            ids.add(str(manifest.get("id") or folder.name))
+    return ids
+
+
+def effective_dataset_ids(dataset_ids: set[str] | None = None) -> set[str] | None:
+    background_ids = default_background_dataset_ids()
+    if dataset_ids is None:
+        return None
+    return set(dataset_ids) | background_ids
 
 
 def _chunk_text(source: str, text: str, max_chars: int = 1200) -> list[dict[str, Any]]:
@@ -266,6 +317,31 @@ def _chunk_text(source: str, text: str, max_chars: int = 1200) -> list[dict[str,
         size += len(line)
     if buffer:
         chunks.append({"source": source, "text": "\n".join(buffer), "links": [{"label": source, "url": _local_ref(source)}]})
+    return chunks
+
+
+def _table_file_chunks(path: Path, source: str, *, max_rows_per_chunk: int = 8) -> list[dict[str, Any]]:
+    delimiter = "\t" if path.suffix.lower() == ".tsv" else ","
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle, delimiter=delimiter))
+    except Exception:
+        return _chunk_text(source, _read_text(path, limit=240000), max_chars=1600)
+    chunks: list[dict[str, Any]] = []
+    for start in range(0, len(rows), max_rows_per_chunk):
+        part = rows[start : start + max_rows_per_chunk]
+        lines = []
+        for row in part:
+            useful = {key: value for key, value in row.items() if str(value or "").strip()}
+            lines.append(json.dumps(useful, ensure_ascii=False, sort_keys=True))
+        if lines:
+            chunks.append(
+                {
+                    "source": source,
+                    "text": "\n".join(lines),
+                    "links": [{"label": source, "url": _local_ref(source)}],
+                }
+            )
     return chunks
 
 
@@ -299,7 +375,14 @@ def _agent_knowledge_chunks(dataset_ids: set[str] | None = None) -> list[dict[st
     chunks: list[dict[str, Any]] = []
     if not AGENT_KNOWLEDGE_ROOT.exists():
         return chunks
-    for dataset in list_knowledge_datasets(dataset_ids=dataset_ids):
+
+    seen_dataset_ids: set[str] = set()
+
+    def add_dataset_chunks(dataset: dict[str, Any]) -> None:
+        dataset_key = str(dataset.get("id") or dataset.get("folder") or "")
+        if dataset_key in seen_dataset_ids:
+            return
+        seen_dataset_ids.add(dataset_key)
         folder = ROOT / dataset["folder"]
         manifest_text = json.dumps(
             {
@@ -311,6 +394,7 @@ def _agent_knowledge_chunks(dataset_ids: set[str] | None = None) -> list[dict[st
                 "tags": dataset.get("tags"),
                 "keywords": dataset.get("keywords"),
                 "entrypoints": dataset.get("entrypoints"),
+                "include_datasets": dataset.get("include_datasets"),
                 "quality": dataset.get("quality"),
                 "files": [item["path"] for item in dataset.get("files", [])],
             },
@@ -322,12 +406,25 @@ def _agent_knowledge_chunks(dataset_ids: set[str] | None = None) -> list[dict[st
         entrypoints = set(dataset.get("entrypoints") or [])
         ordered_files = sorted(
             [ROOT / item["path"] for item in dataset.get("files", [])],
-            key=lambda p: (0 if p.name in entrypoints else 1, p.name),
+            key=lambda p: (0 if p.name in entrypoints or p.relative_to(ROOT).as_posix() in entrypoints else 1, p.name),
         )
-        for path in ordered_files:
+        include_ids = {str(item).strip() for item in dataset.get("include_datasets") or [] if str(item).strip()}
+        parent_only = bool(include_ids and dataset.get("rag_prefer_parent_entrypoints"))
+        files_to_index = [
+            path for path in ordered_files
+            if not parent_only or (
+                path.parent == folder
+                and (path.name in entrypoints or path.relative_to(ROOT).as_posix() in entrypoints)
+            )
+        ]
+        for path in files_to_index:
             if not _is_allowed_knowledge_file(path):
                 continue
             source = path.relative_to(ROOT).as_posix()
+            if path.suffix.lower() in {".csv", ".tsv"}:
+                rows_per_chunk = 1 if dataset.get("id") in {"competitor_product_tariffs", "hk_competitor_product_tariffs", "hkt_product_tariffs"} else 8
+                chunks.extend(_table_file_chunks(path, source, max_rows_per_chunk=rows_per_chunk))
+                continue
             text = _read_text(path, limit=120000)
             if path.suffix.lower() == ".json":
                 try:
@@ -335,6 +432,20 @@ def _agent_knowledge_chunks(dataset_ids: set[str] | None = None) -> list[dict[st
                 except Exception:
                     pass
             chunks.extend(_chunk_text(source, text, max_chars=1600))
+        if include_ids and not parent_only:
+            for child_dataset in list_knowledge_datasets(dataset_ids=include_ids):
+                add_dataset_chunks(child_dataset)
+
+    datasets = list_knowledge_datasets(dataset_ids=dataset_ids)
+    if dataset_ids is None:
+        background_ids = default_background_dataset_ids()
+        if background_ids:
+            known_ids = {str(item.get("id") or "") for item in datasets}
+            for dataset in list_knowledge_datasets(dataset_ids=background_ids):
+                if str(dataset.get("id") or "") not in known_ids:
+                    datasets.append(dataset)
+    for dataset in datasets:
+        add_dataset_chunks(dataset)
     return chunks
 
 
@@ -342,7 +453,7 @@ def build_rag_index(dataset_ids: set[str] | None = None) -> list[dict[str, Any]]
     chunks: list[dict[str, Any]] = []
     for name in ["weekly_report.md", "final_audit.md", "coverage_report.tsv", "run_log.tsv"]:
         chunks.extend(_chunk_text(name, _read_text(ROOT / name)))
-    chunks.extend(_agent_knowledge_chunks(dataset_ids=dataset_ids))
+    chunks.extend(_agent_knowledge_chunks(dataset_ids=effective_dataset_ids(dataset_ids)))
     chunks.extend(_result_chunks())
     return chunks
 
@@ -797,7 +908,7 @@ def _extract_output_text(payload: dict[str, Any]) -> str:
 
 def ask_llm_with_rag(question: str) -> dict[str, Any]:
     config = load_ai_config(include_key=True)
-    api_key = (os.environ.get("OPENAI_API_KEY") or str(config.get("api_key") or "")).strip()
+    api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         return {
             "ok": False,
@@ -807,8 +918,8 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
         }
 
     provider = str(config.get("provider") or "deepseek").lower()
-    model = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-v4-flash")
-    base_url = str(config.get("base_url") or "https://api.deepseek.com").rstrip("/")
+    model = str(config.get("model") or "deepseek-v4")
+    base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
     chunks = retrieve_context(question, limit=14)
     context_package = build_context_package(chunks, model=model)
     chunks = context_package["chunks"]
@@ -827,7 +938,7 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
 
     if provider == "openai":
         body = {"model": model, "instructions": system_prompt, "input": user_prompt}
-        url = f"{base_url or 'https://api.openai.com/v1'}/responses"
+        url = f"{base_url}/responses"
     else:
         body = {
             "model": model,
@@ -838,6 +949,7 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
             "temperature": 0.2,
         }
         url = f"{base_url}/chat/completions"
+    body.update(config.get("extra_parameters") or {})
 
     req = urllib.request.Request(
         url,
@@ -877,14 +989,14 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
 
 def stream_llm_with_rag(question: str):
     config = load_ai_config(include_key=True)
-    api_key = (os.environ.get("OPENAI_API_KEY") or str(config.get("api_key") or "")).strip()
+    api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         yield {"type": "error", "text": "未配置 API Key，请在 AI 助手弹窗里的“设置”中填写并保存。"}
         return
 
     provider = str(config.get("provider") or "deepseek").lower()
-    model = os.environ.get("OPENAI_MODEL") or str(config.get("model") or "deepseek-v4-flash")
-    base_url = str(config.get("base_url") or "https://api.deepseek.com").rstrip("/")
+    model = str(config.get("model") or "deepseek-v4")
+    base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
     
     yield {"type": "process", "step": "检索", "text": "开始从本地文档和爬取结果中进行 RAG 检索..."}
     chunks = retrieve_context(question, limit=14)
@@ -941,7 +1053,7 @@ def stream_llm_with_rag(question: str):
 
     if provider == "openai":
         body = {"model": model, "instructions": system_prompt, "input": user_prompt, "stream": True}
-        url = f"{base_url or 'https://api.openai.com/v1'}/responses"
+        url = f"{base_url}/responses"
     else:
         body = {
             "model": model,
@@ -953,6 +1065,7 @@ def stream_llm_with_rag(question: str):
             "stream": True,
         }
         url = f"{base_url}/chat/completions"
+    body.update(config.get("extra_parameters") or {})
 
     req = urllib.request.Request(
         url,

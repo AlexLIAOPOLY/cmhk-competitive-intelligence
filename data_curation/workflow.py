@@ -23,7 +23,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy
 
-from ai_config import load_ai_config
+from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
 from rag_llm import estimate_tokens
 from company_metrics import (
     AI_CACHE_PATH,
@@ -530,6 +530,8 @@ def _recover_market_reaction_fact(fact: CandidateFact) -> bool:
 
 
 def _recover_verified_metric_fact(fact: CandidateFact) -> bool:
+    if fact.status == "ok" and str(fact.value or "").startswith("不适用"):
+        return False
     value, sources = _verified_metric_context(fact.company, fact.metric)
     if not value or not _passes_metric_gate(fact.metric, value):
         return False
@@ -608,6 +610,39 @@ def classify_sources(state: CurationState) -> dict[str, Any]:
     }
 
 
+def _normalize_confidence(value: Any, default: float = 0.0) -> float:
+    """Normalize numeric or qualitative model confidence to a bounded score."""
+    if isinstance(value, bool):
+        score = 1.0 if value else 0.0
+    elif isinstance(value, (int, float)):
+        score = float(value)
+    else:
+        text = str(value or "").strip().lower().replace("_", " ")
+        qualitative = {
+            "very high": 0.95,
+            "high": 0.9,
+            "medium": 0.6,
+            "moderate": 0.6,
+            "low": 0.3,
+            "very low": 0.1,
+            "高": 0.9,
+            "高置信度": 0.9,
+            "中": 0.6,
+            "中等": 0.6,
+            "中置信度": 0.6,
+            "低": 0.3,
+            "低置信度": 0.3,
+        }
+        if text in qualitative:
+            score = qualitative[text]
+        else:
+            try:
+                score = float(text[:-1]) / 100.0 if text.endswith("%") else float(text)
+            except (TypeError, ValueError):
+                score = default
+    return min(max(score, 0.0), 1.0)
+
+
 def _candidate_from_cache(task: EvidenceTask, item: dict[str, Any]) -> CandidateFact:
     status = item.get("status") if item.get("status") in {"ok", "unavailable"} else "unavailable"
     entity_supported = bool(item.get("entity_supported"))
@@ -641,7 +676,7 @@ def _candidate_from_cache(task: EvidenceTask, item: dict[str, Any]) -> Candidate
         entity_supported=entity_supported,
         metric_supported=metric_supported,
         value_supported=value_supported,
-        confidence=float(item.get("confidence") or 0.0),
+        confidence=_normalize_confidence(item.get("confidence")),
         source_score=task.source_score,
         source_tier=task.source_tier,
         row_ref=task.row_ref,
@@ -892,7 +927,7 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
         _recover_market_reaction_fact(fact)
         _recover_verified_metric_fact(fact)
         _demote_unsupported_ok_fact(fact)
-        _close_negative_evidence_gap(fact)
+        # Missing or negative evidence is a monitoring gap, not a publishable fact.
         fact.value = _normalize_hk_financial_unit(
             fact.metric,
             fact.value,
@@ -964,6 +999,10 @@ def audit_quality(state: CurationState) -> dict[str, Any]:
             fact.decision = "review"
             review += 1
         output.append(fact.model_dump())
+
+    run_id = str(state.get("run_id") or "").strip()
+    if run_id:
+        atomic_write_jsonl(RUNS_DIR / f"{run_id}_candidate_facts.jsonl", output)
     return {
         "candidates": output,
         "node_events": [
@@ -2010,9 +2049,10 @@ def _build_supervisor_model() -> ChatDeepSeek:
     if not api_key:
         raise RuntimeError("未配置 DeepSeek API Key")
     return ChatDeepSeek(
-        model=str(config.get("model") or "deepseek-chat"),
+        model=str(config.get("model") or "deepseek-v4"),
         api_key=api_key,
-        base_url=str(config.get("base_url") or "https://api.deepseek.com").rstrip("/"),
+        base_url=str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/"),
+        extra_body=dict(config.get("extra_parameters") or {}),
         temperature=0,
         timeout=120,
         max_retries=1,
@@ -2457,6 +2497,7 @@ def publish_results(state: CurationState) -> dict[str, Any]:
             "curation_data/recrawl_tasks.json",
             "curation_data/latest.json",
             f"curation_data/runs/{state['run_id']}.json",
+            f"curation_data/runs/{state['run_id']}_candidate_facts.jsonl",
             "curation_data/agent_trace.jsonl",
             f"curation_data/runs/{state['run_id']}_agent_trace.jsonl",
         ]
@@ -2482,6 +2523,10 @@ def publish_results(state: CurationState) -> dict[str, Any]:
             },
         )
         atomic_write_jsonl(DATA_DIR / "candidate_facts.jsonl", [item.model_dump() for item in candidates])
+        atomic_write_jsonl(
+            RUNS_DIR / f"{state['run_id']}_candidate_facts.jsonl",
+            [item.model_dump() for item in candidates],
+        )
         atomic_write_jsonl(DATA_DIR / "verified_facts.jsonl", [item.model_dump() for item in accepted])
         atomic_write_json(DATA_DIR / "recrawl_tasks.json", state.get("recrawl_tasks", []))
         atomic_write_json(DATA_DIR / "latest.json", summary.model_dump())

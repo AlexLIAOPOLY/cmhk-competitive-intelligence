@@ -11,8 +11,7 @@ const state = {
   currentAudioButton: null,
   isScrubbing: false,
   agentTraceLoaded: false,
-  webSearchEnabled: false,
-  thinkingEnabled: false,
+  webSearchEnabled: true,
   agentSkills: [],
   selectedSkillIds: new Set(),
   expandedSkillIds: new Set(),
@@ -22,6 +21,16 @@ const state = {
   expandedDatasetIds: new Set(),
   datasetSelectionTouched: false,
   knowledgeUploadBusy: false,
+  knowledgeUploadOpen: false,
+  knowledgeUploadFile: null,
+  knowledgeUploadMeta: {
+    title: "",
+    summary: "",
+    scope: "",
+    tags: "",
+    sourceType: "user_uploaded_file",
+    quality: "",
+  },
   pendingConfirmedActions: new Set(),
   chatHistory: [],
   chatThreads: [],
@@ -31,6 +40,13 @@ const state = {
   chatThreadSearchOpen: false,
   agentContextKey: "",
   loadedSkillIds: new Set(),
+  chatAbortController: null,
+  chatStopRequested: false,
+  chatAutoScroll: true,
+  crawlRuns: [],
+  activeCrawlRunId: null,
+  crawlLogPollTimer: null,
+  crawlLogPollBusy: false,
 };
 
 const els = {
@@ -67,7 +83,6 @@ const els = {
     document.querySelector("#crawlButton"),
     document.querySelector("#crawlButtonSecondary"),
   ].filter(Boolean),
-  refreshButton: document.querySelector("#refreshButton"),
   logButton: document.querySelector("#logButton"),
   logModal: document.querySelector("#logModal"),
   closeLogButton: document.querySelector("#closeLogButton"),
@@ -83,10 +98,15 @@ const els = {
   aiBaseUrl: document.querySelector("#aiBaseUrl"),
   aiModel: document.querySelector("#aiModel"),
   aiApiKey: document.querySelector("#aiApiKey"),
+  fetchAiModels: document.querySelector("#fetchAiModels"),
+  aiModelHint: document.querySelector("#aiModelHint"),
   aiConfigStatus: document.querySelector("#aiConfigStatus"),
   agentMemoryList: document.querySelector("#agentMemoryList"),
   refreshAgentMemory: document.querySelector("#refreshAgentMemory"),
   clearLogButton: document.querySelector("#clearLogButton"),
+  refreshCrawlRunsButton: document.querySelector("#refreshCrawlRunsButton"),
+  crawlRunList: document.querySelector("#crawlRunList"),
+  logRunTitle: document.querySelector("#logRunTitle"),
   clearChatButton: document.querySelector("#clearChatButton"),
   toggleChatThreadsButton: document.querySelector("#toggleChatThreadsButton"),
   collapseChatThreadsButton: document.querySelector("#collapseChatThreadsButton"),
@@ -109,7 +129,6 @@ const els = {
   databaseMenu: document.querySelector("#databaseMenu"),
   knowledgeUploadButton: document.querySelector("#knowledgeUploadButton"),
   knowledgeUploadInput: document.querySelector("#knowledgeUploadInput"),
-  thinkingToggle: document.querySelector("#thinkingToggle"),
   webSearchToggle: document.querySelector("#webSearchToggle"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
@@ -143,44 +162,126 @@ function setClock() {
   els.headerTime.textContent = `${now.toLocaleString("zh-CN", { hour12: false })} · Asia/Hong_Kong`;
 }
 
+function showTaskOperationNotice(message) {
+  let notice = document.getElementById("taskActionNotice");
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "taskActionNotice";
+    notice.className = "task-action-notice";
+    notice.setAttribute("role", "alert");
+    document.body.appendChild(notice);
+  }
+  notice.textContent = message;
+  notice.classList.add("is-visible");
+  clearTimeout(state.taskBusyNoticeTimer);
+  state.taskBusyNoticeTimer = setTimeout(() => notice.classList.remove("is-visible"), 3600);
+}
+
+function ensureTaskBusyInteraction() {
+  if (state.taskBusyInteractionReady) return;
+  state.taskBusyInteractionReady = true;
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-blocked-reason]");
+    const message = button?.dataset.blockedReason || "";
+    if (!message) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    showTaskOperationNotice(message);
+  }, true);
+}
+
+function setTaskButtonState(button, { active, reason, idleLabel, activeLabel }) {
+  if (!button) return;
+  button.disabled = false;
+  button.dataset.blockedReason = reason || "";
+  button.classList.toggle("is-task-loading", active);
+  button.classList.toggle("is-task-blocked", Boolean(reason));
+  button.setAttribute("aria-disabled", reason ? "true" : "false");
+  button.setAttribute("aria-busy", active ? "true" : "false");
+  button.title = reason || "";
+  button.textContent = active ? activeLabel : idleLabel;
+}
+
 function setBusy(value, label = "运行中", action = "all") {
-  state.busy = value;
-  
-  els.generateButtons.forEach((button) => {
-    button.disabled = value;
-    if (value) {
-      button.textContent = (action === "all" || action === "generate") ? "生成中..." : "生成周报";
-    } else {
-      button.textContent = "生成周报";
-    }
-  });
-  if (els.generateButtonSecondary) {
-    els.generateButtonSecondary.disabled = value;
-    els.generateButtonSecondary.textContent = value && action === "report" ? "生成中..." : "生成周报";
-  }
-  if (els.generatePerformanceButton) {
-    els.generatePerformanceButton.disabled = value;
-    els.generatePerformanceButton.textContent = value && action === "performance" ? "生成中..." : "生成业绩摘要";
-  }
-  
-  els.crawlButtons.forEach((button) => {
-    button.disabled = value;
-    if (value) {
-      button.textContent = (action === "all" || action === "crawl") ? "爬取中..." : "重新爬取";
-    } else {
-      button.textContent = "重新爬取";
-    }
+  ensureTaskBusyInteraction();
+  state.busyActions ||= { crawl: false, generate: false, performance: false };
+  state.busyStartedAt ||= {};
+  const normalizedAction = action === "report" ? "generate" : action;
+  const actionNames = normalizedAction === "all"
+    ? ["crawl", "generate", "performance"]
+    : [normalizedAction];
+  actionNames.forEach((name) => {
+    if (!(name in state.busyActions)) return;
+    state.busyActions[name] = value;
+    if (value) state.busyStartedAt[name] ||= Date.now();
+    else delete state.busyStartedAt[name];
   });
 
-  els.refreshButton.disabled = value;
-  if (els.aiSettingsButton) els.aiSettingsButton.disabled = value;
-  els.runState.textContent = value ? label : "准备就绪";
-  
-  if (value) {
-    els.logButton.classList.add("log-glowing");
-  } else {
-    els.logButton.classList.remove("log-glowing");
+  const crawlBusy = state.busyActions.crawl;
+  const weeklyBusy = state.busyActions.generate;
+  const performanceBusy = state.busyActions.performance;
+  const reportBusy = weeklyBusy || performanceBusy;
+  const anyBusy = crawlBusy || reportBusy;
+  state.busy = crawlBusy;
+
+  const weeklyReason = weeklyBusy
+    ? "周报正在生成，系统已阻止重复启动。"
+    : crawlBusy
+      ? "爬虫正在运行。周报需等待本轮爬取完成，以免读取正在改写的半成品数据。"
+      : "";
+  const performanceReason = performanceBusy
+    ? "业绩摘要正在生成，系统已阻止重复启动。"
+    : crawlBusy
+      ? "爬虫正在运行。业绩摘要需等待本轮爬取完成，以免读取正在改写的半成品数据。"
+      : "";
+  const crawlReason = crawlBusy
+    ? "爬虫正在运行，系统已阻止重复启动。"
+    : reportBusy
+      ? "报告正在生成。为保证报告使用稳定数据，报告完成前不能启动爬虫。"
+      : "";
+
+  els.generateButtons.forEach((button) => setTaskButtonState(button, {
+    active: weeklyBusy,
+    reason: weeklyReason,
+    idleLabel: "生成周报",
+    activeLabel: "周报生成中",
+  }));
+  setTaskButtonState(els.generateButtonSecondary, {
+    active: weeklyBusy,
+    reason: weeklyReason,
+    idleLabel: "生成周报",
+    activeLabel: "周报生成中",
+  });
+  setTaskButtonState(els.generatePerformanceButton, {
+    active: performanceBusy,
+    reason: performanceReason,
+    idleLabel: "生成业绩摘要",
+    activeLabel: "业绩摘要生成中",
+  });
+  els.crawlButtons.forEach((button) => setTaskButtonState(button, {
+    active: crawlBusy,
+    reason: crawlReason,
+    idleLabel: "重新爬取",
+    activeLabel: "爬虫运行中",
+  }));
+
+  if (els.aiSettingsButton) {
+    setTaskButtonState(els.aiSettingsButton, {
+      active: false,
+      reason: anyBusy ? "任务运行中，为避免模型配置中途变化，请在任务完成后修改 AI 设置。" : "",
+      idleLabel: els.aiSettingsButton.dataset.idleLabel || els.aiSettingsButton.textContent,
+      activeLabel: "",
+    });
+    els.aiSettingsButton.dataset.idleLabel ||= els.aiSettingsButton.textContent;
   }
+
+  if (crawlBusy) els.runState.textContent = label || "爬虫运行中";
+  else if (weeklyBusy && performanceBusy) els.runState.textContent = "周报与业绩摘要并行生成中";
+  else if (weeklyBusy) els.runState.textContent = "周报生成中";
+  else if (performanceBusy) els.runState.textContent = "业绩摘要生成中";
+  else els.runState.textContent = "准备就绪";
+
+  els.logButton.classList.toggle("log-glowing", anyBusy);
 }
 
 function setChatBusy(value) {
@@ -188,11 +289,15 @@ function setChatBusy(value) {
   els.chatSubmitButton.disabled = false;
   els.chatInput.disabled = false;
   if (els.webSearchToggle) els.webSearchToggle.disabled = false;
-  if (els.thinkingToggle) els.thinkingToggle.disabled = false;
   if (els.skillToggle) els.skillToggle.disabled = false;
   if (els.databaseToggle) els.databaseToggle.disabled = false;
   if (els.knowledgeUploadButton) els.knowledgeUploadButton.disabled = state.knowledgeUploadBusy;
-  els.chatSubmitButton.textContent = value ? "排队" : "发送";
+  els.chatSubmitButton.classList.toggle("is-pausing", value);
+  els.chatSubmitButton.setAttribute("aria-label", value ? "暂停生成" : "发送");
+  els.chatSubmitButton.title = value ? "暂停生成" : "发送";
+  els.chatSubmitButton.innerHTML = value
+    ? `<svg viewBox="0 0 24 24" aria-hidden="true" class="chat-submit-icon"><path d="M7 5h4v14H7z"></path><path d="M13 5h4v14h-4z"></path></svg><span class="sr-only">暂停生成</span>`
+    : `<span>发送</span>`;
 }
 
 function renderWebSearchToggle() {
@@ -203,18 +308,6 @@ function renderWebSearchToggle() {
   button.title = state.webSearchEnabled ? "本轮使用网页来源" : "本轮只用本地来源";
   const label = button.querySelector("span");
   if (label) label.textContent = "联网搜索";
-}
-
-function renderThinkingToggle() {
-  const button = els.thinkingToggle;
-  if (!button) return;
-  button.classList.toggle("is-active", state.thinkingEnabled);
-  button.setAttribute("aria-pressed", state.thinkingEnabled ? "true" : "false");
-  button.title = state.thinkingEnabled
-    ? "深度思考已开启：使用 reasoning 模型；显示可审计思考轨迹，不展示原始思维链"
-    : "打开深度思考";
-  const label = button.querySelector("span");
-  if (label) label.textContent = state.thinkingEnabled ? "深思" : "思考";
 }
 
 function renderSkillToggle() {
@@ -288,19 +381,65 @@ function renderDatabaseToggle() {
 function renderDatabaseMenu() {
   const menu = els.databaseMenu;
   if (!menu) return;
+  const uploadMeta = state.knowledgeUploadMeta || {};
+  const uploadFileName = state.knowledgeUploadFile ? state.knowledgeUploadFile.name : "";
   const uploadAction = `
-    <button class="database-upload-action ${state.knowledgeUploadBusy ? "is-loading" : ""}" id="knowledgeUploadButton" type="button" ${state.knowledgeUploadBusy ? "disabled" : ""}>
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 3v12"></path>
-        <path d="m7 8 5-5 5 5"></path>
-        <path d="M5 21h14"></path>
-        <path d="M6 17h12"></path>
-      </svg>
-      <span>
-        <strong>上传文件作为知识库</strong>
-        <small>支持 txt、md、csv、tsv、json、docx、pdf；上传后自动选中</small>
-      </span>
-    </button>
+    <div class="database-upload-panel ${state.knowledgeUploadOpen ? "is-open" : ""} ${state.knowledgeUploadBusy ? "is-loading" : ""}">
+      <button class="database-upload-action" id="knowledgeUploadButton" type="button" ${state.knowledgeUploadBusy ? "disabled" : ""} aria-expanded="${state.knowledgeUploadOpen ? "true" : "false"}">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v12"></path>
+          <path d="m7 8 5-5 5 5"></path>
+          <path d="M5 21h14"></path>
+          <path d="M6 17h12"></path>
+        </svg>
+        <span>
+          <strong>上传文件作为知识库</strong>
+          <small>补充名称和说明后上传，AI 才能按正确口径检索</small>
+        </span>
+        <b>${state.knowledgeUploadOpen ? "▴" : "▾"}</b>
+      </button>
+      ${state.knowledgeUploadOpen ? `
+        <div class="database-upload-form" id="knowledgeUploadForm">
+          <label>
+            <span>知识库名称 <em>必填</em></span>
+            <input data-upload-field="title" type="text" maxlength="80" placeholder="例如：2026年竞对补充数据" value="${escapeHtml(uploadMeta.title || "")}">
+          </label>
+          <label>
+            <span>知识库说明 <em>必填</em></span>
+            <textarea data-upload-field="summary" maxlength="600" rows="2" placeholder="说明这批文件覆盖的主体、时间、指标和用途">${escapeHtml(uploadMeta.summary || "")}</textarea>
+          </label>
+          <label>
+            <span>范围/口径 <small>选填</small></span>
+            <textarea data-upload-field="scope" maxlength="600" rows="2" placeholder="例如：只含公开披露数据；金额单位为百万元人民币">${escapeHtml(uploadMeta.scope || "")}</textarea>
+          </label>
+          <div class="database-upload-grid">
+            <label>
+              <span>标签/关键词 <small>选填</small></span>
+              <input data-upload-field="tags" type="text" maxlength="240" placeholder="逗号分隔，例如 CMHK, 5G, 季度收入" value="${escapeHtml(uploadMeta.tags || "")}">
+            </label>
+            <label>
+              <span>来源类型 <small>选填</small></span>
+              <select data-upload-field="sourceType">
+                <option value="user_uploaded_file" ${(uploadMeta.sourceType || "user_uploaded_file") === "user_uploaded_file" ? "selected" : ""}>用户上传文件</option>
+                <option value="official_public" ${uploadMeta.sourceType === "official_public" ? "selected" : ""}>官方/公开来源</option>
+                <option value="internal_working_file" ${uploadMeta.sourceType === "internal_working_file" ? "selected" : ""}>内部工作文件</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>质量/备注 <small>选填</small></span>
+            <input data-upload-field="quality" type="text" maxlength="600" placeholder="例如：已人工核验；仍需复核；含估算值" value="${escapeHtml(uploadMeta.quality || "")}">
+          </label>
+          <div class="database-upload-file">
+            <button class="database-upload-file-button" id="knowledgeUploadChooseFile" type="button" ${state.knowledgeUploadBusy ? "disabled" : ""}>选择文件</button>
+            <span>${uploadFileName ? escapeHtml(uploadFileName) : "尚未选择文件"}</span>
+          </div>
+          <div class="database-upload-actions">
+            <button class="database-upload-submit" id="knowledgeUploadSubmit" type="button" ${state.knowledgeUploadBusy ? "disabled" : ""}>${state.knowledgeUploadBusy ? "上传中..." : "上传并选中"}</button>
+          </div>
+        </div>
+      ` : ""}
+    </div>
   `;
   const items = state.agentDatasets.map((dataset) => {
     const active = state.selectedDatasetIds.has(dataset.id);
@@ -367,7 +506,18 @@ function fileToBase64(file) {
 }
 
 async function uploadKnowledgeFile(file) {
-  if (!file || state.knowledgeUploadBusy) return;
+  if (state.knowledgeUploadBusy) return;
+  if (!file) {
+    addMessage("assistant", "请先选择要上传的知识库文件。");
+    return;
+  }
+  const meta = state.knowledgeUploadMeta || {};
+  const title = String(meta.title || "").trim();
+  const summary = String(meta.summary || "").trim();
+  if (!title || !summary) {
+    addMessage("assistant", "上传知识库前请先填写「知识库名称」和「知识库说明」。");
+    return;
+  }
   const maxBytes = 8 * 1024 * 1024;
   if (file.size > maxBytes) {
     addMessage("assistant", "文件过大，当前单文件上限为 8MB。");
@@ -385,6 +535,12 @@ async function uploadKnowledgeFile(file) {
         contentType: file.type || "",
         size: file.size,
         contentBase64,
+        title,
+        summary,
+        scope: String(meta.scope || "").trim(),
+        tags: String(meta.tags || "").trim(),
+        sourceType: String(meta.sourceType || "user_uploaded_file").trim(),
+        quality: String(meta.quality || "").trim(),
       }),
     });
     const data = await response.json();
@@ -395,8 +551,18 @@ async function uploadKnowledgeFile(file) {
       state.selectedDatasetIds.add(datasetId);
       state.datasetSelectionTouched = true;
     }
+    state.knowledgeUploadOpen = false;
+    state.knowledgeUploadFile = null;
+    state.knowledgeUploadMeta = {
+      title: "",
+      summary: "",
+      scope: "",
+      tags: "",
+      sourceType: "user_uploaded_file",
+      quality: "",
+    };
     renderDatabaseMenu();
-    addMessage("assistant", `已上传「${file.name}」并作为本轮已选择数据库，可直接向小竞AI提问。`);
+    addMessage("assistant", `已上传「${title}」并作为本轮已选择数据库，可直接向小竞AI提问。`);
   } catch (error) {
     addMessage("assistant", `上传知识库失败：${error.message || String(error)}`);
   } finally {
@@ -504,7 +670,6 @@ function toolIconName(toolName) {
   if (name.includes("read_local_reference")) return "fileText";
   if (name.includes("list_local_datasets") || name.includes("list_crawl_runs")) return "database";
   if (name.includes("render_python_chart")) return "chartLine";
-  if (name.includes("feishu")) return "table";
   if (name.includes("crawl") || name.includes("recrawl")) return "crawler";
   if (name.includes("system_status")) return "status";
   if (name.includes("cli") || name.includes("trigger_")) return "terminal";
@@ -521,7 +686,6 @@ function toolFriendlyName(toolName) {
     read_webpage: "读取网页",
     trigger_crawl: "触发爬虫",
     list_crawl_runs: "爬虫日志",
-    feishu_cli: "飞书表格",
     trigger_report_generation: "生成报告",
     render_python_chart: "生成图表",
     get_system_status: "系统状态",
@@ -763,7 +927,12 @@ function renderInsights(status) {
             usePointStyle: true,
             boxWidth: 8,
             padding: 14,
-            font: { size: 11, family: 'Inter, sans-serif' }
+            font: { size: 11, family: 'Inter, sans-serif' },
+            generateLabels: (chart) => Chart.defaults.plugins.legend.labels.generateLabels(chart).map((item, index) => {
+              const datasetIndex = Number.isInteger(item.datasetIndex) ? item.datasetIndex : index;
+              const value = Number(chart.data.datasets[datasetIndex]?.data?.[0] || 0);
+              return { ...item, text: `${item.text} ${value}` };
+            })
           }
         },
         datalabels: {
@@ -772,7 +941,15 @@ function renderInsights(status) {
           align: 'center',
           font: { weight: '700', size: 11, family: 'Inter, sans-serif' },
           formatter: (value, context) => value > 0 ? `${context.dataset.label} ${value}` : "",
-          display: (context) => Number(context.dataset.data[context.dataIndex]) > 0
+          display: (context) => {
+            const value = Number(context.dataset.data[context.dataIndex] || 0);
+            const total = context.chart.data.datasets.reduce(
+              (sum, dataset) => sum + Number(dataset.data[context.dataIndex] || 0),
+              0
+            );
+            const availableWidth = Number(context.chart.chartArea?.width || context.chart.width || 0);
+            return value > 0 && total > 0 && (value / total) * availableWidth >= 88;
+          }
         },
         tooltip: {
           backgroundColor: 'rgba(17, 24, 39, 0.85)',
@@ -1020,6 +1197,10 @@ function renderStatus(status) {
 }
 
 function appendLog(text) {
+  // Unified task history is the only log surface while this dialog is open.
+  // Streaming text is persisted by the backend and rendered from the selected
+  // task, so appending it here would create an orphan block below the archive.
+  if (crawlLogModalIsOpen()) return;
   els.logBox.appendChild(document.createTextNode(text));
   els.logBox.scrollTop = els.logBox.scrollHeight;
   localStorage.setItem("appLogs", els.logBox.textContent);
@@ -1143,6 +1324,348 @@ function traceKeyMetrics(trace) {
     });
 }
 
+const TRACE_AUDIT_GUIDE = Object.freeze({
+  "多 Agent 编排器": {
+    audit: "调度本轮抓取后的完整审核流程，监控工具和模型是否正常返回。",
+    next: "继续执行当前审核节点；全部节点完成后汇总发布结果。",
+  },
+  "证据接收": {
+    audit: "核对本轮抓取到的原始指标证据、缓存命中和待审核任务范围。",
+    next: "按来源可信度进行分类。",
+  },
+  "来源分类": {
+    audit: "区分官方来源、公开来源、商业来源和缺失来源，确认后续证据等级。",
+    next: "从证据原文中抽取公司、指标和具体事实。",
+  },
+  "事实抽取": {
+    audit: "逐条检查公司、指标和值是否能从原文直接提取，并保留支持依据。",
+    next: "校验事实是否归属于正确主体和指标。",
+  },
+  "主体校验": {
+    audit: "检查公司主体、指标口径和事实归属，拦截张冠李戴或指标错配。",
+    next: "进入质量门禁，决定可发布、待复核或拒绝。",
+  },
+  "质量审计": {
+    audit: "检查证据是否覆盖结论、字段是否完整、质量是否达到发布门槛。",
+    next: "检查同一事实是否存在来源冲突。",
+  },
+  "冲突仲裁": {
+    audit: "比较同一主体和指标的多条事实，识别数值、期间或口径冲突。",
+    next: "通过联网与多来源多数口径进行复核。",
+  },
+  "搜索验证": {
+    audit: "对已通过的事实进行多来源验证，记录纠正、冲突和待复核项。",
+    next: "汇总仍缺少证据的事实并制定补爬计划。",
+  },
+  "缺口规划": {
+    audit: "识别未覆盖字段和证据缺口，判断哪些行值得定向补爬。",
+    next: "由编排器决定补爬或直接发布。",
+  },
+  "编排决策": {
+    audit: "综合质量门禁、证据缺口和补爬收益，决定下一步动作。",
+    next: "按决定执行定向补爬，或进入发布。",
+  },
+  "定向补爬": {
+    audit: "只重跑被选中的缺口行，检查新增证据是否补齐目标字段。",
+    next: "将补爬结果重新送入整理和质量审核。",
+  },
+  "发布": {
+    audit: "汇总最终通过、待复核、拒绝和证据缺口，写入正式发布层。",
+    next: "同步审计记录并结束本轮。",
+  },
+  "飞书审计日志": {
+    audit: "把本轮审核步骤、依据和最终结果写入对应飞书日志页并回读校验。",
+    next: "本轮结束，可在历史运行中复查。",
+  },
+});
+
+const TRACE_FIELD_LABELS = Object.freeze({
+  tasks: "原始证据",
+  task_count: "本批数量",
+  cached: "缓存命中",
+  cache_reused: "复用判断",
+  deterministic: "规则抽取",
+  deterministic_extracted: "规则抽取",
+  pending: "待模型抽取",
+  returned: "返回结果",
+  candidates: "候选事实",
+  accepted: "可发布",
+  review: "待复核",
+  rejected: "未发布",
+  unpublished: "未发布",
+  evidence_gaps: "证据缺口",
+  quality_rejected: "质量拒绝",
+  pre_rejected: "归属异常",
+  gaps: "缺口数量",
+  conflicts: "冲突数量",
+  checked: "核验数量",
+  corrected: "纠正数量",
+  online_checked: "联网核验",
+  online_votes: "多数口径票数",
+  online_search: "联网搜索",
+  online_ai: "内部模型",
+  online_ai_used: "内部模型已使用",
+  online_batches: "在线模型批次",
+  fallback_batches: "本地降级批次",
+  source_tiers: "来源分级",
+  official: "官方来源",
+  public: "公开来源",
+  commercial: "商业来源",
+  missing: "缺失来源",
+  batch: "处理批次",
+  sample: "抽样明细",
+  company: "公司",
+  entity: "主体",
+  metric: "审核指标",
+  value: "提取结果",
+  basis: "原文依据",
+  note: "备注",
+  status: "状态",
+  confidence: "置信度",
+  entity_supported: "主体有依据",
+  metric_supported: "指标有依据",
+  value_supported: "结果有依据",
+  workers: "并行任务",
+  parallel_workers: "并行任务",
+  ai_workers: "模型并行数",
+  batch_size: "单批数量",
+  rows: "目标行",
+  selected_rows: "选中行",
+  rejected_rows: "未选中行",
+  executed_rows: "已补爬行",
+  recrawl_tasks: "补爬任务",
+  recrawl_rows: "补爬行",
+  recrawl_performed: "已执行补爬",
+  action: "执行动作",
+  reason: "决策原因",
+  max_rows: "最多补爬行",
+  returncode: "返回码",
+  ok: "执行成功",
+  targets: "写入位置",
+  durationMs: "耗时",
+  duration_ms: "耗时",
+  workflow: "审核流程",
+  limit: "读取上限",
+  cache_schema: "缓存版本",
+  preserved_previous_facts: "保留历史事实",
+  best_accepted_count: "当前最佳通过数",
+  completed_at: "完成时间",
+  started_at: "开始时间",
+  run_id: "审核运行编号",
+});
+
+const TRACE_TECHNICAL_FIELDS = new Set([
+  "command",
+  "processId",
+  "stderr_tail",
+  "stdout_tail",
+  "tool_calls",
+  "protected_semantic_keys",
+  "node_events",
+  "extra",
+]);
+
+function traceAuditValue(events, keys) {
+  for (let index = events.length - 1; index >= 0; index -= 1) {
+    const event = events[index] || {};
+    for (const payload of [event.output, event.result, event.input]) {
+      if (!payload || typeof payload !== "object" || Array.isArray(payload)) continue;
+      for (const key of keys) {
+        if (payload[key] !== undefined && payload[key] !== null && payload[key] !== "") {
+          return payload[key];
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function traceAuditStatus(events) {
+  const latest = events[events.length - 1] || {};
+  const latestPhase = latest.phase || latest.event_type || "agent";
+  const failed = latest.status === "error"
+    || latest.status === "failed"
+    || latestPhase === "error"
+    || /失败|异常|错误/.test(String(latest.message || ""));
+  if (failed) return "attention";
+  if (latestPhase === "answer" || latestPhase === "decision") return "done";
+  const terminalToolNodes = new Set(["多 Agent 编排器", "搜索验证", "定向补爬", "发布", "飞书审计日志"]);
+  if (latestPhase === "tool_result" && terminalToolNodes.has(String(latest.node || ""))) return "done";
+  return "running";
+}
+
+function traceAuditStatusLabel(status) {
+  if (status === "done") return "已完成";
+  if (status === "attention") return "需处理";
+  return "审核中";
+}
+
+function traceCountText(value) {
+  if (Array.isArray(value)) return value.join("、");
+  if (value && typeof value === "object") return Object.values(value).join("、");
+  return value === null || value === undefined ? "" : String(value);
+}
+
+function traceAuditSubject(events) {
+  const latest = events[events.length - 1] || {};
+  const node = String(latest.node || "Agent");
+  const guide = TRACE_AUDIT_GUIDE[node] || {
+    audit: "检查当前步骤输入、处理依据和输出结果。",
+    next: "根据本步骤结果继续后续处理。",
+  };
+  const tasks = traceAuditValue(events, ["tasks", "candidates", "checked"]);
+  const pending = traceAuditValue(events, ["pending", "task_count"]);
+  const rows = traceAuditValue(events, ["selected_rows", "executed_rows", "rows"]);
+  if (node === "证据接收" && tasks !== null) {
+    return "核对本轮 " + traceCountText(tasks) + " 条原始指标证据，以及缓存复用和任务完整性。";
+  }
+  if (node === "来源分类" && tasks !== null) {
+    return "对 " + traceCountText(tasks) + " 条证据按官方、公开、商业和缺失来源进行分级。";
+  }
+  if (node === "事实抽取") {
+    const suffix = pending !== null ? "，其中 " + traceCountText(pending) + " 条需要当前批次处理" : "";
+    return "逐条核对公司、指标、提取值和原文依据" + suffix + "。";
+  }
+  if (node === "搜索验证" && tasks !== null) {
+    return "对 " + traceCountText(tasks) + " 条候选事实执行多来源多数口径核验。";
+  }
+  if (node === "定向补爬" && rows !== null) {
+    return "重新抓取第 " + traceCountText(rows) + " 行，检查缺口字段能否补齐。";
+  }
+  return guide.audit;
+}
+
+function traceAuditResult(events, status) {
+  const latest = events[events.length - 1] || {};
+  const terminal = [...events].reverse().find((event) => {
+    const phase = event.phase || event.event_type;
+    return ["answer", "decision", "tool_result"].includes(phase);
+  });
+  if (status === "running") {
+    return "正在处理，尚未形成最终结论。当前状态：" + traceFriendlyMessage(latest, latest.phase || latest.event_type || "agent");
+  }
+  const chosen = terminal || latest;
+  return traceFriendlyMessage(chosen, chosen.phase || chosen.event_type || "agent");
+}
+
+function traceAuditNext(events, status) {
+  const latest = events[events.length - 1] || {};
+  const node = String(latest.node || "Agent");
+  const guide = TRACE_AUDIT_GUIDE[node] || { next: "根据本步骤结果继续后续处理。" };
+  if (status === "attention") return "先查看失败依据并修正问题，再重试本步骤。";
+  if (status === "running") return "本步骤完成后，" + guide.next;
+  const decisionEvent = [...events].reverse().find((event) => event.decision);
+  const decision = decisionEvent ? decisionEvent.decision : "";
+  if (decision === "recrawl") return "按选中行执行定向补爬，再重新进入审核。";
+  if (decision === "publish") return "无需继续补爬，进入正式发布。";
+  return guide.next;
+}
+
+function traceHumanStatus(value) {
+  const raw = String(value ?? "").toLowerCase();
+  const labels = {
+    ok: "通过",
+    success: "成功",
+    accepted: "可发布",
+    unavailable: "未找到有效数据",
+    review: "待复核",
+    rejected: "未通过",
+    failed: "失败",
+    error: "错误",
+    true: "是",
+    false: "否",
+  };
+  return labels[raw] || String(value ?? "-");
+}
+
+function traceFieldLabel(key) {
+  return TRACE_FIELD_LABELS[key] || String(key).replaceAll("_", " ");
+}
+
+function renderAuditValue(value, depth = 0) {
+  if (value === null || value === undefined || value === "") return '<span class="audit-empty">-</span>';
+  if (typeof value === "boolean") return escapeHtml(value ? "是" : "否");
+  if (typeof value === "number") return escapeHtml(String(value));
+  if (typeof value === "string") {
+    const display = value.length > 1200 ? value.slice(0, 1200) + "…" : value;
+    return escapeHtml(display).replace(/\n/g, "<br>");
+  }
+  if (Array.isArray(value)) {
+    if (!value.length) return '<span class="audit-empty">无</span>';
+    if (value.every((item) => item && typeof item === "object" && !Array.isArray(item))) {
+      return '<div class="agent-audit-sample-list">' + value.slice(0, 12).map((item, index) => {
+        const title = item.company || item.entity || item.metric || item.id || ("记录 " + (index + 1));
+        const metric = item.metric && item.metric !== title ? '<span>' + escapeHtml(String(item.metric)) + '</span>' : "";
+        const status = item.status !== undefined
+          ? '<em class="sample-status status-' + escapeHtml(String(item.status)) + '">' + escapeHtml(traceHumanStatus(item.status)) + '</em>'
+          : "";
+        const body = Object.entries(item)
+          .filter(([key, itemValue]) => !["company", "entity", "metric", "id", "status"].includes(key)
+            && !TRACE_TECHNICAL_FIELDS.has(key)
+            && itemValue !== null
+            && itemValue !== undefined
+            && itemValue !== "")
+          .map(([key, itemValue]) => {
+            let shown = itemValue;
+            if (key === "confidence" && Number.isFinite(Number(itemValue))) shown = Math.round(Number(itemValue) * 100) + "%";
+            return '<div><dt>' + escapeHtml(traceFieldLabel(key)) + '</dt><dd>' + renderAuditValue(shown, depth + 1) + '</dd></div>';
+          }).join("");
+        return '<article class="agent-audit-sample"><header><strong>' + escapeHtml(String(title)) + '</strong>' + metric + status + '</header><dl>' + body + '</dl></article>';
+      }).join("") + (value.length > 12 ? '<p class="audit-more">另有 ' + (value.length - 12) + ' 条未展开。</p>' : "") + '</div>';
+    }
+    const tag = value.every((item) => typeof item === "string") ? "ol" : "ul";
+    return '<' + tag + ' class="agent-audit-list">' + value.slice(0, 30).map((item) => '<li>' + renderAuditValue(item, depth + 1) + '</li>').join("") + '</' + tag + '>';
+  }
+  if (typeof value === "object") {
+    if (depth > 2) return '<pre>' + escapeHtml(compactJson(value)) + '</pre>';
+    const entries = Object.entries(value).filter(([key, itemValue]) =>
+      !TRACE_TECHNICAL_FIELDS.has(key)
+      && itemValue !== null
+      && itemValue !== undefined
+      && itemValue !== ""
+    );
+    if (!entries.length) return '<span class="audit-empty">无可展示业务字段</span>';
+    return '<dl class="agent-audit-kv">' + entries.map(([key, itemValue]) => {
+      let shown = itemValue;
+      if (["durationMs", "duration_ms"].includes(key) && Number.isFinite(Number(itemValue))) {
+        shown = formatAuditDuration(Number(itemValue));
+      }
+      return '<div><dt>' + escapeHtml(traceFieldLabel(key)) + '</dt><dd>' + renderAuditValue(shown, depth + 1) + '</dd></div>';
+    }).join("") + '</dl>';
+  }
+  return escapeHtml(String(value));
+}
+
+function traceEventPayload(event) {
+  const phase = event.phase || event.event_type || "agent";
+  if (phase === "tool_result") return event.result ?? event.output ?? null;
+  if (phase === "answer") return event.output ?? event.result ?? null;
+  if (phase === "tool_call") return event.input ?? null;
+  if (phase === "decision") return event.output ?? event.result ?? event.input ?? null;
+  return event.input ?? event.output ?? event.result ?? null;
+}
+
+function renderAuditEventTimeline(events) {
+  return '<div class="agent-audit-timeline">' + events.map((event) => {
+    const phase = event.phase || event.event_type || "agent";
+    const time = String(event.ts || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "").split(" ").pop() || "-";
+    const message = traceFriendlyMessage(event, phase);
+    const payload = traceEventPayload(event);
+    const tool = event.tool ? '<span class="agent-audit-tool">' + escapeHtml(traceFriendlyTool(event.tool)) + '</span>' : "";
+    return '<div class="agent-audit-event"><time>' + escapeHtml(time) + '</time><div><div class="agent-audit-event-heading"><span>' + escapeHtml(tracePhaseLabel(phase)) + '</span>' + tool + '</div><strong>' + escapeHtml(message) + '</strong>' + (payload !== null && payload !== undefined ? '<div class="agent-audit-data">' + renderAuditValue(payload) + '</div>' : "") + '</div></div>';
+  }).join("") + '</div>';
+}
+
+function formatAuditDuration(value) {
+  const milliseconds = Number(value || 0);
+  if (!milliseconds) return "-";
+  const totalSeconds = Math.round(milliseconds / 1000);
+  if (totalSeconds < 60) return totalSeconds + " 秒";
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return minutes + " 分 " + seconds + " 秒";
+}
+
 function renderAgentRunSummary(summary) {
   if (!els.logBox || !summary || !summary.run_id) return;
   const panel = document.createElement("section");
@@ -1166,82 +1689,862 @@ function renderAgentRunSummary(summary) {
   els.logBox.appendChild(panel);
 }
 
+/* Per-record quality audit v2 */
+const agentQualityRecordCache = new Map();
+const agentQualityViewState = new Map();
+
+function isAgentRecordQualityNode(nodeName) {
+  return nodeName === "主体校验" || nodeName === "质量审计";
+}
+
+function agentQualityEscape(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, function (character) {
+    if (character === "&") return "&amp;";
+    if (character === "<") return "&lt;";
+    if (character === ">") return "&gt;";
+    if (character === '"') return "&quot;";
+    return "&#39;";
+  });
+}
+
+function agentQualityNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function agentQualityPercent(value) {
+  const number = agentQualityNumber(value);
+  if (number == null) return null;
+  const percent = Math.abs(number) <= 1 ? number * 100 : number;
+  return Math.round(percent * 10) / 10;
+}
+
+function agentQualityScoreMeta(value) {
+  const percent = agentQualityPercent(value);
+  if (percent == null) return { percent: null, label: "未评分", tone: "unknown" };
+  if (percent >= 95) return { percent: percent, label: "优秀", tone: "excellent" };
+  if (percent >= 85) return { percent: percent, label: "良好", tone: "good" };
+  if (percent >= 70) return { percent: percent, label: "待复核", tone: "review" };
+  return { percent: percent, label: "不合格", tone: "rejected" };
+}
+
+function agentQualityDecisionMeta(decision) {
+  const normalized = String(decision || "").toLowerCase();
+  if (normalized === "accepted") return { label: "可发布", tone: "accepted" };
+  if (normalized === "review") return { label: "待复核", tone: "review" };
+  if (normalized === "rejected") return { label: "已拒绝", tone: "rejected" };
+  return { label: "未判定", tone: "unknown" };
+}
+
+function agentQualityTierLabel(tier) {
+  const labels = {
+    official: "官方来源",
+    public: "公开来源",
+    commercial: "商业来源",
+    monitoring: "监测来源",
+    missing: "缺少来源",
+    unknown: "来源未标记"
+  };
+  return labels[String(tier || "").toLowerCase()] || String(tier || "来源未标记");
+}
+
+function agentQualityRowLabel(rowRef) {
+  const text = String(rowRef == null ? "" : rowRef).trim();
+  if (!text) return "未关联行";
+  if (/^第.*行$/.test(text)) return text;
+  return "第 " + text + " 行";
+}
+
+function agentQualityNextStep(record) {
+  const decision = String(record.decision || "").toLowerCase();
+  if (decision === "accepted") return "进入发布结果；后续若来源更新则按该行频次重新审核。";
+  if (decision === "review") return "人工核对来源、指标口径与数值有效期，确认后再发布。";
+  if (!record.entity_supported || !record.metric_supported) return "修正主体或指标归属后重新审核。";
+  if (!record.value_supported || String(record.source_tier || "").toLowerCase() === "missing") {
+    return "补充能够覆盖结论的公开证据后重新爬取。";
+  }
+  return "根据拒绝原因修正数据或证据，再进入质量审计。";
+}
+
+function agentQualityCheck(label, passed) {
+  return '<span class="agent-quality-check ' + (passed ? "is-pass" : "is-fail") + '">'
+    + agentQualityEscape(label) + " " + (passed ? "通过" : "异常") + "</span>";
+}
+
+function agentQualitySourceHtml(source, index) {
+  const url = String(source && source.url || "").trim();
+  const title = String(source && source.title || "").trim();
+  const type = String(source && source.type || "").trim();
+  const label = title || type || (url ? "来源 " + (index + 1) : "未提供链接");
+  if (!url) return '<span class="agent-quality-source is-missing">' + agentQualityEscape(label) + "</span>";
+  return '<a class="agent-quality-source" href="' + agentQualityEscape(url)
+    + '" target="_blank" rel="noopener noreferrer">' + agentQualityEscape(label) + "</a>";
+}
+
+function loadAgentQualityRecords(runId) {
+  if (agentQualityRecordCache.has(runId)) return agentQualityRecordCache.get(runId);
+  const request = fetch("/api/curation-quality-records?runId=" + encodeURIComponent(runId), {
+    cache: "no-store"
+  }).then(function (response) {
+    return response.json().catch(function () {
+      return { ok: false, error: "服务返回了无法解析的内容。" };
+    }).then(function (payload) {
+      if (!payload.ok) throw new Error(payload.error || "逐条质量明细尚未生成。");
+      return payload;
+    });
+  }).catch(function (error) {
+    agentQualityRecordCache.delete(runId);
+    throw error;
+  });
+  agentQualityRecordCache.set(runId, request);
+  return request;
+}
+
+function agentQualityIssuePriority(record) {
+  const decision = String(record.decision || "").toLowerCase();
+  if (decision === "rejected") return 0;
+  if (decision === "review") return 1;
+  if (!record.entity_supported || !record.metric_supported || !record.value_supported) return 2;
+  return 3;
+}
+
+function agentQualityRowOrder(record) {
+  const match = String(record.row_ref == null ? "" : record.row_ref).match(/\d+/);
+  return match ? Number(match[0]) : Number.MAX_SAFE_INTEGER;
+}
+
+function renderAgentQualityRecord(record) {
+  const decision = agentQualityDecisionMeta(record.decision);
+  const score = agentQualityScoreMeta(record.quality_score);
+  const value = String(record.value || record.note || "未提供数值");
+  const reasons = Array.isArray(record.reasons) ? record.reasons.filter(Boolean) : [];
+  const sources = Array.isArray(record.sources) ? record.sources : [];
+  const verification = record.search_verification || {};
+  const onlineSearch = verification.online_search || {};
+  const confidence = agentQualityPercent(record.confidence);
+  const sourceScore = agentQualityPercent(record.source_score);
+  const sourceLinks = sources.length
+    ? sources.map(agentQualitySourceHtml).join("")
+    : '<span class="agent-quality-source is-missing">没有记录可核验来源</span>';
+  const reasonHtml = reasons.length
+    ? '<ul>' + reasons.map(function (reason) {
+        return "<li>" + agentQualityEscape(reason) + "</li>";
+      }).join("") + "</ul>"
+    : "<p>未记录额外异常原因。</p>";
+  const verificationText = [
+    verification.vote_count ? verification.vote_count + " 个复核意见" : "",
+    verification.majority_count ? verification.majority_count + " 个多数意见" : "",
+    verification.conflict_count ? verification.conflict_count + " 个来源冲突" : "无来源冲突",
+    onlineSearch.enabled
+      ? "联网检索 " + (onlineSearch.result_count || 0) + " 条"
+      : "未启用联网检索"
+  ].filter(Boolean).join(" · ");
+
+  return '<details class="agent-quality-row agent-quality-row--' + decision.tone + '">'
+    + '<summary class="agent-quality-row-summary">'
+      + '<span class="agent-quality-cell agent-quality-cell--identity">'
+        + '<strong>' + agentQualityEscape(record.company || "未标记主体") + "</strong>"
+        + '<span>' + agentQualityEscape(record.metric || "未标记指标") + " · "
+        + agentQualityEscape(agentQualityRowLabel(record.row_ref)) + "</span>"
+      + "</span>"
+      + '<span class="agent-quality-cell agent-quality-cell--value" title="' + agentQualityEscape(value) + '">'
+        + agentQualityEscape(value)
+      + "</span>"
+      + '<span class="agent-quality-cell agent-quality-cell--score">'
+        + '<strong class="agent-quality-score agent-quality-score--' + score.tone + '">'
+        + (score.percent == null ? "—" : score.percent + " 分") + "</strong>"
+        + "<span>" + agentQualityEscape(score.label) + "</span>"
+      + "</span>"
+      + '<span class="agent-quality-cell agent-quality-cell--checks">'
+        + agentQualityCheck("主体", Boolean(record.entity_supported))
+        + agentQualityCheck("指标", Boolean(record.metric_supported))
+        + agentQualityCheck("数值", Boolean(record.value_supported))
+      + "</span>"
+      + '<span class="agent-quality-cell agent-quality-cell--source">'
+        + "<strong>" + agentQualityEscape(agentQualityTierLabel(record.source_tier)) + "</strong>"
+        + "<span>" + sources.length + " 个来源</span>"
+      + "</span>"
+      + '<span class="agent-quality-decision agent-quality-decision--' + decision.tone + '">'
+        + agentQualityEscape(decision.label)
+      + "</span>"
+    + "</summary>"
+    + '<div class="agent-quality-row-body">'
+      + '<section><h5>证据与依据</h5><p>' + agentQualityEscape(record.basis || "未记录证据依据。") + "</p>"
+        + (record.note ? '<p class="agent-quality-note">' + agentQualityEscape(record.note) + "</p>" : "")
+      + "</section>"
+      + '<section><h5>审核原因</h5>' + reasonHtml + "</section>"
+      + '<section><h5>来源链接</h5><div class="agent-quality-sources">' + sourceLinks + "</div></section>"
+      + '<section><h5>质量信号</h5><dl class="agent-quality-metrics">'
+        + "<div><dt>质量分</dt><dd>" + (score.percent == null ? "未评分" : score.percent + " 分") + "</dd></div>"
+        + "<div><dt>置信度</dt><dd>" + (confidence == null ? "未评分" : confidence + "%") + "</dd></div>"
+        + "<div><dt>来源分</dt><dd>" + (sourceScore == null ? "未评分" : sourceScore + "%") + "</dd></div>"
+        + "<div><dt>检索复核</dt><dd>" + agentQualityEscape(verificationText) + "</dd></div>"
+      + "</dl></section>"
+      + '<section class="agent-quality-next"><h5>下一步处置</h5><p>'
+        + agentQualityEscape(agentQualityNextStep(record)) + "</p></section>"
+    + "</div>"
+  + "</details>";
+}
+
+function renderAgentQualityWorkspace(details, payload, nodeName) {
+  const body = details.querySelector("[data-quality-body]");
+  const summaryLabel = details.querySelector("[data-quality-summary]");
+  const runId = String(payload.runId || details.dataset.runId || "");
+  const records = Array.isArray(payload.records) ? payload.records : [];
+  const payloadSummary = payload.summary || {};
+  const decisions = payloadSummary.decisions || {};
+  const average = agentQualityScoreMeta(payloadSummary.averageQuality);
+  const state = agentQualityViewState.get(runId) || {
+    query: "",
+    decision: "all",
+    tier: "all",
+    sort: "issues"
+  };
+  agentQualityViewState.set(runId, state);
+
+  if (summaryLabel) {
+    summaryLabel.textContent = records.length + " 条 · 可筛选";
+  }
+
+  body.innerHTML = '<div class="agent-quality-overview">'
+      + '<div><span>本轮数据</span><strong>' + records.length + "</strong></div>"
+      + '<div><span>可发布</span><strong>' + Number(decisions.accepted || 0) + "</strong></div>"
+      + '<div><span>待复核</span><strong>' + Number(decisions.review || 0) + "</strong></div>"
+      + '<div><span>已拒绝</span><strong>' + Number(decisions.rejected || 0) + "</strong></div>"
+      + '<div><span>平均质量</span><strong>' + (average.percent == null ? "—" : average.percent + " 分") + "</strong></div>"
+    + "</div>"
+    + '<div class="agent-quality-context">'
+      + '<strong>' + agentQualityEscape(nodeName) + "逐条明细</strong>"
+      + "<span>默认把拒绝、待复核和字段异常排在最前；点击任意数据可查看依据、来源和处置建议。</span>"
+    + "</div>"
+    + '<div class="agent-quality-toolbar">'
+      + '<label class="agent-quality-search"><span>搜索</span><input type="search" data-quality-filter="query" placeholder="公司、指标、数值或飞书行号"></label>'
+      + '<label><span>审核结论</span><select data-quality-filter="decision">'
+        + '<option value="all">全部结论</option><option value="accepted">可发布</option>'
+        + '<option value="review">待复核</option><option value="rejected">已拒绝</option>'
+      + "</select></label>"
+      + '<label><span>来源等级</span><select data-quality-filter="tier">'
+        + '<option value="all">全部来源</option><option value="official">官方来源</option>'
+        + '<option value="public">公开来源</option><option value="commercial">商业来源</option>'
+        + '<option value="monitoring">监测来源</option><option value="missing">缺少来源</option>'
+      + "</select></label>"
+      + '<label><span>排序</span><select data-quality-filter="sort">'
+        + '<option value="issues">问题优先</option><option value="row">飞书行号</option>'
+        + '<option value="quality-asc">质量分由低到高</option><option value="quality-desc">质量分由高到低</option>'
+      + "</select></label>"
+      + '<div class="agent-quality-visible" data-quality-visible></div>'
+    + "</div>"
+    + '<div class="agent-quality-table-head" aria-hidden="true">'
+      + "<span>主体 / 指标</span><span>数据值</span><span>质量</span><span>字段校验</span><span>证据来源</span><span>结论</span>"
+    + "</div>"
+    + '<div class="agent-quality-records" data-quality-records></div>';
+
+  const queryInput = body.querySelector('[data-quality-filter="query"]');
+  const decisionInput = body.querySelector('[data-quality-filter="decision"]');
+  const tierInput = body.querySelector('[data-quality-filter="tier"]');
+  const sortInput = body.querySelector('[data-quality-filter="sort"]');
+  queryInput.value = state.query;
+  decisionInput.value = state.decision;
+  tierInput.value = state.tier;
+  sortInput.value = state.sort;
+
+  function refreshRecords() {
+    const query = String(state.query || "").trim().toLowerCase();
+    const filtered = records.filter(function (record) {
+      if (state.decision !== "all" && String(record.decision || "").toLowerCase() !== state.decision) return false;
+      if (state.tier !== "all" && String(record.source_tier || "").toLowerCase() !== state.tier) return false;
+      if (!query) return true;
+      const haystack = [
+        record.company,
+        record.metric,
+        record.value,
+        record.row_ref,
+        record.basis,
+        record.note
+      ].join(" ").toLowerCase();
+      return haystack.indexOf(query) >= 0;
+    });
+
+    filtered.sort(function (left, right) {
+      if (state.sort === "row") return agentQualityRowOrder(left) - agentQualityRowOrder(right);
+      const leftScore = agentQualityPercent(left.quality_score);
+      const rightScore = agentQualityPercent(right.quality_score);
+      if (state.sort === "quality-asc") return (leftScore == null ? 999 : leftScore) - (rightScore == null ? 999 : rightScore);
+      if (state.sort === "quality-desc") return (rightScore == null ? -1 : rightScore) - (leftScore == null ? -1 : leftScore);
+      return agentQualityIssuePriority(left) - agentQualityIssuePriority(right)
+        || (leftScore == null ? -1 : leftScore) - (rightScore == null ? -1 : rightScore)
+        || agentQualityRowOrder(left) - agentQualityRowOrder(right);
+    });
+
+    const recordsHost = body.querySelector("[data-quality-records]");
+    const visible = body.querySelector("[data-quality-visible]");
+    visible.textContent = "显示 " + filtered.length + " / " + records.length + " 条";
+    recordsHost.innerHTML = filtered.length
+      ? filtered.map(renderAgentQualityRecord).join("")
+      : '<div class="agent-quality-empty">没有符合当前筛选条件的数据。</div>';
+  }
+
+  body.querySelectorAll("[data-quality-filter]").forEach(function (control) {
+    const eventName = control.tagName === "INPUT" ? "input" : "change";
+    control.addEventListener(eventName, function () {
+      state[control.dataset.qualityFilter] = control.value;
+      refreshRecords();
+    });
+  });
+  refreshRecords();
+}
+
+function mountAgentRecordQuality(card, options) {
+  if (!card || !isAgentRecordQualityNode(options.nodeName)) return;
+  const host = card.querySelector(".agent-trace-details") || card;
+  const details = document.createElement("details");
+  details.className = "agent-quality-details";
+  details.dataset.detailKey = options.qualityKey;
+  details.dataset.runId = options.runId;
+  details.innerHTML = '<summary><span>逐条数据质量</span><span data-quality-summary>展开查看每条结论</span></summary>'
+    + '<div class="agent-quality-loading" data-quality-body>展开后加载本轮逐条审核结果。</div>';
+
+  let technicalDetails = null;
+  Array.prototype.forEach.call(host.children, function (child) {
+    const summary = child.querySelector && child.querySelector(":scope > summary");
+    if (!technicalDetails && summary && summary.textContent.indexOf("技术") >= 0) technicalDetails = child;
+  });
+  if (technicalDetails) host.insertBefore(details, technicalDetails);
+  else host.appendChild(details);
+
+  let loaded = false;
+  function loadRecords() {
+    if (loaded) return;
+    const body = details.querySelector("[data-quality-body]");
+    if (!options.runId) {
+      body.innerHTML = '<div class="agent-quality-empty">这条历史记录没有可关联的运行编号。</div>';
+      loaded = true;
+      return;
+    }
+    body.innerHTML = '<div class="agent-quality-loading">正在加载逐条质量明细...</div>';
+    loadAgentQualityRecords(options.runId).then(function (payload) {
+      loaded = true;
+      renderAgentQualityWorkspace(details, payload, options.nodeName);
+    }).catch(function (error) {
+      body.innerHTML = '<div class="agent-quality-empty">' + agentQualityEscape(error.message || "加载失败") + "</div>";
+    });
+  }
+
+  details.addEventListener("toggle", function () {
+    if (details.open) loadRecords();
+  });
+  if (options.open) {
+    details.open = true;
+    loadRecords();
+  }
+}
+
+
 function renderAgentTrace(trace, options = {}) {
   if (!els.logBox || !trace) return;
-  const card = document.createElement("section");
+  const nodeName = String(trace.node || "Agent");
+  const runKey = String(trace.run_id || state.activeCrawlRunId || "current");
+  const traceKey = runKey + "::" + nodeName;
+  let card = Array.from(els.logBox.querySelectorAll(".agent-trace-card")).find((item) => item.dataset.traceKey === traceKey);
+  if (!card) {
+    card = document.createElement("section");
+    card.dataset.traceKey = traceKey;
+    card._traceEvents = [];
+    els.logBox.appendChild(card);
+  }
+
+  const events = Array.isArray(card._traceEvents) ? card._traceEvents : [];
   const phase = trace.phase || trace.event_type || "agent";
-  card.className = `agent-trace-card phase-${phase}`;
-  const title = document.createElement("div");
-  title.className = "agent-trace-title";
-  const node = escapeHtml(trace.node || "Agent");
-  const step = TRACE_STEPS[trace.node];
-  const stepText = step ? `第 ${step}/9 步` : "工作流";
-  const label = escapeHtml(tracePhaseLabel(phase));
-  const time = escapeHtml((trace.ts || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, ""));
-  title.innerHTML = `<span class="agent-trace-step">${stepText}</span><strong>${node}</strong><span class="agent-trace-badge">${label}</span><time>${time}</time>`;
-  card.appendChild(title);
-
-  const message = document.createElement("p");
-  message.className = "agent-trace-message";
-  message.textContent = traceFriendlyMessage(trace, phase);
-  card.appendChild(message);
-
-  if (trace.decision) {
-    const decision = document.createElement("div");
-    decision.className = "agent-trace-decision";
-    const decisionText = trace.decision === "recrawl" ? "定向补爬" : "进入发布";
-    decision.innerHTML = `<span>执行决定</span><strong>${escapeHtml(decisionText)}</strong>`;
-    card.appendChild(decision);
+  const isHeartbeat = nodeName === "多 Agent 编排器"
+    && phase === "observe"
+    && trace.output
+    && trace.output.elapsedSeconds !== undefined;
+  if (isHeartbeat) {
+    const heartbeatIndex = events.findIndex((event) =>
+      event.node === "多 Agent 编排器"
+      && (event.phase || event.event_type) === "observe"
+      && event.output
+      && event.output.elapsedSeconds !== undefined
+    );
+    if (heartbeatIndex >= 0) events[heartbeatIndex] = trace;
+    else events.push(trace);
+  } else {
+    events.push(trace);
   }
+  card._traceEvents = events.slice(-80);
 
-  const metrics = traceKeyMetrics(trace);
-  if (metrics.length) {
-    const metricBox = document.createElement("div");
-    metricBox.className = "agent-trace-metrics";
-    metricBox.innerHTML = metrics.map((item) =>
-      `<span><b>${escapeHtml(String(item.value))}</b>${escapeHtml(item.label)}</span>`
-    ).join("");
-    card.appendChild(metricBox);
-  }
+  const latest = card._traceEvents[card._traceEvents.length - 1] || trace;
+  const latestPhase = latest.phase || latest.event_type || "agent";
+  const status = traceAuditStatus(card._traceEvents);
+  const statusText = traceAuditStatusLabel(status);
+  const step = TRACE_STEPS[nodeName];
+  const stepText = step ? "步骤 " + step : "工作流";
+  const time = String(latest.ts || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+  const subject = traceAuditSubject(card._traceEvents);
+  const result = traceAuditResult(card._traceEvents, status);
+  const next = traceAuditNext(card._traceEvents, status);
+  const metricTrace = [...card._traceEvents].reverse().find((event) => traceKeyMetrics(event).length) || latest;
+  const metrics = traceKeyMetrics(metricTrace);
+  const metricsHtml = metrics.length
+    ? '<div class="agent-trace-metrics">' + metrics.map((item) => '<span><b>' + escapeHtml(String(item.value)) + '</b>' + escapeHtml(item.label) + '</span>').join("") + '</div>'
+    : "";
 
-  const details = [
-    ["输入", trace.input],
-    ["工具", traceFriendlyTool(trace.tool)],
-    ["结果", trace.result],
-    ["输出", trace.output],
-  ].filter(([, value]) => value !== undefined && value !== null && value !== "");
-  if (details.length) {
-    const box = document.createElement("div");
-    box.className = "agent-trace-details";
-    details.forEach(([name, value]) => {
-      const item = document.createElement("details");
-      const summary = document.createElement("summary");
-      summary.textContent = name === "工具" ? "使用的工具" : `查看${name}技术详情`;
-      const pre = document.createElement("pre");
-      pre.textContent = compactJson(value);
-      item.append(summary, pre);
-      box.appendChild(item);
+  const openKeys = new Set(Array.from(card.querySelectorAll("details[open]")).map((item) => item.dataset.detailKey));
+  const businessKey = traceKey + ":business";
+  const technicalKey = traceKey + ":technical";
+  card.className = "agent-trace-card phase-" + latestPhase + " audit-status-" + status;
+  card.innerHTML =
+    '<div class="agent-trace-title">'
+      + '<span class="agent-trace-step">' + escapeHtml(stepText) + '</span>'
+      + '<strong>' + escapeHtml(nodeName) + '</strong>'
+      + '<span class="agent-trace-badge audit-status-' + escapeHtml(status) + '">' + escapeHtml(statusText) + '</span>'
+      + '<time>' + escapeHtml(time) + '</time>'
+    + '</div>'
+    + '<div class="agent-audit-grid">'
+      + '<section><span class="agent-audit-label">审核内容</span><p>' + escapeHtml(subject) + '</p></section>'
+      + '<section><span class="agent-audit-label">审核结果</span><p class="agent-trace-message">' + escapeHtml(result) + '</p></section>'
+      + '<section><span class="agent-audit-label">下一步</span><p>' + escapeHtml(next) + '</p></section>'
+    + '</div>'
+    + metricsHtml
+    + '<div class="agent-trace-details">'
+      + '<details data-detail-key="' + escapeHtml(businessKey) + '"' + (openKeys.has(businessKey) ? " open" : "") + '>'
+        + '<summary><span>展开查看审核依据与抽样结果</span><small>' + card._traceEvents.length + ' 条过程记录</small></summary>'
+        + renderAuditEventTimeline(card._traceEvents)
+      + '</details>'
+      + '<details class="agent-technical-details" data-detail-key="' + escapeHtml(technicalKey) + '"' + (openKeys.has(technicalKey) ? " open" : "") + '>'
+        + '<summary><span>技术记录</span><small>仅排障时查看</small></summary>'
+        + '<pre>' + escapeHtml(compactJson(card._traceEvents)) + '</pre>'
+      + '</details>'
+    + '</div>';
+
+  const qualityRunId = String((trace && (trace.run_id || trace.runId)) || (typeof runKey !== "undefined" ? runKey : ""));
+
+  if (isAgentRecordQualityNode(nodeName)) {
+
+    const qualityKey = traceKey + ":quality-records";
+
+    mountAgentRecordQuality(card, {
+
+      runId: qualityRunId,
+
+      nodeName: nodeName,
+
+      qualityKey: qualityKey,
+
+      open: Boolean(typeof openKeys !== "undefined" && openKeys && openKeys.has(qualityKey))
+
     });
-    card.appendChild(box);
+
   }
-  els.logBox.appendChild(card);
+
+
   if (!options.skipScroll) els.logBox.scrollTop = els.logBox.scrollHeight;
   localStorage.setItem("appLogs", els.logBox.textContent);
 }
 
-function setLog(text, appendWithDivider = false) {
-  const currentText = els.logBox.textContent.trim();
-  if (appendWithDivider && els.logBox.innerHTML.trim() !== "" && currentText !== "等待操作。" && currentText !== "执行日志已清空。") {
-    const divider = document.createElement("div");
-    divider.className = "log-divider";
-    divider.innerHTML = "<span>新任务启动</span>";
-    els.logBox.appendChild(divider);
+function parseCrawlRunContent(content) {
+  const parsed = { traces: [], raw: [], crawlSummary: null, done: null };
+  String(content || "").split(/\r?\n/).forEach((line) => {
+    if (!line) return;
+    const markerIndex = line.indexOf("AGENT_TRACE=");
+    if (markerIndex >= 0) {
+      try {
+        parsed.traces.push(JSON.parse(line.slice(markerIndex + "AGENT_TRACE=".length)));
+        return;
+      } catch (_) {
+        parsed.raw.push(line);
+        return;
+      }
+    }
+    if (line.trim().startsWith("{")) {
+      try {
+        const payload = JSON.parse(line);
+        if (payload.type === "agent_trace" && payload.trace) {
+          parsed.traces.push(payload.trace);
+          return;
+        }
+        if (payload.type === "crawl_summary") {
+          parsed.crawlSummary = payload;
+          return;
+        }
+        if (payload.type === "done") {
+          parsed.done = payload;
+          return;
+        }
+      } catch (_) {
+      }
+    }
+    parsed.raw.push(line);
+  });
+  return parsed;
+}
+
+function renderCrawlRunArchive(data) {
+  if (!els.logBox) return;
+  const run = data.run || {};
+  const parsed = parseCrawlRunContent(data.content || "");
+  const curation = run.curation || {};
+  const runLog = run.run_log || {};
+  const summary = parsed.crawlSummary || {};
+  const successful = Number(runLog.success_urls ?? (Array.isArray(summary.success) ? summary.success.length : 0));
+  const failed = Number(runLog.failed_urls ?? (Array.isArray(summary.failed) ? summary.failed.length : 0));
+  const total = Number(runLog.rows ?? summary.total ?? successful + failed);
+  const status = crawlRunStatusLabel(run);
+  const started = String(run.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+  const uniqueSteps = new Set(parsed.traces.map((trace) => String(trace.run_id || run.crawl_run_id || "run") + "::" + String(trace.node || "Agent"))).size;
+  const stats = [
+    ["抓取链接", total],
+    ["抓取成功", successful],
+    ["抓取失败", failed],
+    ["审核证据", Number(curation.tasks || 0)],
+    ["可发布", Number(curation.accepted || 0)],
+    ["待复核", Number(curation.review || 0)],
+    ["证据缺口", Number(curation.gaps || 0)],
+  ];
+
+  els.logBox.innerHTML =
+    '<section class="crawl-audit-overview">'
+      + '<div class="crawl-audit-heading"><div><span class="run-status status-' + escapeHtml(String(run.run_status || "completed")) + '">' + escapeHtml(status) + '</span><strong>' + escapeHtml(run.trigger || "爬虫运行") + '</strong><span>' + escapeHtml(run.scope || "未记录范围") + '</span></div><time>' + escapeHtml(started || run.crawl_run_id || "") + (run.duration_ms ? " · " + escapeHtml(formatAuditDuration(run.duration_ms)) : "") + '</time></div>'
+      + '<div class="crawl-audit-stats">' + stats.map(([label, value]) => '<span><b>' + escapeHtml(String(value)) + '</b>' + escapeHtml(label) + '</span>').join("") + '</div>'
+    + '</section>'
+    + taskLifecycleMarkup(run)
+    + '<div class="agent-audit-list-heading"><div><strong>Agent 审核流程</strong><span>按业务节点合并展示审核内容、结论和下一步；展开可看证据抽样。</span></div><em>' + uniqueSteps + ' 个步骤</em></div>';
+
+  if (parsed.traces.length) {
+    parsed.traces.forEach((trace) => renderAgentTrace(trace, { skipScroll: true }));
   } else {
-    els.logBox.innerHTML = "";
+    const empty = document.createElement("div");
+    empty.className = "agent-audit-empty";
+    empty.textContent = run.run_status === "running" ? "Agent 审核尚未开始，或日志仍在写入。" : "本轮没有可解析的 Agent 审核事件。";
+    els.logBox.appendChild(empty);
   }
+
+  if (Array.isArray(summary.failed) && summary.failed.length) {
+    const failures = document.createElement("details");
+    failures.className = "crawl-raw-log";
+    failures.dataset.detailKey = "failed-urls";
+    failures.innerHTML = '<summary><span>展开查看失败链接</span><small>' + summary.failed.length + ' 条</small></summary><div class="agent-audit-data">' + renderAuditValue(summary.failed) + '</div>';
+    els.logBox.appendChild(failures);
+  }
+
+  if (parsed.raw.length) {
+    const raw = document.createElement("details");
+    raw.className = "crawl-raw-log";
+    raw.dataset.detailKey = "raw-log";
+    const rawSummary = document.createElement("summary");
+    rawSummary.innerHTML = '<span>展开查看原始运行日志</span><small>排障用 · ' + parsed.raw.length + ' 行</small>';
+    const pre = document.createElement("pre");
+    pre.textContent = parsed.raw.join("\n");
+    raw.append(rawSummary, pre);
+    els.logBox.appendChild(raw);
+  }
+}
+
+function renderTaskTrackingPlaceholder(attempt = 0) {
+  if (!els.logBox) return;
+  const waitingLonger = attempt >= 12;
+  const waitingMode = waitingLonger ? "long" : "short";
+  if (els.logBox.dataset.waitingForTask === waitingMode) return;
+  els.logBox.dataset.waitingForTask = waitingMode;
+  els.logBox.innerHTML = '<div class="task-tracking-placeholder">'
+    + '<span class="task-tracking-spinner" aria-hidden="true"></span>'
+    + '<strong>正在建立并跟踪新任务</strong>'
+    + '<p>' + (waitingLonger ? '后台尚未返回任务编号，系统仍在自动重试，不会停止跟踪。' : '任务记录生成后会自动出现在左侧并打开详情。') + '</p>'
+    + '</div>';
+}
+
+async function selectNewUnifiedTask(previousTaskId, attempt = 0) {
+  if (!crawlLogModalIsOpen()) return;
+  try {
+    await loadCrawlRuns();
+  } catch (_) {
+  }
+  const newestTaskId = String(state.crawlRuns[0]?.task_id || "");
+  if (newestTaskId && newestTaskId !== previousTaskId) {
+    state.pendingUnifiedTaskTimer = null;
+    delete els.logBox.dataset.waitingForTask;
+    await loadCrawlRunLog(newestTaskId);
+    return;
+  }
+  renderTaskTrackingPlaceholder(attempt);
+  state.pendingUnifiedTaskTimer = window.setTimeout(function () {
+    state.pendingUnifiedTaskTimer = null;
+    selectNewUnifiedTask(previousTaskId, attempt + 1);
+  }, Math.min(1500, 500 + attempt * 50));
+}
+
+function setLog(text, appendWithDivider = false) {
+  if (appendWithDivider) {
+    const previousTaskId = String(state.crawlRuns[0]?.task_id || "");
+    if (state.pendingUnifiedTaskTimer) window.clearTimeout(state.pendingUnifiedTaskTimer);
+    stopCrawlLogPolling();
+    state.activeCrawlRunId = null;
+    delete els.logBox.dataset.renderSignature;
+    renderTaskTrackingPlaceholder(0);
+    localStorage.removeItem("appLogs");
+    selectNewUnifiedTask(previousTaskId);
+    return;
+  }
+  const currentText = els.logBox.textContent.trim();
+  els.logBox.innerHTML = "";
   els.logBox.appendChild(document.createTextNode(text));
   els.logBox.scrollTop = els.logBox.scrollHeight;
   localStorage.setItem("appLogs", els.logBox.textContent);
+}
+
+function taskLifecycleTime(value) {
+  const text = String(value || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+  return text ? text.slice(0, 19) : "尚未记录";
+}
+
+function taskLifecycleMarkup(task) {
+  const running = String(task?.run_status || "") === "running";
+  const interrupted = Boolean(task?.interrupted);
+  const phase = String(task?.phase || (running ? "执行中" : interrupted ? "已中断" : "已结束"));
+  const detail = String(task?.progress_detail || task?.status_detail || (running ? "后台持续监控中。" : "任务状态已归档。"));
+  const heartbeat = taskLifecycleTime(task?.heartbeat_at_hkt || task?.completed_at_hkt || task?.started_at_hkt);
+  const stateClass = running ? "is-running" : interrupted ? "is-interrupted" : "is-settled";
+  return '<section class="task-lifecycle-monitor ' + stateClass + '">'
+    + '<span class="task-lifecycle-signal" aria-hidden="true"></span>'
+    + '<strong>当前阶段：' + escapeHtml(phase) + '</strong>'
+    + '<span>最近心跳：' + escapeHtml(heartbeat) + '</span>'
+    + '<p>' + escapeHtml(detail) + '</p>'
+    + '</section>';
+}
+
+function taskLifecycleCompact(task) {
+  if (String(task?.run_status || "") !== "running" && !task?.interrupted) return "";
+  const phase = String(task?.phase || (task?.interrupted ? "已中断" : "执行中"));
+  const heartbeat = taskLifecycleTime(task?.heartbeat_at_hkt || task?.completed_at_hkt || task?.started_at_hkt).slice(11, 19);
+  const detail = String(task?.progress_detail || task?.status_detail || "持续监控中").slice(0, 68);
+  return '<small class="task-live-progress ' + (task?.interrupted ? "is-interrupted" : "is-running") + '">'
+    + '<span aria-hidden="true"></span>' + escapeHtml(phase) + ' · ' + escapeHtml(heartbeat) + ' · ' + escapeHtml(detail)
+    + '</small>';
+}
+
+function crawlRunStatusLabel(run) {
+  if (run.run_status === "running") return "运行中";
+  if (run.run_status === "failed" || Number(run.crawl_return_code || 0) !== 0) return "失败";
+  return "已完成";
+}
+
+const CRAWL_LOG_POLL_INTERVAL_MS = 1500;
+
+function crawlLogModalIsOpen() {
+  return Boolean(els.logModal && !els.logModal.hidden);
+}
+
+function stopCrawlLogPolling() {
+  if (state.crawlLogPollTimer) {
+    window.clearTimeout(state.crawlLogPollTimer);
+    state.crawlLogPollTimer = null;
+  }
+}
+
+function scheduleCrawlLogPolling(delay = CRAWL_LOG_POLL_INTERVAL_MS) {
+  stopCrawlLogPolling();
+  if (!crawlLogModalIsOpen() || !state.activeCrawlRunId) return;
+  state.crawlLogPollTimer = window.setTimeout(async () => {
+    state.crawlLogPollTimer = null;
+    if (state.crawlLogPollBusy || !crawlLogModalIsOpen() || !state.activeCrawlRunId) {
+      scheduleCrawlLogPolling();
+      return;
+    }
+    const crawlRunId = state.activeCrawlRunId;
+    state.crawlLogPollBusy = true;
+    let data = null;
+    try {
+      data = await loadCrawlRunLog(crawlRunId, { silent: true, managePolling: false });
+    } finally {
+      state.crawlLogPollBusy = false;
+    }
+    const stillActive = crawlRunId === state.activeCrawlRunId && crawlLogModalIsOpen();
+    if (stillActive) {
+      scheduleCrawlLogPolling(data?.run?.run_status === "running" ? CRAWL_LOG_POLL_INTERVAL_MS : 5000);
+    }
+  }, delay);
+}
+
+/* Unified task sidebar v144 */
+function unifiedTaskId(value) {
+  const id = String(value || "");
+  return id.indexOf(":") >= 0 ? id : "crawl:" + id;
+}
+
+function unifiedTaskKindLabel(task) {
+  if (task.kind_label) return String(task.kind_label);
+  if (task.kind === "crawl") return "爬虫";
+  if (task.kind === "weekly-report") return "周报生成";
+  if (task.kind === "carrier-performance") return "业绩摘要";
+  if (task.kind === "audio-generation") return "音频生成";
+  return "后台任务";
+}
+
+function renderUnifiedTaskArchive(data) {
+  const task = data.task || {};
+  if (task.kind === "crawl") {
+    renderCrawlRunArchive({
+      run: data.run || {},
+      content: data.content || "",
+      lines: data.lines || 0,
+      bytes: data.bytes || 0
+    });
+    return;
+  }
+  const status = crawlRunStatusLabel(task);
+  const started = String(task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+  const completed = String(task.completed_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+  const duration = task.duration_ms ? formatAuditDuration(task.duration_ms) : (task.run_status === "running" ? "执行中" : "未记录");
+  const content = String(data.content || "");
+  els.logBox.innerHTML =
+    '<section class="crawl-audit-overview task-audit-overview">'
+      + '<div class="crawl-audit-heading"><div><span class="run-status status-' + escapeHtml(task.run_status || "completed") + '">'
+      + escapeHtml(status) + '</span><strong>' + escapeHtml(task.title || "后台任务") + '</strong><span>'
+      + escapeHtml(task.scope || unifiedTaskKindLabel(task)) + '</span></div><time>'
+      + escapeHtml(started || task.task_run_id || "") + (completed ? " 至 " + escapeHtml(completed) : "")
+      + '</time></div>'
+      + '<div class="task-audit-stats">'
+        + '<span><b>' + escapeHtml(unifiedTaskKindLabel(task)) + '</b><small>任务类型</small></span>'
+        + '<span><b>' + escapeHtml(String(data.lines || task.lines || 0)) + '</b><small>日志行数</small></span>'
+        + '<span><b>' + escapeHtml(duration) + '</b><small>运行耗时</small></span>'
+        + '<span><b>' + escapeHtml(status) + '</b><small>当前状态</small></span>'
+      + '</div>'
+    + '</section>'
+    + taskLifecycleMarkup(task);
+  const process = document.createElement("section");
+  process.className = "task-run-process";
+  process.innerHTML = '<header><strong>任务执行过程</strong><span>日志持续归档到该任务</span></header>';
+  const pre = document.createElement("pre");
+  pre.textContent = content || "任务已创建，正在等待运行日志。";
+  process.appendChild(pre);
+  els.logBox.appendChild(process);
+}
+
+function scheduleUnifiedTaskListRefresh() {
+  if (state.taskListPollTimer) {
+    window.clearTimeout(state.taskListPollTimer);
+    state.taskListPollTimer = null;
+  }
+  if (!crawlLogModalIsOpen()) return;
+  state.taskListPollTimer = window.setTimeout(function () {
+    state.taskListPollTimer = null;
+    loadCrawlRuns();
+  }, 2500);
+}
+
+function renderCrawlRunList() {
+  if (!els.crawlRunList) return;
+  if (!state.crawlRuns.length) {
+    els.crawlRunList.textContent = "暂无任务记录。";
+    return;
+  }
+  els.crawlRunList.innerHTML = state.crawlRuns.map(function (task) {
+    const id = String(task.task_id || "");
+    const time = String(task.completed_at_hkt || task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+    const status = crawlRunStatusLabel(task);
+    const count = Number(task.lines || 0);
+    const kind = unifiedTaskKindLabel(task);
+    const scope = String(task.scope || "未记录任务范围");
+    return '<button class="crawl-run-item ' + (id === state.activeCrawlRunId ? "is-active" : "")
+      + '" type="button" data-run-id="' + escapeHtml(id) + '">'
+      + '<span><strong>' + escapeHtml(task.title || "后台任务") + '</strong><em class="status-'
+      + escapeHtml(task.run_status || "completed") + '">' + escapeHtml(status) + '</em></span>'
+      + '<time>' + escapeHtml(time || task.task_run_id || id) + '</time>'
+      + '<small><i class="task-kind-label">' + escapeHtml(kind) + '</i>' + escapeHtml(scope)
+      + (count ? " · " + count + " 行" : "") + '</small>'
+      + taskLifecycleCompact(task)
+      + '</button>';
+  }).join("");
+  els.crawlRunList.querySelectorAll("[data-run-id]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      loadCrawlRunLog(button.dataset.runId);
+    });
+  });
+}
+
+async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = true } = {}) {
+  if (!crawlRunId || !els.logBox) return null;
+  const taskId = unifiedTaskId(crawlRunId);
+  state.activeCrawlRunId = taskId;
+  renderCrawlRunList();
+  if (!silent) els.logBox.textContent = "正在读取任务日志...";
+  const previousScrollTop = els.logBox.scrollTop;
+  const wasNearBottom = els.logBox.scrollHeight - els.logBox.scrollTop - els.logBox.clientHeight < 80;
+  try {
+    const response = await fetch("/api/task-run-log?id=" + encodeURIComponent(taskId), { cache: "no-store" });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "任务日志不可用");
+    const task = Object.assign({}, data.task || {}, {
+      lines: Number(data.lines || (data.task || {}).lines || 0),
+      bytes: Number(data.bytes || (data.task || {}).bytes || 0)
+    });
+    const taskIndex = state.crawlRuns.findIndex(function (item) {
+      return String(item.task_id || "") === taskId;
+    });
+    if (taskIndex >= 0) state.crawlRuns[taskIndex] = task;
+    else state.crawlRuns.unshift(task);
+    renderCrawlRunList();
+    const renderSignature = [
+      taskId,
+      data.lines || 0,
+      data.bytes || 0,
+      task.run_status || "",
+      task.phase || "",
+      task.heartbeat_at_hkt || "",
+      task.status_detail || ""
+    ].join(":");
+    if (els.logBox.dataset.renderSignature !== renderSignature) {
+      const openDetailKeys = new Set(
+        Array.from(els.logBox.querySelectorAll("details[open]")).map(function (item) {
+          return item.dataset.detailKey;
+        })
+      );
+      renderUnifiedTaskArchive(Object.assign({}, data, { task: task }));
+      Array.from(els.logBox.querySelectorAll("details[data-detail-key]")).forEach(function (item) {
+        if (openDetailKeys.has(item.dataset.detailKey)) item.open = true;
+      });
+      els.logBox.dataset.renderSignature = renderSignature;
+    }
+    if (els.logRunTitle) {
+      const time = String(task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
+      els.logRunTitle.textContent = (task.title || "后台任务") + " · " + (time || task.task_run_id || taskId)
+        + " · " + Number(data.lines || 0) + " 行 · " + Number(data.bytes || 0) + " B";
+    }
+    if (task.run_status === "running") {
+      els.logBox.scrollTop = !silent || wasNearBottom ? els.logBox.scrollHeight : previousScrollTop;
+    } else {
+      els.logBox.scrollTop = silent && wasNearBottom ? els.logBox.scrollHeight : (silent ? previousScrollTop : 0);
+    }
+    if (managePolling) {
+      if (task.run_status === "running" && crawlLogModalIsOpen()) scheduleCrawlLogPolling();
+      else stopCrawlLogPolling();
+    }
+    data.run = data.run || { run_status: task.run_status };
+    return data;
+  } catch (error) {
+    if (!silent) els.logBox.textContent = "无法读取该任务日志：" + error.message;
+    if (managePolling && crawlLogModalIsOpen()) scheduleCrawlLogPolling();
+    return null;
+  }
+}
+
+async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
+  if (!els.crawlRunList) return;
+  try {
+    const response = await fetch("/api/task-runs?limit=80", { cache: "no-store" });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "任务记录加载失败");
+    state.crawlRuns = Array.isArray(data.tasks) ? data.tasks : [];
+    renderCrawlRunList();
+    let target = selectRunId || (selectLatest && state.crawlRuns.length ? state.crawlRuns[0].task_id : "");
+    if (target) {
+      target = unifiedTaskId(target);
+      await loadCrawlRunLog(target);
+    }
+    scheduleUnifiedTaskListRefresh();
+  } catch (error) {
+    els.crawlRunList.textContent = "任务记录加载失败：" + error.message;
+  }
 }
 
 async function loadLatestAgentTrace() {
@@ -1271,10 +2574,37 @@ localStorage.removeItem("appLogs");
 function fillAiConfig(config) {
   els.aiProvider.value = config.provider || "deepseek";
   els.aiBaseUrl.value = config.base_url || "https://api.deepseek.com";
-  els.aiModel.value = config.model || "deepseek-v4-flash";
+  const model = config.model || "deepseek-v4-flash";
+  els.aiModel.innerHTML = `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`;
+  els.aiModel.value = model;
   els.aiApiKey.value = "";
   els.aiApiKey.placeholder = config.has_api_key ? `已保存：${config.api_key}` : "请输入 API Key";
   els.aiConfigStatus.textContent = `${config.provider} / ${config.model} / ${config.base_url} / ${config.has_api_key ? "API Key 已保存" : "未保存 API Key"}`;
+}
+
+async function fetchAiModels() {
+  const baseUrl = els.aiBaseUrl.value.trim();
+  const apiKey = els.aiApiKey.value.trim();
+  if (!/^https?:\/\//i.test(baseUrl)) throw new Error("Base URL 必须以 http:// 或 https:// 开头");
+  els.fetchAiModels.disabled = true;
+  els.fetchAiModels.textContent = "获取中...";
+  if (els.aiModelHint) els.aiModelHint.textContent = "正在连接模型服务...";
+  try {
+    const response = await fetch("/api/ai-models", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base_url: baseUrl, api_key: apiKey }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "模型列表获取失败");
+    const current = els.aiModel.value;
+    els.aiModel.innerHTML = data.models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
+    els.aiModel.value = data.models.includes(current) ? current : data.models[0];
+    if (els.aiModelHint) els.aiModelHint.textContent = `已获取 ${data.models.length} 个模型，选择后点击保存设置。`;
+  } finally {
+    els.fetchAiModels.disabled = false;
+    els.fetchAiModels.textContent = "获取模型列表";
+  }
 }
 
 async function loadAiConfig() {
@@ -1304,15 +2634,19 @@ async function saveAiConfig() {
 }
 
 async function testAiConfig() {
-  els.aiConfigStatus.textContent = "正在测试 LLM + RAG 连接...";
-  const response = await fetch("/api/ai-test", { method: "POST" });
-  const data = await response.json();
-  if (data.ok) {
-    els.aiConfigStatus.textContent = `连接成功：${data.result.provider || ""} ${data.result.model || ""}`;
-  } else {
-    els.aiConfigStatus.textContent = data.result?.error || data.error || "连接失败";
+  els.testAiConfig.disabled = true;
+  els.testAiConfig.textContent = "测试中...";
+  els.aiConfigStatus.textContent = "正在验证 Base URL、API Key 和模型...";
+  try {
+    const response = await fetch("/api/ai-test", { method: "POST" });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || data.result?.error || "连接失败");
+    els.aiConfigStatus.textContent = `连接成功：${data.result.provider || ""} / ${data.result.model || ""} / ${data.result.latency_ms || 0}ms`;
+    if (data.status) renderStatus(data.status);
+  } finally {
+    els.testAiConfig.disabled = false;
+    els.testAiConfig.textContent = "测试连接";
   }
-  if (data.status) renderStatus(data.status);
 }
 
 async function fetchStatus() {
@@ -1389,9 +2723,37 @@ async function generateAudio(pathStr, button = null) {
       body: JSON.stringify({ path: pathStr, force: true }),
     });
     const data = await response.json();
-    if (!data.ok) throw new Error(data.result?.error || data.error || "音频生成失败");
-    renderStatus(data.status);
-    appendLog(`音频摘要已生成：${data.result.audio?.name || ""}（${data.result.backend || "unknown"}）\n`);
+    if (!data.ok) throw new Error(data.error || "音频任务提交失败");
+    const taskId = String(data.task?.task_id || "");
+    if (!taskId) throw new Error("后端没有返回音频任务编号");
+    const submitMessage = data.alreadyRunning
+      ? "该文件的音频任务已在运行，继续跟踪现有任务。"
+      : "音频生成任务已启动，可在任务与审核记录中查看。";
+    appendLog(`${submitMessage}\n`);
+    showTaskOperationNotice(submitMessage);
+    await loadCrawlRuns({ selectRunId: taskId });
+
+    const deadline = Date.now() + 30 * 60 * 1000;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => window.setTimeout(resolve, 2500));
+      const taskResponse = await fetch("/api/task-run-log?id=" + encodeURIComponent(taskId), { cache: "no-store" });
+      const taskData = await taskResponse.json();
+      if (!taskData.ok) throw new Error(taskData.error || "无法读取音频任务状态");
+      const task = taskData.task || {};
+      if (crawlLogModalIsOpen()) await loadCrawlRuns({ selectRunId: taskId });
+      if (task.run_status === "running") continue;
+      await loadCrawlRuns({ selectRunId: taskId });
+      if (task.run_status !== "completed") {
+        throw new Error(task.status_detail || task.progress_detail || "音频生成失败");
+      }
+      const statusResponse = await fetch("/api/status", { cache: "no-store" });
+      const statusData = await statusResponse.json();
+      if (statusData.ok && statusData.status) renderStatus(statusData.status);
+      appendLog(`${task.status_detail || "音频摘要已生成。"}\n`);
+      showTaskOperationNotice("音频摘要已生成，播放按钮已更新。");
+      return;
+    }
+    throw new Error("音频任务仍在后台运行，请在任务与审核记录中继续查看。");
   } catch (error) {
     appendLog(`音频生成失败：${error.message}\n`);
     alert(error.message);
@@ -1691,11 +3053,16 @@ if (els.audioCloseBtn) {
 
 async function runCrawl(source = "按钮") {
   if (els.logModal) els.logModal.hidden = false;
+  loadCrawlRuns();
+  if (els.logRunTitle) els.logRunTitle.textContent = "实时日志（运行开始后即自动归档）";
   setBusy(true, "正在重新爬取", "crawl");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`, true);
   try {
     const res = await fetch("/api/crawl-stream?v=12", { method: "POST" });
-    if (!res.ok) throw new Error("网络请求失败");
+    if (!res.ok) {
+      const payload = await res.json().catch(() => ({}));
+      throw new Error(payload.error || `请求失败（HTTP ${res.status}）`);
+    }
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -1711,13 +3078,17 @@ async function runCrawl(source = "按钮") {
         if (!line) continue;
         const event = JSON.parse(line.replace(/^data:\s*/, ""));
         
-        if (event.type === "log") {
+        if (event.type === "run_start") {
+          state.activeCrawlRunId = event.crawlRunId || null;
+          loadCrawlRuns({ selectRunId: state.activeCrawlRunId });
+        } else if (event.type === "log") {
           if (event.text) {
             appendLog(event.text + "\n");
           }
         } else if (event.type === "agent_trace") {
-          renderAgentTrace(event.trace);
+          if (!crawlLogModalIsOpen()) renderAgentTrace(event.trace);
         } else if (event.type === "crawl_summary") {
+          if (crawlLogModalIsOpen()) continue;
           const successCount = event.success ? event.success.length : 0;
           const failedCount = event.failed ? event.failed.length : 0;
           let html = `<div class="crawl-summary-card">
@@ -1770,15 +3141,17 @@ async function runCrawl(source = "按钮") {
           appendLog(`\n[爬取结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           renderStatus(event.status);
           await fetchStatus();
-          setBusy(false);
+          await loadCrawlRuns({ selectRunId: event.crawlRunRegistry?.crawl_run_id || state.activeCrawlRunId });
+          setBusy(false, "准备就绪", "crawl");
           return;
         }
       }
     }
   } catch (err) {
     appendLog(`\n\n执行异常：${err.message}`);
+    showTaskOperationNotice(`手动全量爬虫未能启动或已中断：${err.message}`);
   }
-  setBusy(false);
+  setBusy(false, "准备就绪", "crawl");
 }
 
 async function generateReport(source = "按钮") {
@@ -1788,6 +3161,7 @@ async function generateReport(source = "按钮") {
   try {
     const res = await fetch("/api/generate-stream", { method: "POST" });
     if (!res.ok) throw new Error("网络请求失败");
+    loadCrawlRuns();
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -1808,14 +3182,15 @@ async function generateReport(source = "按钮") {
             appendLog(event.text + "\n");
           }
         } else if (event.type === "agent_trace") {
-          renderAgentTrace(event.trace);
+          if (!crawlLogModalIsOpen()) renderAgentTrace(event.trace);
         } else if (event.type === "done") {
           appendLog(`\n[生成结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           if (event.audio && !event.audio.ok) {
              appendLog(`语音摘要失败：${event.audio.error}\n`);
           }
           renderStatus(event.status);
-          setBusy(false);
+          await loadCrawlRuns({ selectLatest: true });
+          setBusy(false, "准备就绪", "generate");
           return;
         }
       }
@@ -1823,7 +3198,7 @@ async function generateReport(source = "按钮") {
   } catch (error) {
     appendLog(`\n生成失败：${error.message}`);
   } finally {
-    setBusy(false);
+    setBusy(false, "准备就绪", "generate");
   }
 }
 
@@ -1834,6 +3209,7 @@ async function generateCarrierPerformanceReport(source = "按钮") {
   try {
     const response = await fetch(`/api/generate-carrier-performance-stream`, { method: "POST" });
     if (!response.ok) throw new Error("网络请求失败");
+    loadCrawlRuns();
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -1851,11 +3227,12 @@ async function generateCarrierPerformanceReport(source = "按钮") {
         if (event.type === "log") {
           if (event.text) appendLog(event.text + "\n");
         } else if (event.type === "agent_trace") {
-          renderAgentTrace(event.trace);
+          if (!crawlLogModalIsOpen()) renderAgentTrace(event.trace);
         } else if (event.type === "done") {
           appendLog(`\n[生成结束] 最终状态：${event.ok ? "成功" : "失败"}\n总耗时：${event.durationMs} ms\n`);
           if (event.audio && !event.audio.ok) appendLog(`语音摘要失败：${event.audio.error}\n`);
           renderStatus(event.status);
+          await loadCrawlRuns({ selectLatest: true });
           return;
         }
       }
@@ -1863,7 +3240,7 @@ async function generateCarrierPerformanceReport(source = "按钮") {
   } catch (error) {
     appendLog(`\n生成失败：${error.message}`);
   } finally {
-    setBusy(false);
+    setBusy(false, "准备就绪", "performance");
   }
 }
 
@@ -1963,7 +3340,7 @@ function markdownToHtml(markdown) {
       html.push("<hr />");
       continue;
     }
-    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    const heading = line.match(/^(#{1,6})\s+(.+)$/);
     if (heading) {
       closeList();
       const level = Math.min(heading[1].length + 2, 5);
@@ -2182,6 +3559,10 @@ function removeProcessClauses(text, collector = null) {
   return String(text || "")
     .split(/\n+/)
     .map((line) => {
+      // Markdown table rows are structured data. Splitting them on commas
+      // corrupts values such as 263,707 and can remove the closing pipes when
+      // a later cell contains audit terms such as official_match.
+      if (line.trimStart().startsWith("|")) return line;
       const parts = line.match(/[^。！？；;]+[。！？；;]?/g) || [line];
       const kept = [];
       parts.forEach((part) => {
@@ -2240,6 +3621,9 @@ function extractAssistantProcessLines(content) {
 
 function stripAssistantControlText(content) {
   let text = content || "";
+  // The chart tool renders the actual image as a timeline event. A bare
+  // Markdown image label without a URL is only a model placeholder.
+  text = text.replace(/!\[[^\]\n]*\](?!\s*\()/g, "").trim();
   text = text.replace(/<suggestions>[\s\S]*?<\/suggestions>/gi, "").trim();
   text = text.replace(/<suggestions>[\s\S]*$/gi, "").trim();
   text = text.replace(/^\s*\[\s*["“][\s\S]*?["”]\s*(?:,\s*["“][\s\S]*?["”]\s*){1,}\]\s*$/m, "").trim();
@@ -2332,29 +3716,55 @@ function normalizeCitationLabel(value) {
     .trim();
 }
 
+function citationLabelVariants(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return [];
+  const withoutFragment = raw
+    .replace(/\s*·\s*片段\s*\d+\s*$/i, "")
+    .replace(/\s+片段\s*\d+\s*$/i, "");
+  const strippedRef = withoutFragment
+    .replace(/^\/references(?:-raw)?\//, "")
+    .replace(/^https?:\/\/[^/]+\/references(?:-raw)?\//i, "");
+  let decoded = strippedRef;
+  try {
+    decoded = decodeURIComponent(strippedRef);
+  } catch (e) {}
+  const noQuery = decoded.split(/[?#]/, 1)[0];
+  const basename = noQuery.split("/").filter(Boolean).pop() || noQuery;
+  const noExtension = basename.replace(/\.[a-z0-9]+$/i, "");
+  return [...new Set([raw, withoutFragment, strippedRef, decoded, noQuery, basename, noExtension])]
+    .filter(Boolean)
+    .map(normalizeCitationLabel)
+    .filter(Boolean);
+}
+
 function citationIndexForSourceLabel(label, node) {
-  const target = normalizeCitationLabel(label)
-    .replace(/^来源/, "")
-    .replace(/^source/, "");
-  if (!target || !node.dataset.references) return null;
+  const targets = citationLabelVariants(label)
+    .map((item) => item.replace(/^来源/, "").replace(/^source/, ""))
+    .filter(Boolean);
+  if (!targets.length || !node.dataset.references) return null;
   try {
     const refs = JSON.parse(node.dataset.references);
     const candidates = refs
       .map((ref) => {
-        const labels = [
+        const rawLabels = [
           ref.source,
           ref.originalIndex,
           ...(Array.isArray(ref.links) ? ref.links.flatMap((link) => [link.label, link.url]) : []),
         ]
-          .filter(Boolean)
-          .map(normalizeCitationLabel);
+          .filter(Boolean);
+        const labels = rawLabels.flatMap(citationLabelVariants);
         return { index: Number(ref.index), labels };
       })
       .filter((item) => Number.isFinite(item.index) && item.index > 0);
-    const exact = candidates.find((item) => item.labels.some((itemLabel) => itemLabel === target));
+    const exact = candidates.find((item) =>
+      item.labels.some((itemLabel) => targets.some((target) => itemLabel === target))
+    );
     if (exact) return exact.index;
     const contains = candidates.find((item) =>
-      item.labels.some((itemLabel) => itemLabel && (itemLabel.includes(target) || target.includes(itemLabel)))
+      item.labels.some((itemLabel) =>
+        itemLabel && targets.some((target) => itemLabel.includes(target) || target.includes(itemLabel))
+      )
     );
     return contains ? contains.index : null;
   } catch (e) {
@@ -2394,6 +3804,7 @@ function mergeCitationMeta(node, event) {
   const mergedRefs = [];
   const mergedLinks = [];
   const seenRefs = new Set();
+  const usedIndexes = new Set();
 
   const sourceType = event.provider ? "网络" : "本地";
   const addLink = (link) => {
@@ -2413,7 +3824,11 @@ function mergeCitationMeta(node, event) {
     if (seenRefs.has(refKey)) return;
     seenRefs.add(refKey);
     const currentMax = mergedRefs.reduce((max, item) => Math.max(max, Number(item.index) || 0), 0);
-    const index = Number(ref.index) || currentMax + 1;
+    const requestedIndex = Number(ref.index);
+    const index = Number.isFinite(requestedIndex) && requestedIndex > 0 && !usedIndexes.has(requestedIndex)
+      ? requestedIndex
+      : currentMax + 1;
+    usedIndexes.add(index);
     const normalizedLinks = links.map((link) => ({
       label: link.label || ref.source || `来源 ${index}`,
       url: link.url,
@@ -2489,11 +3904,43 @@ function appendRunSummary(node, event) {
   appendRagProcess(node, `本轮完成：${event.status || "ok"}，工具 ${Number(event.toolCount || 0)} 次，用时 ${seconds}。`);
 }
 
+function normalizeStoredChatRole(value) {
+  const role = String(value || "").trim().toLowerCase();
+  return ["assistant", "ai", "model"].includes(role) ? "assistant" : "user";
+}
+
+function normalizeStoredChatContent(value, decodeLegacyNewlines = false) {
+  let content = "";
+  if (typeof value === "string") {
+    content = value;
+  } else if (Array.isArray(value)) {
+    content = value.map((item) => {
+      if (typeof item === "string") return item;
+      if (!item || typeof item !== "object") return "";
+      return String(item.text ?? item.content ?? "");
+    }).join("");
+  } else if (value && typeof value === "object") {
+    content = String(value.content ?? value.text ?? value.message ?? "");
+  } else {
+    content = String(value ?? "");
+  }
+  if (
+    decodeLegacyNewlines &&
+    !content.includes("\n") &&
+    /\\n(?:#{1,6}\s|[-*]\s|\d+[.、]\s|\|)/.test(content)
+  ) {
+    content = content.replace(/\\r\\n|\\n/g, "\n");
+  }
+  return content;
+}
+
 function setMessageContent(node, content, markdown = false) {
   const text = node.querySelector(".message-text") || node.querySelector(".markdown-body");
   if (!text) return;
-  if (markdown) {
+  const renderAsMarkdown = Boolean(markdown || node.classList.contains("assistant"));
+  if (renderAsMarkdown) {
     if (text.className === "message-text") text.className = "markdown-body";
+    text._rawMarkdown = String(content || "");
     const cleaned = stripAssistantControlText(content);
     let html = markdownToHtml(cleaned);
     html = renderCitationMarkers(html, node);
@@ -2503,8 +3950,30 @@ function setMessageContent(node, content, markdown = false) {
   }
 }
 
-function scrollMessagesToBottom() {
+function rerenderAssistantMarkdown(node) {
+  assistantAnswerNodes(node).forEach((textNode) => {
+    if (textNode._rawMarkdown === undefined) return;
+    const cleaned = stripAssistantControlText(textNode._rawMarkdown);
+    let html = markdownToHtml(cleaned);
+    html = renderCitationMarkers(html, node);
+    textNode.innerHTML = html;
+  });
+}
+
+function isMessagesNearBottom(threshold = 96) {
+  if (!els.messages) return true;
+  return els.messages.scrollHeight - els.messages.scrollTop - els.messages.clientHeight <= threshold;
+}
+
+function updateChatAutoScrollFromPosition() {
+  state.chatAutoScroll = isMessagesNearBottom();
+}
+
+function scrollMessagesToBottom(options = {}) {
   if (!els.messages) return;
+  const force = Boolean(options.force);
+  if (!force && !state.chatAutoScroll) return;
+  state.chatAutoScroll = true;
   const scroll = () => {
     els.messages.scrollTop = els.messages.scrollHeight;
   };
@@ -2532,14 +4001,14 @@ function addMessage(role, content, markdown = false) {
     body.appendChild(text);
     node.append(avatar, body);
     els.messages.appendChild(node);
-    scrollMessagesToBottom();
+    scrollMessagesToBottom({ force: true });
     return node;
   }
   body.appendChild(text);
   node.append(avatar, body);
   els.messages.appendChild(node);
   setMessageContent(node, content, markdown);
-  scrollMessagesToBottom();
+  scrollMessagesToBottom({ force: true });
   return node;
 }
 
@@ -2586,7 +4055,6 @@ function renderChatThreadList() {
     <div class="chat-thread-item ${thread.id === state.activeThreadId ? "is-active" : ""}" data-thread-id="${escapeHtml(thread.id)}">
       <button class="chat-thread-main" type="button">
         <span class="chat-thread-title">${escapeHtml(thread.title || "未命名对话")}</span>
-        <span class="chat-thread-preview">${escapeHtml(thread.preview || `${thread.messageCount || 0} 条消息`)}</span>
       </button>
       <button class="chat-thread-pin ${thread.pinned ? "is-pinned" : ""}" type="button" title="${thread.pinned ? "取消置顶" : "置顶"}" aria-label="${thread.pinned ? "取消置顶" : "置顶"}" data-action="pin">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"></path><path d="M8 3h8l-1 7 3 4H6l3-4z"></path></svg>
@@ -2682,7 +4150,13 @@ async function openChatThread(threadId) {
     if (!state.chatHistory.length) {
       resetChatMessages();
     } else {
-      state.chatHistory.forEach((item) => addMessage(item.role, item.content, item.role === "assistant"));
+      state.chatHistory.forEach((item) => {
+        const role = normalizeStoredChatRole(item && item.role);
+        const content = normalizeStoredChatContent(item && item.content, role === "assistant");
+        const normalizedItem = { ...(item || {}), role, content };
+        const node = addMessage(role, content, role === "assistant");
+        restoreAssistantMessageExtras(node, normalizedItem);
+      });
     }
     renderChatThreadList();
   } catch (error) {
@@ -2809,6 +4283,14 @@ function appendStreamBlock(node, element) {
   return element;
 }
 
+function assistantAnswerNodes(node) {
+  const body = messageBody(node);
+  if (!body) return [];
+  return Array.from(body.children).filter(
+    (child) => child.classList.contains("message-text") || child.classList.contains("markdown-body")
+  );
+}
+
 function currentMessageTextNode(node) {
   const body = messageBody(node);
   let text = body.lastElementChild;
@@ -2823,6 +4305,9 @@ function currentMessageTextNode(node) {
     text.className = "message-text";
     text._rawMarkdown = "";
     body.appendChild(text);
+  }
+  if (node.classList.contains("assistant")) {
+    text.dataset.assistantAnswer = "true";
   }
   return text;
 }
@@ -3081,6 +4566,66 @@ function appendToolCallCard(node, event) {
   }
 }
 
+function renderAssistantToolEvent(node, event, insertedChartUrls = null) {
+  if (event.type === "tool_call_start") {
+    appendAssistantActionLine(node, event);
+  }
+  appendToolCallCard(node, event);
+  if (event.type === "tool_call_result" && event.name === "render_python_chart") {
+    const chartImage = extractFirstMarkdownImage(event.content);
+    if (chartImage && (!insertedChartUrls || !insertedChartUrls.has(chartImage.url))) {
+      if (insertedChartUrls) insertedChartUrls.add(chartImage.url);
+      appendStableChartImage(node, chartImage);
+    }
+  }
+}
+
+function appendAssistantTimelineText(timeline, text) {
+  const value = String(text || "");
+  if (!value) return;
+  const last = timeline[timeline.length - 1];
+  if (last && last.type === "text") {
+    last.text += value;
+  } else {
+    timeline.push({ type: "text", text: value });
+  }
+}
+
+function assistantTimelineToolEvent(event) {
+  return {
+    type: event.type,
+    id: event.id || "",
+    name: event.name || "",
+    processText: event.processText || "",
+    args: event.args || "",
+    content: event.content || "",
+  };
+}
+
+function restoreAssistantTimeline(node, timeline) {
+  if (!Array.isArray(timeline) || !timeline.length) return false;
+  const body = messageBody(node);
+  if (!body) return false;
+  body.innerHTML = "";
+  const insertedChartUrls = new Set();
+  timeline.forEach((event) => {
+    if (!event || typeof event !== "object") return;
+    if (event.type === "text") {
+      const textNode = document.createElement("div");
+      textNode.className = "markdown-body";
+      textNode.dataset.assistantAnswer = "true";
+      textNode._rawMarkdown = String(event.text || "");
+      body.appendChild(textNode);
+      setCurrentMessageContent(node, textNode._rawMarkdown, true, textNode);
+      return;
+    }
+    if (event.type === "tool_call_start" || event.type === "tool_call_result") {
+      renderAssistantToolEvent(node, event, insertedChartUrls);
+    }
+  });
+  return body.children.length > 0;
+}
+
 function resizeChatInput() {
   const value = els.chatInput.value || "";
   const isSingleLine = !value.includes("\n");
@@ -3144,6 +4689,46 @@ function normalizeSuggestionList(items) {
     .slice(0, 3);
 }
 
+function suggestionChipsHtml(items) {
+  const arr = normalizeSuggestionList(items);
+  if (!arr.length) return "";
+  return `<div class="suggestion-chips">` + arr.map((q) => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join("") + `</div>`;
+}
+
+function parseSuggestionTag(value) {
+  const match = String(value || "").match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
+  if (!match) return [];
+  try {
+    let jsonStr = match[1].trim();
+    jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
+    return normalizeSuggestionList(JSON.parse(jsonStr));
+  } catch (e) {
+    return [];
+  }
+}
+
+function restoreAssistantMessageExtras(node, item) {
+  if (!node || !item || item.role !== "assistant") return;
+  const references = Array.isArray(item.references) ? item.references : [];
+  const links = Array.isArray(item.links) ? item.links : [];
+  const suggestions = normalizeSuggestionList(item.suggestions || parseSuggestionTag(item.content));
+  if (references.length) node.dataset.references = JSON.stringify(references);
+  if (links.length) node.dataset.links = JSON.stringify(links);
+  restoreAssistantTimeline(node, item.timeline);
+  if (references.length || links.length) {
+    rerenderAssistantMarkdown(node);
+  }
+  const answerNodes = assistantAnswerNodes(node);
+  const textNode = answerNodes[answerNodes.length - 1] || null;
+  const chips = suggestionChipsHtml(suggestions);
+  if (textNode && chips && !textNode.querySelector(".suggestion-chips")) {
+    textNode.insertAdjacentHTML("beforeend", chips);
+  }
+  if (references.length || links.length) {
+    appendCitationFooter(node, references, links);
+  }
+}
+
 function currentAgentContextKey(skillIds, datasetIds) {
   return JSON.stringify({
     skills: [...skillIds].sort(),
@@ -3167,12 +4752,47 @@ async function sendChat(message, options = {}) {
   addMessage("user", message);
   state.chatHistory.push({ role: "user", content: message });
   state.chatHistory = state.chatHistory.slice(-80);
-  persistActiveThread();
+  state.chatAbortController = new AbortController();
+  state.chatStopRequested = false;
   setChatBusy(true);
+  let assistantNode = null;
+  let assistantHistoryEntry = null;
+  let draftPersistTimer = null;
+  let assistantDraftRaw = "";
+  const assistantTimeline = [];
+  const setAssistantDraftContent = (content) => {
+    if (!assistantHistoryEntry) return;
+    const clean = stripAssistantControlText(String(content || "").trim());
+    assistantHistoryEntry.content = clean || "正在分析请求，并调用相关工具获取依据。";
+    assistantHistoryEntry.partial = true;
+  };
+  const scheduleDraftPersist = () => {
+    if (!assistantHistoryEntry || draftPersistTimer) return;
+    draftPersistTimer = window.setTimeout(() => {
+      draftPersistTimer = null;
+      persistActiveThread();
+    }, 1200);
+  };
+  const flushDraftPersist = async () => {
+    if (draftPersistTimer) {
+      window.clearTimeout(draftPersistTimer);
+      draftPersistTimer = null;
+    }
+    await persistActiveThread();
+  };
   try {
-    const assistantNode = addMessage("assistant", "正在连接...");
+    assistantNode = addMessage("assistant", "正在连接...");
+    assistantHistoryEntry = {
+      role: "assistant",
+      content: "正在分析请求，并调用相关工具获取依据。",
+      timeline: assistantTimeline,
+      partial: true,
+    };
+    state.chatHistory.push(assistantHistoryEntry);
+    state.chatHistory = state.chatHistory.slice(-80);
+    await persistActiveThread();
     const webSearchEnabled = Boolean(state.webSearchEnabled);
-    const thinkingEnabled = Boolean(state.thinkingEnabled);
+    const thinkingEnabled = false;
     assistantNode.dataset.showThinkingPanel = thinkingEnabled ? "true" : "false";
     const selectedSkillIds = Array.from(state.selectedSkillIds);
     const selectedDatasetIds = Array.from(state.selectedDatasetIds);
@@ -3183,6 +4803,7 @@ async function sendChat(message, options = {}) {
     const response = await fetch("/api/chat-stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: state.chatAbortController.signal,
       body: JSON.stringify({
         message,
         webSearchEnabled,
@@ -3202,25 +4823,71 @@ async function sendChat(message, options = {}) {
     let answer = "";
     const insertedChartUrls = new Set();
     let isDone = false;
+    let streamQueue = "";
+    let streamTimer = null;
+
+    const renderStreamingMarkdown = (textNode) => {
+      textNode.classList.remove("message-text");
+      textNode.classList.add("markdown-body");
+      textNode.dataset.assistantAnswer = "true";
+      let displayAnswer = textNode._rawMarkdown || "";
+      const parsedSuggestions = parseSuggestionTag(displayAnswer);
+      let suggestionsHTML = "";
+      if (parsedSuggestions.length) {
+        displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
+        suggestionsHTML = suggestionChipsHtml(parsedSuggestions);
+      }
+      const cleaned = stripAssistantControlText(displayAnswer);
+      let html = markdownToHtml(cleaned);
+      html = renderCitationMarkers(html, assistantNode);
+      textNode.innerHTML = html;
+      if (suggestionsHTML) {
+        textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
+      }
+    };
+
+    const flushStreamQueue = (flushAll = false) => {
+      if (!streamQueue) return;
+      const textNode = currentMessageTextNode(assistantNode);
+      if (textNode._rawMarkdown === undefined) textNode._rawMarkdown = "";
+      textNode.classList.add("is-streaming-token");
+      const sliceSize = flushAll ? streamQueue.length : Math.min(streamQueue.length, Math.max(3, Math.min(18, Math.ceil(streamQueue.length / 4))));
+      textNode._rawMarkdown += streamQueue.slice(0, sliceSize);
+      streamQueue = streamQueue.slice(sliceSize);
+      renderStreamingMarkdown(textNode);
+      scrollMessagesToBottom();
+      if (streamQueue && !flushAll) {
+        streamTimer = window.setTimeout(() => {
+          streamTimer = null;
+          flushStreamQueue(false);
+        }, 24);
+      }
+    };
+
+    const queueStreamingText = (chunk) => {
+      if (!chunk) return;
+      streamQueue += chunk;
+      const textNode = currentMessageTextNode(assistantNode);
+      textNode.classList.add("is-streaming-token");
+      if (!streamTimer) {
+        streamTimer = window.setTimeout(() => {
+          streamTimer = null;
+          flushStreamQueue(false);
+        }, 8);
+      }
+    };
+
+    const finishStreamingText = () => {
+      if (streamTimer) {
+        window.clearTimeout(streamTimer);
+        streamTimer = null;
+      }
+      flushStreamQueue(true);
+      assistantAnswerNodes(assistantNode).forEach((textNode) => textNode.classList.remove("is-streaming-token"));
+    };
 
     const renderToolEvent = (event) => {
-      if (event.type === "tool_call_start") {
-        appendAssistantActionLine(assistantNode, event);
-      }
-      if (event.type === "tool_call_result" && event.name === "read_agent_skill" && event.args) {
-        try {
-          const parsedArgs = JSON.parse(event.args);
-          if (parsedArgs && parsedArgs.skill_id) state.loadedSkillIds.add(String(parsedArgs.skill_id));
-        } catch (e) {}
-      }
-      appendToolCallCard(assistantNode, event);
-      if (event.type === "tool_call_result" && event.name === "render_python_chart") {
-        const chartImage = extractFirstMarkdownImage(event.content);
-        if (chartImage && !insertedChartUrls.has(chartImage.url)) {
-          insertedChartUrls.add(chartImage.url);
-          appendStableChartImage(assistantNode, chartImage);
-        }
-      }
+      renderAssistantToolEvent(assistantNode, event, insertedChartUrls);
     };
 
     while (true) {
@@ -3240,8 +4907,11 @@ async function sendChat(message, options = {}) {
         } else if (event.type === "thinking_status" || event.type === "process") {
           if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
+          finishStreamingText();
           mergeCitationMeta(assistantNode, event);
+          rerenderAssistantMarkdown(assistantNode);
         } else if (event.type === "action_confirmation") {
+          finishStreamingText();
           appendActionConfirmation(assistantNode, event, message);
         } else if (event.type === "run_summary") {
           if (thinkingEnabled) appendRunSummary(assistantNode, event);
@@ -3252,8 +4922,12 @@ async function sendChat(message, options = {}) {
               if (parsedArgs && parsedArgs.skill_id) state.loadedSkillIds.add(String(parsedArgs.skill_id));
             } catch (e) {}
           }
+          finishStreamingText();
           clearConnectingPlaceholder(assistantNode);
+          assistantTimeline.push(assistantTimelineToolEvent(event));
+          assistantHistoryEntry.timeline = assistantTimeline;
           renderToolEvent(event);
+          scheduleDraftPersist();
           scrollMessagesToBottom();
         } else if (event.type === "delta" || event.type === "error" || event.type === "tool_start") {
           let textChunk = "";
@@ -3269,37 +4943,12 @@ async function sendChat(message, options = {}) {
           }
 
           answer += textChunk;
-
-          const textNode = currentMessageTextNode(assistantNode);
-          if (textNode._rawMarkdown === undefined) textNode._rawMarkdown = "";
-          textNode._rawMarkdown += textChunk;
-
-          let displayAnswer = textNode._rawMarkdown;
-          const sugMatch = displayAnswer.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
-          let suggestionsHTML = "";
-          if (sugMatch) {
-            try {
-              let jsonStr = sugMatch[1].trim();
-              jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
-              const arr = normalizeSuggestionList(JSON.parse(jsonStr));
-              displayAnswer = displayAnswer.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
-              if (arr && arr.length > 0) {
-                suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
-              }
-            } catch (e) {}
-          }
-
-          // Render the markdown content
-          const cleaned = stripAssistantControlText(displayAnswer);
-          let html = markdownToHtml(cleaned);
-          html = renderCitationMarkers(html, assistantNode);
-          textNode.innerHTML = html;
-
-          if (suggestionsHTML) {
-            textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
-          }
-          
-          scrollMessagesToBottom();
+          appendAssistantTimelineText(assistantTimeline, textChunk);
+          assistantHistoryEntry.timeline = assistantTimeline;
+          assistantDraftRaw = answer;
+          setAssistantDraftContent(answer);
+          scheduleDraftPersist();
+          queueStreamingText(textChunk);
         } else if (event.type === "action_result") {
           if (event.generation) {
             appendLog([
@@ -3321,48 +4970,53 @@ async function sendChat(message, options = {}) {
       }
       if (isDone) break;
     }
+    finishStreamingText();
 
     if (!answer.trim()) {
       const textNode = currentMessageTextNode(assistantNode);
       textNode.innerHTML = "<p>操作完成。</p>";
-      state.chatHistory.push({ role: "assistant", content: "操作完成。" });
-      state.chatHistory = state.chatHistory.slice(-80);
-      state.agentContextKey = contextKey;
-      await persistActiveThread();
-    } else {
-      // Final processing of the accumulated text in the LAST text node ONLY
-      const textNode = currentMessageTextNode(assistantNode);
-      let finalChunk = textNode._rawMarkdown || "";
-
-      const sugMatch = finalChunk.match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
-      let suggestionsHTML = "";
-      if (sugMatch) {
-        try {
-          let jsonStr = sugMatch[1].trim();
-          jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
-          const arr = normalizeSuggestionList(JSON.parse(jsonStr));
-          finalChunk = finalChunk.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
-          if (arr && arr.length > 0) {
-            suggestionsHTML = `<div class="suggestion-chips">` + arr.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join('') + `</div>`;
-          }
-        } catch (e) {}
+      textNode._rawMarkdown = "操作完成。";
+      appendAssistantTimelineText(assistantTimeline, "操作完成。");
+      if (assistantHistoryEntry) {
+        assistantHistoryEntry.content = "操作完成。";
+        assistantHistoryEntry.timeline = assistantTimeline;
+        delete assistantHistoryEntry.partial;
       }
-
-      const citationTagMatch = finalChunk.match(/<引用来源>([\s\S]*?)<\/引用来源>/i);
-      let llmCitationText = citationTagMatch ? citationTagMatch[1].trim() : null;
-      finalChunk = finalChunk.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
-      finalChunk = finalChunk.replace(/<引用来源>[\s\S]*$/gi, "").trim();
-      finalChunk = finalChunk.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
-      finalChunk = finalChunk.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
-
-      const cleanedChunk = stripAssistantControlText(finalChunk);
-      let html = markdownToHtml(cleanedChunk);
-      html = renderCitationMarkers(html, assistantNode);
-      textNode.innerHTML = html;
+      state.agentContextKey = contextKey;
+      await flushDraftPersist();
+    } else {
+      const textNodes = assistantAnswerNodes(assistantNode);
+      const textNode = textNodes[textNodes.length - 1] || currentMessageTextNode(assistantNode);
+      let finalSuggestions = [];
+      let suggestionsHTML = "";
+      let llmCitationText = null;
+      textNodes.forEach((segmentNode, index) => {
+        let finalChunk = segmentNode._rawMarkdown || "";
+        if (index === textNodes.length - 1) {
+          finalSuggestions = parseSuggestionTag(finalChunk);
+          if (finalSuggestions.length) {
+            finalChunk = finalChunk.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
+            suggestionsHTML = suggestionChipsHtml(finalSuggestions);
+          }
+        }
+        const citationTagMatch = finalChunk.match(/<引用来源>([\s\S]*?)<\/引用来源>/i);
+        if (citationTagMatch) llmCitationText = citationTagMatch[1].trim();
+        finalChunk = finalChunk.replace(/<引用来源>[\s\S]*?<\/引用来源>/gi, "").trim();
+        finalChunk = finalChunk.replace(/<引用来源>[\s\S]*$/gi, "").trim();
+        finalChunk = finalChunk.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
+        finalChunk = finalChunk.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
+        segmentNode._rawMarkdown = finalChunk;
+        const cleanedChunk = stripAssistantControlText(finalChunk);
+        let html = markdownToHtml(cleanedChunk);
+        html = renderCitationMarkers(html, assistantNode);
+        segmentNode.innerHTML = html;
+      });
 
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;
       const storedLinks = assistantNode.dataset.links ? JSON.parse(assistantNode.dataset.links) : null;
+      let persistedRefs = storedRefs || [];
+      let persistedLinks = storedLinks || [];
       if (storedRefs || storedLinks) {
         appendCitationFooter(assistantNode, storedRefs, storedLinks);
       } else if (llmCitationText) {
@@ -3376,33 +5030,58 @@ async function sendChat(message, options = {}) {
             fallbackRefs.push({ index: idx, source: src, links: [{ label: src, url: `/references/${src}` }] });
           }
         }
-        if (fallbackRefs.length) appendCitationFooter(assistantNode, fallbackRefs, null);
+        if (fallbackRefs.length) {
+          persistedRefs = fallbackRefs;
+          appendCitationFooter(assistantNode, fallbackRefs, null);
+        }
       }
 
       if (suggestionsHTML) {
         textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
       } else {
-        const fallback = generateFallbackSuggestions(message);
-        const fallbackHTML = `<div class="suggestion-chips">` + fallback.map(q => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${q}</button>`).join('') + `</div>`;
+        finalSuggestions = generateFallbackSuggestions(message);
+        const fallbackHTML = suggestionChipsHtml(finalSuggestions);
         textNode.insertAdjacentHTML("beforeend", fallbackHTML);
       }
 
       if (answer.trim()) {
-        state.chatHistory.push({ role: "assistant", content: stripAssistantControlText(answer) });
-        state.chatHistory = state.chatHistory.slice(-80);
+        if (assistantHistoryEntry) {
+          assistantHistoryEntry.content = stripAssistantControlText(answer).trim();
+          assistantHistoryEntry.timeline = assistantTimeline;
+          assistantHistoryEntry.references = persistedRefs;
+          assistantHistoryEntry.links = persistedLinks;
+          assistantHistoryEntry.suggestions = finalSuggestions;
+          delete assistantHistoryEntry.partial;
+        }
       }
       state.agentContextKey = contextKey;
-      await persistActiveThread();
+      await flushDraftPersist();
       scrollMessagesToBottom();
     }
     await fetchStatus();
   } catch (error) {
-    clearConnectingPlaceholder(assistantNode);
-    addMessage("assistant", `处理失败：${error.message}`);
-    state.chatHistory.push({ role: "assistant", content: `处理失败：${error.message}` });
-    state.chatHistory = state.chatHistory.slice(-80);
-    await persistActiveThread();
+    const stopped = state.chatStopRequested || error.name === "AbortError";
+    const stoppedText = assistantDraftRaw.trim()
+      ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n（已暂停生成）`
+      : "已暂停生成。";
+    if (assistantNode) {
+      clearConnectingPlaceholder(assistantNode);
+      const textNode = currentMessageTextNode(assistantNode);
+      setCurrentMessageContent(assistantNode, stopped ? stoppedText : `处理失败：${error.message}`, stopped, textNode);
+    } else {
+      addMessage("assistant", stopped ? stoppedText : `处理失败：${error.message}`, stopped);
+    }
+    if (assistantHistoryEntry) {
+      assistantHistoryEntry.content = stopped ? stoppedText : `处理失败：${error.message}`;
+      delete assistantHistoryEntry.partial;
+    } else {
+      state.chatHistory.push({ role: "assistant", content: stopped ? stoppedText : `处理失败：${error.message}` });
+      state.chatHistory = state.chatHistory.slice(-80);
+    }
+    await flushDraftPersist();
   } finally {
+    state.chatAbortController = null;
+    state.chatStopRequested = false;
     setChatBusy(false);
     els.chatInput.focus();
     processNextQueuedChat();
@@ -3421,11 +5100,6 @@ els.crawlButtons.forEach((button) => {
   button.addEventListener("click", () => runCrawl("页面按钮"));
 });
 
-els.refreshButton.addEventListener("click", () => {
-  fetchStatus().catch((error) => {
-    appendLog(`刷新失败：${error.message}`);
-  });
-});
 
 els.aiSettingsButton.addEventListener("click", () => {
   els.aiSettingsModal.hidden = false;
@@ -3458,6 +5132,14 @@ if (els.refreshAgentMemory) {
   els.refreshAgentMemory.addEventListener("click", () => {
     loadAgentMemory().catch((error) => {
       if (els.agentMemoryList) els.agentMemoryList.textContent = error.message || String(error);
+    });
+  });
+}
+
+if (els.fetchAiModels) {
+  els.fetchAiModels.addEventListener("click", () => {
+    fetchAiModels().catch((error) => {
+      if (els.aiModelHint) els.aiModelHint.textContent = error.message || String(error);
     });
   });
 }
@@ -3520,26 +5202,48 @@ els.outputTabs.forEach((button) => {
 });
 
 els.testAiConfig.addEventListener("click", () => {
+  els.aiConfigStatus.textContent = "正在保存当前选择并准备测试...";
+  els.testAiConfig.disabled = true;
+  els.testAiConfig.textContent = "准备中...";
   saveAiConfig()
     .then(testAiConfig)
     .catch((error) => {
       els.aiConfigStatus.textContent = error.message;
+      els.testAiConfig.disabled = false;
+      els.testAiConfig.textContent = "测试连接";
     });
 });
 
 els.clearLogButton.addEventListener("click", () => {
   state.agentTraceLoaded = false;
-  setLog("执行日志已清空。");
+  setLog("当前显示已清空；持久化历史日志未删除。");
 });
 
 els.logButton.addEventListener("click", () => {
   els.logModal.hidden = false;
-  loadLatestAgentTrace();
-  setTimeout(() => els.logBox.scrollTop = els.logBox.scrollHeight, 10);
+  loadCrawlRuns({ selectLatest: !state.activeCrawlRunId, selectRunId: state.activeCrawlRunId || "" });
 });
 
-if (els.closeLogButton) els.closeLogButton.addEventListener("click", () => { els.logModal.hidden = true; });
-if (els.logModal) els.logModal.addEventListener("click", (e) => { if (e.target === els.logModal) els.logModal.hidden = true; });
+if (els.refreshCrawlRunsButton) {
+  els.refreshCrawlRunsButton.addEventListener("click", () => {
+    loadCrawlRuns({ selectLatest: !state.activeCrawlRunId, selectRunId: state.activeCrawlRunId || "" });
+  });
+}
+
+function closeCrawlLogModal() {
+  if (els.logModal) els.logModal.hidden = true;
+  stopCrawlLogPolling();
+}
+
+if (els.closeLogButton) els.closeLogButton.addEventListener("click", closeCrawlLogModal);
+if (els.logModal) els.logModal.addEventListener("click", (e) => { if (e.target === els.logModal) closeCrawlLogModal(); });
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    stopCrawlLogPolling();
+  } else if (crawlLogModalIsOpen()) {
+    loadCrawlRuns({ selectLatest: !state.activeCrawlRunId, selectRunId: state.activeCrawlRunId || "" });
+  }
+});
 
 // Dashboard Modal
 if (els.dashboardBtn) els.dashboardBtn.addEventListener("click", openDashboard);
@@ -3590,6 +5294,16 @@ els.chatFab.addEventListener("click", () => {
   els.chatModal.hidden = false;
   setTimeout(() => els.chatInput.focus(), 0);
 });
+
+if (els.messages) {
+  els.messages.addEventListener("scroll", updateChatAutoScrollFromPosition, { passive: true });
+  els.messages.addEventListener("wheel", () => {
+    window.requestAnimationFrame(updateChatAutoScrollFromPosition);
+  }, { passive: true });
+  els.messages.addEventListener("touchmove", () => {
+    window.requestAnimationFrame(updateChatAutoScrollFromPosition);
+  }, { passive: true });
+}
 
 window.clickSuggestion = function(text) {
   if (state.chatBusy) {
@@ -3701,15 +5415,6 @@ if (els.webSearchToggle) {
   });
 }
 
-if (els.thinkingToggle) {
-  renderThinkingToggle();
-  els.thinkingToggle.addEventListener("click", () => {
-    state.thinkingEnabled = !state.thinkingEnabled;
-    renderThinkingToggle();
-    els.chatInput.focus();
-  });
-}
-
 if (els.skillToggle) {
   renderSkillToggle();
   loadAgentSkills();
@@ -3733,7 +5438,10 @@ if (els.databaseToggle) {
 if (els.knowledgeUploadInput) {
   els.knowledgeUploadInput.addEventListener("change", () => {
     const file = els.knowledgeUploadInput.files && els.knowledgeUploadInput.files[0];
-    uploadKnowledgeFile(file);
+    if (!file) return;
+    state.knowledgeUploadFile = file;
+    state.knowledgeUploadOpen = true;
+    renderDatabaseMenu();
   });
 }
 
@@ -3767,8 +5475,20 @@ if (els.databaseMenu) {
     event.stopPropagation();
     const uploadAction = event.target.closest(".database-upload-action");
     if (uploadAction) {
+      if (state.knowledgeUploadBusy) return;
+      state.knowledgeUploadOpen = !state.knowledgeUploadOpen;
+      renderDatabaseMenu();
+      return;
+    }
+    const chooseFile = event.target.closest("#knowledgeUploadChooseFile");
+    if (chooseFile) {
       if (state.knowledgeUploadBusy || !els.knowledgeUploadInput) return;
       els.knowledgeUploadInput.click();
+      return;
+    }
+    const submitUpload = event.target.closest("#knowledgeUploadSubmit");
+    if (submitUpload) {
+      uploadKnowledgeFile(state.knowledgeUploadFile);
       return;
     }
     const expand = event.target.closest(".option-expand");
@@ -3790,6 +5510,16 @@ if (els.databaseMenu) {
     else state.selectedDatasetIds.add(datasetId);
     renderDatabaseMenu();
     els.chatInput.focus();
+  });
+  els.databaseMenu.addEventListener("input", (event) => {
+    const field = event.target && event.target.dataset ? event.target.dataset.uploadField : "";
+    if (!field) return;
+    state.knowledgeUploadMeta[field] = event.target.value;
+  });
+  els.databaseMenu.addEventListener("change", (event) => {
+    const field = event.target && event.target.dataset ? event.target.dataset.uploadField : "";
+    if (!field) return;
+    state.knowledgeUploadMeta[field] = event.target.value;
   });
 }
 
@@ -3821,6 +5551,13 @@ els.chatForm.addEventListener("submit", (event) => {
   sendChat(message);
 });
 
+els.chatSubmitButton.addEventListener("click", (event) => {
+  if (!state.chatBusy) return;
+  event.preventDefault();
+  state.chatStopRequested = true;
+  if (state.chatAbortController) state.chatAbortController.abort();
+});
+
 els.chatInput.addEventListener("input", resizeChatInput);
 
 els.chatInput.addEventListener("keydown", (event) => {
@@ -3841,3 +5578,397 @@ setInterval(() => fetchStatus().catch(console.error), 10000);
 let citationPopover = document.createElement("div");
 citationPopover.className = "citation-popover";
 document.body.appendChild(citationPopover);
+
+// AI message image lightbox
+const imageLightbox = document.createElement("div");
+imageLightbox.className = "chat-image-lightbox";
+imageLightbox.hidden = true;
+imageLightbox.innerHTML = `
+  <button class="chat-image-lightbox-close" type="button" aria-label="关闭图片预览" title="关闭">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12"></path>
+    </svg>
+  </button>
+  <img class="chat-image-lightbox-image" src="" alt="" />
+`;
+document.body.appendChild(imageLightbox);
+
+const imageLightboxImage = imageLightbox.querySelector(".chat-image-lightbox-image");
+const imageLightboxClose = imageLightbox.querySelector(".chat-image-lightbox-close");
+let imageLightboxTrigger = null;
+
+function openImageLightbox(image) {
+  imageLightboxTrigger = image;
+  imageLightboxImage.src = image.currentSrc || image.src;
+  imageLightboxImage.alt = image.alt || "AI 生成图片放大预览";
+  imageLightbox.hidden = false;
+  document.body.classList.add("chat-image-lightbox-open");
+  requestAnimationFrame(() => imageLightbox.classList.add("is-visible"));
+  imageLightboxClose.focus();
+}
+
+function closeImageLightbox() {
+  if (imageLightbox.hidden) return;
+  imageLightbox.classList.remove("is-visible");
+  document.body.classList.remove("chat-image-lightbox-open");
+  window.setTimeout(() => {
+    imageLightbox.hidden = true;
+    imageLightboxImage.removeAttribute("src");
+    if (imageLightboxTrigger && document.contains(imageLightboxTrigger)) imageLightboxTrigger.focus();
+    imageLightboxTrigger = null;
+  }, 160);
+}
+
+document.addEventListener("click", (event) => {
+  const image = event.target.closest(".message-body img.chat-inline-image, .chart-result-block img.chat-inline-image");
+  if (!image) return;
+  event.preventDefault();
+  openImageLightbox(image);
+});
+
+imageLightboxClose.addEventListener("click", closeImageLightbox);
+imageLightbox.addEventListener("click", (event) => {
+  if (event.target === imageLightbox) closeImageLightbox();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !imageLightbox.hidden) closeImageLightbox();
+});
+
+/* Permanently expanded raw run logs v143 */
+(function pinRawRunLogsOpen() {
+  function normalizeTitle(summary) {
+    const walker = document.createTreeWalker(summary, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(function (node) {
+      node.nodeValue = node.nodeValue.replace("展开查看原始运行日志", "原始运行日志");
+    });
+  }
+
+  function pinDetails(details) {
+    if (!details || details.tagName !== "DETAILS") return;
+    const summary = details.querySelector(":scope > summary");
+    if (!summary || summary.textContent.indexOf("原始运行日志") < 0) return;
+
+    details.open = true;
+    if (details.dataset.rawLogPinned === "true") return;
+
+    details.dataset.rawLogPinned = "true";
+    summary.setAttribute("aria-disabled", "true");
+    summary.tabIndex = -1;
+    normalizeTitle(summary);
+    summary.addEventListener("click", function (event) {
+      event.preventDefault();
+      details.open = true;
+    });
+    details.addEventListener("toggle", function () {
+      if (!details.open) details.open = true;
+    });
+  }
+
+  function scan(root) {
+    if (!root) return;
+    if (root.nodeType === Node.ELEMENT_NODE && root.matches("details")) pinDetails(root);
+    if (root.querySelectorAll) root.querySelectorAll("details").forEach(pinDetails);
+  }
+
+  scan(document);
+  const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      mutation.addedNodes.forEach(scan);
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+
+/* Strategic briefing ticker: only group-approved items are rendered. */
+(function initStrategicBriefingTicker() {
+  const list = document.getElementById("strategyTickerList");
+  const syncStatus = document.getElementById("strategySyncStatus");
+  const scheduleText = document.getElementById("strategyScheduleText");
+  if (!list || !syncStatus || !scheduleText) return;
+
+  let scrollAnimation = null;
+  let resumeTimer = null;
+  let pointerPaused = false;
+  let focusPaused = false;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  const autoScrollSpeed = 30;
+  list.tabIndex = 0;
+  list.setAttribute("aria-label", "战略快讯滚动列表");
+  const sampleItems = [
+    {
+      published_at: "2026-07-15T10:53:00+08:00",
+      category: "示例",
+      title: "示例｜HKT 企业服务与云网协同动态",
+      summary: "用于预览重点竞对动态在战略快讯中的标题、时间与摘要层级。",
+      source_url: "https://www.hkt.com/en/about-hkt/investor-relations/",
+    },
+    {
+      published_at: "2026-07-15T09:35:00+08:00",
+      category: "示例",
+      title: "示例｜3香港漫游及重点套餐变化",
+      summary: "用于展示资费、权益和营销活动变化进入快讯后的阅读效果。",
+      source_url: "https://www.three.com.hk/",
+    },
+    {
+      published_at: "2026-07-14T16:20:00+08:00",
+      category: "示例",
+      title: "示例｜csl 5G 与企业解决方案观察",
+      summary: "用于展示网络能力、行业方案和重点合作类信号的滚动效果。",
+      source_url: "https://www.hkcsl.com/",
+    },
+    {
+      published_at: "2026-07-14T11:10:00+08:00",
+      category: "示例",
+      title: "示例｜SmarTone 家庭宽带市场动作",
+      summary: "用于展示家庭市场促销、渠道动作及产品组合变化的快讯样式。",
+      source_url: "https://www.smartone.com/",
+    },
+    {
+      published_at: "2026-07-13T15:40:00+08:00",
+      category: "示例",
+      title: "示例｜HKBN 战略合作与业务调整",
+      summary: "用于展示合作、组织及业务方向变化等战略信号的呈现方式。",
+      source_url: "https://www.hkbn.net/",
+    },
+    {
+      published_at: "2026-07-13T10:25:00+08:00",
+      category: "示例",
+      title: "示例｜中国移动香港跨境业务观察",
+      summary: "用于展示跨境通信、湾区服务及重点客户方案相关动态。",
+      source_url: "https://www.hk.chinamobile.com/",
+    },
+    {
+      published_at: "2026-07-12T17:05:00+08:00",
+      category: "示例",
+      title: "示例｜HGC 国际网络与安全服务动态",
+      summary: "用于展示国际连接、网络安全和企业托管服务相关信号。",
+      source_url: "https://www.hgc.com.hk/",
+    },
+    {
+      published_at: "2026-07-12T12:30:00+08:00",
+      category: "示例",
+      title: "示例｜i-CABLE 家庭市场套餐变化",
+      summary: "用于展示家庭宽带、内容权益与融合套餐的市场变化。",
+      source_url: "https://www.i-cable.com/",
+    },
+    {
+      published_at: "2026-07-11T16:15:00+08:00",
+      category: "示例",
+      title: "示例｜1O1O 高端客户服务动作",
+      summary: "用于展示高价值客户权益、终端组合及服务升级动态。",
+      source_url: "https://www.1010.com.hk/",
+    },
+    {
+      published_at: "2026-07-11T09:45:00+08:00",
+      category: "示例",
+      title: "示例｜云网与人工智能能力合作信号",
+      summary: "用于展示云计算、人工智能和行业数字化合作相关变化。",
+      source_url: "https://www.hk.chinamobile.com/en/corporate/",
+    },
+  ];
+
+  function escapeValue(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function formatTime(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat("zh-HK", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Hong_Kong",
+    }).format(date);
+  }
+
+  function restartScroll() {
+    if (scrollAnimation) scrollAnimation.cancel();
+    if (resumeTimer) window.clearTimeout(resumeTimer);
+    list.scrollTop = 0;
+    const items = Array.from(list.querySelectorAll(".strategy-ticker-item"));
+    if (items.length < 2) return;
+
+    const track = document.createElement("div");
+    track.className = "strategy-ticker-track";
+    items.forEach(function (item) {
+      track.appendChild(item);
+    });
+    const cloneFragment = document.createDocumentFragment();
+    items.forEach(function (item) {
+      const clone = item.cloneNode(true);
+      clone.classList.add("strategy-ticker-clone");
+      clone.setAttribute("aria-hidden", "true");
+      clone.tabIndex = -1;
+      cloneFragment.appendChild(clone);
+    });
+    track.appendChild(cloneFragment);
+    list.replaceChildren(track);
+
+    const firstClone = track.querySelector(".strategy-ticker-clone");
+    const cycleHeight = firstClone
+      ? firstClone.offsetTop - items[0].offsetTop
+      : 0;
+    if (cycleHeight <= 1) return;
+
+    scrollAnimation = track.animate(
+      [
+        { transform: "translate3d(0, 0, 0)" },
+        { transform: "translate3d(0, -" + cycleHeight + "px, 0)" }
+      ],
+      {
+        duration: Math.max(12000, (cycleHeight / autoScrollSpeed) * 1000),
+        iterations: Infinity,
+        easing: "linear"
+      }
+    );
+  }
+
+  function pauseScroll() {
+    if (scrollAnimation) scrollAnimation.pause();
+  }
+
+  function resumeScroll(delay) {
+    if (resumeTimer) window.clearTimeout(resumeTimer);
+    resumeTimer = window.setTimeout(function () {
+      if (!pointerPaused && !focusPaused && scrollAnimation) {
+        scrollAnimation.play();
+      }
+    }, delay || 0);
+  }
+
+  function shiftScroll(deltaY) {
+    if (!scrollAnimation) return;
+    const current = Number(scrollAnimation.currentTime) || 0;
+    scrollAnimation.currentTime = current + (deltaY / autoScrollSpeed) * 1000;
+  }
+
+  function render(payload) {
+    const liveItems = Array.isArray(payload.items) ? payload.items : [];
+    const items = liveItems.concat(sampleItems.slice(0, Math.max(0, 10 - liveItems.length)));
+    const monitor = payload.monitor || {};
+    const degraded = monitor.status === "degraded";
+    syncStatus.classList.toggle("is-degraded", degraded);
+    syncStatus.title = monitor.last_error || "";
+    syncStatus.innerHTML =
+      '<i aria-hidden="true"></i>' + (degraded ? "同步待恢复" : "每小时同步");
+    const scanTimes = Array.isArray(monitor.scan_times) ? monitor.scan_times : [];
+    scheduleText.textContent = scanTimes.length
+      ? "每日 " + scanTimes.join(" / ") + " 扫描"
+      : "每日两次扫描";
+
+    if (!items.length) {
+      list.innerHTML =
+        '<div class="strategy-ticker-empty">' +
+          '<b>等待首条确认快讯</b>' +
+          '<span>候选新闻经战略部人工筛选后展示</span>' +
+        "</div>";
+      restartScroll();
+      return;
+    }
+
+    const fingerprint = items.map(function (item) {
+      return [item.published_at, item.title, item.summary, item.source_url].join("|");
+    }).join("||");
+    if (
+      list.dataset.tickerFingerprint === fingerprint &&
+      list.querySelector(".strategy-ticker-track")
+    ) {
+      return;
+    }
+    list.dataset.tickerFingerprint = fingerprint;
+    list.innerHTML = items.map(function (item) {
+      const url = /^https?:\/\//i.test(String(item.source_url || ""))
+        ? String(item.source_url)
+        : "";
+      const tag = url ? "a" : "article";
+      const linkAttrs = url
+        ? ' href="' + escapeValue(url) + '" target="_blank" rel="noreferrer"'
+        : "";
+      return (
+        "<" + tag + ' class="strategy-ticker-item"' + linkAttrs + ">" +
+          '<span class="strategy-ticker-meta">' +
+            "<time>" + escapeValue(formatTime(item.published_at)) + "</time>" +
+            "<b>" + escapeValue(item.category || "战略动态") + "</b>" +
+          "</span>" +
+          "<strong>" + escapeValue(item.title || "战略快讯") + "</strong>" +
+          "<p>" + escapeValue(item.summary || ("这条" + (item.category || "战略动态") + "涉及“" + (item.title || "该动态") + "”。可点击标题查看原文，关注其产品定位、市场变化及竞争影响。")) + "</p>" +
+        "</" + tag + ">"
+      );
+    }).join("");
+    restartScroll();
+  }
+
+  async function fetchStrategicBriefs() {
+    try {
+      const response = await fetch("/api/strategic-briefs", { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "战略快讯同步失败");
+      }
+      render(payload);
+    } catch (error) {
+      syncStatus.classList.add("is-degraded");
+      syncStatus.innerHTML = '<i aria-hidden="true"></i>同步待恢复';
+      syncStatus.title = error && error.message ? error.message : String(error);
+      render({ items: sampleItems, monitor: { status: "degraded" } });
+    }
+  }
+
+  list.addEventListener("pointerenter", function () {
+    pointerPaused = true;
+    pauseScroll();
+  });
+  list.addEventListener("pointerleave", function () {
+    pointerPaused = false;
+    resumeScroll(350);
+  });
+  list.addEventListener("wheel", function (event) {
+    event.preventDefault();
+    pauseScroll();
+    shiftScroll(event.deltaY);
+  }, { passive: false });
+  list.addEventListener("touchstart", function (event) {
+    const touch = event.touches && event.touches[0];
+    if (!touch || !scrollAnimation) return;
+    pauseScroll();
+    touchStartY = touch.clientY;
+    touchStartTime = Number(scrollAnimation.currentTime) || 0;
+  }, { passive: true });
+  list.addEventListener("touchmove", function (event) {
+    const touch = event.touches && event.touches[0];
+    if (!touch || !scrollAnimation) return;
+    event.preventDefault();
+    scrollAnimation.currentTime = touchStartTime + ((touchStartY - touch.clientY) / autoScrollSpeed) * 1000;
+  }, { passive: false });
+  list.addEventListener("touchend", function () {
+    resumeScroll(700);
+  }, { passive: true });
+  list.addEventListener("pointerdown", function () {
+    pauseScroll();
+  });
+  list.addEventListener("keydown", function () {
+    pauseScroll();
+  });
+  list.addEventListener("focusin", function () {
+    focusPaused = true;
+    pauseScroll();
+  });
+  list.addEventListener("focusout", function () {
+    focusPaused = false;
+    resumeScroll(500);
+  });
+  fetchStrategicBriefs();
+  window.setInterval(fetchStrategicBriefs, 60000);
+})();

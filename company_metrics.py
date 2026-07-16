@@ -190,6 +190,15 @@ def _verified_fact_publish_issue(fact: dict) -> str:
         return "披露期早于当前FY2025业绩口径"
     if re.search(r"公开信息已更新|未提取到有效数据", value):
         return "缺少可直接发布的事实值"
+    if re.search(r"本轮公开来源未发现.+可核验披露；维持后续监测", value):
+        return "监测闭环不是可发布事实"
+    if re.fullmatch(r"(?:HK|US)?\$\s*0(?:\.0+)?", value.strip(), re.IGNORECASE):
+        return "零值缺少有效资费含义"
+    try:
+        if fact.get("quality_score") is not None and float(fact["quality_score"]) < 0.84:
+            return "质量分低于发布门槛"
+    except (TypeError, ValueError):
+        return "质量分格式无效"
     return ""
 
 
@@ -575,6 +584,11 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         if re.search(r"套餐|资费", metric_text, re.IGNORECASE):
             return bool(re.search(r"\d", value_text))
         if re.search(r"用户|客户|宽频|家宽", metric_text, re.IGNORECASE):
+            compact_number = value_text.strip().replace(",", "")
+            if re.fullmatch(r"\d[\d,]*(?:\.\d+)?", value_text.strip()) and (
+                "," in value_text or len(compact_number.split(".", 1)[0]) >= 4
+            ):
+                return True
             return bool(
                 re.search(
                     r"户|人|用户|客户|million|\bM\b|万|亿|%|月费|港元|HK\$|Mbps|Gbps|Wi-?Fi",

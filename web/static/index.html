@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-    <link rel="stylesheet" href="/static/styles.css?v=120" />
+  <link rel="stylesheet" href="/static/styles.css?v=176" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -17,9 +17,6 @@
           <a class="icon-button nav-link" href="/company-data.html" title="公司指标表" aria-label="公司指标表">▦</a>
           <button class="icon-button" id="dashboardBtn" type="button" title="全局看板" aria-label="全局看板">📊</button>
           <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
-          <a class="icon-button nav-link" href="/schedule.html" title="定时任务" aria-label="定时任务">⏰</a>
-          <a class="icon-button nav-link" href="/settings.html" title="爬取设置" aria-label="爬取设置">⚙</a>
-          <button class="icon-button" id="refreshButton" type="button" title="刷新状态" aria-label="刷新状态">↻</button>
         </div>
       </header>
 
@@ -88,6 +85,26 @@
                 </div>
               </article>
             </div>
+            <aside class="strategy-ticker" aria-label="滚动战略快讯">
+              <header class="strategy-ticker-header">
+                <div>
+                  <span class="strategy-eyebrow">STRATEGIC SIGNALS</span>
+                  <strong>战略快讯</strong>
+                  <small>人工确认后发布 · 按时间倒序</small>
+                </div>
+                <span id="strategySyncStatus"><i aria-hidden="true"></i>每小时同步</span>
+              </header>
+              <div class="strategy-ticker-list" id="strategyTickerList" aria-live="polite">
+                <div class="strategy-ticker-empty">
+                  <b>等待首条确认快讯</b>
+                  <span>候选新闻经战略部人工筛选后展示</span>
+                </div>
+              </div>
+              <footer class="strategy-ticker-footer">
+                <span id="strategyScheduleText">每日 09:00 / 15:00 扫描</span>
+                <a href="https://cmhk-try.feishu.cn/sheets/NB6Gsi9tChARfGtBDpFc6QfOnmb?sheet=n1fzSN" target="_blank" rel="noreferrer">监测规则</a>
+              </footer>
+            </aside>
           </section>
 
           <section class="reports-layout" id="outputArea">
@@ -238,25 +255,11 @@
                 accept=".txt,.md,.csv,.tsv,.json,.docx,.pdf,text/plain,text/markdown,text/csv,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               />
               <button
-                class="thinking-toggle"
-                id="thinkingToggle"
-                type="button"
-                aria-pressed="false"
-                title="打开深度思考"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 18h6"></path>
-                  <path d="M10 22h4"></path>
-                  <path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.7.6-1.1 1.4-1.2 2.3h-4.6c-.1-.9-.5-1.7-1.2-2.3z"></path>
-                </svg>
-                <span class="sr-only">思考</span>
-              </button>
-              <button
                 class="web-search-toggle"
                 id="webSearchToggle"
                 type="button"
-                aria-pressed="false"
-                title="打开联网搜索"
+                aria-pressed="true"
+                title="本轮使用网页来源"
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -278,13 +281,25 @@
       <section class="modal-backdrop" id="logModal" hidden>
         <div class="log-modal">
           <header>
-            <h2>执行日志</h2>
             <div>
-              <button class="quiet-button small" id="clearLogButton" type="button">清空</button>
+              <h2>任务与审核记录</h2>
+              <span id="logRunTitle">选择一条任务，查看执行状态、审核过程、结果与日志</span>
+            </div>
+            <div>
+              <button class="quiet-button small" id="refreshCrawlRunsButton" type="button">刷新任务</button>
+              <button class="quiet-button small" id="clearLogButton" type="button">清空显示</button>
               <button class="close-btn" id="closeLogButton" type="button" aria-label="关闭">&times;</button>
             </div>
           </header>
-          <div id="logBox" class="log-box">等待操作。</div>
+          <div class="log-history-layout">
+            <aside class="crawl-run-sidebar" aria-label="任务记录">
+              <strong>任务记录</strong>
+              <div id="crawlRunList" class="crawl-run-list">正在加载任务记录…</div>
+            </aside>
+            <section class="log-viewer">
+              <div id="logBox" class="log-box">选择任务后显示执行过程和完整日志。</div>
+            </section>
+          </div>
         </div>
       </section>
 
@@ -324,24 +339,22 @@
           </label>
           <label>
             <span>Base URL</span>
-            <input id="aiBaseUrl" type="url" autocomplete="off" />
-          </label>
-          <label>
-            <span>Model</span>
-            <input id="aiModel" type="text" autocomplete="off" />
+            <input id="aiBaseUrl" type="url" autocomplete="off" readonly />
+            <small class="field-help">公司内网模型网关，所有 AI 功能统一使用此地址。</small>
           </label>
           <label>
             <span>API Key</span>
             <input id="aiApiKey" type="password" autocomplete="off" placeholder="已保存则可留空" />
+            <small class="field-help">Key 只会在点击保存后写入本机配置；获取列表时可临时试用。</small>
           </label>
-          <section class="agent-memory-panel">
-            <div>
-              <h3>长期记忆</h3>
-              <p>只保存明确要求记住的偏好和生产规则。</p>
+          <label>
+            <span>Model</span>
+            <div class="model-picker-row">
+              <select id="aiModel" aria-label="选择模型"></select>
+              <button class="quiet-button model-fetch-button" id="fetchAiModels" type="button">获取模型列表</button>
             </div>
-            <button class="quiet-button small" id="refreshAgentMemory" type="button">刷新</button>
-            <div class="agent-memory-list" id="agentMemoryList">尚未加载。</div>
-          </section>
+            <small class="field-help" id="aiModelHint">输入 Base URL 和 API Key 后获取可用模型。</small>
+          </label>
           <div class="modal-status" id="aiConfigStatus">默认 DeepSeek：api.deepseek.com / deepseek-v4-flash</div>
           <footer>
             <button class="quiet-button" id="testAiConfig" type="button">测试连接</button>
@@ -405,6 +418,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=127"></script>
+  <script src="/static/app.js?v=177"></script>
   </body>
 </html>

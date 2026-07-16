@@ -8,7 +8,7 @@ from unittest.mock import patch
 from docx import Document
 
 from generate_weekly_report import curated_section, localized_weekly_value
-from tts_service import build_audio_summary
+from tts_service import build_audio_summary, normalize_for_speech, prepare_tts_text
 
 
 class WeeklyReportContentTests(unittest.TestCase):
@@ -58,6 +58,14 @@ class WeeklyReportContentTests(unittest.TestCase):
         self.assertIn("行业资讯方面", summary)
         self.assertIn("国际资讯方面", summary)
         self.assertGreater(len(summary), 120)
+
+    def test_tts_does_not_treat_15gw_as_a_5g_network_term(self):
+        normalized = normalize_for_speech("SKT建设15GW数据中心，同时推进5G网络。")
+        prepared = prepare_tts_text(normalized)
+
+        self.assertNotIn("1五GW", normalized)
+        self.assertIn("15GW", normalized)
+        self.assertIn("五G网络", prepared)
 
 
 if __name__ == "__main__":
