@@ -50,6 +50,8 @@ Uncommitted files are included only in the private complete snapshot. They are n
 
 ## Safety rules for Codex
 
+- Re-read every targeted file from the current working tree immediately before editing and treat that newest version as the baseline; multiple workers may update this repository concurrently, so prior-turn file contents must never be assumed current.
+- When another worker has changed a targeted file, preserve those changes and layer the active request onto the latest version. Stop only when a same-line conflict cannot be merged safely without clarification.
 - Inspect the current branch and targeted file status before committing because this working tree may contain unrelated user edits.
 - Stage only files required by the active request; never clean, reset or revert unrelated changes.
 - Use `origin` for the public repository and `private` for the private repository.

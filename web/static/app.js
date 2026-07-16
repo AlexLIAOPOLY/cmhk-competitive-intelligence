@@ -5740,10 +5740,11 @@ document.addEventListener("keydown", (event) => {
 
   function restartScroll() {
     if (scrollAnimation) scrollAnimation.cancel();
+    scrollAnimation = null;
     if (resumeTimer) window.clearTimeout(resumeTimer);
     list.scrollTop = 0;
     const items = Array.from(list.querySelectorAll(".strategy-ticker-item"));
-    if (items.length < 2) return;
+    if (!items.length || list.scrollHeight <= list.clientHeight + 2) return;
 
     const track = document.createElement("div");
     track.className = "strategy-ticker-track";
@@ -5800,7 +5801,12 @@ document.addEventListener("keydown", (event) => {
   }
 
   function render(payload) {
-    const items = Array.isArray(payload.items) ? payload.items : [];
+    const items = (Array.isArray(payload.items) ? payload.items : []).filter(function (item) {
+      const previewText = [item && item.title, item && item.summary, item && item.category]
+        .filter(Boolean)
+        .join(" ");
+      return !/排版预览|版式预览/.test(previewText);
+    });
     const monitor = payload.monitor || {};
     const degraded = monitor.status === "degraded";
     syncStatus.classList.toggle("is-degraded", degraded);
