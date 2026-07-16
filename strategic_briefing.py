@@ -25,6 +25,9 @@ RUNS_DIR = DATA_DIR / "runs"
 STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
+AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
+AI_EDITOR_VERSION = 1
+AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "12")))
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
 
@@ -675,123 +678,105 @@ def _send_scan_message(
     slot_label: str,
     candidates: list[dict[str, Any]],
     spec: dict[str, Any],
+    review_result: dict[str, Any] | None = None,
 ) -> tuple[str, str]:
     if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1":
         return "", "paused"
-
-    def card_markdown(value: Any, limit: int = 1000) -> str:
-        text = _clean_text(value, limit)
-        for original, escaped in (
-            ("\\", "\\\\"),
-            ("*", "\\*"),
-            ("_", "\\_"),
-            ("~", "\\~"),
-            ("[", "\\["),
-            ("]", "\\]"),
-            ("<", "&lt;"),
-            (">", "&gt;"),
-        ):
-            text = text.replace(original, escaped)
-        return text
-
-    title = f"战略快讯候选｜{now:%m月%d日}{slot_label}"
+    review = review_result or {}
+    category_counts = review.get("category_counts") or {}
+    if not isinstance(category_counts, dict):
+        category_counts = {}
+    if not category_counts:
+        for candidate in candidates:
+            category = _clean_text(candidate.get("module") or "其他", 80)
+            category_counts[category] = int(category_counts.get(category) or 0) + 1
+    category_counts = {
+        _clean_text(name, 80): int(count or 0)
+        for name, count in category_counts.items()
+        if _clean_text(name, 80) and int(count or 0) > 0
+    }
+    candidate_count = int(review.get("candidate_count") or len(candidates))
+    region_counts = review.get("region_counts") or {}
+    local_count = int(region_counts.get("香港本地") or 0) if isinstance(region_counts, dict) else 0
+    source_count = int(review.get("source_count") or 0)
+    sheet_url = _normalize_url(review.get("sheet_url") or "")
+    category_lines = "\n".join(
+        f"- **{name}**：{count} 条"
+        for name, count in sorted(
+            category_counts.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    )
+    title = f"战略快讯扫描完成｜{now:%m月%d日}{slot_label}"
+    if candidate_count:
+        result_text = (
+            f"**本轮结果**  共发现 **{candidate_count} 条**候选，"
+            f"覆盖 **{len(category_counts)} 个方面**。\n"
+            + (f"其中香港本地 **{local_count} 条**" if local_count else "")
+            + (f" · 来自 **{source_count} 个来源**" if source_count else "")
+        ).rstrip("。") + "。"
+        detail_text = (
+            f"**分类概览**\n{category_lines}\n\n"
+            "<font color='grey'>AI中文标题、内容简介及每条原文链接已整理到飞书审核表。</font>"
+        )
+    else:
+        result_text = "**本轮结果**  未发现新的合格新闻候选。"
+        detail_text = "<font color='grey'>系统将在下一时段继续扫描。</font>"
     elements: list[dict[str, Any]] = [
         {
             "tag": "markdown",
             "content": (
                 f"**扫描范围**  {spec['keyword_count']} 个关键词 · "
-                f"{spec['module_count']} 个模块\n"
-                "<font color='grey'>候选仅供人工筛选，不会直接发布到 APP。</font>"
+                f"{spec['module_count']} 个监测模块\n"
+                f"{result_text}"
             ),
-        }
+        },
+        {"tag": "hr"},
+        {"tag": "markdown", "content": detail_text},
     ]
-    if not candidates:
+    if sheet_url:
         elements.append(
             {
-                "tag": "markdown",
-                "content": (
-                    "**本轮结果**  未发现新的高优先级候选\n"
-                    "<font color='grey'>系统仍会在下一时段继续扫描。</font>"
-                ),
-            }
-        )
-    for index, candidate in enumerate(candidates, start=1):
-        elements.append({"tag": "hr"})
-        source_line = " · ".join(
-            item
-            for item in (
-                card_markdown(candidate.get("source"), 80),
-                card_markdown(candidate.get("source_date"), 40),
-            )
-            if item
-        )
-        elements.append(
-            {
-                "tag": "markdown",
-                "content": (
-                    f"<font color='blue'>**{index:02d}**</font>  "
-                    f"**[{card_markdown(candidate['candidate_id'], 50)}] "
-                    f"{card_markdown(candidate['title'], 240)}**\n"
-                    f"<font color='green'>{card_markdown(candidate['module'], 100)}</font>\n"
-                    f"**关注理由**  {card_markdown(candidate['why'], 240)}\n"
-                    f"<font color='grey'>{card_markdown(candidate.get('snippet'), 220)}</font>"
-                    + (
-                        f"\n<font color='grey'>来源：{source_line}</font>"
-                        if source_line
-                        else ""
-                    )
-                ),
-            }
-        )
-        if candidate.get("url"):
-            elements.append(
-                {
-                    "tag": "action",
-                    "actions": [
-                        {
-                            "tag": "button",
-                            "text": {"tag": "plain_text", "content": "查看原文"},
-                            "type": "default",
-                            "url": candidate["url"],
-                        }
-                    ],
-                }
-            )
-    elements.extend(
-        [
-            {"tag": "hr"},
-            {
-                "tag": "note",
-                "elements": [
+                "tag": "action",
+                "actions": [
                     {
-                        "tag": "plain_text",
-                        "content": (
-                            "确认方式：回复“确认发布 + 候选编号”，或发送"
-                            "“完整战略快讯：标题与正文”。单独回复“收到”不会自动发布。"
-                        ),
+                        "tag": "button",
+                        "text": {"tag": "plain_text", "content": "打开飞书审核表"},
+                        "type": "primary",
+                        "url": sheet_url,
                     }
                 ],
-            },
-        ]
+            }
+        )
+    elements.append(
+        {
+            "tag": "note",
+            "elements": [
+                {
+                    "tag": "plain_text",
+                    "content": "请在表内第一列选择接受、暂缓或不接受；接受后约5分钟同步到APP。",
+                }
+            ],
+        }
     )
     card = {
         "config": {"wide_screen_mode": True, "enable_forward": True},
         "header": {
-            "template": "blue",
+            "template": "turquoise",
             "title": {"tag": "plain_text", "content": title},
             "subtitle": {
                 "tag": "plain_text",
-                "content": "战略监测 · 人工筛选 · 每日两次",
+                "content": f"{now:%Y-%m-%d %H:%M} · 人工筛选",
             },
             "text_tag_list": [
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": "待筛选"},
+                    "text": {"tag": "plain_text", "content": f"{len(category_counts)} 个方面"},
                     "color": "orange",
                 },
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": f"{len(candidates)} 条"},
+                    "text": {"tag": "plain_text", "content": f"{candidate_count} 条"},
                     "color": "blue",
                 },
             ],
@@ -863,11 +848,21 @@ def _run_scan(
         candidate["slot"] = slot_label
         candidate["spec_hash"] = spec["spec_hash"]
     _enrich_with_crawler(ranked)
+    ranked = polish_candidates_before_review(ranked)
+    review_result: dict[str, Any] = {}
+    try:
+        import news_review_sheet
+
+        review_result = news_review_sheet.run_cycle(force=True)
+    except Exception as exc:
+        review_result = {"error": _clean_text(exc, 300)}
+        logging.exception("战略快讯扫描完成，但飞书审核表同步失败")
     message_id, identity = _send_scan_message(
         now=now,
         slot_label=slot_label,
         candidates=ranked,
         spec=spec,
+        review_result=review_result,
     )
     _save_candidates(_load_candidates() + ranked)
     state["seen_urls"] = (
@@ -898,6 +893,7 @@ def _run_scan(
         "candidate_count": len(ranked),
         "message_id": message_id,
         "feishu_identity": identity,
+        "review_sheet": review_result,
         "candidates": ranked,
     }
     _atomic_write_json(RUNS_DIR / f"{slot_key.replace(':', '-')}.json", run_payload)
@@ -1019,12 +1015,172 @@ def _call_internal_ai(
     return parsed if isinstance(parsed, dict) else {}
 
 
+_META_SUMMARY_PREFIX = re.compile(
+    r"^(?:这条|该条|这则|该则|本条|本新闻|该新闻|本报道|该报道|本文|此文|"
+    r"当前来源|这项内容|该内容|这项动态|该动态)"
+)
+
+
+def _candidate_editor_key(item: dict[str, Any]) -> str:
+    payload = {
+        "version": AI_EDITOR_VERSION,
+        "title": _clean_text(item.get("source_title") or item.get("title"), 500),
+        "summary": _clean_text(
+            item.get("source_summary")
+            or item.get("snippet")
+            or item.get("summary")
+            or item.get("description")
+            or item.get("why"),
+            1800,
+        ),
+        "category": _clean_text(item.get("category") or item.get("module"), 120),
+        "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
+        "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+
+
+def _validated_ai_copy(value: dict[str, Any]) -> dict[str, str]:
+    title = _clean_text(value.get("title") or value.get("ai_title"), 48)
+    summary = _clean_text(value.get("summary") or value.get("ai_summary"), 96)
+    if not title or not re.search(r"[\u4e00-\u9fff]", title):
+        raise RuntimeError("公司内部 AI 未返回中文快讯标题")
+    if len(summary) < 16 or not re.search(r"[\u4e00-\u9fff]", summary):
+        raise RuntimeError("公司内部 AI 未返回有效中文内容简介")
+    if _META_SUMMARY_PREFIX.search(summary):
+        raise RuntimeError("公司内部 AI 内容简介仍使用元话术，未直接陈述内容")
+    return {"title": title, "summary": summary}
+
+
+def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Create the final Chinese title and concise copy before human review."""
+    if not items:
+        return []
+    cache_payload = _read_json(AI_EDITOR_CACHE_PATH, {"items": {}})
+    cache = cache_payload.get("items") if isinstance(cache_payload, dict) else {}
+    if not isinstance(cache, dict):
+        cache = {}
+    resolved: dict[str, dict[str, str]] = {}
+    pending: list[tuple[str, dict[str, Any]]] = []
+    for item in items:
+        key = _candidate_editor_key(item)
+        existing = {
+            "title": item.get("ai_title"),
+            "summary": item.get("ai_summary"),
+        }
+        try:
+            resolved[key] = _validated_ai_copy(existing)
+            continue
+        except RuntimeError:
+            pass
+        try:
+            resolved[key] = _validated_ai_copy(cache.get(key) or {})
+            continue
+        except RuntimeError:
+            pending.append((key, item))
+
+    for offset in range(0, len(pending), AI_EDITOR_BATCH_SIZE):
+        batch = pending[offset : offset + AI_EDITOR_BATCH_SIZE]
+        request_items = []
+        for key, item in batch:
+            request_items.append(
+                {
+                    "id": key[:16],
+                    "title": _clean_text(item.get("source_title") or item.get("title"), 500),
+                    "source_summary": _clean_text(
+                        item.get("source_summary")
+                        or item.get("snippet")
+                        or item.get("summary")
+                        or item.get("description")
+                        or item.get("why"),
+                        1800,
+                    ),
+                    "category": _clean_text(item.get("category") or item.get("module"), 120),
+                    "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
+                    "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+                }
+            )
+        response = _call_internal_ai(
+            (
+                "你是公司内部战略新闻编辑。只输出合法JSON对象，结构为"
+                "{\"items\":[{\"id\":\"输入id\",\"title\":\"中文标题\","
+                "\"summary\":\"内容简介\"}]}。每条都必须返回且id原样保留。"
+                "title须为简洁准确的中文标题，品牌名和必要缩写可保留。"
+                "summary须用一至两句、最多96个中文字符直接说明发生了什么，"
+                "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
+                "不得写‘可点击原文、值得关注、反映了、涉及’等空泛提示。"
+                "只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
+            ),
+            json.dumps({"items": request_items}, ensure_ascii=False),
+            max_tokens=max(2400, len(batch) * 420),
+        )
+        response_items = response.get("items") if isinstance(response, dict) else []
+        response_map = {
+            str(entry.get("id") or ""): entry
+            for entry in response_items or []
+            if isinstance(entry, dict)
+        }
+        request_map = {str(entry["id"]): entry for entry in request_items}
+        for key, _item in batch:
+            try:
+                edited = _validated_ai_copy(response_map.get(key[:16]) or {})
+            except RuntimeError:
+                source = request_map[key[:16]]
+                retry = _call_internal_ai(
+                    (
+                        "你是公司内部战略新闻中文编辑。只输出合法JSON对象，字段为title和summary。"
+                        "title必须是简洁准确的中文标题。summary必须用一至两句、16至96个中文字符"
+                        "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
+                        "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
+                        "仅使用输入已有事实，不补造内容，不要Markdown。"
+                    ),
+                    json.dumps(source, ensure_ascii=False),
+                    max_tokens=3200,
+                )
+                try:
+                    edited = _validated_ai_copy(retry)
+                except RuntimeError as exc:
+                    raise RuntimeError(
+                        f"候选 {source['id']} 经批量和单条 AI 编辑后仍不合格：{exc}"
+                    ) from exc
+            resolved[key] = edited
+            cache[key] = {
+                **edited,
+                "editor_version": AI_EDITOR_VERSION,
+                "updated_at": _now_iso(),
+            }
+        _atomic_write_json(
+            AI_EDITOR_CACHE_PATH,
+            {
+                "version": AI_EDITOR_VERSION,
+                "updated_at": _now_iso(),
+                "items": cache,
+            },
+        )
+
+    polished_items: list[dict[str, Any]] = []
+    for source_item in items:
+        item = dict(source_item)
+        edited = resolved[_candidate_editor_key(item)]
+        item.setdefault("source_title", _clean_text(item.get("title"), 500))
+        item["ai_title"] = edited["title"]
+        item["ai_summary"] = edited["summary"]
+        item["ai_polished_at"] = _now_iso()
+        item["ai_editor_version"] = AI_EDITOR_VERSION
+        polished_items.append(item)
+    return polished_items
+
+
 def _polish_approved_brief(brief: dict[str, Any]) -> dict[str, Any]:
     polished = _call_internal_ai(
         (
             "你是公司内部战略快讯中文编辑。只输出一行合法JSON，不要解释。"
             "字段title：把原标题翻译或改写成简洁中文标题，保留必要品牌名和技术缩写。"
-            "字段summary：根据输入标题和摘要，用一至两句中文说明发生了什么以及为何值得关注。"
+            "字段summary：根据输入标题和摘要，用一至两句中文直接说明发生了什么。"
+            "禁止以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
+            "不要写可点击原文、值得关注、反映了、涉及等空泛提示。"
             "不得改变事实、补造数字或引入输入中没有的信息，不要Markdown。"
         ),
         json.dumps(
@@ -1039,16 +1195,11 @@ def _polish_approved_brief(brief: dict[str, Any]) -> dict[str, Any]:
         ),
         max_tokens=2400,
     )
-    title = _clean_text(polished.get("title"), 48)
-    summary = _clean_text(polished.get("summary"), 96)
-    if not title or not re.search(r"[\u4e00-\u9fff]", title):
-        raise RuntimeError("公司内部 AI 未返回中文快讯标题")
-    if len(summary) < 20 or not re.search(r"[\u4e00-\u9fff]", summary):
-        raise RuntimeError("公司内部 AI 未返回有效中文快讯摘要")
+    edited = _validated_ai_copy(polished)
     return {
         **brief,
-        "title": title,
-        "summary": summary,
+        "title": edited["title"],
+        "summary": edited["summary"],
         "ai_polished_at": _now_iso(),
     }
 
@@ -1088,8 +1239,8 @@ def _classify_approval(
     candidate_context = [
         {
             "candidate_id": candidate.get("candidate_id"),
-            "title": candidate.get("title"),
-            "summary": _clean_text(candidate.get("snippet"), 260),
+            "title": candidate.get("ai_title") or candidate.get("title"),
+            "summary": _clean_text(candidate.get("ai_summary"), 260),
             "category": candidate.get("module"),
             "source_url": candidate.get("url"),
         }
@@ -1138,8 +1289,8 @@ def _classify_approval(
     category = _clean_text(ai_result.get("category"), 80)
     source_url = _normalize_url(ai_result.get("source_url") or "")
     if selected:
-        title = title or _clean_text(selected.get("title"), 180)
-        summary = summary or _clean_text(selected.get("snippet"), 900)
+        title = _clean_text(selected.get("ai_title") or selected.get("title"), 180)
+        summary = _clean_text(selected.get("ai_summary"), 900)
         category = category or _clean_text(selected.get("module"), 80)
         source_url = source_url or _normalize_url(selected.get("url") or "")
     if full_text:
@@ -1175,6 +1326,7 @@ def _classify_approval(
             260,
         ),
         "confidence": ai_result.get("confidence"),
+        "ai_polished_at": selected.get("ai_polished_at") if selected else "",
     }
 
 
@@ -1236,7 +1388,11 @@ def _sync_group(now: datetime, state: dict[str, Any]) -> dict[str, Any]:
     polish_errors: list[str] = []
     for brief in pending_briefs:
         try:
-            polished_brief = _polish_approved_brief(brief)
+            if brief.get("ai_polished_at"):
+                edited = _validated_ai_copy(brief)
+                polished_brief = {**brief, **edited}
+            else:
+                polished_brief = _polish_approved_brief(brief)
         except Exception as exc:
             error = _clean_text(exc, 300)
             polish_errors.append(error)

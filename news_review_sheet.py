@@ -34,14 +34,15 @@ SHEET_TITLE = os.environ.get("CMHK_NEWS_REVIEW_SHEET_TITLE") or "滚动新闻候
 POLL_SECONDS = max(60, int(os.environ.get("CMHK_NEWS_REVIEW_POLL_SECONDS", "300")))
 MAX_SHEET_ROWS = max(500, int(os.environ.get("CMHK_NEWS_REVIEW_MAX_ROWS", "3000")))
 SHEET_SOURCE = "feishu_review_sheet"
-FORMAT_VERSION = 5
+FORMAT_VERSION = 6
 
 HEADERS = [
     "是否纳入滚动",
     "同步状态",
     "地域",
     "分类",
-    "新闻标题",
+    "新闻标题（AI）",
+    "内容简介（AI）",
     "来源媒体",
     "发布时间",
     "原文链接",
@@ -191,7 +192,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A1:J1",
+        f"{sheet_id}!A1:K1",
         "--style",
         json.dumps(header_style, ensure_ascii=False),
     )
@@ -201,7 +202,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A2:J{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A2:K{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(body_style, ensure_ascii=False),
     )
@@ -261,7 +262,24 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!F2:J{MAX_SHEET_ROWS}",
+        f"{sheet_id}!F2:F{MAX_SHEET_ROWS}",
+        "--style",
+        json.dumps(
+            {
+                "font": {"foreColor": "#274C67"},
+                "verticalAlignment": "TOP",
+                "wrapStrategy": "WRAP",
+            },
+            ensure_ascii=False,
+        ),
+    )
+    _best_effort(
+        "sheets",
+        "+set-style",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--range",
+        f"{sheet_id}!G2:K{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -303,6 +321,7 @@ def _format_sheet(sheet_id: str) -> None:
         108,
         90,
         150,
+        380,
         440,
         140,
         145,
@@ -359,7 +378,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--end-index",
         str(MAX_SHEET_ROWS),
         "--fixed-size",
-        "66",
+        "76",
         "--visible",
     )
     _best_effort(
@@ -372,7 +391,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--frozen-row-count",
         "1",
         "--frozen-col-count",
-        "5",
+        "6",
     )
     _best_effort(
         "sheets",
@@ -382,7 +401,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--sheet-id",
         sheet_id,
         "--range",
-        f"{sheet_id}!A1:J{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A1:K{MAX_SHEET_ROWS}",
         "--filter-view-name",
         "滚动新闻审核视图",
     )
@@ -403,6 +422,22 @@ def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
     )
 
 
+def _normalized_sheet_row(row: list[Any]) -> list[Any]:
+    padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+    url_at_expected_column = _text(padded[8], 1600).lower().startswith(("http://", "https://"))
+    url_shifted_one_column = _text(padded[9], 1600).lower().startswith(("http://", "https://"))
+    if not url_at_expected_column and url_shifted_one_column:
+        return [
+            *padded[:6],
+            padded[7],
+            padded[8],
+            padded[9],
+            padded[10],
+            "历史候选",
+        ]
+    return padded
+
+
 def _read_rows(sheet_id: str) -> list[list[Any]]:
     payload = _lark(
         "sheets",
@@ -412,12 +447,15 @@ def _read_rows(sheet_id: str) -> list[list[Any]]:
         "--sheet-id",
         sheet_id,
         "--range",
-        f"A2:J{MAX_SHEET_ROWS}",
+        f"A2:K{MAX_SHEET_ROWS}",
         "--value-render-option",
         "ToString",
     )
     values = _walk_for_key(payload, "values")
-    rows = [row if isinstance(row, list) else [] for row in values or []]
+    rows = [
+        _normalized_sheet_row(row if isinstance(row, list) else [])
+        for row in values or []
+    ]
     while rows and not any(cell not in (None, "") for cell in rows[-1]):
         rows.pop()
     return rows
@@ -460,8 +498,20 @@ def ensure_sheet() -> str:
                 "--length",
                 str(MAX_SHEET_ROWS - row_count),
             )
-        _write(sheet_id, "A1:J1", [HEADERS])
-        _write(sheet_id, "K1:P1", [[""] * 6])
+        previous_version = int(state.get("format_version") or 0)
+        if not created and previous_version == 5:
+            legacy_rows = _read_rows(sheet_id)
+            migrated_rows = []
+            for row in legacy_rows:
+                legacy = (list(row[:10]) + [""] * 10)[:10]
+                migrated_rows.append(legacy[:5] + [""] + legacy[5:])
+            for offset in range(0, len(migrated_rows), 40):
+                chunk = migrated_rows[offset : offset + 40]
+                start_row = 2 + offset
+                end_row = start_row + len(chunk) - 1
+                _write(sheet_id, f"A{start_row}:K{end_row}", chunk)
+        _write(sheet_id, "A1:K1", [HEADERS])
+        _write(sheet_id, "L1:P1", [[""] * 5])
         if (
             created
             or expanded
@@ -534,7 +584,8 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
         "未同步",
         _text(item.get("region") or "国际/行业", 40),
         _text(item.get("category") or _category_label(item), 80),
-        _text(item.get("title"), 500),
+        _text(item.get("ai_title"), 500),
+        _text(item.get("ai_summary"), 500),
         _text(item.get("source") or item.get("source_domain"), 160),
         _display_time(item.get("source_date") or item.get("published_at") or item.get("searched_at") or generated_at),
         _text(item.get("url"), 1600),
@@ -552,7 +603,7 @@ def sync_candidates(
         sheet_id = ensure_sheet()
         rows = _read_rows(sheet_id)
         existing_status: dict[str, tuple[str, str]] = {}
-        existing_rows: dict[str, list[Any]] = {}
+        archived_items: dict[str, dict[str, Any]] = {}
         for index, row in enumerate(rows, start=2):
             if not row or not _text(row[0], 40):
                 continue
@@ -561,7 +612,7 @@ def sync_candidates(
                 still_relevant, _ = _review_news_candidate(
                     {
                         "title": parsed["title"],
-                        "snippet": f"{parsed['keywords']} {parsed['note']}",
+                        "snippet": f"{parsed['summary']} {parsed['keywords']} {parsed['note']}",
                         "source": parsed["source"],
                         "url": parsed["source_url"],
                         "keywords": parsed["keywords"],
@@ -574,22 +625,38 @@ def sync_candidates(
                 parsed["status"],
                 parsed["sync_status"] or "未同步",
             )
-            existing_rows[parsed["news_id"]] = (list(row[:10]) + [""] * 10)[:10]
+            archived_items[parsed["news_id"]] = {
+                "news_id": parsed["news_id"],
+                "title": parsed["title"],
+                "source_title": parsed["title"],
+                "snippet": parsed["summary"] or parsed["note"],
+                "ai_title": parsed["title"],
+                "ai_summary": parsed["summary"],
+                "region": parsed["region"],
+                "category": parsed["category"],
+                "source": parsed["source"],
+                "source_date": parsed["source_date"],
+                "url": parsed["source_url"],
+                "keywords": parsed["keywords"],
+                "filter_reason": parsed["note"],
+            }
+        current_ids = {_text(item.get("news_id"), 80) for item in items}
+        combined_items = list(items) + [
+            item for news_id, item in archived_items.items() if news_id not in current_ids
+        ]
+        from strategic_briefing import polish_candidates_before_review
+
+        prepared_items = polish_candidates_before_review(combined_items)
         values: list[list[Any]] = []
-        current_ids: set[str] = set()
         new_count = 0
-        for item in items:
+        for item in prepared_items:
             news_id = _text(item.get("news_id"), 80)
-            current_ids.add(news_id)
             value = _candidate_row(item, generated_at)
             if news_id in existing_status:
                 value[0], value[1] = existing_status[news_id]
             else:
                 new_count += 1
             values.append(value)
-        for news_id, existing_row in existing_rows.items():
-            if news_id not in current_ids:
-                values.append(existing_row)
         if len(values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
         clear_count = max(len(rows), len(values))
@@ -602,7 +669,7 @@ def sync_candidates(
             chunk = values[offset : offset + 40]
             start_row = 2 + offset
             end_row = start_row + len(chunk) - 1
-            _write(sheet_id, f"A{start_row}:J{end_row}", chunk)
+            _write(sheet_id, f"A{start_row}:K{end_row}", chunk)
         state = _read_json(STATE_PATH, {})
         state.update(
             {
@@ -614,6 +681,7 @@ def sync_candidates(
                 "last_batch_count": len(items),
                 "last_archived_count": len(values) - len(items),
                 "last_new_count": new_count,
+                "last_ai_processed_count": len(prepared_items),
                 "last_sync_at": _now_iso(),
                 "group_notifications_paused": True,
             }
@@ -645,7 +713,7 @@ def _normalized_status(value: Any) -> str:
 
 def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
     padded = list(row) + [""] * max(0, len(HEADERS) - len(row))
-    news_id = _news_item_id(padded[7], padded[4])
+    news_id = _news_item_id(padded[8], padded[4])
     return {
         "row_number": row_number,
         "status": _normalized_status(padded[0]),
@@ -653,12 +721,12 @@ def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
         "region": _text(padded[2], 80),
         "category": _text(padded[3], 120),
         "title": _text(padded[4], 500),
-        "source": _text(padded[5], 240),
-        "source_date": _text(padded[6], 40),
-        "source_url": _text(padded[7], 1600),
-        "keywords": _text(padded[8], 1800),
-        "summary": "",
-        "note": _text(padded[9], 500),
+        "summary": _text(padded[5], 500),
+        "source": _text(padded[6], 240),
+        "source_date": _text(padded[7], 40),
+        "source_url": _text(padded[8], 1600),
+        "keywords": _text(padded[9], 1800),
+        "note": _text(padded[10], 500),
         "news_id": news_id,
     }
 
@@ -693,7 +761,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                 {
                     "id": row["news_id"],
                     "title": row["title"],
-                    "summary": "",
+                    "summary": row["summary"],
                     "category": row["category"] or "战略动态",
                     "source_url": row["source_url"],
                     "source": row["source"],
@@ -1239,6 +1307,17 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             generated_at = _text(payload.get("generated_at"), 60)
     if combined:
         curated, reasons = _curate_news_items(combined)
+        category_counts = Counter(
+            _text(item.get("category") or "未分类", 80) for item in curated
+        )
+        region_counts = Counter(
+            _text(item.get("region") or "未分类", 80) for item in curated
+        )
+        sources = {
+            _text(item.get("source") or item.get("source_domain"), 160)
+            for item in curated
+            if _text(item.get("source") or item.get("source_domain"), 160)
+        }
         return curated, {
             "generated_at": generated_at or _now_iso(),
             "slot_label": "战略新闻搜索池",
@@ -1246,6 +1325,9 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             "candidate_count": len(curated),
             "filtered_count": len(combined) - len(curated),
             "filtered_reasons": dict(reasons),
+            "category_counts": dict(category_counts),
+            "region_counts": dict(region_counts),
+            "source_count": len(sources),
             "source_path": ", ".join(source_paths),
             "group_notifications_paused": True,
         }
@@ -1256,6 +1338,9 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         "candidate_count": 0,
         "filtered_count": 0,
         "filtered_reasons": {},
+        "category_counts": {},
+        "region_counts": {},
+        "source_count": 0,
         "group_notifications_paused": True,
     }
 
