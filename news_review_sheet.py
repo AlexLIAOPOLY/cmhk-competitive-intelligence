@@ -11,6 +11,8 @@ import threading
 import time
 from collections import Counter
 from datetime import datetime
+from difflib import SequenceMatcher
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -593,14 +595,40 @@ def _keywords(value: Any) -> str:
     return _text(value, 500)
 
 
-def _display_time(value: Any) -> str:
+def _publication_date(value: Any) -> str:
     text = _text(value, 60)
     if not text:
         return ""
+    normalized = text.strip().replace("Z", "+00:00")
     try:
-        return datetime.fromisoformat(text).astimezone(HKT).strftime("%Y-%m-%d %H:%M")
+        parsed = datetime.fromisoformat(normalized)
     except ValueError:
-        return text.replace("T", " ")[:16]
+        parsed = None
+    if parsed is not None:
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=HKT)
+        return parsed.astimezone(HKT).strftime("%Y-%m-%d")
+    try:
+        parsed = parsedate_to_datetime(text)
+    except (TypeError, ValueError, OverflowError):
+        parsed = None
+    if parsed is not None:
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=HKT)
+        return parsed.astimezone(HKT).strftime("%Y-%m-%d")
+    match = re.search(r"\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b", text)
+    if not match:
+        return ""
+    try:
+        return datetime(
+            int(match.group(1)), int(match.group(2)), int(match.group(3)), tzinfo=HKT
+        ).strftime("%Y-%m-%d")
+    except ValueError:
+        return ""
+
+
+def _display_time(value: Any) -> str:
+    return _publication_date(value)
 
 
 def _search_date(value: Any) -> str:
@@ -659,7 +687,7 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
         _text(item.get("ai_title"), 500),
         _text(item.get("ai_summary"), 500),
         _text(item.get("source") or item.get("source_domain"), 160),
-        _display_time(item.get("source_date") or item.get("published_at") or item.get("searched_at") or generated_at),
+        _display_time(item.get("source_date") or item.get("published_at")),
         _text(item.get("url"), 1600),
         _keywords(item.get("keywords")),
         _text(item.get("filter_reason") or "战略新闻候选", 300),
@@ -681,19 +709,19 @@ def sync_candidates(
             if not row or not _text(row[0], 40):
                 continue
             parsed = _row_dict(row, index)
-            if parsed["status"] == "待审核":
-                still_relevant, _ = _review_news_candidate(
-                    {
-                        "title": parsed["title"],
-                        "snippet": f"{parsed['summary']} {parsed['keywords']} {parsed['note']}",
-                        "source": parsed["source"],
-                        "url": parsed["source_url"],
-                        "keywords": parsed["keywords"],
-                        "source_date": parsed["source_date"],
-                    }
-                )
-                if not still_relevant:
-                    continue
+            still_relevant, _ = _review_news_candidate(
+                {
+                    "title": parsed["title"],
+                    "snippet": f"{parsed['summary']} {parsed['keywords']} {parsed['note']}",
+                    "source": parsed["source"],
+                    "url": parsed["source_url"],
+                    "keywords": parsed["keywords"],
+                    "source_date": parsed["source_date"],
+                    "search_date": parsed["search_date"],
+                }
+            )
+            if not still_relevant:
+                continue
             existing_status[parsed["news_id"]] = (
                 parsed["status"],
                 parsed["sync_status"] or "未同步",
@@ -719,9 +747,13 @@ def sync_candidates(
         combined_items = list(items) + [
             item for news_id, item in archived_items.items() if news_id not in current_ids
         ]
+        curated_items, gate_reasons = curate_news_items(combined_items)
         from strategic_briefing import polish_candidates_before_review
 
-        prepared_items = polish_candidates_before_review(combined_items)
+        prepared_items = polish_candidates_before_review(curated_items)
+        archived_count = sum(
+            _text(item.get("news_id"), 80) not in current_ids for item in prepared_items
+        )
         values: list[list[Any]] = []
         new_count = 0
         for item in prepared_items:
@@ -756,7 +788,9 @@ def sync_candidates(
                 "last_slot_label": slot_label,
                 "last_candidate_count": len(values),
                 "last_batch_count": len(items),
-                "last_archived_count": len(values) - len(items),
+                "last_archived_count": archived_count,
+                "last_gate_filtered_count": len(combined_items) - len(curated_items),
+                "last_gate_filtered_reasons": dict(gate_reasons),
                 "last_new_count": new_count,
                 "last_ai_processed_count": len(prepared_items),
                 "last_sync_at": _now_iso(),
@@ -769,7 +803,9 @@ def sync_candidates(
             "sheet_url": _sheet_url(sheet_id),
             "candidate_count": len(values),
             "batch_count": len(items),
-            "archived_count": len(values) - len(items),
+            "archived_count": archived_count,
+            "gate_filtered_count": len(combined_items) - len(curated_items),
+            "gate_filtered_reasons": dict(gate_reasons),
             "new_count": new_count,
             "existing_count": len(existing_status),
         }
@@ -831,8 +867,43 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
         accepted_rows = [row for row in rows if row["status"] == "接受"]
         now_text = _now_iso()
         accepted_items: list[dict[str, Any]] = []
+        blocked_rows: dict[int, str] = {}
+        seen_urls = {
+            _canonical_news_url(item.get("source_url"))
+            for item in retained
+            if _canonical_news_url(item.get("source_url"))
+        }
+        seen_titles = [
+            _normalized_news_title(item.get("title"))
+            for item in retained
+            if _normalized_news_title(item.get("title"))
+        ]
         for row in accepted_rows:
             if row["news_id"] in retained_ids:
+                blocked_rows[row["row_number"]] = "重复新闻"
+                continue
+            gate_item = {
+                "title": row["title"],
+                "snippet": f"{row['summary']} {row['keywords']} {row['note']}",
+                "source": row["source"],
+                "url": row["source_url"],
+                "keywords": row["keywords"],
+                "source_date": row["source_date"],
+                "search_date": row["search_date"],
+            }
+            allowed, reason = _review_news_candidate(gate_item)
+            if not allowed:
+                blocked_rows[row["row_number"]] = reason
+                continue
+            url_key = _canonical_news_url(row["source_url"])
+            title_key = _normalized_news_title(row["title"])
+            if (
+                not url_key
+                or not title_key
+                or url_key in seen_urls
+                or any(_event_titles_duplicate(title_key, existing) for existing in seen_titles)
+            ):
+                blocked_rows[row["row_number"]] = "重复新闻"
                 continue
             previous = existing_sheet.get(row["news_id"], {})
             accepted_items.append(
@@ -846,12 +917,14 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     "source_date": row["source_date"],
                     "region": row["region"],
                     "keywords": row["keywords"],
-                    "published_at": previous.get("published_at") or now_text,
+                    "published_at": row["source_date"],
                     "approved_at": previous.get("approved_at") or now_text,
                     "approved_by": "飞书表格人工审核",
                     "approval_source": SHEET_SOURCE,
                 }
             )
+            seen_urls.add(url_key)
+            seen_titles.append(title_key)
         combined = retained + accepted_items
         combined.sort(key=lambda item: str(item.get("published_at") or ""), reverse=True)
         new_payload = {"updated_at": now_text, "items": combined[:100]}
@@ -862,6 +935,24 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
 
         changed_rows = 0
         for row in rows:
+            blocked_reason = blocked_rows.get(row["row_number"])
+            if blocked_reason:
+                if row["status"] != "不接受" or row["sync_status"] != "已移除":
+                    _write(
+                        sheet_id,
+                        f"A{row['row_number']}:B{row['row_number']}",
+                        [["不接受", "已移除"]],
+                    )
+                    changed_rows += 1
+                gate_note = f"门控拒绝：{blocked_reason}"
+                if row["note"] != gate_note:
+                    _write(
+                        sheet_id,
+                        f"L{row['row_number']}:L{row['row_number']}",
+                        [[gate_note]],
+                    )
+                    changed_rows += 1
+                continue
             desired_sync = "未同步"
             if row["status"] == "接受":
                 desired_sync = "已纳入"
@@ -877,7 +968,9 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                 )
                 changed_rows += 1
         return {
-            "accepted_count": len(accepted_rows),
+            "accepted_count": len(accepted_items),
+            "requested_accept_count": len(accepted_rows),
+            "blocked_accept_count": len(blocked_rows),
             "pending_count": sum(row["status"] == "待审核" for row in rows),
             "deferred_count": sum(row["status"] == "暂缓" for row in rows),
             "rejected_count": sum(row["status"] == "不接受" for row in rows),
@@ -1123,6 +1216,11 @@ _CORPORATE_CHANGE_RE = re.compile(
     r"组织调整|組織調整|成立.{0,12}部门|成立.{0,12}部門|任命|换帅|換帥)",
     re.I,
 )
+_NON_TELECOM_CORPORATE_RE = re.compile(
+    r"(?:automotive|automaker|motor group|boston dynamics|humanoid robot|robotics company|"
+    r"现代汽车|現代汽車|汽车集团|汽車集團|波士顿动力|波士頓動力|人形机器人|人形機器人)",
+    re.I,
+)
 _HK_TELECOM_MARKET_RE = re.compile(
     r"(?:ofca|communications authority|telecom|telecommunications|mobile operator|carrier|"
     r"mobile network|broadband|spectrum|\b5g(?:-a)?\b|\b6g\b|电讯|電訊|电信|電信|"
@@ -1151,7 +1249,8 @@ _POLICY_RE = re.compile(
     r"antitrust|data governance|privacy law|export control|entity list|sanction|subsidy|spectrum auction|"
     r"ofca|communications authority|政府|政策|监管|監管|规管|規管|法规|法規|法案|立法|"
     r"牌照|许可证|許可證|反垄断|反壟斷|竞争委员会|競爭事務委員會|数据治理|數據治理|"
-    r"隐私|私隱|出口管制|实体清单|實體清單|制裁|补贴|補貼|频谱拍卖|頻譜拍賣)",
+    r"隐私|私隱|出口管制|实体清单|實體清單|制裁|补贴|補貼|频谱拍卖|頻譜拍賣|"
+    r"national security|国家安全|國家安全|国安|國安)",
     re.I,
 )
 _ECONOMY_RE = re.compile(
@@ -1168,7 +1267,7 @@ _FINANCE_RE = re.compile(
     r"shares? (?:rise|fall)|\d+% rally|revenue growth|"
     r"股价|股價|目标价|目標價|评级|評級|净利润|淨利潤|盈利预测|盈利預測|"
     r"业绩预告|業績預告|中期业绩|中期業績|港股通|持股解析|融资融券|融資融券|基金|"
-    r"台股|受惠股|概念股|个股|個股|\d+档受惠|\d+檔受惠)",
+    r"台股|受惠股|概念股|个股|個股|\d+档受惠|\d+檔受惠|chartwatch|asx扫描|asx掃描|券商预测|券商預測)",
     re.I,
 )
 _PRODUCT_AD_RE = re.compile(
@@ -1176,7 +1275,10 @@ _PRODUCT_AD_RE = re.compile(
     r"mobile plan|price plan|buy now|\brealme\b|\bredmi\b|\bnarzo\b|geekbench|"
     r"price,? specifications|battery launched|expected price|新品发布|新品發表|产品发布|產品發表|蓝图流出|藍圖流出|"
     r"手机评测|手機評測|手机优惠|手機優惠|套餐优惠|套餐優惠|促销折扣|促銷折扣|"
-    r"联想问天|聯想問天|wa5685|破解推理成本困局)",
+    r"联想问天|聯想問天|wa5685|破解推理成本困局|asus experthub|"
+    r"智能电磁炉|智能電磁爐|家电产品|家電產品|商场.*速度实测|商場.*速度實測|"
+    r"展会展示.*产品|展會展示.*產品|营销解决方案|營銷解決方案|"
+    r"让营销|讓行銷|成交率.*成|完整ai解方)",
     re.I,
 )
 _NOISE_RE = re.compile(
@@ -1194,13 +1296,28 @@ _NOISE_RE = re.compile(
     r"登錄興櫃|登录兴柜|ai写自介|ai寫自介|cryptocurrency|crypto token|"
     r"\busdc\b|24小時成交量|24小时成交量|幣速報|币速报|\bnrl\b|broncos|"
     r"trophy|semi-finals|semifinals|rugby|cricket|fighter jet|missile|航空母舰|航空母艦|"
-    r"航母|导弹|導彈|food safety|eateries|餐厅卫生|餐廳衛生)",
+    r"航母|导弹|導彈|food safety|eateries|餐厅卫生|餐廳衛生|"
+    r"child|toddler|infant|missing person|homicide|murder|shooting|car crash|court case|"
+    r"baseball|basketball|soccer|sports team|player transfer|\bnba\b|\bnfl\b|\bmlb\b|"
+    r"男童|女童|幼儿|幼兒|婴儿|嬰兒|儿童|兒童|上吊|尸体|屍體|身亡|死亡|失踪|失蹤|"
+    r"谋杀|謀殺|凶杀|兇殺|枪击|槍擊|车祸|車禍|沉船|救援|警方|法院|判刑|"
+    r"球队|球隊|球员|球員|赛季|賽季|比赛|比賽|联赛|聯賽|国家队|國家隊|投手|"
+    r"av女優|av女优|成人影片|porn|entertainment|movie|film premiere|地震|明星八卦)",
     re.I,
 )
 _STATIC_PATH_MARKERS = (
     "/solutions/", "/products/", "/product/", "/postpaid/", "/prepaid/",
     "/plans/", "/tariff", "/contact-us", "/1010home/", "/tc/home",
     "/globalbusiness-", "/ctc_login", "/wiki/", "/blob/", "/resources/",
+    "/project-links", "/four-zones", "/committees-and-task-force", "/downloads/",
+    "/assets/files/", "/legislative_council_business/", "/ad/article/",
+    "/perspectives/advisories/", "/about-nm/", "/trending-in-nm",
+    "/publications/", ".pdf",
+)
+_STATIC_TITLE_RE = re.compile(
+    r"(?:主页|主頁|首页|首頁|项目链接|項目連結|四大区域|四大區域|"
+    r"网站简介|網站簡介|执行摘要|執行摘要|草案全文|政策文件全文|報告全文|报告全文)",
+    re.I,
 )
 _NEWS_PATH_MARKERS = (
     "/news/", "/article/", "/articles/", "/press/", "/media/", "/story/",
@@ -1210,7 +1327,8 @@ _MEDIA_RE = re.compile(
     r"(?:reuters|bloomberg|bbc|cnbc|scmp|rthk|hket|tvb|now\s*财经|now\s*財經|"
     r"singtao|bastillepost|light reading|lightreading|total telecom|totaltele|"
     r"mobile world live|mobileworldlive|capacity media|telecompaper|datacenterdynamics|"
-    r"the register|pr newswire|prnewswire|yahoo|caixin|info\.gov\.hk|gov\.hk)",
+    r"the register|pr newswire|prnewswire|yahoo|caixin|wenweipo|香港文匯|香港文汇|"
+    r"mydrivers|快科技|yicai|第一财经|第一財經|shangbao|商报|商報|info\.gov\.hk|gov\.hk)",
     re.I,
 )
 
@@ -1224,6 +1342,40 @@ def _canonical_news_url(value: Any) -> str:
     return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{parsed.path.rstrip('/')}"
 
 
+def _url_publication_hint(value: Any) -> str:
+    text = _text(value, 1800)
+    full_match = re.search(
+        r"(?<!\d)(20\d{2})[-/](\d{1,2})[-/](\d{1,2})(?!\d)", text
+    )
+    if full_match:
+        try:
+            return datetime(
+                int(full_match.group(1)),
+                int(full_match.group(2)),
+                int(full_match.group(3)),
+                tzinfo=HKT,
+            ).strftime("%Y-%m-%d")
+        except ValueError:
+            return ""
+    compact_match = re.search(r"(?<!\d)(20\d{2})(\d{2})(\d{2})(?!\d)", text)
+    if compact_match:
+        try:
+            return datetime(
+                int(compact_match.group(1)),
+                int(compact_match.group(2)),
+                int(compact_match.group(3)),
+                tzinfo=HKT,
+            ).strftime("%Y-%m-%d")
+        except ValueError:
+            return ""
+    month_match = re.search(r"(?<!\d)(20\d{2})[-/](\d{1,2})(?!\d)", text)
+    if month_match:
+        month = int(month_match.group(2))
+        if 1 <= month <= 12:
+            return f"{month_match.group(1)}-{month:02d}"
+    return ""
+
+
 def _normalized_news_title(value: Any) -> str:
     text = _text(value, 500).lower()
     text = re.sub(r"^\s*[【\[].{1,24}?[】\]]\s*", "", text)
@@ -1231,9 +1383,41 @@ def _normalized_news_title(value: Any) -> str:
     return re.sub(r"[^0-9a-z\u4e00-\u9fff]+", "", text)
 
 
-def _news_like(item: dict[str, Any], lower_url: str, text: str) -> bool:
-    if _text(item.get("source_date") or item.get("published_at"), 60):
+_EVENT_TITLE_STOP_RE = re.compile(
+    r"(?:集团|集團|公司|宣布|宣佈|将|將|获得|獲得|实现|實現|完全|全资|全資|"
+    r"控股|控制|收购|收購|购买|購買|持有|所持|股份|股权|股權|正式|完成|拟|擬|"
+    r"计划|計劃|旗下|关联|關聯|加速|战略|戰略|group|company|announces?|acquires?|"
+    r"acquisition|purchase|buy|stake|shares?|fully?|takes?control|completes?|plans?)",
+    re.I,
+)
+
+
+def _event_title_key(value: Any) -> str:
+    title = re.sub(r"project\s*tango", "探戈", _text(value, 500), flags=re.I)
+    return _normalized_news_title(_EVENT_TITLE_STOP_RE.sub("", title))
+
+
+def _event_titles_duplicate(left: Any, right: Any) -> bool:
+    left_key = _event_title_key(left)
+    right_key = _event_title_key(right)
+    if not left_key or not right_key:
+        return False
+    if left_key == right_key:
         return True
+    if min(len(left_key), len(right_key)) >= 8 and (
+        left_key in right_key or right_key in left_key
+    ):
+        return True
+    if min(len(left_key), len(right_key)) < 10:
+        return False
+    if SequenceMatcher(None, left_key, right_key).ratio() >= 0.60:
+        return True
+    left_pairs = {left_key[index : index + 2] for index in range(len(left_key) - 1)}
+    right_pairs = {right_key[index : index + 2] for index in range(len(right_key) - 1)}
+    return len(left_pairs & right_pairs) / max(1, min(len(left_pairs), len(right_pairs))) >= 0.62
+
+
+def _news_like(item: dict[str, Any], lower_url: str, text: str) -> bool:
     source = " ".join((_text(item.get("source"), 200), _text(item.get("source_domain"), 200)))
     if _MEDIA_RE.search(source):
         return True
@@ -1258,7 +1442,11 @@ def _competitor_relevance(item: dict[str, Any]) -> tuple[bool, str]:
     if _DIRECT_COMPETITOR_RE.search(text):
         return True, "香港直接竞对新闻"
     if _BENCHMARK_OPERATOR_RE.search(text):
-        if _CORPORATE_CHANGE_RE.search(text):
+        if (
+            _CORPORATE_CHANGE_RE.search(text)
+            and _BENCHMARK_TOPIC_RE.search(text)
+            and not _NON_TELECOM_CORPORATE_RE.search(text)
+        ):
             return True, "国际运营商组织或资本动作"
         if _OPERATOR_ACTION_RE.search(text) and _BENCHMARK_TOPIC_RE.search(text):
             return True, "国际运营商业务对标新闻"
@@ -1273,6 +1461,24 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
     url = _text(item.get("url"), 1800)
     if not title or not url:
         return False, "缺少标题或原文"
+    source_date = _publication_date(item.get("source_date") or item.get("published_at"))
+    search_date = _search_date(
+        item.get("search_date") or item.get("searched_at") or item.get("retrieved_at")
+    )
+    if not source_date:
+        return False, "缺少可验证发布日期"
+    if not search_date:
+        return False, "缺少检索日期"
+    if source_date != search_date:
+        return False, "非检索当日发布"
+    title_years = {int(value) for value in re.findall(r"(?<!\d)(20\d{2})(?!\d)", title)}
+    if title_years and int(search_date[:4]) not in title_years and max(title_years) < int(search_date[:4]):
+        return False, "标题显示旧年份"
+    url_date_hint = _url_publication_hint(url)
+    if url_date_hint and not source_date.startswith(url_date_hint):
+        return False, "原文路径日期与发布时间不符"
+    item["source_date"] = source_date
+    item["search_date"] = search_date
     lower_url = url.lower()
     text = f"{title} {snippet}"
     lower_text = text.lower()
@@ -1284,23 +1490,39 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         return False, "基金或行情页面"
     if any(marker in path for marker in _STATIC_PATH_MARKERS):
         return False, "官网产品或资料页"
-    if _NOISE_RE.search(lower_text):
+    if "nm.gov.hk" in source_text and not url_date_hint:
+        return False, "北部都会区静态页面"
+    if "chinaelections.org" in source_text or _STATIC_TITLE_RE.search(title):
+        return False, "静态文件或资料页"
+    if _NOISE_RE.search(f"{lower_text} {source_text}"):
         return False, "生活、体育或误命中新闻"
+    if re.search(r"(?:codex\s*micro|实体键盘|實體鍵盤|限量版键盘|限量版鍵盤)", lower_text, re.I):
+        return False, "消费型AI硬件新品"
     if _PRODUCT_AD_RE.search(lower_text):
         return False, "消费产品或套餐广告"
+    if (
+        _BENCHMARK_OPERATOR_RE.search(text)
+        and _CORPORATE_CHANGE_RE.search(text)
+        and _NON_TELECOM_CORPORATE_RE.search(text)
+    ):
+        return False, "非电信资产或业务事件"
     direct_competitor = bool(_DIRECT_COMPETITOR_RE.search(text))
     if _FINANCE_RE.search(lower_text) and not direct_competitor:
         return False, "非香港竞对股市或业绩稿"
     competitor_relevant, relevance_reason = _competitor_relevance(item)
     if not competitor_relevant:
-        if _POLICY_RE.search(text) and (_STRATEGIC_RE.search(text) or _ECONOMY_RE.search(text)):
+        if _POLICY_RE.search(text) and (
+            _STRATEGIC_RE.search(text)
+            or _ECONOMY_RE.search(text)
+            or re.search(r"national security|国家安全|國家安全|国安|國安", text, re.I)
+        ):
             relevance_reason = "政策监管"
         elif _ECONOMY_RE.search(text):
             relevance_reason = "宏观经济"
         elif _STRATEGIC_RE.search(text):
             relevance_reason = "战略产业新闻"
         else:
-            relevance_reason = "其他待筛"
+            return False, "未达到战略相关门槛"
     generic_titles = {
         "hkt", "pccw", "ctexcel", "documentctexcel", "1010home", "wwwbisgov",
         "香港電訊商及流動數據服務csl", "香港电讯商及流动数据服务csl",
@@ -1312,9 +1534,9 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
     return True, relevance_reason
 
 
-def _curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], Counter[str]]:
+def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], Counter[str]]:
     kept: dict[str, dict[str, Any]] = {}
-    title_keys: set[str] = set()
+    title_keys: list[str] = []
     reasons: Counter[str] = Counter()
     for source_item in items:
         if not isinstance(source_item, dict):
@@ -1326,7 +1548,12 @@ def _curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]
             continue
         url_key = _canonical_news_url(item.get("url"))
         title_key = _normalized_news_title(item.get("title"))
-        if not url_key or not title_key or url_key in kept or title_key in title_keys:
+        if (
+            not url_key
+            or not title_key
+            or url_key in kept
+            or any(_event_titles_duplicate(title_key, existing) for existing in title_keys)
+        ):
             reasons["重复新闻"] += 1
             continue
         text = f"{_text(item.get('title'), 500)} {_text(item.get('snippet'), 1800)}"
@@ -1344,7 +1571,7 @@ def _curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]
         item["filter_reason"] = reason
         item["news_id"] = _news_item_id(item.get("url"), item.get("title"))
         kept[url_key] = item
-        title_keys.add(title_key)
+        title_keys.append(title_key)
     result = list(kept.values())
     category_priority = {"竞对动态": 0, "政策监管": 1, "宏观经济": 2, "其他待筛": 9}
     result.sort(
@@ -1384,7 +1611,7 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         if not generated_at:
             generated_at = _text(payload.get("generated_at"), 60)
     if combined:
-        curated, reasons = _curate_news_items(combined)
+        curated, reasons = curate_news_items(combined)
         category_counts = Counter(
             _text(item.get("category") or "未分类", 80) for item in curated
         )

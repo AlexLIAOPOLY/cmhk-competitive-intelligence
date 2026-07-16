@@ -837,9 +837,12 @@ def _run_scan(
             "items": full_items,
         },
     )
+    import news_review_sheet
+
+    gated_items, gate_reasons = news_review_sheet.curate_news_items(full_items)
     seen_urls = set(str(url) for url in state.get("seen_urls") or [])
     ranked = sorted(
-        (candidate for candidate in full_items if candidate.get("url") not in seen_urls),
+        (candidate for candidate in gated_items if candidate.get("url") not in seen_urls),
         key=lambda item: (-int(item.get("score") or 0), item.get("title") or ""),
     )[:MAX_CANDIDATES_PER_SCAN]
     slot_code = "M" if slot_label == "晨间扫描" else "A"
@@ -851,8 +854,6 @@ def _run_scan(
     ranked = polish_candidates_before_review(ranked)
     review_result: dict[str, Any] = {}
     try:
-        import news_review_sheet
-
         review_result = news_review_sheet.run_cycle(force=True)
     except Exception as exc:
         review_result = {"error": _clean_text(exc, 300)}
@@ -890,6 +891,9 @@ def _run_scan(
         },
         "query_count": len(plans),
         "search_result_count": searched_count,
+        "gate_candidate_count": len(gated_items),
+        "gate_filtered_count": len(full_items) - len(gated_items),
+        "gate_filtered_reasons": dict(gate_reasons),
         "candidate_count": len(ranked),
         "message_id": message_id,
         "feishu_identity": identity,
