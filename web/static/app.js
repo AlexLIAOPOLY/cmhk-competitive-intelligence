@@ -5697,79 +5697,6 @@ document.addEventListener("keydown", (event) => {
   const autoScrollSpeed = 30;
   list.tabIndex = 0;
   list.setAttribute("aria-label", "战略快讯滚动列表");
-  const sampleItems = [
-    {
-      published_at: "2026-07-15T10:53:00+08:00",
-      category: "示例",
-      title: "示例｜HKT 企业服务与云网协同动态",
-      summary: "用于预览重点竞对动态在战略快讯中的标题、时间与摘要层级。",
-      source_url: "https://www.hkt.com/en/about-hkt/investor-relations/",
-    },
-    {
-      published_at: "2026-07-15T09:35:00+08:00",
-      category: "示例",
-      title: "示例｜3香港漫游及重点套餐变化",
-      summary: "用于展示资费、权益和营销活动变化进入快讯后的阅读效果。",
-      source_url: "https://www.three.com.hk/",
-    },
-    {
-      published_at: "2026-07-14T16:20:00+08:00",
-      category: "示例",
-      title: "示例｜csl 5G 与企业解决方案观察",
-      summary: "用于展示网络能力、行业方案和重点合作类信号的滚动效果。",
-      source_url: "https://www.hkcsl.com/",
-    },
-    {
-      published_at: "2026-07-14T11:10:00+08:00",
-      category: "示例",
-      title: "示例｜SmarTone 家庭宽带市场动作",
-      summary: "用于展示家庭市场促销、渠道动作及产品组合变化的快讯样式。",
-      source_url: "https://www.smartone.com/",
-    },
-    {
-      published_at: "2026-07-13T15:40:00+08:00",
-      category: "示例",
-      title: "示例｜HKBN 战略合作与业务调整",
-      summary: "用于展示合作、组织及业务方向变化等战略信号的呈现方式。",
-      source_url: "https://www.hkbn.net/",
-    },
-    {
-      published_at: "2026-07-13T10:25:00+08:00",
-      category: "示例",
-      title: "示例｜中国移动香港跨境业务观察",
-      summary: "用于展示跨境通信、湾区服务及重点客户方案相关动态。",
-      source_url: "https://www.hk.chinamobile.com/",
-    },
-    {
-      published_at: "2026-07-12T17:05:00+08:00",
-      category: "示例",
-      title: "示例｜HGC 国际网络与安全服务动态",
-      summary: "用于展示国际连接、网络安全和企业托管服务相关信号。",
-      source_url: "https://www.hgc.com.hk/",
-    },
-    {
-      published_at: "2026-07-12T12:30:00+08:00",
-      category: "示例",
-      title: "示例｜i-CABLE 家庭市场套餐变化",
-      summary: "用于展示家庭宽带、内容权益与融合套餐的市场变化。",
-      source_url: "https://www.i-cable.com/",
-    },
-    {
-      published_at: "2026-07-11T16:15:00+08:00",
-      category: "示例",
-      title: "示例｜1O1O 高端客户服务动作",
-      summary: "用于展示高价值客户权益、终端组合及服务升级动态。",
-      source_url: "https://www.1010.com.hk/",
-    },
-    {
-      published_at: "2026-07-11T09:45:00+08:00",
-      category: "示例",
-      title: "示例｜云网与人工智能能力合作信号",
-      summary: "用于展示云计算、人工智能和行业数字化合作相关变化。",
-      source_url: "https://www.hk.chinamobile.com/en/corporate/",
-    },
-  ];
-
   function escapeValue(value) {
     return String(value == null ? "" : value)
       .replace(/&/g, "&amp;")
@@ -5855,8 +5782,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function render(payload) {
-    const liveItems = Array.isArray(payload.items) ? payload.items : [];
-    const items = liveItems.concat(sampleItems.slice(0, Math.max(0, 10 - liveItems.length)));
+    const items = Array.isArray(payload.items) ? payload.items : [];
     const monitor = payload.monitor || {};
     const degraded = monitor.status === "degraded";
     syncStatus.classList.toggle("is-degraded", degraded);
