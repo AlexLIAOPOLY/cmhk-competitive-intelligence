@@ -31,6 +31,15 @@ Before every private `main` update, the script creates a timestamped `backup/mai
 
 Uncommitted files are included only in the private complete snapshot. They are not included in either repository's development branch until explicitly committed.
 
+## Mandatory completion and remote synchronization
+
+- Every completed project update that changes code, configuration, documentation or generated operational state in this workspace must be synchronized to the remote repositories before the task is reported complete.
+- Unless the user explicitly says not to synchronize, Codex must perform the following in the same task: inspect the current branch and targeted status, stage only the files intentionally changed for the task, create a descriptive commit when source-controlled files changed, and run `./scripts/sync_github_repositories.sh`.
+- Do not stop after updating only the local source tree or runtime mirror. A finished update is not complete until the public development branch, private development branch and private `main` complete snapshot have all been synchronized successfully.
+- If a task changes only an external system and leaves no project file or operational state in this workspace, a repository synchronization is not required.
+- If synchronization fails, report the exact failed destination and keep working or clearly report the blocker. Never claim that an update is complete while required remote synchronization is still pending.
+- Continue to exclude unrelated runtime files and secrets from the public development commit. The synchronization script remains the only approved path for including the sanitized complete workspace snapshot in private `main`.
+
 ## Secrets and internal model configuration
 
 - The internal model key is stored in the private repository as the encrypted GitHub Actions secret `CMHK_LLM_API_KEY`.

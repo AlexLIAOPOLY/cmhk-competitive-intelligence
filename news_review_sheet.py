@@ -34,11 +34,12 @@ SHEET_TITLE = os.environ.get("CMHK_NEWS_REVIEW_SHEET_TITLE") or "滚动新闻候
 POLL_SECONDS = max(60, int(os.environ.get("CMHK_NEWS_REVIEW_POLL_SECONDS", "300")))
 MAX_SHEET_ROWS = max(500, int(os.environ.get("CMHK_NEWS_REVIEW_MAX_ROWS", "3000")))
 SHEET_SOURCE = "feishu_review_sheet"
-FORMAT_VERSION = 6
+FORMAT_VERSION = 7
 
 HEADERS = [
     "是否纳入滚动",
     "同步状态",
+    "检索日期",
     "地域",
     "分类",
     "新闻标题（AI）",
@@ -192,7 +193,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A1:K1",
+        f"{sheet_id}!A1:L1",
         "--style",
         json.dumps(header_style, ensure_ascii=False),
     )
@@ -202,7 +203,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A2:K{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A2:L{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(body_style, ensure_ascii=False),
     )
@@ -228,7 +229,25 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!C2:D{MAX_SHEET_ROWS}",
+        f"{sheet_id}!C2:C{MAX_SHEET_ROWS}",
+        "--style",
+        json.dumps(
+            {
+                "font": {"bold": True, "foreColor": "#174A78"},
+                "backColor": "#EAF3FA",
+                "horizontalAlignment": "CENTER",
+                "verticalAlignment": "MIDDLE",
+            },
+            ensure_ascii=False,
+        ),
+    )
+    _best_effort(
+        "sheets",
+        "+set-style",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--range",
+        f"{sheet_id}!D2:E{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -245,7 +264,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!E2:E{MAX_SHEET_ROWS}",
+        f"{sheet_id}!F2:F{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -262,7 +281,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!F2:F{MAX_SHEET_ROWS}",
+        f"{sheet_id}!G2:G{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -279,7 +298,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!G2:K{MAX_SHEET_ROWS}",
+        f"{sheet_id}!H2:L{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -319,6 +338,7 @@ def _format_sheet(sheet_id: str) -> None:
     widths = [
         112,
         108,
+        112,
         90,
         150,
         380,
@@ -391,7 +411,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--frozen-row-count",
         "1",
         "--frozen-col-count",
-        "6",
+        "7",
     )
     _best_effort(
         "sheets",
@@ -401,7 +421,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--sheet-id",
         sheet_id,
         "--range",
-        f"{sheet_id}!A1:K{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A1:L{MAX_SHEET_ROWS}",
         "--filter-view-name",
         "滚动新闻审核视图",
     )
@@ -422,11 +442,19 @@ def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
     )
 
 
-def _normalized_sheet_row(row: list[Any]) -> list[Any]:
-    padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
-    url_at_expected_column = _text(padded[8], 1600).lower().startswith(("http://", "https://"))
-    url_shifted_one_column = _text(padded[9], 1600).lower().startswith(("http://", "https://"))
-    if not url_at_expected_column and url_shifted_one_column:
+def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) -> list[Any]:
+    width = 10 if format_version <= 5 else 11 if format_version == 6 else len(HEADERS)
+    padded = (list(row) + [""] * width)[:width]
+    if format_version <= 5:
+        return padded
+    expected_url_index = 8 if format_version == 6 else 9
+    shifted_url_index = expected_url_index + 1
+    url_at_expected_column = _text(padded[expected_url_index], 1600).lower().startswith(("http://", "https://"))
+    url_shifted_one_column = (
+        shifted_url_index < len(padded)
+        and _text(padded[shifted_url_index], 1600).lower().startswith(("http://", "https://"))
+    )
+    if format_version == 6 and not url_at_expected_column and url_shifted_one_column:
         return [
             *padded[:6],
             padded[7],
@@ -435,10 +463,24 @@ def _normalized_sheet_row(row: list[Any]) -> list[Any]:
             padded[10],
             "历史候选",
         ]
+    if format_version >= 7 and not url_at_expected_column and url_shifted_one_column:
+        return [
+            *padded[:7],
+            padded[8],
+            padded[9],
+            padded[10],
+            padded[11],
+            "历史候选",
+        ]
     return padded
 
 
-def _read_rows(sheet_id: str) -> list[list[Any]]:
+def _read_rows(
+    sheet_id: str,
+    *,
+    format_version: int = FORMAT_VERSION,
+) -> list[list[Any]]:
+    end_column = "J" if format_version <= 5 else "K" if format_version == 6 else "L"
     payload = _lark(
         "sheets",
         "+read",
@@ -447,13 +489,16 @@ def _read_rows(sheet_id: str) -> list[list[Any]]:
         "--sheet-id",
         sheet_id,
         "--range",
-        f"A2:K{MAX_SHEET_ROWS}",
+        f"A2:{end_column}{MAX_SHEET_ROWS}",
         "--value-render-option",
         "ToString",
     )
     values = _walk_for_key(payload, "values")
     rows = [
-        _normalized_sheet_row(row if isinstance(row, list) else [])
+        _normalized_sheet_row(
+            row if isinstance(row, list) else [],
+            format_version,
+        )
         for row in values or []
     ]
     while rows and not any(cell not in (None, "") for cell in rows[-1]):
@@ -499,19 +544,27 @@ def ensure_sheet() -> str:
                 str(MAX_SHEET_ROWS - row_count),
             )
         previous_version = int(state.get("format_version") or 0)
-        if not created and previous_version == 5:
-            legacy_rows = _read_rows(sheet_id)
-            migrated_rows = []
-            for row in legacy_rows:
-                legacy = (list(row[:10]) + [""] * 10)[:10]
-                migrated_rows.append(legacy[:5] + [""] + legacy[5:])
+        if not created and previous_version in {5, 6}:
+            legacy_rows = _read_rows(sheet_id, format_version=previous_version)
+            if previous_version == 5:
+                version_six_rows = []
+                for row in legacy_rows:
+                    legacy = (list(row[:10]) + [""] * 10)[:10]
+                    version_six_rows.append(legacy[:5] + [""] + legacy[5:])
+            else:
+                version_six_rows = legacy_rows
+            legacy_search_date = _search_date(state.get("last_source_generated_at"))
+            migrated_rows = [
+                list(row[:2]) + [legacy_search_date] + list(row[2:11])
+                for row in version_six_rows
+            ]
             for offset in range(0, len(migrated_rows), 40):
                 chunk = migrated_rows[offset : offset + 40]
                 start_row = 2 + offset
                 end_row = start_row + len(chunk) - 1
-                _write(sheet_id, f"A{start_row}:K{end_row}", chunk)
-        _write(sheet_id, "A1:K1", [HEADERS])
-        _write(sheet_id, "L1:P1", [[""] * 5])
+                _write(sheet_id, f"A{start_row}:L{end_row}", chunk)
+        _write(sheet_id, "A1:L1", [HEADERS])
+        _write(sheet_id, "M1:P1", [[""] * 4])
         if (
             created
             or expanded
@@ -550,6 +603,17 @@ def _display_time(value: Any) -> str:
         return text.replace("T", " ")[:16]
 
 
+def _search_date(value: Any) -> str:
+    text = _text(value, 60)
+    if not text:
+        return ""
+    try:
+        return datetime.fromisoformat(text).astimezone(HKT).strftime("%Y-%m-%d")
+    except ValueError:
+        match = re.search(r"20\d{2}[-/]\d{1,2}[-/]\d{1,2}", text)
+        return match.group(0).replace("/", "-") if match else text[:10]
+
+
 def _category_label(item: dict[str, Any]) -> str:
     text = " ".join(
         (
@@ -574,7 +638,9 @@ def _category_label(item: dict[str, Any]) -> str:
 
 
 def _news_item_id(url: Any, title: Any) -> str:
-    seed = f"{_text(url, 1800)}\n{_text(title, 500)}".encode("utf-8")
+    canonical_url = _canonical_news_url(url)
+    seed_text = canonical_url or _text(url, 1800) or _normalized_news_title(title)
+    seed = seed_text.encode("utf-8")
     return "NEWS-" + hashlib.sha1(seed).hexdigest()[:14].upper()
 
 
@@ -582,6 +648,12 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
     return [
         "待审核",
         "未同步",
+        _search_date(
+            item.get("search_date")
+            or item.get("searched_at")
+            or item.get("retrieved_at")
+            or generated_at
+        ),
         _text(item.get("region") or "国际/行业", 40),
         _text(item.get("category") or _category_label(item), 80),
         _text(item.get("ai_title"), 500),
@@ -603,6 +675,7 @@ def sync_candidates(
         sheet_id = ensure_sheet()
         rows = _read_rows(sheet_id)
         existing_status: dict[str, tuple[str, str]] = {}
+        existing_search_dates: dict[str, str] = {}
         archived_items: dict[str, dict[str, Any]] = {}
         for index, row in enumerate(rows, start=2):
             if not row or not _text(row[0], 40):
@@ -625,8 +698,10 @@ def sync_candidates(
                 parsed["status"],
                 parsed["sync_status"] or "未同步",
             )
+            existing_search_dates[parsed["news_id"]] = parsed["search_date"]
             archived_items[parsed["news_id"]] = {
                 "news_id": parsed["news_id"],
+                "search_date": parsed["search_date"],
                 "title": parsed["title"],
                 "source_title": parsed["title"],
                 "snippet": parsed["summary"] or parsed["note"],
@@ -654,9 +729,11 @@ def sync_candidates(
             value = _candidate_row(item, generated_at)
             if news_id in existing_status:
                 value[0], value[1] = existing_status[news_id]
+                value[2] = existing_search_dates.get(news_id) or value[2]
             else:
                 new_count += 1
             values.append(value)
+        values.sort(key=lambda row: str(row[2] or ""), reverse=True)
         if len(values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
         clear_count = max(len(rows), len(values))
@@ -669,7 +746,7 @@ def sync_candidates(
             chunk = values[offset : offset + 40]
             start_row = 2 + offset
             end_row = start_row + len(chunk) - 1
-            _write(sheet_id, f"A{start_row}:K{end_row}", chunk)
+            _write(sheet_id, f"A{start_row}:L{end_row}", chunk)
         state = _read_json(STATE_PATH, {})
         state.update(
             {
@@ -713,20 +790,21 @@ def _normalized_status(value: Any) -> str:
 
 def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
     padded = list(row) + [""] * max(0, len(HEADERS) - len(row))
-    news_id = _news_item_id(padded[8], padded[4])
+    news_id = _news_item_id(padded[9], padded[5])
     return {
         "row_number": row_number,
         "status": _normalized_status(padded[0]),
         "sync_status": _text(padded[1], 40),
-        "region": _text(padded[2], 80),
-        "category": _text(padded[3], 120),
-        "title": _text(padded[4], 500),
-        "summary": _text(padded[5], 500),
-        "source": _text(padded[6], 240),
-        "source_date": _text(padded[7], 40),
-        "source_url": _text(padded[8], 1600),
-        "keywords": _text(padded[9], 1800),
-        "note": _text(padded[10], 500),
+        "search_date": _text(padded[2], 20),
+        "region": _text(padded[3], 80),
+        "category": _text(padded[4], 120),
+        "title": _text(padded[5], 500),
+        "summary": _text(padded[6], 500),
+        "source": _text(padded[7], 240),
+        "source_date": _text(padded[8], 40),
+        "source_url": _text(padded[9], 1600),
+        "keywords": _text(padded[10], 1800),
+        "note": _text(padded[11], 500),
         "news_id": news_id,
     }
 
