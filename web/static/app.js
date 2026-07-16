@@ -2634,16 +2634,40 @@ async function saveAiConfig() {
 }
 
 async function testAiConfig() {
+  const payload = {
+    provider: els.aiProvider.value,
+    base_url: els.aiBaseUrl.value.trim(),
+    model: els.aiModel.value.trim(),
+    api_key: els.aiApiKey.value.trim(),
+  };
+  if (!/^https?:\/\//i.test(payload.base_url)) {
+    throw new Error("Base URL 必须以 http:// 或 https:// 开头");
+  }
+  if (!payload.model) throw new Error("请选择要测试的模型");
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 50000);
   els.testAiConfig.disabled = true;
   els.testAiConfig.textContent = "测试中...";
   els.aiConfigStatus.textContent = "正在验证 Base URL、API Key 和模型...";
   try {
-    const response = await fetch("/api/ai-test", { method: "POST" });
+    const response = await fetch("/api/ai-test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || data.result?.error || "连接失败");
     els.aiConfigStatus.textContent = `连接成功：${data.result.provider || ""} / ${data.result.model || ""} / ${data.result.latency_ms || 0}ms`;
-    if (data.status) renderStatus(data.status);
+    return data.result;
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      throw new Error("连接测试超时，请检查内网连接或稍后重试");
+    }
+    throw error;
   } finally {
+    window.clearTimeout(timeoutId);
     els.testAiConfig.disabled = false;
     els.testAiConfig.textContent = "测试连接";
   }
@@ -5122,6 +5146,7 @@ els.aiSettingsForm.addEventListener("submit", (event) => {
   saveAiConfig()
     .then(() => {
       els.aiConfigStatus.textContent = "AI 设置已保存。";
+      els.aiSettingsModal.hidden = true;
     })
     .catch((error) => {
       els.aiConfigStatus.textContent = error.message;
@@ -5202,16 +5227,9 @@ els.outputTabs.forEach((button) => {
 });
 
 els.testAiConfig.addEventListener("click", () => {
-  els.aiConfigStatus.textContent = "正在保存当前选择并准备测试...";
-  els.testAiConfig.disabled = true;
-  els.testAiConfig.textContent = "准备中...";
-  saveAiConfig()
-    .then(testAiConfig)
-    .catch((error) => {
-      els.aiConfigStatus.textContent = error.message;
-      els.testAiConfig.disabled = false;
-      els.testAiConfig.textContent = "测试连接";
-    });
+  testAiConfig().catch((error) => {
+    els.aiConfigStatus.textContent = `连接失败：${error.message || String(error)}`;
+  });
 });
 
 els.clearLogButton.addEventListener("click", () => {

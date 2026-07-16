@@ -3343,13 +3343,18 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/ai-test":
             started = time.monotonic()
             try:
+                payload = read_request_json(self)
                 config = load_ai_config(include_key=True)
-                provider = str(config.get("provider") or "deepseek").lower()
-                base_url = str(config.get("base_url") or "").rstrip("/")
-                model = str(config.get("model") or "").strip()
-                api_key = str(config.get("api_key") or "").strip()
+                provider = str(payload.get("provider") or config.get("provider") or "deepseek").lower()
+                base_url = str(payload.get("base_url") or config.get("base_url") or "").strip().rstrip("/")
+                model = str(payload.get("model") or config.get("model") or "").strip()
+                api_key = str(payload.get("api_key") or config.get("api_key") or "").strip()
                 if not base_url or not model or not api_key:
                     raise ValueError("Base URL、模型和 API Key 均不能为空")
+                if not re.match(r"^https?://", base_url, flags=re.I):
+                    raise ValueError("Base URL 必须以 http:// 或 https:// 开头")
+                if not is_internal_ai_base_url(base_url):
+                    raise ValueError("只能访问公司内网模型服务")
                 if provider == "openai":
                     url = f"{base_url}/responses"
                     body = {"model": model, "input": "Reply OK", "max_output_tokens": 16}
