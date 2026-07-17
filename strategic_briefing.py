@@ -27,7 +27,7 @@ CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_VERSION = 1
-AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "12")))
+AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
 
@@ -898,6 +898,17 @@ def _run_scan(
         candidate["spec_hash"] = spec["spec_hash"]
     _enrich_with_crawler(ranked)
     ranked = polish_candidates_before_review(ranked)
+    discovery_result: dict[str, Any] = {}
+    try:
+        import news_discovery_vote_digest
+
+        discovery_result = news_discovery_vote_digest.send_digest(
+            now=now,
+            morning=slot_label == "晨间扫描",
+        )
+    except Exception as exc:
+        discovery_result = {"error": _clean_text(exc, 300)}
+        logging.exception("战略快讯新闻发现失败")
     review_result: dict[str, Any] = {}
     try:
         review_result = news_review_sheet.run_cycle(force=True)
@@ -941,6 +952,12 @@ def _run_scan(
         "gate_filtered_count": len(full_items) - len(gated_items),
         "gate_filtered_reasons": dict(gate_reasons),
         "candidate_count": len(ranked),
+        "news_discovery": {
+            "result_count": int(discovery_result.get("result_count") or 0),
+            "hong_kong_count": int(discovery_result.get("hong_kong_count") or 0),
+            "query_error_count": len(discovery_result.get("query_errors") or []),
+            "error": discovery_result.get("error") or "",
+        },
         "message_id": message_id,
         "feishu_identity": identity,
         "review_sheet": review_result,
@@ -1026,7 +1043,14 @@ def _call_internal_ai(
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
     api_key = str(config.get("api_key") or "")
-    model = str(config.get("model") or "")
+    configured_model = str(config.get("model") or "")
+    model = (
+        os.environ.get(
+            "CMHK_STRATEGY_AI_MODEL",
+            "Qwen3-30B-A3B-Instruct-2507",
+        ).strip()
+        or configured_model
+    )
     if not base_url or not model:
         raise RuntimeError("公司内部 AI 配置不完整")
     request_body = {
@@ -1048,8 +1072,26 @@ def _call_internal_ai(
         method="POST",
     )
     opener = build_opener(ProxyHandler({}))
-    with opener.open(request, timeout=90) as response:
-        payload = json.loads(response.read().decode("utf-8", errors="ignore"))
+    timeout_seconds = max(
+        30,
+        int(os.environ.get("CMHK_STRATEGY_AI_TIMEOUT_SECONDS", "60")),
+    )
+    attempts = max(1, int(os.environ.get("CMHK_STRATEGY_AI_ATTEMPTS", "2")))
+    payload: dict[str, Any] = {}
+    for attempt in range(1, attempts + 1):
+        try:
+            with opener.open(request, timeout=timeout_seconds) as response:
+                payload = json.loads(response.read().decode("utf-8", errors="ignore"))
+            break
+        except TimeoutError:
+            if attempt >= attempts:
+                raise
+            logging.warning(
+                "公司内部 AI 请求超时，正在重试 %s/%s",
+                attempt + 1,
+                attempts,
+            )
+            time.sleep(min(4, 2 ** attempt))
     message = ((payload.get("choices") or [{}])[0].get("message") or {})
     content = str(
         message.get("content") or message.get("reasoning_content") or ""
@@ -1152,20 +1194,28 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
                 }
             )
-        response = _call_internal_ai(
-            (
-                "你是公司内部战略新闻编辑。只输出合法JSON对象，结构为"
-                "{\"items\":[{\"id\":\"输入id\",\"title\":\"中文标题\","
-                "\"summary\":\"内容简介\"}]}。每条都必须返回且id原样保留。"
-                "title须为简洁准确的中文标题，品牌名和必要缩写可保留。"
-                "summary须用一至两句、最多96个中文字符直接说明发生了什么，"
-                "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
-                "不得写‘可点击原文、值得关注、反映了、涉及’等空泛提示。"
-                "只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
-            ),
-            json.dumps({"items": request_items}, ensure_ascii=False),
-            max_tokens=max(2400, len(batch) * 420),
-        )
+        try:
+            response = _call_internal_ai(
+                (
+                    "你是公司内部战略新闻编辑。只输出合法JSON对象，结构为"
+                    "{\"items\":[{\"id\":\"输入id\",\"title\":\"中文标题\","
+                    "\"summary\":\"内容简介\"}]}。每条都必须返回且id原样保留。"
+                    "title须为简洁准确的中文标题，品牌名和必要缩写可保留。"
+                    "summary须用一至两句、最多96个中文字符直接说明发生了什么，"
+                    "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
+                    "不得写‘可点击原文、值得关注、反映了、涉及’等空泛提示。"
+                    "只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
+                ),
+                json.dumps({"items": request_items}, ensure_ascii=False),
+                max_tokens=max(1200, len(batch) * 300),
+            )
+        except Exception as exc:
+            logging.error(
+                "公司内部 AI 批量编辑失败，本批 %s 条留待下轮重试：%s",
+                len(batch),
+                _clean_text(exc, 240),
+            )
+            continue
         response_items = response.get("items") if isinstance(response, dict) else []
         response_map = {
             str(entry.get("id") or ""): entry
@@ -1178,23 +1228,26 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 edited = _validated_ai_copy(response_map.get(key[:16]) or {})
             except RuntimeError:
                 source = request_map[key[:16]]
-                retry = _call_internal_ai(
-                    (
-                        "你是公司内部战略新闻中文编辑。只输出合法JSON对象，字段为title和summary。"
-                        "title必须是简洁准确的中文标题。summary必须用一至两句、16至96个中文字符"
-                        "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
-                        "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
-                        "仅使用输入已有事实，不补造内容，不要Markdown。"
-                    ),
-                    json.dumps(source, ensure_ascii=False),
-                    max_tokens=3200,
-                )
                 try:
+                    retry = _call_internal_ai(
+                        (
+                            "你是公司内部战略新闻中文编辑。只输出合法JSON对象，字段为title和summary。"
+                            "title必须是简洁准确的中文标题。summary必须用一至两句、16至96个中文字符"
+                            "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
+                            "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
+                            "仅使用输入已有事实，不补造内容，不要Markdown。"
+                        ),
+                        json.dumps(source, ensure_ascii=False),
+                        max_tokens=1200,
+                    )
                     edited = _validated_ai_copy(retry)
-                except RuntimeError as exc:
-                    raise RuntimeError(
-                        f"候选 {source['id']} 经批量和单条 AI 编辑后仍不合格：{exc}"
-                    ) from exc
+                except Exception as exc:
+                    logging.error(
+                        "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
+                        source["id"],
+                        _clean_text(exc, 240),
+                    )
+                    continue
             resolved[key] = edited
             cache[key] = {
                 **edited,
@@ -1213,7 +1266,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     polished_items: list[dict[str, Any]] = []
     for source_item in items:
         item = dict(source_item)
-        edited = resolved[_candidate_editor_key(item)]
+        edited = resolved.get(_candidate_editor_key(item))
+        if not edited:
+            continue
         item.setdefault("source_title", _clean_text(item.get("title"), 500))
         item["ai_title"] = edited["title"]
         item["ai_summary"] = edited["summary"]

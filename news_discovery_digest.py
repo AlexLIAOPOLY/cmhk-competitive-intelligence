@@ -109,57 +109,16 @@ def _relevant(text: str, keywords: list[str]) -> bool:
     return not meaningful or any(_term_matches(text, item) for item in meaningful)
 
 
-def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: datetime) -> list[dict[str, Any]]:
-    base_query = _clean_text(plan.get("fallback_query") or plan.get("query"), 1400)
-    module = _clean_text(plan.get("module"), 100) or "其他"
-    keywords = [_clean_text(item, 120) for item in (plan.get("keywords") or []) if _clean_text(item, 120)]
-    if not base_query:
-        return []
-    if module in {"香港本地新闻", "政策/法规类"}:
-        base_query = f"{base_query} (香港 OR \"Hong Kong\")"
-    before_date = end_at.date() + timedelta(days=1)
-    google_query = f"{base_query} after:{start_at.date().isoformat()} before:{before_date.isoformat()}"
-    feeds = [
-        (
-            "bing",
-            "https://www.bing.com/news/search?q="
-            + quote_plus(base_query)
-            + "&format=rss&mkt=zh-HK&qft=sortbydate%3d%221%22",
-        ),
-        (
-            "google",
-            "https://news.google.com/rss/search?q="
-            + quote_plus(google_query)
-            + "&hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
-        ),
-    ]
-    raw = b""
-    provider = ""
-    last_error: Exception | None = None
-    for provider_name, feed_url in feeds:
-        request = Request(
-            feed_url,
-            headers={"User-Agent": "Mozilla/5.0 CMHK-Strategic-News/1.0"},
-        )
-        try:
-            try:
-                raw = urlopen(request, timeout=25).read()
-            except URLError as exc:
-                if "CERTIFICATE_VERIFY_FAILED" not in str(exc):
-                    raise
-                raw = urlopen(
-                    request,
-                    timeout=25,
-                    context=ssl._create_unverified_context(),
-                ).read()
-            provider = provider_name
-            break
-        except Exception as exc:
-            last_error = exc
-    if not raw:
-        if last_error is not None:
-            raise last_error
-        return []
+def _parse_news_feed(
+    raw: bytes,
+    *,
+    provider: str,
+    module: str,
+    keywords: list[str],
+    base_query: str,
+    start_at: datetime,
+    end_at: datetime,
+) -> list[dict[str, Any]]:
     root = ET.fromstring(raw)
     output: list[dict[str, Any]] = []
     for item in root.findall("./channel/item")[:RESULTS_PER_QUERY]:
@@ -210,6 +169,68 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
                 "query": base_query,
             }
         )
+    return output
+
+
+def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: datetime) -> list[dict[str, Any]]:
+    base_query = _clean_text(plan.get("fallback_query") or plan.get("query"), 1400)
+    module = _clean_text(plan.get("module"), 100) or "其他"
+    keywords = [_clean_text(item, 120) for item in (plan.get("keywords") or []) if _clean_text(item, 120)]
+    if not base_query:
+        return []
+    if module in {"香港本地新闻", "政策/法规类"}:
+        base_query = f"{base_query} (香港 OR \"Hong Kong\")"
+    before_date = end_at.date() + timedelta(days=1)
+    google_query = f"{base_query} after:{start_at.date().isoformat()} before:{before_date.isoformat()}"
+    feeds = [
+        (
+            "bing",
+            "https://www.bing.com/news/search?q="
+            + quote_plus(base_query)
+            + "&format=rss&mkt=zh-HK&qft=sortbydate%3d%221%22",
+        ),
+        (
+            "google",
+            "https://news.google.com/rss/search?q="
+            + quote_plus(google_query)
+            + "&hl=zh-HK&gl=HK&ceid=HK:zh-Hant",
+        ),
+    ]
+    output: list[dict[str, Any]] = []
+    successful_feeds = 0
+    last_error: Exception | None = None
+    for provider, feed_url in feeds:
+        request = Request(
+            feed_url,
+            headers={"User-Agent": "Mozilla/5.0 CMHK-Strategic-News/1.0"},
+        )
+        try:
+            try:
+                raw = urlopen(request, timeout=25).read()
+            except URLError as exc:
+                if "CERTIFICATE_VERIFY_FAILED" not in str(exc):
+                    raise
+                raw = urlopen(
+                    request,
+                    timeout=25,
+                    context=ssl._create_unverified_context(),
+                ).read()
+            output.extend(
+                _parse_news_feed(
+                    raw,
+                    provider=provider,
+                    module=module,
+                    keywords=keywords,
+                    base_query=base_query,
+                    start_at=start_at,
+                    end_at=end_at,
+                )
+            )
+            successful_feeds += 1
+        except Exception as exc:
+            last_error = exc
+    if not successful_feeds and last_error is not None:
+        raise last_error
     return output
 
 
@@ -332,7 +353,9 @@ def _latest_timed_crawl() -> dict[str, Any]:
 def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     if not morning:
-        return today, now
+        # Retain one hour of overlap for articles indexed shortly after the 09:00 run.
+        # Downstream URL/title deduplication prevents overlap from becoming new rows.
+        return today.replace(hour=8), now
     days_back = 3 if now.weekday() == 0 else 1
     return today - timedelta(days=days_back), now
 

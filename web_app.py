@@ -1041,22 +1041,9 @@ def start_scheduler_with_backend() -> None:
         )
         briefing_thread.start()
 
-        def strategic_news_digest_worker() -> None:
-            import news_discovery_vote_digest
-
-            while True:
-                try:
-                    news_discovery_vote_digest.main()
-                except Exception:
-                    scheduler_traceback.print_exc()
-                time.sleep(10)
-
-        news_digest_thread = scheduler_threading.Thread(
-            target=strategic_news_digest_worker,
-            name="strategic-news-digest-monitor",
-            daemon=True,
-        )
-        news_digest_thread.start()
+        # News discovery runs inside strategic_briefing._run_scan so discovery,
+        # review-sheet synchronization and group reporting form one ordered task.
+        # A second 09:00/15:00 worker would race the Feishu write and report stale counts.
         print("Strategic briefing monitor started with APP backend", flush=True)
 
 
