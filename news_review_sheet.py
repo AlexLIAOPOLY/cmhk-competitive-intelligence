@@ -760,6 +760,9 @@ def sync_candidates(
         )
         values: list[list[Any]] = []
         new_count = 0
+        new_category_counts: Counter[str] = Counter()
+        new_region_counts: Counter[str] = Counter()
+        new_sources: set[str] = set()
         for item in prepared_items:
             news_id = _text(item.get("news_id"), 80)
             value = _candidate_row(item, generated_at)
@@ -768,6 +771,11 @@ def sync_candidates(
                 value[2] = existing_search_dates.get(news_id) or value[2]
             else:
                 new_count += 1
+                new_category_counts[_text(item.get("category") or "未分类", 80)] += 1
+                new_region_counts[_text(item.get("region") or "未分类", 80)] += 1
+                source = _text(item.get("source") or item.get("source_domain"), 160)
+                if source:
+                    new_sources.add(source)
             values.append(value)
         values.sort(key=lambda row: str(row[2] or ""), reverse=True)
         if len(values) > MAX_SHEET_ROWS - 1:
@@ -796,6 +804,9 @@ def sync_candidates(
                 "last_gate_filtered_count": len(combined_items) - len(curated_items),
                 "last_gate_filtered_reasons": dict(gate_reasons),
                 "last_new_count": new_count,
+                "last_new_category_counts": dict(new_category_counts),
+                "last_new_region_counts": dict(new_region_counts),
+                "last_new_source_count": len(new_sources),
                 "last_ai_processed_count": len(prepared_items),
                 "last_sync_at": _now_iso(),
                 "group_notifications_paused": _group_notifications_paused(),
@@ -811,6 +822,9 @@ def sync_candidates(
             "gate_filtered_count": len(combined_items) - len(curated_items),
             "gate_filtered_reasons": dict(gate_reasons),
             "new_count": new_count,
+            "new_category_counts": dict(new_category_counts),
+            "new_region_counts": dict(new_region_counts),
+            "new_source_count": len(new_sources),
             "existing_count": len(existing_status),
         }
 
@@ -1676,7 +1690,14 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
             }
         )
         _write_json(STATE_PATH, state)
-        return {"status": "ok", **latest, **sync_result, **review_result}
+        return {
+            "status": "ok",
+            **latest,
+            **sync_result,
+            **review_result,
+            "source_candidate_count": int(latest.get("candidate_count") or 0),
+            "sheet_candidate_count": int(sync_result.get("candidate_count") or 0),
+        }
 
 
 def build_notice_cards(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:

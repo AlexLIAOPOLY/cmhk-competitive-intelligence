@@ -201,6 +201,8 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
                 "url": link,
                 "source": source or "公开新闻来源",
                 "published_at": published_at.isoformat(timespec="seconds"),
+                "search_date": end_at.astimezone(HKT).date().isoformat(),
+                "retrieved_at": end_at.astimezone(HKT).isoformat(timespec="seconds"),
                 "module": module,
                 "keywords": [item for item in keywords if _term_matches(searchable, item)][:5],
                 "snippet": snippet,

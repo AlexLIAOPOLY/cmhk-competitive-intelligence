@@ -683,7 +683,12 @@ def _send_scan_message(
     if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1":
         return "", "paused"
     review = review_result or {}
-    category_counts = review.get("category_counts") or {}
+    has_new_metrics = "new_count" in review
+    category_counts = (
+        review.get("new_category_counts")
+        if has_new_metrics
+        else review.get("category_counts")
+    ) or {}
     if not isinstance(category_counts, dict):
         category_counts = {}
     if not category_counts:
@@ -695,10 +700,27 @@ def _send_scan_message(
         for name, count in category_counts.items()
         if _clean_text(name, 80) and int(count or 0) > 0
     }
-    candidate_count = int(review.get("candidate_count") or len(candidates))
-    region_counts = review.get("region_counts") or {}
+    candidate_count = int(review.get("new_count") if has_new_metrics else len(candidates))
+    region_counts = (
+        review.get("new_region_counts")
+        if has_new_metrics
+        else review.get("region_counts")
+    ) or {}
     local_count = int(region_counts.get("香港本地") or 0) if isinstance(region_counts, dict) else 0
-    source_count = int(review.get("source_count") or 0)
+    source_count = int(
+        review.get("new_source_count")
+        if has_new_metrics
+        else review.get("source_count") or 0
+    )
+    input_count = int(review.get("input_count") or 0)
+    qualified_count = int(
+        review.get("source_candidate_count")
+        if "source_candidate_count" in review
+        else review.get("batch_count") or 0
+    )
+    filtered_reasons = review.get("filtered_reasons") or {}
+    if not isinstance(filtered_reasons, dict):
+        filtered_reasons = {}
     sheet_url = _normalize_url(review.get("sheet_url") or "")
     category_lines = "\n".join(
         f"- **{name}**：{count} 条"
@@ -710,7 +732,8 @@ def _send_scan_message(
     title = f"战略快讯扫描完成｜{now:%m月%d日}{slot_label}"
     if candidate_count:
         result_text = (
-            f"**本轮结果**  共发现 **{candidate_count} 条**候选，"
+            f"**本轮结果**  门控通过 **{qualified_count} 条**，"
+            f"新增 **{candidate_count} 条**待审核候选，"
             f"覆盖 **{len(category_counts)} 个方面**。\n"
             + (f"其中香港本地 **{local_count} 条**" if local_count else "")
             + (f" · 来自 **{source_count} 个来源**" if source_count else "")
@@ -720,8 +743,31 @@ def _send_scan_message(
             "<font color='grey'>AI中文标题、内容简介及每条原文链接已整理到飞书审核表。</font>"
         )
     else:
-        result_text = "**本轮结果**  未发现新的合格新闻候选。"
-        detail_text = "<font color='grey'>系统将在下一时段继续扫描。</font>"
+        if qualified_count:
+            result_text = (
+                f"**本轮结果**  门控通过 **{qualified_count} 条**，"
+                "但均已在审核表中，本轮新增 **0 条**。"
+            )
+        elif input_count:
+            result_text = (
+                f"**本轮结果**  检索 **{input_count} 条**，"
+                "严格日期与相关性门控后新增 **0 条**。"
+            )
+        else:
+            result_text = "**本轮结果**  未发现新的合格新闻候选。"
+        reason_lines = "\n".join(
+            f"- {name}：{int(count or 0)} 条"
+            for name, count in sorted(
+                filtered_reasons.items(),
+                key=lambda item: (-int(item[1] or 0), item[0]),
+            )[:4]
+            if int(count or 0) > 0
+        )
+        detail_text = (
+            f"**本轮过滤原因**\n{reason_lines}\n\n"
+            if reason_lines
+            else ""
+        ) + "<font color='grey'>系统将在下一时段继续扫描。</font>"
     elements: list[dict[str, Any]] = [
         {
             "tag": "markdown",
