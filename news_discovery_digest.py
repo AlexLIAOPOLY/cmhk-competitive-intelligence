@@ -247,7 +247,9 @@ def _deduplicate(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 COMPETITOR_NEWS_QUERIES: tuple[tuple[str, ...], ...] = (
-    ("HKT", "PCCW", "csl", "1O1O"),
+    ("HKT", "Hong Kong Telecommunications", "香港电讯", "香港電訊"),
+    ("PCCW", "电讯盈科", "電訊盈科"),
+    ("csl", "1O1O", "Club Sim"),
     ("HKBN", "SmarTone", "HGC", "3 Hong Kong", "i-CABLE"),
     ("China Telecom", "China Unicom", "CTExcel", "CUniq"),
     ("Vodafone", "BT Group", "Deutsche Telekom", "Telefonica"),
@@ -328,8 +330,20 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
                 errors.append(f"{_clean_text(plan.get('module'), 80)}: {type(exc).__name__}: {_clean_text(exc, 160)}")
     deduplicated = _deduplicate(all_items)
     module_order = {str(plan.get("module") or "其他"): index for index, plan in enumerate(plans)}
+    def competitor_priority(item: dict[str, Any]) -> int:
+        text = " ".join(
+            str(item.get(key) or "")
+            for key in ("title", "snippet", "query", "keywords")
+        ).casefold()
+        if any(term in text for term in ("hkt", "hong kong telecommunications", "香港电讯", "香港電訊", "pccw", "电讯盈科", "電訊盈科", "csl", "1o1o")):
+            return 0
+        if any(term in text for term in ("hkbn", "smartone", "hgc", "3 hong kong", "i-cable")):
+            return 1
+        return 2
+
     deduplicated.sort(
         key=lambda item: (
+            competitor_priority(item),
             module_order.get(str(item.get("module") or "其他"), 999),
             -datetime.fromisoformat(str(item["published_at"])).timestamp(),
         )

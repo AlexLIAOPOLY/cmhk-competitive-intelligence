@@ -528,12 +528,27 @@ def _candidate_from_result(
     item_domain = _domain(result.get("url") or "")
     source_match = item_domain in set(plan.get("domains") or [])
     importance_hits = [term for term in IMPORTANT_TERMS if term.casefold() in haystack]
+    primary_hk_competitor_hits = [
+        term
+        for term in (
+            "hkt", "hong kong telecommunications", "香港电讯", "香港電訊",
+            "pccw", "电讯盈科", "電訊盈科", "csl", "1o1o",
+        )
+        if term.casefold() in haystack
+    ]
+    other_hk_competitor_hits = [
+        term
+        for term in ("hkbn", "smartone", "数码通", "數碼通", "hgc", "3 hong kong", "i-cable")
+        if term.casefold() in haystack
+    ]
     score = (
         1
         + len(matched)
         + len(title_matches)
         + (2 if source_match else 0)
         + min(3, len(importance_hits))
+        + (100 if primary_hk_competitor_hits else 0)
+        + (50 if other_hk_competitor_hits else 0)
     )
     reasons: list[str] = []
     if matched:
@@ -542,6 +557,10 @@ def _candidate_from_result(
         reasons.append("绑定来源")
     if importance_hits:
         reasons.append("重点信号：" + "、".join(importance_hits[:3]))
+    if primary_hk_competitor_hits:
+        reasons.append("最高优先级香港竞对：" + "、".join(primary_hk_competitor_hits[:3]))
+    elif other_hk_competitor_hits:
+        reasons.append("优先香港竞对：" + "、".join(other_hk_competitor_hits[:3]))
     return {
         "title": title,
         "url": _normalize_url(result.get("url") or ""),
@@ -554,6 +573,7 @@ def _candidate_from_result(
         "score": score,
         "why": "；".join(reasons) or "关键词检索命中",
         "searched_at": _now_iso(now),
+        "search_date": now.date().isoformat(),
         "fetch_status": "search_index",
     }
 

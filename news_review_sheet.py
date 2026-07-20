@@ -707,76 +707,61 @@ def sync_candidates(
         sheet_id = ensure_sheet()
         rows = _read_rows(sheet_id)
         existing_status: dict[str, tuple[str, str]] = {}
-        existing_search_dates: dict[str, str] = {}
-        archived_items: dict[str, dict[str, Any]] = {}
+        existing_rows_by_id: dict[str, list[Any]] = {}
+        existing_title_keys: list[str] = []
+        status_priority = {"接受": 4, "暂缓": 3, "待审核": 2, "不接受": 1}
         for index, row in enumerate(rows, start=2):
             if not row or not _text(row[0], 40):
                 continue
             parsed = _row_dict(row, index)
-            still_relevant, _ = _review_news_candidate(
-                {
-                    "title": parsed["title"],
-                    "snippet": f"{parsed['summary']} {parsed['keywords']} {parsed['note']}",
-                    "source": parsed["source"],
-                    "url": parsed["source_url"],
-                    "keywords": parsed["keywords"],
-                    "source_date": parsed["source_date"],
-                    "search_date": parsed["search_date"],
-                }
-            )
-            if not still_relevant:
+            normalized_row = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+            previous_row = existing_rows_by_id.get(parsed["news_id"])
+            if previous_row is not None:
+                previous_status = _normalized_status(previous_row[0])
+                if status_priority.get(parsed["status"], 0) > status_priority.get(previous_status, 0):
+                    existing_rows_by_id[parsed["news_id"]] = normalized_row
+                    existing_status[parsed["news_id"]] = (
+                        parsed["status"],
+                        parsed["sync_status"] or "未同步",
+                    )
                 continue
             existing_status[parsed["news_id"]] = (
                 parsed["status"],
                 parsed["sync_status"] or "未同步",
             )
-            existing_search_dates[parsed["news_id"]] = parsed["search_date"]
-            archived_items[parsed["news_id"]] = {
-                "news_id": parsed["news_id"],
-                "search_date": parsed["search_date"],
-                "title": parsed["title"],
-                "source_title": parsed["title"],
-                "snippet": parsed["summary"] or parsed["note"],
-                "ai_title": parsed["title"],
-                "ai_summary": parsed["summary"],
-                "region": parsed["region"],
-                "category": parsed["category"],
-                "source": parsed["source"],
-                "source_date": parsed["source_date"],
-                "url": parsed["source_url"],
-                "keywords": parsed["keywords"],
-                "filter_reason": parsed["note"],
-            }
-        current_ids = {_text(item.get("news_id"), 80) for item in items}
-        combined_items = list(items) + [
-            item for news_id, item in archived_items.items() if news_id not in current_ids
-        ]
-        curated_items, gate_reasons = curate_news_items(combined_items)
+            existing_rows_by_id[parsed["news_id"]] = normalized_row
+            title_key = _normalized_news_title(parsed["title"])
+            if title_key:
+                existing_title_keys.append(title_key)
+        curated_items, gate_reasons = curate_news_items(list(items))
         from strategic_briefing import polish_candidates_before_review
 
         prepared_items = polish_candidates_before_review(curated_items)
-        archived_count = sum(
-            _text(item.get("news_id"), 80) not in current_ids for item in prepared_items
-        )
-        values: list[list[Any]] = []
+        archived_count = len(existing_rows_by_id)
+        values: list[list[Any]] = list(existing_rows_by_id.values())
         new_count = 0
         new_category_counts: Counter[str] = Counter()
         new_region_counts: Counter[str] = Counter()
         new_sources: set[str] = set()
         for item in prepared_items:
             news_id = _text(item.get("news_id"), 80)
+            title_key = _normalized_news_title(item.get("ai_title") or item.get("title"))
+            if news_id in existing_status or any(
+                _event_titles_duplicate(title_key, existing_title)
+                for existing_title in existing_title_keys
+            ):
+                continue
             value = _candidate_row(item, generated_at)
-            if news_id in existing_status:
-                value[0], value[1] = existing_status[news_id]
-                value[2] = existing_search_dates.get(news_id) or value[2]
-            else:
-                new_count += 1
-                new_category_counts[_text(item.get("category") or "未分类", 80)] += 1
-                new_region_counts[_text(item.get("region") or "未分类", 80)] += 1
-                source = _text(item.get("source") or item.get("source_domain"), 160)
-                if source:
-                    new_sources.add(source)
+            new_count += 1
+            new_category_counts[_text(item.get("category") or "未分类", 80)] += 1
+            new_region_counts[_text(item.get("region") or "未分类", 80)] += 1
+            source = _text(item.get("source") or item.get("source_domain"), 160)
+            if source:
+                new_sources.add(source)
             values.append(value)
+            existing_status[news_id] = (value[0], value[1])
+            if title_key:
+                existing_title_keys.append(title_key)
         values.sort(key=lambda row: str(row[2] or ""), reverse=True)
         if len(values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
@@ -801,7 +786,7 @@ def sync_candidates(
                 "last_candidate_count": len(values),
                 "last_batch_count": len(items),
                 "last_archived_count": archived_count,
-                "last_gate_filtered_count": len(combined_items) - len(curated_items),
+                "last_gate_filtered_count": len(items) - len(curated_items),
                 "last_gate_filtered_reasons": dict(gate_reasons),
                 "last_new_count": new_count,
                 "last_new_category_counts": dict(new_category_counts),
@@ -819,7 +804,7 @@ def sync_candidates(
             "candidate_count": len(values),
             "batch_count": len(items),
             "archived_count": archived_count,
-            "gate_filtered_count": len(combined_items) - len(curated_items),
+            "gate_filtered_count": len(items) - len(curated_items),
             "gate_filtered_reasons": dict(gate_reasons),
             "new_count": new_count,
             "new_category_counts": dict(new_category_counts),
@@ -1601,7 +1586,7 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
             str(item.get("title") or ""),
         )
     )
-    return result[:100], reasons
+    return result, reasons
 
 
 def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
