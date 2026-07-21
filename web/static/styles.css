@@ -2710,6 +2710,37 @@ select {
   color: var(--blue-dark);
 }
 
+.user-image-attachment {
+  width: min(240px, 58vw);
+  margin: 0 0 8px;
+}
+
+.chat-user-image-preview {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  border: 1px solid rgba(0, 119, 200, 0.18);
+  border-radius: 9px;
+  background: #fff;
+  object-fit: cover;
+  cursor: zoom-in;
+}
+
+.chat-user-image-preview:focus-visible {
+  outline: 3px solid rgba(0, 103, 177, 0.32);
+  outline-offset: 2px;
+}
+
+.user-image-attachment figcaption {
+  margin-top: 5px;
+  overflow: hidden;
+  color: #5a7892;
+  font-size: 10px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .avatar {
   width: 28px;
   height: 28px;

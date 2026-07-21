@@ -389,10 +389,35 @@ function renderChatAttachment() {
   els.chatAttachmentPreview.hidden = !attachment;
   els.chatAttachmentPreview.innerHTML = attachment ? `
     <span class="chat-attachment-chip">
-      <img src="${attachment.dataUrl}" alt="待发送图片预览" />
+      <img src="${attachment.previewDataUrl || attachment.dataUrl}" alt="待发送图片预览" />
       <span><strong>${escapeHtml(attachment.name)}</strong><small>${formatBytes(attachment.size)}</small></span>
       <button type="button" id="removeChatImage" aria-label="移除图片">&times;</button>
     </span>` : "";
+}
+
+function createChatImagePreview(dataUrl, maxEdge = 480) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      const scale = Math.min(1, maxEdge / Math.max(image.naturalWidth || 1, image.naturalHeight || 1));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round((image.naturalWidth || 1) * scale));
+      canvas.height = Math.max(1, Math.round((image.naturalHeight || 1) * scale));
+      const context = canvas.getContext("2d");
+      if (!context) {
+        resolve(dataUrl);
+        return;
+      }
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      try {
+        resolve(canvas.toDataURL("image/webp", 0.8));
+      } catch (_error) {
+        resolve(dataUrl);
+      }
+    };
+    image.onerror = () => resolve(dataUrl);
+    image.src = dataUrl;
+  });
 }
 
 async function loadChatModelOptions() {
@@ -4157,6 +4182,23 @@ function addMessage(role, content, markdown = false) {
   return node;
 }
 
+function appendUserImagePreview(node, imagePreview) {
+  const body = messageBody(node);
+  const dataUrl = String(imagePreview?.dataUrl || "");
+  if (!body || !dataUrl.startsWith("data:image/")) return;
+  const figure = document.createElement("figure");
+  figure.className = "user-image-attachment";
+  const image = document.createElement("img");
+  image.className = "chat-user-image-preview";
+  image.src = dataUrl;
+  image.alt = imagePreview.name ? `已发送图片：${imagePreview.name}` : "已发送图片预览";
+  image.tabIndex = 0;
+  const caption = document.createElement("figcaption");
+  caption.textContent = imagePreview.name || "已发送图片";
+  figure.append(image, caption);
+  body.insertBefore(figure, body.firstChild);
+}
+
 function chatThreadId() {
   if (window.crypto && typeof window.crypto.randomUUID === "function") {
     return window.crypto.randomUUID().replace(/-/g, "").slice(0, 12);
@@ -4299,7 +4341,13 @@ async function openChatThread(threadId) {
         const role = normalizeStoredChatRole(item && item.role);
         const content = normalizeStoredChatContent(item && item.content, role === "assistant");
         const normalizedItem = { ...(item || {}), role, content };
-        const node = addMessage(role, content, role === "assistant");
+        const displayContent = role === "user" && item && item.displayContent
+          ? normalizeStoredChatContent(item.displayContent)
+          : content;
+        const node = addMessage(role, displayContent, role === "assistant");
+        if (role === "user" && item && item.imagePreview) {
+          appendUserImagePreview(node, item.imagePreview);
+        }
         restoreAssistantMessageExtras(node, normalizedItem);
       });
     }
@@ -4354,15 +4402,15 @@ function renderChatQueue() {
   els.chatQueueList.innerHTML = state.chatQueue.map((item, index) => `
     <div class="queued-message-item" data-queue-id="${escapeHtml(item.id)}">
       <strong>等待 ${index + 1}</strong>
-      <span class="queued-message-text">${escapeHtml(item.message)}</span>
+      <span class="queued-message-text">${item.options && item.options.displayImage ? "[图片] " : ""}${escapeHtml((item.options && item.options.displayMessage) || item.message)}</span>
       <button class="queued-message-action" type="button" data-action="edit">修改</button>
       <button class="queued-message-action" type="button" data-action="remove">撤回</button>
     </div>
   `).join("");
 }
 
-function enqueueChatMessage(message) {
-  state.chatQueue.push({ id: chatThreadId(), message });
+function enqueueChatMessage(message, options = {}) {
+  state.chatQueue.push({ id: chatThreadId(), message, options });
   renderChatQueue();
 }
 
@@ -4370,7 +4418,7 @@ function processNextQueuedChat() {
   if (state.chatBusy || !state.chatQueue.length) return;
   const next = state.chatQueue.shift();
   renderChatQueue();
-  if (next && next.message) sendChat(next.message);
+  if (next && next.message) sendChat(next.message, next.options || {});
 }
 
 function setChatSidebarCollapsed(collapsed) {
@@ -4729,6 +4777,15 @@ function appendAssistantTimelineReasoning(timeline, text) {
   }
 }
 
+function scrollReasoningToLatest(content) {
+  if (!content) return;
+  const scroll = () => {
+    content.scrollTop = content.scrollHeight;
+  };
+  scroll();
+  requestAnimationFrame(scroll);
+}
+
 function appendModelReasoning(node, text) {
   const body = messageBody(node);
   const value = String(text || "");
@@ -4749,6 +4806,7 @@ function appendModelReasoning(node, text) {
   if (!content) return;
   content._rawReasoning = `${content._rawReasoning || ""}${value}`;
   content.innerHTML = markdownToHtml(content._rawReasoning);
+  scrollReasoningToLatest(content);
 }
 
 function assistantTimelineToolEvent(event) {
@@ -4913,8 +4971,12 @@ function compactChatHistory() {
 async function sendChat(message, options = {}) {
   if (!state.activeThreadId) state.activeThreadId = chatThreadId();
   const conversationHistory = compactChatHistory();
-  addMessage("user", options.displayMessage || message);
-  state.chatHistory.push({ role: "user", content: message });
+  const displayMessage = options.displayMessage || message;
+  const userNode = addMessage("user", displayMessage);
+  if (options.displayImage) appendUserImagePreview(userNode, options.displayImage);
+  const userHistoryEntry = { role: "user", content: message, displayContent: displayMessage };
+  if (options.displayImage) userHistoryEntry.imagePreview = options.displayImage;
+  state.chatHistory.push(userHistoryEntry);
   state.chatHistory = state.chatHistory.slice(-80);
   state.chatAbortController = new AbortController();
   state.chatStopRequested = false;
@@ -5678,8 +5740,10 @@ if (els.chatImageInput) {
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => {
-      state.chatImageAttachment = { name: file.name, size: file.size, dataUrl: String(reader.result || "") };
+    reader.onload = async () => {
+      const dataUrl = String(reader.result || "");
+      const previewDataUrl = await createChatImagePreview(dataUrl);
+      state.chatImageAttachment = { name: file.name, size: file.size, dataUrl, previewDataUrl };
       renderChatAttachment();
       els.composerPlusMenu.hidden = true;
       els.chatInput.focus();
@@ -5886,12 +5950,19 @@ els.chatForm.addEventListener("submit", async (event) => {
       return;
     }
   }
+  const sendOptions = attachment ? {
+    displayMessage: message || "请分析这张图片。",
+    displayImage: {
+      name: attachment.name,
+      dataUrl: attachment.previewDataUrl || attachment.dataUrl,
+    },
+  } : { displayMessage: message };
   if (state.chatBusy) {
-    enqueueChatMessage(enrichedMessage);
+    enqueueChatMessage(enrichedMessage, sendOptions);
     els.chatInput.focus();
     return;
   }
-  sendChat(enrichedMessage, { displayMessage: attachment ? `${message || "请分析这张图片。"}\n[图片：${attachment.name}]` : message });
+  sendChat(enrichedMessage, sendOptions);
 });
 
 els.chatSubmitButton.addEventListener("click", (event) => {
@@ -5943,7 +6014,7 @@ let imageLightboxTrigger = null;
 function openImageLightbox(image) {
   imageLightboxTrigger = image;
   imageLightboxImage.src = image.currentSrc || image.src;
-  imageLightboxImage.alt = image.alt || "AI 生成图片放大预览";
+  imageLightboxImage.alt = image.alt || "图片放大预览";
   imageLightbox.hidden = false;
   document.body.classList.add("chat-image-lightbox-open");
   requestAnimationFrame(() => imageLightbox.classList.add("is-visible"));
@@ -5963,7 +6034,15 @@ function closeImageLightbox() {
 }
 
 document.addEventListener("click", (event) => {
-  const image = event.target.closest(".message-body img.chat-inline-image, .chart-result-block img.chat-inline-image");
+  const image = event.target.closest(".message-body img.chat-inline-image, .message-body img.chat-user-image-preview, .chart-result-block img.chat-inline-image");
+  if (!image) return;
+  event.preventDefault();
+  openImageLightbox(image);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const image = event.target.closest(".message-body img.chat-user-image-preview");
   if (!image) return;
   event.preventDefault();
   openImageLightbox(image);

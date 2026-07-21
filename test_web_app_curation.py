@@ -65,6 +65,47 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("collapseLatestModelReasoning(node)", append_helper)
         self.assertIn("collapseLatestModelReasoning(node)", text_helper)
 
+    def test_reasoning_stream_scrolls_its_panel_to_the_latest_token(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        scroll_start = app.index("function scrollReasoningToLatest")
+        scroll_end = app.index("function appendModelReasoning", scroll_start)
+        scroll_helper = app[scroll_start:scroll_end]
+        reasoning_start = scroll_end
+        reasoning_end = app.index("function assistantTimelineToolEvent", reasoning_start)
+        reasoning_renderer = app[reasoning_start:reasoning_end]
+
+        self.assertIn("content.scrollTop = content.scrollHeight", scroll_helper)
+        self.assertIn("requestAnimationFrame(scroll)", scroll_helper)
+        self.assertIn("scrollReasoningToLatest(content)", reasoning_renderer)
+
+    def test_sent_image_preview_is_rendered_and_persisted_in_the_user_message(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        send_start = app.index("async function sendChat")
+        send_end = app.index("els.generateButtons.forEach", send_start)
+        send_chat = app[send_start:send_end]
+
+        self.assertIn("function appendUserImagePreview", app)
+        self.assertIn("appendUserImagePreview(userNode, options.displayImage)", send_chat)
+        self.assertIn("userHistoryEntry.imagePreview = options.displayImage", send_chat)
+        self.assertIn("appendUserImagePreview(node, item.imagePreview)", app)
+        self.assertIn("dataUrl: attachment.previewDataUrl || attachment.dataUrl", app)
+        self.assertNotIn("[图片：${attachment.name}]", app)
+        self.assertIn(".chat-user-image-preview", styles)
+
+        cleaned = web_app._clean_chat_message({
+            "role": "user",
+            "content": "请分析图片",
+            "displayContent": "这个怎么说",
+            "imagePreview": {
+                "name": "example.png",
+                "dataUrl": "data:image/png;base64,iVBORw0KGgo=",
+            },
+        })
+        self.assertEqual(cleaned["displayContent"], "这个怎么说")
+        self.assertEqual(cleaned["imagePreview"]["name"], "example.png")
+        self.assertTrue(cleaned["imagePreview"]["dataUrl"].startswith("data:image/png;base64,"))
+
     def test_named_source_citation_renders_when_reference_uses_full_path(self) -> None:
         script = r"""
 const fs = require('fs');

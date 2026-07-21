@@ -166,7 +166,19 @@ def _clean_chat_message(item: dict) -> dict | None:
     if not content:
         return None
     clean = {"role": role, "content": content[:20000]}
-    if role == "assistant":
+    if role == "user":
+        display_content = str(item.get("displayContent") or "").strip()
+        if display_content:
+            clean["displayContent"] = display_content[:4000]
+        image_preview = item.get("imagePreview")
+        if isinstance(image_preview, dict):
+            data_url = str(image_preview.get("dataUrl") or "")
+            if len(data_url) <= 1_500_000 and re.match(r"^data:image/(?:png|jpeg|webp|gif);base64,", data_url, flags=re.I):
+                clean["imagePreview"] = {
+                    "name": str(image_preview.get("name") or "已发送图片")[:200],
+                    "dataUrl": data_url,
+                }
+    else:
         references = item.get("references")
         links = item.get("links")
         suggestions = item.get("suggestions")
