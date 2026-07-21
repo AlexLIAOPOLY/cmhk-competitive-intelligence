@@ -356,6 +356,11 @@ function chatModelTags(modelName) {
   return tags;
 }
 
+function modelSupportsReasoning(modelName) {
+  const tags = chatModelTags(modelName);
+  return tags.includes("推理") || tags.includes("混合");
+}
+
 function renderChatModelOptions() {
   if (!els.chatModelOptions) return;
   const models = visibleChatModels();
@@ -5001,7 +5006,7 @@ async function sendChat(message, options = {}) {
     state.chatHistory = state.chatHistory.slice(-80);
     await persistActiveThread();
     const webSearchEnabled = Boolean(state.webSearchEnabled);
-    const thinkingEnabled = false;
+    const thinkingEnabled = modelSupportsReasoning(state.chatModel);
     assistantNode.dataset.showThinkingPanel = thinkingEnabled ? "true" : "false";
     const selectedSkillIds = Array.from(state.selectedSkillIds);
     const selectedDatasetIds = Array.from(state.selectedDatasetIds);
