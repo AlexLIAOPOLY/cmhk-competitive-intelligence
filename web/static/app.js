@@ -4458,10 +4458,10 @@ function messageBody(node) {
 }
 
 function collapseLatestModelReasoning(node) {
-  const panel = messageBody(node)?.lastElementChild;
-  if (panel?.classList.contains("model-reasoning")) {
+  const panels = messageBody(node)?.querySelectorAll(".model-reasoning") || [];
+  panels.forEach((panel) => {
     panel.open = false;
-  }
+  });
 }
 
 function ensureToolList(node) {
@@ -4502,7 +4502,6 @@ function currentMessageTextNode(node) {
     (!text.classList.contains("message-text") && !text.classList.contains("markdown-body"))
   ) {
     clearConnectingPlaceholder(node);
-    collapseLatestModelReasoning(node);
     text = document.createElement("div");
     text.className = "message-text";
     text._rawMarkdown = "";
@@ -4845,6 +4844,7 @@ function restoreAssistantTimeline(node, timeline) {
       renderAssistantToolEvent(node, event, insertedChartUrls);
     }
   });
+  collapseLatestModelReasoning(node);
   return body.children.length > 0;
 }
 
@@ -5198,6 +5198,7 @@ async function sendChat(message, options = {}) {
       if (isDone) break;
     }
     finishStreamingText();
+    collapseLatestModelReasoning(assistantNode);
 
     if (!answer.trim()) {
       const textNode = currentMessageTextNode(assistantNode);

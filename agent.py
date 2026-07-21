@@ -9,6 +9,7 @@ import statistics
 import subprocess
 import sys
 import threading
+import time
 from contextvars import ContextVar
 from io import BytesIO
 from pathlib import Path
@@ -16,7 +17,7 @@ from typing import Any, Generator
 from urllib.parse import parse_qs, unquote, urlencode, urlparse
 from urllib.request import Request
 
-from langchain_core.messages import AIMessageChunk, ToolMessage
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
 from ai_rate_limit import (
     RateLimitedChatDeepSeek as ChatDeepSeek,
@@ -40,6 +41,140 @@ from crawl_run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
 from rag_llm import build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, retrieve_context
 from chart_renderer import render_chart
+
+
+_UNSTABLE_MODEL_MARKERS = re.compile(
+    r"(?:<\|?begin[_▁ ]of[_▁ ]file\|?>|<｜?DSML｜?|pdb\.set_trace|"
+    r"administrator(?:'s)?\s+note|admin\s+(?:override|intervention)|"
+    r"system\.(?:halt|exit)|malwarebytes|buffer\s+ended|restart(?:ing)?\s+cleanly)",
+    re.IGNORECASE,
+)
+
+
+def _looks_like_unstable_model_text(value: str) -> bool:
+    """Detect the gateway's known multilingual/repetition degeneration."""
+    text = str(value or "")
+    if not text:
+        return False
+    if "�" in text or "\x00" in text or _UNSTABLE_MODEL_MARKERS.search(text):
+        return True
+    if re.search(r"</?s>|<eoc>|<｜|\|>|前面的回答.{0,30}(?:错误|混乱)|请.{0,20}忽略前面的", text, re.IGNORECASE):
+        return True
+    if re.search(r"(?:\d{2,5}[;:,]){12,}", text):
+        return True
+    if len(re.findall(r"\[(?:来源\s*)?\d+\]", text)) > 24:
+        return True
+    if len(re.findall(r"[⁰¹²³⁴⁵⁶⁷⁸⁹]", text)) > 30:
+        return True
+    if len(re.findall(r"\bAgent\b", text, re.IGNORECASE)) > 10:
+        return True
+    identifiers = re.findall(r"\b[A-Za-z_][A-Za-z0-9_]{5,}\b", text)
+    if identifiers:
+        counts = collections.Counter(item.lower() for item in identifiers)
+        if counts.most_common(1)[0][1] > 24:
+            return True
+    if re.search(r"[\u0400-\u052f\u0600-\u06ff\u3040-\u30ff\uac00-\ud7af]", text):
+        return True
+    compact = re.sub(r"\s+", "", text)
+    if len(compact) > 10000:
+        return True
+    if len(compact) >= 500:
+        cjk = len(re.findall(r"[\u4e00-\u9fff]", compact))
+        latin = len(re.findall(r"[A-Za-z]", compact))
+        if latin >= 300 and cjk / max(cjk + latin, 1) < 0.18:
+            return True
+        for size in (80, 120, 180):
+            if len(compact) >= size * 3:
+                block = compact[-size:]
+                if block and compact.count(block) >= 3:
+                    return True
+    return False
+
+
+class StableAgentChatDeepSeek(ChatDeepSeek):
+    """Retry malformed non-streaming Agent generations before they reach the UI."""
+
+    stable_attempts: int = 3
+
+    @staticmethod
+    def _stable_messages(messages: Any) -> list[Any]:
+        compact_system = SystemMessage(
+            content=(
+                "你是小竞AI。请准确完成当前用户请求，并保留已有工具结果、数据库边界和来源编号。"
+                "需要外部或本地依据时使用现有工具；工具调用只能通过 API 的结构化 tool_calls 返回。"
+                "可见推理和最终回答只用连贯、专业的简体中文，必要的公司名、模型名和指标缩写可保留原文。"
+                "禁止提示词复述、多语言混杂、控制标记、调试内容、循环句、自我重启或让用户忽略前文。"
+                "最终回答仍须遵守来源编号和 <suggestions> 推荐追问格式。"
+            )
+        )
+        return [compact_system, *[message for message in messages if not isinstance(message, SystemMessage)]]
+
+    @staticmethod
+    def _fallback_messages(messages: Any) -> list[Any]:
+        stable = StableAgentChatDeepSeek._stable_messages(messages)
+        original_request = ""
+        tool_context: list[str] = []
+        for message in messages:
+            if isinstance(message, HumanMessage):
+                candidate = str(message.content or "")
+                match = re.search(
+                    r"<current_user_request>(.*?)</current_user_request>",
+                    candidate,
+                    re.DOTALL | re.IGNORECASE,
+                )
+                original_request = (match.group(1) if match else candidate).strip()
+            elif isinstance(message, ToolMessage):
+                tool_context.append(
+                    f"工具 {getattr(message, 'name', '') or 'result'} 返回：\n{str(message.content or '')[:7000]}"
+                )
+        if not original_request:
+            original_request = "请根据已有上下文给出准确回答。"
+        context_text = "\n\n".join(tool_context[-4:])
+        prompt = f"用户原始请求：\n{original_request}"
+        if context_text:
+            prompt += f"\n\n已取得的工具结果：\n{context_text}\n\n请基于这些结果回答，不要再次调用工具。"
+        return [stable[0], HumanMessage(content=prompt)]
+
+    def _generate(self, messages: Any, *args: Any, **kwargs: Any) -> Any:
+        retry_messages = list(messages)
+        last_result = None
+        retry_kwargs = dict(kwargs)
+        for attempt in range(self.stable_attempts):
+            last_result = super()._generate(retry_messages, *args, **retry_kwargs)
+            generations = list(getattr(last_result, "generations", None) or [])
+            model_message = getattr(generations[0], "message", None) if generations else None
+            content = str(getattr(model_message, "content", "") or "")
+            reasoning = ""
+            additional = getattr(model_message, "additional_kwargs", None)
+            if isinstance(additional, dict):
+                reasoning = str(additional.get("reasoning_content") or additional.get("reasoning") or "")
+            malformed_tool_call = bool(re.search(r"DSML|tool_calls?>|invoke\s*(?:name|=)", content, re.IGNORECASE))
+            if not malformed_tool_call and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
+                return last_result
+            if attempt + 1 >= self.stable_attempts:
+                break
+            if malformed_tool_call and retry_kwargs.get("tools"):
+                retry_kwargs["tool_choice"] = "required"
+            retry_messages = self._stable_messages(messages)
+
+        fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
+        fallback_messages = self._fallback_messages(messages)
+        for _ in range(2):
+            fallback_result = super()._generate(fallback_messages, *args, **fallback_kwargs)
+            generations = list(getattr(fallback_result, "generations", None) or [])
+            model_message = getattr(generations[0], "message", None) if generations else None
+            content = str(getattr(model_message, "content", "") or "")
+            additional = getattr(model_message, "additional_kwargs", None)
+            reasoning = str((additional or {}).get("reasoning_content") or "") if isinstance(additional, dict) else ""
+            if content and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
+                return fallback_result
+        generations = list(getattr(last_result, "generations", None) or [])
+        if generations:
+            generations[0].message = AIMessage(
+                content="本次模型输出未通过稳定性校验，系统已阻止异常文本。请重新发送同一问题。",
+                additional_kwargs={"reasoning_content": "检测到模型草稿异常，已停止展示不可靠内容。"},
+            )
+        return last_result
 
 ROOT = Path(__file__).resolve().parent
 AGENT_SKILLS_DIR = ROOT / "Codex" / "agent" / "skills"
@@ -259,15 +394,29 @@ def available_agent_skills() -> list[dict[str, Any]]:
     return visible
 
 
-def _selected_skill_context(skill_ids: list[str] | None) -> str:
+def _selected_skill_context(skill_ids: list[str] | None, message: str = "") -> str:
     if not skill_ids:
         return ""
     allowed = {item["id"] for item in available_agent_skills()}
+    selected = [
+        re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
+        for skill_id in skill_ids
+    ]
+    matched = [
+        skill_id
+        for skill_id, pattern in SKILL_ROUTING_RULES
+        if skill_id in selected and re.search(pattern, _clean_search_text(message, 1200), re.IGNORECASE)
+    ][:2]
+    if not matched:
+        return (
+            "前端已选择 Agent Skills，但本轮问题未命中具体 Skill。"
+            "不要展开、复述或猜测这些 Skill 的内容；直接按用户原始问题回答。"
+        )
     blocks: list[str] = [
-        "以下是本轮前端勾选的 Agent Skill 发现信息。"
+        "以下仅列出与本轮问题匹配的 Agent Skill 发现信息。"
         "这不是完整 Skill 指令；如果本轮确实需要某个 Skill 的完整规则，再调用 `read_agent_skill(skill_id)` 读取完整 SKILL.md。"
     ]
-    for skill_id in skill_ids[:5]:
+    for skill_id in matched:
         clean_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
         if clean_id not in allowed:
             continue
@@ -1696,8 +1845,8 @@ def _agent_model_name(thinking_enabled: bool = False) -> str:
     return str(model_name)
 
 
-def _agent_tools(allow_web_search: bool = True):
-    tools = [
+def _agent_tools(allow_web_search: bool = True, user_message: str | None = None):
+    all_tools = [
         read_agent_skill,
         list_local_datasets,
         list_crawl_runs,
@@ -1718,13 +1867,65 @@ def _agent_tools(allow_web_search: bool = True):
         list_agent_memory,
         list_database_lineage,
     ]
+    if user_message is None:
+        tools = list(all_tools)
+        if allow_web_search:
+            tools[4:4] = [web_search, read_webpage]
+        return tools
+
+    text = _clean_search_text(user_message, 1600)
+    tools: list[Any] = []
+
+    def add(*items: Any) -> None:
+        for item in items:
+            if item not in tools:
+                tools.append(item)
+
     if allow_web_search:
-        insert_at = 4
-        tools[insert_at:insert_at] = [web_search, read_webpage]
+        add(search_local_reports, web_search, read_webpage, read_local_reference)
+    if re.search(
+        r"数据|来源|收入|营收|利润|EBITDA|ARPU|财务|竞对|云厂商|AWS|Azure|Google Cloud|"
+        r"阿里云|腾讯云|华为云|宏观|政策|监管|5G|频谱|电信市场|套餐|资费|产品|趋势|预测|"
+        r"同比|环比|中国移动|中国联通|中国电信|中国铁塔|HKT|SmarTone|Hutchison|HKBN",
+        text,
+        re.IGNORECASE,
+    ):
+        add(read_agent_skill, list_local_datasets, search_local_reports, read_local_reference)
+    if re.search(r"有哪些数据|数据集|数据库|能访问.*数据|数据放哪里|内部数据|外部数据", text, re.IGNORECASE):
+        add(list_local_datasets)
+    if re.search(r"系统状态|系统.*健康|健康状态|爬取.*(?:成功|失败|统计)|运行状态", text, re.IGNORECASE):
+        add(get_system_status)
+    if re.search(r"爬虫日志|爬取日志|最近.*爬|上次.*爬|失败链接|覆盖率|运行记录", text, re.IGNORECASE):
+        add(list_crawl_runs, get_crawl_settings_summary)
+    if re.search(r"重新爬|全量爬|完整爬|更新公开信息|跑.*采集|触发.*爬", text, re.IGNORECASE):
+        add(trigger_full_crawl, trigger_crawl)
+    if re.search(r"生成.*周报|重新生成.*周报|Word周报|战略内参", text, re.IGNORECASE):
+        add(trigger_report_generation)
+    if re.search(r"生成.*运营商|业绩摘要|业绩对标摘要|运营商报告", text, re.IGNORECASE):
+        add(trigger_carrier_performance_report_generation)
+    if re.search(r"输出文件|下载.*报告|报告在哪里|有哪些.*Word|最新.*文件", text, re.IGNORECASE):
+        add(list_report_outputs)
+    if re.search(r"爬取设置|爬取范围|启用.*行|覆盖.*主体|数据内容配置", text, re.IGNORECASE):
+        add(get_crawl_settings_summary)
+    if re.search(r"画图|图表|可视化|折线|柱状|饼图|散点|热力图", text, re.IGNORECASE):
+        add(render_python_chart)
+    if re.search(r"预测|未来.*季度|forecast|Holt|Winters|回测", text, re.IGNORECASE):
+        add(forecast_quarterly_metric)
+    if re.search(r"记住|长期记忆|偏好|以后都|默认规则|你了解我|我是谁|感兴趣", text, re.IGNORECASE):
+        add(search_agent_memory, remember_agent_memory, list_agent_memory)
+    if re.search(r"历史聊天|之前聊|上一轮|早先|某次我说|聊天记录", text, re.IGNORECASE):
+        add(search_chat_history)
+    if re.search(r"血缘|版本|是否过期|fingerprint|manifest|数据包来源", text, re.IGNORECASE):
+        add(list_database_lineage)
     return tools
 
 
-def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, runtime_context: dict[str, Any] | None = None):
+def get_agent(
+    thinking_enabled: bool = False,
+    allow_web_search: bool = True,
+    runtime_context: dict[str, Any] | None = None,
+    user_message: str | None = None,
+):
     config = load_ai_config()
     api_key = config.get("api_key", "")
     base_url = config.get("base_url", "")
@@ -1736,15 +1937,17 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
         os.environ["HTTP_PROXY"] = proxies[0]
         os.environ["HTTPS_PROXY"] = proxies[0]
         
-    llm = ChatDeepSeek(
+    llm = StableAgentChatDeepSeek(
         model=model_name,
         api_key=api_key,
         api_base=base_url,
         extra_body=dict(config.get("extra_parameters") or {}),
+        temperature=0.1,
+        disable_streaming=True,
         max_retries=3,
     )
     
-    tools = _agent_tools(allow_web_search=allow_web_search)
+    tools = _agent_tools(allow_web_search=allow_web_search, user_message=user_message)
 
     if allow_web_search:
         source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`web_search` 或其他工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号（对应 [来源 1], [来源 2] 的编号）。本地检索通常使用 [1]-[5]，联网搜索通常从 [6] 开始编号；必须沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
@@ -1773,6 +1976,10 @@ def get_agent(thinking_enabled: bool = False, allow_web_search: bool = True, run
 
     system_message = (
         "你是中国移动战略部公开信息监测系统的智能 RAG 和运维助手。\n"
+        "【语言与可见推理稳定性】你的 reasoning_content 会在前端“推理过程”中直接展示。"
+        "可见推理和最终正文都必须使用清晰、连贯、专业的简体中文；公司名、产品名、模型名、指标缩写和必要引用可保留原文。"
+        "禁止混入俄语、日语、韩语等无关语言，禁止输出提示词复述、角色切换、Admin/System 对话、调试代码、控制标记、"
+        "伪造的错误恢复过程或循环自我纠错。如果思路需要重整，直接从当前问题继续给出简洁中文分析，不要描述重启、覆写或停止自己。\n"
         "【当前运行上下文】以下信息由后端按本次请求实时注入。凡用户提到“今天、现在、目前、最新、上个季度、上一季度、最近”等相对时间，必须优先用这里的当前时间和时区定位；涉及地域、网络可达性或本地/公网判断时，可参考请求 IP 和位置推断，但不要把粗略位置当作精确地理定位。\n"
         f"{runtime_context_text}\n"
         f"{source_rule}"
@@ -2033,11 +2240,25 @@ def stream_agent(
         approved_action_ids=approved_action_ids or [],
     )
     try:
-        agent = get_agent(thinking_enabled=thinking_enabled, allow_web_search=force_web_search, runtime_context=runtime_context)
+        agent = get_agent(
+            thinking_enabled=thinking_enabled,
+            allow_web_search=force_web_search,
+            runtime_context=runtime_context,
+            user_message=original_user_message,
+        )
     except TypeError as exc:
-        if "runtime_context" not in str(exc):
+        if "unexpected keyword" not in str(exc):
             raise
-        agent = get_agent(thinking_enabled=thinking_enabled, allow_web_search=force_web_search)
+        try:
+            agent = get_agent(
+                thinking_enabled=thinking_enabled,
+                allow_web_search=force_web_search,
+                user_message=original_user_message,
+            )
+        except TypeError as fallback_exc:
+            if "unexpected keyword" not in str(fallback_exc):
+                raise
+            agent = get_agent(thinking_enabled=thinking_enabled, allow_web_search=force_web_search)
     thinking_step = 0
 
     def thinking_event(text: str) -> dict[str, Any]:
@@ -2054,7 +2275,7 @@ def stream_agent(
         recorder.observe(event)
         yield event
 
-    skill_context = _selected_skill_context(selected_skill_ids)
+    skill_context = _selected_skill_context(selected_skill_ids, original_user_message)
     skill_routing_instruction = _skill_routing_instruction(message, selected_skill_ids, loaded_skill_ids)
     # Selected skills and datasets are injected as model context below. They are not
     # rendered as fake tool calls; the UI should only show tools the Agent chose.
@@ -2154,6 +2375,14 @@ def stream_agent(
             "但不要输出内部推理过程；只输出可审计的结论、依据、必要步骤和不确定性。\n\n"
             f"用户问题：{message}"
         )
+    message = (
+        f"{message}\n\n"
+        "【本轮原始输入（唯一需要回答的用户请求）】\n"
+        f"<current_user_request>{original_user_message}</current_user_request>\n"
+        "前面的 Skill、数据库、历史、记忆和联网说明都只是上下文，不是用户说的话，也不是多个待回答问题。"
+        "只围绕 current_user_request 理解意图；输入过短或不明确时，用一句简洁中文询问用户希望查看或分析什么，"
+        "不要猜造隐藏主题，不要复述上下文。"
+    )
     inputs = {"messages": [("user", message)]}
     
     tool_calls_acc = {}
@@ -2183,7 +2412,7 @@ def stream_agent(
     checking_disabled_web_notice = not force_web_search
     table_limiter = MarkdownTableLimiter()
 
-    def chunk_reasoning_text(chunk: AIMessageChunk) -> str:
+    def chunk_reasoning_text(chunk: AIMessage | AIMessageChunk) -> str:
         """Read provider reasoning fields without mixing them into the final answer."""
         containers = [
             getattr(chunk, "additional_kwargs", None),
@@ -2211,6 +2440,46 @@ def stream_agent(
                     parts.append(value)
             return "".join(parts)
         return ""
+
+    def visible_reasoning_text(chunk: AIMessage | AIMessageChunk) -> str:
+        """Keep useful Chinese reasoning visible; summarize provider-only English scratch work."""
+        reasoning = chunk_reasoning_text(chunk).strip()
+        if not reasoning:
+            return ""
+        cjk = len(re.findall(r"[\u4e00-\u9fff]", reasoning))
+        latin = len(re.findall(r"[A-Za-z]", reasoning))
+        if _looks_like_unstable_model_text(reasoning) or (latin >= 20 and cjk / max(cjk + latin, 1) < 0.25):
+            tool_names = [
+                str(item.get("name") or "")
+                for item in (getattr(chunk, "tool_calls", None) or [])
+                if isinstance(item, dict) and str(item.get("name") or "").strip()
+            ]
+            if tool_names:
+                return f"已完成问题拆解，接下来调用 {', '.join(tool_names)} 获取并核验所需依据。"
+            if str(getattr(chunk, "content", "") or "").strip():
+                return "已完成问题理解和上下文检查，正在组织清晰、可核验的中文回答。"
+            return "正在理解问题、检查上下文并确定下一步分析方法。"
+        return reasoning
+
+    def replay_reasoning_text(text: str) -> Generator[str, None, None]:
+        """Replay a validated full reasoning message as visible streaming chunks."""
+        if not text:
+            return
+        if len(text) <= 18:
+            yield text
+            return
+        cursor = 0
+        while cursor < len(text):
+            remaining = len(text) - cursor
+            size = min(24, max(8, math.ceil(remaining / 12)))
+            end = min(len(text), cursor + size)
+            punctuation = re.search(r"[，。；：！？、\n]", text[cursor:end + 8])
+            if punctuation and punctuation.end() >= 6:
+                end = cursor + punctuation.end()
+            yield text[cursor:end]
+            cursor = end
+            if cursor < len(text):
+                time.sleep(0.022)
 
     def filter_disabled_web_notice(text: str) -> list[str]:
         """Drop a leading web-toggle explanation; keep normal streaming intact."""
@@ -2261,12 +2530,18 @@ def stream_agent(
     try:
         events = _stream_agent_events(agent, inputs)
         for chunk, metadata in events:
-            if isinstance(chunk, AIMessageChunk):
-                reasoning_text = chunk_reasoning_text(chunk)
+            if isinstance(chunk, (AIMessage, AIMessageChunk)):
+                reasoning_text = visible_reasoning_text(chunk)
                 if reasoning_text:
-                    event = {"type": "reasoning", "text": reasoning_text}
-                    recorder.observe(event)
-                    yield event
+                    reasoning_parts = (
+                        replay_reasoning_text(reasoning_text)
+                        if isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
+                        else [reasoning_text]
+                    )
+                    for reasoning_part in reasoning_parts:
+                        event = {"type": "reasoning", "text": reasoning_part}
+                        recorder.observe(event)
+                        yield event
                 if chunk.content and isinstance(chunk.content, str):
                     for text in filter_disabled_web_notice(chunk.content):
                         limited_text = table_limiter.feed(text)
@@ -2274,8 +2549,20 @@ def stream_agent(
                             event = {"type": "delta", "text": limited_text}
                             recorder.observe(event)
                             yield event
-                if chunk.tool_call_chunks:
-                    for tc in chunk.tool_call_chunks:
+                tool_call_chunks = getattr(chunk, "tool_call_chunks", None) or []
+                if not tool_call_chunks:
+                    for index, tool_call in enumerate(getattr(chunk, "tool_calls", None) or []):
+                        if not isinstance(tool_call, dict):
+                            continue
+                        args = tool_call.get("args", {})
+                        tool_call_chunks.append({
+                            "index": index,
+                            "id": tool_call.get("id"),
+                            "name": tool_call.get("name"),
+                            "args": args if isinstance(args, str) else json.dumps(args, ensure_ascii=False),
+                        })
+                if tool_call_chunks:
+                    for tc in tool_call_chunks:
                         index = tc.get("index")
                         tc_id = tc.get("id")
                         

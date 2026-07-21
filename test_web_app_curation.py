@@ -48,7 +48,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('!panel.classList.contains("model-reasoning")', reasoning_renderer)
         self.assertNotIn('body.querySelector(".model-reasoning")', reasoning_renderer)
 
-    def test_completed_reasoning_block_collapses_when_next_stream_block_arrives(self) -> None:
+    def test_reasoning_stays_open_during_answer_and_collapses_when_stream_finishes(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         collapse_start = app.index("function collapseLatestModelReasoning")
         collapse_end = app.index("function ensureToolList", collapse_start)
@@ -60,10 +60,14 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         text_end = app.index("function setCurrentMessageContent", text_start)
         text_helper = app[text_start:text_end]
 
-        self.assertIn('panel?.classList.contains("model-reasoning")', collapse_helper)
+        self.assertIn('querySelectorAll(".model-reasoning")', collapse_helper)
         self.assertIn("panel.open = false", collapse_helper)
         self.assertIn("collapseLatestModelReasoning(node)", append_helper)
-        self.assertIn("collapseLatestModelReasoning(node)", text_helper)
+        self.assertNotIn("collapseLatestModelReasoning(node)", text_helper)
+        send_start = app.index("async function sendChat")
+        send_end = app.index("els.generateButtons.forEach", send_start)
+        send_chat = app[send_start:send_end]
+        self.assertIn("finishStreamingText();\n    collapseLatestModelReasoning(assistantNode);", send_chat)
 
     def test_reasoning_stream_scrolls_its_panel_to_the_latest_token(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -275,6 +279,100 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("web_search", tool_names)
         self.assertNotIn("read_webpage", tool_names)
 
+    def test_agent_model_uses_non_streaming_gateway_and_targeted_tools(self) -> None:
+        captured: dict[str, object] = {}
+
+        class FakeLLM:
+            def __init__(self, **kwargs):
+                captured["llm_kwargs"] = kwargs
+
+        def fake_create_react_agent(_llm, tools, prompt):
+            captured["tools"] = {tool.name for tool in tools}
+            captured["prompt"] = prompt
+            return object()
+
+        with (
+            mock.patch("agent.StableAgentChatDeepSeek", FakeLLM),
+            mock.patch("agent.create_react_agent", side_effect=fake_create_react_agent),
+        ):
+            agent.get_agent(
+                allow_web_search=False,
+                user_message="请查看当前系统状态并告诉我最近爬取成功和失败数量。",
+            )
+
+        self.assertTrue(captured["llm_kwargs"]["disable_streaming"])
+        self.assertEqual(captured["llm_kwargs"]["temperature"], 0.1)
+        self.assertEqual(
+            captured["tools"],
+            {"get_system_status", "list_crawl_runs", "get_crawl_settings_summary"},
+        )
+        self.assertIn("语言与可见推理稳定性", captured["prompt"])
+
+    def test_dynamic_tool_routing_keeps_every_tool_available_by_intent(self) -> None:
+        default_names = {tool.name for tool in agent._agent_tools(allow_web_search=True)}
+        targeted_names = {
+            tool.name
+            for tool in agent._agent_tools(
+                allow_web_search=False,
+                user_message="请生成周报，再查看系统状态和最近爬虫日志。",
+            )
+        }
+
+        self.assertIn("web_search", default_names)
+        self.assertIn("trigger_report_generation", targeted_names)
+        self.assertIn("get_system_status", targeted_names)
+        self.assertIn("list_crawl_runs", targeted_names)
+
+    def test_gateway_corruption_detector_catches_known_failure_shapes(self) -> None:
+        samples = [
+            "<｜DSML｜tool_calls><｜DSML｜invoke name=\"get_system_status\">",
+            "import pdb;pdb.set_trace(); <|begin_of_file|> Admin override restarting cleanly",
+            "get_system_status() " * 40,
+            "[1]" * 40,
+            "¹²³⁴⁵⁶⁷⁸⁹" * 8,
+            "正常中文 Русский 한국어 日本語 mixed corruption",
+        ]
+
+        for sample in samples:
+            self.assertTrue(agent._looks_like_unstable_model_text(sample), sample[:80])
+        self.assertFalse(agent._looks_like_unstable_model_text("这是清晰、正常的中文分析结论。"))
+
+    def test_non_streaming_ai_message_keeps_reasoning_panel_and_final_answer(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None):
+                yield agent.AIMessage(
+                    content="这是正常的中文最终答案。",
+                    additional_kwargs={"reasoning_content": "The model checked context and prepared the answer."},
+                ), {}
+
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+            events = list(agent.stream_agent("请回答", thinking_enabled=False))
+
+        reasoning = [event for event in events if event.get("type") == "reasoning"]
+        answers = [event for event in events if event.get("type") == "delta"]
+        self.assertGreater(len(reasoning), 1)
+        self.assertIn("正在组织", "".join(event["text"] for event in reasoning))
+        self.assertEqual("".join(event["text"] for event in answers), "这是正常的中文最终答案。")
+
+    def test_non_streaming_ai_message_preserves_structured_tool_events(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None):
+                yield agent.AIMessage(
+                    content="",
+                    tool_calls=[{"name": "get_system_status", "args": {}, "id": "call-1", "type": "tool_call"}],
+                    additional_kwargs={"reasoning_content": "需要读取系统状态。"},
+                ), {}
+                yield agent.ToolMessage(content="系统状态正常。", tool_call_id="call-1", name="get_system_status"), {}
+
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+            events = list(agent.stream_agent("查看系统状态"))
+
+        starts = [event for event in events if event.get("type") == "tool_call_start"]
+        results = [event for event in events if event.get("type") == "tool_call_result"]
+        self.assertEqual(starts[0]["name"], "get_system_status")
+        self.assertEqual(results[0]["name"], "get_system_status")
+        self.assertIn("系统状态正常", results[0]["content"])
+
     def test_plain_greeting_uses_model_with_history_as_background_only(self) -> None:
         captured: dict[str, str] = {}
 
@@ -296,8 +394,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 )
             )
 
-        self.assertEqual(events[0]["type"], "delta")
-        self.assertIn("我是小竞AI", events[0]["text"])
+        first_delta = next(event for event in events if event.get("type") == "delta")
+        self.assertIn("我是小竞AI", first_delta["text"])
         self.assertEqual(events[-2]["toolCount"], 0)
         self.assertEqual(events[-1], {"type": "done"})
         self.assertEqual(captured["stream_mode"], "messages")
@@ -330,7 +428,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 )
             )
 
-        self.assertEqual(events[0]["type"], "delta")
+        self.assertTrue(any(event.get("type") == "delta" for event in events))
         self.assertEqual(events[-2]["toolCount"], 0)
         self.assertEqual(events[-1], {"type": "done"})
         self.assertEqual(captured["stream_mode"], "messages")
