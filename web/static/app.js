@@ -340,27 +340,16 @@ function isConversationalModel(modelName) {
   return /(?:deepseek|qwen|glm|kimi|minimax|gpt|claude|gemini|llama|mistral|internlm|baichuan|chat|instruct|thinking|reason|code|omni|(?:^|[/_.-])vl(?:[/_.-]|$))/i.test(value);
 }
 
-function chatModelCategory(modelName) {
-  const value = String(modelName || "");
-  if (modelSupportsImages(value) || /omni/i.test(value)) return "多模态";
-  if (/(?:r1|thinking|reason)/i.test(value)) return "推理";
-  if (/code/i.test(value)) return "代码";
-  return "通用";
-}
-
 function visibleChatModels() {
   return state.chatModels.filter(isConversationalModel);
 }
 
 function renderChatModelOptions() {
   if (!els.chatModelOptions) return;
-  const query = String(els.chatModelSearch?.value || "").trim().toLowerCase();
-  const models = visibleChatModels().filter((model) => !query || String(model).toLowerCase().includes(query));
+  const models = visibleChatModels();
   els.chatModelOptions.innerHTML = models.length ? models.map((model) => {
     const active = model === state.chatModel;
-    const category = chatModelCategory(model);
-    const description = category === "多模态" ? "支持文本与图片理解" : "适用于文本对话与分析";
-    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><span class="chat-model-option-copy"><strong>${escapeHtml(model)}</strong><small>${description}</small></span><span class="chat-model-category">${category}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
+    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><strong>${escapeHtml(model)}</strong><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
   }).join("") : '<div class="chat-model-empty">没有匹配的语言模型</div>';
 }
 
@@ -370,7 +359,6 @@ function renderChatModelControls() {
     els.chatModelSelect.innerHTML = models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
     els.chatModelSelect.value = models.includes(state.chatModel) ? state.chatModel : models[0];
     if (els.chatModelButtonLabel) els.chatModelButtonLabel.textContent = state.chatModel || models[0];
-    if (els.chatModelMenuHint) els.chatModelMenuHint.textContent = `仅显示可用于对话的模型 · ${visibleChatModels().length} 个`;
     renderChatModelOptions();
   }
   const supportsImages = modelSupportsImages(state.chatModel);
