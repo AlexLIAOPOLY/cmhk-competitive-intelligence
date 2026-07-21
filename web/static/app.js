@@ -4046,7 +4046,7 @@ function appendActionConfirmation(node, event, originalMessage) {
     button.textContent = "已确认，正在执行";
     sendChat(originalMessage, { approvedActionIds: [event.actionId] });
   });
-  body.appendChild(card);
+  appendStreamBlock(node, card);
 }
 
 function normalizeStoredChatRole(value) {
@@ -4409,6 +4409,13 @@ function messageBody(node) {
   return node.querySelector(".message-body");
 }
 
+function collapseLatestModelReasoning(node) {
+  const panel = messageBody(node)?.lastElementChild;
+  if (panel?.classList.contains("model-reasoning")) {
+    panel.open = false;
+  }
+}
+
 function ensureToolList(node) {
   const body = messageBody(node);
   if (!body) return null;
@@ -4416,7 +4423,7 @@ function ensureToolList(node) {
   if (!list || !list.classList.contains("tool-call-list")) {
     list = document.createElement("div");
     list.className = "tool-call-list";
-    body.appendChild(list);
+    appendStreamBlock(node, list);
   }
   return list;
 }
@@ -4424,6 +4431,7 @@ function ensureToolList(node) {
 function appendStreamBlock(node, element) {
   const body = messageBody(node);
   if (!body || !element) return null;
+  collapseLatestModelReasoning(node);
   body.appendChild(element);
   return element;
 }
@@ -4446,6 +4454,7 @@ function currentMessageTextNode(node) {
     (!text.classList.contains("message-text") && !text.classList.contains("markdown-body"))
   ) {
     clearConnectingPlaceholder(node);
+    collapseLatestModelReasoning(node);
     text = document.createElement("div");
     text.className = "message-text";
     text._rawMarkdown = "";
@@ -4479,7 +4488,7 @@ function appendStableChartImage(node, chartImage) {
   block.className = "chart-result-block";
   block.dataset.chartUrl = chartImage.url;
   block.innerHTML = inlineMarkdown(chartImage.markdown);
-  body.appendChild(block);
+  appendStreamBlock(node, block);
 }
 
 function appendAssistantActionLine(node, event) {
@@ -4637,7 +4646,7 @@ function appendCitationFooter(node, references, links) {
 
   footer.append(header, list);
   const body = node.querySelector(".message-body");
-  body.appendChild(footer);
+  appendStreamBlock(node, footer);
 }
 
 function appendToolCallCard(node, event) {
@@ -4770,7 +4779,7 @@ function restoreAssistantTimeline(node, timeline) {
       textNode.className = "markdown-body";
       textNode.dataset.assistantAnswer = "true";
       textNode._rawMarkdown = String(event.text || "");
-      body.appendChild(textNode);
+      appendStreamBlock(node, textNode);
       setCurrentMessageContent(node, textNode._rawMarkdown, true, textNode);
       return;
     }

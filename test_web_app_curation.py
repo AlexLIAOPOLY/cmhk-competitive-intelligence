@@ -48,6 +48,23 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('!panel.classList.contains("model-reasoning")', reasoning_renderer)
         self.assertNotIn('body.querySelector(".model-reasoning")', reasoning_renderer)
 
+    def test_completed_reasoning_block_collapses_when_next_stream_block_arrives(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        collapse_start = app.index("function collapseLatestModelReasoning")
+        collapse_end = app.index("function ensureToolList", collapse_start)
+        collapse_helper = app[collapse_start:collapse_end]
+        append_start = app.index("function appendStreamBlock")
+        append_end = app.index("function assistantAnswerNodes", append_start)
+        append_helper = app[append_start:append_end]
+        text_start = app.index("function currentMessageTextNode")
+        text_end = app.index("function setCurrentMessageContent", text_start)
+        text_helper = app[text_start:text_end]
+
+        self.assertIn('panel?.classList.contains("model-reasoning")', collapse_helper)
+        self.assertIn("panel.open = false", collapse_helper)
+        self.assertIn("collapseLatestModelReasoning(node)", append_helper)
+        self.assertIn("collapseLatestModelReasoning(node)", text_helper)
+
     def test_named_source_citation_renders_when_reference_uses_full_path(self) -> None:
         script = r"""
 const fs = require('fs');
