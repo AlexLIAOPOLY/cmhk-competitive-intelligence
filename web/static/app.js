@@ -23,6 +23,11 @@ const state = {
   knowledgeUploadBusy: false,
   knowledgeUploadOpen: false,
   knowledgeUploadFile: null,
+  chatModels: [],
+  chatModel: "",
+  chatAiConfig: null,
+  chatImageAttachment: null,
+  chatImageAnalysisBusy: false,
   knowledgeUploadMeta: {
     title: "",
     summary: "",
@@ -123,6 +128,13 @@ const els = {
   messages: document.querySelector("#messages"),
   chatForm: document.querySelector("#chatForm"),
   chatInput: document.querySelector("#chatInput"),
+  composerPlusButton: document.querySelector("#composerPlusButton"),
+  composerPlusMenu: document.querySelector("#composerPlusMenu"),
+  composerUploadFileButton: document.querySelector("#composerUploadFileButton"),
+  composerUploadImageButton: document.querySelector("#composerUploadImageButton"),
+  chatImageInput: document.querySelector("#chatImageInput"),
+  chatAttachmentPreview: document.querySelector("#chatAttachmentPreview"),
+  chatModelSelect: document.querySelector("#chatModelSelect"),
   skillToggle: document.querySelector("#skillToggle"),
   skillMenu: document.querySelector("#skillMenu"),
   databaseToggle: document.querySelector("#databaseToggle"),
@@ -308,6 +320,100 @@ function renderWebSearchToggle() {
   button.title = state.webSearchEnabled ? "本轮使用网页来源" : "本轮只用本地来源";
   const label = button.querySelector("span");
   if (label) label.textContent = "联网搜索";
+}
+
+function modelSupportsImages(modelName) {
+  return /(?:vision|multimodal|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)/i.test(String(modelName || ""));
+}
+
+function renderChatModelControls() {
+  if (els.chatModelSelect) {
+    const models = state.chatModels.length ? state.chatModels : [state.chatModel || "未配置模型"];
+    els.chatModelSelect.innerHTML = models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
+    els.chatModelSelect.value = models.includes(state.chatModel) ? state.chatModel : models[0];
+  }
+  const supportsImages = modelSupportsImages(state.chatModel);
+  if (els.composerUploadImageButton) {
+    els.composerUploadImageButton.disabled = !supportsImages || state.chatImageAnalysisBusy;
+    els.composerUploadImageButton.title = supportsImages ? "上传图片并由当前模型理解" : "当前模型未声明视觉能力";
+    const hint = els.composerUploadImageButton.querySelector("small");
+    if (hint) hint.textContent = supportsImages ? "PNG、JPG、WebP、GIF" : "当前模型不支持";
+  }
+}
+
+function renderChatAttachment() {
+  if (!els.chatAttachmentPreview) return;
+  const attachment = state.chatImageAttachment;
+  els.chatAttachmentPreview.hidden = !attachment;
+  els.chatAttachmentPreview.innerHTML = attachment ? `
+    <span class="chat-attachment-chip">
+      <img src="${attachment.dataUrl}" alt="待发送图片预览" />
+      <span><strong>${escapeHtml(attachment.name)}</strong><small>${formatBytes(attachment.size)}</small></span>
+      <button type="button" id="removeChatImage" aria-label="移除图片">&times;</button>
+    </span>` : "";
+}
+
+async function loadChatModelOptions() {
+  const configResponse = await fetch("/api/ai-config", { cache: "no-store" });
+  const configData = await configResponse.json();
+  if (!configData.ok) throw new Error(configData.error || "AI 设置加载失败");
+  state.chatAiConfig = configData.config;
+  state.chatModel = String(configData.config.model || "");
+  state.chatModels = state.chatModel ? [state.chatModel] : [];
+  renderChatModelControls();
+  try {
+    const response = await fetch("/api/ai-models", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base_url: configData.config.base_url, api_key: "" }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "模型列表获取失败");
+    state.chatModels = Array.isArray(data.models) ? data.models : state.chatModels;
+    if (state.chatModel && !state.chatModels.includes(state.chatModel)) state.chatModels.unshift(state.chatModel);
+  } catch (error) {
+    console.warn("聊天模型列表加载失败，保留当前模型", error);
+  }
+  renderChatModelControls();
+}
+
+async function switchChatModel(model) {
+  if (!model || model === state.chatModel || !state.chatAiConfig) return;
+  const response = await fetch("/api/ai-config", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      provider: state.chatAiConfig.provider,
+      base_url: state.chatAiConfig.base_url,
+      model,
+      api_key: "",
+    }),
+  });
+  const data = await response.json();
+  if (!data.ok) throw new Error(data.error || "模型切换失败");
+  state.chatAiConfig = data.config;
+  state.chatModel = model;
+  state.chatImageAttachment = modelSupportsImages(model) ? state.chatImageAttachment : null;
+  renderChatModelControls();
+  renderChatAttachment();
+}
+
+async function analyzeChatImage(attachment, question) {
+  state.chatImageAnalysisBusy = true;
+  renderChatModelControls();
+  try {
+    const response = await fetch("/api/chat-image-analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: attachment.dataUrl, filename: attachment.name, question }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || "图片理解失败");
+    return String(data.description || "").trim();
+  } finally {
+    state.chatImageAnalysisBusy = false;
+    renderChatModelControls();
+  }
 }
 
 function renderSkillToggle() {
@@ -4773,7 +4879,7 @@ function compactChatHistory() {
 async function sendChat(message, options = {}) {
   if (!state.activeThreadId) state.activeThreadId = chatThreadId();
   const conversationHistory = compactChatHistory();
-  addMessage("user", message);
+  addMessage("user", options.displayMessage || message);
   state.chatHistory.push({ role: "user", content: message });
   state.chatHistory = state.chatHistory.slice(-80);
   state.chatAbortController = new AbortController();
@@ -5459,9 +5565,89 @@ if (els.knowledgeUploadInput) {
     if (!file) return;
     state.knowledgeUploadFile = file;
     state.knowledgeUploadOpen = true;
+    if (els.databaseMenu) els.databaseMenu.hidden = false;
     renderDatabaseMenu();
   });
 }
+
+if (els.composerPlusButton) {
+  els.composerPlusButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    els.composerPlusMenu.hidden = !els.composerPlusMenu.hidden;
+    els.composerPlusButton.setAttribute("aria-expanded", els.composerPlusMenu.hidden ? "false" : "true");
+  });
+}
+
+if (els.composerUploadFileButton) {
+  els.composerUploadFileButton.addEventListener("click", () => els.knowledgeUploadInput && els.knowledgeUploadInput.click());
+}
+
+if (els.composerUploadImageButton) {
+  els.composerUploadImageButton.addEventListener("click", () => {
+    if (!modelSupportsImages(state.chatModel)) return;
+    if (els.chatImageInput) els.chatImageInput.click();
+  });
+}
+
+if (els.chatImageInput) {
+  els.chatImageInput.addEventListener("change", () => {
+    const file = els.chatImageInput.files && els.chatImageInput.files[0];
+    if (!file) return;
+    if (!modelSupportsImages(state.chatModel)) {
+      showTaskOperationNotice("当前模型不支持图片，请先切换到视觉模型。");
+      els.chatImageInput.value = "";
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      showTaskOperationNotice("图片不能超过 8 MB。");
+      els.chatImageInput.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      state.chatImageAttachment = { name: file.name, size: file.size, dataUrl: String(reader.result || "") };
+      renderChatAttachment();
+      els.composerPlusMenu.hidden = true;
+      els.chatInput.focus();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+if (els.chatAttachmentPreview) {
+  els.chatAttachmentPreview.addEventListener("click", (event) => {
+    if (!event.target.closest("#removeChatImage")) return;
+    state.chatImageAttachment = null;
+    if (els.chatImageInput) els.chatImageInput.value = "";
+    renderChatAttachment();
+  });
+}
+
+if (els.chatModelSelect) {
+  els.chatModelSelect.addEventListener("change", async () => {
+    els.chatModelSelect.disabled = true;
+    try {
+      await switchChatModel(els.chatModelSelect.value);
+      showTaskOperationNotice(`已切换到 ${state.chatModel}`);
+    } catch (error) {
+      showTaskOperationNotice(error.message);
+      renderChatModelControls();
+    } finally {
+      els.chatModelSelect.disabled = false;
+    }
+  });
+  loadChatModelOptions().catch((error) => {
+    console.warn(error);
+    renderChatModelControls();
+  });
+}
+
+document.addEventListener("click", (event) => {
+  if (!els.composerPlusMenu || els.composerPlusMenu.hidden) return;
+  if (event.target.closest(".composer-plus-picker")) return;
+  els.composerPlusMenu.hidden = true;
+  els.composerPlusButton.setAttribute("aria-expanded", "false");
+});
 
 if (els.skillMenu) {
   els.skillMenu.addEventListener("click", (event) => {
@@ -5555,18 +5741,34 @@ document.addEventListener("click", (event) => {
   renderDatabaseToggle();
 });
 
-els.chatForm.addEventListener("submit", (event) => {
+els.chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const message = els.chatInput.value.trim();
-  if (!message) return;
+  const attachment = state.chatImageAttachment;
+  if (!message && !attachment) return;
   els.chatInput.value = "";
   resizeChatInput();
+  let enrichedMessage = message || "请分析这张图片。";
+  if (attachment) {
+    try {
+      const description = await analyzeChatImage(attachment, enrichedMessage);
+      enrichedMessage = `${enrichedMessage}\n\n[图片内容（由 ${state.chatModel} 识别）]\n${description}`;
+      state.chatImageAttachment = null;
+      if (els.chatImageInput) els.chatImageInput.value = "";
+      renderChatAttachment();
+    } catch (error) {
+      showTaskOperationNotice(error.message);
+      els.chatInput.value = message;
+      resizeChatInput();
+      return;
+    }
+  }
   if (state.chatBusy) {
-    enqueueChatMessage(message);
+    enqueueChatMessage(enrichedMessage);
     els.chatInput.focus();
     return;
   }
-  sendChat(message);
+  sendChat(enrichedMessage, { displayMessage: attachment ? `${message || "请分析这张图片。"}\n[图片：${attachment.name}]` : message });
 });
 
 els.chatSubmitButton.addEventListener("click", (event) => {

@@ -75,6 +75,7 @@ REFERENCE_FILES = {"weekly_report.md", "weekly_report.html", "final_audit.md", "
 UPLOAD_DATASET_PREFIX = "user-upload"
 UPLOAD_ALLOWED_SUFFIXES = {".txt", ".md", ".csv", ".tsv", ".json", ".docx", ".pdf"}
 UPLOAD_MAX_BYTES = 8 * 1024 * 1024
+CHAT_IMAGE_MAX_BYTES = 8 * 1024 * 1024
 CHAT_THREADS_DIR = ROOT / "agent_chat_threads"
 CHAT_THREADS_PATH = CHAT_THREADS_DIR / "threads.json"
 CHAT_THREADS_LOCK = threading.Lock()
@@ -104,6 +105,53 @@ def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:
         "visible_ip": visible_ip,
         "location_hint": location_hint,
     }
+
+
+def analyze_chat_image(payload: dict) -> dict:
+    config = load_ai_config(include_key=True)
+    model = str(config.get("model") or "").strip()
+    if not re.search(r"(?:vision|multimodal|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)", model, flags=re.I):
+        raise ValueError("当前模型未声明视觉能力，请先在输入框切换到视觉模型")
+    data_url = str(payload.get("image") or "").strip()
+    match = re.fullmatch(r"data:(image/(?:png|jpeg|webp|gif));base64,([A-Za-z0-9+/=\s]+)", data_url, flags=re.I)
+    if not match:
+        raise ValueError("只支持 PNG、JPG、WebP 或 GIF 图片")
+    raw = base64.b64decode(re.sub(r"\s+", "", match.group(2)), validate=True)
+    if not raw or len(raw) > CHAT_IMAGE_MAX_BYTES:
+        raise ValueError("图片不能为空且不能超过 8 MB")
+    base_url = str(config.get("base_url") or "").strip().rstrip("/")
+    api_key = str(config.get("api_key") or "").strip()
+    if not is_internal_ai_base_url(base_url) or not api_key:
+        raise ValueError("公司内网模型配置不完整")
+    question = str(payload.get("question") or "请分析这张图片").strip()[:1200]
+    body = {
+        "model": model,
+        "messages": [{
+            "role": "user",
+            "content": [
+                {"type": "text", "text": f"请准确识别图片中与下列问题相关的内容，输出可供后续分析的中文事实描述，不要猜测。问题：{question}"},
+                {"type": "image_url", "image_url": {"url": data_url}},
+            ],
+        }],
+        "max_tokens": 900,
+        "stream": False,
+    }
+    request = urllib.request.Request(
+        f"{base_url}/chat/completions",
+        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    wait_for_internal_ai_slot("chat-image-analyze")
+    with urllib.request.urlopen(request, timeout=90) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    content = (((result.get("choices") or [{}])[0].get("message") or {}).get("content") or "")
+    if isinstance(content, list):
+        content = "\n".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
+    description = str(content).strip()
+    if not description:
+        raise ValueError("视觉模型没有返回可用的图片描述")
+    return {"description": description, "model": model}
 
 
 def _now_iso() -> str:
@@ -3290,6 +3338,15 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/ai-config":
             try:
                 json_response(self, {"ok": True, "config": save_ai_config(read_request_json(self)), "status": build_status()})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+        if parsed.path == "/api/chat-image-analyze":
+            try:
+                json_response(self, {"ok": True, **analyze_chat_image(read_request_json(self))})
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="ignore")[:600]
+                json_response(self, {"ok": False, "error": f"视觉模型返回 HTTP {exc.code}：{detail}"}, 400)
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
