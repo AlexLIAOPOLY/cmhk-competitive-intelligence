@@ -5573,8 +5573,15 @@ if (els.skillToggle) {
   loadAgentSkills();
   els.skillToggle.addEventListener("click", () => {
     if (!els.skillMenu) return;
-    els.skillMenu.hidden = !els.skillMenu.hidden;
+    const willOpen = els.skillMenu.hidden;
+    els.skillMenu.hidden = !willOpen;
+    if (willOpen && els.databaseMenu) els.databaseMenu.hidden = true;
+    if (willOpen && els.chatModelMenu) {
+      els.chatModelMenu.hidden = true;
+      els.chatModelButton?.setAttribute("aria-expanded", "false");
+    }
     renderSkillToggle();
+    renderDatabaseToggle();
   });
 }
 
@@ -5583,8 +5590,15 @@ if (els.databaseToggle) {
   loadAgentDatasets();
   els.databaseToggle.addEventListener("click", () => {
     if (!els.databaseMenu) return;
-    els.databaseMenu.hidden = !els.databaseMenu.hidden;
+    const willOpen = els.databaseMenu.hidden;
+    els.databaseMenu.hidden = !willOpen;
+    if (willOpen && els.skillMenu) els.skillMenu.hidden = true;
+    if (willOpen && els.chatModelMenu) {
+      els.chatModelMenu.hidden = true;
+      els.chatModelButton?.setAttribute("aria-expanded", "false");
+    }
     renderDatabaseToggle();
+    renderSkillToggle();
   });
 }
 
@@ -5602,7 +5616,12 @@ if (els.knowledgeUploadInput) {
 if (els.composerPlusButton) {
   els.composerPlusButton.addEventListener("click", (event) => {
     event.stopPropagation();
-    els.composerPlusMenu.hidden = !els.composerPlusMenu.hidden;
+    const willOpen = els.composerPlusMenu.hidden;
+    els.composerPlusMenu.hidden = !willOpen;
+    if (willOpen && els.chatModelMenu) {
+      els.chatModelMenu.hidden = true;
+      els.chatModelButton?.setAttribute("aria-expanded", "false");
+    }
     els.composerPlusButton.setAttribute("aria-expanded", els.composerPlusMenu.hidden ? "false" : "true");
   });
 }
@@ -5677,6 +5696,12 @@ if (els.chatModelButton) {
     if (els.chatModelMenu) els.chatModelMenu.hidden = !willOpen;
     els.chatModelButton.setAttribute("aria-expanded", String(willOpen));
     if (willOpen) {
+      if (els.composerPlusMenu) els.composerPlusMenu.hidden = true;
+      els.composerPlusButton?.setAttribute("aria-expanded", "false");
+      if (els.skillMenu) els.skillMenu.hidden = true;
+      if (els.databaseMenu) els.databaseMenu.hidden = true;
+      renderSkillToggle();
+      renderDatabaseToggle();
       renderChatModelOptions();
       requestAnimationFrame(() => els.chatModelSearch?.focus());
     }
