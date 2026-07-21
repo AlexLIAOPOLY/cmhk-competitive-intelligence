@@ -18,6 +18,28 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn('else if (event.type === "status")', app)
         self.assertIn('else if (event.type === "reasoning")', app)
         self.assertIn("appendModelReasoning(assistantNode, event.text)", app)
+        merge_start = app.index("function mergeCitationMeta")
+        merge_end = app.index("function appendActionConfirmation", merge_start)
+        self.assertNotIn("appendRagProcess(", app[merge_start:merge_end])
+
+    def test_reasoning_stream_renders_markdown_instead_of_raw_markers(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function appendModelReasoning")
+        end = app.index("function assistantTimelineToolEvent", start)
+        reasoning_renderer = app[start:end]
+
+        self.assertIn("content.innerHTML = markdownToHtml(content._rawReasoning)", reasoning_renderer)
+        self.assertNotIn("content.textContent = content._rawReasoning", reasoning_renderer)
+
+    def test_reasoning_stream_starts_a_new_block_after_each_non_reasoning_event(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function appendModelReasoning")
+        end = app.index("function assistantTimelineToolEvent", start)
+        reasoning_renderer = app[start:end]
+
+        self.assertIn("let panel = body.lastElementChild", reasoning_renderer)
+        self.assertIn('!panel.classList.contains("model-reasoning")', reasoning_renderer)
+        self.assertNotIn('body.querySelector(".model-reasoning")', reasoning_renderer)
 
     def test_named_source_citation_renders_when_reference_uses_full_path(self) -> None:
         script = r"""

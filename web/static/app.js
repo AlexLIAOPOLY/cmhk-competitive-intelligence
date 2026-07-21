@@ -4024,27 +4024,6 @@ function mergeCitationMeta(node, event) {
 
   node.dataset.references = JSON.stringify(mergedRefs);
   node.dataset.links = JSON.stringify(mergedLinks);
-  if (event.contextAudit) {
-    const audit = event.contextAudit;
-    const retained = Number(audit.retained_chunks || 0);
-    const input = Number(audit.input_chunks || 0);
-    const tokens = Number(audit.token_estimate || 0);
-    const budget = Number(audit.token_budget || 0);
-    const compressed = Number(audit.compressed_chunks || 0);
-    const skipped = Number(audit.skipped_chunks || 0);
-    appendRagProcess(
-      node,
-      `上下文预算：保留 ${retained}/${input} 个片段，估算 ${tokens}/${budget} tokens，压缩 ${compressed} 个，跳过 ${skipped} 个。`
-    );
-  }
-  if (event.retrievalQuality) {
-    const quality = event.retrievalQuality;
-    const score = Number(quality.score || 0);
-    appendRagProcess(
-      node,
-      `检索质量：${quality.status || "unknown"}，评分 ${score}/100，官方命中 ${Number(quality.official_hits || 0)} 个，来源 ${Number(quality.unique_sources || 0)} 个。`
-    );
-  }
 }
 
 function appendActionConfirmation(node, event, originalMessage) {
@@ -4779,8 +4758,8 @@ function appendModelReasoning(node, text) {
   const value = String(text || "");
   if (!body || !value) return;
   clearConnectingPlaceholder(node);
-  let panel = body.querySelector(".model-reasoning");
-  if (!panel) {
+  let panel = body.lastElementChild;
+  if (!panel || !panel.classList.contains("model-reasoning")) {
     panel = document.createElement("details");
     panel.className = "model-reasoning";
     panel.open = true;
@@ -4793,7 +4772,7 @@ function appendModelReasoning(node, text) {
   const content = panel.querySelector(".model-reasoning-content");
   if (!content) return;
   content._rawReasoning = `${content._rawReasoning || ""}${value}`;
-  content.textContent = content._rawReasoning;
+  content.innerHTML = markdownToHtml(content._rawReasoning);
 }
 
 function assistantTimelineToolEvent(event) {
