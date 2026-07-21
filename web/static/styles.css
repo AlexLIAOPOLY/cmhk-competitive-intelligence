@@ -2920,7 +2920,8 @@ select {
   min-width: 0 !important;
   height: 44px !important;
   display: flex !important;
-  justify-content: flex-start !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 10px !important;
   padding: 0 10px !important;
   border: 0 !important;
@@ -2928,7 +2929,7 @@ select {
   background: transparent !important;
   color: #29435d !important;
   box-shadow: none !important;
-  text-align: left;
+  text-align: center;
 }
 
 .composer-menu-action:hover { background: #f0f6fb !important; color: var(--blue-dark) !important; }
