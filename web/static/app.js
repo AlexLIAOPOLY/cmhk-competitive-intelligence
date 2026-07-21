@@ -330,7 +330,7 @@ function renderWebSearchToggle() {
 }
 
 function modelSupportsImages(modelName) {
-  return /(?:vision|multimodal|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)/i.test(String(modelName || ""));
+  return /(?:vision|multimodal|omni|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)/i.test(String(modelName || ""));
 }
 
 function isConversationalModel(modelName) {
