@@ -5114,9 +5114,6 @@ async function sendChat(message, options = {}) {
         if (event.type === "done") {
           isDone = true;
           break;
-        } else if (event.type === "status") {
-          appendRagProcess(assistantNode, event.text);
-          scrollMessagesToBottom();
         } else if (event.type === "reasoning") {
           clearConnectingPlaceholder(assistantNode);
           appendAssistantTimelineReasoning(assistantTimeline, event.text);

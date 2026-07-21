@@ -12,6 +12,13 @@ import web_app
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_chat_ignores_initial_status_marker_but_keeps_reasoning_stream(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertNotIn('else if (event.type === "status")', app)
+        self.assertIn('else if (event.type === "reasoning")', app)
+        self.assertIn("appendModelReasoning(assistantNode, event.text)", app)
+
     def test_named_source_citation_renders_when_reference_uses_full_path(self) -> None:
         script = r"""
 const fs = require('fs');
