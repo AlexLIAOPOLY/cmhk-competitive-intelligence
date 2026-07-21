@@ -5669,7 +5669,6 @@ if (els.chatModelSelect) {
     els.chatModelSelect.disabled = true;
     try {
       await switchChatModel(els.chatModelSelect.value);
-      showTaskOperationNotice(`已切换到 ${state.chatModel}`);
     } catch (error) {
       showTaskOperationNotice(error.message);
       renderChatModelControls();
@@ -5709,7 +5708,6 @@ if (els.chatModelOptions) {
       renderChatModelControls();
       try {
         await switchChatModel(model);
-        showTaskOperationNotice(`已切换到 ${model}`);
       } catch (error) {
         state.chatModel = previous;
         renderChatModelControls();
