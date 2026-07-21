@@ -2179,6 +2179,35 @@ def stream_agent(
     checking_disabled_web_notice = not force_web_search
     table_limiter = MarkdownTableLimiter()
 
+    def chunk_reasoning_text(chunk: AIMessageChunk) -> str:
+        """Read provider reasoning fields without mixing them into the final answer."""
+        containers = [
+            getattr(chunk, "additional_kwargs", None),
+            getattr(chunk, "response_metadata", None),
+        ]
+        for container in containers:
+            if not isinstance(container, dict):
+                continue
+            for key in ("reasoning_content", "reasoning", "thinking_content"):
+                value = container.get(key)
+                if isinstance(value, str) and value:
+                    return value
+
+        content = getattr(chunk, "content", None)
+        if isinstance(content, list):
+            parts: list[str] = []
+            for block in content:
+                if not isinstance(block, dict):
+                    continue
+                block_type = str(block.get("type") or "").lower()
+                if block_type not in {"reasoning", "reasoning_content", "thinking"}:
+                    continue
+                value = block.get("text") or block.get("content") or block.get("reasoning_content")
+                if isinstance(value, str) and value:
+                    parts.append(value)
+            return "".join(parts)
+        return ""
+
     def filter_disabled_web_notice(text: str) -> list[str]:
         """Drop a leading web-toggle explanation; keep normal streaming intact."""
         nonlocal disabled_web_notice_buffer, checking_disabled_web_notice
@@ -2222,6 +2251,11 @@ def stream_agent(
         events = _stream_agent_events(agent, inputs)
         for chunk, metadata in events:
             if isinstance(chunk, AIMessageChunk):
+                reasoning_text = chunk_reasoning_text(chunk)
+                if reasoning_text:
+                    event = {"type": "reasoning", "text": reasoning_text}
+                    recorder.observe(event)
+                    yield event
                 if chunk.content and isinstance(chunk.content, str):
                     for text in filter_disabled_web_notice(chunk.content):
                         limited_text = table_limiter.feed(text)

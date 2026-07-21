@@ -2961,6 +2961,41 @@ select {
 .chat-model-check { width: 14px; color: var(--blue); font-weight: 900; }
 .chat-model-empty { padding: 26px 12px; color: #8296a8; text-align: center; font-size: 12px; }
 
+.model-reasoning {
+  margin: 2px 0 10px;
+  overflow: hidden;
+  border: 1px solid #dbe8f2;
+  border-radius: 9px;
+  background: #f7fafc;
+  color: #5b7185;
+}
+.model-reasoning summary {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  list-style: none;
+  color: #46637d;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  user-select: none;
+}
+.model-reasoning summary::-webkit-details-marker { display: none; }
+.model-reasoning-caret { transition: transform 160ms ease; }
+.model-reasoning[open] .model-reasoning-caret { transform: rotate(180deg); }
+.model-reasoning-content {
+  max-height: 260px;
+  overflow: auto;
+  padding: 10px 12px;
+  border-top: 1px solid #e3edf4;
+  color: #667d91;
+  font: 12px/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .chat-composer-meta { width: 100%; }
 .chat-attachment-chip {
   width: fit-content;

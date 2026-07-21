@@ -345,11 +345,15 @@ function visibleChatModels() {
 }
 
 function chatModelTags(modelName) {
-  const value = String(modelName || "");
+  const value = String(modelName || "").trim();
+  const normalized = value.toLowerCase();
   const tags = [];
-  if (modelSupportsImages(value)) tags.push("多模态");
-  if (/(?:r1|thinking|reason)/i.test(value)) tags.push("推理");
-  if (/(?:code|coder|coding)/i.test(value)) tags.push("编码");
+  if (modelSupportsImages(value) || normalized === "kimi-k2.5") tags.push("多模态");
+  if (
+    /(?:deepseek-r1|deepseek-v4|deepseek-v4-pro|qwen3-[^/]*thinking)/i.test(value)
+    || /^dict\/qwen3-(?:1\.7b|4b|14b)$/i.test(value)
+  ) tags.push("推理");
+  if (/(?:code|coder|coding)/i.test(value) || normalized === "minimax-m2.1") tags.push("编码");
   if (!tags.length) tags.push("文本");
   return tags;
 }
@@ -4761,6 +4765,39 @@ function appendAssistantTimelineText(timeline, text) {
   }
 }
 
+function appendAssistantTimelineReasoning(timeline, text) {
+  const value = String(text || "");
+  if (!value) return;
+  const last = timeline[timeline.length - 1];
+  if (last && last.type === "reasoning") {
+    last.text += value;
+  } else {
+    timeline.push({ type: "reasoning", text: value });
+  }
+}
+
+function appendModelReasoning(node, text) {
+  const body = messageBody(node);
+  const value = String(text || "");
+  if (!body || !value) return;
+  clearConnectingPlaceholder(node);
+  let panel = body.querySelector(".model-reasoning");
+  if (!panel) {
+    panel = document.createElement("details");
+    panel.className = "model-reasoning";
+    panel.open = true;
+    panel.innerHTML = `
+      <summary><span class="model-reasoning-caret">⌄</span><span>推理过程</span></summary>
+      <div class="model-reasoning-content"></div>
+    `;
+    body.appendChild(panel);
+  }
+  const content = panel.querySelector(".model-reasoning-content");
+  if (!content) return;
+  content._rawReasoning = `${content._rawReasoning || ""}${value}`;
+  content.textContent = content._rawReasoning;
+}
+
 function assistantTimelineToolEvent(event) {
   return {
     type: event.type,
@@ -4780,6 +4817,10 @@ function restoreAssistantTimeline(node, timeline) {
   const insertedChartUrls = new Set();
   timeline.forEach((event) => {
     if (!event || typeof event !== "object") return;
+    if (event.type === "reasoning") {
+      appendModelReasoning(node, event.text);
+      return;
+    }
     if (event.type === "text") {
       const textNode = document.createElement("div");
       textNode.className = "markdown-body";
@@ -5074,6 +5115,12 @@ async function sendChat(message, options = {}) {
         if (event.type === "done") {
           isDone = true;
           break;
+        } else if (event.type === "reasoning") {
+          appendAssistantTimelineReasoning(assistantTimeline, event.text);
+          assistantHistoryEntry.timeline = assistantTimeline;
+          appendModelReasoning(assistantNode, event.text);
+          scheduleDraftPersist();
+          scrollMessagesToBottom();
         } else if (event.type === "thinking_status" || event.type === "process") {
           if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
