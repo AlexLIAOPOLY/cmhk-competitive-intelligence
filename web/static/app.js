@@ -349,10 +349,8 @@ function chatModelTags(modelName) {
   const normalized = value.toLowerCase();
   const tags = [];
   if (modelSupportsImages(value) || normalized === "kimi-k2.5") tags.push("多模态");
-  if (
-    /(?:deepseek-r1|deepseek-v4|deepseek-v4-pro|qwen3-[^/]*thinking)/i.test(value)
-    || /^dict\/qwen3-(?:1\.7b|4b|14b)$/i.test(value)
-  ) tags.push("推理");
+  if (/(?:deepseek-r1|qwen3-[^/]*thinking)/i.test(value)) tags.push("推理");
+  if (/(?:deepseek-v4)/i.test(value) || /^dict\/qwen3-(?:1\.7b|4b|14b)$/i.test(value)) tags.push("混合");
   if (/(?:code|coder|coding)/i.test(value) || normalized === "minimax-m2.1") tags.push("编码");
   if (!tags.length) tags.push("文本");
   return tags;

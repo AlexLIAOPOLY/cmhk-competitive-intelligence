@@ -2956,6 +2956,7 @@ select {
 .chat-model-tag { padding: 2px 7px; border-radius: 999px; background: #edf3f7; color: #5d7488; font-size: 10px; font-weight: 700; line-height: 1.5; }
 .chat-model-tag[data-tag="多模态"] { background: #def5f2; color: #087b70; }
 .chat-model-tag[data-tag="推理"] { background: #fff0d8; color: #a65b00; }
+.chat-model-tag[data-tag="混合"] { background: #e7efff; color: #365fa8; }
 .chat-model-tag[data-tag="编码"] { background: #eee8ff; color: #6847bd; }
 .chat-model-tag[data-tag="文本"] { background: #eaf2f8; color: #4d6b83; }
 .chat-model-check { width: 14px; color: var(--blue); font-weight: 900; }
