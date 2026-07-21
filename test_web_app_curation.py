@@ -4,11 +4,56 @@ import os
 import subprocess
 import json
 import tempfile
+import time
 import unittest
 from unittest import mock
+from pathlib import Path
 
 import agent
 import web_app
+
+
+class ChatThreadPersistenceTests(unittest.TestCase):
+    def test_saving_chat_does_not_wait_for_ai_title_generation(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            thread_path = Path(temp_dir) / "threads.json"
+            with (
+                mock.patch.object(web_app, "CHAT_THREADS_DIR", Path(temp_dir)),
+                mock.patch.object(web_app, "CHAT_THREADS_PATH", thread_path),
+                mock.patch.object(web_app, "generate_chat_thread_title", side_effect=AssertionError("must be background")),
+                mock.patch.object(web_app, "_schedule_chat_thread_title") as schedule_title,
+            ):
+                record = web_app.upsert_chat_thread({
+                    "id": "thread-stream-release",
+                    "messages": [{"role": "user", "content": "你好"}],
+                })
+
+        self.assertEqual(record["title"], "初次咨询")
+        self.assertTrue(record["titlePending"])
+        schedule_title.assert_called_once_with("thread-stream-release", "你好")
+
+    def test_background_title_refresh_updates_saved_thread(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            thread_path = Path(temp_dir) / "threads.json"
+            web_app.CHAT_TITLE_PENDING.clear()
+            web_app.CHAT_TITLE_ACTIVE.clear()
+            with (
+                mock.patch.object(web_app, "CHAT_THREADS_DIR", Path(temp_dir)),
+                mock.patch.object(web_app, "CHAT_THREADS_PATH", thread_path),
+                mock.patch.object(web_app, "generate_chat_thread_title", return_value="行业周报查询"),
+            ):
+                web_app.upsert_chat_thread({
+                    "id": "thread-background-title",
+                    "messages": [{"role": "user", "content": "我想查看最新的行业周报"}],
+                })
+                for _ in range(100):
+                    saved = web_app.get_chat_thread("thread-background-title")
+                    if saved and not saved.get("titlePending"):
+                        break
+                    time.sleep(0.01)
+
+        self.assertEqual(saved["title"], "行业周报查询")
+        self.assertFalse(saved["titlePending"])
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
@@ -81,6 +126,21 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("content.scrollTop = content.scrollHeight", scroll_helper)
         self.assertIn("requestAnimationFrame(scroll)", scroll_helper)
         self.assertIn("scrollReasoningToLatest(content)", reasoning_renderer)
+
+    def test_done_releases_chat_before_persistence_and_status_refresh_finish(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        send_start = app.index("async function sendChat")
+        send_end = app.index("els.generateButtons.forEach", send_start)
+        send_chat = app[send_start:send_end]
+
+        persist_pos = send_chat.index("const completionPersist = flushDraftPersist();")
+        release_pos = send_chat.index("releaseChatTurn();", persist_pos)
+        await_pos = send_chat.index("await completionPersist;", release_pos)
+        self.assertLess(persist_pos, release_pos)
+        self.assertLess(release_pos, await_pos)
+        self.assertIn("if (state.chatAbortController !== requestController) return;", send_chat)
+        self.assertIn("let chatPersistChain = Promise.resolve();", app)
+        self.assertIn("const snapshotBody = JSON.stringify({", app)
 
     def test_sent_image_preview_is_rendered_and_persisted_in_the_user_message(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

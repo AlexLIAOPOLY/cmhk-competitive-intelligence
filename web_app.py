@@ -79,6 +79,9 @@ CHAT_IMAGE_MAX_BYTES = 8 * 1024 * 1024
 CHAT_THREADS_DIR = ROOT / "agent_chat_threads"
 CHAT_THREADS_PATH = CHAT_THREADS_DIR / "threads.json"
 CHAT_THREADS_LOCK = threading.Lock()
+CHAT_TITLE_TASK_LOCK = threading.Lock()
+CHAT_TITLE_PENDING: dict[str, str] = {}
+CHAT_TITLE_ACTIVE: set[str] = set()
 
 
 def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:
@@ -343,6 +346,46 @@ def generate_chat_thread_title(first_user: str) -> str:
         return _fallback_thread_title(first_user)
 
 
+def _schedule_chat_thread_title(thread_id: str, title_source: str) -> None:
+    """Refresh an AI chat title in the background without blocking message saves."""
+    source = str(title_source or "").strip()
+    if not thread_id or not source:
+        return
+    with CHAT_TITLE_TASK_LOCK:
+        CHAT_TITLE_PENDING[thread_id] = source
+        if thread_id in CHAT_TITLE_ACTIVE:
+            return
+        CHAT_TITLE_ACTIVE.add(thread_id)
+
+    def worker() -> None:
+        try:
+            while True:
+                with CHAT_TITLE_TASK_LOCK:
+                    current_source = CHAT_TITLE_PENDING.pop(thread_id, "")
+                if not current_source:
+                    return
+                generated_title = generate_chat_thread_title(current_source)
+                with CHAT_TITLE_TASK_LOCK:
+                    has_newer_source = bool(CHAT_TITLE_PENDING.get(thread_id))
+                with CHAT_THREADS_LOCK:
+                    threads = load_chat_threads()
+                    target = next((item for item in threads if str(item.get("id")) == thread_id), None)
+                    if target and target.get("titlePending"):
+                        target["title"] = generated_title
+                        target["titlePending"] = has_newer_source
+                        save_chat_threads(threads)
+                if not has_newer_source:
+                    return
+        finally:
+            with CHAT_TITLE_TASK_LOCK:
+                CHAT_TITLE_ACTIVE.discard(thread_id)
+                should_restart = bool(CHAT_TITLE_PENDING.get(thread_id))
+            if should_restart:
+                _schedule_chat_thread_title(thread_id, CHAT_TITLE_PENDING.get(thread_id, ""))
+
+    threading.Thread(target=worker, name=f"chat-title-{thread_id[:8]}", daemon=True).start()
+
+
 def get_chat_thread(thread_id: str) -> dict | None:
     for thread in load_chat_threads():
         if str(thread.get("id")) == thread_id:
@@ -357,9 +400,11 @@ def upsert_chat_thread(payload: dict) -> dict:
     thread_id = str(payload.get("id") or "").strip() or uuid.uuid4().hex[:12]
     now = _now_iso()
     existing_title = ""
+    existing_title_pending = False
     for thread in load_chat_threads():
         if str(thread.get("id")) == thread_id and thread.get("title"):
             existing_title = str(thread.get("title"))
+            existing_title_pending = bool(thread.get("titlePending"))
             break
     if title:
         title = _sanitize_thread_title(title)
@@ -373,16 +418,21 @@ def upsert_chat_thread(payload: dict) -> dict:
         first_user[:24],
         _fallback_thread_title(first_user),
     }
-    if existing_title and existing_title not in placeholder_titles:
+    title_pending = False
+    if title:
+        title_pending = False
+    elif existing_title and not existing_title_pending and existing_title not in placeholder_titles:
         title = existing_title
     else:
-        title = generate_chat_thread_title(title_source or first_user)
+        title = _fallback_thread_title(title_source or first_user)
+        title_pending = True
     with CHAT_THREADS_LOCK:
         threads = load_chat_threads()
         existing = next((item for item in threads if str(item.get("id")) == thread_id), None)
         record = {
             "id": thread_id,
             "title": title[:80],
+            "titlePending": title_pending,
             "createdAt": (existing or {}).get("createdAt") or now,
             "updatedAt": now,
             "messages": messages[-80:],
@@ -393,6 +443,8 @@ def upsert_chat_thread(payload: dict) -> dict:
         threads = [item for item in threads if str(item.get("id")) != thread_id]
         threads.insert(0, record)
         save_chat_threads(threads)
+    if title_pending:
+        _schedule_chat_thread_title(thread_id, title_source or first_user)
     return record
 
 

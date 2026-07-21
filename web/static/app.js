@@ -4286,28 +4286,34 @@ async function loadChatThreads() {
   }
 }
 
-async function persistActiveThread() {
+let chatPersistChain = Promise.resolve();
+
+function persistActiveThread() {
   if (!state.activeThreadId && !state.chatHistory.length) return;
   if (!state.activeThreadId) state.activeThreadId = chatThreadId();
-  try {
-    const response = await fetch("/api/chat-threads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: state.activeThreadId,
-        messages: state.chatHistory,
-        agentContextKey: state.agentContextKey,
-        loadedSkillIds: Array.from(state.loadedSkillIds),
-      }),
-    });
-    const payload = await response.json();
-    if (!payload.ok) throw new Error(payload.error || "保存失败");
-    state.activeThreadId = payload.thread && payload.thread.id ? payload.thread.id : state.activeThreadId;
-    state.chatThreads = Array.isArray(payload.threads) ? payload.threads : state.chatThreads;
-    renderChatThreadList();
-  } catch (error) {
-    console.warn("保存历史对话失败", error);
-  }
+  const snapshotBody = JSON.stringify({
+    id: state.activeThreadId,
+    messages: state.chatHistory,
+    agentContextKey: state.agentContextKey,
+    loadedSkillIds: Array.from(state.loadedSkillIds),
+  });
+  chatPersistChain = chatPersistChain.catch(() => {}).then(async () => {
+    try {
+      const response = await fetch("/api/chat-threads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: snapshotBody,
+      });
+      const payload = await response.json();
+      if (!payload.ok) throw new Error(payload.error || "保存失败");
+      state.activeThreadId = payload.thread && payload.thread.id ? payload.thread.id : state.activeThreadId;
+      state.chatThreads = Array.isArray(payload.threads) ? payload.threads : state.chatThreads;
+      renderChatThreadList();
+    } catch (error) {
+      console.warn("保存历史对话失败", error);
+    }
+  });
+  return chatPersistChain;
 }
 
 function startNewChatThread() {
@@ -4978,9 +4984,21 @@ async function sendChat(message, options = {}) {
   if (options.displayImage) userHistoryEntry.imagePreview = options.displayImage;
   state.chatHistory.push(userHistoryEntry);
   state.chatHistory = state.chatHistory.slice(-80);
-  state.chatAbortController = new AbortController();
+  const requestController = new AbortController();
+  state.chatAbortController = requestController;
   state.chatStopRequested = false;
   setChatBusy(true);
+  let chatTurnReleased = false;
+  const releaseChatTurn = () => {
+    if (chatTurnReleased) return;
+    chatTurnReleased = true;
+    if (state.chatAbortController !== requestController) return;
+    state.chatAbortController = null;
+    state.chatStopRequested = false;
+    setChatBusy(false);
+    els.chatInput.focus();
+    processNextQueuedChat();
+  };
   let assistantNode = null;
   let assistantHistoryEntry = null;
   let draftPersistTimer = null;
@@ -5027,7 +5045,7 @@ async function sendChat(message, options = {}) {
     const response = await fetch("/api/chat-stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      signal: state.chatAbortController.signal,
+      signal: requestController.signal,
       body: JSON.stringify({
         message,
         webSearchEnabled,
@@ -5211,7 +5229,6 @@ async function sendChat(message, options = {}) {
         delete assistantHistoryEntry.partial;
       }
       state.agentContextKey = contextKey;
-      await flushDraftPersist();
     } else {
       const textNodes = assistantAnswerNodes(assistantNode);
       const textNode = textNodes[textNodes.length - 1] || currentMessageTextNode(assistantNode);
@@ -5283,10 +5300,12 @@ async function sendChat(message, options = {}) {
         }
       }
       state.agentContextKey = contextKey;
-      await flushDraftPersist();
       scrollMessagesToBottom();
     }
-    await fetchStatus();
+    const completionPersist = flushDraftPersist();
+    releaseChatTurn();
+    await completionPersist;
+    fetchStatus().catch((error) => console.warn("回答完成后刷新状态失败", error));
   } catch (error) {
     const stopped = state.chatStopRequested || error.name === "AbortError";
     const stoppedText = assistantDraftRaw.trim()
@@ -5308,11 +5327,7 @@ async function sendChat(message, options = {}) {
     }
     await flushDraftPersist();
   } finally {
-    state.chatAbortController = null;
-    state.chatStopRequested = false;
-    setChatBusy(false);
-    els.chatInput.focus();
-    processNextQueuedChat();
+    releaseChatTurn();
   }
 }
 
