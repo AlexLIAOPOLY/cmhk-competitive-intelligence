@@ -12,12 +12,19 @@ import web_app
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
-    def test_chat_ignores_initial_status_marker_but_keeps_reasoning_stream(self) -> None:
+    def test_chat_removes_all_thinking_marker_ui_but_keeps_reasoning_stream(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
 
         self.assertNotIn('else if (event.type === "status")', app)
         self.assertIn('else if (event.type === "reasoning")', app)
         self.assertIn("appendModelReasoning(assistantNode, event.text)", app)
+        self.assertNotIn("appendRagProcess", app)
+        self.assertNotIn("appendRunSummary", app)
+        self.assertNotIn("showThinkingPanel", app)
+        self.assertNotIn('>Thinking<', app)
+        self.assertNotIn(".rag-process", styles)
+        self.assertNotIn(".thinking-dots", styles)
         merge_start = app.index("function mergeCitationMeta")
         merge_end = app.index("function appendActionConfirmation", merge_start)
         self.assertNotIn("appendRagProcess(", app[merge_start:merge_end])

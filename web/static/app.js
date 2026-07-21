@@ -4049,12 +4049,6 @@ function appendActionConfirmation(node, event, originalMessage) {
   body.appendChild(card);
 }
 
-function appendRunSummary(node, event) {
-  const ms = Number(event.durationMs || 0);
-  const seconds = ms ? `${(ms / 1000).toFixed(1)}s` : "-";
-  appendRagProcess(node, `本轮完成：${event.status || "ok"}，工具 ${Number(event.toolCount || 0)} 次，用时 ${seconds}。`);
-}
-
 function normalizeStoredChatRole(value) {
   const role = String(value || "").trim().toLowerCase();
   return ["assistant", "ai", "model"].includes(role) ? "assistant" : "user";
@@ -4587,33 +4581,6 @@ function renderAssistantTextWithProcess(node, rawContent, markdown = true, textN
   return contentWithoutProcess;
 }
 
-function appendRagProcess(node, text) {
-  if (!node || node.dataset.showThinkingPanel !== "true") return;
-  let processNode = node.querySelector(".rag-process");
-  if (!processNode) {
-    processNode = document.createElement("details");
-    processNode.className = "rag-process";
-    const title = document.createElement("summary");
-    title.className = "rag-process-title";
-    title.innerHTML = `<span class="rag-process-caret" aria-hidden="true">▾</span><span>Thinking</span><span class="thinking-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>`;
-    title.setAttribute("aria-label", "Thinking");
-    processNode.appendChild(title);
-    const steps = document.createElement("div");
-    steps.className = "rag-process-steps";
-    processNode.appendChild(steps);
-    const body = node.querySelector(".message-body");
-    body.insertBefore(processNode, body.firstChild);
-  }
-  const steps = processNode.querySelector(".rag-process-steps");
-  if (!steps) return;
-  const exists = [...steps.querySelectorAll(".rag-step")].some((item) => item.textContent === text);
-  if (exists) return;
-  const step = document.createElement("div");
-  step.className = "rag-step";
-  step.textContent = text;
-  steps.appendChild(step);
-}
-
 function appendRagSources(node, sources, links) {
   // No-op for the top process display - we now show sources in the footer instead
   // (kept for compatibility)
@@ -4980,9 +4947,6 @@ async function sendChat(message, options = {}) {
     state.chatHistory = state.chatHistory.slice(-80);
     await persistActiveThread();
     const webSearchEnabled = Boolean(state.webSearchEnabled);
-    const thinkingEnabled = false;
-    const showReasoningPanel = chatModelTags(state.chatModel).some((tag) => tag === "推理" || tag === "混合");
-    assistantNode.dataset.showThinkingPanel = showReasoningPanel ? "true" : "false";
     const selectedSkillIds = Array.from(state.selectedSkillIds);
     const selectedDatasetIds = Array.from(state.selectedDatasetIds);
     const contextKey = currentAgentContextKey(selectedSkillIds, selectedDatasetIds);
@@ -4996,7 +4960,7 @@ async function sendChat(message, options = {}) {
       body: JSON.stringify({
         message,
         webSearchEnabled,
-        thinkingEnabled,
+        thinkingEnabled: false,
         selectedSkillIds,
         selectedDatasetIds,
         approvedActionIds,
@@ -5100,8 +5064,6 @@ async function sendChat(message, options = {}) {
           appendModelReasoning(assistantNode, event.text);
           scheduleDraftPersist();
           scrollMessagesToBottom();
-        } else if (event.type === "thinking_status" || event.type === "process") {
-          if (thinkingEnabled) appendRagProcess(assistantNode, event.text);
         } else if (event.type === "meta") {
           finishStreamingText();
           mergeCitationMeta(assistantNode, event);
@@ -5109,8 +5071,6 @@ async function sendChat(message, options = {}) {
         } else if (event.type === "action_confirmation") {
           finishStreamingText();
           appendActionConfirmation(assistantNode, event, message);
-        } else if (event.type === "run_summary") {
-          if (thinkingEnabled) appendRunSummary(assistantNode, event);
         } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
           if (event.type === "tool_call_result" && event.name === "read_agent_skill" && event.args) {
             try {
