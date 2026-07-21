@@ -18,7 +18,11 @@ from urllib.request import Request
 
 from langchain_core.messages import AIMessageChunk, ToolMessage
 from langchain_core.tools import tool
-from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
+from ai_rate_limit import (
+    RateLimitedChatDeepSeek as ChatDeepSeek,
+    reset_internal_ai_priority,
+    set_internal_ai_priority,
+)
 from langgraph.prebuilt import create_react_agent
 
 from ai_config import load_ai_config
@@ -2246,7 +2250,14 @@ def stream_agent(
         buffered = disabled_web_notice_buffer
         disabled_web_notice_buffer = ""
         return [buffered] if buffered else []
-    
+
+    priority_token = set_internal_ai_priority("interactive")
+    status_event = {
+        "type": "status",
+        "text": "已进入完整 Agent 流程，正在分析问题并规划工具调用。",
+    }
+    recorder.observe(status_event)
+    yield status_event
     try:
         events = _stream_agent_events(agent, inputs)
         for chunk, metadata in events:
@@ -2383,6 +2394,7 @@ def stream_agent(
         recorder.finish()
         yield {"type": "done"}
     finally:
+        reset_internal_ai_priority(priority_token)
         SELECTED_DATASET_IDS.reset(dataset_token)
         SELECTED_SKILL_IDS.reset(skill_token)
         APPROVED_ACTION_IDS.reset(approved_token)

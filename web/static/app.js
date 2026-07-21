@@ -356,11 +356,6 @@ function chatModelTags(modelName) {
   return tags;
 }
 
-function modelSupportsReasoning(modelName) {
-  const tags = chatModelTags(modelName);
-  return tags.includes("推理") || tags.includes("混合");
-}
-
 function renderChatModelOptions() {
   if (!els.chatModelOptions) return;
   const models = visibleChatModels();
@@ -5006,8 +5001,9 @@ async function sendChat(message, options = {}) {
     state.chatHistory = state.chatHistory.slice(-80);
     await persistActiveThread();
     const webSearchEnabled = Boolean(state.webSearchEnabled);
-    const thinkingEnabled = modelSupportsReasoning(state.chatModel);
-    assistantNode.dataset.showThinkingPanel = thinkingEnabled ? "true" : "false";
+    const thinkingEnabled = false;
+    const showReasoningPanel = chatModelTags(state.chatModel).some((tag) => tag === "推理" || tag === "混合");
+    assistantNode.dataset.showThinkingPanel = showReasoningPanel ? "true" : "false";
     const selectedSkillIds = Array.from(state.selectedSkillIds);
     const selectedDatasetIds = Array.from(state.selectedDatasetIds);
     const contextKey = currentAgentContextKey(selectedSkillIds, selectedDatasetIds);
@@ -5118,7 +5114,11 @@ async function sendChat(message, options = {}) {
         if (event.type === "done") {
           isDone = true;
           break;
+        } else if (event.type === "status") {
+          appendRagProcess(assistantNode, event.text);
+          scrollMessagesToBottom();
         } else if (event.type === "reasoning") {
+          clearConnectingPlaceholder(assistantNode);
           appendAssistantTimelineReasoning(assistantTimeline, event.text);
           assistantHistoryEntry.timeline = assistantTimeline;
           appendModelReasoning(assistantNode, event.text);

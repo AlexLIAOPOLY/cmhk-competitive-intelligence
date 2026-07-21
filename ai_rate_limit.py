@@ -19,6 +19,9 @@ DEFAULT_REQUESTS_PER_MINUTE = 14
 _RESERVATION_ACTIVE: ContextVar[bool] = ContextVar(
     "cmhk_internal_ai_reservation_active", default=False
 )
+_REQUEST_PRIORITY: ContextVar[str] = ContextVar(
+    "cmhk_internal_ai_request_priority", default="background"
+)
 
 
 def _limit() -> int:
@@ -43,6 +46,28 @@ def _state_path() -> Path:
     return Path(tempfile.gettempdir()) / "cmhk_internal_ai_rate_limit.json"
 
 
+def set_internal_ai_priority(priority: str = "interactive"):
+    """Mark a complete workflow so foreground chat keeps reserved gateway capacity."""
+    return _REQUEST_PRIORITY.set(str(priority or "background"))
+
+
+def reset_internal_ai_priority(token: Any) -> None:
+    _REQUEST_PRIORITY.reset(token)
+
+
+def _effective_limit(total_limit: int) -> int:
+    if _REQUEST_PRIORITY.get() == "interactive":
+        return total_limit
+    reserve = max(
+        1,
+        min(
+            total_limit - 1,
+            int(os.environ.get("CMHK_INTERNAL_AI_INTERACTIVE_RESERVE", "4")),
+        ),
+    )
+    return max(1, total_limit - reserve)
+
+
 def wait_for_internal_ai_slot(operation: str = "internal-model") -> float:
     """Reserve one request in the gateway's shared UTC calendar-minute bucket."""
     total_wait = 0.0
@@ -51,7 +76,8 @@ def wait_for_internal_ai_slot(operation: str = "internal-model") -> float:
     while True:
         now = time.time()
         window = int(now // 60)
-        limit = _limit()
+        total_limit = _limit()
+        limit = _effective_limit(total_limit)
         with path.open("a+", encoding="utf-8") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
             handle.seek(0)
