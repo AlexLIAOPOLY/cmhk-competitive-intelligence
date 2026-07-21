@@ -330,7 +330,7 @@ function renderWebSearchToggle() {
 }
 
 function modelSupportsImages(modelName) {
-  return /(?:vision|multimodal|omni|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)/i.test(String(modelName || ""));
+  return /(?:vision|multimodal|omni|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3|kimi[-_.]?k2\.5)/i.test(String(modelName || ""));
 }
 
 function isConversationalModel(modelName) {
@@ -348,7 +348,7 @@ function chatModelTags(modelName) {
   const value = String(modelName || "").trim();
   const normalized = value.toLowerCase();
   const tags = [];
-  if (modelSupportsImages(value) || normalized === "kimi-k2.5") tags.push("多模态");
+  if (modelSupportsImages(value)) tags.push("多模态");
   if (/(?:deepseek-r1|qwen3-[^/]*thinking)/i.test(value)) tags.push("推理");
   if (/(?:deepseek-v4)/i.test(value) || /^dict\/qwen3-(?:1\.7b|4b|14b)$/i.test(value)) tags.push("混合");
   if (/(?:code|coder|coding)/i.test(value) || normalized === "minimax-m2.1") tags.push("编码");
@@ -452,7 +452,7 @@ async function analyzeChatImage(attachment, question) {
     const response = await fetch("/api/chat-image-analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: attachment.dataUrl, filename: attachment.name, question }),
+      body: JSON.stringify({ image: attachment.dataUrl, filename: attachment.name, question, model: state.chatModel }),
     });
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "图片理解失败");

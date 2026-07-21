@@ -109,8 +109,8 @@ def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:
 
 def analyze_chat_image(payload: dict) -> dict:
     config = load_ai_config(include_key=True)
-    model = str(config.get("model") or "").strip()
-    if not re.search(r"(?:vision|multimodal|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)", model, flags=re.I):
+    model = str(payload.get("model") or config.get("model") or "").strip()
+    if not re.search(r"(?:vision|multimodal|omni|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3|kimi[-_.]?k2\.5)", model, flags=re.I):
         raise ValueError("当前模型未声明视觉能力，请先在输入框切换到视觉模型")
     data_url = str(payload.get("image") or "").strip()
     match = re.fullmatch(r"data:(image/(?:png|jpeg|webp|gif));base64,([A-Za-z0-9+/=\s]+)", data_url, flags=re.I)
