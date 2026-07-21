@@ -18,6 +18,7 @@ from matplotlib.ticker import FuncFormatter
 
 ROOT = Path(__file__).resolve().parent
 CHART_OUTPUT_DIR = ROOT / "agent_knowledge" / "generated_charts"
+CHART_RENDERER_VERSION = "2026-07-21-cjk-font-v2"
 
 COLOR_PALETTE = [
     "#0077C8",
@@ -190,7 +191,15 @@ def _format_value_label(value: float, unit: str) -> str:
     return f"{number}{unit}" if unit else number
 
 
-def _label_bars(ax, container, values: list[float], unit: str, *, center: bool = False) -> None:
+def _label_bars(
+    ax,
+    container,
+    values: list[float],
+    unit: str,
+    font_prop,
+    *,
+    center: bool = False,
+) -> None:
     labels = [_format_value_label(value, unit) if value != 0 else "" for value in values]
     ax.bar_label(
         container,
@@ -200,6 +209,7 @@ def _label_bars(ax, container, values: list[float], unit: str, *, center: bool =
         fontsize=8.2,
         color="white" if center else "#344054",
         fontweight="bold" if center else "normal",
+        fontproperties=font_prop,
     )
 
 
@@ -238,6 +248,13 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
     font_path, font_name = _find_cjk_font()
     font_prop = font_manager.FontProperties(fname=font_path) if font_path else None
     plt.rcParams["axes.unicode_minus"] = False
+    if font_path:
+        try:
+            font_manager.fontManager.addfont(font_path)
+        except Exception:
+            pass
+        plt.rcParams["font.family"] = [font_name, "sans-serif"]
+        plt.rcParams["font.sans-serif"] = [font_name, "DejaVu Sans"]
 
     chart_type = spec["type"]
     x_labels = spec["x"]
@@ -259,7 +276,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             values = _category_values(item, label_count)
             bars = ax.bar([x + offsets[index] for x in x_pos], values, width=width * 0.92, label=item["name"], color=item["color"], alpha=0.92)
             if label_count * count <= 30:
-                _label_bars(ax, bars, values, spec["unit"])
+                _label_bars(ax, bars, values, spec["unit"], font_prop)
     elif chart_type == "horizontal_bar":
         count = len(spec["series"])
         height = min(0.24, 0.72 / max(count, 1))
@@ -268,7 +285,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             values = _category_values(item, label_count)
             bars = ax.barh([y + offsets[index] for y in x_pos], values, height=height * 0.92, label=item["name"], color=item["color"], alpha=0.92)
             if label_count * count <= 30:
-                _label_bars(ax, bars, values, spec["unit"])
+                _label_bars(ax, bars, values, spec["unit"], font_prop)
         ax.set_yticks(x_pos, x_labels, fontproperties=font_prop)
         ax.invert_yaxis()
         ax.grid(axis="x", color="#E6EEF6", linewidth=1.0)
@@ -283,7 +300,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             bottoms = [positive[i] if value >= 0 else negative[i] for i, value in enumerate(values)]
             bars = ax.bar(x_pos, values, bottom=bottoms, label=item["name"], color=item["color"], alpha=0.92)
             if label_count * len(spec["series"]) <= 24:
-                _label_bars(ax, bars, values, spec["unit"], center=True)
+                _label_bars(ax, bars, values, spec["unit"], font_prop, center=True)
             for index, value in enumerate(values):
                 if value >= 0:
                     positive[index] += value
@@ -380,7 +397,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
         first_values = _category_values(first, label_count)
         bars = ax.bar(x_pos, first_values, width=0.58, label=first["name"], color=first["color"], alpha=0.82)
         if label_count <= 20:
-            _label_bars(ax, bars, first_values, spec["unit"])
+            _label_bars(ax, bars, first_values, spec["unit"], font_prop)
         for item in rest:
             ax.plot(x_pos, _category_values(item, label_count, float("nan")), label=item["name"], color=item["color"], linewidth=2.2, marker="o", markersize=4.0)
     else:
@@ -407,7 +424,8 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
         bottom = 0.08
     fig.subplots_adjust(left=0.10, right=0.97, top=0.82, bottom=bottom)
 
-    digest = hashlib.sha256(json.dumps(spec, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    digest_payload = {"renderer": CHART_RENDERER_VERSION, "spec": spec}
+    digest = hashlib.sha256(json.dumps(digest_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
     filename = f"chart_{digest}.png"
     path = CHART_OUTPUT_DIR / filename
     fig.savefig(path, bbox_inches="tight", facecolor="white")
