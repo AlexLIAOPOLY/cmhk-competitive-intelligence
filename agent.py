@@ -321,6 +321,11 @@ class MarkdownTableLimiter:
             line = self.buffer[: newline_index + 1]
             self.buffer = self.buffer[newline_index + 1 :]
             output.append(self._process_line(line))
+        if not self.in_table and self.buffer:
+            stripped = self.buffer.lstrip()
+            if stripped and not stripped.startswith("|"):
+                output.append(self.buffer)
+                self.buffer = ""
         return "".join(output)
 
     def flush(self) -> str:
@@ -2461,8 +2466,8 @@ def stream_agent(
             return "正在理解问题、检查上下文并确定下一步分析方法。"
         return reasoning
 
-    def replay_reasoning_text(text: str) -> Generator[str, None, None]:
-        """Replay a validated full reasoning message as visible streaming chunks."""
+    def replay_validated_text(text: str, *, delay_seconds: float = 0.022) -> Generator[str, None, None]:
+        """Replay validated full model text as ordered SSE-sized chunks."""
         if not text:
             return
         if len(text) <= 18:
@@ -2479,7 +2484,7 @@ def stream_agent(
             yield text[cursor:end]
             cursor = end
             if cursor < len(text):
-                time.sleep(0.022)
+                time.sleep(delay_seconds)
 
     def filter_disabled_web_notice(text: str) -> list[str]:
         """Drop a leading web-toggle explanation; keep normal streaming intact."""
@@ -2534,7 +2539,7 @@ def stream_agent(
                 reasoning_text = visible_reasoning_text(chunk)
                 if reasoning_text:
                     reasoning_parts = (
-                        replay_reasoning_text(reasoning_text)
+                        replay_validated_text(reasoning_text)
                         if isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
                         else [reasoning_text]
                     )
@@ -2544,11 +2549,17 @@ def stream_agent(
                         yield event
                 if chunk.content and isinstance(chunk.content, str):
                     for text in filter_disabled_web_notice(chunk.content):
-                        limited_text = table_limiter.feed(text)
-                        if limited_text:
-                            event = {"type": "delta", "text": limited_text}
-                            recorder.observe(event)
-                            yield event
+                        content_parts = (
+                            replay_validated_text(text, delay_seconds=0.018)
+                            if isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
+                            else [text]
+                        )
+                        for content_part in content_parts:
+                            limited_text = table_limiter.feed(content_part)
+                            if limited_text:
+                                event = {"type": "delta", "text": limited_text}
+                                recorder.observe(event)
+                                yield event
                 tool_call_chunks = getattr(chunk, "tool_call_chunks", None) or []
                 if not tool_call_chunks:
                     for index, tool_call in enumerate(getattr(chunk, "tool_calls", None) or []):

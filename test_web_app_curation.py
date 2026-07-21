@@ -337,11 +337,18 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             self.assertTrue(agent._looks_like_unstable_model_text(sample), sample[:80])
         self.assertFalse(agent._looks_like_unstable_model_text("这是清晰、正常的中文分析结论。"))
 
+    def test_markdown_limiter_streams_plain_text_but_buffers_table_rows(self) -> None:
+        limiter = agent.MarkdownTableLimiter()
+        self.assertEqual(limiter.feed("普通正文第一段"), "普通正文第一段")
+        self.assertEqual(limiter.feed("继续流式返回"), "继续流式返回")
+        self.assertEqual(limiter.feed("|列一|列二"), "")
+        self.assertEqual(limiter.feed("|\n"), "|列一|列二|\n")
+
     def test_non_streaming_ai_message_keeps_reasoning_panel_and_final_answer(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None):
                 yield agent.AIMessage(
-                    content="这是正常的中文最终答案。",
+                    content="这是正常的中文最终答案，正文也必须通过多个连续事件逐段流式返回给页面。",
                     additional_kwargs={"reasoning_content": "The model checked context and prepared the answer."},
                 ), {}
 
@@ -351,8 +358,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         reasoning = [event for event in events if event.get("type") == "reasoning"]
         answers = [event for event in events if event.get("type") == "delta"]
         self.assertGreater(len(reasoning), 1)
+        self.assertGreater(len(answers), 1)
         self.assertIn("正在组织", "".join(event["text"] for event in reasoning))
-        self.assertEqual("".join(event["text"] for event in answers), "这是正常的中文最终答案。")
+        self.assertEqual(
+            "".join(event["text"] for event in answers),
+            "这是正常的中文最终答案，正文也必须通过多个连续事件逐段流式返回给页面。",
+        )
 
     def test_non_streaming_ai_message_preserves_structured_tool_events(self) -> None:
         class FakeAgent:
