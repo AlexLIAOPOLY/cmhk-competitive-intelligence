@@ -686,15 +686,15 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
             or item.get("retrieved_at")
             or generated_at
         ),
-        _text(item.get("region") or "国际/行业", 40),
-        _text(item.get("category") or _category_label(item), 80),
+        _text(item.get("ai_region") or item.get("region") or "国际/行业", 40),
+        _text(item.get("ai_category") or item.get("category") or _category_label(item), 80),
         _text(item.get("ai_title"), 500),
         _text(item.get("ai_summary"), 500),
         _text(item.get("source") or item.get("source_domain"), 160),
         _display_time(item.get("source_date") or item.get("published_at")),
         _text(item.get("url"), 1600),
-        _keywords(item.get("keywords")),
-        _text(item.get("filter_reason") or "战略新闻候选", 300),
+        _text(item.get("ai_keywords") or _keywords(item.get("keywords")), 500),
+        _text(item.get("ai_inclusion_reason") or item.get("filter_reason") or "战略新闻候选", 300),
     ]
 
 def sync_candidates(
@@ -1235,6 +1235,24 @@ _HONG_KONG_RE = re.compile(
     r"(?:hong kong|\bhk\b|香港|ofca|itib|cyberport|science park|数码港|數碼港|科学园|科學園)",
     re.I,
 )
+
+
+def _region_label(item: dict[str, Any]) -> str:
+    """Classify the event location without treating its publisher as evidence."""
+    title = _text(item.get("title"), 500)
+    snippet = _text(item.get("snippet"), 1800)
+    evidence = f"{title} {snippet}"
+    for publisher in (
+        _text(item.get("source"), 240),
+        _text(item.get("source_domain"), 240),
+    ):
+        if publisher:
+            evidence = re.sub(re.escape(publisher), " ", evidence, flags=re.I)
+    evidence = re.sub(r"\b(?:hk01|hong\s*kong\s*01)\b|香港\s*01", " ", evidence, flags=re.I)
+    evidence = _text(evidence, 2300)
+    if _LOCAL_COMPETITOR_RE.search(evidence) or _HONG_KONG_RE.search(evidence):
+        return "香港本地"
+    return "国际/行业"
 _STRATEGIC_RE = re.compile(
     r"(?:telecom|telecommunications|mobile operator|carrier|\b5g(?:-a)?\b|\b6g\b|"
     r"open ran|\bran\b|broadband|fibre|fiber|spectrum|mvno|esim|roaming|submarine cable|"
@@ -1511,7 +1529,7 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         return False, "非电信资产或业务事件"
     direct_competitor = bool(_DIRECT_COMPETITOR_RE.search(text))
     if _FINANCE_RE.search(lower_text) and not direct_competitor:
-        return False, "非香港竞对股市或业绩稿"
+        relevance_reason = "待AI审核的资本市场新闻"
     competitor_relevant, relevance_reason = _competitor_relevance(item)
     if not competitor_relevant:
         if _POLICY_RE.search(text) and (
@@ -1525,7 +1543,7 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         elif _STRATEGIC_RE.search(text):
             relevance_reason = "战略产业新闻"
         else:
-            return False, "未达到战略相关门槛"
+            relevance_reason = "待AI战略审核"
     generic_titles = {
         "hkt", "pccw", "ctexcel", "documentctexcel", "1010home", "wwwbisgov",
         "香港電訊商及流動數據服務csl", "香港电讯商及流动数据服务csl",
@@ -1559,8 +1577,11 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
         ):
             reasons["重复新闻"] += 1
             continue
-        text = f"{_text(item.get('title'), 500)} {_text(item.get('snippet'), 1800)}"
-        item["region"] = "香港本地" if _HONG_KONG_RE.search(text) or _LOCAL_COMPETITOR_RE.search(text) else "国际/行业"
+        item["region"] = (
+            _text(item.get("ai_region"), 20)
+            if _text(item.get("ai_region"), 20) in {"香港本地", "国际/行业"}
+            else _region_label(item)
+        )
         if "竞对" in reason or "运营商" in reason:
             item["category"] = "竞对动态"
         elif reason == "政策监管":
@@ -1615,6 +1636,14 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             generated_at = _text(payload.get("generated_at"), 60)
     if combined:
         curated, reasons = curate_news_items(combined)
+        try:
+            from strategic_briefing import polish_candidates_before_review
+
+            polished = polish_candidates_before_review(curated)
+            curated = polished
+        except Exception as exc:
+            logging.exception("公司内部 AI 候选审核失败，将在下轮重试: %s", exc)
+            curated = []
         category_counts = Counter(
             _text(item.get("category") or "未分类", 80) for item in curated
         )

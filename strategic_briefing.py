@@ -13,6 +13,7 @@ from datetime import datetime, time as clock_time, timedelta
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode, urlparse, urlunparse
+from urllib.error import HTTPError
 from urllib.request import ProxyHandler, Request, build_opener, urlopen
 from zoneinfo import ZoneInfo
 
@@ -26,7 +27,7 @@ STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
-AI_EDITOR_VERSION = 1
+AI_EDITOR_VERSION = 5
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
@@ -1096,13 +1097,31 @@ def _call_internal_ai(
         30,
         int(os.environ.get("CMHK_STRATEGY_AI_TIMEOUT_SECONDS", "60")),
     )
-    attempts = max(1, int(os.environ.get("CMHK_STRATEGY_AI_ATTEMPTS", "2")))
+    attempts = max(1, int(os.environ.get("CMHK_STRATEGY_AI_ATTEMPTS", "4")))
     payload: dict[str, Any] = {}
     for attempt in range(1, attempts + 1):
         try:
             with opener.open(request, timeout=timeout_seconds) as response:
                 payload = json.loads(response.read().decode("utf-8", errors="ignore"))
             break
+        except HTTPError as exc:
+            retryable = exc.code == 429 or 500 <= exc.code < 600
+            if not retryable or attempt >= attempts:
+                raise
+            retry_after = 0
+            try:
+                retry_after = int(exc.headers.get("Retry-After") or 0)
+            except (TypeError, ValueError):
+                retry_after = 0
+            delay = min(30, max(retry_after, 2 ** attempt * 2))
+            logging.warning(
+                "公司内部 AI 返回 HTTP %s，%s 秒后重试 %s/%s",
+                exc.code,
+                delay,
+                attempt + 1,
+                attempts,
+            )
+            time.sleep(delay)
         except TimeoutError:
             if attempt >= attempts:
                 raise
@@ -1146,6 +1165,7 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
             1800,
         ),
         "category": _clean_text(item.get("category") or item.get("module"), 120),
+        "keywords": _clean_text(item.get("keywords"), 800),
         "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
         "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
     }
@@ -1154,7 +1174,10 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
     ).hexdigest()
 
 
-def _validated_ai_copy(value: dict[str, Any]) -> dict[str, str]:
+def _validated_ai_copy(
+    value: dict[str, Any], *, require_review_fields: bool = False,
+    allowed_keywords: Any = None,
+) -> dict[str, str]:
     title = _clean_text(value.get("title") or value.get("ai_title"), 48)
     summary = _clean_text(value.get("summary") or value.get("ai_summary"), 96)
     if not title or not re.search(r"[\u4e00-\u9fff]", title):
@@ -1163,7 +1186,63 @@ def _validated_ai_copy(value: dict[str, Any]) -> dict[str, str]:
         raise RuntimeError("公司内部 AI 未返回有效中文内容简介")
     if _META_SUMMARY_PREFIX.search(summary):
         raise RuntimeError("公司内部 AI 内容简介仍使用元话术，未直接陈述内容")
-    return {"title": title, "summary": summary}
+    result = {"title": title, "summary": summary}
+    if not require_review_fields:
+        return result
+    raw_should_include = value.get("should_include")
+    if isinstance(raw_should_include, bool):
+        should_include = raw_should_include
+    elif str(raw_should_include).strip().lower() in {"true", "1", "yes", "是", "入选"}:
+        should_include = True
+    elif str(raw_should_include).strip().lower() in {"false", "0", "no", "否", "不入选"}:
+        should_include = False
+    else:
+        raise RuntimeError("公司内部 AI 未返回是否入选")
+    region = _clean_text(value.get("region"), 20)
+    category = _clean_text(value.get("category"), 40)
+    if isinstance(allowed_keywords, (list, tuple, set)):
+        configured_keywords = [
+            _clean_text(keyword, 80) for keyword in allowed_keywords if _clean_text(keyword, 80)
+        ]
+    else:
+        configured_keywords = [
+            _clean_text(keyword, 80)
+            for keyword in re.split(r"[,，、;；|\n]+", str(allowed_keywords or ""))
+            if _clean_text(keyword, 80)
+        ]
+    configured_by_key = {keyword.casefold(): keyword for keyword in configured_keywords}
+    proposed_keywords = [
+        _clean_text(keyword, 80)
+        for keyword in re.split(r"[,，、;；|\n]+", str(value.get("keywords") or ""))
+        if _clean_text(keyword, 80)
+    ]
+    approved_keywords = [
+        configured_by_key[keyword.casefold()]
+        for keyword in proposed_keywords
+        if keyword.casefold() in configured_by_key
+    ]
+    keywords = "、".join(dict.fromkeys(approved_keywords or configured_keywords))
+    inclusion_reason = _clean_text(value.get("inclusion_reason"), 120)
+    region_reason = _clean_text(value.get("region_reason"), 120)
+    if region not in {"香港本地", "国际/行业"}:
+        raise RuntimeError("公司内部 AI 未返回有效地域")
+    if not category:
+        raise RuntimeError("公司内部 AI 未返回分类")
+    if should_include and not keywords:
+        raise RuntimeError("公司内部 AI 未返回命中关键词")
+    if len(inclusion_reason) < 8:
+        raise RuntimeError("公司内部 AI 未返回有效入池理由")
+    if len(region_reason) < 4:
+        raise RuntimeError("公司内部 AI 未返回有效地域依据")
+    return {
+        **result,
+        "should_include": should_include,
+        "region": region,
+        "category": category,
+        "keywords": keywords,
+        "inclusion_reason": inclusion_reason,
+        "region_reason": region_reason,
+    }
 
 
 def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -1181,14 +1260,28 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         existing = {
             "title": item.get("ai_title"),
             "summary": item.get("ai_summary"),
+            "should_include": item.get("ai_should_include"),
+            "region": item.get("ai_region"),
+            "category": item.get("ai_category"),
+            "keywords": item.get("ai_keywords"),
+            "inclusion_reason": item.get("ai_inclusion_reason"),
+            "region_reason": item.get("ai_region_reason"),
         }
         try:
-            resolved[key] = _validated_ai_copy(existing)
+            resolved[key] = _validated_ai_copy(
+                existing,
+                require_review_fields=True,
+                allowed_keywords=item.get("keywords"),
+            )
             continue
         except RuntimeError:
             pass
         try:
-            resolved[key] = _validated_ai_copy(cache.get(key) or {})
+            resolved[key] = _validated_ai_copy(
+                cache.get(key) or {},
+                require_review_fields=True,
+                allowed_keywords=item.get("keywords"),
+            )
             continue
         except RuntimeError:
             pending.append((key, item))
@@ -1212,6 +1305,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "category": _clean_text(item.get("category") or item.get("module"), 120),
                     "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
                     "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+                    "matched_keywords": _clean_text(item.get("keywords"), 800),
+                    "rule_gate_reason": _clean_text(item.get("filter_reason"), 240),
                 }
             )
         try:
@@ -1219,12 +1314,25 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 (
                     "你是公司内部战略新闻编辑。只输出合法JSON对象，结构为"
                     "{\"items\":[{\"id\":\"输入id\",\"title\":\"中文标题\","
-                    "\"summary\":\"内容简介\"}]}。每条都必须返回且id原样保留。"
+                    "\"summary\":\"内容简介\",\"should_include\":true或false,"
+                    "\"region\":\"香港本地或国际/行业\","
+                    "\"category\":\"分类\",\"keywords\":\"命中关键词\","
+                    "\"inclusion_reason\":\"入池理由\",\"region_reason\":\"地域依据\"}]}。"
+                    "每条都必须返回且id原样保留。"
+                    "先判断should_include：只有新闻与输入matched_keywords中的至少一个监控词存在"
+                    "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
+                    "仅媒体提及、同名误命中、泛社会新闻或关键词没有正文证据时必须为false。"
                     "title须为简洁准确的中文标题，品牌名和必要缩写可保留。"
                     "summary须用一至两句、最多96个中文字符直接说明发生了什么，"
                     "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
                     "不得写‘可点击原文、值得关注、反映了、涉及’等空泛提示。"
-                    "只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
+                    "region必须依据新闻事件主体、明确发生地和受影响市场判断。"
+                    "来源媒体、媒体域名、报道语言及媒体所在地绝不能作为地域证据；"
+                    "香港媒体报道中国内地或海外事件仍应判为国际/行业。"
+                    "category根据事件实质给出简洁业务分类。keywords只能从输入matched_keywords中选择"
+                    "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
+                    "inclusion_reason直接说明其战略价值，不复述规则。"
+                    "region_reason简述事件地域证据。只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
                 ),
                 json.dumps({"items": request_items}, ensure_ascii=False),
                 max_tokens=max(1200, len(batch) * 300),
@@ -1245,22 +1353,36 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         request_map = {str(entry["id"]): entry for entry in request_items}
         for key, _item in batch:
             try:
-                edited = _validated_ai_copy(response_map.get(key[:16]) or {})
+                edited = _validated_ai_copy(
+                    response_map.get(key[:16]) or {},
+                    require_review_fields=True,
+                    allowed_keywords=_item.get("keywords"),
+                )
             except RuntimeError:
                 source = request_map[key[:16]]
                 try:
                     retry = _call_internal_ai(
                         (
-                            "你是公司内部战略新闻中文编辑。只输出合法JSON对象，字段为title和summary。"
+                            "你是公司内部战略新闻审核员。只输出合法JSON对象，字段为title、summary、should_include、"
+                            "region、category、keywords、inclusion_reason、region_reason。"
                             "title必须是简洁准确的中文标题。summary必须用一至两句、16至96个中文字符"
                             "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
                             "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
-                            "仅使用输入已有事实，不补造内容，不要Markdown。"
+                            "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
+                            "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
+                            "should_include只有在新闻与matched_keywords存在正文证据和战略信息价值时才为true。"
+                            "category按事件实质分类；keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
+                            "并用顿号分隔；inclusion_reason说明战略价值；"
+                            "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
                         ),
                         json.dumps(source, ensure_ascii=False),
                         max_tokens=1200,
                     )
-                    edited = _validated_ai_copy(retry)
+                    edited = _validated_ai_copy(
+                        retry,
+                        require_review_fields=True,
+                        allowed_keywords=_item.get("keywords"),
+                    )
                 except Exception as exc:
                     logging.error(
                         "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
@@ -1292,6 +1414,16 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item.setdefault("source_title", _clean_text(item.get("title"), 500))
         item["ai_title"] = edited["title"]
         item["ai_summary"] = edited["summary"]
+        item["ai_should_include"] = edited["should_include"]
+        item["ai_region"] = edited["region"]
+        item["ai_category"] = edited["category"]
+        item["ai_keywords"] = edited["keywords"]
+        item["ai_inclusion_reason"] = edited["inclusion_reason"]
+        item["ai_region_reason"] = edited["region_reason"]
+        item["region"] = edited["region"]
+        item["category"] = edited["category"]
+        if not edited["should_include"]:
+            continue
         item["ai_polished_at"] = _now_iso()
         item["ai_editor_version"] = AI_EDITOR_VERSION
         polished_items.append(item)
