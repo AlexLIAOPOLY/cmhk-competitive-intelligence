@@ -344,12 +344,23 @@ function visibleChatModels() {
   return state.chatModels.filter(isConversationalModel);
 }
 
+function chatModelTags(modelName) {
+  const value = String(modelName || "");
+  const tags = [];
+  if (modelSupportsImages(value)) tags.push("多模态");
+  if (/(?:r1|thinking|reason)/i.test(value)) tags.push("推理");
+  if (/(?:code|coder|coding)/i.test(value)) tags.push("编码");
+  if (!tags.length) tags.push("文本");
+  return tags;
+}
+
 function renderChatModelOptions() {
   if (!els.chatModelOptions) return;
   const models = visibleChatModels();
   els.chatModelOptions.innerHTML = models.length ? models.map((model) => {
     const active = model === state.chatModel;
-    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><strong>${escapeHtml(model)}</strong><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
+    const tags = chatModelTags(model).map((tag) => `<span class="chat-model-tag" data-tag="${tag}">${tag}</span>`).join("");
+    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><strong>${escapeHtml(model)}</strong><span class="chat-model-tags">${tags}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
   }).join("") : '<div class="chat-model-empty">没有匹配的语言模型</div>';
 }
 
