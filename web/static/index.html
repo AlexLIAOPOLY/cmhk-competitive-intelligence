@@ -222,33 +222,40 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
                   </button>
                   <div class="composer-plus-menu" id="composerPlusMenu" hidden>
+                    <div class="composer-menu-heading"><strong>添加到对话</strong><span>选择能力、数据或附件</span></div>
                     <div class="skill-picker">
                       <button class="skill-toggle composer-menu-action" id="skillToggle" type="button" aria-expanded="false" title="选择 Agent Skill">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg><span>能力</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></svg><span>能力</span><small>选择分析方法</small>
                       </button>
                       <div class="skill-menu" id="skillMenu" hidden></div>
                     </div>
                     <div class="database-picker">
                       <button class="database-toggle composer-menu-action" id="databaseToggle" type="button" aria-expanded="false" title="选择发送给 AI 的数据库">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg><span>数据库</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"></path><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg><span>数据库</span><small>限定检索范围</small>
                       </button>
                       <div class="database-menu" id="databaseMenu" hidden></div>
                     </div>
                     <button class="web-search-toggle composer-menu-action" id="webSearchToggle" type="button" aria-pressed="true" title="本轮使用网页来源">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 0 20"></path><path d="M12 2a15.3 15.3 0 0 0 0 20"></path></svg><span>联网搜索</span>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 0 20"></path><path d="M12 2a15.3 15.3 0 0 0 0 20"></path></svg><span>联网搜索</span><small>补充公开来源</small>
                     </button>
+                    <div class="composer-menu-divider"></div>
                     <button class="composer-menu-action" id="composerUploadFileButton" type="button">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg><span>上传文件</span>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg><span>上传文件</span><small>导入可检索资料</small>
                     </button>
                     <button class="composer-menu-action" id="composerUploadImageButton" type="button" disabled>
                       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg><span>上传图片</span><small>当前模型不支持</small>
                     </button>
                   </div>
                 </div>
-                <label class="chat-model-picker" title="选择本轮及后续对话使用的模型">
-                  <span class="sr-only">模型</span>
-                  <select id="chatModelSelect" aria-label="选择模型"><option>正在读取模型...</option></select>
-                </label>
+                <div class="chat-model-picker" id="chatModelPicker">
+                  <button class="chat-model-button" id="chatModelButton" type="button" aria-expanded="false" aria-label="选择语言模型"><span class="chat-model-status-dot"></span><span id="chatModelButtonLabel">正在读取模型...</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button>
+                  <div class="chat-model-menu" id="chatModelMenu" hidden>
+                    <div class="chat-model-menu-heading"><strong>选择语言模型</strong><span id="chatModelMenuHint">仅显示可用于对话的模型</span></div>
+                    <label class="chat-model-search"><span>⌕</span><input id="chatModelSearch" type="search" placeholder="搜索模型" autocomplete="off"></label>
+                    <div class="chat-model-options" id="chatModelOptions" role="listbox"></div>
+                  </div>
+                  <select class="sr-only" id="chatModelSelect" aria-label="选择模型"><option>正在读取模型...</option></select>
+                </div>
               </div>
               <input
                 class="sr-only"
@@ -405,6 +412,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=181"></script>
+    <script src="/static/app.js?v=182"></script>
   </body>
 </html>

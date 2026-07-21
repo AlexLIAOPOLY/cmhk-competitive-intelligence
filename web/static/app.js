@@ -134,6 +134,13 @@ const els = {
   composerUploadImageButton: document.querySelector("#composerUploadImageButton"),
   chatImageInput: document.querySelector("#chatImageInput"),
   chatAttachmentPreview: document.querySelector("#chatAttachmentPreview"),
+  chatModelPicker: document.querySelector("#chatModelPicker"),
+  chatModelButton: document.querySelector("#chatModelButton"),
+  chatModelButtonLabel: document.querySelector("#chatModelButtonLabel"),
+  chatModelMenu: document.querySelector("#chatModelMenu"),
+  chatModelMenuHint: document.querySelector("#chatModelMenuHint"),
+  chatModelSearch: document.querySelector("#chatModelSearch"),
+  chatModelOptions: document.querySelector("#chatModelOptions"),
   chatModelSelect: document.querySelector("#chatModelSelect"),
   skillToggle: document.querySelector("#skillToggle"),
   skillMenu: document.querySelector("#skillMenu"),
@@ -326,11 +333,45 @@ function modelSupportsImages(modelName) {
   return /(?:vision|multimodal|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3)/i.test(String(modelName || ""));
 }
 
+function isConversationalModel(modelName) {
+  const value = String(modelName || "").trim().toLowerCase();
+  if (!value) return false;
+  if (/(?:embedding|rerank|(?:^|[/_.-])bge(?:[/_.-]|$)|ocr|asr|tts|text-to-speech|speech-to-text|deprecated|voxcpm|whisper)/i.test(value)) return false;
+  return /(?:deepseek|qwen|glm|kimi|minimax|gpt|claude|gemini|llama|mistral|internlm|baichuan|chat|instruct|thinking|reason|code|omni|(?:^|[/_.-])vl(?:[/_.-]|$))/i.test(value);
+}
+
+function chatModelCategory(modelName) {
+  const value = String(modelName || "");
+  if (modelSupportsImages(value) || /omni/i.test(value)) return "多模态";
+  if (/(?:r1|thinking|reason)/i.test(value)) return "推理";
+  if (/code/i.test(value)) return "代码";
+  return "通用";
+}
+
+function visibleChatModels() {
+  return state.chatModels.filter(isConversationalModel);
+}
+
+function renderChatModelOptions() {
+  if (!els.chatModelOptions) return;
+  const query = String(els.chatModelSearch?.value || "").trim().toLowerCase();
+  const models = visibleChatModels().filter((model) => !query || String(model).toLowerCase().includes(query));
+  els.chatModelOptions.innerHTML = models.length ? models.map((model) => {
+    const active = model === state.chatModel;
+    const category = chatModelCategory(model);
+    const description = category === "多模态" ? "支持文本与图片理解" : "适用于文本对话与分析";
+    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><span class="chat-model-option-copy"><strong>${escapeHtml(model)}</strong><small>${description}</small></span><span class="chat-model-category">${category}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
+  }).join("") : '<div class="chat-model-empty">没有匹配的语言模型</div>';
+}
+
 function renderChatModelControls() {
   if (els.chatModelSelect) {
-    const models = state.chatModels.length ? state.chatModels : [state.chatModel || "未配置模型"];
+    const models = visibleChatModels().length ? visibleChatModels() : [state.chatModel || "未配置模型"];
     els.chatModelSelect.innerHTML = models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
     els.chatModelSelect.value = models.includes(state.chatModel) ? state.chatModel : models[0];
+    if (els.chatModelButtonLabel) els.chatModelButtonLabel.textContent = state.chatModel || models[0];
+    if (els.chatModelMenuHint) els.chatModelMenuHint.textContent = `仅显示可用于对话的模型 · ${visibleChatModels().length} 个`;
+    renderChatModelOptions();
   }
   const supportsImages = modelSupportsImages(state.chatModel);
   if (els.composerUploadImageButton) {
@@ -5642,11 +5683,56 @@ if (els.chatModelSelect) {
   });
 }
 
+if (els.chatModelButton) {
+  els.chatModelButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const willOpen = Boolean(els.chatModelMenu?.hidden);
+    if (els.chatModelMenu) els.chatModelMenu.hidden = !willOpen;
+    els.chatModelButton.setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+      renderChatModelOptions();
+      requestAnimationFrame(() => els.chatModelSearch?.focus());
+    }
+  });
+}
+
+if (els.chatModelSearch) els.chatModelSearch.addEventListener("input", renderChatModelOptions);
+
+if (els.chatModelOptions) {
+  els.chatModelOptions.addEventListener("click", async (event) => {
+    const option = event.target.closest("[data-model]");
+    if (!option) return;
+    const model = option.dataset.model || "";
+    if (model && model !== state.chatModel) {
+      const previous = state.chatModel;
+      state.chatModel = model;
+      renderChatModelControls();
+      try {
+        await switchChatModel(model);
+        showTaskOperationNotice(`已切换到 ${model}`);
+      } catch (error) {
+        state.chatModel = previous;
+        renderChatModelControls();
+        showTaskOperationNotice(error.message);
+      }
+    }
+    if (els.chatModelMenu) els.chatModelMenu.hidden = true;
+    els.chatModelButton?.setAttribute("aria-expanded", "false");
+  });
+}
+
 document.addEventListener("click", (event) => {
   if (!els.composerPlusMenu || els.composerPlusMenu.hidden) return;
   if (event.target.closest(".composer-plus-picker")) return;
   els.composerPlusMenu.hidden = true;
   els.composerPlusButton.setAttribute("aria-expanded", "false");
+});
+
+document.addEventListener("click", (event) => {
+  if (!els.chatModelMenu || els.chatModelMenu.hidden) return;
+  if (event.target.closest(".chat-model-picker")) return;
+  els.chatModelMenu.hidden = true;
+  els.chatModelButton?.setAttribute("aria-expanded", "false");
 });
 
 if (els.skillMenu) {
