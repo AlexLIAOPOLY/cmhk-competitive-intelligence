@@ -18,7 +18,7 @@ from urllib.request import Request
 
 from langchain_core.messages import AIMessageChunk, ToolMessage
 from langchain_core.tools import tool
-from langchain_deepseek import ChatDeepSeek
+from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from langgraph.prebuilt import create_react_agent
 
 from ai_config import load_ai_config

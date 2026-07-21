@@ -2,7 +2,7 @@ import json
 import os
 import re
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_deepseek import ChatDeepSeek
+from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from ai_config import load_ai_config
 
 _llm = None

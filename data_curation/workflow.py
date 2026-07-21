@@ -18,7 +18,7 @@ from urllib.parse import urlencode, urlparse
 
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
-from langchain_deepseek import ChatDeepSeek
+from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_rate_limit import wait_for_internal_ai_slot
 
 
 ROOT = Path(__file__).resolve().parent
@@ -958,6 +959,7 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("rag-answer")
         with urllib.request.urlopen(req, timeout=90) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -1074,6 +1076,7 @@ def stream_llm_with_rag(question: str):
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("rag-stream")
         with urllib.request.urlopen(req, timeout=120) as resp:
             for raw in resp:
                 line = raw.decode("utf-8", errors="ignore").strip()

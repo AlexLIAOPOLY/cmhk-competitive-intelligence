@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_rate_limit import wait_for_internal_ai_slot
 from rag_llm import estimate_tokens
 from network_utils import urlopen_with_local_proxy_fallback
 from company_metrics import (
@@ -1881,6 +1882,7 @@ def call_deepseek(tasks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("company-metrics-normalization")
         with urlopen_with_local_proxy_fallback(req, timeout=180) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:

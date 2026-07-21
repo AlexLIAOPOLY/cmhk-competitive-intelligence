@@ -28,6 +28,7 @@ from bs4 import BeautifulSoup
 import httpx
 
 from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from ai_rate_limit import wait_for_internal_ai_slot
 from company_metrics import build_company_metrics_payload
 from network_utils import urlopen_with_local_proxy_fallback
 
@@ -1049,6 +1050,7 @@ def _call_weekly_writer_llm(items: list[dict]) -> dict:
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("weekly-report-writer")
         with urlopen_with_local_proxy_fallback(request, timeout=120) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -1353,6 +1355,7 @@ def _call_weekly_quality_reviewer_llm(items: list[dict]) -> dict:
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("weekly-report-reviewer")
         with urlopen_with_local_proxy_fallback(request, timeout=150) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:

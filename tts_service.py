@@ -14,6 +14,7 @@ from urllib.parse import quote
 
 from docx import Document
 from network_utils import urlopen_with_local_proxy_fallback
+from ai_rate_limit import wait_for_internal_ai_slot
 
 
 ROOT = Path(__file__).resolve().parent
@@ -291,6 +292,7 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("tts-summary")
         with urlopen_with_local_proxy_fallback(req, timeout=90) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
             if provider == "openai":
@@ -818,6 +820,7 @@ def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
                 method="POST",
             )
             try:
+                wait_for_internal_ai_slot("tts-audio-chunk")
                 with urllib.request.urlopen(request, timeout=180) as response:
                     audio_bytes = response.read()
             except urllib.error.HTTPError as exc:

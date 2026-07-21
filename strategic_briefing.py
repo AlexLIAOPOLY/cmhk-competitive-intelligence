@@ -18,6 +18,7 @@ from urllib.request import ProxyHandler, Request, build_opener, urlopen
 from zoneinfo import ZoneInfo
 
 from ai_config import load_ai_config
+from ai_rate_limit import wait_for_internal_ai_slot
 
 
 ROOT = Path(__file__).resolve().parent
@@ -1101,6 +1102,7 @@ def _call_internal_ai(
     payload: dict[str, Any] = {}
     for attempt in range(1, attempts + 1):
         try:
+            wait_for_internal_ai_slot("strategic-news-review")
             with opener.open(request, timeout=timeout_seconds) as response:
                 payload = json.loads(response.read().decode("utf-8", errors="ignore"))
             break

@@ -31,6 +31,7 @@ from crawl_run_registry import (
     start_crawl_run,
 )
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
+from ai_rate_limit import wait_for_internal_ai_slot
 from company_metrics import build_company_metrics_payload
 from extractors import row_fields
 from rag_llm import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
@@ -267,6 +268,7 @@ def generate_chat_thread_title(first_user: str) -> str:
         method="POST",
     )
     try:
+        wait_for_internal_ai_slot("chat-thread-title")
         with urllib.request.urlopen(req, timeout=12) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
         content = str(payload.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
@@ -3360,6 +3362,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                     method="POST",
                 )
+                wait_for_internal_ai_slot("ai-settings-test")
                 with urllib.request.urlopen(request, timeout=45) as response:
                     response.read()
                 result = {
