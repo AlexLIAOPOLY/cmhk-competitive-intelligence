@@ -709,10 +709,12 @@ def sync_candidates(
         existing_status: dict[str, tuple[str, str]] = {}
         existing_rows_by_id: dict[str, list[Any]] = {}
         existing_title_keys: list[str] = []
+        existing_row_count = 0
         status_priority = {"接受": 4, "暂缓": 3, "待审核": 2, "不接受": 1}
         for index, row in enumerate(rows, start=2):
             if not row or not _text(row[0], 40):
                 continue
+            existing_row_count += 1
             parsed = _row_dict(row, index)
             normalized_row = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
             previous_row = existing_rows_by_id.get(parsed["news_id"])
@@ -733,12 +735,22 @@ def sync_candidates(
             title_key = _normalized_news_title(parsed["title"])
             if title_key:
                 existing_title_keys.append(title_key)
+        state = _read_json(STATE_PATH, {})
+        try:
+            previous_candidate_count = int(state.get("last_candidate_count") or 0)
+        except (TypeError, ValueError):
+            previous_candidate_count = 0
+        if existing_row_count < previous_candidate_count:
+            raise RuntimeError(
+                "审核表现有候选数少于上次同步记录，已停止追加以防止历史数据被覆盖："
+                f"当前 {existing_row_count} 条，上次 {previous_candidate_count} 条"
+            )
         curated_items, gate_reasons = curate_news_items(list(items))
         from strategic_briefing import polish_candidates_before_review
 
         prepared_items = polish_candidates_before_review(curated_items)
         archived_count = len(existing_rows_by_id)
-        values: list[list[Any]] = list(existing_rows_by_id.values())
+        new_values: list[list[Any]] = []
         new_count = 0
         new_category_counts: Counter[str] = Counter()
         new_region_counts: Counter[str] = Counter()
@@ -758,32 +770,27 @@ def sync_candidates(
             source = _text(item.get("source") or item.get("source_domain"), 160)
             if source:
                 new_sources.add(source)
-            values.append(value)
+            new_values.append(value)
             existing_status[news_id] = (value[0], value[1])
             if title_key:
                 existing_title_keys.append(title_key)
-        values.sort(key=lambda row: str(row[2] or ""), reverse=True)
-        if len(values) > MAX_SHEET_ROWS - 1:
+        new_values.sort(key=lambda row: str(row[2] or ""), reverse=True)
+        candidate_count = existing_row_count + len(new_values)
+        if candidate_count > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
-        clear_count = max(len(rows), len(values))
-        for offset in range(0, clear_count, 40):
-            count = min(40, clear_count - offset)
-            start_row = 2 + offset
-            end_row = start_row + count - 1
-            _write(sheet_id, f"A{start_row}:P{end_row}", [[""] * 16 for _ in range(count)])
-        for offset in range(0, len(values), 40):
-            chunk = values[offset : offset + 40]
-            start_row = 2 + offset
+        append_start_row = len(rows) + 2
+        for offset in range(0, len(new_values), 40):
+            chunk = new_values[offset : offset + 40]
+            start_row = append_start_row + offset
             end_row = start_row + len(chunk) - 1
             _write(sheet_id, f"A{start_row}:L{end_row}", chunk)
-        state = _read_json(STATE_PATH, {})
         state.update(
             {
                 "sheet_id": sheet_id,
                 "sheet_url": _sheet_url(sheet_id),
                 "last_source_generated_at": generated_at,
                 "last_slot_label": slot_label,
-                "last_candidate_count": len(values),
+                "last_candidate_count": candidate_count,
                 "last_batch_count": len(items),
                 "last_archived_count": archived_count,
                 "last_gate_filtered_count": len(items) - len(curated_items),
@@ -801,7 +808,7 @@ def sync_candidates(
         return {
             "sheet_id": sheet_id,
             "sheet_url": _sheet_url(sheet_id),
-            "candidate_count": len(values),
+            "candidate_count": candidate_count,
             "batch_count": len(items),
             "archived_count": archived_count,
             "gate_filtered_count": len(items) - len(curated_items),
