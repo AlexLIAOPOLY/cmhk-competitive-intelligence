@@ -108,7 +108,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('!panel.classList.contains("model-reasoning")', reasoning_renderer)
         self.assertNotIn('body.querySelector(".model-reasoning")', reasoning_renderer)
 
-    def test_reasoning_stays_open_during_answer_and_collapses_when_stream_finishes(self) -> None:
+    def test_reasoning_collapses_when_final_answer_stream_starts_and_when_stream_finishes(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         collapse_start = app.index("function collapseLatestModelReasoning")
         collapse_end = app.index("function ensureToolList", collapse_start)
@@ -127,6 +127,15 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         send_start = app.index("async function sendChat")
         send_end = app.index("els.generateButtons.forEach", send_start)
         send_chat = app[send_start:send_end]
+        self.assertIn("let collapseReasoningOnNextDelta = false;", send_chat)
+        self.assertIn('event.type === "reasoning"', send_chat)
+        self.assertIn("collapseReasoningOnNextDelta = true;", send_chat)
+        first_delta_start = send_chat.index('if (event.type === "delta")')
+        first_delta_end = send_chat.index("textChunk = event.text;", first_delta_start)
+        first_delta = send_chat[first_delta_start:first_delta_end]
+        self.assertIn("if (collapseReasoningOnNextDelta)", first_delta)
+        self.assertIn("collapseLatestModelReasoning(assistantNode);", first_delta)
+        self.assertIn("collapseReasoningOnNextDelta = false;", first_delta)
         self.assertIn("finishStreamingText();\n    collapseLatestModelReasoning(assistantNode);", send_chat)
 
     def test_reasoning_stream_scrolls_its_panel_to_the_latest_token(self) -> None:

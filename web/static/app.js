@@ -5065,6 +5065,7 @@ async function sendChat(message, options = {}) {
     let answer = "";
     const insertedChartUrls = new Set();
     let isDone = false;
+    let collapseReasoningOnNextDelta = false;
     let streamQueue = "";
     let streamTimer = null;
 
@@ -5148,6 +5149,7 @@ async function sendChat(message, options = {}) {
           break;
         } else if (event.type === "reasoning") {
           clearConnectingPlaceholder(assistantNode);
+          collapseReasoningOnNextDelta = true;
           appendAssistantTimelineReasoning(assistantTimeline, event.text);
           assistantHistoryEntry.timeline = assistantTimeline;
           appendModelReasoning(assistantNode, event.text);
@@ -5177,6 +5179,10 @@ async function sendChat(message, options = {}) {
         } else if (event.type === "delta" || event.type === "error" || event.type === "tool_start") {
           let textChunk = "";
           if (event.type === "delta") {
+            if (collapseReasoningOnNextDelta) {
+              collapseLatestModelReasoning(assistantNode);
+              collapseReasoningOnNextDelta = false;
+            }
             textChunk = event.text;
           } else if (event.type === "error") {
             textChunk = `\n\n**错误：** ${event.text}`;
