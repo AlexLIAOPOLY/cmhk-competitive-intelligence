@@ -153,6 +153,52 @@ class ChatAudioTranscriptionTests(unittest.TestCase):
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_process_filter_preserves_complete_dependent_sentences(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("const ASSISTANT_PROCESS_MARKERS")
+        end = app.index("function extractAssistantProcessLines", start)
+        snippet = app[start:end] + "\n" + (
+            "console.log(JSON.stringify(["
+            "removeProcessClauses('请进一步说明，以便我为您准确检索和提供信息。'),"
+            "removeProcessClauses('明确主体后，我将检索本地资料并整理路线图。')"
+            "]));"
+        )
+        completed = subprocess.run(
+            ["node", "-e", snippet],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            json.loads(completed.stdout),
+            [
+                "请进一步说明，以便我为您准确检索和提供信息。",
+                "明确主体后，我将检索本地资料并整理路线图。",
+            ],
+        )
+
+    def test_control_filter_never_turns_complete_prose_into_a_dangling_comma(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("const ASSISTANT_PROCESS_MARKERS")
+        end = app.index("function expandCitationIndexes", start)
+        snippet = app[start:end] + "\n" + (
+            "console.log(JSON.stringify(["
+            "stripAssistantControlText('请进一步说明，以便我为您准确检索和提供信息。\\n<suggestions>[\\\"一\\\",\\\"二\\\",\\\"三\\\"]</suggestions>'),"
+            "stripAssistantControlText('您好。请问您希望查看什么？我可以帮您查询经营数据、竞品资费和宏观政策。\\n<suggestions>[\\\"一\\\",\\\"二\\\",\\\"三\\\"]</suggestions>'),"
+            "stripAssistantControlText('明确主体后，我将检索本地资料并整理路线图。\\n<suggestions>[\\\"一\\\",\\\"二\\\",\\\"三\\\"]</suggestions>')"
+            "]));"
+        )
+        completed = subprocess.run(
+            ["node", "-e", snippet],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        cleaned = json.loads(completed.stdout)
+        self.assertEqual(cleaned[0], "请进一步说明，以便我为您准确检索和提供信息。")
+        self.assertTrue(cleaned[1].endswith("宏观政策。"), cleaned[1])
+        self.assertEqual(cleaned[2], "明确主体后，我将检索本地资料并整理路线图。")
+
     def test_voice_dictation_uses_company_stt_and_auto_submits_transcript(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
@@ -589,6 +635,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
     def test_gateway_corruption_detector_catches_known_failure_shapes(self) -> None:
         samples = [
             "<｜DSML｜tool_calls><｜DSML｜invoke name=\"get_system_status\">",
+            "<search_local_reports>\n<query>本周竞对</query>\n<max_results>5</max_results>\n</search_local_reports>",
             "import pdb;pdb.set_trace(); <|begin_of_file|> Admin override restarting cleanly",
             "get_system_status() " * 40,
             "[1]" * 40,
@@ -608,6 +655,21 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertTrue(agent._looks_like_incomplete_model_answer(incomplete))
         self.assertTrue(agent._looks_like_incomplete_model_answer("这是完整句子。", "length"))
         self.assertTrue(agent._looks_like_incomplete_model_answer("分析需要结合"))
+        self.assertTrue(
+            agent._looks_like_incomplete_model_answer(
+                '请进一步说明，\n<suggestions>["查看本周动态", "对比战略路线图"'
+            )
+        )
+        self.assertTrue(
+            agent._looks_like_incomplete_model_answer(
+                '明确主体后，\n<suggestions>["中国移动", "AWS", "华为云"]'
+            )
+        )
+        self.assertTrue(
+            agent._looks_like_incomplete_model_answer(
+                "这是完整正文。\n<引用来源>[来源 1] 本地资料"
+            )
+        )
         self.assertFalse(agent._looks_like_incomplete_model_answer("这是清晰、完整的中文分析结论。"))
         self.assertFalse(
             agent._looks_like_incomplete_model_answer(
@@ -649,6 +711,151 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIs(result, fallback_result)
         self.assertEqual(generate.call_count, 2)
         self.assertIn("已自动切换至 deepseek-v4", fallback_message.additional_kwargs["reasoning_content"])
+
+    def test_model_retries_when_suggestion_footer_is_cut_off(self) -> None:
+        incomplete_message = agent.AIMessage(
+            content='请进一步说明，\n<suggestions>["查看本周动态", "对比路线图"'
+        )
+        complete_message = agent.AIMessage(
+            content='请告诉我希望查看哪家企业的战略路线图。\n<suggestions>["中国移动", "AWS", "华为云"]</suggestions>'
+        )
+        incomplete_result = mock.Mock(
+            generations=[mock.Mock(message=incomplete_message, generation_info={"finish_reason": "stop"})]
+        )
+        complete_result = mock.Mock(
+            generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[incomplete_result, complete_result],
+        ) as generate:
+            result = model._generate([agent.HumanMessage(content="请完整回答")])
+
+        self.assertIs(result, complete_result)
+        self.assertEqual(generate.call_count, 2)
+
+    def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
+        pseudo_message = agent.AIMessage(
+            content=(
+                "<search_local_reports>\n"
+                "  <query>2026-07-20 周报 竞争情报 本周</query>\n"
+                "  <max_results>5</max_results>\n"
+                "</search_local_reports>"
+            )
+        )
+        pseudo_result = mock.Mock(
+            generations=[mock.Mock(message=pseudo_message, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+
+        with mock.patch.object(agent.ChatDeepSeek, "_generate", return_value=pseudo_result) as generate:
+            result = model._generate(
+                [agent.HumanMessage(content="查询本周情报")],
+                tools=[agent.search_local_reports],
+            )
+
+        self.assertIs(result, pseudo_result)
+        self.assertEqual(generate.call_count, 1)
+        recovered = result.generations[0].message
+        self.assertEqual(recovered.content, "")
+        self.assertEqual(recovered.tool_calls[0]["name"], "search_local_reports")
+        self.assertEqual(recovered.tool_calls[0]["args"]["max_results"], 5)
+        self.assertEqual(recovered.tool_calls[0]["args"]["query"], "2026-07-20 周报 竞争情报 本周")
+
+    def test_stream_agent_never_marks_unclosed_footer_as_successful_answer(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                yield agent.AIMessage(
+                    content='明确主体后，\n<suggestions>["中国移动", "AWS"',
+                    response_metadata={"finish_reason": "stop"},
+                ), {}
+
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+            events = list(agent.stream_agent("请查看路线图", thinking_enabled=False))
+
+        self.assertFalse(any(event.get("type") == "delta" for event in events))
+        self.assertTrue(any(event.get("type") == "error" for event in events))
+        self.assertEqual(events[-1].get("type"), "done")
+
+    def test_tool_limit_finishes_once_instead_of_looping_until_empty_done(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                yield agent.ToolMessage(
+                    content=(
+                        "search_local_reports 已达到本轮调用上限（6 次），"
+                        "请停止继续调用该工具，直接基于已经返回的资料给出结论。"
+                    ),
+                    tool_call_id="call_limit",
+                ), {}
+                raise AssertionError("工具达到上限后不应继续消费 Agent 循环")
+
+        final = (
+            '现有资料不足以完成两周对比，请指定主体和日期。\n'
+            '<suggestions>["指定竞对主体", "指定起止日期", "查看可用数据集"]</suggestions>'
+        )
+        with (
+            mock.patch("agent.get_agent", return_value=FakeAgent()),
+            mock.patch(
+                "agent._finalize_after_tool_limit",
+                return_value=(final, {"inputTokens": 10, "outputTokens": 20, "totalTokens": 30}),
+            ) as finalize,
+        ):
+            events = list(agent.stream_agent("对比最近两周的竞对动态变化", thinking_enabled=False))
+
+        answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
+        self.assertEqual(answer, final)
+        self.assertEqual(finalize.call_count, 1)
+        self.assertFalse(any(event.get("type") == "error" for event in events))
+        self.assertEqual(events[-1].get("type"), "done")
+
+    def test_three_identical_tool_calls_are_finalized_without_consuming_a_fourth(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                for index in range(4):
+                    call_id = f"same_{index}"
+                    yield agent.AIMessage(
+                        content="",
+                        tool_calls=[{
+                            "name": "search_local_reports",
+                            "args": {"query": "同一个查询"},
+                            "id": call_id,
+                            "type": "tool_call",
+                        }],
+                    ), {}
+                    yield agent.ToolMessage(content="相同检索结果", tool_call_id=call_id), {}
+                raise AssertionError("第三次相同调用后应停止 Agent 循环")
+
+        final = '已根据现有结果完成回答。\n<suggestions>["追问一", "追问二", "追问三"]</suggestions>'
+        with (
+            mock.patch("agent.get_agent", return_value=FakeAgent()),
+            mock.patch(
+                "agent._finalize_after_tool_limit",
+                return_value=(final, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
+            ) as finalize,
+        ):
+            events = list(agent.stream_agent("测试重复调用保护", thinking_enabled=False))
+
+        starts = [event for event in events if event.get("type") == "tool_call_start"]
+        self.assertEqual(len(starts), 3)
+        self.assertEqual(finalize.call_count, 1)
+        self.assertEqual(events[-1].get("type"), "done")
 
     def test_markdown_limiter_streams_plain_text_but_buffers_table_rows(self) -> None:
         limiter = agent.MarkdownTableLimiter()

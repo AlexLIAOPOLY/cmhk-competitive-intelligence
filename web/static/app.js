@@ -3777,6 +3777,19 @@ function removeProcessClauses(text, collector = null) {
           const clean = piece.trim();
           if (!clean) return;
           if (isProcessClause(clean)) {
+            const preceding = keptCommaParts.join("").trim();
+            const dependentPrefix = (
+              /^(?:请|若|如果|如需)/.test(preceding)
+              || /(?:后|时|前|以便|从而|因此|这样)[，,]$/.test(preceding)
+              || /^(?:以便|从而|因此|这样|同时|并且|以及)/.test(clean)
+            );
+            // Do not cut a dependent clause out of an otherwise normal final
+            // sentence.  That used to turn complete text such as
+            // “请进一步说明，以便我为您准确检索……” into “请进一步说明，”.
+            if (dependentPrefix) {
+              keptCommaParts.push(piece);
+              return;
+            }
             if (collector) collector.push(clean.replace(/\s+/g, " "));
             return;
           }
@@ -3838,6 +3851,7 @@ function stripAssistantControlText(content) {
   text = text.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
   text = text.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
   text = text.replace(/^\s*(?:联网搜索已关闭|当前联网搜索已关闭|已关闭联网搜索|由于联网搜索|因为联网搜索|本轮不会调用|我不能联网|当前不能联网)[^\n。！？]*(?:[。！？]|\n|$)/gmi, "").trim();
+  const beforeProcessFiltering = text;
   const processMarkers = ASSISTANT_PROCESS_MARKERS;
   const processSentencePattern = new RegExp(`(^|[。！？]\\s*)${processMarkers}[^。！？]*(?:[。！？]|$)`, "g");
   text = text.replace(processSentencePattern, (match, prefix) => (prefix && prefix.trim() ? prefix.trim() : "")).trim();
@@ -3860,6 +3874,13 @@ function stripAssistantControlText(content) {
     .trim();
   text = text.replace(new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?=\\n\\s*(?:#{1,3}\\s+|[一二三四五六七八九十\\d]+[、.]\\s+|[^\\n：:]{2,18}[：:]|$))`, "g"), "").trim();
   text = removeProcessClauses(text);
+  const danglingVisibleEnd = /(?:[,，;；:：、（(【\[]|(?:以及|包括|例如|建议|如下|结合|通过|从而|并且|或者|与|和))$/;
+  if (danglingVisibleEnd.test(text) && !danglingVisibleEnd.test(beforeProcessFiltering)) {
+    // Process-text cleanup must never turn a complete model response into a
+    // visibly truncated sentence. Keep all existing cleanup rules, but roll
+    // this destructive case back to the complete control-tag-free prose.
+    text = beforeProcessFiltering;
+  }
   text = text.replace(/^\s*[-–—]{3,}\s*$/gm, "").trim();
   return text;
 }

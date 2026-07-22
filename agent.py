@@ -1,6 +1,7 @@
 import csv
 import collections
 import hashlib
+import html
 import json
 import math
 import os
@@ -49,6 +50,10 @@ _UNSTABLE_MODEL_MARKERS = re.compile(
     r"system\.(?:halt|exit)|malwarebytes|buffer\s+ended|restart(?:ing)?\s+cleanly)",
     re.IGNORECASE,
 )
+_PSEUDO_TOOL_XML_RE = re.compile(
+    r"<([a-z][a-z0-9_]*_[a-z0-9_]+)(?:\s[^>]*)?>[\s\S]*?</\1\s*>",
+    re.IGNORECASE,
+)
 
 
 def _looks_like_unstable_model_text(value: str) -> bool:
@@ -57,6 +62,11 @@ def _looks_like_unstable_model_text(value: str) -> bool:
     if not text:
         return False
     if "�" in text or "\x00" in text or _UNSTABLE_MODEL_MARKERS.search(text):
+        return True
+    # Some gateway failures serialize an intended structured tool call as XML
+    # and put it in the visible assistant content.  It was previously accepted
+    # as a finished answer, even though no tool had actually run.
+    if _PSEUDO_TOOL_XML_RE.search(text):
         return True
     if re.search(r"</?s>|<eoc>|<｜|\|>|前面的回答.{0,30}(?:错误|混乱)|请.{0,20}忽略前面的", text, re.IGNORECASE):
         return True
@@ -95,6 +105,10 @@ _INCOMPLETE_FINISH_REASONS = {"length", "max_tokens", "max_output_tokens"}
 _DANGLING_ANSWER_END = re.compile(
     r"(?:[,，;；:：、（(【\[]|(?:以及|包括|例如|建议|如下|分别为|主要有|结合|通过|从而|并且|或者|与|和))$"
 )
+_CONTROL_FOOTER_PAIRS = (
+    (re.compile(r"<suggestions(?:\s[^>]*)?>", re.IGNORECASE), re.compile(r"</suggestions\s*>", re.IGNORECASE)),
+    (re.compile(r"<引用来源(?:\s[^>]*)?>", re.IGNORECASE), re.compile(r"</引用来源\s*>", re.IGNORECASE)),
+)
 
 
 def _model_finish_reason(result: Any, model_message: Any) -> str:
@@ -124,6 +138,14 @@ def _looks_like_incomplete_model_answer(value: str, finish_reason: str = "") -> 
     text = str(value or "").strip()
     if not text:
         return False
+    # A provider can stop while writing UI metadata.  Previously the dangling
+    # opening tag hid the comma at the end of the visible prose, so the backend
+    # emitted a successful `done` event and the browser persisted a visibly
+    # truncated answer.  Any unclosed control footer means the generation did
+    # not reach its intended end and must be retried as a whole.
+    for opening, closing in _CONTROL_FOOTER_PAIRS:
+        if len(opening.findall(text)) > len(closing.findall(text)):
+            return True
     # Suggestions and source footers are UI metadata; judge the prose immediately before them.
     prose = re.sub(r"<suggestions>[\s\S]*?</suggestions>\s*$", "", text, flags=re.IGNORECASE).strip()
     prose = re.sub(r"<引用来源>[\s\S]*?</引用来源>\s*$", "", prose, flags=re.IGNORECASE).strip()
@@ -159,11 +181,82 @@ def _is_retryable_model_transport_error(exc: Exception) -> bool:
     )
 
 
+def _tool_spec_name(tool_spec: Any) -> str:
+    """Read a bound tool name from LangChain objects or OpenAI-style specs."""
+    if isinstance(tool_spec, dict):
+        function = tool_spec.get("function")
+        if isinstance(function, dict) and function.get("name"):
+            return str(function["name"])
+        return str(tool_spec.get("name") or "")
+    return str(getattr(tool_spec, "name", "") or "")
+
+
+def _coerce_pseudo_tool_argument(value: str) -> Any:
+    clean = html.unescape(str(value or "").strip())
+    if not clean:
+        return ""
+    try:
+        return json.loads(clean)
+    except Exception:
+        return clean
+
+
+def _convert_pseudo_tool_xml(result: Any, model_message: Any, tool_specs: Any) -> Any | None:
+    """Convert a gateway XML tool serialization into a real LangChain tool call.
+
+    This is an abnormal-provider compatibility path. It performs no extra model
+    request, so successful normal answers keep exactly the same latency.
+    """
+    content = str(getattr(model_message, "content", "") or "")
+    allowed_names = {name for name in (_tool_spec_name(item) for item in (tool_specs or [])) if name}
+    if not content or not allowed_names:
+        return None
+    wrapped = re.fullmatch(
+        r"\s*(?:```(?:xml)?\s*)?<([a-z][a-z0-9_]*_[a-z0-9_]+)(?:\s[^>]*)?>"
+        r"([\s\S]*?)</\1\s*>\s*(?:```)?\s*",
+        content,
+        re.IGNORECASE,
+    )
+    if not wrapped:
+        return None
+    tool_name = wrapped.group(1)
+    if tool_name not in allowed_names:
+        return None
+    args: dict[str, Any] = {}
+    body = wrapped.group(2)
+    for match in re.finditer(
+        r"<([a-z][a-z0-9_]*)>([\s\S]*?)</\1\s*>",
+        body,
+        re.IGNORECASE,
+    ):
+        args[match.group(1)] = _coerce_pseudo_tool_argument(match.group(2))
+    if not args and body.strip():
+        return None
+    replacement = AIMessage(
+        content="",
+        tool_calls=[{
+            "name": tool_name,
+            "args": args,
+            "id": f"call_recovered_{hashlib.sha1(content.encode('utf-8')).hexdigest()[:16]}",
+            "type": "tool_call",
+        }],
+        additional_kwargs=dict(getattr(model_message, "additional_kwargs", None) or {}),
+        response_metadata=dict(getattr(model_message, "response_metadata", None) or {}),
+        id=getattr(model_message, "id", None),
+        usage_metadata=getattr(model_message, "usage_metadata", None),
+    )
+    generations = list(getattr(result, "generations", None) or [])
+    if not generations:
+        return None
+    generations[0].message = replacement
+    return replacement
+
+
 class StableAgentChatDeepSeek(ChatDeepSeek):
     """Retry malformed non-streaming Agent generations before they reach the UI."""
 
     stable_attempts: int = 3
-    transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528")
+    transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528", "GLM")
 
     @staticmethod
     def _stable_messages(messages: Any) -> list[Any]:
@@ -262,6 +355,13 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             model_message = getattr(generations[0], "message", None) if generations else None
             if active_fallback_name and model_message is not None:
                 self._annotate_transport_fallback(model_message, active_fallback_name)
+            recovered_tool_message = _convert_pseudo_tool_xml(
+                last_result,
+                model_message,
+                retry_kwargs.get("tools"),
+            )
+            if recovered_tool_message is not None:
+                return last_result
             content = str(getattr(model_message, "content", "") or "")
             reasoning = ""
             additional = getattr(model_message, "additional_kwargs", None)
@@ -287,10 +387,21 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
         fallback_messages = self._fallback_messages(messages)
-        for _ in range(2):
-            fallback_result = super()._generate(fallback_messages, *args, **fallback_kwargs)
+        completion_fallbacks: list[tuple[str, ChatDeepSeek | None]] = [("", None)]
+        completion_fallbacks.extend(
+            (model_name, self._transport_fallback_client(model_name))
+            for model_name in fallback_names
+        )
+        for fallback_name, fallback_client in completion_fallbacks:
+            fallback_result = (
+                fallback_client._generate(fallback_messages, *args, **fallback_kwargs)
+                if fallback_client is not None
+                else super()._generate(fallback_messages, *args, **fallback_kwargs)
+            )
             generations = list(getattr(fallback_result, "generations", None) or [])
             model_message = getattr(generations[0], "message", None) if generations else None
+            if fallback_name and model_message is not None:
+                self._annotate_transport_fallback(model_message, fallback_name)
             content = str(getattr(model_message, "content", "") or "")
             additional = getattr(model_message, "additional_kwargs", None)
             reasoning = str((additional or {}).get("reasoning_content") or "") if isinstance(additional, dict) else ""
@@ -2349,6 +2460,63 @@ def _message_token_usage(message: AIMessage | AIMessageChunk) -> dict[str, int]:
     return {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
 
 
+def _finalize_after_tool_limit(
+    original_user_message: str,
+    tool_evidence: list[str],
+    *,
+    thinking_enabled: bool = False,
+) -> tuple[str, dict[str, int]]:
+    """Finish once after an Agent ignores a tool's explicit stop response.
+
+    This path is never used for normal answers. It replaces an otherwise
+    unbounded ReAct loop with one tool-free model call, preserving the existing
+    answer and recommendation format while sharply reducing failure latency.
+    """
+    config = load_ai_config()
+    model = ChatDeepSeek(
+        model=_agent_model_name(thinking_enabled=thinking_enabled),
+        api_key=config.get("api_key", ""),
+        api_base=config.get("base_url", ""),
+        extra_body=dict(config.get("extra_parameters") or {}),
+        temperature=0.1,
+        disable_streaming=True,
+        max_retries=1,
+    )
+    evidence = "\n\n".join(tool_evidence[-6:])[:18000]
+    response = model.invoke(
+        [
+            SystemMessage(
+                content=(
+                    "你是小竞AI的最终回答整理器。Agent 已完成多次工具调用并触发调用上限；"
+                    "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
+                    "证据不足时明确说明缺少什么，不得编造。正文必须完整收束，不得停在逗号、冒号、"
+                    "连接词或未闭合列表。保留工具结果中的数字来源编号。最后一行必须输出完整的"
+                    "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。"
+                )
+            ),
+            HumanMessage(
+                content=(
+                    f"用户原始请求：\n{original_user_message}\n\n"
+                    f"已经取得的工具结果：\n{evidence or '未取得足够的有效工具结果。'}"
+                )
+            ),
+        ]
+    )
+    content = str(getattr(response, "content", "") or "").strip()
+    if (
+        not content
+        or _looks_like_unstable_model_text(content)
+        or _looks_like_incomplete_model_answer(content)
+    ):
+        content = (
+            "本轮检索已达到安全上限，现有资料不足以可靠完成全部比较。"
+            "系统已停止重复检索，避免返回残缺或未经核验的结论。"
+            "请指定要比较的主体、日期范围或数据类型后继续。\n"
+            "<suggestions>[\"指定要比较的竞对主体\", \"指定最近两周的起止日期\", \"查看当前可用的数据集\"]</suggestions>"
+        )
+    return content, _message_token_usage(response)
+
+
 def stream_agent(
     message: str,
     force_web_search: bool = False,
@@ -2581,6 +2749,9 @@ def stream_agent(
     checking_disabled_web_notice = not force_web_search
     table_limiter = MarkdownTableLimiter()
     token_usage = {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
+    tool_evidence: list[str] = []
+    tool_limit_reached = False
+    tool_signature_counts: dict[tuple[str, str], int] = {}
 
     def chunk_reasoning_text(chunk: AIMessage | AIMessageChunk) -> str:
         """Read provider reasoning fields without mixing them into the final answer."""
@@ -2701,6 +2872,22 @@ def stream_agent(
         events = _stream_agent_events(agent, inputs)
         for chunk, metadata in events:
             if isinstance(chunk, (AIMessage, AIMessageChunk)):
+                full_message = isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
+                full_message_tool_calls = list(getattr(chunk, "tool_calls", None) or [])
+                if (
+                    full_message
+                    and isinstance(chunk.content, str)
+                    and chunk.content
+                    and not full_message_tool_calls
+                    and (
+                        _looks_like_unstable_model_text(chunk.content)
+                        or _looks_like_incomplete_model_answer(
+                            chunk.content,
+                            str((getattr(chunk, "response_metadata", None) or {}).get("finish_reason") or ""),
+                        )
+                    )
+                ):
+                    raise RuntimeError("模型最终回答未完整结束，已阻止将残缺内容标记为完成。")
                 chunk_usage = _message_token_usage(chunk)
                 for key in token_usage:
                     token_usage[key] += chunk_usage[key]
@@ -2776,6 +2963,10 @@ def stream_agent(
                     args_str = tc_data.get("args", "")
                 
                 content = chunk.content
+                raw_tool_content = str(content or "")
+                reached_tool_limit = "达到本轮调用上限" in raw_tool_content
+                if raw_tool_content and not reached_tool_limit:
+                    tool_evidence.append(raw_tool_content[:6000])
                 
                 # Parse metadata if present
                 meta_event = None
@@ -2809,6 +3000,11 @@ def stream_agent(
                     yield meta_event
                     
                 tool_name = str((tc_data or {}).get("name") or "工具")
+                repeated_tool_call = False
+                if args_str:
+                    signature = (tool_name, re.sub(r"\s+", "", args_str))
+                    tool_signature_counts[signature] = tool_signature_counts.get(signature, 0) + 1
+                    repeated_tool_call = tool_signature_counts[signature] >= 3
                 display_content = _display_tool_result(tool_name, content.strip(), meta_event)
                 if thinking_enabled:
                     yield thinking_event(f"工具返回结果：{tool_name} 已完成，开始把结果纳入来源核验和回答组织。")
@@ -2821,6 +3017,26 @@ def stream_agent(
                 }
                 recorder.observe(event)
                 yield event
+                if reached_tool_limit or repeated_tool_call:
+                    tool_limit_reached = True
+                    close_events = getattr(events, "close", None)
+                    if callable(close_events):
+                        close_events()
+                    break
+        if tool_limit_reached:
+            final_text, final_usage = _finalize_after_tool_limit(
+                original_user_message,
+                tool_evidence,
+                thinking_enabled=thinking_enabled,
+            )
+            for key in token_usage:
+                token_usage[key] += final_usage[key]
+            for content_part in replay_validated_text(final_text, delay_seconds=0.018):
+                limited_text = table_limiter.feed(content_part)
+                if limited_text:
+                    event = {"type": "delta", "text": limited_text}
+                    recorder.observe(event)
+                    yield event
         if checking_disabled_web_notice and disabled_web_notice_buffer:
             leading = disabled_web_notice_buffer.lstrip()
             if not any(leading.startswith(prefix) for prefix in disabled_web_notice_prefixes):
