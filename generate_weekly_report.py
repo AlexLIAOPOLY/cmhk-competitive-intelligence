@@ -62,7 +62,7 @@ def dated_weekly_docx_path(
     value = now or datetime.now(ZoneInfo("Asia/Hong_Kong"))
     base_name = f"{value.month}月{value.day}日周报"
     if draft_as_of is not None:
-        base_name += f"（草稿，截至{draft_as_of.month}月{draft_as_of.day}日）"
+        base_name += f"（截至{draft_as_of.month}月{draft_as_of.day}日）"
     path = ROOT / f"{base_name}.docx"
     if not path.exists():
         return path

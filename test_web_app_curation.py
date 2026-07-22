@@ -13,6 +13,13 @@ import agent
 import web_app
 
 
+class ReportFileNameTests(unittest.TestCase):
+    def test_report_file_pattern_accepts_new_and_legacy_as_of_names(self) -> None:
+        self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报（截至7月22日）.docx"))
+        self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报（草稿，截至7月22日）.docx"))
+        self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报.docx"))
+
+
 class ChatThreadPersistenceTests(unittest.TestCase):
     def test_saving_chat_does_not_wait_for_ai_title_generation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

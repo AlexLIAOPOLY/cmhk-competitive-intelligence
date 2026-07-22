@@ -138,12 +138,13 @@ class WeeklyIssuePeriodTests(unittest.TestCase):
         self.assertEqual(next_period.issue_date.date(), date(2026, 7, 31))
         self.assertEqual(next_period.status, "draft")
 
-    def test_draft_filename_cannot_be_mistaken_for_the_final_issue(self) -> None:
+    def test_early_issue_filename_keeps_its_as_of_date_without_draft_label(self) -> None:
         path = report.dated_weekly_docx_path(
             date(2026, 7, 17),
             draft_as_of=date(2026, 7, 15),
         )
-        self.assertTrue(path.name.startswith("7月17日周报（草稿，截至7月15日）"))
+        self.assertTrue(path.name.startswith("7月17日周报（截至7月15日）"))
+        self.assertNotIn("草稿", path.name)
 
     def test_invalid_issue_period_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -61,7 +61,7 @@ LOCAL_TEMPLATE_PATH = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_TEMPLATE_PATH = ROOT / "weekly_report_template.docx"
 TEMPLATE_PATH = LOCAL_TEMPLATE_PATH if LOCAL_TEMPLATE_PATH.exists() else REPO_TEMPLATE_PATH
 REPORT_FILE_RE = re.compile(
-    r"^\d{1,2}月\d{1,2}日周报(?:（草稿，截至\d{1,2}月\d{1,2}日）)?(?: \(\d+\))?\.docx$"
+    r"^\d{1,2}月\d{1,2}日周报(?:（(?:草稿，)?截至\d{1,2}月\d{1,2}日）)?(?: \(\d+\))?\.docx$"
 )
 REPORT_METADATA_PATH = ROOT / "report_file_metadata.json"
 EXCLUDED_REPORT_NAMES = {
