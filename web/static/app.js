@@ -5358,6 +5358,11 @@ async function sendChat(message, options = {}) {
       }
       if (isDone) break;
     }
+    if (!isDone) {
+      const streamError = new Error("回答连接意外中断，未收到完成信号，请重新发送。已生成的内容仅供参考。");
+      streamError.code = "STREAM_INCOMPLETE";
+      throw streamError;
+    }
     finishStreamingText();
     collapseLatestModelReasoning(assistantNode);
 
@@ -5462,18 +5467,22 @@ async function sendChat(message, options = {}) {
     if (assistantNode) collapseLatestModelReasoning(assistantNode);
     const stopped = state.chatStopRequested || error.name === "AbortError";
     const steered = Boolean(requestController.steerRequested);
+    const streamIncomplete = error.code === "STREAM_INCOMPLETE";
     const stoppedText = assistantDraftRaw.trim()
       ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n${steered ? "（已收到插队消息，当前回答已停止）" : "（已暂停生成）"}`
       : steered ? "已收到插队消息，当前回答已停止。" : "已暂停生成。";
+    const failureText = streamIncomplete && assistantDraftRaw.trim()
+      ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n（连接意外中断，本次回答未完成，请重新发送。）`
+      : `处理失败：${error.message}`;
     if (assistantNode) {
       clearConnectingPlaceholder(assistantNode);
       const textNode = currentMessageTextNode(assistantNode);
-      setCurrentMessageContent(assistantNode, stopped ? stoppedText : `处理失败：${error.message}`, stopped, textNode);
+      setCurrentMessageContent(assistantNode, stopped ? stoppedText : failureText, stopped, textNode);
     } else {
-      addMessage("assistant", stopped ? stoppedText : `处理失败：${error.message}`, stopped);
+      addMessage("assistant", stopped ? stoppedText : failureText, stopped);
     }
     if (assistantHistoryEntry) {
-      assistantHistoryEntry.content = stopped ? stoppedText : `处理失败：${error.message}`;
+      assistantHistoryEntry.content = stopped ? stoppedText : failureText;
       if (stopped) {
         appendAssistantTimelineText(
           assistantTimeline,
@@ -5489,7 +5498,7 @@ async function sendChat(message, options = {}) {
       appendAssistantMetrics(assistantNode, assistantHistoryEntry.metrics);
       delete assistantHistoryEntry.partial;
     } else {
-      state.chatHistory.push({ role: "assistant", content: stopped ? stoppedText : `处理失败：${error.message}` });
+      state.chatHistory.push({ role: "assistant", content: stopped ? stoppedText : failureText });
       state.chatHistory = state.chatHistory.slice(-80);
     }
     const interruptedPersist = flushDraftPersist();

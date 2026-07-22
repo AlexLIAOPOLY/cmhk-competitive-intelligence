@@ -91,10 +91,79 @@ def _looks_like_unstable_model_text(value: str) -> bool:
     return False
 
 
+_INCOMPLETE_FINISH_REASONS = {"length", "max_tokens", "max_output_tokens"}
+_DANGLING_ANSWER_END = re.compile(
+    r"(?:[,，;；:：、（(【\[]|(?:以及|包括|例如|建议|如下|分别为|主要有|结合|通过|从而|并且|或者|与|和))$"
+)
+
+
+def _model_finish_reason(result: Any, model_message: Any) -> str:
+    """Return the provider finish reason without depending on one SDK shape."""
+    candidates: list[Any] = []
+    response_metadata = getattr(model_message, "response_metadata", None)
+    if isinstance(response_metadata, dict):
+        candidates.extend(
+            response_metadata.get(key)
+            for key in ("finish_reason", "stop_reason", "finishReason")
+        )
+    generations = list(getattr(result, "generations", None) or [])
+    if generations:
+        generation_info = getattr(generations[0], "generation_info", None)
+        if isinstance(generation_info, dict):
+            candidates.extend(
+                generation_info.get(key)
+                for key in ("finish_reason", "stop_reason", "finishReason")
+            )
+    return next((str(value).strip().lower() for value in candidates if value), "")
+
+
+def _looks_like_incomplete_model_answer(value: str, finish_reason: str = "") -> bool:
+    """Detect a final answer that the provider stopped before finishing a sentence."""
+    if str(finish_reason or "").strip().lower() in _INCOMPLETE_FINISH_REASONS:
+        return True
+    text = str(value or "").strip()
+    if not text:
+        return False
+    # Suggestions and source footers are UI metadata; judge the prose immediately before them.
+    prose = re.sub(r"<suggestions>[\s\S]*?</suggestions>\s*$", "", text, flags=re.IGNORECASE).strip()
+    prose = re.sub(r"<引用来源>[\s\S]*?</引用来源>\s*$", "", prose, flags=re.IGNORECASE).strip()
+    if not prose:
+        return False
+    if _DANGLING_ANSWER_END.search(prose):
+        return True
+    if prose.count("```") % 2 or prose.count("**") % 2:
+        return True
+    paired_marks = (("（", "）"), ("【", "】"), ("[", "]"))
+    return any(prose.count(opening) > prose.count(closing) for opening, closing in paired_marks)
+
+
+def _is_retryable_model_transport_error(exc: Exception) -> bool:
+    text = str(exc or "").lower()
+    return any(
+        marker in text
+        for marker in (
+            "error code: 500",
+            "error code: 502",
+            "error code: 503",
+            "error code: 504",
+            "internalservererror",
+            "service unavailable",
+            "gateway timeout",
+            "connect call failed",
+            "cannot connect to host",
+            "connection refused",
+            "connection reset",
+            "read timeout",
+            "timed out",
+        )
+    )
+
+
 class StableAgentChatDeepSeek(ChatDeepSeek):
     """Retry malformed non-streaming Agent generations before they reach the UI."""
 
     stable_attempts: int = 3
+    transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528")
 
     @staticmethod
     def _stable_messages(messages: Any) -> list[Any]:
@@ -135,27 +204,86 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             prompt += f"\n\n已取得的工具结果：\n{context_text}\n\n请基于这些结果回答，不要再次调用工具。"
         return [stable[0], HumanMessage(content=prompt)]
 
+    @staticmethod
+    def _completion_retry_messages(messages: Any) -> list[Any]:
+        stable = StableAgentChatDeepSeek._stable_messages(messages)
+        stable[0] = SystemMessage(
+            content=(
+                f"{stable[0].content} 上一次生成在句子或列表中途停止。"
+                "请重新生成完整结果，不得以逗号、分号、冒号、连接词或未闭合列表结束；"
+                "最后一个正文句子必须完整收束，再输出完整的 <suggestions> 推荐追问标签。"
+            )
+        )
+        return stable
+
+    def _transport_fallback_client(self, model_name: str) -> ChatDeepSeek:
+        return ChatDeepSeek(
+            model=model_name,
+            api_key=self.api_key,
+            api_base=self.api_base,
+            extra_body=dict(self.extra_body or {}),
+            temperature=self.temperature,
+            disable_streaming=True,
+            max_retries=1,
+        )
+
+    @staticmethod
+    def _annotate_transport_fallback(model_message: Any, model_name: str) -> None:
+        additional = dict(getattr(model_message, "additional_kwargs", None) or {})
+        existing = str(additional.get("reasoning_content") or additional.get("reasoning") or "").strip()
+        notice = f"所选模型节点暂时不可用，已自动切换至 {model_name} 继续完成本次回答。"
+        additional["reasoning_content"] = f"{notice}\n\n{existing}".strip()
+        model_message.additional_kwargs = additional
+
     def _generate(self, messages: Any, *args: Any, **kwargs: Any) -> Any:
         retry_messages = list(messages)
         last_result = None
         retry_kwargs = dict(kwargs)
+        fallback_names = [name for name in self.transport_fallback_models if name != self.model_name]
+        fallback_index = 0
+        active_fallback_name = ""
+        active_client: ChatDeepSeek | None = None
         for attempt in range(self.stable_attempts):
-            last_result = super()._generate(retry_messages, *args, **retry_kwargs)
+            try:
+                last_result = (
+                    active_client._generate(retry_messages, *args, **retry_kwargs)
+                    if active_client is not None
+                    else super()._generate(retry_messages, *args, **retry_kwargs)
+                )
+            except Exception as exc:
+                if not _is_retryable_model_transport_error(exc) or fallback_index >= len(fallback_names):
+                    raise
+                active_fallback_name = fallback_names[fallback_index]
+                fallback_index += 1
+                active_client = self._transport_fallback_client(active_fallback_name)
+                retry_messages = self._stable_messages(messages)
+                continue
             generations = list(getattr(last_result, "generations", None) or [])
             model_message = getattr(generations[0], "message", None) if generations else None
+            if active_fallback_name and model_message is not None:
+                self._annotate_transport_fallback(model_message, active_fallback_name)
             content = str(getattr(model_message, "content", "") or "")
             reasoning = ""
             additional = getattr(model_message, "additional_kwargs", None)
             if isinstance(additional, dict):
                 reasoning = str(additional.get("reasoning_content") or additional.get("reasoning") or "")
             malformed_tool_call = bool(re.search(r"DSML|tool_calls?>|invoke\s*(?:name|=)", content, re.IGNORECASE))
-            if not malformed_tool_call and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
+            tool_calls = list(getattr(model_message, "tool_calls", None) or [])
+            incomplete_answer = bool(
+                not tool_calls
+                and content
+                and _looks_like_incomplete_model_answer(
+                    content,
+                    _model_finish_reason(last_result, model_message),
+                )
+            )
+            if not malformed_tool_call and not incomplete_answer and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
                 return last_result
             if attempt + 1 >= self.stable_attempts:
                 break
             if malformed_tool_call and retry_kwargs.get("tools"):
                 retry_kwargs["tool_choice"] = "required"
-            retry_messages = self._stable_messages(messages)
+            retry_messages = self._completion_retry_messages(messages) if incomplete_answer else self._stable_messages(messages)
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
         fallback_messages = self._fallback_messages(messages)
@@ -166,13 +294,21 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             content = str(getattr(model_message, "content", "") or "")
             additional = getattr(model_message, "additional_kwargs", None)
             reasoning = str((additional or {}).get("reasoning_content") or "") if isinstance(additional, dict) else ""
-            if content and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
+            if (
+                content
+                and not _looks_like_incomplete_model_answer(
+                    content,
+                    _model_finish_reason(fallback_result, model_message),
+                )
+                and not _looks_like_unstable_model_text(content)
+                and not _looks_like_unstable_model_text(reasoning)
+            ):
                 return fallback_result
         generations = list(getattr(last_result, "generations", None) or [])
         if generations:
             generations[0].message = AIMessage(
-                content="本次模型输出未通过稳定性校验，系统已阻止异常文本。请重新发送同一问题。",
-                additional_kwargs={"reasoning_content": "检测到模型草稿异常，已停止展示不可靠内容。"},
+                content="本次模型输出未能完整结束，系统已阻止展示残缺回答。请重新发送同一问题。",
+                additional_kwargs={"reasoning_content": "检测到模型草稿异常或意外截断，已停止展示不可靠内容。"},
             )
         return last_result
 

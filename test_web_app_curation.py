@@ -554,6 +554,56 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             self.assertTrue(agent._looks_like_unstable_model_text(sample), sample[:80])
         self.assertFalse(agent._looks_like_unstable_model_text("这是清晰、正常的中文分析结论。"))
 
+    def test_incomplete_answer_detector_catches_mid_sentence_provider_stops(self) -> None:
+        incomplete = (
+            "如需获取本周竞对动态，建议：\n"
+            "- 明确指定竞对名称（如中国移动、华为云、AWS 等）或动态类型（如新品发布、财报预告、监管事件）；"
+        )
+        self.assertTrue(agent._looks_like_incomplete_model_answer(incomplete))
+        self.assertTrue(agent._looks_like_incomplete_model_answer("这是完整句子。", "length"))
+        self.assertTrue(agent._looks_like_incomplete_model_answer("分析需要结合"))
+        self.assertFalse(agent._looks_like_incomplete_model_answer("这是清晰、完整的中文分析结论。"))
+        self.assertFalse(
+            agent._looks_like_incomplete_model_answer(
+                "结论已经完整。\n<suggestions>继续分析|查看来源|对比趋势</suggestions>"
+            )
+        )
+
+    def test_chat_stream_requires_explicit_done_event_before_finalizing(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        send_start = app.index("async function sendChat")
+        send_end = app.index("els.generateButtons.forEach", send_start)
+        send_chat = app[send_start:send_end]
+
+        guard = send_chat.index("if (!isDone)")
+        finalize = send_chat.index("collapseLatestModelReasoning(assistantNode);", guard)
+        self.assertLess(guard, finalize)
+        self.assertIn('streamError.code = "STREAM_INCOMPLETE";', send_chat)
+        self.assertIn("连接意外中断，本次回答未完成，请重新发送。", send_chat)
+
+    def test_model_transport_failure_uses_application_fallback(self) -> None:
+        primary_error = RuntimeError(
+            "Error code: 500 - InternalServerError: Cannot connect to host 10.0.62.169:30001"
+        )
+        fallback_message = agent.AIMessage(content="备用模型已经完整回答。")
+        fallback_result = mock.Mock()
+        fallback_result.generations = [mock.Mock(message=fallback_message, generation_info={"finish_reason": "stop"})]
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-r1-0528-PPU",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+
+        with mock.patch.object(agent.ChatDeepSeek, "_generate", side_effect=[primary_error, fallback_result]) as generate:
+            result = model._generate([agent.HumanMessage(content="请完整回答")])
+
+        self.assertIs(result, fallback_result)
+        self.assertEqual(generate.call_count, 2)
+        self.assertIn("已自动切换至 deepseek-v4", fallback_message.additional_kwargs["reasoning_content"])
+
     def test_markdown_limiter_streams_plain_text_but_buffers_table_rows(self) -> None:
         limiter = agent.MarkdownTableLimiter()
         self.assertEqual(limiter.feed("普通正文第一段"), "普通正文第一段")
