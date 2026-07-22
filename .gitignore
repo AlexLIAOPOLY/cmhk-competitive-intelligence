@@ -59,6 +59,7 @@ agent_knowledge/**/crawl_cache/
 agent_knowledge/crawl_run_logs/runs/
 weekly_report_*_cache.json
 weekly_report_ai_quality_audit.json
+carrier_performance_ai_audit.json
 weekly_report_period.json
 *.docx.quality.json
 weekly_report.html
