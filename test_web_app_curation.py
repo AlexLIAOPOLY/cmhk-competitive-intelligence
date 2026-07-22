@@ -57,6 +57,21 @@ class ChatThreadPersistenceTests(unittest.TestCase):
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_reasoning_uses_one_transparent_outline_without_a_filled_header_box(self) -> None:
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        panel_start = styles.index(".model-reasoning {")
+        panel_end = styles.index(".model-reasoning-content h3", panel_start)
+        panel_styles = styles[panel_start:panel_end]
+
+        self.assertIn("border: 0", panel_styles)
+        self.assertIn(".model-reasoning[open] {\n  border: 1px solid #d7e4ee", panel_styles)
+        self.assertGreaterEqual(panel_styles.count("background: transparent"), 3)
+        self.assertIn("box-shadow: none", panel_styles)
+        self.assertIn("border-top: 0", panel_styles)
+        self.assertIn("outline: none", panel_styles)
+        self.assertIn("text-decoration: underline", panel_styles)
+        self.assertNotIn("background: #f7fafc", panel_styles)
+
     def test_chat_removes_all_thinking_marker_ui_but_keeps_reasoning_stream(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")

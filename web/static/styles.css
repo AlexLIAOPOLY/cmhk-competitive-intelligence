@@ -2885,10 +2885,13 @@ select {
 .model-reasoning {
   margin: 2px 0 10px;
   overflow: hidden;
-  border: 1px solid #dbe8f2;
+  border: 0;
   border-radius: 9px;
-  background: #f7fafc;
+  background: transparent;
   color: #5b7185;
+}
+.model-reasoning[open] {
+  border: 1px solid #d7e4ee;
 }
 .model-reasoning summary {
   min-height: 34px;
@@ -2902,15 +2905,24 @@ select {
   font-weight: 750;
   cursor: pointer;
   user-select: none;
+  background: transparent;
+  box-shadow: none;
 }
 .model-reasoning summary::-webkit-details-marker { display: none; }
+.model-reasoning summary:focus-visible {
+  outline: none;
+  color: #007ed6;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .model-reasoning-caret { transition: transform 160ms ease; }
 .model-reasoning[open] .model-reasoning-caret { transform: rotate(180deg); }
 .model-reasoning-content {
   max-height: 260px;
   overflow: auto;
   padding: 10px 12px;
-  border-top: 1px solid #e3edf4;
+  border-top: 0;
+  background: transparent;
   color: #667d91;
   font: 13px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   white-space: normal;
