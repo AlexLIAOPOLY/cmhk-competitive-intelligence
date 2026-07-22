@@ -186,6 +186,7 @@ def _clean_chat_message(item: dict) -> dict | None:
         links = item.get("links")
         suggestions = item.get("suggestions")
         timeline = item.get("timeline")
+        metrics = item.get("metrics")
         if isinstance(references, list):
             clean["references"] = references[:30]
         if isinstance(links, list):
@@ -221,6 +222,14 @@ def _clean_chat_message(item: dict) -> dict | None:
                 clean_timeline.append(event)
             if clean_timeline:
                 clean["timeline"] = clean_timeline
+        if isinstance(metrics, dict):
+            clean["metrics"] = {
+                "inputTokens": max(0, int(metrics.get("inputTokens") or 0)),
+                "outputTokens": max(0, int(metrics.get("outputTokens") or 0)),
+                "totalTokens": max(0, int(metrics.get("totalTokens") or 0)),
+                "durationMs": max(0, int(metrics.get("durationMs") or 0)),
+                "estimated": bool(metrics.get("estimated")),
+            }
     return clean
 
 

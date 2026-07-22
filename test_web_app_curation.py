@@ -166,6 +166,41 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("let chatPersistChain = Promise.resolve();", app)
         self.assertIn("const snapshotBody = JSON.stringify({", app)
 
+    def test_answer_metrics_are_rendered_last_and_restored_from_history(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        send_start = app.index("async function sendChat")
+        send_end = app.index("els.generateButtons.forEach", send_start)
+        send_chat = app[send_start:send_end]
+
+        self.assertIn('event.type === "run_summary"', send_chat)
+        self.assertIn("appendAssistantMetrics(assistantNode, finalMetrics);", send_chat)
+        self.assertIn("assistantHistoryEntry.metrics = finalMetrics", send_chat)
+        self.assertIn("if (item.metrics) appendAssistantMetrics(node, item.metrics);", app)
+        self.assertIn(".assistant-response-metrics", styles)
+        self.assertIn("font-size: 10.5px", styles)
+        self.assertIn("color: #93a1ad", styles)
+
+    def test_waiting_message_has_codex_style_steer_action(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        queue_start = app.index("function renderChatQueue")
+        queue_end = app.index("function setChatSidebarCollapsed", queue_start)
+        queue_code = app[queue_start:queue_end]
+        handler_start = app.index("if (els.chatQueueList)")
+        handler_end = app.index("if (els.webSearchToggle)", handler_start)
+        handler = app[handler_start:handler_end]
+
+        self.assertIn('data-action="steer"', queue_code)
+        self.assertIn(">插队</button>", queue_code)
+        self.assertIn('if (action === "steer")', handler)
+        self.assertIn("state.chatQueue.unshift(queued)", handler)
+        self.assertIn("state.chatAbortController.steerRequested = true", handler)
+        self.assertIn("state.chatAbortController.abort()", handler)
+        self.assertIn("（已收到插队消息，当前回答已停止）", app)
+        self.assertIn("if (stopStreamingRender) stopStreamingRender();", app)
+        self.assertIn("if (assistantNode) collapseLatestModelReasoning(assistantNode);", app)
+        self.assertIn("const interruptedPersist = flushDraftPersist();\n    releaseChatTurn();\n    await interruptedPersist;", app)
+
     def test_sent_image_preview_is_rendered_and_persisted_in_the_user_message(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
@@ -193,6 +228,23 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertEqual(cleaned["displayContent"], "这个怎么说")
         self.assertEqual(cleaned["imagePreview"]["name"], "example.png")
         self.assertTrue(cleaned["imagePreview"]["dataUrl"].startswith("data:image/png;base64,"))
+
+    def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
+        cleaned = web_app._clean_chat_message({
+            "role": "assistant",
+            "content": "回答正文",
+            "metrics": {
+                "inputTokens": 120,
+                "outputTokens": 30,
+                "totalTokens": 150,
+                "durationMs": 2345,
+                "estimated": False,
+            },
+        })
+
+        self.assertEqual(cleaned["metrics"]["totalTokens"], 150)
+        self.assertEqual(cleaned["metrics"]["durationMs"], 2345)
+        self.assertFalse(cleaned["metrics"]["estimated"])
 
     def test_named_source_citation_renders_when_reference_uses_full_path(self) -> None:
         script = r"""
@@ -448,6 +500,23 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             "".join(event["text"] for event in answers),
             "这是正常的中文最终答案，正文也必须通过多个连续事件逐段流式返回给页面。",
         )
+
+    def test_run_summary_reports_provider_token_usage(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None):
+                yield agent.AIMessage(
+                    content="简短回答。",
+                    usage_metadata={"input_tokens": 321, "output_tokens": 45, "total_tokens": 366},
+                ), {}
+
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+            events = list(agent.stream_agent("请回答"))
+
+        summary = next(event for event in events if event.get("type") == "run_summary")
+        self.assertEqual(summary["usage"]["inputTokens"], 321)
+        self.assertEqual(summary["usage"]["outputTokens"], 45)
+        self.assertEqual(summary["usage"]["totalTokens"], 366)
+        self.assertFalse(summary["usage"]["estimated"])
 
     def test_non_streaming_ai_message_preserves_structured_tool_events(self) -> None:
         class FakeAgent:

@@ -2185,6 +2185,34 @@ def _is_user_profile_query(message: str) -> bool:
     return any(marker in text for marker in profile_markers)
 
 
+def _message_token_usage(message: AIMessage | AIMessageChunk) -> dict[str, int]:
+    """Normalize provider token metadata without depending on one gateway shape."""
+    candidates: list[dict[str, Any]] = []
+    usage_metadata = getattr(message, "usage_metadata", None)
+    if isinstance(usage_metadata, dict):
+        candidates.append(usage_metadata)
+    for container_name in ("response_metadata", "additional_kwargs"):
+        container = getattr(message, container_name, None)
+        if not isinstance(container, dict):
+            continue
+        for key in ("token_usage", "usage", "usage_metadata"):
+            value = container.get(key)
+            if isinstance(value, dict):
+                candidates.append(value)
+
+    for usage in candidates:
+        input_tokens = int(usage.get("input_tokens") or usage.get("prompt_tokens") or 0)
+        output_tokens = int(usage.get("output_tokens") or usage.get("completion_tokens") or 0)
+        total_tokens = int(usage.get("total_tokens") or input_tokens + output_tokens)
+        if total_tokens or input_tokens or output_tokens:
+            return {
+                "inputTokens": input_tokens,
+                "outputTokens": output_tokens,
+                "totalTokens": total_tokens or input_tokens + output_tokens,
+            }
+    return {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
+
+
 def stream_agent(
     message: str,
     force_web_search: bool = False,
@@ -2416,6 +2444,7 @@ def stream_agent(
     disabled_web_notice_buffer = ""
     checking_disabled_web_notice = not force_web_search
     table_limiter = MarkdownTableLimiter()
+    token_usage = {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
 
     def chunk_reasoning_text(chunk: AIMessage | AIMessageChunk) -> str:
         """Read provider reasoning fields without mixing them into the final answer."""
@@ -2536,6 +2565,9 @@ def stream_agent(
         events = _stream_agent_events(agent, inputs)
         for chunk, metadata in events:
             if isinstance(chunk, (AIMessage, AIMessageChunk)):
+                chunk_usage = _message_token_usage(chunk)
+                for key in token_usage:
+                    token_usage[key] += chunk_usage[key]
                 reasoning_text = visible_reasoning_text(chunk)
                 if reasoning_text:
                     reasoning_parts = (
@@ -2674,6 +2706,15 @@ def stream_agent(
             "durationMs": summary["duration_ms"],
             "toolCount": len(summary.get("tool_calls") or []),
             "status": summary.get("status"),
+            "usage": {
+                "inputTokens": token_usage["inputTokens"] or int(summary.get("input_tokens_estimate") or 0),
+                "outputTokens": token_usage["outputTokens"] or int(summary.get("answer_tokens_estimate") or 0),
+                "totalTokens": token_usage["totalTokens"] or (
+                    int(summary.get("input_tokens_estimate") or 0)
+                    + int(summary.get("answer_tokens_estimate") or 0)
+                ),
+                "estimated": token_usage["totalTokens"] <= 0,
+            },
         }
         yield {"type": "done"}
     except Exception as e:

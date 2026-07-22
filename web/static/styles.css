@@ -2077,7 +2077,7 @@ select {
 
 .queued-message-item {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
   gap: 8px;
   align-items: center;
   padding: 7px 10px;
@@ -2111,6 +2111,20 @@ select {
 
 .queued-message-action:hover {
   text-decoration: underline;
+}
+
+.queued-message-steer {
+  padding: 3px 8px;
+  border: 1px solid rgba(0, 119, 200, 0.28);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--blue);
+  line-height: 1.4;
+}
+
+.queued-message-steer:hover {
+  background: var(--blue-soft);
+  text-decoration: none;
 }
 
 .message {
@@ -2697,6 +2711,15 @@ select {
 .citation-footer-label {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.assistant-response-metrics {
+  margin-top: 9px;
+  color: #93a1ad;
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  user-select: text;
 }
 
 .message.user {

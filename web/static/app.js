@@ -4409,6 +4409,7 @@ function renderChatQueue() {
     <div class="queued-message-item" data-queue-id="${escapeHtml(item.id)}">
       <strong>等待 ${index + 1}</strong>
       <span class="queued-message-text">${item.options && item.options.displayImage ? "[图片] " : ""}${escapeHtml((item.options && item.options.displayMessage) || item.message)}</span>
+      <button class="queued-message-action queued-message-steer" type="button" data-action="steer" title="停止当前回答并立即发送这条消息">插队</button>
       <button class="queued-message-action" type="button" data-action="edit">修改</button>
       <button class="queued-message-action" type="button" data-action="remove">撤回</button>
     </div>
@@ -4935,6 +4936,54 @@ function parseSuggestionTag(value) {
   }
 }
 
+function estimateChatTokens(value) {
+  const text = String(value || "");
+  let asciiChars = 0;
+  for (const char of text) {
+    if (char.codePointAt(0) < 128) asciiChars += 1;
+  }
+  return Math.max(1, Math.round(asciiChars / 4 + (text.length - asciiChars) * 0.9));
+}
+
+function normalizeAssistantMetrics(metrics, fallbackText = "", fallbackDurationMs = 0) {
+  const usage = metrics && typeof metrics.usage === "object" ? metrics.usage : metrics || {};
+  const inputTokens = Number(usage.inputTokens || 0);
+  const outputTokens = Number(usage.outputTokens || 0);
+  const reportedTotal = Number(usage.totalTokens || 0);
+  const totalTokens = reportedTotal || inputTokens + outputTokens || estimateChatTokens(fallbackText);
+  const durationMs = Math.max(0, Number(metrics?.durationMs || fallbackDurationMs || 0));
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens,
+    durationMs,
+    estimated: Boolean(usage.estimated || !reportedTotal),
+  };
+}
+
+function formatAssistantDuration(durationMs) {
+  const seconds = Math.max(0, Number(durationMs || 0)) / 1000;
+  if (seconds < 10) return `${seconds.toFixed(1)} 秒`;
+  if (seconds < 60) return `${Math.round(seconds)} 秒`;
+  const minutes = Math.floor(seconds / 60);
+  const remaining = Math.round(seconds % 60);
+  return remaining ? `${minutes} 分 ${remaining} 秒` : `${minutes} 分钟`;
+}
+
+function appendAssistantMetrics(node, metrics) {
+  const body = messageBody(node);
+  if (!body || !metrics) return;
+  body.querySelector(".assistant-response-metrics")?.remove();
+  const normalized = normalizeAssistantMetrics(metrics);
+  const meta = document.createElement("div");
+  meta.className = "assistant-response-metrics";
+  meta.textContent = `${normalized.estimated ? "约 " : ""}${normalized.totalTokens.toLocaleString("en-US")} tokens · ${formatAssistantDuration(normalized.durationMs)}`;
+  if (normalized.inputTokens || normalized.outputTokens) {
+    meta.title = `输入 ${normalized.inputTokens.toLocaleString("en-US")} tokens · 输出 ${normalized.outputTokens.toLocaleString("en-US")} tokens`;
+  }
+  body.appendChild(meta);
+}
+
 function restoreAssistantMessageExtras(node, item) {
   if (!node || !item || item.role !== "assistant") return;
   const references = Array.isArray(item.references) ? item.references : [];
@@ -4955,6 +5004,7 @@ function restoreAssistantMessageExtras(node, item) {
   if (references.length || links.length) {
     appendCitationFooter(node, references, links);
   }
+  if (item.metrics) appendAssistantMetrics(node, item.metrics);
 }
 
 function currentAgentContextKey(skillIds, datasetIds) {
@@ -4975,6 +5025,7 @@ function compactChatHistory() {
 }
 
 async function sendChat(message, options = {}) {
+  const chatStartedAt = performance.now();
   if (!state.activeThreadId) state.activeThreadId = chatThreadId();
   const conversationHistory = compactChatHistory();
   const displayMessage = options.displayMessage || message;
@@ -5003,6 +5054,7 @@ async function sendChat(message, options = {}) {
   let assistantHistoryEntry = null;
   let draftPersistTimer = null;
   let assistantDraftRaw = "";
+  let stopStreamingRender = null;
   const assistantTimeline = [];
   const setAssistantDraftContent = (content) => {
     if (!assistantHistoryEntry) return;
@@ -5065,6 +5117,7 @@ async function sendChat(message, options = {}) {
     let answer = "";
     const insertedChartUrls = new Set();
     let isDone = false;
+    let responseMetrics = null;
     let collapseReasoningOnNextDelta = false;
     let streamQueue = "";
     let streamTimer = null;
@@ -5128,6 +5181,7 @@ async function sendChat(message, options = {}) {
       flushStreamQueue(true);
       assistantAnswerNodes(assistantNode).forEach((textNode) => textNode.classList.remove("is-streaming-token"));
     };
+    stopStreamingRender = finishStreamingText;
 
     const renderToolEvent = (event) => {
       renderAssistantToolEvent(assistantNode, event, insertedChartUrls);
@@ -5147,6 +5201,8 @@ async function sendChat(message, options = {}) {
         if (event.type === "done") {
           isDone = true;
           break;
+        } else if (event.type === "run_summary") {
+          responseMetrics = normalizeAssistantMetrics(event, `${message}\n${answer}`, performance.now() - chatStartedAt);
         } else if (event.type === "reasoning") {
           clearConnectingPlaceholder(assistantNode);
           collapseReasoningOnNextDelta = true;
@@ -5308,15 +5364,25 @@ async function sendChat(message, options = {}) {
       state.agentContextKey = contextKey;
       scrollMessagesToBottom();
     }
+    const finalMetrics = responseMetrics || normalizeAssistantMetrics(
+      null,
+      `${message}\n${assistantTimeline.map((event) => event.text || event.content || "").join("\n")}`,
+      performance.now() - chatStartedAt,
+    );
+    appendAssistantMetrics(assistantNode, finalMetrics);
+    if (assistantHistoryEntry) assistantHistoryEntry.metrics = finalMetrics;
     const completionPersist = flushDraftPersist();
     releaseChatTurn();
     await completionPersist;
     fetchStatus().catch((error) => console.warn("回答完成后刷新状态失败", error));
   } catch (error) {
+    if (stopStreamingRender) stopStreamingRender();
+    if (assistantNode) collapseLatestModelReasoning(assistantNode);
     const stopped = state.chatStopRequested || error.name === "AbortError";
+    const steered = Boolean(requestController.steerRequested);
     const stoppedText = assistantDraftRaw.trim()
-      ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n（已暂停生成）`
-      : "已暂停生成。";
+      ? `${stripAssistantControlText(assistantDraftRaw).trim()}\n\n${steered ? "（已收到插队消息，当前回答已停止）" : "（已暂停生成）"}`
+      : steered ? "已收到插队消息，当前回答已停止。" : "已暂停生成。";
     if (assistantNode) {
       clearConnectingPlaceholder(assistantNode);
       const textNode = currentMessageTextNode(assistantNode);
@@ -5326,12 +5392,27 @@ async function sendChat(message, options = {}) {
     }
     if (assistantHistoryEntry) {
       assistantHistoryEntry.content = stopped ? stoppedText : `处理失败：${error.message}`;
+      if (stopped) {
+        appendAssistantTimelineText(
+          assistantTimeline,
+          steered ? "\n\n（已收到插队消息，当前回答已停止）" : "\n\n（已暂停生成）",
+        );
+        assistantHistoryEntry.timeline = assistantTimeline;
+      }
+      assistantHistoryEntry.metrics = normalizeAssistantMetrics(
+        null,
+        `${message}\n${assistantDraftRaw}`,
+        performance.now() - chatStartedAt,
+      );
+      appendAssistantMetrics(assistantNode, assistantHistoryEntry.metrics);
       delete assistantHistoryEntry.partial;
     } else {
       state.chatHistory.push({ role: "assistant", content: stopped ? stoppedText : `处理失败：${error.message}` });
       state.chatHistory = state.chatHistory.slice(-80);
     }
-    await flushDraftPersist();
+    const interruptedPersist = flushDraftPersist();
+    releaseChatTurn();
+    await interruptedPersist;
   } finally {
     releaseChatTurn();
   }
@@ -5637,6 +5718,19 @@ if (els.chatQueueList) {
     if (action === "remove") {
       state.chatQueue = state.chatQueue.filter((entry) => entry.id !== queueId);
       renderChatQueue();
+      return;
+    }
+    if (action === "steer") {
+      state.chatQueue = state.chatQueue.filter((entry) => entry.id !== queueId);
+      state.chatQueue.unshift(queued);
+      renderChatQueue();
+      if (state.chatBusy && state.chatAbortController) {
+        state.chatStopRequested = true;
+        state.chatAbortController.steerRequested = true;
+        state.chatAbortController.abort();
+      } else {
+        processNextQueuedChat();
+      }
       return;
     }
     if (action === "edit") {
