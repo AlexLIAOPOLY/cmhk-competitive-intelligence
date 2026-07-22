@@ -158,6 +158,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
 
         self.assertIn('id="voiceInputButton"', markup)
+        self.assertLess(markup.index('id="chatModelPicker"'), markup.index('id="voiceInputButton"'))
         self.assertIn("navigator.mediaDevices.getUserMedia", app)
         self.assertIn("new MediaRecorder", app)
         self.assertIn('fetch("/api/chat-audio-transcribe"', app)
