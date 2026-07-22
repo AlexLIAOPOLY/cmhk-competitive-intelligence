@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-  <link rel="stylesheet" href="/static/styles.css?v=186" />
+  <link rel="stylesheet" href="/static/styles.css?v=187" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -246,6 +246,12 @@
                 <button class="web-search-toggle" id="webSearchToggle" type="button" aria-pressed="true" title="本轮使用网页来源">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 0 20"></path><path d="M12 2a15.3 15.3 0 0 0 0 20"></path></svg><span>联网搜索</span>
                 </button>
+                <div class="voice-input-control">
+                  <span class="voice-input-status" id="voiceInputStatus" aria-live="polite" hidden></span>
+                  <button class="voice-input-button" id="voiceInputButton" type="button" aria-label="语音输入" aria-pressed="false" title="语音输入">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
+                  </button>
+                </div>
                 <div class="chat-model-picker" id="chatModelPicker">
                   <button class="chat-model-button" id="chatModelButton" type="button" aria-expanded="false" aria-label="选择语言模型"><span id="chatModelButtonLabel">正在读取模型...</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button>
                   <div class="chat-model-menu" id="chatModelMenu" hidden>
@@ -409,6 +415,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=202"></script>
+    <script src="/static/app.js?v=203"></script>
   </body>
 </html>

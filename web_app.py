@@ -76,6 +76,18 @@ UPLOAD_DATASET_PREFIX = "user-upload"
 UPLOAD_ALLOWED_SUFFIXES = {".txt", ".md", ".csv", ".tsv", ".json", ".docx", ".pdf"}
 UPLOAD_MAX_BYTES = 8 * 1024 * 1024
 CHAT_IMAGE_MAX_BYTES = 8 * 1024 * 1024
+CHAT_AUDIO_MAX_BYTES = 20 * 1024 * 1024
+CHAT_STT_MODEL = (os.environ.get("CMHK_STT_MODEL") or "Qwen3ASR").strip()
+CHAT_AUDIO_MIME_EXTENSIONS = {
+    "audio/webm": "webm",
+    "audio/mp4": "m4a",
+    "audio/mpeg": "mp3",
+    "audio/mpga": "mpga",
+    "audio/m4a": "m4a",
+    "audio/x-m4a": "m4a",
+    "audio/wav": "wav",
+    "audio/x-wav": "wav",
+}
 CHAT_THREADS_DIR = ROOT / "agent_chat_threads"
 CHAT_THREADS_PATH = CHAT_THREADS_DIR / "threads.json"
 CHAT_THREADS_LOCK = threading.Lock()
@@ -157,6 +169,69 @@ def analyze_chat_image(payload: dict) -> dict:
     if not description:
         raise ValueError("视觉模型没有返回可用的图片描述")
     return {"description": description, "model": model}
+
+
+def transcribe_chat_audio(payload: dict) -> dict:
+    data_url = str(payload.get("audio") or "").strip()
+    match = re.fullmatch(
+        r"data:(audio/(?:webm|mp4|mpeg|mpga|m4a|x-m4a|wav|x-wav))(?:;codecs=[^;,]+)?;base64,([A-Za-z0-9+/=\s]+)",
+        data_url,
+        flags=re.I,
+    )
+    if not match:
+        raise ValueError("只支持 WebM、M4A、MP3 或 WAV 语音")
+    try:
+        raw = base64.b64decode(re.sub(r"\s+", "", match.group(2)), validate=True)
+    except Exception as exc:
+        raise ValueError("语音数据格式无效") from exc
+    if not raw:
+        raise ValueError("没有录到可识别的语音")
+    if len(raw) > CHAT_AUDIO_MAX_BYTES:
+        raise ValueError("单次语音不能超过 20 MB")
+
+    mime_type = match.group(1).lower()
+    extension = CHAT_AUDIO_MIME_EXTENSIONS.get(mime_type)
+    if not extension:
+        raise ValueError("不支持当前录音格式")
+    config = load_ai_config(include_key=True)
+    base_url = str(config.get("base_url") or "").strip().rstrip("/")
+    api_key = str(config.get("api_key") or "").strip()
+    if not is_internal_ai_base_url(base_url) or not api_key:
+        raise ValueError("公司内网模型配置不完整")
+
+    boundary = f"----CMHKVoice{uuid.uuid4().hex}"
+    line_break = b"\r\n"
+    body = bytearray()
+    for name, value in (("model", CHAT_STT_MODEL), ("language", "zh")):
+        body.extend(f"--{boundary}".encode("ascii") + line_break)
+        body.extend(f'Content-Disposition: form-data; name="{name}"'.encode("ascii") + line_break + line_break)
+        body.extend(str(value).encode("utf-8") + line_break)
+    body.extend(f"--{boundary}".encode("ascii") + line_break)
+    body.extend(
+        f'Content-Disposition: form-data; name="file"; filename="voice.{extension}"'.encode("ascii")
+        + line_break
+    )
+    body.extend(f"Content-Type: {mime_type}".encode("ascii") + line_break + line_break)
+    body.extend(raw + line_break)
+    body.extend(f"--{boundary}--".encode("ascii") + line_break)
+
+    request = urllib.request.Request(
+        f"{base_url}/audio/transcriptions",
+        data=bytes(body),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    wait_for_internal_ai_slot("chat-audio-transcription")
+    with urllib.request.urlopen(request, timeout=90) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    transcript = str(result.get("text") or result.get("transcript") or "").strip()
+    if not transcript:
+        raise ValueError("语音模型没有识别出文字，请靠近麦克风后重试")
+    return {"text": transcript, "model": CHAT_STT_MODEL}
 
 
 def _now_iso() -> str:
@@ -3513,6 +3588,18 @@ class AppHandler(BaseHTTPRequestHandler):
             except urllib.error.HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="ignore")[:600]
                 json_response(self, {"ok": False, "error": f"视觉模型返回 HTTP {exc.code}：{detail}"}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+        if parsed.path == "/api/chat-audio-transcribe":
+            try:
+                content_length = int(self.headers.get("Content-Length") or 0)
+                if content_length > (CHAT_AUDIO_MAX_BYTES * 2):
+                    raise ValueError("单次语音不能超过 20 MB")
+                json_response(self, {"ok": True, **transcribe_chat_audio(read_request_json(self))})
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="ignore")[:600]
+                json_response(self, {"ok": False, "error": f"语音模型返回 HTTP {exc.code}：{detail}"}, 400)
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return

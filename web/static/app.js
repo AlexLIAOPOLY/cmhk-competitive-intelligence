@@ -47,6 +47,11 @@ const state = {
   loadedSkillIds: new Set(),
   chatAbortController: null,
   chatStopRequested: false,
+  voiceRecorder: null,
+  voiceStream: null,
+  voiceChunks: [],
+  voiceState: "idle",
+  voiceStopTimer: null,
   chatAutoScroll: true,
   crawlRuns: [],
   activeCrawlRunId: null,
@@ -150,6 +155,8 @@ const els = {
   knowledgeUploadButton: document.querySelector("#knowledgeUploadButton"),
   knowledgeUploadInput: document.querySelector("#knowledgeUploadInput"),
   webSearchToggle: document.querySelector("#webSearchToggle"),
+  voiceInputButton: document.querySelector("#voiceInputButton"),
+  voiceInputStatus: document.querySelector("#voiceInputStatus"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
   qualityScore: document.querySelector("#qualityScore"),
@@ -4929,6 +4936,134 @@ function resizeChatInput() {
   els.chatInput.style.height = `${Math.min(120, Math.max(30, els.chatInput.scrollHeight))}px`;
 }
 
+function renderVoiceInputState() {
+  const button = els.voiceInputButton;
+  if (!button) return;
+  const voiceState = state.voiceState;
+  const recording = voiceState === "recording";
+  const requesting = voiceState === "requesting";
+  const transcribing = voiceState === "transcribing";
+  button.classList.toggle("is-recording", recording);
+  button.classList.toggle("is-busy", requesting || transcribing);
+  button.disabled = requesting || transcribing;
+  button.setAttribute("aria-pressed", recording ? "true" : "false");
+  button.setAttribute("aria-busy", requesting || transcribing ? "true" : "false");
+  button.setAttribute("aria-label", recording ? "停止录音并发送" : transcribing ? "正在识别语音" : "语音输入");
+  button.title = recording ? "停止录音并发送" : transcribing ? "正在使用公司语音模型识别" : "语音输入";
+  if (els.voiceInputStatus) {
+    const label = recording ? "正在聆听…" : requesting ? "正在启用麦克风…" : transcribing ? "正在识别…" : "";
+    els.voiceInputStatus.textContent = label;
+    els.voiceInputStatus.hidden = !label;
+  }
+}
+
+function preferredVoiceMimeType() {
+  const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
+  return candidates.find((type) => window.MediaRecorder?.isTypeSupported(type)) || "";
+}
+
+function voiceBlobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("无法读取录音数据"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function releaseVoiceStream() {
+  if (state.voiceStopTimer) {
+    clearTimeout(state.voiceStopTimer);
+    state.voiceStopTimer = null;
+  }
+  if (state.voiceStream) state.voiceStream.getTracks().forEach((track) => track.stop());
+  state.voiceStream = null;
+  state.voiceRecorder = null;
+}
+
+async function transcribeAndSendVoice(blob) {
+  try {
+    if (!blob || !blob.size) throw new Error("没有录到可识别的语音");
+    if (blob.size > 20 * 1024 * 1024) throw new Error("单次语音不能超过 20 MB");
+    state.voiceState = "transcribing";
+    renderVoiceInputState();
+    const audio = await voiceBlobToDataUrl(blob);
+    const response = await fetch("/api/chat-audio-transcribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ audio }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || "语音识别失败");
+    const transcript = String(payload.text || "").trim();
+    if (!transcript) throw new Error("没有识别出文字，请重试");
+    const existing = els.chatInput.value.trim();
+    els.chatInput.value = existing ? `${existing} ${transcript}` : transcript;
+    resizeChatInput();
+    state.voiceState = "idle";
+    renderVoiceInputState();
+    els.chatForm.requestSubmit();
+  } catch (error) {
+    state.voiceState = "idle";
+    renderVoiceInputState();
+    showTaskOperationNotice(error.message || "语音识别失败，请重试");
+    els.chatInput.focus();
+  }
+}
+
+async function startVoiceInput() {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    showTaskOperationNotice("当前浏览器不支持语音输入，请使用最新版 Chrome、Edge 或 Safari");
+    return;
+  }
+  state.voiceState = "requesting";
+  renderVoiceInputState();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    });
+    const mimeType = preferredVoiceMimeType();
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    state.voiceStream = stream;
+    state.voiceRecorder = recorder;
+    state.voiceChunks = [];
+    recorder.addEventListener("dataavailable", (event) => {
+      if (event.data?.size) state.voiceChunks.push(event.data);
+    });
+    recorder.addEventListener("stop", () => {
+      const audioType = recorder.mimeType || mimeType || "audio/webm";
+      const blob = new Blob(state.voiceChunks, { type: audioType });
+      state.voiceChunks = [];
+      releaseVoiceStream();
+      transcribeAndSendVoice(blob);
+    }, { once: true });
+    recorder.addEventListener("error", () => {
+      releaseVoiceStream();
+      state.voiceState = "idle";
+      renderVoiceInputState();
+      showTaskOperationNotice("录音中断，请重试");
+    }, { once: true });
+    recorder.start(250);
+    state.voiceState = "recording";
+    renderVoiceInputState();
+    state.voiceStopTimer = setTimeout(() => stopVoiceInput(), 120000);
+  } catch (error) {
+    releaseVoiceStream();
+    state.voiceState = "idle";
+    renderVoiceInputState();
+    const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+    showTaskOperationNotice(denied ? "未获得麦克风权限，请在浏览器设置中允许后重试" : `无法启动麦克风：${error.message || "请重试"}`);
+  }
+}
+
+function stopVoiceInput() {
+  if (state.voiceRecorder?.state === "recording") {
+    state.voiceState = "transcribing";
+    renderVoiceInputState();
+    state.voiceRecorder.stop();
+  }
+}
+
 function generateFallbackSuggestions(userMessage) {
   const msg = userMessage || "";
   const suggestions = [];
@@ -5784,6 +5919,14 @@ if (els.chatThreadSearchInput) {
   els.chatThreadSearchInput.addEventListener("input", () => {
     state.chatThreadSearch = els.chatThreadSearchInput.value;
     renderChatThreadList();
+  });
+}
+
+if (els.voiceInputButton) {
+  renderVoiceInputState();
+  els.voiceInputButton.addEventListener("click", () => {
+    if (state.voiceState === "recording") stopVoiceInput();
+    else if (state.voiceState === "idle") startVoiceInput();
   });
 }
 

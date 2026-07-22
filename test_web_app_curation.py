@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import os
 import subprocess
 import json
@@ -124,7 +125,44 @@ class ChatApprovalProtocolTests(unittest.TestCase):
         self.assertEqual(events[-1], {"type": "done"})
 
 
+class ChatAudioTranscriptionTests(unittest.TestCase):
+    def test_company_asr_receives_multipart_audio_and_returns_text(self) -> None:
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({"text": "请分析最新业绩。"}).encode()
+        payload = {"audio": "data:audio/webm;codecs=opus;base64," + base64.b64encode(b"webm-audio").decode()}
+        with (
+            mock.patch.object(web_app, "load_ai_config", return_value={
+                "base_url": web_app.INTERNAL_AI_BASE_URL,
+                "api_key": "secret-test-key",
+            }),
+            mock.patch.object(web_app.urllib.request, "urlopen", return_value=response) as urlopen,
+            mock.patch.object(web_app, "wait_for_internal_ai_slot"),
+        ):
+            result = web_app.transcribe_chat_audio(payload)
+
+        self.assertEqual(result, {"text": "请分析最新业绩。", "model": "Qwen3ASR"})
+        request = urlopen.call_args.args[0]
+        self.assertTrue(request.full_url.endswith("/audio/transcriptions"))
+        self.assertIn(b'name="model"', request.data)
+        self.assertIn(b"Qwen3ASR", request.data)
+        self.assertIn(b'name="file"', request.data)
+
+    def test_audio_validation_rejects_unsupported_data_urls(self) -> None:
+        with self.assertRaisesRegex(ValueError, "只支持"):
+            web_app.transcribe_chat_audio({"audio": "data:text/plain;base64,SGVsbG8="})
+
+
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_voice_dictation_uses_company_stt_and_auto_submits_transcript(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+
+        self.assertIn('id="voiceInputButton"', markup)
+        self.assertIn("navigator.mediaDevices.getUserMedia", app)
+        self.assertIn("new MediaRecorder", app)
+        self.assertIn('fetch("/api/chat-audio-transcribe"', app)
+        self.assertIn("els.chatForm.requestSubmit();", app)
+
     def test_reasoning_uses_one_transparent_outline_without_a_filled_header_box(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
         panel_start = styles.index(".model-reasoning {")
