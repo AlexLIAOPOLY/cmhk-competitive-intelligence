@@ -82,6 +82,8 @@ CHAT_THREADS_LOCK = threading.Lock()
 CHAT_TITLE_TASK_LOCK = threading.Lock()
 CHAT_TITLE_PENDING: dict[str, str] = {}
 CHAT_TITLE_ACTIVE: set[str] = set()
+CHAT_APPROVAL_LOCK = threading.Lock()
+CHAT_APPROVAL_WAITERS: dict[tuple[str, str], dict[str, object]] = {}
 
 
 def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:
@@ -723,6 +725,97 @@ def read_request_json(handler: BaseHTTPRequestHandler) -> dict:
         return {}
     raw = handler.rfile.read(length)
     return json.loads(raw.decode("utf-8") or "{}")
+
+
+def _chat_approval_key(request_id: str, action_id: str) -> tuple[str, str]:
+    return (str(request_id or "")[:160], str(action_id or "")[:240])
+
+
+def register_chat_approval(request_id: str, action_id: str) -> None:
+    key = _chat_approval_key(request_id, action_id)
+    with CHAT_APPROVAL_LOCK:
+        CHAT_APPROVAL_WAITERS[key] = {"event": threading.Event(), "decision": ""}
+
+
+def resolve_chat_approval(request_id: str, action_id: str, decision: str) -> bool:
+    key = _chat_approval_key(request_id, action_id)
+    normalized = "allow" if decision == "allow" else "deny"
+    with CHAT_APPROVAL_LOCK:
+        waiter = CHAT_APPROVAL_WAITERS.get(key)
+        if not waiter:
+            return False
+        waiter["decision"] = normalized
+        signal = waiter.get("event")
+    if isinstance(signal, threading.Event):
+        signal.set()
+    return True
+
+
+def wait_for_chat_approval(request_id: str, action_id: str) -> str:
+    key = _chat_approval_key(request_id, action_id)
+    with CHAT_APPROVAL_LOCK:
+        waiter = CHAT_APPROVAL_WAITERS.get(key)
+    if not waiter:
+        return "deny"
+    signal = waiter.get("event")
+    if isinstance(signal, threading.Event):
+        signal.wait()
+    with CHAT_APPROVAL_LOCK:
+        resolved = CHAT_APPROVAL_WAITERS.pop(key, waiter)
+    return "allow" if resolved.get("decision") == "allow" else "deny"
+
+
+def stream_agent_with_approvals(
+    message: str,
+    *,
+    request_id: str,
+    approved_action_ids: list[str] | None = None,
+    decision_waiter=wait_for_chat_approval,
+    agent_factory=stream_agent,
+    **agent_kwargs,
+):
+    """Pause one SSE turn for approval, then resume it with the user's decision."""
+    approved = {str(item) for item in (approved_action_ids or []) if str(item).strip()}
+    while True:
+        events = agent_factory(message, approved_action_ids=sorted(approved), **agent_kwargs)
+        restart = False
+        try:
+            for raw_event in events:
+                event = dict(raw_event or {})
+                if event.get("type") != "action_confirmation":
+                    yield event
+                    continue
+                action_id = str(event.get("actionId") or "")
+                if not action_id:
+                    yield event
+                    continue
+                register_chat_approval(request_id, action_id)
+                event["requestId"] = request_id
+                yield event
+                decision = decision_waiter(request_id, action_id)
+                with CHAT_APPROVAL_LOCK:
+                    CHAT_APPROVAL_WAITERS.pop(_chat_approval_key(request_id, action_id), None)
+                yield {
+                    "type": "approval_result",
+                    "requestId": request_id,
+                    "actionId": action_id,
+                    "decision": decision,
+                    "label": str(event.get("label") or "执行操作"),
+                }
+                if decision == "allow":
+                    approved.add(action_id)
+                    restart = True
+                else:
+                    yield {"type": "delta", "text": f"已取消执行：{event.get('label') or '该操作'}。"}
+                    yield {"type": "done"}
+                break
+        finally:
+            close = getattr(events, "close", None)
+            if callable(close):
+                close()
+        if restart:
+            continue
+        return
 
 
 def safe_dataset_slug(value: str) -> str:
@@ -3528,6 +3621,18 @@ class AppHandler(BaseHTTPRequestHandler):
             memory_id = str(payload.get("id") or "")
             json_response(self, {"ok": delete_memory(memory_id), "id": memory_id})
             return
+        if parsed.path == "/api/chat-approval":
+            payload = read_request_json(self)
+            request_id = str(payload.get("requestId") or "")
+            action_id = str(payload.get("actionId") or "")
+            decision = "allow" if payload.get("decision") == "allow" else "deny"
+            resolved = resolve_chat_approval(request_id, action_id, decision)
+            json_response(
+                self,
+                {"ok": resolved, "requestId": request_id, "actionId": action_id, "decision": decision},
+                200 if resolved else 404,
+            )
+            return
         if parsed.path == "/api/chat-threads":
             try:
                 payload = read_request_json(self)
@@ -3556,6 +3661,9 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/chat-stream":
             payload = read_request_json(self)
             message = str(payload.get("message") or "")
+            request_id = re.sub(r"[^A-Za-z0-9_.:-]", "", str(payload.get("requestId") or ""))[:160]
+            if not request_id:
+                request_id = f"chat-{uuid.uuid4().hex}"
             web_search_enabled = bool(payload.get("webSearchEnabled"))
             thinking_enabled = bool(payload.get("thinkingEnabled"))
             selected_skill_ids = payload.get("selectedSkillIds")
@@ -3580,8 +3688,9 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_header("Connection", "close")
             self.end_headers()
 
-            for event in stream_agent(
+            for event in stream_agent_with_approvals(
                 message,
+                request_id=request_id,
                 force_web_search=web_search_enabled,
                 selected_skill_ids=[str(item) for item in selected_skill_ids],
                 selected_dataset_ids=[str(item) for item in selected_dataset_ids],

@@ -36,7 +36,7 @@ const state = {
     sourceType: "user_uploaded_file",
     quality: "",
   },
-  pendingConfirmedActions: new Set(),
+  pendingChatApproval: null,
   chatHistory: [],
   chatThreads: [],
   activeThreadId: null,
@@ -122,6 +122,7 @@ const els = {
   chatThreadSearchInput: document.querySelector("#chatThreadSearchInput"),
   chatThreadList: document.querySelector("#chatThreadList"),
   chatQueueList: document.querySelector("#chatQueueList"),
+  chatApprovalBar: document.querySelector("#chatApprovalBar"),
   chatFab: document.querySelector("#chatFab"),
   chatModal: document.querySelector("#chatModal"),
   closeChatButton: document.querySelector("#closeChatButton"),
@@ -4051,27 +4052,89 @@ function mergeCitationMeta(node, event) {
   node.dataset.links = JSON.stringify(mergedLinks);
 }
 
-function appendActionConfirmation(node, event, originalMessage) {
-  const body = node.querySelector(".message-body");
-  if (!body || !event.actionId) return;
-  const existing = body.querySelector(`[data-action-id="${CSS.escape(event.actionId)}"]`);
-  if (existing) return;
-  const card = document.createElement("div");
-  card.className = "action-confirm-card";
-  card.dataset.actionId = event.actionId;
-  card.innerHTML = `
-    <strong>需要确认：${escapeHtml(event.label || "执行操作")}</strong>
-    <p>${escapeHtml(event.description || event.risk || "该操作会修改数据或触发任务。")}</p>
-    <button type="button" class="primary-button small">确认执行</button>
+function hideChatApproval(requestId = "") {
+  if (!els.chatApprovalBar) return;
+  if (requestId && state.pendingChatApproval?.requestId !== requestId) return;
+  state.pendingChatApproval = null;
+  els.chatApprovalBar.hidden = true;
+  els.chatApprovalBar.classList.remove("is-resolving");
+  els.chatApprovalBar.innerHTML = "";
+}
+
+async function respondToChatApproval(decision, options = {}) {
+  const pending = state.pendingChatApproval;
+  if (!pending) return false;
+  const normalizedDecision = decision === "allow" ? "allow" : "deny";
+  if (els.chatApprovalBar) {
+    els.chatApprovalBar.classList.add("is-resolving");
+    els.chatApprovalBar.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+    const status = els.chatApprovalBar.querySelector(".chat-approval-copy strong");
+    if (status) status.textContent = normalizedDecision === "allow" ? "已确认，AI 正在继续" : "正在取消操作";
+  }
+  try {
+    const response = await fetch("/api/chat-approval", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: Boolean(options.keepalive),
+      body: JSON.stringify({
+        requestId: pending.requestId,
+        actionId: pending.actionId,
+        decision: normalizedDecision,
+      }),
+    });
+    if (!response.ok && response.status !== 404) throw new Error("审批反馈失败");
+    return response.ok;
+  } catch (error) {
+    if (!options.silent && els.chatApprovalBar) {
+      els.chatApprovalBar.classList.remove("is-resolving");
+      els.chatApprovalBar.querySelectorAll("button").forEach((button) => { button.disabled = false; });
+      const status = els.chatApprovalBar.querySelector(".chat-approval-copy strong");
+      if (status) status.textContent = "反馈失败，请重试";
+    }
+    return false;
+  }
+}
+
+function abandonPendingChatApproval() {
+  const requestId = state.pendingChatApproval?.requestId || "";
+  if (!requestId) return;
+  void respondToChatApproval("deny", { keepalive: true, silent: true });
+  hideChatApproval(requestId);
+}
+
+function showActionConfirmation(event) {
+  if (!els.chatApprovalBar || !event.actionId || !event.requestId) return;
+  state.pendingChatApproval = {
+    requestId: event.requestId,
+    actionId: event.actionId,
+  };
+  els.chatApprovalBar.hidden = false;
+  els.chatApprovalBar.classList.remove("is-resolving");
+  els.chatApprovalBar.innerHTML = `
+    <div class="chat-approval-copy">
+      <strong>需要确认：${escapeHtml(event.label || "执行操作")}</strong>
+      <span>${escapeHtml(event.description || event.risk || "该操作会修改数据或触发任务。")}</span>
+    </div>
+    <div class="chat-approval-actions">
+      <button type="button" class="quiet-button small" data-decision="deny">取消</button>
+      <button type="button" class="primary-button small" data-decision="allow">确认执行</button>
+    </div>
   `;
-  const button = card.querySelector("button");
-  button.addEventListener("click", () => {
-    state.pendingConfirmedActions.add(event.actionId);
-    button.disabled = true;
-    button.textContent = "已确认，正在执行";
-    sendChat(originalMessage, { approvedActionIds: [event.actionId] });
+  els.chatApprovalBar.querySelectorAll("[data-decision]").forEach((button) => {
+    button.addEventListener("click", () => respondToChatApproval(button.dataset.decision));
   });
-  appendStreamBlock(node, card);
+}
+
+function resetAssistantForApprovalResume(node, timeline) {
+  const body = messageBody(node);
+  if (!body) return;
+  timeline.splice(0, timeline.length);
+  body.classList.add("is-typing");
+  body.innerHTML = `
+    <div class="typing-ellipsis" data-placeholder="connecting" role="status" aria-live="polite">
+      <span aria-hidden="true"><i>.</i><i>.</i><i>.</i></span><span class="sr-only">正在继续</span>
+    </div>
+  `;
 }
 
 function normalizeStoredChatRole(value) {
@@ -5026,6 +5089,7 @@ function compactChatHistory() {
 
 async function sendChat(message, options = {}) {
   const chatStartedAt = performance.now();
+  const chatRequestId = chatThreadId();
   if (!state.activeThreadId) state.activeThreadId = chatThreadId();
   const conversationHistory = compactChatHistory();
   const displayMessage = options.displayMessage || message;
@@ -5036,6 +5100,7 @@ async function sendChat(message, options = {}) {
   state.chatHistory.push(userHistoryEntry);
   state.chatHistory = state.chatHistory.slice(-80);
   const requestController = new AbortController();
+  requestController.requestId = chatRequestId;
   state.chatAbortController = requestController;
   state.chatStopRequested = false;
   setChatBusy(true);
@@ -5099,6 +5164,7 @@ async function sendChat(message, options = {}) {
       headers: { "Content-Type": "application/json" },
       signal: requestController.signal,
       body: JSON.stringify({
+        requestId: chatRequestId,
         message,
         webSearchEnabled,
         thinkingEnabled: false,
@@ -5217,7 +5283,22 @@ async function sendChat(message, options = {}) {
           rerenderAssistantMarkdown(assistantNode);
         } else if (event.type === "action_confirmation") {
           finishStreamingText();
-          appendActionConfirmation(assistantNode, event, message);
+          showActionConfirmation(event);
+        } else if (event.type === "approval_result") {
+          finishStreamingText();
+          hideChatApproval(event.requestId);
+          resetAssistantForApprovalResume(assistantNode, assistantTimeline);
+          answer = "";
+          assistantDraftRaw = "";
+          responseMetrics = null;
+          collapseReasoningOnNextDelta = false;
+          insertedChartUrls.clear();
+          if (assistantHistoryEntry) {
+            assistantHistoryEntry.content = "正在根据您的决定继续处理。";
+            assistantHistoryEntry.timeline = assistantTimeline;
+            assistantHistoryEntry.partial = true;
+          }
+          scheduleDraftPersist();
         } else if (event.type === "tool_call_start" || event.type === "tool_call_result") {
           if (event.type === "tool_call_result" && event.name === "read_agent_skill" && event.args) {
             try {
@@ -5376,6 +5457,7 @@ async function sendChat(message, options = {}) {
     await completionPersist;
     fetchStatus().catch((error) => console.warn("回答完成后刷新状态失败", error));
   } catch (error) {
+    hideChatApproval(chatRequestId);
     if (stopStreamingRender) stopStreamingRender();
     if (assistantNode) collapseLatestModelReasoning(assistantNode);
     const stopped = state.chatStopRequested || error.name === "AbortError";
@@ -5414,6 +5496,7 @@ async function sendChat(message, options = {}) {
     releaseChatTurn();
     await interruptedPersist;
   } finally {
+    hideChatApproval(chatRequestId);
     releaseChatTurn();
   }
 }
@@ -5725,6 +5808,7 @@ if (els.chatQueueList) {
       state.chatQueue.unshift(queued);
       renderChatQueue();
       if (state.chatBusy && state.chatAbortController) {
+        abandonPendingChatApproval();
         state.chatStopRequested = true;
         state.chatAbortController.steerRequested = true;
         state.chatAbortController.abort();
@@ -6084,6 +6168,7 @@ els.chatForm.addEventListener("submit", async (event) => {
 els.chatSubmitButton.addEventListener("click", (event) => {
   if (!state.chatBusy) return;
   event.preventDefault();
+  abandonPendingChatApproval();
   state.chatStopRequested = true;
   if (state.chatAbortController) state.chatAbortController.abort();
 });
@@ -6095,6 +6180,8 @@ els.chatInput.addEventListener("keydown", (event) => {
   event.preventDefault();
   els.chatForm.requestSubmit();
 });
+
+window.addEventListener("beforeunload", abandonPendingChatApproval);
 
 setClock();
 setInterval(setClock, 30000);

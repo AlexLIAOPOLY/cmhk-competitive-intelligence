@@ -2231,24 +2231,63 @@ select {
   }
 }
 
-.action-confirm-card {
+.chat-approval-bar {
+  flex: 0 0 auto;
   display: grid;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid rgba(14, 116, 144, 0.22);
-  border-radius: var(--radius-md);
-  background: #f0f9ff;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 16px;
+  align-items: center;
+  margin: 0 20px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 119, 200, 0.24);
+  border-radius: 12px;
+  background: #f4faff;
+  box-shadow: 0 4px 14px rgba(26, 75, 112, 0.06);
 }
 
-.action-confirm-card strong {
-  color: #075985;
+.chat-approval-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
 }
 
-.action-confirm-card p {
-  margin: 0;
-  color: var(--text);
+.chat-approval-copy strong {
+  color: var(--blue-dark);
   font-size: 12px;
+}
+
+.chat-approval-copy span {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-approval-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-approval-actions button {
+  min-width: 72px;
+}
+
+.chat-approval-bar.is-resolving {
+  opacity: 0.72;
+}
+
+@media (max-width: 700px) {
+  .chat-approval-bar {
+    grid-template-columns: 1fr;
+    margin-inline: 12px;
+  }
+
+  .chat-approval-actions {
+    justify-content: flex-end;
+  }
 }
 
 .message-body p { margin: 0 0 8px; }

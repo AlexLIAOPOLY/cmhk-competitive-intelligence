@@ -56,6 +56,67 @@ class ChatThreadPersistenceTests(unittest.TestCase):
         self.assertFalse(saved["titlePending"])
 
 
+class ChatApprovalProtocolTests(unittest.TestCase):
+    def setUp(self) -> None:
+        web_app.CHAT_APPROVAL_WAITERS.clear()
+
+    def tearDown(self) -> None:
+        web_app.CHAT_APPROVAL_WAITERS.clear()
+
+    def test_allow_pauses_then_restarts_same_turn_with_action_id(self) -> None:
+        calls: list[list[str]] = []
+
+        def fake_agent(_message, *, approved_action_ids, **_kwargs):
+            calls.append(list(approved_action_ids))
+            if "trigger_full_crawl:abc" not in approved_action_ids:
+                yield {
+                    "type": "action_confirmation",
+                    "actionId": "trigger_full_crawl:abc",
+                    "label": "全量爬虫",
+                    "description": "执行完整公开信息爬取。",
+                }
+                return
+            yield {"type": "delta", "text": "已开始执行。"}
+            yield {"type": "done"}
+
+        events = list(web_app.stream_agent_with_approvals(
+            "请全量爬取",
+            request_id="request-allow",
+            decision_waiter=lambda _request_id, _action_id: "allow",
+            agent_factory=fake_agent,
+        ))
+
+        self.assertEqual(calls, [[], ["trigger_full_crawl:abc"]])
+        self.assertEqual([event["type"] for event in events], [
+            "action_confirmation", "approval_result", "delta", "done",
+        ])
+        self.assertEqual(events[0]["requestId"], "request-allow")
+        self.assertEqual(events[1]["decision"], "allow")
+
+    def test_deny_finishes_turn_without_executing_action(self) -> None:
+        calls = 0
+
+        def fake_agent(_message, *, approved_action_ids, **_kwargs):
+            nonlocal calls
+            calls += 1
+            yield {
+                "type": "action_confirmation",
+                "actionId": "trigger_full_crawl:def",
+                "label": "全量爬虫",
+            }
+
+        events = list(web_app.stream_agent_with_approvals(
+            "请全量爬取",
+            request_id="request-deny",
+            decision_waiter=lambda _request_id, _action_id: "deny",
+            agent_factory=fake_agent,
+        ))
+
+        self.assertEqual(calls, 1)
+        self.assertEqual(events[-2], {"type": "delta", "text": "已取消执行：全量爬虫。"})
+        self.assertEqual(events[-1], {"type": "done"})
+
+
 class FrontendCitationRenderingTests(unittest.TestCase):
     def test_reasoning_uses_one_transparent_outline_without_a_filled_header_box(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
@@ -86,7 +147,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn(".rag-process", styles)
         self.assertNotIn(".thinking-dots", styles)
         merge_start = app.index("function mergeCitationMeta")
-        merge_end = app.index("function appendActionConfirmation", merge_start)
+        merge_end = app.index("function hideChatApproval", merge_start)
         self.assertNotIn("appendRagProcess(", app[merge_start:merge_end])
 
     def test_reasoning_stream_renders_markdown_instead_of_raw_markers(self) -> None:
@@ -201,6 +262,26 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("if (assistantNode) collapseLatestModelReasoning(assistantNode);", app)
         self.assertIn("const interruptedPersist = flushDraftPersist();\n    releaseChatTurn();\n    await interruptedPersist;", app)
 
+    def test_action_approval_is_above_composer_and_resumes_the_same_stream(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        html = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        approval_start = app.index("function showActionConfirmation")
+        approval_end = app.index("function resetAssistantForApprovalResume", approval_start)
+        approval_renderer = app[approval_start:approval_end]
+
+        self.assertLess(html.index('id="chatApprovalBar"'), html.index('id="chatForm"'))
+        self.assertIn('fetch("/api/chat-approval"', app)
+        self.assertIn('data-decision="deny"', approval_renderer)
+        self.assertIn('data-decision="allow"', approval_renderer)
+        self.assertNotIn("appendStreamBlock", approval_renderer)
+        self.assertNotIn("sendChat(", approval_renderer)
+        self.assertIn('event.type === "approval_result"', app)
+        self.assertIn("resetAssistantForApprovalResume(assistantNode, assistantTimeline)", app)
+        self.assertIn("requestId: chatRequestId", app)
+        self.assertIn(".chat-approval-bar", styles)
+        self.assertNotIn(".action-confirm-card", styles)
+
     def test_sent_image_preview_is_rendered_and_persisted_in_the_user_message(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
@@ -286,7 +367,7 @@ if (!rendered.includes('citation-marker') || rendered.includes('[来源')) {
 const fs = require('fs');
 const app = fs.readFileSync('web/static/app.js', 'utf8');
 const start = app.indexOf('function readStoredJson');
-const end = app.indexOf('function appendActionConfirmation');
+const end = app.indexOf('function hideChatApproval');
 if (start < 0 || end < 0) throw new Error('function slice not found');
 function appendRagProcess() {}
 eval(app.slice(start, end));
