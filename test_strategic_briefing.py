@@ -33,6 +33,69 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertTrue(result["ai_polished_at"])
         self.assertEqual(call.call_args.kwargs["max_tokens"], 2400)
 
+    def test_model_authored_copy_is_normalized_to_simplified_chinese(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "香港電訊擴展人工智能服務",
+                "summary": "香港電訊宣佈擴展人工智能服務，為企業客戶提供新的網絡能力。",
+                "should_include": True,
+                "region": "香港本地",
+                "category": "競對動態",
+                "keywords": "人工智能",
+                "inclusion_reason": "直接關係香港企業市場的競爭格局變化。",
+                "region_reason": "事件主體與受影響市場均在香港。",
+            },
+            require_review_fields=True,
+            allowed_keywords="人工智能",
+        )
+        self.assertEqual(result["title"], "香港电讯扩展人工智能服务")
+        self.assertIn("企业客户", result["summary"])
+        self.assertEqual(result["category"], "竞对动态")
+        self.assertIn("竞争格局变化", result["inclusion_reason"])
+
+    def test_explicit_taiwan_evidence_overrides_ai_hong_kong_region(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "辉达代理AI RTX Spark携手联发科",
+                "summary": "辉达代理AI RTX Spark技术与联发科合作，并有4家台厂新品接力上场。",
+                "should_include": True,
+                "region": "香港本地",
+                "category": "行业动态",
+                "keywords": "AI",
+                "inclusion_reason": "涉及AI技术合作与台厂新品上市，具产业动态价值。",
+                "region_reason": "模型错误认为影响香港市场。",
+            },
+            require_review_fields=True,
+            allowed_keywords="AI",
+            source_item={
+                "source_title": "7/22盘前｜辉达代理AI RTX Spark牵手联发科 4台厂新品接力上场",
+                "source_summary": "台股盘前重点新闻。",
+                "jurisdiction": "TW",
+            },
+        )
+        self.assertEqual(result["region"], "国际/行业")
+
+    def test_explicit_hong_kong_evidence_keeps_local_region(self):
+        self.assertEqual(
+            briefing._enforce_region_from_source_evidence(
+                "香港本地",
+                {"source_title": "台湾企业在香港推出新服务"},
+            ),
+            "香港本地",
+        )
+
+    def test_approved_brief_prompt_requires_simplified_chinese(self):
+        with mock.patch.object(
+            briefing,
+            "_call_internal_ai",
+            return_value={
+                "title": "竞对推出新一代企业网络方案",
+                "summary": "该公司发布新的企业网络方案，重点关注产品能力变化及市场影响。",
+            },
+        ) as call:
+            briefing._polish_approved_brief(self._approved_brief())
+        self.assertIn("简体中文", call.call_args.args[0])
+
     def test_polish_approved_brief_rejects_english_title(self):
         with mock.patch.object(
             briefing,

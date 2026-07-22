@@ -17,6 +17,8 @@ from urllib.error import HTTPError
 from urllib.request import ProxyHandler, Request, build_opener, urlopen
 from zoneinfo import ZoneInfo
 
+from opencc import OpenCC
+
 from ai_config import load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
 
@@ -28,7 +30,7 @@ STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
-AI_EDITOR_VERSION = 5
+AI_EDITOR_VERSION = 6
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
@@ -1152,6 +1154,45 @@ _META_SUMMARY_PREFIX = re.compile(
     r"^(?:这条|该条|这则|该则|本条|本新闻|该新闻|本报道|该报道|本文|此文|"
     r"当前来源|这项内容|该内容|这项动态|该动态)"
 )
+_EXPLICIT_NON_HK_EVENT_RE = re.compile(
+    r"(?:台湾|台灣|台厂|台廠|台股|台积电|台積電|联发科|聯發科|"
+    r"鸿海|鴻海|台北|臺北|台中|臺中|高雄|新竹|"
+    r"\btaiwan\b|\btaipei\b|\bmedIATEK\b)",
+    re.I,
+)
+_EXPLICIT_HK_EVENT_RE = re.compile(
+    r"(?:hong kong|香港|ofca|通讯事务管理局|通訊事務管理局|"
+    r"数码港|數碼港|科学园|科學園|河套|北都|新界|九龙|九龍)",
+    re.I,
+)
+_SIMPLIFIED_CHINESE_CONVERTER = OpenCC("t2s")
+
+
+def _to_simplified_chinese(value: Any, limit: int) -> str:
+    """Normalize model-authored Chinese copy before it reaches any consumer."""
+    return _clean_text(_SIMPLIFIED_CHINESE_CONVERTER.convert(str(value or "")), limit)
+
+
+def _enforce_region_from_source_evidence(region: str, source_item: dict[str, Any] | None) -> str:
+    """Reject a Hong Kong label when the source explicitly describes a non-HK event."""
+    if region != "香港本地" or not isinstance(source_item, dict):
+        return region
+    evidence = " ".join(
+        _clean_text(source_item.get(key), limit)
+        for key, limit in (
+            ("source_title", 500),
+            ("title", 500),
+            ("source_summary", 1800),
+            ("snippet", 1800),
+            ("summary", 1800),
+        )
+    )
+    jurisdiction = _clean_text(source_item.get("jurisdiction"), 20).upper()
+    has_hk_evidence = bool(_EXPLICIT_HK_EVENT_RE.search(evidence))
+    has_non_hk_evidence = bool(_EXPLICIT_NON_HK_EVENT_RE.search(evidence))
+    if not has_hk_evidence and (has_non_hk_evidence or jurisdiction in {"TW", "TWN"}):
+        return "国际/行业"
+    return region
 
 
 def _candidate_editor_key(item: dict[str, Any]) -> str:
@@ -1178,10 +1219,10 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
 
 def _validated_ai_copy(
     value: dict[str, Any], *, require_review_fields: bool = False,
-    allowed_keywords: Any = None,
+    allowed_keywords: Any = None, source_item: dict[str, Any] | None = None,
 ) -> dict[str, str]:
-    title = _clean_text(value.get("title") or value.get("ai_title"), 48)
-    summary = _clean_text(value.get("summary") or value.get("ai_summary"), 96)
+    title = _to_simplified_chinese(value.get("title") or value.get("ai_title"), 48)
+    summary = _to_simplified_chinese(value.get("summary") or value.get("ai_summary"), 96)
     if not title or not re.search(r"[\u4e00-\u9fff]", title):
         raise RuntimeError("公司内部 AI 未返回中文快讯标题")
     if len(summary) < 16 or not re.search(r"[\u4e00-\u9fff]", summary):
@@ -1200,8 +1241,8 @@ def _validated_ai_copy(
         should_include = False
     else:
         raise RuntimeError("公司内部 AI 未返回是否入选")
-    region = _clean_text(value.get("region"), 20)
-    category = _clean_text(value.get("category"), 40)
+    region = _to_simplified_chinese(value.get("region"), 20)
+    category = _to_simplified_chinese(value.get("category"), 40)
     if isinstance(allowed_keywords, (list, tuple, set)):
         configured_keywords = [
             _clean_text(keyword, 80) for keyword in allowed_keywords if _clean_text(keyword, 80)
@@ -1224,10 +1265,11 @@ def _validated_ai_copy(
         if keyword.casefold() in configured_by_key
     ]
     keywords = "、".join(dict.fromkeys(approved_keywords or configured_keywords))
-    inclusion_reason = _clean_text(value.get("inclusion_reason"), 120)
-    region_reason = _clean_text(value.get("region_reason"), 120)
+    inclusion_reason = _to_simplified_chinese(value.get("inclusion_reason"), 120)
+    region_reason = _to_simplified_chinese(value.get("region_reason"), 120)
     if region not in {"香港本地", "国际/行业"}:
         raise RuntimeError("公司内部 AI 未返回有效地域")
+    region = _enforce_region_from_source_evidence(region, source_item)
     if not category:
         raise RuntimeError("公司内部 AI 未返回分类")
     if should_include and not keywords:
@@ -1274,6 +1316,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 existing,
                 require_review_fields=True,
                 allowed_keywords=item.get("keywords"),
+                source_item=item,
             )
             continue
         except RuntimeError:
@@ -1283,6 +1326,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 cache.get(key) or {},
                 require_review_fields=True,
                 allowed_keywords=item.get("keywords"),
+                source_item=item,
             )
             continue
         except RuntimeError:
@@ -1315,7 +1359,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             response = _call_internal_ai(
                 (
                     "你是公司内部战略新闻编辑。只输出合法JSON对象，结构为"
-                    "{\"items\":[{\"id\":\"输入id\",\"title\":\"中文标题\","
+                    "{\"items\":[{\"id\":\"输入id\",\"title\":\"简体中文标题\","
                     "\"summary\":\"内容简介\",\"should_include\":true或false,"
                     "\"region\":\"香港本地或国际/行业\","
                     "\"category\":\"分类\",\"keywords\":\"命中关键词\","
@@ -1324,8 +1368,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "先判断should_include：只有新闻与输入matched_keywords中的至少一个监控词存在"
                     "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
                     "仅媒体提及、同名误命中、泛社会新闻或关键词没有正文证据时必须为false。"
-                    "title须为简洁准确的中文标题，品牌名和必要缩写可保留。"
-                    "summary须用一至两句、最多96个中文字符直接说明发生了什么，"
+                    "title须为简洁准确的简体中文标题，品牌名和必要缩写可保留。"
+                    "summary须用简体中文写一至两句、最多96个中文字符直接说明发生了什么，"
                     "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
                     "不得写‘可点击原文、值得关注、反映了、涉及’等空泛提示。"
                     "region必须依据新闻事件主体、明确发生地和受影响市场判断。"
@@ -1359,6 +1403,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     response_map.get(key[:16]) or {},
                     require_review_fields=True,
                     allowed_keywords=_item.get("keywords"),
+                    source_item=_item,
                 )
             except RuntimeError:
                 source = request_map[key[:16]]
@@ -1367,7 +1412,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         (
                             "你是公司内部战略新闻审核员。只输出合法JSON对象，字段为title、summary、should_include、"
                             "region、category、keywords、inclusion_reason、region_reason。"
-                            "title必须是简洁准确的中文标题。summary必须用一至两句、16至96个中文字符"
+                            "title必须是简洁准确的简体中文标题。summary必须用简体中文写一至两句、16至96个中文字符"
                             "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
                             "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
                             "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
@@ -1384,6 +1429,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         retry,
                         require_review_fields=True,
                         allowed_keywords=_item.get("keywords"),
+                        source_item=_item,
                     )
                 except Exception as exc:
                     logging.error(
@@ -1435,9 +1481,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
 def _polish_approved_brief(brief: dict[str, Any]) -> dict[str, Any]:
     polished = _call_internal_ai(
         (
-            "你是公司内部战略快讯中文编辑。只输出一行合法JSON，不要解释。"
-            "字段title：把原标题翻译或改写成简洁中文标题，保留必要品牌名和技术缩写。"
-            "字段summary：根据输入标题和摘要，用一至两句中文直接说明发生了什么。"
+            "你是公司内部战略快讯简体中文编辑。只输出一行合法JSON，不要解释。"
+            "字段title：把原标题翻译或改写成简洁简体中文标题，保留必要品牌名和技术缩写。"
+            "字段summary：根据输入标题和摘要，用一至两句简体中文直接说明发生了什么。"
             "禁止以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
             "不要写可点击原文、值得关注、反映了、涉及等空泛提示。"
             "不得改变事实、补造数字或引入输入中没有的信息，不要Markdown。"
