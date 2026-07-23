@@ -132,7 +132,12 @@ def _model_finish_reason(result: Any, model_message: Any) -> str:
     return next((str(value).strip().lower() for value in candidates if value), "")
 
 
-def _looks_like_incomplete_model_answer(value: str, finish_reason: str = "") -> bool:
+def _looks_like_incomplete_model_answer(
+    value: str,
+    finish_reason: str = "",
+    *,
+    require_completion_footer: bool = False,
+) -> bool:
     """Detect a final answer that the provider stopped before finishing a sentence."""
     if str(finish_reason or "").strip().lower() in _INCOMPLETE_FINISH_REASONS:
         return True
@@ -147,6 +152,16 @@ def _looks_like_incomplete_model_answer(value: str, finish_reason: str = "") -> 
     for opening, closing in _CONTROL_FOOTER_PAIRS:
         if len(opening.findall(text)) > len(closing.findall(text)):
             return True
+    # A long answer can stop after an ordinary full stop while still omitting
+    # most requested sections. Syntax-only checks cannot detect that case. The
+    # required suggestions footer therefore doubles as a hidden completion
+    # contract for substantive final answers; short direct answers stay valid.
+    if (
+        require_completion_footer
+        and len(text) >= 100
+        and not re.search(r"</suggestions\s*>\s*$", text, re.IGNORECASE)
+    ):
+        return True
     # Suggestions and source footers are UI metadata; judge the prose immediately before them.
     prose = re.sub(r"<suggestions>[\s\S]*?</suggestions>\s*$", "", text, flags=re.IGNORECASE).strip()
     prose = re.sub(r"<引用来源>[\s\S]*?</引用来源>\s*$", "", prose, flags=re.IGNORECASE).strip()
@@ -162,6 +177,69 @@ def _looks_like_incomplete_model_answer(value: str, finish_reason: str = "") -> 
         return True
     paired_marks = (("（", "）"), ("【", "】"), ("[", "]"))
     return any(prose.count(opening) > prose.count(closing) for opening, closing in paired_marks)
+
+
+def _with_completion_footer(value: str) -> str:
+    """Add a deterministic UI completion footer after a repaired complete answer."""
+    text = str(value or "").strip()
+    if not text or re.search(r"</suggestions\s*>\s*$", text, re.IGNORECASE):
+        return text
+    return (
+        f"{text}\n"
+        '<suggestions>["继续深化当前问题", "核对相关数据来源", "换一个角度继续分析"]</suggestions>'
+    )
+
+
+def _chinese_count(value: str) -> int:
+    text = str(value or "").strip()
+    if text.isdigit():
+        return int(text)
+    numbers = {
+        "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5,
+        "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    }
+    return numbers.get(text, 0)
+
+
+def _answer_satisfies_explicit_structure(request: str, answer: str) -> bool:
+    """Verify simple countable structures explicitly requested by the user."""
+    prompt = re.sub(r"\s+", "", str(request or ""))
+    text = str(answer or "")
+    checks: list[bool] = []
+
+    section_match = re.search(r"分(?:成|为)?([一二两三四五六七八九十\d]+)节", prompt)
+    if section_match:
+        required = _chinese_count(section_match.group(1))
+        headings = re.findall(
+            r"(?m)^#{1,6}\s*(?:第)?([一二两三四五六七八九十\d]+)[、.．：:]",
+            text,
+        )
+        checks.append(required > 0 and len(set(headings)) >= required)
+
+    sentence_match = re.search(r"([一二两三四五六七八九十\d]+)句话", prompt)
+    if sentence_match:
+        required = _chinese_count(sentence_match.group(1))
+        prose = re.sub(r"<suggestions>[\s\S]*", "", text, flags=re.IGNORECASE)
+        checks.append(required > 0 and len(re.findall(r"[。！？!?]", prose)) >= required)
+
+    item_match = re.search(r"(?:展开|分)(?:成|为)([一二两三四五六七八九十\d]+)条", prompt)
+    if item_match:
+        required = _chinese_count(item_match.group(1))
+        items = re.findall(r"(?m)^\s*(?:[-*]\s+|\d+[.)、]\s*)", text)
+        item_ok = required > 0 and len(items) >= required
+        if "结论" in prompt:
+            item_ok = item_ok and "结论" in text
+        checks.append(item_ok)
+
+    summary_match = re.search(r"(?:总结([一二两三四五六七八九十\d]+)点|([一二两三四五六七八九十\d]+)点总结)", prompt)
+    if summary_match:
+        required = _chinese_count(summary_match.group(1) or summary_match.group(2))
+        summary_start = max(text.rfind("总结"), text.rfind("结论"))
+        summary_text = text[summary_start:] if summary_start >= 0 else ""
+        summary_items = re.findall(r"(?m)^\s*(?:[-*]\s+|\d+[.)、]\s*)", summary_text)
+        checks.append(required > 0 and len(summary_items) >= required)
+
+    return bool(checks) and all(checks)
 
 
 def _is_retryable_model_transport_error(exc: Exception) -> bool:
@@ -330,7 +408,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
         return [stable[0], HumanMessage(content=prompt)]
 
     @staticmethod
-    def _completion_retry_messages(messages: Any) -> list[Any]:
+    def _completion_retry_messages(messages: Any, partial_content: str = "") -> list[Any]:
         stable = StableAgentChatDeepSeek._fallback_messages(messages)
         stable[0] = SystemMessage(
             content=(
@@ -340,6 +418,13 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 "只保留最关键结论，正文不得超过 1200 个中文字符，不要输出超长表格。"
             )
         )
+        if partial_content:
+            stable[1].content = (
+                f"{stable[1].content}\n\n"
+                "上一次候选回答如下。先核对它是否覆盖了用户要求的全部部分；"
+                "缺少的部分必须补齐，已经完整的事实可以保留，不要从中途继续造成上下文断裂。\n"
+                f"<previous_candidate>\n{str(partial_content)[:8000]}\n</previous_candidate>"
+            )
         return stable
 
     def _transport_fallback_client(self, model_name: str) -> ChatDeepSeek:
@@ -351,7 +436,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             temperature=self.temperature,
             disable_streaming=True,
             max_retries=1,
-            max_tokens=1800,
+            max_tokens=4096,
         )
 
     @staticmethod
@@ -364,6 +449,17 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
 
     def _generate(self, messages: Any, *args: Any, **kwargs: Any) -> Any:
         retry_messages = list(messages)
+        original_request = ""
+        for message in messages:
+            if not isinstance(message, HumanMessage):
+                continue
+            candidate = str(message.content or "")
+            match = re.search(
+                r"<current_user_request>(.*?)</current_user_request>",
+                candidate,
+                re.DOTALL | re.IGNORECASE,
+            )
+            original_request = (match.group(1) if match else candidate).strip()
         last_result = None
         best_partial_content = ""
         retry_kwargs = dict(kwargs)
@@ -404,12 +500,52 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 reasoning = str(additional.get("reasoning_content") or additional.get("reasoning") or "")
             malformed_tool_call = bool(re.search(r"DSML|tool_calls?>|invoke\s*(?:name|=)", content, re.IGNORECASE))
             tool_calls = list(getattr(model_message, "tool_calls", None) or [])
+            structurally_incomplete = bool(
+                content
+                and _looks_like_incomplete_model_answer(
+                    content,
+                    _model_finish_reason(last_result, model_message),
+                )
+            )
+            missing_completion_footer = bool(
+                len(content) >= 100
+                and not re.search(r"</suggestions\s*>\s*$", content, re.IGNORECASE)
+            )
+            explicit_structure_complete = _answer_satisfies_explicit_structure(
+                original_request,
+                content,
+            )
+            # The first missing footer is treated as suspicious and gets a
+            # bounded repair pass. If that repair returns structurally complete
+            # prose but merely omits UI metadata, add the deterministic footer
+            # instead of throwing away a valid answer.
+            if (
+                (attempt > 0 or explicit_structure_complete)
+                and not tool_calls
+                and missing_completion_footer
+                and (
+                    not structurally_incomplete
+                    or (
+                        explicit_structure_complete
+                        and not _looks_like_incomplete_model_answer(content)
+                    )
+                )
+                and not _looks_like_unstable_model_text(content)
+            ):
+                content = _with_completion_footer(content)
+                model_message.content = content
+                if explicit_structure_complete:
+                    response_metadata = dict(getattr(model_message, "response_metadata", None) or {})
+                    response_metadata["finish_reason"] = "stop"
+                    response_metadata["completion_contract"] = "explicit_structure_verified"
+                    model_message.response_metadata = response_metadata
             incomplete_answer = bool(
                 not tool_calls
                 and content
                 and _looks_like_incomplete_model_answer(
                     content,
                     _model_finish_reason(last_result, model_message),
+                    require_completion_footer=True,
                 )
             )
             if incomplete_answer and len(content) > len(best_partial_content):
@@ -425,7 +561,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 # and is exactly what produced six-figure token usage in one
                 # failed turn. Repair from a bounded evidence digest and do not
                 # let the repair call enter another tool loop.
-                retry_messages = self._completion_retry_messages(messages)
+                retry_messages = self._completion_retry_messages(messages, best_partial_content)
                 retry_kwargs = {
                     key: value
                     for key, value in retry_kwargs.items()
@@ -435,7 +571,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 retry_messages = self._stable_messages(messages)
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
-        fallback_messages = self._fallback_messages(messages)
+        fallback_messages = self._completion_retry_messages(messages, best_partial_content)
         # The selected model already had two attempts. Use at most two compact
         # tool-free fallback calls instead of retrying the same large prompt and
         # then walking every configured model.
@@ -454,6 +590,17 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             if fallback_name and model_message is not None:
                 self._annotate_transport_fallback(model_message, fallback_name)
             content = str(getattr(model_message, "content", "") or "")
+            if (
+                len(content) >= 100
+                and not re.search(r"</suggestions\s*>\s*$", content, re.IGNORECASE)
+                and not _looks_like_incomplete_model_answer(
+                    content,
+                    _model_finish_reason(fallback_result, model_message),
+                )
+                and not _looks_like_unstable_model_text(content)
+            ):
+                content = _with_completion_footer(content)
+                model_message.content = content
             if content and len(content) > len(best_partial_content):
                 best_partial_content = content
             additional = getattr(model_message, "additional_kwargs", None)
@@ -463,6 +610,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 and not _looks_like_incomplete_model_answer(
                     content,
                     _model_finish_reason(fallback_result, model_message),
+                    require_completion_footer=True,
                 )
                 and not _looks_like_unstable_model_text(content)
                 and not _looks_like_unstable_model_text(reasoning)
@@ -471,10 +619,18 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
         generations = list(getattr(last_result, "generations", None) or [])
         if generations:
             salvaged = _salvage_complete_answer(best_partial_content)
+            if salvaged and len(salvaged) >= 100 and not re.search(
+                r"</suggestions\s*>\s*$", salvaged, re.IGNORECASE
+            ):
+                salvaged = ""
             generations[0].message = AIMessage(
                 content=(
                     salvaged
-                    or "模型节点本轮未能生成可靠的完整回答，系统已停止重复消耗上下文。请缩小范围后继续。"
+                    or (
+                        "模型节点本轮未能生成可靠的完整回答，系统已停止重复消耗上下文。"
+                        "请缩小范围后继续。\n"
+                        '<suggestions>["缩小问题范围后重试", "指定需要分析的主体", "查看当前可用的数据集"]</suggestions>'
+                    )
                 ),
                 additional_kwargs={"reasoning_content": "检测到模型输出异常，已使用短上下文修复并停止重复重写。"},
             )
@@ -2404,6 +2560,7 @@ def get_agent(
         temperature=0.1,
         disable_streaming=True,
         max_retries=3,
+        max_tokens=4096,
     )
     
     tools = _agent_tools(allow_web_search=allow_web_search, user_message=user_message)
@@ -2526,7 +2683,7 @@ def _context_tool_content(title: str, rows: list[dict[str, str]], id_key: str = 
 
 def _stream_agent_events(agent: Any, inputs: dict[str, Any]):
     try:
-        return agent.stream(inputs, stream_mode="messages", config={"recursion_limit": 50})
+        return agent.stream(inputs, stream_mode="messages", config={"recursion_limit": 20})
     except TypeError:
         return agent.stream(inputs, stream_mode="messages")
 
@@ -2639,6 +2796,15 @@ def _is_user_profile_query(message: str) -> bool:
     return any(marker in text for marker in profile_markers)
 
 
+def _is_explicit_chat_continuation(message: str) -> bool:
+    text = re.sub(r"\s+", "", str(message or "")).strip().lower()
+    continuation_markers = (
+        "这个", "那个", "它", "上面", "前面", "刚才", "之前那个", "继续", "接着", "然后呢",
+        "后来呢", "还是不行", "不行", "不对", "怎么回事", "什么意思", "看不到", "没反应",
+    )
+    return any(marker in text for marker in continuation_markers)
+
+
 def _should_probe_chat_history_for_ambiguity(message: str) -> bool:
     """Return true when past context should be checked before asking a question."""
     text = re.sub(r"\s+", "", str(message or "")).strip().lower()
@@ -2646,11 +2812,7 @@ def _should_probe_chat_history_for_ambiguity(message: str) -> bool:
         return False
     if re.fullmatch(r"[\d.]+(?:[+\-*/×÷][\d.]+)+(?:等于多少|是多少|=|？|\?)?", text):
         return False
-    continuation_markers = (
-        "这个", "那个", "它", "上面", "前面", "刚才", "之前那个", "继续", "接着", "然后呢",
-        "后来呢", "还是不行", "不行", "不对", "怎么回事", "什么意思", "看不到", "没反应",
-    )
-    if any(marker in text for marker in continuation_markers):
+    if _is_explicit_chat_continuation(text):
         return True
     explicit_intent_markers = (
         "什么", "多少", "为何", "为什么", "怎么", "如何", "哪里", "哪个", "是否", "有没有", "吗", "呢",
@@ -2733,7 +2895,7 @@ def _finalize_after_tool_limit(
             temperature=0.1,
             disable_streaming=True,
             max_retries=1,
-            max_tokens=1800,
+            max_tokens=4096,
         )
         try:
             response = model.invoke(prompt_messages)
@@ -2746,10 +2908,17 @@ def _finalize_after_tool_limit(
         if (
             content
             and not _looks_like_unstable_model_text(content)
-            and not _looks_like_incomplete_model_answer(content)
+            and not _looks_like_incomplete_model_answer(
+                content,
+                require_completion_footer=True,
+            )
         ):
             return content, _message_token_usage(response)
     content = _salvage_complete_answer(best_partial)
+    if content and len(content) >= 100 and not re.search(
+        r"</suggestions\s*>\s*$", content, re.IGNORECASE
+    ):
+        content = ""
     if not content:
         content = (
             "本轮检索已达到安全上限，现有资料不足以可靠完成全部比较。"
@@ -2782,6 +2951,12 @@ def stream_agent(
     plain_conversation = _is_plain_conversational_query(message)
     profile_query = _is_user_profile_query(message)
     ambiguous_history_probe = _should_probe_chat_history_for_ambiguity(message)
+    same_thread_continuation = bool(conversation_history) and _is_explicit_chat_continuation(message)
+    if same_thread_continuation:
+        # The browser already sends the preceding turns before adding the new
+        # user message. Prefer that exact, freshest thread context over a
+        # cross-thread persistence search, which can lag by one save cycle.
+        ambiguous_history_probe = False
     if plain_conversation:
         force_web_search = False
         selected_skill_ids = []
@@ -2792,7 +2967,7 @@ def stream_agent(
         selected_skill_ids = []
         selected_dataset_ids = []
         loaded_skill_ids = []
-    if ambiguous_history_probe:
+    if ambiguous_history_probe or same_thread_continuation:
         # First understand whether this is a continuation of prior work. Web
         # and database retrieval would otherwise guess a topic too early.
         force_web_search = False
@@ -3153,6 +3328,7 @@ def stream_agent(
                         or _looks_like_incomplete_model_answer(
                             chunk.content,
                             str((getattr(chunk, "response_metadata", None) or {}).get("finish_reason") or ""),
+                            require_completion_footer=True,
                         )
                     )
                 ):
@@ -3340,18 +3516,52 @@ def stream_agent(
         yield {"type": "done"}
     except Exception as e:
         error_text = str(e)
-        if "Recursion limit" in error_text or "GRAPH_RECURSION_LIMIT" in error_text:
-            message_text = (
-                "本轮工具调用已达到安全上限，已停止继续检索。"
-                "请基于上方已返回的工具结果和已生成图表查看当前结论；"
-                "如需继续深挖，请缩小问题范围后再问。"
+        recoverable_completion_failure = (
+            "Recursion limit" in error_text
+            or "GRAPH_RECURSION_LIMIT" in error_text
+            or "模型最终回答未完整结束" in error_text
+        )
+        if recoverable_completion_failure:
+            final_text, final_usage = _finalize_after_tool_limit(
+                original_user_message,
+                tool_evidence,
+                thinking_enabled=thinking_enabled,
             )
+            for key in token_usage:
+                token_usage[key] += final_usage[key]
+            for content_part in replay_validated_text(final_text, delay_seconds=0.018):
+                limited_text = table_limiter.feed(content_part)
+                if limited_text:
+                    event = {"type": "delta", "text": limited_text}
+                    recorder.observe(event)
+                    yield event
+            tail_text = table_limiter.flush()
+            if tail_text:
+                event = {"type": "delta", "text": tail_text}
+                recorder.observe(event)
+                yield event
+            summary = recorder.finish()
+            yield {
+                "type": "run_summary",
+                "runId": summary["run_id"],
+                "durationMs": summary["duration_ms"],
+                "toolCount": len(summary.get("tool_calls") or []),
+                "status": summary.get("status"),
+                "usage": {
+                    "inputTokens": token_usage["inputTokens"] or int(summary.get("input_tokens_estimate") or 0),
+                    "outputTokens": token_usage["outputTokens"] or int(summary.get("answer_tokens_estimate") or 0),
+                    "totalTokens": token_usage["totalTokens"] or (
+                        int(summary.get("input_tokens_estimate") or 0)
+                        + int(summary.get("answer_tokens_estimate") or 0)
+                    ),
+                    "estimated": token_usage["totalTokens"] <= 0,
+                },
+            }
         else:
-            message_text = f"Agent 调用失败: {e}"
-        event = {"type": "error", "text": message_text}
-        recorder.observe(event)
-        yield event
-        recorder.finish()
+            event = {"type": "error", "text": f"Agent 调用失败: {e}"}
+            recorder.observe(event)
+            yield event
+            recorder.finish()
         yield {"type": "done"}
     finally:
         reset_internal_ai_priority(priority_token)

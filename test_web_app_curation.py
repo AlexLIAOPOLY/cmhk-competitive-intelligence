@@ -637,6 +637,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         self.assertTrue(captured["llm_kwargs"]["disable_streaming"])
         self.assertEqual(captured["llm_kwargs"]["temperature"], 0.1)
+        self.assertEqual(captured["llm_kwargs"]["max_tokens"], 4096)
         self.assertEqual(
             captured["tools"],
             {"search_chat_history", "get_system_status", "list_crawl_runs", "get_crawl_settings_summary"},
@@ -708,6 +709,51 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             )
         )
 
+    def test_completion_contract_catches_long_semantic_cutoff_after_full_stop(self) -> None:
+        seemingly_finished = (
+            "这段回答虽然以句号结束，但它只写完了用户要求的第一部分。"
+            "模型有时会在网关或上下文限制下提前停止，finish_reason 仍可能被记录成 stop。"
+            "因此不能只根据最后一个标点判断整份回答是否已经完成，还必须观察应用约定的完成标记。"
+            "这里再补足一些正文长度，用来模拟真实的长回答在某一段末尾突然结束。"
+        )
+
+        self.assertTrue(
+            agent._looks_like_incomplete_model_answer(
+                seemingly_finished,
+                require_completion_footer=True,
+            )
+        )
+        self.assertFalse(
+            agent._looks_like_incomplete_model_answer(
+                seemingly_finished
+                + '\n<suggestions>["继续分析", "查看来源", "对比趋势"]</suggestions>',
+                require_completion_footer=True,
+            )
+        )
+        self.assertFalse(
+            agent._looks_like_incomplete_model_answer(
+                "4。",
+                require_completion_footer=True,
+            )
+        )
+
+    def test_explicit_structure_validator_requires_all_requested_sections_and_summary(self) -> None:
+        request = "写约800字分析，分成五节，每节完整收束，最后总结三点。"
+        complete = (
+            "## 一、背景\n第一节完整。\n## 二、网络\n第二节完整。\n"
+            "## 三、业务\n第三节完整。\n## 四、产业\n第四节完整。\n"
+            "## 五、风险\n第五节完整。\n## 总结三点\n"
+            "- 方向确定。\n- 节奏受制。\n- 香港有机会。"
+        )
+
+        self.assertTrue(agent._answer_satisfies_explicit_structure(request, complete))
+        self.assertFalse(
+            agent._answer_satisfies_explicit_structure(
+                request,
+                complete.replace("## 五、风险\n第五节完整。\n", ""),
+            )
+        )
+
     def test_chat_stream_requires_explicit_done_event_before_finalizing(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         send_start = app.index("async function sendChat")
@@ -774,6 +820,121 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         self.assertIs(result, complete_result)
         self.assertEqual(generate.call_count, 2)
+
+    def test_model_retries_when_long_answer_ends_cleanly_without_completion_footer(self) -> None:
+        partial_message = agent.AIMessage(
+            content=(
+                "第一部分已经分析完毕，但第二部分和最终结论尚未生成。"
+                "这个片段故意以正常句号结尾，以覆盖过去只检查标点时会漏判的场景。"
+                "模型供应方仍然可能返回 stop，所以应用层必须用完整回答协议来确认结束。"
+                "再增加足够的文字，使它达到真实分析回答的长度，同时仍然缺少最终建议标记。"
+            )
+        )
+        complete_message = agent.AIMessage(
+            content=(
+                "第一部分、第二部分和最终结论均已完整生成，且所有段落都已经收束。"
+                "完整回答协议会在正文最后附上结构化建议标记，前端读取后再结束本轮。"
+                "因此这次可以安全地把流状态切换为完成，并允许用户继续发送下一条消息。"
+                "该标记同时帮助应用识别语义上看似完整、实际上被截断的长回答。\n"
+                '<suggestions>["继续追问", "查看来源", "新建话题"]</suggestions>'
+            )
+        )
+        partial_result = mock.Mock(
+            generations=[mock.Mock(message=partial_message, generation_info={"finish_reason": "stop"})]
+        )
+        complete_result = mock.Mock(
+            generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[partial_result, complete_result],
+        ) as generate:
+            result = model._generate([agent.HumanMessage(content="请分两部分完整回答")])
+
+        self.assertIs(result, complete_result)
+        self.assertEqual(generate.call_count, 2)
+
+    def test_repaired_complete_answer_gets_footer_without_being_discarded(self) -> None:
+        first_message = agent.AIMessage(
+            content=(
+                "第一版回答只覆盖了请求的前半部分，虽然句号完整，但缺少后续比较和结论。"
+                "这里补足字符长度，模拟供应方在某一段结束后提前返回 stop 的真实场景。"
+                "应用应先触发一次有界修复，而不是马上把这一版直接交给前端显示。"
+            )
+        )
+        repaired_text = (
+            "修复后的回答已经覆盖用户要求的两个比较部分，并给出了明确且完整的最终结论。"
+            "所有列表和句子均已闭合，事实边界也已说明，因此正文在语义和结构上都可以正常展示。"
+            "即使模型遗漏了只供前端使用的推荐追问标签，系统也不应丢弃这份已经修复完成的回答。"
+        )
+        repaired_message = agent.AIMessage(content=repaired_text)
+        first_result = mock.Mock(
+            generations=[mock.Mock(message=first_message, generation_info={"finish_reason": "stop"})]
+        )
+        repaired_result = mock.Mock(
+            generations=[mock.Mock(message=repaired_message, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[first_result, repaired_result],
+        ) as generate:
+            result = model._generate([agent.HumanMessage(content="请完整比较并给出结论")])
+
+        self.assertIs(result, repaired_result)
+        self.assertEqual(generate.call_count, 2)
+        self.assertTrue(repaired_message.content.startswith(repaired_text))
+        self.assertTrue(repaired_message.content.endswith("</suggestions>"))
+
+    def test_length_finish_is_accepted_when_requested_structure_is_complete(self) -> None:
+        complete_text = (
+            "## 一、背景\n第一节完整。\n## 二、网络\n第二节完整。\n"
+            "## 三、业务\n第三节完整。\n## 四、产业\n第四节完整。\n"
+            "## 五、风险\n第五节完整。\n## 总结三点\n"
+            "- 方向确定。\n- 节奏受制。\n- 香港有机会。"
+        )
+        complete_message = agent.AIMessage(content=complete_text)
+        complete_result = mock.Mock(
+            generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "length"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        request = (
+            "<current_user_request>写约800字分析，分成五节，每节完整收束，"
+            "最后总结三点。</current_user_request>"
+        )
+
+        with mock.patch.object(agent.ChatDeepSeek, "_generate", return_value=complete_result) as generate:
+            result = model._generate([agent.HumanMessage(content=request)])
+
+        self.assertIs(result, complete_result)
+        self.assertEqual(generate.call_count, 1)
+        self.assertTrue(complete_message.content.endswith("</suggestions>"))
 
     def test_incomplete_retry_uses_bounded_tool_free_context(self) -> None:
         incomplete_message = agent.AIMessage(
@@ -888,7 +1049,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(recovered.tool_calls[0]["args"]["max_results"], 5)
         self.assertEqual(recovered.tool_calls[0]["args"]["query"], "2026-07-20 周报 竞争情报 本周")
 
-    def test_stream_agent_never_marks_unclosed_footer_as_successful_answer(self) -> None:
+    def test_stream_agent_repairs_unclosed_footer_before_done(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None, config=None):
                 yield agent.AIMessage(
@@ -896,12 +1057,56 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                     response_metadata={"finish_reason": "stop"},
                 ), {}
 
-        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+        repaired = '已重新组织为完整回答。\n<suggestions>["继续分析", "查看来源", "对比路线"]</suggestions>'
+        with (
+            mock.patch("agent.get_agent", return_value=FakeAgent()),
+            mock.patch(
+                "agent._finalize_after_tool_limit",
+                return_value=(repaired, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
+            ) as finalize,
+        ):
             events = list(agent.stream_agent("请查看路线图", thinking_enabled=False))
 
-        self.assertFalse(any(event.get("type") == "delta" for event in events))
-        self.assertTrue(any(event.get("type") == "error" for event in events))
+        answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
+        self.assertEqual(answer, repaired)
+        self.assertEqual(finalize.call_count, 1)
+        self.assertFalse(any(event.get("type") == "error" for event in events))
+        self.assertTrue(any(event.get("type") == "run_summary" for event in events))
         self.assertEqual(events[-1].get("type"), "done")
+
+    def test_graph_recursion_limit_is_finalized_as_answer_not_error(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                raise RuntimeError("GRAPH_RECURSION_LIMIT: stopped after 20 steps")
+                yield
+
+        final = '已基于当前证据完成收尾。\n<suggestions>["缩小范围", "查看来源", "继续追问"]</suggestions>'
+        with (
+            mock.patch("agent.get_agent", return_value=FakeAgent()),
+            mock.patch(
+                "agent._finalize_after_tool_limit",
+                return_value=(final, {"inputTokens": 5, "outputTokens": 8, "totalTokens": 13}),
+            ) as finalize,
+        ):
+            events = list(agent.stream_agent("请完成复杂分析", thinking_enabled=False))
+
+        answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
+        self.assertEqual(answer, final)
+        self.assertEqual(finalize.call_count, 1)
+        self.assertFalse(any(event.get("type") == "error" for event in events))
+        self.assertEqual(events[-1].get("type"), "done")
+
+    def test_agent_graph_has_bounded_recursion_limit(self) -> None:
+        captured: dict[str, object] = {}
+
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                captured["config"] = config
+                return iter(())
+
+        list(agent._stream_agent_events(FakeAgent(), {"messages": []}))
+
+        self.assertEqual(captured["config"], {"recursion_limit": 20})
 
     def test_tool_limit_finishes_once_instead_of_looping_until_empty_done(self) -> None:
         class FakeAgent:
@@ -1062,6 +1267,34 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("不能自动把历史主题补全为本轮问题", captured["message"])
         self.assertNotIn("quarterly_competitor_metrics", captured["message"])
         self.assertNotIn("长期记忆召回", captured["message"])
+
+    def test_explicit_follow_up_prefers_fresh_same_thread_history(self) -> None:
+        captured: dict[str, str] = {}
+
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                captured["message"] = inputs["messages"][0][1]
+                yield agent.AIMessage(content="三条建议已经完整给出。"), {}
+
+        history = [
+            {"role": "user", "content": "对比AWS和Google Cloud的年度收入与营业利润。"},
+            {"role": "assistant", "content": "AWS与Google Cloud的对比表和口径如下。"},
+        ]
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+            events = list(
+                agent.stream_agent(
+                    "继续，基于前面的云厂商对比给CMHK三条可执行建议。",
+                    force_web_search=True,
+                    conversation_history=history,
+                    active_thread_id="current-cloud-thread",
+                )
+            )
+
+        self.assertTrue(any(event.get("type") == "delta" for event in events))
+        self.assertIn("AWS和Google Cloud", captured["message"])
+        self.assertIn("同一聊天线程的最近对话", captured["message"])
+        self.assertNotIn("必须先调用 `search_chat_history`", captured["message"])
+        self.assertNotIn("你必须调用 `web_search`", captured["message"])
 
     def test_user_profile_question_routes_to_memory_and_history_without_dataset_guessing(self) -> None:
         captured: dict[str, str] = {}
