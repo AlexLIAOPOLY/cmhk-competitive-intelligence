@@ -38,7 +38,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "category": "行业动态",
         }
 
-    def test_sync_appends_new_rows_without_clearing_or_rewriting_history(self):
+    def test_sync_places_new_rows_above_history_and_preserves_history(self):
         writes = []
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
@@ -70,8 +70,41 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             result = review_sheet.sync_candidates([self._new_item()])
 
         self.assertEqual(result["candidate_count"], 2)
-        self.assertEqual([cell_range for cell_range, _ in writes], ["A3:L3"])
+        self.assertEqual([cell_range for cell_range, _ in writes], ["A2:L3"])
         self.assertEqual(writes[0][1][0][5], "今日新新闻")
+        self.assertEqual(writes[0][1][1], self._existing_row())
+
+    def test_sync_places_current_batch_first_when_search_dates_match(self):
+        writes = []
+        existing = self._existing_row()
+        existing[2] = "2026-07-22"
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
+            mock.patch.object(review_sheet, "_read_rows", return_value=[existing]),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda _sheet_id, cell_range, values: writes.append(
+                    (cell_range, values)
+                ),
+            ),
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "curate_news_items",
+                side_effect=lambda items: (items, {}),
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "polish_candidates_before_review",
+                side_effect=lambda items: items,
+            ),
+        ):
+            review_sheet.sync_candidates([self._new_item()])
+
+        self.assertEqual(writes[0][1][0][5], "今日新新闻")
+        self.assertEqual(writes[0][1][1][5], "历史新闻")
 
     def test_sync_stops_when_sheet_returns_fewer_rows_than_last_sync(self):
         write = mock.Mock()

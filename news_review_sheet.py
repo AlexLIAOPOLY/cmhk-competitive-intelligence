@@ -778,10 +778,17 @@ def sync_candidates(
         candidate_count = existing_row_count + len(new_values)
         if candidate_count > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
-        append_start_row = len(rows) + 2
-        for offset in range(0, len(new_values), 40):
-            chunk = new_values[offset : offset + 40]
-            start_row = append_start_row + offset
+        existing_values = [
+            (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+            for row in rows
+        ]
+        ordered_values = new_values + existing_values
+        ordered_values.sort(key=lambda row: str(row[2] or ""), reverse=True)
+        if len(ordered_values) > MAX_SHEET_ROWS - 1:
+            raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 行数据上限")
+        for offset in range(0, len(ordered_values), 40):
+            chunk = ordered_values[offset : offset + 40]
+            start_row = 2 + offset
             end_row = start_row + len(chunk) - 1
             _write(sheet_id, f"A{start_row}:L{end_row}", chunk)
         state.update(
