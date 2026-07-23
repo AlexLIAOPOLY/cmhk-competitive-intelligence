@@ -5251,7 +5251,12 @@ async function sendChat(message, options = {}) {
   const displayMessage = options.displayMessage || message;
   const userNode = addMessage("user", displayMessage);
   if (options.displayImage) appendUserImagePreview(userNode, options.displayImage);
-  const userHistoryEntry = { role: "user", content: message, displayContent: displayMessage };
+  const userHistoryEntry = {
+    role: "user",
+    content: message,
+    displayContent: displayMessage,
+    createdAt: new Date().toISOString(),
+  };
   if (options.displayImage) userHistoryEntry.imagePreview = options.displayImage;
   state.chatHistory.push(userHistoryEntry);
   state.chatHistory = state.chatHistory.slice(-80);
@@ -5304,6 +5309,7 @@ async function sendChat(message, options = {}) {
       content: "正在分析请求，并调用相关工具获取依据。",
       timeline: assistantTimeline,
       partial: true,
+      createdAt: new Date().toISOString(),
     };
     state.chatHistory.push(assistantHistoryEntry);
     state.chatHistory = state.chatHistory.slice(-80);
@@ -5612,7 +5618,10 @@ async function sendChat(message, options = {}) {
       performance.now() - chatStartedAt,
     );
     appendAssistantMetrics(assistantNode, finalMetrics);
-    if (assistantHistoryEntry) assistantHistoryEntry.metrics = finalMetrics;
+    if (assistantHistoryEntry) {
+      assistantHistoryEntry.metrics = finalMetrics;
+      assistantHistoryEntry.completedAt = new Date().toISOString();
+    }
     const completionPersist = flushDraftPersist();
     releaseChatTurn();
     await completionPersist;
@@ -5652,9 +5661,16 @@ async function sendChat(message, options = {}) {
         performance.now() - chatStartedAt,
       );
       appendAssistantMetrics(assistantNode, assistantHistoryEntry.metrics);
+      assistantHistoryEntry.completedAt = new Date().toISOString();
       delete assistantHistoryEntry.partial;
     } else {
-      state.chatHistory.push({ role: "assistant", content: stopped ? stoppedText : failureText });
+      const failureTime = new Date().toISOString();
+      state.chatHistory.push({
+        role: "assistant",
+        content: stopped ? stoppedText : failureText,
+        createdAt: failureTime,
+        completedAt: failureTime,
+      });
       state.chatHistory = state.chatHistory.slice(-80);
     }
     const interruptedPersist = flushDraftPersist();

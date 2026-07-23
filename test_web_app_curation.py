@@ -22,6 +22,26 @@ class ReportFileNameTests(unittest.TestCase):
 
 
 class ChatThreadPersistenceTests(unittest.TestCase):
+    def test_chat_message_preserves_valid_per_message_timestamps(self) -> None:
+        clean = web_app._clean_chat_message({
+            "role": "assistant",
+            "content": "完整回答。",
+            "createdAt": "2026-07-22T17:01:02.123Z",
+            "completedAt": "2026-07-22T17:01:08.456Z",
+        })
+
+        self.assertEqual(clean["createdAt"], "2026-07-22T17:01:02.123Z")
+        self.assertEqual(clean["completedAt"], "2026-07-22T17:01:08.456Z")
+
+    def test_chat_message_rejects_invalid_timestamps(self) -> None:
+        clean = web_app._clean_chat_message({
+            "role": "user",
+            "content": "测试",
+            "createdAt": "not-a-date",
+        })
+
+        self.assertNotIn("createdAt", clean)
+
     def test_saving_chat_does_not_wait_for_ai_title_generation(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             thread_path = Path(temp_dir) / "threads.json"
@@ -153,6 +173,11 @@ class ChatAudioTranscriptionTests(unittest.TestCase):
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_new_chat_messages_record_created_and_completed_times(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn('createdAt: new Date().toISOString()', app)
+        self.assertIn('assistantHistoryEntry.completedAt = new Date().toISOString()', app)
+
     def test_process_filter_preserves_complete_dependent_sentences(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         start = app.index("const ASSISTANT_PROCESS_MARKERS")
@@ -613,7 +638,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(captured["llm_kwargs"]["temperature"], 0.1)
         self.assertEqual(
             captured["tools"],
-            {"get_system_status", "list_crawl_runs", "get_crawl_settings_summary"},
+            {"search_chat_history", "get_system_status", "list_crawl_runs", "get_crawl_settings_summary"},
         )
         self.assertIn("语言与可见推理稳定性", captured["prompt"])
 
@@ -1026,6 +1051,82 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("香港5G监管政策", result)
         self.assertIn("CMHK未来收入", result)
         self.assertNotIn("您好。", result)
+
+    def test_chat_history_tool_filters_an_exact_time_range_and_role(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = os.path.join(tempdir, "threads.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(
+                    {
+                        "threads": [{
+                            "id": "thread-timed",
+                            "title": "定时历史查询",
+                            "createdAt": "2026-07-22T17:00:00+08:00",
+                            "updatedAt": "2026-07-22T17:04:00+08:00",
+                            "messages": [
+                                {
+                                    "role": "user",
+                                    "content": "下午五点我问了这个问题",
+                                    "createdAt": "2026-07-22T17:01:00+08:00",
+                                },
+                                {
+                                    "role": "assistant",
+                                    "content": "这是AI在五点零三分的回答。",
+                                    "createdAt": "2026-07-22T17:03:00+08:00",
+                                    "completedAt": "2026-07-22T17:03:20+08:00",
+                                },
+                            ],
+                        }]
+                    },
+                    handle,
+                    ensure_ascii=False,
+                )
+            with mock.patch("agent.CHAT_THREADS_PATH", agent.Path(path)):
+                result = agent.search_chat_history.invoke({
+                    "query": "",
+                    "start_time": "2026-07-22T17:00:30+08:00",
+                    "end_time": "2026-07-22T17:02:00+08:00",
+                    "role": "user",
+                    "limit": 5,
+                    "context_window": 0,
+                })
+
+        self.assertIn("下午五点我问了这个问题", result)
+        self.assertNotIn("五点零三分", result)
+        self.assertIn("逐条消息准确时间", result)
+
+    def test_chat_history_tool_marks_legacy_time_as_thread_range(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = os.path.join(tempdir, "threads.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(
+                    {
+                        "threads": [{
+                            "id": "thread-legacy",
+                            "title": "旧历史记录",
+                            "createdAt": "2026-07-20T16:00:00+08:00",
+                            "updatedAt": "2026-07-20T18:00:00+08:00",
+                            "messages": [{"role": "user", "content": "旧消息没有逐条时间戳"}],
+                        }]
+                    },
+                    handle,
+                    ensure_ascii=False,
+                )
+            with mock.patch("agent.CHAT_THREADS_PATH", agent.Path(path)):
+                result = agent.search_chat_history.invoke({
+                    "query": "",
+                    "start_time": "2026-07-20T17:00:00+08:00",
+                    "end_time": "2026-07-20T17:10:00+08:00",
+                    "role": "all",
+                    "limit": 5,
+                })
+
+        self.assertIn("旧消息没有逐条时间戳", result)
+        self.assertIn("旧记录仅有会话时间范围", result)
+
+    def test_chat_history_tool_is_always_available_for_agent_autonomy(self) -> None:
+        tool_names = {item.name for item in agent._agent_tools(allow_web_search=False, user_message="你来判断要查什么")}
+        self.assertIn("search_chat_history", tool_names)
 
     def test_disabled_web_search_prompt_does_not_explain_toggle_state(self) -> None:
         captured: dict[str, object] = {}

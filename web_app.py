@@ -246,6 +246,15 @@ def _clean_chat_message(item: dict) -> dict | None:
     if not content:
         return None
     clean = {"role": role, "content": content[:20000]}
+    for timestamp_key in ("createdAt", "completedAt"):
+        timestamp = str(item.get(timestamp_key) or "").strip()
+        if timestamp:
+            try:
+                normalized = timestamp[:-1] + "+00:00" if timestamp.endswith(("Z", "z")) else timestamp
+                datetime.fromisoformat(normalized)
+            except ValueError:
+                continue
+            clean[timestamp_key] = timestamp[:40]
     if role == "user":
         display_content = str(item.get("displayContent") or "").strip()
         if display_content:

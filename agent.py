@@ -12,6 +12,7 @@ import sys
 import threading
 import time
 from contextvars import ContextVar
+from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Generator
@@ -1903,7 +1904,34 @@ def _chat_message_content(message: dict[str, Any], limit: int = 1200) -> str:
     return _clean_search_text(message.get("content") or message.get("text") or "", limit)
 
 
-def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> list[dict[str, Any]]:
+def _parse_chat_history_time(value: Any, *, end_of_period: bool = False) -> datetime | None:
+    """Parse tool-supplied or stored ISO timestamps in the server's timezone."""
+    text = str(value or "").strip()
+    if not text:
+        return None
+    date_only = bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", text))
+    normalized = text[:-1] + "+00:00" if text.endswith(("Z", "z")) else text
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if date_only and end_of_period:
+        parsed = parsed.replace(hour=23, minute=59, second=59, microsecond=999999)
+    local_tz = datetime.now().astimezone().tzinfo
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=local_tz)
+    return parsed.astimezone(local_tz)
+
+
+def _chat_history_rows(
+    query: str = "",
+    limit: int = 5,
+    context_window: int = 2,
+    start_time: str = "",
+    end_time: str = "",
+    role: str = "all",
+    thread_id: str = "",
+) -> list[dict[str, Any]]:
     if not CHAT_THREADS_PATH.exists():
         return []
     try:
@@ -1916,12 +1944,33 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
     clean_query = _clean_search_text(query, 300)
     query_terms = {term for term in re.split(r"[\s,，。；;:：!?！？、]+", clean_query.lower()) if term}
     profile_query = _is_user_profile_query(clean_query)
+    start_at = _parse_chat_history_time(start_time)
+    end_at = _parse_chat_history_time(end_time, end_of_period=True)
+    if str(start_time or "").strip() and start_at is None:
+        return []
+    if str(end_time or "").strip() and end_at is None:
+        return []
+    if start_at and end_at and start_at > end_at:
+        start_at, end_at = end_at, start_at
+    requested_role = str(role or "all").strip().lower()
+    if requested_role in {"ai", "model", "assistant", "助手"}:
+        requested_role = "assistant"
+    elif requested_role in {"user", "human", "用户", "我"}:
+        requested_role = "user"
+    else:
+        requested_role = "all"
+    requested_thread_id = _clean_search_text(thread_id, 120)
     rows: list[dict[str, Any]] = []
     for thread in threads:
         if not isinstance(thread, dict):
             continue
+        current_thread_id = str(thread.get("id") or "")
+        if requested_thread_id and current_thread_id != requested_thread_id:
+            continue
         messages = thread.get("messages") if isinstance(thread.get("messages"), list) else []
         thread_title = _clean_search_text(thread.get("title") or "", 120)
+        thread_created_at = _parse_chat_history_time(thread.get("createdAt"))
+        thread_updated_at = _parse_chat_history_time(thread.get("updatedAt"))
         for index, message in enumerate(messages):
             if not isinstance(message, dict):
                 continue
@@ -1929,10 +1978,32 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
             if not content:
                 continue
             role = str(message.get("role") or "").lower()
+            role = "assistant" if role in {"assistant", "ai", "model"} else "user"
+            if requested_role != "all" and role != requested_role:
+                continue
             if profile_query and role != "user":
                 continue
+            message_created_at = _parse_chat_history_time(message.get("createdAt"))
+            message_completed_at = _parse_chat_history_time(message.get("completedAt"))
+            precise_time = message_created_at or message_completed_at
+            if start_at or end_at:
+                if precise_time:
+                    if start_at and precise_time < start_at:
+                        continue
+                    if end_at and precise_time > end_at:
+                        continue
+                else:
+                    # Legacy messages have no per-message timestamp. Keep them
+                    # only when their saved thread interval overlaps the query,
+                    # and report the lower precision instead of inventing a time.
+                    interval_start = thread_created_at or thread_updated_at
+                    interval_end = thread_updated_at or thread_created_at
+                    if start_at and interval_end and interval_end < start_at:
+                        continue
+                    if end_at and interval_start and interval_start > end_at:
+                        continue
             haystack = f"{thread_title} {content}".lower()
-            score = 0
+            score = 1 if not clean_query else 0
             if clean_query and clean_query.lower() in haystack:
                 score += 20
             score += sum(2 for term in query_terms if term in haystack)
@@ -1974,11 +2045,14 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
                     "score": score,
                     "thread_id": thread.get("id") or "",
                     "thread_title": thread_title or "未命名对话",
+                    "thread_created_at": thread.get("createdAt") or "",
                     "thread_updated_at": thread.get("updatedAt") or "",
                     "message_index": index + 1,
-                    "role": message.get("role") or "unknown",
+                    "role": role,
                     "content": content,
                     "created_at": message.get("createdAt") or "",
+                    "completed_at": message.get("completedAt") or "",
+                    "time_precision": "message" if precise_time else "thread_range",
                     "context_messages": context_messages,
                 }
             )
@@ -1987,20 +2061,51 @@ def _chat_history_rows(query: str, limit: int = 5, context_window: int = 2) -> l
 
 
 @tool
-def search_chat_history(query: str, limit: int = 5) -> str:
-    """搜索小竞AI已保存的历史聊天线程。
-    当用户询问“之前聊过什么”“上一轮/早先/某次我说过什么”“历史聊天记录里有没有”等问题时使用。
-    该工具只检索本地保存的聊天线程，不等同于长期记忆；回答时要说明命中的线程、角色和消息序号。
+def search_chat_history(
+    query: str = "",
+    start_time: str = "",
+    end_time: str = "",
+    role: str = "all",
+    thread_id: str = "",
+    limit: int = 5,
+    context_window: int = 2,
+) -> str:
+    """按内容和时间搜索小竞AI已保存的全部历史聊天线程。
+    当当前问题依赖过去对话、用户说“之前/当时/那次/上周/某日/某个时刻”、指代不清但可能需要回看，
+    或需要核对用户或AI过去说过什么时，可自主调用。query 可留空以纯时间检索；start_time/end_time
+    使用 ISO 8601（如 2026-07-22 或 2026-07-22T17:00:00+08:00）；role 可选 all/user/assistant；
+    thread_id 可限定单个会话；context_window 控制命中前后消息数量。不要为普通当前事实查询无故调用。
+    该工具只读，不等同于长期记忆；回答时要说明命中的线程、角色、消息序号和时间精度。
     """
-    rows = _chat_history_rows(query, limit=limit)
+    limit_message = _register_tool_invocation("search_chat_history", 4)
+    if limit_message:
+        return limit_message
+    rows = _chat_history_rows(
+        query=query,
+        limit=limit,
+        context_window=max(0, min(int(context_window or 0), 5)),
+        start_time=start_time,
+        end_time=end_time,
+        role=role,
+        thread_id=thread_id,
+    )
     if not rows:
-        return "未在已保存的历史聊天线程中找到匹配消息。"
+        requested_range = ""
+        if start_time or end_time:
+            requested_range = f"（时间范围：{start_time or '最早'} 至 {end_time or '现在'}）"
+        return f"未在已保存的历史聊天线程中找到匹配消息{requested_range}。"
     lines = ["历史聊天记录命中："]
     for index, item in enumerate(rows, 1):
         role = "AI" if str(item.get("role") or "").lower() == "assistant" else "用户"
+        if item.get("time_precision") == "message":
+            time_text = item.get("created_at") or item.get("completed_at") or "未记录"
+            precision_text = "逐条消息准确时间"
+        else:
+            time_text = f"{item.get('thread_created_at') or '未知'} 至 {item.get('thread_updated_at') or '未知'}"
+            precision_text = "旧记录仅有会话时间范围"
         lines.append(
             f"[聊天命中 {index}] thread={item.get('thread_title')} ({item.get('thread_id')}); "
-            f"message_index={item.get('message_index')}; role={role}; updated_at={item.get('thread_updated_at')}\n"
+            f"message_index={item.get('message_index')}; role={role}; time={time_text}; precision={precision_text}\n"
             f"{item.get('content')}"
         )
         context_messages = item.get("context_messages") if isinstance(item.get("context_messages"), list) else []
@@ -2133,6 +2238,10 @@ def _agent_tools(allow_web_search: bool = True, user_message: str | None = None)
             if item not in tools:
                 tools.append(item)
 
+    # Cross-thread history is a persistent, read-only memory tool. Keep it
+    # available on every turn so the Agent can decide to recall a past moment
+    # even when the user's wording does not match a fixed intent regex.
+    add(search_chat_history)
     if allow_web_search:
         add(search_local_reports, web_search, read_webpage, read_local_reference)
     if re.search(
@@ -2238,7 +2347,7 @@ def get_agent(
         "【本地数据边界】你能接触到的本地数据不是无限的，必须以工具返回为准：`list_local_datasets` 用于列出标准化数据集，`search_local_reports` 用于检索标准化数据集、周报、审计日志和爬取结果，`read_local_reference` 用于读取可点击引用原文。用户问“你能访问哪些数据”“数据放哪里”“内部/外部数据怎么接入”“后端有哪些数据”时，必须先调用 `list_local_datasets` 再回答。做趋势分析、问数、财报对比、口径核验、图表之前，如果不确定可用数据，也要先调用 `list_local_datasets`。\n"
         "【上下文预算审计】`search_local_reports` 会返回 contextAudit，包含 token_budget、token_estimate、retained_chunks、compressed_chunks、skipped_chunks。若 compressed_chunks 或 skipped_chunks 大于 0，正式回答必须把结论限定在已保留上下文内，并在必要时说明仍需读取原文或缩小问题范围。不要声称已完整读取未进入上下文预算的全部文件。\n"
         "【长期记忆边界】`search_agent_memory`、`remember_agent_memory`、`list_agent_memory` 只用于小竞AI运行偏好、长期规则和已验证流程。长期记忆不能替代本轮用户指令、前端数据库选择、官方来源、审计文件或工具返回结果；若记忆与本轮上下文冲突，必须以本轮上下文为准。\n"
-        "【历史聊天边界】当用户询问此前聊天、上一轮、早先说过什么、某个历史对话内容或要求核对聊天记录时，必须调用 `search_chat_history` 检索已保存聊天线程；不要只凭最近 8 条上下文或长期记忆猜测。回答要区分“历史聊天记录命中”和“长期记忆命中”。\n"
+        "【历史聊天边界】`search_chat_history` 是跨线程、只读、持久化的历史对话工具，支持 query、start_time、end_time、role、thread_id、limit 和 context_window。当前问题依赖此前聊天、用户提到上一轮/早先/某日/某时刻/当时/那次、要求核对过去谁说过什么，或含糊指代确实需要回看时，由你自主调用；纯时间检索时 query 可以留空。相对时间必须先用当前运行上下文换算为 ISO 8601 再传入。不要只凭最近 8 条上下文或长期记忆猜测，也不要为与历史无关的当前事实查询无故调用。旧消息若只返回会话时间范围，必须明确其时间精度较低，不得伪称为逐条准确时间。回答要区分“历史聊天记录命中”和“长期记忆命中”。\n"
         "【用户画像边界】当用户问“我是谁”“你了解我什么”“我对什么感兴趣”“我的偏好/关注点是什么”等身份、偏好或用户画像问题时，必须优先调用 `search_agent_memory` 和 `search_chat_history`。只把明确记忆和历史聊天中用户自己发出的消息当证据；历史里 AI 曾经做过的猜测、当前选择的数据库、项目环境或最近一次数据主题不能作为个人身份或兴趣证据。若没有明确证据，必须说“不确定”，并把基于用户历史问题的判断标成“可能/倾向”。\n"
         "【Agent Skill 渐进加载】前端选择的 Skill 不是固定开场流程，但它们是专业分析方法。历史聊天查询、寒暄、简单问答、纯记忆审计和无需领域规则的问题，不要为了流程感读取 Skill；但当用户要求分析竞对经营数据、云厂商数据、宏观政策、趋势预测或战略简报时，应优先读取最相关的 1-2 个已选 Skill，再按 Skill 方法调用数据库检索、原文核验、预测或图表工具。不要把所有已选 Skill 全部读一遍。\n"
         "【新增数据规范】后续新增内部或外部数据时，默认放入项目根目录 `agent_knowledge/<dataset_id>/`。每个数据集至少提供 `manifest.json`，建议同时提供 `README.md`、结构化 `data.csv` 或 `data.json`、摘要 `summary.md`、来源 `sources.json`。允许被后端索引和引用的文本文件扩展名只有 `.md`、`.txt`、`.json`、`.csv`、`.tsv`。`manifest.json` 应写明 id、title、summary、source_type、scope、tags、keywords、entrypoints、updated_at、quality。除非工具列出，否则不要声称自己能读取其他本地目录。\n"
