@@ -472,6 +472,9 @@ SELECTED_SKILL_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_SKILL_IDS
 APPROVED_ACTION_IDS: ContextVar[set[str]] = ContextVar("APPROVED_ACTION_IDS", default=set())
 CHART_RUN_STATE: ContextVar[dict[str, Any] | None] = ContextVar("CHART_RUN_STATE", default=None)
 TOOL_RUN_STATE: ContextVar[dict[str, Any] | None] = ContextVar("TOOL_RUN_STATE", default=None)
+ACTIVE_CHAT_THREAD_ID: ContextVar[str] = ContextVar("ACTIVE_CHAT_THREAD_ID", default="")
+CURRENT_USER_REQUEST: ContextVar[str] = ContextVar("CURRENT_USER_REQUEST", default="")
+AMBIGUOUS_HISTORY_PROBE: ContextVar[bool] = ContextVar("AMBIGUOUS_HISTORY_PROBE", default=False)
 
 
 def _reset_web_search_indexes() -> None:
@@ -1961,6 +1964,9 @@ def _chat_history_rows(
         requested_role = "all"
     requested_thread_id = _clean_search_text(thread_id, 120)
     rows: list[dict[str, Any]] = []
+    active_thread_id = ACTIVE_CHAT_THREAD_ID.get()
+    current_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
+    exclude_current_turn = AMBIGUOUS_HISTORY_PROBE.get()
     for thread in threads:
         if not isinstance(thread, dict):
             continue
@@ -1976,6 +1982,16 @@ def _chat_history_rows(
                 continue
             content = _chat_message_content(message, 1200)
             if not content:
+                continue
+            if (
+                exclude_current_turn
+                and current_thread_id == active_thread_id
+                and index >= max(0, len(messages) - 2)
+                and (
+                    content == current_request
+                    or content.startswith("正在分析请求")
+                )
+            ):
                 continue
             role = str(message.get("role") or "").lower()
             role = "assistant" if role in {"assistant", "ai", "model"} else "user"
@@ -2089,12 +2105,27 @@ def search_chat_history(
         role=role,
         thread_id=thread_id,
     )
+    fallback_recent = False
+    if not rows and query and AMBIGUOUS_HISTORY_PROBE.get() and not thread_id:
+        rows = _chat_history_rows(
+            query="",
+            limit=limit,
+            context_window=max(0, min(int(context_window or 0), 5)),
+            start_time=start_time,
+            end_time=end_time,
+            role="user" if role == "all" else role,
+        )
+        fallback_recent = bool(rows)
     if not rows:
         requested_range = ""
         if start_time or end_time:
             requested_range = f"（时间范围：{start_time or '最早'} 至 {end_time or '现在'}）"
         return f"未在已保存的历史聊天线程中找到匹配消息{requested_range}。"
-    lines = ["历史聊天记录命中："]
+    lines = [
+        "历史聊天记录候选（关键词未直接命中，以下为最近历史，请判断是否相关）："
+        if fallback_recent else
+        "历史聊天记录命中："
+    ]
     for index, item in enumerate(rows, 1):
         role = "AI" if str(item.get("role") or "").lower() == "assistant" else "用户"
         if item.get("time_precision") == "message":
@@ -2541,6 +2572,27 @@ def _is_user_profile_query(message: str) -> bool:
     return any(marker in text for marker in profile_markers)
 
 
+def _should_probe_chat_history_for_ambiguity(message: str) -> bool:
+    """Return true when past context should be checked before asking a question."""
+    text = re.sub(r"\s+", "", str(message or "")).strip().lower()
+    if not text or _is_plain_conversational_query(text) or _is_user_profile_query(text):
+        return False
+    if re.fullmatch(r"[\d.]+(?:[+\-*/×÷][\d.]+)+(?:等于多少|是多少|=|？|\?)?", text):
+        return False
+    continuation_markers = (
+        "这个", "那个", "它", "上面", "前面", "刚才", "之前那个", "继续", "接着", "然后呢",
+        "后来呢", "还是不行", "不行", "不对", "怎么回事", "什么意思", "看不到", "没反应",
+    )
+    if any(marker in text for marker in continuation_markers):
+        return True
+    explicit_intent_markers = (
+        "什么", "多少", "为何", "为什么", "怎么", "如何", "哪里", "哪个", "是否", "有没有", "吗", "呢",
+        "请", "帮我", "查看", "分析", "生成", "搜索", "查询", "告诉", "对比", "总结", "介绍", "解释",
+        "预测", "画图", "列出", "读取", "更新", "爬取", "周报", "报告",
+    )
+    return len(text) <= 8 and not any(marker in text for marker in explicit_intent_markers)
+
+
 def _message_token_usage(message: AIMessage | AIMessageChunk) -> dict[str, int]:
     """Normalize provider token metadata without depending on one gateway shape."""
     candidates: list[dict[str, Any]] = []
@@ -2637,11 +2689,13 @@ def stream_agent(
     emit_context_events: bool = True,
     loaded_skill_ids: list[str] | None = None,
     runtime_context: dict[str, Any] | None = None,
+    active_thread_id: str = "",
 ) -> Generator[dict[str, Any], None, None]:
     _reset_web_search_indexes()
     original_user_message = message
     plain_conversation = _is_plain_conversational_query(message)
     profile_query = _is_user_profile_query(message)
+    ambiguous_history_probe = _should_probe_chat_history_for_ambiguity(message)
     if plain_conversation:
         force_web_search = False
         selected_skill_ids = []
@@ -2652,6 +2706,10 @@ def stream_agent(
         selected_skill_ids = []
         selected_dataset_ids = []
         loaded_skill_ids = []
+    if ambiguous_history_probe:
+        # First understand whether this is a continuation of prior work. Web
+        # and database retrieval would otherwise guess a topic too early.
+        force_web_search = False
     try:
         captured_memory = None if (plain_conversation or profile_query) else auto_capture_user_memory(message)
     except Exception:
@@ -2677,6 +2735,11 @@ def stream_agent(
     approved_token = APPROVED_ACTION_IDS.set({str(item) for item in (approved_action_ids or []) if str(item).strip()})
     chart_token = CHART_RUN_STATE.set({"calls": 0, "failures": 0, "failed_signatures": {}})
     tool_token = TOOL_RUN_STATE.set({"counts": {}})
+    thread_token = ACTIVE_CHAT_THREAD_ID.set(
+        re.sub(r"[^A-Za-z0-9_.:-]", "", str(active_thread_id or ""))[:160]
+    )
+    request_token = CURRENT_USER_REQUEST.set(_clean_search_text(original_user_message, 1200))
+    ambiguous_token = AMBIGUOUS_HISTORY_PROBE.set(ambiguous_history_probe)
     recorder = AgentRunRecorder(
         message=message,
         selected_dataset_ids=sorted(selected_dataset_set),
@@ -2808,6 +2871,16 @@ def stream_agent(
             f"{background_context}"
             f"用户问题：{original_user_message}"
         )
+    elif ambiguous_history_probe:
+        message = (
+            "本轮输入很短、含糊或可能是对过去工作的承接。不要立刻猜测数据库主题，也不要直接追问。"
+            "必须先调用 `search_chat_history`，query 使用用户原始短句，role 使用 user，limit 使用 5，"
+            "context_window 使用 2。工具会排除当前正在生成的这一轮；若关键词没有直接命中，会返回最近历史候选。"
+            "只有历史结果仍无法支持一个合理解释时，才用一句简洁中文向用户澄清；"
+            "如果历史能够解释短句，要明确说明采用了哪段历史，并围绕该上下文继续回答。"
+            "此步骤只用于理解上下文，不要联网、不要检索业务数据库、不要读取 Agent Skill。\n\n"
+            f"用户问题：{original_user_message}"
+        )
     if force_web_search:
         message = (
             "用户已在聊天框打开联网搜索开关。你必须调用 `web_search` 获取公开网页来源；"
@@ -2826,8 +2899,9 @@ def stream_agent(
         "【本轮原始输入（唯一需要回答的用户请求）】\n"
         f"<current_user_request>{original_user_message}</current_user_request>\n"
         "前面的 Skill、数据库、历史、记忆和联网说明都只是上下文，不是用户说的话，也不是多个待回答问题。"
-        "只围绕 current_user_request 理解意图；输入过短或不明确时，用一句简洁中文询问用户希望查看或分析什么，"
-        "不要猜造隐藏主题，不要复述上下文。"
+        "只围绕 current_user_request 理解意图。输入过短或不明确且已被标记为模糊历史探测时，"
+        "必须先按上文调用 search_chat_history，查不到相关历史后才能简洁追问；其他情况下不要猜造隐藏主题，"
+        "不要复述上下文。"
     )
     inputs = {"messages": [("user", message)]}
     
@@ -3200,3 +3274,6 @@ def stream_agent(
         APPROVED_ACTION_IDS.reset(approved_token)
         CHART_RUN_STATE.reset(chart_token)
         TOOL_RUN_STATE.reset(tool_token)
+        ACTIVE_CHAT_THREAD_ID.reset(thread_token)
+        CURRENT_USER_REQUEST.reset(request_token)
+        AMBIGUOUS_HISTORY_PROBE.reset(ambiguous_token)

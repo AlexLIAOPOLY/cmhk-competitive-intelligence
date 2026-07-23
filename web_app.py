@@ -3778,6 +3778,9 @@ class AppHandler(BaseHTTPRequestHandler):
             loaded_skill_ids = payload.get("loadedSkillIds")
             if not isinstance(loaded_skill_ids, list):
                 loaded_skill_ids = []
+            active_thread_id = re.sub(
+                r"[^A-Za-z0-9_.:-]", "", str(payload.get("threadId") or "")
+            )[:160]
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
@@ -3796,6 +3799,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 emit_context_events=emit_context_events,
                 loaded_skill_ids=[str(item) for item in loaded_skill_ids],
                 runtime_context=request_runtime_context(self),
+                active_thread_id=active_thread_id,
             ):
                 body = json.dumps(event, ensure_ascii=False)
                 self.wfile.write(f"data: {body}\n\n".encode("utf-8"))

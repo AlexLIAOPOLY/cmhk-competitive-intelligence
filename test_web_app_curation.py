@@ -177,6 +177,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         self.assertIn('createdAt: new Date().toISOString()', app)
         self.assertIn('assistantHistoryEntry.completedAt = new Date().toISOString()', app)
+        self.assertIn('threadId: state.activeThreadId', app)
 
     def test_process_filter_preserves_complete_dependent_sentences(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -1127,6 +1128,85 @@ class AgentWebSearchToggleTests(unittest.TestCase):
     def test_chat_history_tool_is_always_available_for_agent_autonomy(self) -> None:
         tool_names = {item.name for item in agent._agent_tools(allow_web_search=False, user_message="你来判断要查什么")}
         self.assertIn("search_chat_history", tool_names)
+
+    def test_ambiguous_short_input_requires_history_probe_but_complete_math_does_not(self) -> None:
+        self.assertTrue(agent._should_probe_chat_history_for_ambiguity("富裕"))
+        self.assertTrue(agent._should_probe_chat_history_for_ambiguity("不行"))
+        self.assertTrue(agent._should_probe_chat_history_for_ambiguity("那个呢"))
+        self.assertFalse(agent._should_probe_chat_history_for_ambiguity("2加2等于多少？"))
+        self.assertFalse(agent._should_probe_chat_history_for_ambiguity("分析中国移动收入"))
+        self.assertFalse(agent._should_probe_chat_history_for_ambiguity("你好"))
+
+    def test_ambiguous_history_probe_excludes_current_turn_and_falls_back_to_recent_history(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = os.path.join(tempdir, "threads.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(
+                    {
+                        "threads": [
+                            {
+                                "id": "current-thread",
+                                "title": "当前模糊输入",
+                                "createdAt": "2026-07-23T09:24:50+08:00",
+                                "updatedAt": "2026-07-23T09:24:52+08:00",
+                                "messages": [
+                                    {"role": "user", "content": "富裕"},
+                                    {"role": "assistant", "content": "正在分析请求，并调用相关工具获取依据。"},
+                                ],
+                            },
+                            {
+                                "id": "previous-thread",
+                                "title": "上一项工作",
+                                "createdAt": "2026-07-23T09:10:00+08:00",
+                                "updatedAt": "2026-07-23T09:12:00+08:00",
+                                "messages": [
+                                    {"role": "user", "content": "请继续整理昨天的战略周报"},
+                                    {"role": "assistant", "content": "已经整理完成。"},
+                                ],
+                            },
+                        ]
+                    },
+                    handle,
+                    ensure_ascii=False,
+                )
+            thread_token = agent.ACTIVE_CHAT_THREAD_ID.set("current-thread")
+            request_token = agent.CURRENT_USER_REQUEST.set("富裕")
+            ambiguous_token = agent.AMBIGUOUS_HISTORY_PROBE.set(True)
+            try:
+                with mock.patch("agent.CHAT_THREADS_PATH", agent.Path(path)):
+                    result = agent.search_chat_history.invoke({
+                        "query": "富裕",
+                        "role": "user",
+                        "limit": 5,
+                        "context_window": 1,
+                    })
+            finally:
+                agent.ACTIVE_CHAT_THREAD_ID.reset(thread_token)
+                agent.CURRENT_USER_REQUEST.reset(request_token)
+                agent.AMBIGUOUS_HISTORY_PROBE.reset(ambiguous_token)
+
+        self.assertIn("关键词未直接命中", result)
+        self.assertIn("请继续整理昨天的战略周报", result)
+        self.assertNotIn("正在分析请求", result)
+
+    def test_stream_marks_ambiguous_input_for_history_before_clarification(self) -> None:
+        captured: dict[str, object] = {}
+
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                captured["message"] = inputs["messages"][0][1]
+                yield agent.AIMessageChunk(content="请补充说明。"), {}
+
+        def fake_get_agent(**kwargs):
+            captured["allow_web_search"] = kwargs.get("allow_web_search")
+            return FakeAgent()
+
+        with mock.patch("agent.get_agent", side_effect=fake_get_agent):
+            list(agent.stream_agent("富裕", force_web_search=True, active_thread_id="thread-now"))
+
+        self.assertFalse(captured["allow_web_search"])
+        self.assertIn("必须先调用 `search_chat_history`", captured["message"])
+        self.assertIn("查不到相关历史后才能简洁追问", captured["message"])
 
     def test_disabled_web_search_prompt_does_not_explain_toggle_state(self) -> None:
         captured: dict[str, object] = {}

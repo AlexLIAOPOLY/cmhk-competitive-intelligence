@@ -5327,6 +5327,7 @@ async function sendChat(message, options = {}) {
       signal: requestController.signal,
       body: JSON.stringify({
         requestId: chatRequestId,
+        threadId: state.activeThreadId,
         message,
         webSearchEnabled,
         thinkingEnabled: false,
