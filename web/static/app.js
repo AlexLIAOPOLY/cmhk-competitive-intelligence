@@ -2515,6 +2515,18 @@ function crawlLogModalIsOpen() {
   return Boolean(els.logModal && !els.logModal.hidden);
 }
 
+function scrollTaskLogToBottom() {
+  if (!els.logBox) return;
+  const scroll = function () {
+    els.logBox.scrollTop = els.logBox.scrollHeight;
+  };
+  scroll();
+  window.requestAnimationFrame(function () {
+    scroll();
+    window.requestAnimationFrame(scroll);
+  });
+}
+
 function stopCrawlLogPolling() {
   if (state.crawlLogPollTimer) {
     window.clearTimeout(state.crawlLogPollTimer);
@@ -2692,9 +2704,11 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
         + " · " + Number(data.lines || 0) + " 行 · " + Number(data.bytes || 0) + " B";
     }
     if (task.run_status === "running") {
-      els.logBox.scrollTop = !silent || wasNearBottom ? els.logBox.scrollHeight : previousScrollTop;
+      if (!silent || wasNearBottom) scrollTaskLogToBottom();
+      else els.logBox.scrollTop = previousScrollTop;
     } else {
-      els.logBox.scrollTop = silent && wasNearBottom ? els.logBox.scrollHeight : (silent ? previousScrollTop : 0);
+      if (silent && wasNearBottom) scrollTaskLogToBottom();
+      else els.logBox.scrollTop = silent ? previousScrollTop : 0;
     }
     if (managePolling) {
       if (task.run_status === "running" && crawlLogModalIsOpen()) scheduleCrawlLogPolling();

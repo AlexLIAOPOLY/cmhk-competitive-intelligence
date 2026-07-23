@@ -300,6 +300,17 @@ def _agent_run_ids(output: str) -> list[str]:
     return run_ids
 
 
+def _json_object_from_output(output: str) -> dict[str, object]:
+    match = re.search(r"\{.*\}\s*$", output, re.S)
+    if not match:
+        return {}
+    try:
+        value = json.loads(match.group(0))
+    except json.JSONDecodeError:
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[str]]:
     summary_path = ROOT / "curation_data" / "runs" / f"{run_id}.json"
     trace_path = ROOT / "curation_data" / "runs" / f"{run_id}_agent_trace.jsonl"
@@ -355,6 +366,8 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
 def _run_scheduled_agent_audit(
     crawl_run_id: str,
     stream_log_path: Path,
+    *,
+    log_sheet_id: str = "",
 ) -> tuple[bool, int, dict[str, object], dict[str, object], str]:
     command = [
         PYTHON,
@@ -435,13 +448,13 @@ def _run_scheduled_agent_audit(
     if problems:
         return False, 1, curation, {}, "；".join(problems)
 
-    try:
-        validation = json.loads((ROOT / "daily_validation.json").read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError) as exc:
-        return False, 1, curation, {}, f"无法读取本次飞书日志信息：{exc}"
-    log_sheet_id = str(validation.get("log_sheet_id") or "").strip()
     if not log_sheet_id:
-        return False, 1, curation, {}, "本次同步没有产生飞书日志页 ID"
+        return True, 0, curation, {
+            "ok": False,
+            "skipped": True,
+            "reason": "本次飞书同步未产生可用日志页 ID，Agent 已完成但 trace 未归档到飞书。",
+            "agent_run_id": agent_run_id,
+        }, ""
 
     heartbeat_crawl_run(
         crawl_run_id,
@@ -550,26 +563,21 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
     with stream_log_path.open("a", encoding="utf-8") as fh:
         fh.write(sync.stdout or "")
         fh.write(sync.stderr or "")
+    sync_result = _json_object_from_output(sync.stdout or "") if sync.returncode == 0 else {}
+    log_sheet_id = str(sync_result.get("log_sheet_id") or "").strip()
     if sync.returncode:
-        logging.error("到期行飞书同步失败，退出码 %s", sync.returncode)
-        append_crawl_run_event(stream_log_path, {"type": "done", "ok": False, "stage": "feishu_sync", "returnCode": sync.returncode})
-        register_crawl_run(
-            crawl_return_code=sync.returncode,
-            duration_ms=round((time.time() - started_monotonic) * 1000),
-            trigger="定时爬虫",
-            scope=env["CMHK_CRAWL_SCOPE"],
-            crawl_run_id=crawl_run_id,
-            started_at_hkt=now.isoformat(timespec="seconds"),
-            stream_log_path=stream_log_path,
-            curation_summary={},
-            failure_stage="feishu_sync",
-            progress_detail=f"飞书同步失败，返回码 {sync.returncode}；Agent 审核未启动。",
+        logging.error("到期行飞书同步失败，退出码 %s；继续执行 Agent 审核", sync.returncode)
+        heartbeat_crawl_run(
+            crawl_run_id,
+            "Agent审核",
+            f"飞书同步失败（返回码 {sync.returncode}），不阻断 Agent 审核；审核完成后任务仍会保留失败状态等待重试。",
+            append_log=True,
         )
-        return False
 
     audit_ok, audit_code, curation, trace_sync, audit_error = _run_scheduled_agent_audit(
         crawl_run_id,
         stream_log_path,
+        log_sheet_id=log_sheet_id,
     )
     if not audit_ok:
         logging.error("定时爬虫 Agent 审核失败：%s", audit_error)
@@ -588,7 +596,39 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
             stream_log_path=stream_log_path,
             curation_summary=curation,
             failure_stage="agent_review",
-            progress_detail=f"网页抓取和飞书同步已完成，但本轮 Agent 审核未通过完整性校验：{audit_error}",
+            progress_detail=(
+                f"飞书同步返回码 {sync.returncode}；" if sync.returncode else "网页抓取和飞书同步已完成；"
+            ) + f"本轮 Agent 审核未通过完整性校验：{audit_error}",
+        )
+        return False
+
+    if sync.returncode:
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "done",
+                "ok": False,
+                "stage": "feishu_sync",
+                "returnCode": sync.returncode,
+                "agentReviewCompleted": True,
+                "agentRunId": curation.get("agent_run_id", ""),
+            },
+        )
+        register_crawl_run(
+            crawl_return_code=sync.returncode,
+            duration_ms=round((time.time() - started_monotonic) * 1000),
+            trace_sync=trace_sync,
+            trigger="定时爬虫",
+            scope=env["CMHK_CRAWL_SCOPE"],
+            crawl_run_id=crawl_run_id,
+            started_at_hkt=now.isoformat(timespec="seconds"),
+            stream_log_path=stream_log_path,
+            curation_summary=curation,
+            failure_stage="feishu_sync",
+            progress_detail=(
+                f"Agent 审核已完整执行（{curation.get('agent_run_id') or 'run_id 未记录'}），"
+                f"但飞书同步失败，返回码 {sync.returncode}；任务将按退避策略重试。"
+            ),
         )
         return False
 

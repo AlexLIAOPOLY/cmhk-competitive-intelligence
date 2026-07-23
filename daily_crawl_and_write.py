@@ -4,7 +4,6 @@ import csv
 import json
 import os
 import re
-import socket
 import subprocess
 import sys
 import time
@@ -40,39 +39,6 @@ AGENT_TRACE_HEADERS = [
     "输出/结果",
     "状态",
 ]
-LOCAL_PROXY_CANDIDATES = (
-    "http://127.0.0.1:7897",
-    "http://127.0.0.1:7890",
-)
-
-
-def local_proxy_env(base_env: dict[str, str] | None = None) -> dict[str, str] | None:
-    env = (base_env or os.environ).copy()
-    configured = next(
-        (
-            env.get(key)
-            for key in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY", "https_proxy", "http_proxy", "all_proxy")
-            if env.get(key)
-        ),
-        "",
-    )
-    candidates = [configured, *LOCAL_PROXY_CANDIDATES]
-    for proxy_url in dict.fromkeys(value for value in candidates if value):
-        match = re.match(r"^https?://([^:/]+):(\d+)$", proxy_url)
-        if not match:
-            continue
-        try:
-            with socket.create_connection((match.group(1), int(match.group(2))), timeout=0.8):
-                pass
-        except OSError:
-            continue
-        env.pop("LARK_CLI_NO_PROXY", None)
-        for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"):
-            env[key] = proxy_url
-        return env
-    return None
-
-
 def feishu_cli_env() -> dict[str, str]:
     env = os.environ.copy()
     env["LARK_CLI_NO_PROXY"] = "1"
@@ -81,51 +47,39 @@ def feishu_cli_env() -> dict[str, str]:
     return env
 
 
-def feishu_proxy_env_if_needed() -> dict[str, str] | None:
-    env = os.environ.copy()
-    try:
-        resolved = socket.gethostbyname("open.feishu.cn")
-    except OSError:
-        resolved = ""
-    # 198.18.0.0/15 is commonly a local proxy fake-IP range and is not
-    # directly routable. In that case the configured proxy is the usable path.
-    if not resolved or resolved.startswith(("198.18.", "198.19.")):
-        return local_proxy_env(env)
-    return None
-
-
 def run_cmd(args: list[str], *, timeout: int = 180) -> str:
-    original_env = os.environ.copy()
     direct_env = feishu_cli_env()
-    proxy_env = feishu_proxy_env_if_needed() or local_proxy_env(original_env)
-    environments = [proxy_env, direct_env] if proxy_env else [direct_env]
     proc = None
     for attempt in range(3):
-        command_env = environments[min(attempt, len(environments) - 1)]
         proc = subprocess.run(
             args,
             cwd=ROOT,
             text=True,
             capture_output=True,
             timeout=timeout,
-            env=command_env,
+            env=direct_env,
         )
         if proc.returncode == 0:
             break
         network_error = f"{proc.stderr}\n{proc.stdout}".lower()
         if not any(
             marker in network_error
-            for marker in ("no such host", "lookup open.feishu.cn", "i/o timeout", "connection refused")
+            for marker in (
+                "no such host",
+                "lookup open.feishu.cn",
+                "i/o timeout",
+                "connection refused",
+                "connection reset",
+                "unexpected eof",
+                '"message": "api call failed',
+                ": eof",
+            )
         ):
             break
-        refreshed_proxy_env = local_proxy_env(original_env)
-        if refreshed_proxy_env:
-            environments = [refreshed_proxy_env, direct_env]
         time.sleep(1.0 + attempt)
     assert proc is not None
-    (ROOT / "last_daily_command.log").open("a", encoding="utf-8").write(
-        f"\n$ {' '.join(args)}\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}\n"
-    )
+    with (ROOT / "last_daily_command.log").open("a", encoding="utf-8") as log_file:
+        log_file.write(f"\n$ {' '.join(args)}\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}\n")
     if proc.returncode:
         raise RuntimeError(f"command failed ({proc.returncode}): {' '.join(args)}\n{proc.stderr}\n{proc.stdout}")
     return proc.stdout
