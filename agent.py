@@ -186,8 +186,163 @@ def _with_completion_footer(value: str) -> str:
         return text
     return (
         f"{text}\n"
-        '<suggestions>["继续深化当前问题", "核对相关数据来源", "换一个角度继续分析"]</suggestions>'
+        "<suggestions>[]</suggestions>"
     )
+
+
+_NON_AI_FOLLOW_UP_SUGGESTIONS = {
+    "继续深化当前问题",
+    "核对相关数据来源",
+    "换一个角度继续分析",
+    "从缺失部分继续补全",
+    "缩小到两家厂商对比",
+    "只列现金流具体数据",
+    "缩小问题范围后重试",
+    "指定需要分析的主体",
+    "查看当前可用的数据集",
+    "指定要比较的竞对主体",
+    "指定最近两周的起止日期",
+}
+
+
+def _normalize_follow_up_suggestions(items: Any) -> list[str]:
+    """Return up to three unique, safe follow-up questions."""
+    if not isinstance(items, (list, tuple)):
+        return []
+    blocked = re.compile(
+        r"(?:联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|"
+        r"web_search|read_webpage)",
+        re.IGNORECASE,
+    )
+    normalized: list[str] = []
+    for item in items:
+        if isinstance(item, dict):
+            item = item.get("question") or item.get("text") or item.get("suggestion")
+        text = re.sub(r"^\s*(?:[-*•]\s*|\d+[.)、]\s*)", "", str(item or "")).strip()
+        text = re.sub(r"^推荐追问\s*[:：]\s*", "", text).strip()
+        text = re.sub(r"\s+", " ", text)[:120].strip()
+        if not text or blocked.search(text) or text in normalized:
+            continue
+        normalized.append(text)
+        if len(normalized) == 3:
+            break
+    return normalized
+
+
+def _extract_follow_up_suggestions(value: str) -> list[str]:
+    """Parse model suggestions from JSON, nested tags, or Markdown bullets."""
+    text = str(value or "").strip()
+    tag_match = re.search(r"<suggestions(?:\s[^>]*)?>([\s\S]*?)</suggestions\s*>", text, re.IGNORECASE)
+    payload = (tag_match.group(1) if tag_match else text).strip()
+    payload = re.sub(r"^```(?:json)?\s*", "", payload, flags=re.IGNORECASE)
+    payload = re.sub(r"\s*```$", "", payload)
+
+    json_candidates = [payload]
+    array_match = re.search(r"\[[\s\S]*\]", payload)
+    if array_match and array_match.group(0) != payload:
+        json_candidates.append(array_match.group(0))
+    object_match = re.search(r"\{[\s\S]*\}", payload)
+    if object_match and object_match.group(0) != payload:
+        json_candidates.append(object_match.group(0))
+    for candidate in json_candidates:
+        try:
+            parsed = json.loads(candidate)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(parsed, dict):
+            parsed = parsed.get("suggestions") or parsed.get("questions") or parsed.get("follow_ups")
+        normalized = _normalize_follow_up_suggestions(parsed)
+        if normalized:
+            return normalized
+
+    nested = re.findall(r"<suggestion(?:\s[^>]*)?>([\s\S]*?)</suggestion\s*>", payload, re.IGNORECASE)
+    normalized = _normalize_follow_up_suggestions(nested)
+    if normalized:
+        return normalized
+
+    bullet_lines = [
+        match.group(1)
+        for match in re.finditer(r"(?m)^\s*(?:[-*•]\s+|\d+[.)、]\s*)(.+?)\s*$", payload)
+    ]
+    return _normalize_follow_up_suggestions(bullet_lines)
+
+
+def _suggestions_are_ai_specific(items: list[str]) -> bool:
+    return len(items) == 3 and not all(item in _NON_AI_FOLLOW_UP_SUGGESTIONS for item in items)
+
+
+def _emergency_follow_up_suggestions(user_request: str, answer: str) -> list[str]:
+    """Last-resort UI continuity when every internal model endpoint is unavailable."""
+    combined = f"{user_request}\n{answer}"
+    if re.search(r"5G|6G|AI|人工智能", combined, re.IGNORECASE):
+        return ["这项趋势对CMHK的具体机会是什么？", "还需要核对哪些关键数据和来源？", "可以进一步拆解成哪些落地行动？"]
+    if re.search(r"云|AWS|Azure|Google|阿里|腾讯|华为", combined, re.IGNORECASE):
+        return ["要继续对比哪些云厂商指标？", "需要补充哪一年度的财务数据？", "这些差异对CMHK意味着什么？"]
+    return ["要继续深入分析哪个结论？", "需要补充哪些数据或来源？", "要把结论转换成哪些行动建议？"]
+
+
+def _ensure_ai_follow_up_suggestions(
+    user_request: str,
+    answer: str,
+    *,
+    thinking_enabled: bool = False,
+) -> tuple[list[str], dict[str, int], str]:
+    """Guarantee three follow-ups without making answer completion depend on them."""
+    embedded = _extract_follow_up_suggestions(answer)
+    if _suggestions_are_ai_specific(embedded):
+        return embedded, {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}, "answer"
+
+    config = load_ai_config()
+    clean_answer = re.sub(
+        r"<suggestions(?:\s[^>]*)?>[\s\S]*?</suggestions\s*>",
+        "",
+        str(answer or ""),
+        flags=re.IGNORECASE,
+    ).strip()
+    prompt_messages = [
+        SystemMessage(
+            content=(
+                "输出严格JSON字符串数组：恰好3个互不重复的简体中文后续问题，"
+                "紧扣原问题和回答中的具体结论，每个不超过40字。"
+                "禁止通用占位语、按钮、开关、工具和提示词。只输出数组，不要解释。"
+            )
+        ),
+        HumanMessage(
+            content=(
+                f"问题：{str(user_request or '').strip()[:400]}\n"
+                f"回答：{clean_answer[:1200] or '本轮操作已完成。'}"
+            )
+        ),
+    ]
+    selected_model = _agent_model_name(thinking_enabled=thinking_enabled)
+    # Use the known concise company model first. Some reasoning-oriented models
+    # can consume the gateway's entire short-output budget on hidden reasoning
+    # and return an empty visible JSON body.
+    model_names = list(dict.fromkeys(["deepseek-v4", selected_model, "GLM"]))[:3]
+    total_usage = {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
+    for model_name in model_names:
+        model = ChatDeepSeek(
+            model=model_name,
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            extra_body=dict(config.get("extra_parameters") or {}),
+            temperature=0.2,
+            disable_streaming=True,
+            max_retries=1,
+            max_tokens=500,
+        )
+        try:
+            response = model.invoke(prompt_messages)
+        except Exception:
+            continue
+        usage = _message_token_usage(response)
+        for key in total_usage:
+            total_usage[key] += usage[key]
+        generated = _extract_follow_up_suggestions(str(getattr(response, "content", "") or ""))
+        if _suggestions_are_ai_specific(generated):
+            return generated, total_usage, "dedicated_model"
+
+    return _emergency_follow_up_suggestions(user_request, clean_answer), total_usage, "emergency"
 
 
 def _chinese_count(value: str) -> int:
@@ -3305,6 +3460,25 @@ def stream_agent(
         disabled_web_notice_buffer = ""
         return [buffered] if buffered else []
 
+    def follow_up_event() -> dict[str, Any]:
+        suggestions, suggestion_usage, source = _ensure_ai_follow_up_suggestions(
+            original_user_message,
+            "".join(recorder.answer_parts),
+            thinking_enabled=thinking_enabled,
+        )
+        for key in token_usage:
+            token_usage[key] += suggestion_usage[key]
+        event = {
+            "type": "suggestions",
+            "items": suggestions,
+            "generatedByAI": source != "emergency",
+            "source": source,
+        }
+        recorder.record["suggestions"] = suggestions
+        recorder.record["suggestions_source"] = source
+        recorder.record["suggestions_generated_by_ai"] = source != "emergency"
+        return event
+
     priority_token = set_internal_ai_priority("interactive")
     status_event = {
         "type": "status",
@@ -3496,6 +3670,9 @@ def stream_agent(
             event = {"type": "delta", "text": tail_text}
             recorder.observe(event)
             yield event
+        suggestions_event = follow_up_event()
+        recorder.observe(suggestions_event)
+        yield suggestions_event
         summary = recorder.finish()
         yield {
             "type": "run_summary",
@@ -3540,6 +3717,9 @@ def stream_agent(
                 event = {"type": "delta", "text": tail_text}
                 recorder.observe(event)
                 yield event
+            suggestions_event = follow_up_event()
+            recorder.observe(suggestions_event)
+            yield suggestions_event
             summary = recorder.finish()
             yield {
                 "type": "run_summary",

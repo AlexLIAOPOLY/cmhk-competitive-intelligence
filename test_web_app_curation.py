@@ -22,6 +22,15 @@ class ReportFileNameTests(unittest.TestCase):
 
 
 class ChatThreadPersistenceTests(unittest.TestCase):
+    def test_assistant_message_preserves_exactly_three_generated_suggestions(self) -> None:
+        clean = web_app._clean_chat_message({
+            "role": "assistant",
+            "content": "完整回答。",
+            "suggestions": ["问题一？", "问题二？", "问题三？", "多余问题？"],
+        })
+
+        self.assertEqual(clean["suggestions"], ["问题一？", "问题二？", "问题三？"])
+
     def test_chat_message_preserves_valid_per_message_timestamps(self) -> None:
         clean = web_app._clean_chat_message({
             "role": "assistant",
@@ -224,6 +233,35 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertEqual(cleaned[0], "请进一步说明，以便我为您准确检索和提供信息。")
         self.assertTrue(cleaned[1].endswith("宏观政策。"), cleaned[1])
         self.assertEqual(cleaned[2], "明确主体后，我将检索本地资料并整理路线图。")
+
+    def test_suggestion_parser_accepts_json_nested_tags_and_markdown_bullets(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function normalizeSuggestionList")
+        end = app.index("function estimateChatTokens", start)
+        snippet = app[start:end] + "\n" + (
+            "console.log(JSON.stringify(["
+            "parseSuggestionTag('<suggestions>[\\\"问题一？\\\",\\\"问题二？\\\",\\\"问题三？\\\"]</suggestions>'),"
+            "parseSuggestionTag('<suggestions><suggestion>甲？</suggestion><suggestion>乙？</suggestion><suggestion>丙？</suggestion></suggestions>'),"
+            "parseSuggestionTag('<suggestions>\\n- 推荐追问：第一问？\\n- 推荐追问：第二问？\\n- 推荐追问：第三问？\\n</suggestions>')"
+            "]));"
+        )
+        completed = subprocess.run(["node", "-e", snippet], check=True, capture_output=True, text=True)
+
+        self.assertEqual(
+            json.loads(completed.stdout),
+            [
+                ["问题一？", "问题二？", "问题三？"],
+                ["甲？", "乙？", "丙？"],
+                ["第一问？", "第二问？", "第三问？"],
+            ],
+        )
+
+    def test_frontend_prefers_structured_suggestion_event_and_requires_three_chips(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn('event.type === "suggestions"', app)
+        self.assertIn("streamedSuggestions.length === 3 ? streamedSuggestions : embeddedSuggestions", app)
+        self.assertIn('if (arr.length !== 3) return "";', app)
 
     def test_voice_dictation_uses_company_stt_and_auto_submits_transcript(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -554,6 +592,21 @@ class WebAppCurationCommandTests(unittest.TestCase):
 
 
 class AgentWebSearchToggleTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._real_follow_up_generator = agent._ensure_ai_follow_up_suggestions
+        self._follow_up_patcher = mock.patch(
+            "agent._ensure_ai_follow_up_suggestions",
+            return_value=(
+                ["继续核对哪个具体结论？", "还需要补充哪些来源？", "下一步要分析哪个主体？"],
+                {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0},
+                "answer",
+            ),
+        )
+        self._follow_up_patcher.start()
+
+    def tearDown(self) -> None:
+        self._follow_up_patcher.stop()
+
     def test_plain_search_question_is_not_intercepted_when_web_toggle_is_off(self) -> None:
         self.assertIsNone(web_app.check_local_action("搜一下移动和联通的收入趋势"))
         self.assertIsNone(web_app.check_local_action("请生成周报"))
@@ -736,6 +789,70 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 require_completion_footer=True,
             )
         )
+
+    def test_follow_up_parser_accepts_model_format_variants(self) -> None:
+        self.assertEqual(
+            agent._extract_follow_up_suggestions(
+                "<suggestions><suggestion>第一问？</suggestion>"
+                "<suggestion>第二问？</suggestion><suggestion>第三问？</suggestion></suggestions>"
+            ),
+            ["第一问？", "第二问？", "第三问？"],
+        )
+        self.assertEqual(
+            agent._extract_follow_up_suggestions(
+                "<suggestions>\n- 甲问题？\n- 乙问题？\n- 丙问题？\n</suggestions>"
+            ),
+            ["甲问题？", "乙问题？", "丙问题？"],
+        )
+
+    def test_existing_three_ai_suggestions_do_not_add_an_extra_model_call(self) -> None:
+        answer = '完整回答。\n<suggestions>["具体问题一？", "具体问题二？", "具体问题三？"]</suggestions>'
+        with mock.patch("agent.ChatDeepSeek", side_effect=AssertionError("不应额外调用模型")):
+            items, usage, source = self._real_follow_up_generator("原问题", answer)
+
+        self.assertEqual(items, ["具体问题一？", "具体问题二？", "具体问题三？"])
+        self.assertEqual(usage["totalTokens"], 0)
+        self.assertEqual(source, "answer")
+
+    def test_missing_or_placeholder_suggestions_are_generated_by_dedicated_model(self) -> None:
+        response = agent.AIMessage(
+            content='["CMHK应优先验证哪个场景？", "需要补充哪些香港数据？", "如何安排下一步试点？"]',
+            usage_metadata={"input_tokens": 20, "output_tokens": 30, "total_tokens": 50},
+        )
+        model = mock.Mock()
+        model.invoke.return_value = response
+        with (
+            mock.patch("agent.ChatDeepSeek", return_value=model),
+            mock.patch("agent.load_ai_config", return_value={
+                "model": "MiniMax-M2.1",
+                "api_key": "test",
+                "base_url": "http://internal/v1",
+                "extra_parameters": {},
+            }),
+        ):
+            items, usage, source = self._real_follow_up_generator(
+                "分析5G-A与AI融合",
+                "完整回答。\n<suggestions>[]</suggestions>",
+            )
+
+        self.assertEqual(len(items), 3)
+        self.assertEqual(usage["totalTokens"], 50)
+        self.assertEqual(source, "dedicated_model")
+
+    def test_stream_emits_exactly_three_structured_suggestions_before_summary(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None):
+                yield agent.AIMessage(
+                    content='完整回答。\n<suggestions>["问题一？", "问题二？", "问题三？"]</suggestions>'
+                ), {}
+
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+            events = list(agent.stream_agent("请回答"))
+
+        suggestion_event = next(event for event in events if event.get("type") == "suggestions")
+        self.assertEqual(len(suggestion_event["items"]), 3)
+        self.assertLess(events.index(suggestion_event), next(i for i, event in enumerate(events) if event.get("type") == "run_summary"))
+        self.assertEqual(events[-1], {"type": "done"})
 
     def test_explicit_structure_validator_requires_all_requested_sections_and_summary(self) -> None:
         request = "写约800字分析，分成五节，每节完整收束，最后总结三点。"

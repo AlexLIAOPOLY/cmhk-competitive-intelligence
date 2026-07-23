@@ -5132,26 +5132,35 @@ function normalizeSuggestionList(items) {
   if (!Array.isArray(items)) return [];
   const blocked = /(联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|web_search|read_webpage)/i;
   return items
-    .map((item) => String(item || "").trim())
+    .map((item) => String(item || "").trim().replace(/^推荐追问\s*[:：]\s*/, ""))
     .filter((item) => item && !blocked.test(item))
     .slice(0, 3);
 }
 
 function suggestionChipsHtml(items) {
   const arr = normalizeSuggestionList(items);
-  if (!arr.length) return "";
+  if (arr.length !== 3) return "";
   return `<div class="suggestion-chips">` + arr.map((q) => `<button type="button" class="suggestion-chip" onclick="clickSuggestion(this.innerText)">${escapeHtml(q)}</button>`).join("") + `</div>`;
 }
 
 function parseSuggestionTag(value) {
-  const match = String(value || "").match(/<suggestions>\s*([\s\S]*?)\s*<\/suggestions>/i);
+  const match = String(value || "").match(/<suggestions(?:\s[^>]*)?>\s*([\s\S]*?)\s*<\/suggestions>/i);
   if (!match) return [];
+  let payload = match[1].trim();
   try {
-    let jsonStr = match[1].trim();
+    let jsonStr = payload;
     jsonStr = jsonStr.replace(/^```json/i, "").replace(/^```/i, "").replace(/```$/i, "").trim();
-    return normalizeSuggestionList(JSON.parse(jsonStr));
+    const parsed = JSON.parse(jsonStr);
+    return normalizeSuggestionList(Array.isArray(parsed) ? parsed : (parsed.suggestions || parsed.questions || parsed.follow_ups));
   } catch (e) {
-    return [];
+    const nested = Array.from(payload.matchAll(/<suggestion(?:\s[^>]*)?>([\s\S]*?)<\/suggestion\s*>/gi), (item) => item[1]);
+    if (nested.length) return normalizeSuggestionList(nested);
+    const bullets = payload
+      .split(/\r?\n/)
+      .map((line) => line.match(/^\s*(?:[-*•]\s+|\d+[.)、]\s*)(.+?)\s*$/))
+      .filter(Boolean)
+      .map((item) => item[1]);
+    return normalizeSuggestionList(bullets);
   }
 }
 
@@ -5347,6 +5356,7 @@ async function sendChat(message, options = {}) {
     const insertedChartUrls = new Set();
     let isDone = false;
     let responseMetrics = null;
+    let streamedSuggestions = [];
     let collapseReasoningOnNextDelta = false;
     let streamQueue = "";
     let streamTimer = null;
@@ -5430,6 +5440,9 @@ async function sendChat(message, options = {}) {
         if (event.type === "done") {
           isDone = true;
           break;
+        } else if (event.type === "suggestions") {
+          const normalized = normalizeSuggestionList(event.items);
+          if (normalized.length === 3) streamedSuggestions = normalized;
         } else if (event.type === "run_summary") {
           responseMetrics = normalizeAssistantMetrics(event, `${message}\n${answer}`, performance.now() - chatStartedAt);
         } else if (event.type === "reasoning") {
@@ -5454,6 +5467,7 @@ async function sendChat(message, options = {}) {
           answer = "";
           assistantDraftRaw = "";
           responseMetrics = null;
+          streamedSuggestions = [];
           collapseReasoningOnNextDelta = false;
           insertedChartUrls.clear();
           if (assistantHistoryEntry) {
@@ -5549,9 +5563,10 @@ async function sendChat(message, options = {}) {
       textNodes.forEach((segmentNode, index) => {
         let finalChunk = segmentNode._rawMarkdown || "";
         if (index === textNodes.length - 1) {
-          finalSuggestions = parseSuggestionTag(finalChunk);
-          if (finalSuggestions.length) {
-            finalChunk = finalChunk.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
+          const embeddedSuggestions = parseSuggestionTag(finalChunk);
+          finalSuggestions = streamedSuggestions.length === 3 ? streamedSuggestions : embeddedSuggestions;
+          finalChunk = finalChunk.replace(/<suggestions>[\s\S]*?<\/suggestions>/i, "").trim();
+          if (finalSuggestions.length === 3) {
             suggestionsHTML = suggestionChipsHtml(finalSuggestions);
           }
         }
@@ -5595,7 +5610,7 @@ async function sendChat(message, options = {}) {
       if (suggestionsHTML) {
         textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
       } else {
-        finalSuggestions = generateFallbackSuggestions(message);
+        finalSuggestions = generateFallbackSuggestions(displayMessage);
         const fallbackHTML = suggestionChipsHtml(finalSuggestions);
         textNode.insertAdjacentHTML("beforeend", fallbackHTML);
       }
