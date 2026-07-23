@@ -696,6 +696,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 "这是完整正文。\n<引用来源>[来源 1] 本地资料"
             )
         )
+        self.assertFalse(
+            agent._looks_like_incomplete_model_answer(
+                "这是语义完整的回答，只是末尾多了一个 Markdown 粗体标记。**"
+            )
+        )
         self.assertFalse(agent._looks_like_incomplete_model_answer("这是清晰、完整的中文分析结论。"))
         self.assertFalse(
             agent._looks_like_incomplete_model_answer(
@@ -769,6 +774,84 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         self.assertIs(result, complete_result)
         self.assertEqual(generate.call_count, 2)
+
+    def test_incomplete_retry_uses_bounded_tool_free_context(self) -> None:
+        incomplete_message = agent.AIMessage(
+            content='现金流对比如下，\n<suggestions>["继续查看"'
+        )
+        complete_message = agent.AIMessage(
+            content='现金流需要使用母公司口径比较，不能写成云分部独立现金流。\n<suggestions>["查看AWS", "查看Google", "查看口径"]</suggestions>'
+        )
+        incomplete_result = mock.Mock(
+            generations=[mock.Mock(message=incomplete_message, generation_info={"finish_reason": "stop"})]
+        )
+        complete_result = mock.Mock(
+            generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="MiniMax-M2.1",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        messages = [
+            agent.SystemMessage(content="原始系统提示" * 10000),
+            agent.HumanMessage(content="<current_user_request>补全现金流数据</current_user_request>"),
+            *[
+                agent.ToolMessage(
+                    content=(f"工具结果 {index}：" + "数据" * 6000),
+                    tool_call_id=f"call_{index}",
+                )
+                for index in range(6)
+            ],
+        ]
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[incomplete_result, complete_result],
+        ) as generate:
+            result = model._generate(messages, tools=[agent.search_local_reports])
+
+        self.assertIs(result, complete_result)
+        self.assertEqual(generate.call_count, 2)
+        retry_messages = generate.call_args_list[1].args[0]
+        retry_text = "\n".join(str(item.content or "") for item in retry_messages)
+        self.assertLess(len(retry_text), 25000)
+        self.assertNotIn("tools", generate.call_args_list[1].kwargs)
+        self.assertIn("1200 个中文字符", retry_text)
+
+    def test_search_local_reports_stops_after_three_calls(self) -> None:
+        token = agent.TOOL_RUN_STATE.set({"counts": {}})
+        try:
+            with mock.patch("agent.retrieve_context", return_value=[]):
+                for _ in range(3):
+                    self.assertEqual(
+                        agent.search_local_reports.invoke({"query": "现金流"}),
+                        "没有找到相关的本地报告信息。",
+                    )
+                limited = agent.search_local_reports.invoke({"query": "现金流"})
+        finally:
+            agent.TOOL_RUN_STATE.reset(token)
+
+        self.assertIn("达到本轮调用上限（3 次）", limited)
+
+    def test_large_retrieval_tools_have_bounded_call_limits(self) -> None:
+        token = agent.TOOL_RUN_STATE.set({
+            "counts": {"web_search": 3, "read_local_reference": 2}
+        })
+        try:
+            web_limited = agent.web_search.invoke({"query": "云厂商现金流"})
+            reference_limited = agent.read_local_reference.invoke({
+                "source": "agent_knowledge/cloud_vendor_database/README.md"
+            })
+        finally:
+            agent.TOOL_RUN_STATE.reset(token)
+
+        self.assertIn("web_search 已达到本轮调用上限（3 次）", web_limited)
+        self.assertIn("read_local_reference 已达到本轮调用上限（2 次）", reference_limited)
 
     def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
         pseudo_message = agent.AIMessage(

@@ -154,7 +154,11 @@ def _looks_like_incomplete_model_answer(value: str, finish_reason: str = "") -> 
         return False
     if _DANGLING_ANSWER_END.search(prose):
         return True
-    if prose.count("```") % 2 or prose.count("**") % 2:
+    # An unmatched fenced code block can hide a genuinely unfinished answer.
+    # A single unmatched Markdown bold marker is only a formatting defect: all
+    # major renderers still show the surrounding prose, so rejecting an entire
+    # otherwise complete answer here caused needless full-model retries.
+    if prose.count("```") % 2:
         return True
     paired_marks = (("（", "）"), ("【", "】"), ("[", "]"))
     return any(prose.count(opening) > prose.count(closing) for opening, closing in paired_marks)
@@ -253,10 +257,33 @@ def _convert_pseudo_tool_xml(result: Any, model_message: Any, tool_specs: Any) -
     return replacement
 
 
+def _salvage_complete_answer(value: str) -> str:
+    """Keep only semantically complete prose when every model repair fails."""
+    text = str(value or "").strip()
+    if not text or _looks_like_unstable_model_text(text):
+        return ""
+    for opening, _closing in _CONTROL_FOOTER_PAIRS:
+        match = opening.search(text)
+        if match:
+            text = text[: match.start()].rstrip()
+    boundaries = [match.end() for match in re.finditer(r"[。！？.!?](?:[）】\]\"']*)", text)]
+    if not boundaries:
+        return ""
+    text = text[: boundaries[-1]].rstrip()
+    if len(text) < 40:
+        return ""
+    return (
+        f"{text}\n\n"
+        "模型节点未能可靠生成剩余部分，系统已保留本轮完整句子并停止继续消耗上下文。"
+        "您可以直接要求我从缺失部分继续。\n"
+        '<suggestions>["从缺失部分继续补全", "缩小到两家厂商对比", "只列现金流具体数据"]</suggestions>'
+    )
+
+
 class StableAgentChatDeepSeek(ChatDeepSeek):
     """Retry malformed non-streaming Agent generations before they reach the UI."""
 
-    stable_attempts: int = 3
+    stable_attempts: int = 2
     transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528", "GLM")
 
     @staticmethod
@@ -288,24 +315,29 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 original_request = (match.group(1) if match else candidate).strip()
             elif isinstance(message, ToolMessage):
                 tool_context.append(
-                    f"工具 {getattr(message, 'name', '') or 'result'} 返回：\n{str(message.content or '')[:7000]}"
+                    f"工具 {getattr(message, 'name', '') or 'result'} 返回：\n{str(message.content or '')[:4500]}"
                 )
         if not original_request:
             original_request = "请根据已有上下文给出准确回答。"
         context_text = "\n\n".join(tool_context[-4:])
         prompt = f"用户原始请求：\n{original_request}"
         if context_text:
-            prompt += f"\n\n已取得的工具结果：\n{context_text}\n\n请基于这些结果回答，不要再次调用工具。"
+            prompt += (
+                f"\n\n已取得的工具结果：\n{context_text}\n\n"
+                "请基于这些结果回答，不要再次调用工具。正文控制在 1200 个中文字符以内；"
+                "数据范围过大时优先给出最关键、可核验的结果和明确边界，不要用超长表格。"
+            )
         return [stable[0], HumanMessage(content=prompt)]
 
     @staticmethod
     def _completion_retry_messages(messages: Any) -> list[Any]:
-        stable = StableAgentChatDeepSeek._stable_messages(messages)
+        stable = StableAgentChatDeepSeek._fallback_messages(messages)
         stable[0] = SystemMessage(
             content=(
                 f"{stable[0].content} 上一次生成在句子或列表中途停止。"
                 "请重新生成完整结果，不得以逗号、分号、冒号、连接词或未闭合列表结束；"
                 "最后一个正文句子必须完整收束，再输出完整的 <suggestions> 推荐追问标签。"
+                "只保留最关键结论，正文不得超过 1200 个中文字符，不要输出超长表格。"
             )
         )
         return stable
@@ -319,6 +351,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             temperature=self.temperature,
             disable_streaming=True,
             max_retries=1,
+            max_tokens=1800,
         )
 
     @staticmethod
@@ -332,6 +365,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
     def _generate(self, messages: Any, *args: Any, **kwargs: Any) -> Any:
         retry_messages = list(messages)
         last_result = None
+        best_partial_content = ""
         retry_kwargs = dict(kwargs)
         fallback_names = [name for name in self.transport_fallback_models if name != self.model_name]
         fallback_index = 0
@@ -378,21 +412,37 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                     _model_finish_reason(last_result, model_message),
                 )
             )
+            if incomplete_answer and len(content) > len(best_partial_content):
+                best_partial_content = content
             if not malformed_tool_call and not incomplete_answer and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
                 return last_result
             if attempt + 1 >= self.stable_attempts:
                 break
             if malformed_tool_call and retry_kwargs.get("tools"):
                 retry_kwargs["tool_choice"] = "required"
-            retry_messages = self._completion_retry_messages(messages) if incomplete_answer else self._stable_messages(messages)
+            if incomplete_answer:
+                # A full-context rewrite repeatedly resends every tool result
+                # and is exactly what produced six-figure token usage in one
+                # failed turn. Repair from a bounded evidence digest and do not
+                # let the repair call enter another tool loop.
+                retry_messages = self._completion_retry_messages(messages)
+                retry_kwargs = {
+                    key: value
+                    for key, value in retry_kwargs.items()
+                    if key not in {"tools", "tool_choice", "parallel_tool_calls"}
+                }
+            else:
+                retry_messages = self._stable_messages(messages)
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
         fallback_messages = self._fallback_messages(messages)
-        completion_fallbacks: list[tuple[str, ChatDeepSeek | None]] = [("", None)]
-        completion_fallbacks.extend(
+        # The selected model already had two attempts. Use at most two compact
+        # tool-free fallback calls instead of retrying the same large prompt and
+        # then walking every configured model.
+        completion_fallbacks: list[tuple[str, ChatDeepSeek | None]] = [
             (model_name, self._transport_fallback_client(model_name))
-            for model_name in fallback_names
-        )
+            for model_name in fallback_names[:2]
+        ]
         for fallback_name, fallback_client in completion_fallbacks:
             fallback_result = (
                 fallback_client._generate(fallback_messages, *args, **fallback_kwargs)
@@ -404,6 +454,8 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             if fallback_name and model_message is not None:
                 self._annotate_transport_fallback(model_message, fallback_name)
             content = str(getattr(model_message, "content", "") or "")
+            if content and len(content) > len(best_partial_content):
+                best_partial_content = content
             additional = getattr(model_message, "additional_kwargs", None)
             reasoning = str((additional or {}).get("reasoning_content") or "") if isinstance(additional, dict) else ""
             if (
@@ -418,9 +470,13 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 return fallback_result
         generations = list(getattr(last_result, "generations", None) or [])
         if generations:
+            salvaged = _salvage_complete_answer(best_partial_content)
             generations[0].message = AIMessage(
-                content="本次模型输出未能完整结束，系统已阻止展示残缺回答。请重新发送同一问题。",
-                additional_kwargs={"reasoning_content": "检测到模型草稿异常或意外截断，已停止展示不可靠内容。"},
+                content=(
+                    salvaged
+                    or "模型节点本轮未能生成可靠的完整回答，系统已停止重复消耗上下文。请缩小范围后继续。"
+                ),
+                additional_kwargs={"reasoning_content": "检测到模型输出异常，已使用短上下文修复并停止重复重写。"},
             )
         return last_result
 
@@ -1111,13 +1167,18 @@ def search_local_reports(query: str) -> str:
     当你需要了解公司的最新动态、特定主体的近期情况，或是爬虫的执行历史时，请使用此工具。
     若用户问题包含“收入同比”“营收同比”“营业收入同比”“收入增长”“revenue_growth_yoy”“YoY”等词，query 必须保留这些同比/增长关键词，不能简化成“收入”或“营业收入”。
     """
-    limit_message = _register_tool_invocation("search_local_reports", 6)
+    limit_message = _register_tool_invocation("search_local_reports", 3)
     if limit_message:
         return limit_message
-    chunks = retrieve_context(query, limit=10, dataset_ids=_effective_selected_dataset_ids())
+    chunks = retrieve_context(query, limit=6, dataset_ids=_effective_selected_dataset_ids())
     if not chunks:
         return "没有找到相关的本地报告信息。"
-    context_package = build_context_package(chunks, token_budget=6500, model=_agent_model_name())
+    # Multiple search calls remain in the ReAct transcript and are resent on
+    # later model turns. A 6.5k budget per call allowed one detailed question
+    # to balloon past 120k cumulative input tokens. Three focused calls at
+    # 3.2k each still leave enough evidence for `read_local_reference`, while
+    # bounding the transcript before the tool-free finalizer takes over.
+    context_package = build_context_package(chunks, token_budget=3200, model=_agent_model_name())
     chunks = context_package["chunks"]
     audit = context_package["audit"]
     quality = retrieval_quality(query, chunks, audit)
@@ -1168,7 +1229,7 @@ def read_local_reference(source: str) -> str:
     等本地来源，而你需要查看更完整上下文、核对本地口径或追溯原始抓取结果时，优先使用此工具。
     参数可以是文件名，也可以是 `/references/...` 链接。
     """
-    limit_message = _register_tool_invocation("read_local_reference", 4)
+    limit_message = _register_tool_invocation("read_local_reference", 2)
     if limit_message:
         return limit_message
     import web_app
@@ -1190,7 +1251,10 @@ def read_local_reference(source: str) -> str:
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     if not text:
         return f"本地引用读取失败：{clean} 内容为空。"
-    limit = 60000 if clean.startswith("agent_knowledge/") else 16000
+    # Full 60k-character files were retained in the ReAct transcript and then
+    # resent on every later model turn. Two focused reads are enough for source
+    # verification; larger follow-ups should narrow the requested source.
+    limit = 18000 if clean.startswith("agent_knowledge/") else 12000
     return f"[本地引用: {clean}]\n{text[:limit]}"
 
 
@@ -1200,10 +1264,13 @@ def web_search(query: str, max_results: int = 5) -> str:
     当用户要求“上网搜一下”“联网搜索”“查最新消息”“找公开来源”或本地 RAG 没有足够信息时使用。
     优先使用自托管 SearXNG（环境变量 SEARXNG_URL/CMHK_SEARXNG_URL），否则使用开源 DDGS/DuckDuckGo 搜索库。
     """
+    limit_message = _register_tool_invocation("web_search", 3)
+    if limit_message:
+        return limit_message
     query = _search_query_from_instruction(query)
     if not query:
         return "搜索关键词为空。"
-    limit = max(1, min(int(max_results or 5), 8))
+    limit = max(1, min(int(max_results or 5), 5))
     provider = "searxng"
     failures: list[str] = []
     try:
@@ -2634,48 +2701,67 @@ def _finalize_after_tool_limit(
     answer and recommendation format while sharply reducing failure latency.
     """
     config = load_ai_config()
-    model = ChatDeepSeek(
-        model=_agent_model_name(thinking_enabled=thinking_enabled),
-        api_key=config.get("api_key", ""),
-        api_base=config.get("base_url", ""),
-        extra_body=dict(config.get("extra_parameters") or {}),
-        temperature=0.1,
-        disable_streaming=True,
-        max_retries=1,
-    )
     evidence = "\n\n".join(tool_evidence[-6:])[:18000]
-    response = model.invoke(
-        [
-            SystemMessage(
-                content=(
-                    "你是小竞AI的最终回答整理器。Agent 已完成多次工具调用并触发调用上限；"
-                    "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
-                    "证据不足时明确说明缺少什么，不得编造。正文必须完整收束，不得停在逗号、冒号、"
-                    "连接词或未闭合列表。保留工具结果中的数字来源编号。最后一行必须输出完整的"
-                    "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。"
-                )
-            ),
-            HumanMessage(
-                content=(
-                    f"用户原始请求：\n{original_user_message}\n\n"
-                    f"已经取得的工具结果：\n{evidence or '未取得足够的有效工具结果。'}"
-                )
-            ),
-        ]
-    )
-    content = str(getattr(response, "content", "") or "").strip()
-    if (
-        not content
-        or _looks_like_unstable_model_text(content)
-        or _looks_like_incomplete_model_answer(content)
-    ):
+    prompt_messages = [
+        SystemMessage(
+            content=(
+                "你是小竞AI的最终回答整理器。Agent 已完成多次工具调用并触发调用上限；"
+                "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
+                "证据不足时明确说明缺少什么，不得编造。正文控制在 1200 个中文字符以内，"
+                "必须完整收束，不得停在逗号、冒号、连接词或未闭合列表。保留工具结果中的"
+                "数字来源编号。最后一行必须输出完整的"
+                "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。"
+            )
+        ),
+        HumanMessage(
+            content=(
+                f"用户原始请求：\n{original_user_message}\n\n"
+                f"已经取得的工具结果：\n{evidence or '未取得足够的有效工具结果。'}"
+            )
+        ),
+    ]
+    selected_model = _agent_model_name(thinking_enabled=thinking_enabled)
+    model_names = list(dict.fromkeys([selected_model, "deepseek-v4"]))
+    last_response: Any = None
+    best_partial = ""
+    for model_name in model_names:
+        model = ChatDeepSeek(
+            model=model_name,
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            extra_body=dict(config.get("extra_parameters") or {}),
+            temperature=0.1,
+            disable_streaming=True,
+            max_retries=1,
+            max_tokens=1800,
+        )
+        try:
+            response = model.invoke(prompt_messages)
+        except Exception:
+            continue
+        last_response = response
+        content = str(getattr(response, "content", "") or "").strip()
+        if len(content) > len(best_partial):
+            best_partial = content
+        if (
+            content
+            and not _looks_like_unstable_model_text(content)
+            and not _looks_like_incomplete_model_answer(content)
+        ):
+            return content, _message_token_usage(response)
+    content = _salvage_complete_answer(best_partial)
+    if not content:
         content = (
             "本轮检索已达到安全上限，现有资料不足以可靠完成全部比较。"
             "系统已停止重复检索，避免返回残缺或未经核验的结论。"
             "请指定要比较的主体、日期范围或数据类型后继续。\n"
             "<suggestions>[\"指定要比较的竞对主体\", \"指定最近两周的起止日期\", \"查看当前可用的数据集\"]</suggestions>"
         )
-    return content, _message_token_usage(response)
+    return content, _message_token_usage(last_response) if last_response is not None else {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "totalTokens": 0,
+    }
 
 
 def stream_agent(
