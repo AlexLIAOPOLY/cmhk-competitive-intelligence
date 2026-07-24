@@ -10174,3 +10174,12 @@ body.report-library-open::before {
   background: rgba(250, 252, 253, 0.92);
   border-bottom-color: rgba(83, 115, 135, 0.08);
 }
+
+/* Keep the command row action-only; runtime status remains available to scripts. */
+.command-strip {
+  justify-content: flex-end;
+}
+
+.command-strip > div {
+  display: none;
+}
