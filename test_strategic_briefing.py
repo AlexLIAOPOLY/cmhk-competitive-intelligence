@@ -84,7 +84,7 @@ class StrategicBriefingTests(unittest.TestCase):
             "香港本地",
         )
 
-    def test_competitor_module_overrides_ai_industry_category(self):
+    def test_competitor_category_is_decided_by_ai_without_hard_override(self):
         result = briefing._validated_ai_copy(
             {
                 "title": "T-Mobile上调2026年自由现金流预期",
@@ -103,7 +103,24 @@ class StrategicBriefingTests(unittest.TestCase):
                 "source_title": "T-Mobile raises 2026 free cash flow outlook",
             },
         )
-        self.assertEqual(result["category"], "竞对动态")
+        self.assertEqual(result["category"], "行业动态")
+
+    def test_candidate_editor_receives_module_and_rule_category(self):
+        payload = briefing._candidate_editor_input(
+            "1234567890abcdef",
+            {
+                "module": "竞争对手",
+                "category": "竞对动态",
+                "title": "T-Mobile raises 2026 free cash flow outlook",
+                "snippet": "T-Mobile raised its full-year free cash flow guidance.",
+                "keywords": ["T-Mobile"],
+            },
+        )
+        self.assertEqual(payload["monitoring_module"], "竞争对手")
+        self.assertEqual(payload["rule_category"], "竞对动态")
+        self.assertIn("T-Mobile", payload["matched_keywords"])
+        self.assertIn("业绩或现金流指引", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
+        self.assertIn("地域与分类是两个独立维度", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
 
     def test_approved_brief_prompt_requires_simplified_chinese(self):
         with mock.patch.object(

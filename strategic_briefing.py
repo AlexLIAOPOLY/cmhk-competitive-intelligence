@@ -30,8 +30,19 @@ STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
-AI_EDITOR_VERSION = 6
+AI_EDITOR_VERSION = 7
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
+_CATEGORY_CLASSIFICATION_GUIDANCE = (
+    "分类必须结合monitoring_module、rule_category、新闻主体和事件实质综合判断。"
+    "当主体是T-Mobile、中国电信、HKT、Vodafone等被监测运营商，且内容是财报、"
+    "业绩或现金流指引、用户与收入变化、产品资费、网络建设、业务合作、并购投资、"
+    "管理层或经营策略时，应归为‘竞对动态’。"
+    "只有新闻讨论跨多家公司的共同趋势、全行业统计、通用技术演进或行业整体变化，"
+    "且不是以某一家被监测运营商的经营动作为核心时，才归为‘行业动态’。"
+    "不要因为地域是‘国际/行业’就把分类写成‘行业动态’；地域与分类是两个独立维度。"
+    "rule_category是规则层初判，除非正文证据明确表明其不适用，否则应优先沿用；"
+    "如需改写，必须依据事件实质选择更准确的业务分类。"
+)
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
 
@@ -1195,19 +1206,6 @@ def _enforce_region_from_source_evidence(region: str, source_item: dict[str, Any
     return region
 
 
-def _enforce_category_from_monitoring_context(
-    category: str, source_item: dict[str, Any] | None
-) -> str:
-    """Keep deterministic monitoring buckets from being weakened by AI editing."""
-    if not isinstance(source_item, dict):
-        return category
-    module = _clean_text(source_item.get("module"), 120)
-    filter_reason = _clean_text(source_item.get("filter_reason"), 240)
-    if module == "竞争对手" or "竞对" in filter_reason or "运营商" in filter_reason:
-        return "竞对动态"
-    return category
-
-
 def _candidate_editor_key(item: dict[str, Any]) -> str:
     payload = {
         "version": AI_EDITOR_VERSION,
@@ -1285,7 +1283,6 @@ def _validated_ai_copy(
     region = _enforce_region_from_source_evidence(region, source_item)
     if not category:
         raise RuntimeError("公司内部 AI 未返回分类")
-    category = _enforce_category_from_monitoring_context(category, source_item)
     if should_include and not keywords:
         raise RuntimeError("公司内部 AI 未返回命中关键词")
     if len(inclusion_reason) < 8:
@@ -1300,6 +1297,27 @@ def _validated_ai_copy(
         "keywords": keywords,
         "inclusion_reason": inclusion_reason,
         "region_reason": region_reason,
+    }
+
+
+def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, str]:
+    return {
+        "id": key[:16],
+        "title": _clean_text(item.get("source_title") or item.get("title"), 500),
+        "source_summary": _clean_text(
+            item.get("source_summary")
+            or item.get("snippet")
+            or item.get("summary")
+            or item.get("description")
+            or item.get("why"),
+            1800,
+        ),
+        "monitoring_module": _clean_text(item.get("module"), 120),
+        "rule_category": _clean_text(item.get("category") or item.get("module"), 120),
+        "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
+        "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+        "matched_keywords": _clean_text(item.get("keywords"), 800),
+        "rule_gate_reason": _clean_text(item.get("filter_reason"), 240),
     }
 
 
@@ -1350,25 +1368,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         batch = pending[offset : offset + AI_EDITOR_BATCH_SIZE]
         request_items = []
         for key, item in batch:
-            request_items.append(
-                {
-                    "id": key[:16],
-                    "title": _clean_text(item.get("source_title") or item.get("title"), 500),
-                    "source_summary": _clean_text(
-                        item.get("source_summary")
-                        or item.get("snippet")
-                        or item.get("summary")
-                        or item.get("description")
-                        or item.get("why"),
-                        1800,
-                    ),
-                    "category": _clean_text(item.get("category") or item.get("module"), 120),
-                    "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
-                    "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
-                    "matched_keywords": _clean_text(item.get("keywords"), 800),
-                    "rule_gate_reason": _clean_text(item.get("filter_reason"), 240),
-                }
-            )
+            request_items.append(_candidate_editor_input(key, item))
         try:
             response = _call_internal_ai(
                 (
@@ -1389,8 +1389,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "region必须依据新闻事件主体、明确发生地和受影响市场判断。"
                     "来源媒体、媒体域名、报道语言及媒体所在地绝不能作为地域证据；"
                     "香港媒体报道中国内地或海外事件仍应判为国际/行业。"
-                    "category根据事件实质给出简洁业务分类；输入category为‘竞对动态’或监测模块为"
-                    "‘竞争对手’时，category必须为‘竞对动态’，不得改成‘行业动态’。"
+                    f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                     "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
                     "inclusion_reason直接说明其战略价值，不复述规则。"
@@ -1434,8 +1433,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
                             "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
                             "should_include只有在新闻与matched_keywords存在正文证据和战略信息价值时才为true。"
-                            "category按事件实质分类；输入category为‘竞对动态’或监测模块为‘竞争对手’时，"
-                            "category必须为‘竞对动态’，不得改成‘行业动态’；"
+                            f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                             "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
                             "并用顿号分隔；inclusion_reason说明战略价值；"
                             "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
