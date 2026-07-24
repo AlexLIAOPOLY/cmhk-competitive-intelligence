@@ -292,7 +292,7 @@ class BiweeklyContentQualityTests(unittest.TestCase):
         self.assertLessEqual(len(first), 300)
         self.assertNotEqual(first.strip(), short_text)
 
-    def test_llm_timeout_falls_back_to_detailed_text_without_changing_evidence_fields(self) -> None:
+    def test_llm_timeout_repairs_online_then_fails_closed_instead_of_dropping_item(self) -> None:
         original = {
             "id": "item-1",
             "row": "row-1",
@@ -309,23 +309,36 @@ class BiweeklyContentQualityTests(unittest.TestCase):
         def capture_progress(*args, **kwargs) -> None:
             progress_events.append((args, kwargs))
 
-        with patch.object(
-            report,
-            "_call_weekly_writer_llm",
-            side_effect=TimeoutError("simulated timeout"),
-            create=True,
-        ) as llm_call:
-            enriched = report.enrich_weekly_items_with_llm([original], progress=capture_progress)
+        repair_search = [
+            {
+                "id": "W001",
+                "query": "repair",
+                "provider": "unit",
+                "results": [
+                    {
+                        "title": "官方详情",
+                        "url": "https://example.test/detail",
+                        "snippet": "运营商发布新5G套餐并披露网络投资安排。",
+                    }
+                ],
+                "error": "",
+            }
+        ]
+        with (
+            patch.object(
+                report,
+                "_call_weekly_writer_llm",
+                side_effect=TimeoutError("simulated timeout"),
+                create=True,
+            ) as llm_call,
+            patch.object(report, "run_web_research", return_value=repair_search) as web_search,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "不能静默删减"):
+                report.enrich_weekly_items_with_llm([original], progress=capture_progress)
 
         self.assertTrue(llm_call.called, "此用例必须真正走到LLM超时回退分支")
-        self.assertEqual(len(enriched), 1)
-        item = enriched[0]
-        self.assertGreaterEqual(len(re.sub(r"\s+", "", item["detail"])), 120)
-        self.assertEqual(item["sourceIds"], original["sourceIds"])
-        self.assertEqual(item["eventAt"], original["eventAt"])
-        self.assertEqual(item["row"], original["row"])
-        self.assertEqual(item["index"], original["index"])
-        self.assertTrue(progress_events, "LLM写作和回退必须向页面输出可见进度")
+        web_search.assert_called_once()
+        self.assertTrue(progress_events, "LLM写作、联网修复和失败关闭必须向页面输出可见进度")
 
     def test_social_livelihood_rows_are_classified_as_social_news(self) -> None:
         cases = [

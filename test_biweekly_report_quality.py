@@ -217,6 +217,12 @@ class StrategicReferenceDocxStructureTests(unittest.TestCase):
 
 
 class IndependentReviewerTests(unittest.TestCase):
+    def test_report_with_too_few_items_fails_before_publication(self) -> None:
+        model = make_model(make_item("W001", 1))
+
+        with self.assertRaisesRegex(RuntimeError, "最低"):
+            report.apply_weekly_ai_review(model, progress=lambda _message: None)
+
     def test_weekly_online_research_adds_verification_sources_before_review(self) -> None:
         item = make_item("W001", 1)
         model = make_model(item)
@@ -293,6 +299,19 @@ class IndependentReviewerTests(unittest.TestCase):
                 },
             ]
         }
+        repaired_third_detail = detailed_text("强制修复阶段依据原始事实保留并完善了第三条。")
+        repaired_third_response = {
+            "items": [
+                {
+                    "id": "W003",
+                    "decision": "revise",
+                    "scores": {"factuality": 5, "detail": 4, "relevance": 4, "language": 5},
+                    "title": "第三条修复后的标题",
+                    "detail": repaired_third_detail,
+                    "reason": "已按锁定证据修复",
+                }
+            ]
+        }
         progress_events: list[tuple[tuple, dict]] = []
 
         def progress(*args, **kwargs) -> None:
@@ -305,7 +324,7 @@ class IndependentReviewerTests(unittest.TestCase):
                 patch.object(
                     report,
                     "_call_weekly_quality_reviewer_llm",
-                    return_value=reviewer_response,
+                    side_effect=[reviewer_response, repaired_third_response],
                 ) as reviewer_call,
                 patch.object(
                     report,
@@ -321,18 +340,20 @@ class IndependentReviewerTests(unittest.TestCase):
 
         reviewer_call.assert_called()
         writer_call.assert_not_called()
-        self.assertEqual([item["id"] for item in reviewed], ["W001", "W002"])
+        self.assertEqual([item["id"] for item in reviewed], ["W001", "W002", "W003"])
         self.assertEqual(reviewed[0]["reviewDecision"], "approve")
         self.assertEqual(reviewed[1]["reviewDecision"], "revise")
         self.assertEqual(reviewed[1]["title"], "独立审核后的修订标题")
         self.assertEqual(reviewed[1]["detail"], revised_detail)
         self.assertEqual(reviewed[1]["sourceIds"], items[1]["sourceIds"])
         self.assertEqual(reviewed[1]["eventAt"], items[1]["eventAt"])
+        self.assertEqual(reviewed[2]["reviewDecision"], "revise")
+        self.assertEqual(reviewed[2]["title"], "第三条修复后的标题")
         self.assertEqual(audit["approvedItems"], 1)
-        self.assertEqual(audit["revisedItems"], 1)
-        self.assertEqual(audit["rejectedItems"], 1)
+        self.assertEqual(audit["revisedItems"], 2)
+        self.assertEqual(audit["rejectedItems"], 0)
         rejected = [entry for entry in audit["items"] if entry["decision"] == "reject"]
-        self.assertEqual([entry["id"] for entry in rejected], ["W003"])
+        self.assertEqual(rejected, [])
         self.assertTrue(progress_events)
 
     def test_unreviewed_or_writer_only_item_cannot_pass_quality_gate(self) -> None:

@@ -52,6 +52,7 @@ WEEKLY_WRITER_BATCH_SIZE = 5
 WEEKLY_WRITER_PROMPT_VERSION = "strategic-internal-writer-v1"
 WEEKLY_REVIEW_BATCH_SIZE = 4
 WEEKLY_REVIEW_PROMPT_VERSION = "strategic-internal-reviewer-v2-web-verified"
+MIN_WEEKLY_REPORT_ITEMS = 4
 RECENT_ARTICLE_CACHE_VERSION = "recent-articles-v7"
 
 
@@ -1197,6 +1198,7 @@ def enrich_weekly_items_with_llm(
     except Exception:
         cache = {}
     pending = []
+    cache_key_by_index: dict[int, str] = {}
     for index, item in enumerate(enriched):
         item.setdefault("originalTitle", clean_text(item.get("title"), 180))
         item["detail"] = ensure_detailed_paragraph(item.get("detail"))
@@ -1209,6 +1211,7 @@ def enrich_weekly_items_with_llm(
             item["writerStatus"] = "cache"
             continue
         pending.append((index, cache_key))
+        cache_key_by_index[index] = cache_key
     if not pending:
         progress(f"[周报 3/7] {len(enriched)}个要点全部命中写作缓存。")
         return enriched
@@ -1295,8 +1298,96 @@ def enrich_weekly_items_with_llm(
         fallback_count = len(batch_refs) - generated
         progress(
             f"[周报 3/7] 批次{batch_index + 1}/{total_batches}完成：模型生成{generated}条，"
-            f"详细回退{fallback_count}条。"
+            f"待联网修复{fallback_count}条。"
         )
+
+    repair_indexes = [
+        index for index, item in enumerate(enriched) if item.get("writerStatus") == "fallback"
+    ]
+    if repair_indexes:
+        progress(
+            f"[周报 3/7] {len(repair_indexes)}条未通过详细写作门禁，"
+            "正在扩大联网搜索并重新写作，不能直接剔除。"
+        )
+        repair_requests = []
+        for index in repair_indexes:
+            item = enriched[index]
+            repair_requests.append(
+                {
+                    "id": f"W{index + 1:03d}",
+                    "query": (
+                        f"{item.get('sourceName') or ''} {item.get('originalTitle') or item.get('title') or ''} "
+                        f"{item.get('eventAt') or ''} 官方 公告 详情"
+                    ),
+                }
+            )
+        repair_rows = run_web_research(repair_requests, limit=5, workers=4)
+        repair_by_id = {clean_text(row.get("id")): row for row in repair_rows}
+        for index in repair_indexes:
+            item = enriched[index]
+            item_id = f"W{index + 1:03d}"
+            research = repair_by_id.get(item_id) or {}
+            item["webResearch"] = {
+                "query": research.get("query") or "",
+                "provider": research.get("provider") or "",
+                "results": research.get("results") or [],
+                "error": research.get("error") or "",
+                "repairAttempt": True,
+            }
+            repair_payload = {
+                "id": item_id,
+                "section": item.get("section") or "",
+                "subject": item.get("subject") or item.get("tag") or "",
+                "source_name": item.get("sourceName") or "公开来源",
+                "event_date": item.get("eventAt") or "",
+                "existing_title": item.get("originalTitle") or item.get("title") or "",
+                "required_fact_ids": ["F001", "F002"],
+                "facts": [
+                    {
+                        "fact_id": "F001",
+                        "value": clean_text(item.get("rawDetail") or item.get("detail"), 6000),
+                    },
+                    {
+                        "fact_id": "F002",
+                        "value": json.dumps(item["webResearch"], ensure_ascii=False),
+                    },
+                ],
+                "correction": (
+                    "上次写作未通过120至300字、至少3个完整句子和事实支持门禁。"
+                    "请基于原始事实及联网结果修成完整详实的一段，不能删掉该条。"
+                ),
+            }
+            try:
+                response = _call_weekly_writer_llm([repair_payload])
+            except Exception:
+                continue
+            for result in response.get("items") or []:
+                candidate = dict(result)
+                candidate["id"] = item_id
+                normalized = _normalized_weekly_writer_result(candidate, item)
+                if normalized is None:
+                    continue
+                item["title"] = clean_text(normalized.get("title"), 60)
+                item["detail"] = clean_text(normalized.get("detail"), MAX_WEEKLY_DETAIL_CHARS)
+                item["writerStatus"] = "llm_repaired"
+                cache_key = cache_key_by_index.get(index)
+                if cache_key:
+                    cache[cache_key] = {
+                        "status": "ok",
+                        "title": item["title"],
+                        "detail": item["detail"],
+                    }
+                break
+        unresolved_titles = [
+            clean_text(enriched[index].get("originalTitle") or enriched[index].get("title"), 80)
+            for index in repair_indexes
+            if enriched[index].get("writerStatus") == "fallback"
+        ]
+        if unresolved_titles:
+            raise RuntimeError(
+                "周报数据修复后仍有条目未通过详细写作门禁，已停止整份报告，不能静默删减："
+                + "；".join(unresolved_titles)
+            )
     try:
         temp_path = WEEKLY_LLM_CACHE.with_suffix(".tmp")
         temp_path.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -1466,6 +1557,25 @@ def review_weekly_items_with_ai(
     audit_by_index: dict[int, dict] = {}
     pending: list[tuple[int, str]] = []
 
+    def review_payload(index: int) -> dict:
+        item = candidates[index]
+        return {
+            "id": f"W{index + 1:03d}",
+            "section": item.get("section") or "",
+            "source_name": item.get("sourceName") or "公开来源",
+            "event_date": item.get("eventAt") or "",
+            "source_ids": item.get("sourceIds") or [],
+            "locked_evidence": {
+                "original_title": item.get("originalTitle") or "",
+                "raw_detail": clean_text(item.get("rawDetail"), 8000),
+            },
+            "web_research": item.get("webResearch") or {},
+            "draft": {
+                "title": item.get("title") or "",
+                "detail": item.get("detail") or "",
+            },
+        }
+
     def apply_result(result: dict, index: int, cache_key: str, from_cache: bool = False) -> bool:
         source_item = candidates[index]
         decision = _normalized_review_decision(result.get("decision"))
@@ -1557,27 +1667,9 @@ def review_weekly_items_with_ai(
             payload = []
             id_to_ref = {}
             for index, cache_key in refs:
-                item = candidates[index]
                 item_id = f"W{index + 1:03d}"
                 id_to_ref[item_id] = (index, cache_key)
-                payload.append(
-                    {
-                        "id": item_id,
-                        "section": item.get("section") or "",
-                        "source_name": item.get("sourceName") or "公开来源",
-                        "event_date": item.get("eventAt") or "",
-                        "source_ids": item.get("sourceIds") or [],
-                        "locked_evidence": {
-                            "original_title": item.get("originalTitle") or "",
-                            "raw_detail": clean_text(item.get("rawDetail"), 8000),
-                        },
-                        "web_research": item.get("webResearch") or {},
-                        "draft": {
-                            "title": item.get("title") or "",
-                            "detail": item.get("detail") or "",
-                        },
-                    }
-                )
+                payload.append(review_payload(index))
             completed = set()
             try:
                 response = _call_weekly_reviewer_llm(payload)
@@ -1625,10 +1717,40 @@ def review_weekly_items_with_ai(
             progress(
                 f"[周报 5/7] 审稿批次{batch_index + 1}/{total_batches}完成："
                 f"通过{batch_decisions.count('approve')}条，修订{batch_decisions.count('revise')}条，"
-                f"剔除{batch_decisions.count('reject')}条。"
+                f"待修复{batch_decisions.count('reject')}条。"
             )
     else:
         progress(f"[周报 5/7] {len(candidates)}个要点使用已明确启用且包含联网证据指纹的AI审稿缓存。")
+
+    rejected_indexes = [
+        index
+        for index, entry in audit_by_index.items()
+        if entry.get("decision") == "reject"
+    ]
+    if rejected_indexes:
+        progress(
+            f"[周报 5/7] {len(rejected_indexes)}条审核未通过，"
+            "正在依据原始资料和联网证据强制修订并重新审核，不能直接剔除。"
+        )
+        for index in rejected_indexes:
+            payload = review_payload(index)
+            payload["repair_required"] = {
+                "instruction": (
+                    "该条上次被拒。必须在不改变日期、栏目、来源和事实数字的前提下修订为可发布正文；"
+                    "若证据确有矛盾，明确指出矛盾，不能用删除条目代替修复。"
+                ),
+                "previous_review": audit_by_index.get(index) or {},
+            }
+            cache_key = _weekly_review_cache_key(candidates[index], model)
+            try:
+                response = _call_weekly_reviewer_llm([payload])
+            except Exception:
+                continue
+            for result in response.get("items") or []:
+                candidate = dict(result)
+                candidate["id"] = payload["id"]
+                if apply_result(candidate, index, cache_key):
+                    break
 
     if allow_cache:
         try:
@@ -1659,8 +1781,16 @@ def review_weekly_items_with_ai(
         "cacheEnabled": allow_cache,
         "items": audit_items,
     }
+    unresolved = [
+        entry for entry in audit_items if entry.get("decision") == "reject"
+    ]
+    if unresolved:
+        raise RuntimeError(
+            "独立AI审核和强制修复后仍有条目不合格，已停止整份周报，不能静默删减："
+            + "；".join(clean_text(entry.get("id")) for entry in unresolved)
+        )
     if not reviewed:
-        raise RuntimeError("独立AI质量审核未通过任何条目，已停止生成，避免输出低质量Word")
+        raise RuntimeError("独立AI质量审核未通过任何条目，已停止生成")
     return reviewed, audit
 
 
@@ -2826,22 +2956,7 @@ def build_recent_evidence_weekly_model(
         )
     else:
         print("[周报 3/7] 没有通过标题、发布日期和直达正文三重核验的近期事件，不使用旧内容填充。", flush=True)
-    quality_items = []
-    rejected_fallbacks = []
-    for item in items_for_writing:
-        chinese_chars = len(re.findall(r"[\u4e00-\u9fff]", clean_text(item.get("detail"))))
-        if item.get("writerStatus") == "fallback" and chinese_chars < 40:
-            rejected_fallbacks.append(item)
-            continue
-        quality_items.append(item)
-    if rejected_fallbacks:
-        print(
-            f"[周报 3/7] 已剔除{len(rejected_fallbacks)}条未通过中文详细写作质量门禁的事件，"
-            "不会用英文原文或导航文字填充。",
-            flush=True,
-        )
-    discovery_audit["writerFallbackExcluded"] = len(rejected_fallbacks)
-    items_for_writing = quality_items
+    discovery_audit["writerFallbackExcluded"] = 0
     used_source_ids = {source_id for item in items_for_writing for source_id in item.get("sourceIds") or []}
     sources = [source for source in sources if source.get("sourceId") in used_source_ids]
     source_id_map = {}
@@ -2919,6 +3034,14 @@ def build_recent_evidence_weekly_model(
 
 def apply_weekly_ai_review(model: dict, progress=print) -> dict:
     """Run the central reviewer after curated/recent paths converge, then rebuild the model."""
+    initial_items = [
+        item for section in model.get("sections") or [] for item in section.get("items") or []
+    ]
+    if len(initial_items) < MIN_WEEKLY_REPORT_ITEMS:
+        raise RuntimeError(
+            f"本期仅找到{len(initial_items)}条合格候选，少于最低{MIN_WEEKLY_REPORT_ITEMS}条；"
+            "应继续补搜和修复数据，不能生成内容过少的周报。"
+        )
     reviewed_model = research_weekly_model_online(model, progress=progress)
     flattened = [item for section in reviewed_model.get("sections") or [] for item in section.get("items") or []]
     reviewed_items, audit = review_weekly_items_with_ai(
@@ -2927,6 +3050,11 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         bypass_cache=clean_text(os.environ.get("CMHK_WEEKLY_BYPASS_REVIEW_CACHE")).lower()
         in {"1", "true", "yes", "on"},
     )
+    if len(reviewed_items) != len(initial_items):
+        raise RuntimeError(
+            f"AI审核输入{len(initial_items)}条、修复后保留{len(reviewed_items)}条，"
+            "存在静默删减风险，已停止生成。"
+        )
 
     items_by_section: dict[str, list[dict]] = defaultdict(list)
     for item in reviewed_items:

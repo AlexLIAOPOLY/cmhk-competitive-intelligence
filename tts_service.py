@@ -29,6 +29,16 @@ MOSS_TTS_REPO_ID = "OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX"
 MOSS_CODEC_REPO_ID = "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX"
 MOSS_VENDOR_DIR = ROOT / "vendor" / "moss_tts_nano"
 TTS_VENV_PYTHON = ROOT / ".venv_tts" / "bin" / "python"
+MIN_FULL_REPORT_AUDIO_SUMMARY_CHARS = 220
+FULL_REPORT_SOURCE_CHARS = 800
+REPORT_SECTION_NAMES = (
+    "政治资讯",
+    "经济资讯",
+    "行业资讯",
+    "本地运营商资讯",
+    "社会资讯",
+    "国际资讯",
+)
 
 
 def safe_audio_stem(report_path: Path) -> str:
@@ -247,7 +257,7 @@ def normalize_for_speech(value: str) -> str:
     return text.strip(" ，。；")
 
 
-def _generate_audio_summary_with_llm(text: str) -> str | None:
+def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> str | None:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     import urllib.request
     import json
@@ -262,13 +272,26 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
     model = str(config.get("model") or "deepseek-v4")
     base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/")
 
+    if report_kind == "carrier-performance":
+        report_instruction = (
+            "根据运营商业绩摘要全文撰写管理层语音摘要，控制在320至450个汉字。"
+            "依次概括香港主要竞对、内地运营商、资本开支与股东回报、关键风险和观察重点。"
+        )
+        report_label = "运营商业绩摘要"
+    else:
+        report_instruction = (
+            "根据战略双周报全文撰写管理层语音摘要，控制在300至420个汉字。"
+            "按报告实际存在的栏目概括政策、经济、行业、本地运营商、社会或国际重点，不能遗漏全部正文栏目。"
+        )
+        report_label = "战略双周报"
     system_prompt = (
-        "你是中国移动战略部门的资深分析师和正式播音员。根据周报全文撰写管理层语音摘要，控制在300至380个汉字。"
-        "要求结论先行、事实准确、语气正式克制，依次概括香港竞对、内地运营商及关键风险或行动建议。"
-        "保留重要公司、百分比和业务变化，不得编造；不得使用脱口秀、夸张、网络流行语、闲聊、寒暄或主观揣测。"
+        "你是中国移动战略部门的资深分析师和正式播音员。"
+        + report_instruction
+        + "要求结论先行、事实准确、语气正式克制，保留重要公司、数字和业务变化，不得编造；"
+        "不得使用脱口秀、夸张、网络流行语、闲聊、寒暄或主观揣测。"
         "直接输出可播报正文，不要标题、项目符号或解释。"
     )
-    user_prompt = f"周报全文如下：\n{text[:12000]}"
+    user_prompt = f"{report_label}全文如下：\n{text[:12000]}"
 
     if provider == "openai":
         body = {"model": model, "instructions": system_prompt, "input": user_prompt}
@@ -296,7 +319,14 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
         with urlopen_with_local_proxy_fallback(req, timeout=90) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
             if provider == "openai":
-                return payload.get("output", {}).get("text", "")
+                output_parts = []
+                if isinstance(payload.get("output_text"), str):
+                    output_parts.append(payload["output_text"])
+                for output in payload.get("output") or []:
+                    for content in output.get("content") or []:
+                        if isinstance(content.get("text"), str):
+                            output_parts.append(content["text"])
+                return "\n".join(output_parts).strip()
             else:
                 choices = payload.get("choices") or []
                 if choices:
@@ -306,18 +336,157 @@ def _generate_audio_summary_with_llm(text: str) -> str | None:
     return None
 
 
+def _truncate_audio_summary(text: str, max_chars: int) -> str:
+    value = normalize_for_speech(text)
+    if len(value) <= max_chars:
+        return value if value.endswith(("。", "！", "？")) else value + "。"
+    complete = ""
+    for sentence in re.findall(r"[^。！？]+[。！？]", value):
+        if len(complete) + len(sentence) > max_chars:
+            break
+        complete += sentence
+    if complete:
+        return complete
+    return value[: max_chars - 1].rstrip("，。；,. ") + "。"
+
+
+def _condense_report_detail(text: str, max_chars: int = 90) -> str:
+    value = normalize_for_speech(text)
+    first_sentence = re.split(r"(?<=[。！？])", value, maxsplit=1)[0].strip()
+    candidate = first_sentence or value
+    if len(candidate) <= max_chars:
+        return candidate.rstrip("。")
+    clauses = re.split(r"(?<=[，；])", candidate)
+    complete = ""
+    for clause in clauses:
+        if len(complete) + len(clause) > max_chars:
+            break
+        complete += clause
+    return (complete or candidate[:max_chars]).rstrip("，。；,. ")
+
+
+def _weekly_fallback_summary(lines: list[str], max_chars: int) -> str:
+    body_items: dict[str, list[tuple[str, str]]] = {name: [] for name in REPORT_SECTION_NAMES}
+    current_section = ""
+    candidate_title = ""
+    numbered_title_pending = False
+    for line in lines:
+        if line in REPORT_SECTION_NAMES:
+            current_section = line
+            candidate_title = ""
+            numbered_title_pending = False
+            continue
+        if not current_section or line.startswith("发布时间：") or line.startswith("来源："):
+            continue
+        if line.startswith("【") and line.endswith("】"):
+            continue
+        numbered_match = re.match(r"^[一二三四五六七八九十百]+、(.+)$", line)
+        if numbered_match:
+            candidate_title = numbered_match.group(1).strip()
+            numbered_title_pending = True
+            continue
+        if numbered_title_pending and candidate_title:
+            body_items[current_section].append((candidate_title, line))
+            candidate_title = ""
+            numbered_title_pending = False
+            continue
+        if len(line) >= 80 and candidate_title:
+            body_items[current_section].append((candidate_title, line))
+            candidate_title = ""
+            continue
+        if len(line) <= 100 and "（本期暂无更新）" not in line:
+            candidate_title = re.sub(r"^[一二三四五六七八九十百]+、", "", line).strip()
+
+    limits = {
+        "政治资讯": 2,
+        "经济资讯": 2,
+        "行业资讯": 3,
+        "本地运营商资讯": 3,
+        "社会资讯": 2,
+        "国际资讯": 2,
+    }
+    summary_parts = ["本期双周报重点如下。"]
+    for section_name in REPORT_SECTION_NAMES:
+        items = body_items[section_name][: limits[section_name]]
+        if not items:
+            continue
+        cleaned_items = []
+        for title, detail in items:
+            spoken_title = normalize_for_speech(title).rstrip("。")
+            detail_excerpt = _condense_report_detail(detail, 82)
+            cleaned_items.append(f"{spoken_title}，{detail_excerpt}".rstrip("，。"))
+        summary_parts.append(f"{section_name}方面，" + "；".join(cleaned_items) + "。")
+    if len(summary_parts) == 1:
+        return ""
+    summary_parts.append("综合来看，应持续跟进上述政策与行业变化、相关主体后续披露及其对市场竞争和业务部署的影响。")
+    return _truncate_audio_summary("".join(summary_parts), min(max_chars, 760))
+
+
+def _carrier_performance_fallback_summary(lines: list[str], max_chars: int) -> str:
+    companies: list[tuple[str, dict[str, str]]] = []
+    current_company = ""
+    current_fields: dict[str, str] = {}
+    for line in lines:
+        if line.endswith("关键摘要") and "运营商及香港主要竞对" not in line:
+            if current_company and current_fields:
+                companies.append((current_company, current_fields))
+            current_company = re.split(r"[（(]", line, maxsplit=1)[0].strip()
+            current_fields = {}
+            continue
+        match = re.match(r"^\d+[.、]\s*(派息|资本开支|战略升级|券商观点|市场反应)：(.+)$", line)
+        if current_company and match:
+            current_fields[match.group(1)] = match.group(2).strip()
+    if current_company and current_fields:
+        companies.append((current_company, current_fields))
+    if not companies:
+        return ""
+
+    summary_parts = ["本期运营商业绩摘要重点如下。"]
+    for company, fields in companies:
+        preferred = fields.get("战略升级") or fields.get("市场反应") or fields.get("资本开支")
+        secondary = fields.get("派息") or fields.get("资本开支")
+        clauses = [_condense_report_detail(preferred, 48)] if preferred else []
+        if len(companies) <= 6 and secondary and secondary != preferred:
+            clauses.append(_condense_report_detail(secondary, 36))
+        if clauses:
+            summary_parts.append(f"{company}方面，" + "；".join(clauses) + "。")
+    summary_parts.append("综合来看，应继续关注各运营商资本开支效率、股东回报、传统业务压力及人工智能和算力转型的兑现进度。")
+    return _truncate_audio_summary("".join(summary_parts), min(max_chars, 680))
+
+
+def _generic_fallback_summary(lines: list[str], max_chars: int) -> str:
+    useful = []
+    for line in lines:
+        if line.startswith(("发布时间：", "来源：", "中国移动香港公司")):
+            continue
+        if line in {"目 录", "目录"} or (line.startswith("【") and line.endswith("】")):
+            continue
+        if len(line) >= 35:
+            useful.append(_condense_report_detail(line, 110))
+        if len("".join(useful)) >= 360:
+            break
+    if not useful:
+        return ""
+    return _truncate_audio_summary("本期报告重点如下。" + "。".join(useful) + "。", min(max_chars, 620))
+
+
 def build_audio_summary(report_path: Path, max_chars: int = 1100) -> str:
     text = _source_text(report_path)
+    report_kind = (
+        "carrier-performance"
+        if "业绩摘要" in report_path.name or "运营商及香港主要竞对关键业绩摘要" in text
+        else "weekly"
+    )
 
-    llm_summary = _generate_audio_summary_with_llm(text)
+    llm_summary = _generate_audio_summary_with_llm(text, report_kind=report_kind)
     if llm_summary:
         summary = normalize_for_speech(llm_summary)
         summary = re.sub(r"^(音频|语音)?摘要?已生成[，。,. ]*", "", summary)
         summary = re.sub(r"^本期战略竞对检测周报已生成[，。,. ]*", "", summary)
-        if len(summary) < 220 or "相关动态更新" in summary:
+        if len(summary) < MIN_FULL_REPORT_AUDIO_SUMMARY_CHARS or "相关动态更新" in summary:
             summary = ""
         elif len(summary) > max_chars:
-            summary = summary[: max_chars - 1].rstrip("，。；,. ") + "。"
+            summary = _truncate_audio_summary(summary, max_chars)
         elif summary and not summary.endswith(("。", "！", "？")):
             summary += "。"
         if summary:
@@ -328,70 +497,16 @@ def build_audio_summary(report_path: Path, max_chars: int = 1100) -> str:
     if not lines:
         return "本期暂无可提取的重点内容，请打开 Word 文件查看详细内容。"
 
-    skip_exact = {"目 录", "目录"}
-    useful: list[str] = []
-    for line in lines:
-        if line in skip_exact:
-            continue
-        if line.startswith("中国移动香港公司"):
-            continue
-        if re.fullmatch(r"(政治|行业|社会|国际)资讯", line):
-            continue
-        if "（本期暂无更新）" in line:
-            continue
-        useful.append(line.strip(" #-\t"))
-
-    section_names = {"政治资讯", "行业资讯", "社会资讯", "国际资讯"}
-    body_items: dict[str, list[tuple[str, str]]] = {name: [] for name in section_names}
-    current_section = ""
-    current_title = ""
-    for line in lines:
-        if line in section_names:
-            current_section = line
-            current_title = ""
-            continue
-        if re.match(r"^[一二三四五六七八九十百]+、", line):
-            current_title = re.sub(r"^[一二三四五六七八九十百]+、", "", line).strip()
-            continue
-        if current_section and current_title:
-            detail = line.strip()
-            if detail and detail != current_title and "相关动态更新" not in detail:
-                body_items[current_section].append((current_title, detail))
-                current_title = ""
-
-    limits = {"政治资讯": 4, "行业资讯": 4, "社会资讯": 2, "国际资讯": 2}
-    summary_parts = ["本期周报重点如下。"]
-    for section_name in ("政治资讯", "行业资讯", "社会资讯", "国际资讯"):
-        items = body_items[section_name][: limits[section_name]]
-        if not items:
-            continue
-        cleaned_items = []
-        for title, detail in items:
-            spoken = normalize_for_speech(title)
-            if spoken.endswith("更新") or len(spoken) < 18:
-                first_sentence = re.split(r"(?<=[。！？；])", normalize_for_speech(detail), maxsplit=1)[0]
-                if first_sentence:
-                    spoken = f"{spoken}，{first_sentence.rstrip('。；')}"
-            if len(spoken) > 120:
-                clauses = re.split(r"(?<=[，。；])", spoken)
-                complete = ""
-                for clause in clauses:
-                    if len(complete) + len(clause) > 120:
-                        break
-                    complete += clause
-                spoken = complete.rstrip("，。；,. ") or spoken[:119].rstrip("，。；,. ")
-            cleaned_items.append(spoken.rstrip("。"))
-        summary_parts.append(f"{section_name}方面，" + "；".join(cleaned_items) + "。")
-    summary_parts.append("综合来看，应重点跟进政策监管变化、香港友商经营表现以及国际运营商的人工智能和网络投资进展。")
-
-    summary = normalize_for_speech("".join(summary_parts))
-    summary = re.sub(r"^(音频|语音)?摘要?已生成[，。,. ]*", "", summary)
-    summary = re.sub(r"^本期战略竞对检测周报已生成[，。,. ]*", "", summary)
-    fallback_max_chars = min(max_chars, 720)
-    if len(summary) > fallback_max_chars:
-        summary = summary[: fallback_max_chars - 1].rstrip("，。；,. ") + "。"
-    elif summary and not summary.endswith(("。", "！", "？")):
-        summary += "。"
+    if report_kind == "carrier-performance":
+        summary = _carrier_performance_fallback_summary(lines, max_chars)
+    else:
+        summary = _weekly_fallback_summary(lines, max_chars)
+    if len(summary) < MIN_FULL_REPORT_AUDIO_SUMMARY_CHARS and len(text) >= FULL_REPORT_SOURCE_CHARS:
+        summary = _generic_fallback_summary(lines, max_chars)
+    if len(summary) < MIN_FULL_REPORT_AUDIO_SUMMARY_CHARS and len(text) >= FULL_REPORT_SOURCE_CHARS:
+        raise RuntimeError(
+            f"报告正文有{len(text)}字，但语音摘要仅{len(summary)}字，已阻止生成过短音频。"
+        )
     return summary
 
 
@@ -973,6 +1088,36 @@ def _synthesize_with_macos_say(text: str, output_path: Path) -> str | None:
     return "macos-say"
 
 
+def _audio_duration_seconds(path: Path) -> float | None:
+    ffprobe = shutil.which("ffprobe")
+    if ffprobe:
+        try:
+            result = subprocess.run(
+                [
+                    ffprobe,
+                    "-v",
+                    "error",
+                    "-show_entries",
+                    "format=duration",
+                    "-of",
+                    "default=noprint_wrappers=1:nokey=1",
+                    str(path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+            return float(result.stdout.strip())
+        except Exception:
+            pass
+    return None
+
+
+def _minimum_audio_duration_seconds(summary: str) -> float:
+    return max(35.0, min(90.0, len(summary) / 7.0))
+
+
 def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
     if not report_path.exists():
         raise FileNotFoundError(f"report not found: {report_path}")
@@ -1000,8 +1145,30 @@ def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
             output_path.unlink()
     if last_error:
         return {"ok": False, "error": last_error, "summary": summary, "audio": {"exists": False}}
+
+    duration = _audio_duration_seconds(output_path)
+    minimum_duration = _minimum_audio_duration_seconds(summary)
+    if duration is not None and duration < minimum_duration:
+        if output_path.exists():
+            output_path.unlink()
+        return {
+            "ok": False,
+            "error": (
+                f"生成音频仅{duration:.1f}秒，低于当前{len(summary)}字摘要要求的"
+                f"{minimum_duration:.1f}秒，已阻止发布过短音频。"
+            ),
+            "summary": summary,
+            "audio": {"exists": False},
+        }
         
     txt_path = audio_path_for_report_ext(report_path, ".txt")
     txt_path.write_text(summary, encoding="utf-8")
     
-    return {"ok": True, "created": True, "backend": used, "summary": summary, "audio": audio_info_for_report(report_path)}
+    return {
+        "ok": True,
+        "created": True,
+        "backend": used,
+        "summary": summary,
+        "duration": duration,
+        "audio": audio_info_for_report(report_path),
+    }

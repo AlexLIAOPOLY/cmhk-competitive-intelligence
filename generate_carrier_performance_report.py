@@ -920,11 +920,14 @@ def rewrite_performance_sections_with_ai(
                     validation_evidence,
                 )
                 retried = False
-                if not valid and result_fields.get(field_key):
+                if not valid:
                     retry_pack = next(pack for pack in fact_packs if pack["company"] == company)
                     retry_pack = {
                         **retry_pack,
-                        "correction": f"字段{field_key}上次未通过门禁：{reason}。仅用evidence重写，不得新增数字。",
+                        "correction": (
+                            f"字段{field_key}上次未通过门禁：{reason or '模型漏写'}。"
+                            "请结合evidence和web_research修正或补齐，不得省略该字段、不得新增无证据数字。"
+                        ),
                     }
                     try:
                         retry_response, _ = ai_client([retry_pack])
@@ -946,17 +949,30 @@ def rewrite_performance_sections_with_ai(
                     except Exception as retry_exc:
                         reason = f"{reason}；重试失败：{type(retry_exc).__name__}"
                 content = candidate if valid else evidence
+                repaired_by_evidence = not valid
+                if not is_publishable_field(content):
+                    raise RuntimeError(f"业绩摘要字段修复失败：{company} / {label}")
                 accepted_fields += int(valid)
                 final_items.append(f"{label}：{content}")
                 field_audit.append(
-                    {"field": field_key, "accepted": valid, "retried": retried, "reason": reason}
+                    {
+                        "field": field_key,
+                        "accepted": valid,
+                        "retried": retried,
+                        "repairedByEvidence": repaired_by_evidence,
+                        "reason": reason,
+                    }
                 )
             rewritten.append({**section, "items": final_items})
             audit["companies"].append({"company": company, "fields": field_audit})
         audit["acceptedFields"] = accepted_fields
         audit["totalFields"] = len(sections) * len(FIELD_ORDER)
-        audit["status"] = "ai" if accepted_fields else "fallback"
-        progress(f"[AI摘要] 模型重组完成，{accepted_fields}/{audit['totalFields']}个字段通过事实门禁。")
+        audit["repairedFields"] = audit["totalFields"] - accepted_fields
+        audit["status"] = "ai" if accepted_fields == audit["totalFields"] else "ai_with_evidence_repair"
+        progress(
+            f"[AI摘要] 模型重组完成，{accepted_fields}/{audit['totalFields']}个字段直接通过，"
+            f"{audit['repairedFields']}个字段已用核验证据修复保留，没有静默删减。"
+        )
     except Exception as exc:
         rewritten = sections
         audit["error"] = f"{type(exc).__name__}: {exc}"
@@ -990,12 +1006,49 @@ def research_performance_companies_online(
     progress(f"[业绩摘要 联网核实] 正在逐家公司搜索公开网页，共{len(requests)}家公司……")
     rows = run_web_research(requests, search_client=search_client, limit=3, workers=4)
     researched = {clean_text(row.get("id")): row for row in rows if clean_text(row.get("id"))}
-    with_results = sum(bool(row.get("results")) for row in rows)
-    if not with_results:
-        errors = "；".join(clean_text(row.get("error"), 160) for row in rows if row.get("error"))
-        raise RuntimeError(f"业绩摘要联网核实失败：所有搜索均无可用结果。{errors[:600]}")
+    missing_companies = [
+        request["id"]
+        for request in requests
+        if not (researched.get(request["id"]) or {}).get("results")
+    ]
+    if missing_companies:
+        progress(
+            f"[业绩摘要 联网核实] {len(missing_companies)}家公司首轮无结果，"
+            "正在扩大关键词和结果数重搜，不能跳过。"
+        )
+        repair_rows = run_web_research(
+            [
+                {
+                    "id": company,
+                    "query": (
+                        f"{company} official annual report interim results dividend capex strategy "
+                        "investor relations 最新 年报 中期业绩 公告"
+                    ),
+                }
+                for company in missing_companies
+            ],
+            search_client=search_client,
+            limit=5,
+            workers=4,
+        )
+        for row in repair_rows:
+            if row.get("results"):
+                researched[clean_text(row.get("id"))] = row
+        missing_companies = [
+            company
+            for company in missing_companies
+            if not (researched.get(company) or {}).get("results")
+        ]
+    if missing_companies:
+        raise RuntimeError(
+            "业绩摘要联网补搜后仍缺少公司证据，已停止生成，不能静默跳过："
+            + "、".join(missing_companies)
+        )
+    with_results = sum(
+        bool((researched.get(request["id"]) or {}).get("results")) for request in requests
+    )
     progress(
-        f"[业绩摘要 联网核实] 搜索完成：{with_results}/{len(rows)}家公司取得新网页证据；"
+        f"[业绩摘要 联网核实] 搜索完成：{with_results}/{len(requests)}家公司均取得新网页证据；"
         "结果将进入AI事实门禁和审计记录。"
     )
     return researched

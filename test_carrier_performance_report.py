@@ -134,12 +134,41 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
         def empty_search(query, _limit):
             return {"query": query, "provider": "", "results": [], "error": "offline"}
 
-        with self.assertRaisesRegex(RuntimeError, "所有搜索均无可用结果"):
+        with self.assertRaisesRegex(RuntimeError, "不能静默跳过"):
             report.research_performance_companies_online(
                 sample_sections(),
                 search_client=empty_search,
                 progress=lambda _message: None,
             )
+
+    def test_company_research_repairs_a_first_round_search_gap(self) -> None:
+        calls = []
+
+        def second_round_search(query, _limit):
+            calls.append(query)
+            if len(calls) == 1:
+                return {"query": query, "provider": "", "results": [], "error": "no result"}
+            return {
+                "query": query,
+                "provider": "unit",
+                "results": [
+                    {
+                        "title": "测试运营商官方年报",
+                        "url": "https://example.com/annual-report",
+                        "snippet": "测试运营商公布最新年度业绩。",
+                    }
+                ],
+                "error": "",
+            }
+
+        researched = report.research_performance_companies_online(
+            sample_sections(),
+            search_client=second_round_search,
+            progress=lambda _message: None,
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(researched["测试运营商"]["provider"], "unit")
 
 
 if __name__ == "__main__":

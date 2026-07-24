@@ -59,6 +59,59 @@ class WeeklyReportContentTests(unittest.TestCase):
         self.assertIn("国际资讯方面", summary)
         self.assertGreater(len(summary), 120)
 
+    def test_offline_audio_summary_parses_current_unnumbered_body_layout(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "7月31日周报.docx"
+            doc = Document()
+            for section, tag, title in (
+                ("政治资讯", "政策动向", "监管机构公布新政策"),
+                ("经济资讯", "宏观经济", "统计机构公布经济数据"),
+                ("行业资讯", "行业动态", "运营商推进网络投资"),
+                ("本地运营商资讯", "香港友商", "香港友商公布业务进展"),
+            ):
+                doc.add_paragraph(section)
+                doc.add_paragraph(tag)
+                doc.add_paragraph(title)
+                doc.add_paragraph(
+                    "据公开来源于2026年7月24日发布的信息，相关主体公布了本期可核验进展和关键数据。"
+                    "正式披露进一步说明业务背景、实施范围和当前安排。"
+                    "后续仍需持续跟进执行节奏及市场影响。"
+                )
+                doc.add_paragraph("发布时间：2026年7月24日　来源：[S1] 测试来源")
+            doc.save(path)
+
+            with patch("tts_service._generate_audio_summary_with_llm", return_value=None):
+                summary = build_audio_summary(path)
+
+        self.assertIn("政治资讯方面", summary)
+        self.assertIn("经济资讯方面", summary)
+        self.assertIn("本地运营商资讯方面", summary)
+        self.assertGreaterEqual(len(summary), 220)
+
+    def test_carrier_performance_has_a_detailed_offline_audio_fallback(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "7月24日运营商业绩摘要.docx"
+            doc = Document()
+            for company in ("中国移动", "中国电信", "中国联通", "中国铁塔", "香港电讯"):
+                doc.add_paragraph(f"{company}（最新业绩）关键摘要")
+                doc.add_paragraph("1. 派息：全年派息保持增长，股东回报政策维持稳定。")
+                doc.add_paragraph("2. 资本开支：资本开支继续聚焦网络、算力和人工智能基础设施。")
+                doc.add_paragraph(
+                    "3. 战略升级：公司围绕通信服务、算力服务和人工智能服务推进协同转型，"
+                    "并持续跟进传统业务压力、经营效率和新业务收入兑现情况。"
+                )
+                doc.add_paragraph("4. 券商观点：机构关注盈利质量与转型进展。")
+                doc.add_paragraph("5. 市场反应：市场继续观察收入、利润及投资回报变化。")
+            doc.save(path)
+
+            with patch("tts_service._generate_audio_summary_with_llm", return_value=None):
+                summary = build_audio_summary(path)
+
+        self.assertIn("本期运营商业绩摘要重点如下", summary)
+        self.assertIn("中国移动方面", summary)
+        self.assertIn("香港电讯方面", summary)
+        self.assertGreaterEqual(len(summary), 220)
+
     def test_tts_does_not_treat_15gw_as_a_5g_network_term(self):
         normalized = normalize_for_speech("SKT建设15GW数据中心，同时推进5G网络。")
         prepared = prepare_tts_text(normalized)
