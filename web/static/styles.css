@@ -10161,3 +10161,16 @@ body.report-library-open::before {
     border-top: 1px solid rgba(29, 100, 142, 0.14);
   }
 }
+
+/* Near-white canvas: keep brand color as an accent, not a page wash. */
+.dashboard-page {
+  background:
+    radial-gradient(circle at 18% 4%, rgba(71, 177, 229, 0.018), transparent 26%),
+    radial-gradient(circle at 92% 22%, rgba(26, 188, 146, 0.014), transparent 23%),
+    #fafcfd;
+}
+
+.brand-bar {
+  background: rgba(250, 252, 253, 0.92);
+  border-bottom-color: rgba(83, 115, 135, 0.08);
+}
