@@ -164,6 +164,16 @@ class ChatAudioTranscriptionTests(unittest.TestCase):
                 "base_url": web_app.INTERNAL_AI_BASE_URL,
                 "api_key": "secret-test-key",
             }),
+            mock.patch.object(
+                web_app.subprocess,
+                "run",
+                return_value=subprocess.CompletedProcess(
+                    args=["ffmpeg"],
+                    returncode=0,
+                    stdout=b"RIFF" + (b"\0" * 100),
+                    stderr=b"",
+                ),
+            ) as convert,
             mock.patch.object(web_app.urllib.request, "urlopen", return_value=response) as urlopen,
             mock.patch.object(web_app, "wait_for_internal_ai_slot"),
         ):
@@ -175,10 +185,54 @@ class ChatAudioTranscriptionTests(unittest.TestCase):
         self.assertIn(b'name="model"', request.data)
         self.assertIn(b"Qwen3ASR", request.data)
         self.assertIn(b'name="file"', request.data)
+        self.assertIn(b'filename="voice.wav"', request.data)
+        self.assertIn(b"Content-Type: audio/wav", request.data)
+        self.assertEqual(convert.call_args.kwargs["input"], b"webm-audio")
+        self.assertEqual(convert.call_args.kwargs["timeout"], 20)
 
     def test_audio_validation_rejects_unsupported_data_urls(self) -> None:
         with self.assertRaisesRegex(ValueError, "只支持"):
             web_app.transcribe_chat_audio({"audio": "data:text/plain;base64,SGVsbG8="})
+
+    def test_audio_validation_rejects_browser_recordings_ffmpeg_cannot_decode(self) -> None:
+        payload = {"audio": "data:audio/webm;base64," + base64.b64encode(b"broken-webm").decode()}
+        with mock.patch.object(
+            web_app.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(
+                args=["ffmpeg"],
+                returncode=1,
+                stdout=b"",
+                stderr=b"invalid data",
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "无法解码"):
+                web_app.transcribe_chat_audio(payload)
+
+    def test_audio_transcription_rejects_common_silence_hallucination(self) -> None:
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({"text": "嗯。"}).encode()
+        payload = {"audio": "data:audio/webm;base64," + base64.b64encode(b"valid-webm").decode()}
+        with (
+            mock.patch.object(web_app, "load_ai_config", return_value={
+                "base_url": web_app.INTERNAL_AI_BASE_URL,
+                "api_key": "secret-test-key",
+            }),
+            mock.patch.object(
+                web_app.subprocess,
+                "run",
+                return_value=subprocess.CompletedProcess(
+                    args=["ffmpeg"],
+                    returncode=0,
+                    stdout=b"RIFF" + (b"\0" * 100),
+                    stderr=b"",
+                ),
+            ),
+            mock.patch.object(web_app.urllib.request, "urlopen", return_value=response),
+            mock.patch.object(web_app, "wait_for_internal_ai_slot"),
+        ):
+            with self.assertRaisesRegex(ValueError, "语气词"):
+                web_app.transcribe_chat_audio(payload)
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
@@ -263,16 +317,23 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("streamedSuggestions.length === 3 ? streamedSuggestions : embeddedSuggestions", app)
         self.assertIn('if (arr.length !== 3) return "";', app)
 
-    def test_voice_dictation_uses_company_stt_and_auto_submits_transcript(self) -> None:
+    def test_voice_dictation_uses_company_stt_and_gives_user_a_send_choice(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
 
         self.assertIn('id="voiceInputButton"', markup)
+        self.assertIn('id="voiceModeButton"', markup)
+        self.assertIn('data-voice-mode="transcribe"', markup)
+        self.assertIn('data-voice-mode="send"', markup)
         self.assertLess(markup.index('id="chatModelPicker"'), markup.index('id="voiceInputButton"'))
         self.assertIn("navigator.mediaDevices.getUserMedia", app)
         self.assertIn("new MediaRecorder", app)
         self.assertIn('fetch("/api/chat-audio-transcribe"', app)
+        self.assertIn('voiceMode: "transcribe"', app)
+        self.assertIn('if (state.voiceMode === "send")', app)
         self.assertIn("els.chatForm.requestSubmit();", app)
+        self.assertIn('showTaskOperationNotice("语音已转成文字，可修改后手动发送")', app)
+        self.assertIn("recorder.start();", app)
 
     def test_chat_composer_keeps_model_voice_and_send_inside_one_card(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -310,6 +371,26 @@ class FrontendCitationRenderingTests(unittest.TestCase):
             self.assertIn(f'"{tone.removeprefix("is-")}"', app)
         self.assertIn("grid-template-columns: repeat(4, minmax(0, 1fr))", styles)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", styles)
+
+    def test_chat_header_keeps_actions_but_removes_redundant_product_copy(self) -> None:
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        header_start = markup.index('<div class="chat-header">')
+        header_end = markup.index("</div>", markup.index('id="closeChatButton"', header_start))
+        header = markup[header_start:header_end]
+
+        self.assertNotIn("chat-header-title", header)
+        self.assertNotIn("智能 Agent：支持联网搜索", header)
+        self.assertIn('id="toggleChatThreadsButton"', header)
+        self.assertIn('id="newChatThreadButton"', header)
+        self.assertIn('id="aiSettingsButton"', header)
+        self.assertIn('class="chat-header-icon-button"', header)
+        self.assertNotIn('id="clearChatButton"', header)
+        self.assertIn('id="closeChatButton"', header)
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertNotIn("clearChatButton:", app)
+        self.assertIn("preserveContent: true", app)
+        self.assertIn("margin-right: auto", styles[styles.index(".chat-nav-controls {"):])
 
     def test_reasoning_uses_one_transparent_outline_without_a_filled_header_box(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")

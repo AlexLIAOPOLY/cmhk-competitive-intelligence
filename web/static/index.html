@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-  <link rel="stylesheet" href="/static/styles.css?v=193" />
+  <link rel="stylesheet" href="/static/styles.css?v=195" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -46,45 +46,71 @@
             </button>
           </section>
 
-          <section class="insight-board" aria-label="多模态情报看板">
-            <div class="insight-grid">
-              <article class="insight-panel quality-panel pipeline-panel">
-                <div class="panel-title">
-                  <div>
-                    <span><b>01</b> 链接抓取</span>
-                    <small>本轮 URL 实际抓取结果</small>
+          <section class="insight-board" aria-label="战略情报态势看板">
+            <article class="signal-overview" aria-labelledby="signalOverviewTitle">
+              <header class="signal-overview-header">
+                <div>
+                  <span class="signal-overview-eyebrow">INTELLIGENCE OVERVIEW</span>
+                  <h2 id="signalOverviewTitle">近14日情报态势</h2>
+                  <p>仅统计战略部人工确认的有效快讯</p>
+                </div>
+                <span class="signal-window-badge">滚动 14 天</span>
+              </header>
+
+              <div class="signal-kpi-grid" aria-label="关键情报指标">
+                <div class="signal-kpi is-primary">
+                  <span>确认信号</span>
+                  <strong id="signalCount">--</strong>
+                  <small>近14日</small>
+                </div>
+                <div class="signal-kpi">
+                  <span>竞对动态</span>
+                  <strong id="competitorSignalCount">--</strong>
+                  <small id="competitorSignalShare">占比 --</small>
+                </div>
+                <div class="signal-kpi">
+                  <span>活跃主题</span>
+                  <strong id="activeTopicCount">--</strong>
+                  <small>已确认分类</small>
+                </div>
+                <div class="signal-kpi">
+                  <span>最新信号</span>
+                  <strong id="latestSignalDate">--</strong>
+                  <small id="latestSignalCount">等待同步</small>
+                </div>
+              </div>
+
+              <div class="signal-analysis-grid">
+                <section class="signal-chart-card" aria-labelledby="signalTrendTitle">
+                  <div class="signal-chart-heading">
+                    <div>
+                      <strong id="signalTrendTitle">每日信号趋势</strong>
+                      <span>按主题堆叠</span>
+                    </div>
+                    <span id="signalTrendTotal">-- 条</span>
                   </div>
-                  <strong id="qualityScore">--%</strong>
-                </div>
-                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
-                  <canvas id="qualityCanvas"></canvas>
-                </div>
-              </article>
-              <article class="insight-panel pipeline-panel">
-                <div class="panel-title">
-                  <div>
-                    <span><b>02</b> 事实质量门禁</span>
-                    <small>抓取成功后，候选事实发布审核</small>
+                  <div class="signal-trend-chart">
+                    <canvas id="signalTrendCanvas"></canvas>
                   </div>
-                  <strong id="blockTotal">--</strong>
-                </div>
-                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
-                  <canvas id="blockCanvas"></canvas>
-                </div>
-              </article>
-              <article class="insight-panel">
-                <div class="panel-title">
-                  <div>
-                    <span><b>03</b> 未发布原因</span>
-                    <small>区分证据缺口与真正质量拦截</small>
+                </section>
+                <section class="signal-topic-card" aria-labelledby="signalTopicTitle">
+                  <div class="signal-chart-heading">
+                    <div>
+                      <strong id="signalTopicTitle">主题热度</strong>
+                      <span>确认信号构成</span>
+                    </div>
                   </div>
-                  <strong id="sourceTotal">--</strong>
-                </div>
-                <div class="chart-container" style="position: relative; height: 140px; width: 100%; display: flex; justify-content: center; align-items: center;">
-                  <canvas id="sourceCanvas"></canvas>
-                </div>
-              </article>
-            </div>
+                  <div class="signal-topic-list" id="signalTopicList">
+                    <div class="signal-topic-empty">正在汇总主题</div>
+                  </div>
+                </section>
+              </div>
+
+              <footer class="signal-overview-footer">
+                <span class="signal-insight-dot" aria-hidden="true"></span>
+                <p id="signalInsightText">正在读取已确认战略快讯并生成态势摘要。</p>
+              </footer>
+            </article>
             <aside class="strategy-ticker" aria-label="滚动战略快讯">
               <header class="strategy-ticker-header">
                 <div>
@@ -176,12 +202,12 @@
                 </svg>
               </button>
             </div>
-            <div class="chat-header-title">
-              <h2>小竞AI</h2>
-              <p>智能 Agent：支持联网搜索、RAG 检索、趋势判断、来源核验和数据协同。</p>
-            </div>
-            <button class="quiet-button small" id="aiSettingsButton" type="button">设置</button>
-            <button class="quiet-button small" id="clearChatButton" type="button">清空</button>
+            <button class="chat-header-icon-button" id="aiSettingsButton" type="button" title="设置" aria-label="设置">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"></path>
+              </svg>
+            </button>
             <button class="close-btn" id="closeChatButton" type="button" aria-label="关闭">&times;</button>
           </div>
           <div class="chat-workspace is-sidebar-collapsed" id="chatWorkspace">
@@ -274,9 +300,25 @@
                 </div>
                 <div class="voice-input-control">
                   <span class="voice-input-status" id="voiceInputStatus" aria-live="polite" hidden></span>
-                  <button class="voice-input-button" id="voiceInputButton" type="button" aria-label="语音输入" aria-pressed="false" title="语音输入">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
-                  </button>
+                  <div class="voice-input-split">
+                    <button class="voice-input-button" id="voiceInputButton" type="button" aria-label="语音输入" aria-pressed="false" title="语音输入">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
+                    </button>
+                    <button class="voice-mode-button" id="voiceModeButton" type="button" aria-label="选择语音识别方式" aria-haspopup="menu" aria-expanded="false" title="选择语音识别方式">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+                    </button>
+                    <div class="voice-mode-menu" id="voiceModeMenu" role="menu" aria-label="语音识别后" hidden>
+                      <strong>语音识别后</strong>
+                      <button type="button" role="menuitemradio" data-voice-mode="transcribe" aria-checked="true">
+                        <span class="voice-mode-check" aria-hidden="true">✓</span>
+                        <span><b>仅转成文字</b><small>先检查或修改，再手动发送</small></span>
+                      </button>
+                      <button type="button" role="menuitemradio" data-voice-mode="send" aria-checked="false">
+                        <span class="voice-mode-check" aria-hidden="true"></span>
+                        <span><b>识别后直接发送</b><small>转写完成后立即提问</small></span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <button id="chatSubmitButton" type="submit" aria-label="发送" title="发送" disabled>
                   <svg viewBox="0 0 24 24" aria-hidden="true" class="chat-submit-icon"><path d="M12 19V5"></path><path d="m6.5 10.5 5.5-5.5 5.5 5.5"></path></svg>
@@ -437,6 +479,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=215"></script>
+    <script src="/static/app.js?v=217"></script>
   </body>
 </html>

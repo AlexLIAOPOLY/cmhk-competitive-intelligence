@@ -53,6 +53,8 @@ const state = {
   voiceChunks: [],
   voiceState: "idle",
   voiceStopTimer: null,
+  voiceStartedAt: 0,
+  voiceMode: "transcribe",
   chatAutoScroll: true,
   crawlRuns: [],
   activeCrawlRunId: null,
@@ -118,7 +120,6 @@ const els = {
   refreshCrawlRunsButton: document.querySelector("#refreshCrawlRunsButton"),
   crawlRunList: document.querySelector("#crawlRunList"),
   logRunTitle: document.querySelector("#logRunTitle"),
-  clearChatButton: document.querySelector("#clearChatButton"),
   toggleChatThreadsButton: document.querySelector("#toggleChatThreadsButton"),
   collapseChatThreadsButton: document.querySelector("#collapseChatThreadsButton"),
   newChatThreadButton: document.querySelector("#newChatThreadButton"),
@@ -158,6 +159,8 @@ const els = {
   webSearchToggle: document.querySelector("#webSearchToggle"),
   voiceInputButton: document.querySelector("#voiceInputButton"),
   voiceInputStatus: document.querySelector("#voiceInputStatus"),
+  voiceModeButton: document.querySelector("#voiceModeButton"),
+  voiceModeMenu: document.querySelector("#voiceModeMenu"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
   qualityScore: document.querySelector("#qualityScore"),
@@ -218,7 +221,7 @@ function ensureTaskBusyInteraction() {
   }, true);
 }
 
-function setTaskButtonState(button, { active, reason, idleLabel, activeLabel }) {
+function setTaskButtonState(button, { active, reason, idleLabel, activeLabel, preserveContent = false, idleTitle = "" }) {
   if (!button) return;
   button.disabled = false;
   button.dataset.blockedReason = reason || "";
@@ -226,8 +229,8 @@ function setTaskButtonState(button, { active, reason, idleLabel, activeLabel }) 
   button.classList.toggle("is-task-blocked", Boolean(reason));
   button.setAttribute("aria-disabled", reason ? "true" : "false");
   button.setAttribute("aria-busy", active ? "true" : "false");
-  button.title = reason || "";
-  button.textContent = active ? activeLabel : idleLabel;
+  button.title = reason || idleTitle;
+  if (!preserveContent) button.textContent = active ? activeLabel : idleLabel;
 }
 
 function setBusy(value, label = "运行中", action = "all") {
@@ -297,10 +300,12 @@ function setBusy(value, label = "运行中", action = "all") {
     setTaskButtonState(els.aiSettingsButton, {
       active: false,
       reason: anyBusy ? "任务运行中，为避免模型配置中途变化，请在任务完成后修改 AI 设置。" : "",
-      idleLabel: els.aiSettingsButton.dataset.idleLabel || els.aiSettingsButton.textContent,
+      idleLabel: "设置",
       activeLabel: "",
+      preserveContent: true,
+      idleTitle: "设置",
     });
-    els.aiSettingsButton.dataset.idleLabel ||= els.aiSettingsButton.textContent;
+    els.aiSettingsButton.dataset.idleLabel ||= "设置";
   }
 
   if (crawlBusy) els.runState.textContent = label || "爬虫运行中";
@@ -978,6 +983,177 @@ function initOrUpdateChart(id, config) {
   }
   if (existingChart) existingChart.destroy();
   chartInstances[id] = new Chart(canvas, config);
+}
+
+const STRATEGIC_CATEGORY_COLORS = {
+  "竞对动态": "#0077c8",
+  "AI与科技": "#7656d6",
+  "行业动态": "#13a27a",
+  "政策与监管": "#e59a18",
+  "战略与合作": "#dc6b54",
+  "基建与地产": "#5e7f9b",
+};
+
+function strategicCategoryColor(category, index = 0) {
+  const fallback = ["#0077c8", "#13a27a", "#7656d6", "#e59a18", "#dc6b54", "#5e7f9b"];
+  return STRATEGIC_CATEGORY_COLORS[category] || fallback[index % fallback.length];
+}
+
+function hongKongDateKey(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Hong_Kong",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function strategicDateKey(value) {
+  const match = String(value || "").match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : "";
+}
+
+function recentDateKeys(days = 14) {
+  const cursor = new Date(`${hongKongDateKey()}T12:00:00Z`);
+  return Array.from({ length: days }, (_, reverseIndex) => {
+    const date = new Date(cursor);
+    date.setUTCDate(cursor.getUTCDate() - (days - 1 - reverseIndex));
+    return date.toISOString().slice(0, 10);
+  });
+}
+
+function formatShortDate(dateKey) {
+  const parts = String(dateKey || "").split("-");
+  if (parts.length !== 3) return "--";
+  return `${Number(parts[1])}/${Number(parts[2])}`;
+}
+
+function renderStrategicOverview(rawItems) {
+  const dateKeys = recentDateKeys(14);
+  const allowedDates = new Set(dateKeys);
+  const items = (Array.isArray(rawItems) ? rawItems : []).filter((item) => {
+    const previewText = [item && item.title, item && item.summary, item && item.category]
+      .filter(Boolean)
+      .join(" ");
+    return !/排版预览|版式预览/.test(previewText) &&
+      allowedDates.has(strategicDateKey(item && item.published_at));
+  });
+  const byCategory = new Map();
+  const byDate = new Map(dateKeys.map((key) => [key, 0]));
+  items.forEach((item) => {
+    const category = String(item.category || "其他动态");
+    const dateKey = strategicDateKey(item.published_at);
+    byCategory.set(category, (byCategory.get(category) || 0) + 1);
+    byDate.set(dateKey, (byDate.get(dateKey) || 0) + 1);
+  });
+  const categories = Array.from(byCategory.entries())
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh-CN"));
+  const competitorCount = byCategory.get("竞对动态") || 0;
+  const latestDate = items.reduce((latest, item) => {
+    const key = strategicDateKey(item.published_at);
+    return key > latest ? key : latest;
+  }, "");
+  const latestCount = latestDate ? Number(byDate.get(latestDate) || 0) : 0;
+  const activeDays = Array.from(byDate.values()).filter((count) => count > 0).length;
+  const topCategory = categories[0] || ["暂无主题", 0];
+
+  const setText = (id, value) => {
+    const node = document.getElementById(id);
+    if (node) node.textContent = value;
+  };
+  setText("signalCount", String(items.length));
+  setText("competitorSignalCount", String(competitorCount));
+  setText(
+    "competitorSignalShare",
+    items.length ? `占比 ${Math.round((competitorCount / items.length) * 100)}%` : "暂无信号"
+  );
+  setText("activeTopicCount", String(categories.length));
+  setText("latestSignalDate", latestDate ? formatShortDate(latestDate) : "--");
+  setText("latestSignalCount", latestDate ? `当日 ${latestCount} 条` : "等待同步");
+  setText("signalTrendTotal", `${items.length} 条`);
+
+  const topicList = document.getElementById("signalTopicList");
+  if (topicList) {
+    const peak = Math.max(1, ...categories.map((entry) => entry[1]));
+    topicList.innerHTML = categories.length
+      ? categories.slice(0, 5).map(([category, count], index) => {
+          const color = strategicCategoryColor(category, index);
+          const share = items.length ? Math.round((count / items.length) * 100) : 0;
+          return `
+            <div class="signal-topic-row">
+              <div><i style="background:${color}"></i><span>${escapeHtml(category)}</span><b>${count}</b></div>
+              <div class="signal-topic-track" aria-label="${escapeHtml(category)} ${count} 条，占比 ${share}%">
+                <span style="width:${Math.max(8, (count / peak) * 100)}%;background:${color}"></span>
+              </div>
+            </div>
+          `;
+        }).join("")
+      : '<div class="signal-topic-empty">近14日暂无已确认信号</div>';
+  }
+
+  const insight = document.getElementById("signalInsightText");
+  if (insight) {
+    insight.textContent = items.length
+      ? `${topCategory[0]}最活跃，共 ${topCategory[1]} 条；${activeDays} 天出现新信号，竞对动态占 ${Math.round((competitorCount / items.length) * 100)}%。`
+      : "近14日暂无已确认战略快讯，请等待下一轮人工筛选结果。";
+  }
+
+  const categoryOrder = categories.map((entry) => entry[0]);
+  initOrUpdateChart("signalTrendCanvas", {
+    type: "bar",
+    data: {
+      labels: dateKeys.map(formatShortDate),
+      datasets: categoryOrder.map((category, index) => ({
+        label: category,
+        data: dateKeys.map((dateKey) => items.filter(
+          (item) => strategicDateKey(item.published_at) === dateKey &&
+            String(item.category || "其他动态") === category
+        ).length),
+        backgroundColor: strategicCategoryColor(category, index),
+        borderRadius: 3,
+        borderSkipped: false,
+        maxBarThickness: 28,
+      })),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      layout: { padding: { top: 8, right: 4 } },
+      plugins: {
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: {
+          backgroundColor: "rgba(16, 47, 72, 0.94)",
+          padding: 10,
+          cornerRadius: 6,
+          filter: (item) => Number(item.raw || 0) > 0,
+          callbacks: {
+            title: (entries) => entries.length ? `${entries[0].label} 已确认信号` : "",
+            label: (item) => `${item.dataset.label}：${item.formattedValue} 条`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          border: { display: false },
+          ticks: { color: "#6d8293", font: { size: 10 }, maxRotation: 0 },
+        },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          suggestedMax: Math.max(4, ...byDate.values()),
+          grid: { color: "rgba(35, 84, 116, 0.09)" },
+          border: { display: false },
+          ticks: { color: "#7b8f9e", font: { size: 10 }, precision: 0, stepSize: 1 },
+        },
+      },
+    },
+  });
 }
 
 function renderInsights(status) {
@@ -2620,9 +2796,30 @@ function renderUnifiedTaskArchive(data) {
   process.className = "task-run-process";
   process.innerHTML = '<header><strong>任务执行过程</strong><span>日志持续归档到该任务</span></header>';
   const pre = document.createElement("pre");
-  pre.textContent = content || "任务已创建，正在等待运行日志。";
+  renderTaskLogLines(pre, content || "任务已创建，正在等待运行日志。");
   process.appendChild(pre);
   els.logBox.appendChild(process);
+}
+
+function isImportantTaskLogLine(line) {
+  const text = String(line || "");
+  return (
+    /\[(?:周报局限|业绩摘要局限|任务中断)\]/.test(text)
+    || /(?:生成失败|任务失败|执行异常|语音摘要生成失败|语音摘要失败)/.test(text)
+  );
+}
+
+function renderTaskLogLines(container, content) {
+  container.textContent = "";
+  const lines = String(content || "").split("\n");
+  lines.forEach((line) => {
+    const row = document.createElement(isImportantTaskLogLine(line) ? "strong" : "span");
+    row.className = isImportantTaskLogLine(line)
+      ? "task-log-line is-critical"
+      : "task-log-line";
+    row.textContent = line || " ";
+    container.appendChild(row);
+  });
 }
 
 function scheduleUnifiedTaskListRefresh() {
@@ -5088,19 +5285,53 @@ function renderVoiceInputState() {
   button.classList.toggle("is-recording", recording);
   button.classList.toggle("is-busy", requesting || transcribing);
   button.disabled = requesting || transcribing;
+  if (els.voiceModeButton) els.voiceModeButton.disabled = requesting || transcribing || recording;
   button.setAttribute("aria-pressed", recording ? "true" : "false");
   button.setAttribute("aria-busy", requesting || transcribing ? "true" : "false");
-  button.setAttribute("aria-label", recording ? "停止录音并发送" : transcribing ? "正在识别语音" : "语音输入");
-  button.title = recording ? "停止录音并发送" : transcribing ? "正在使用公司语音模型识别" : "语音输入";
+  const modeLabel = state.voiceMode === "send" ? "识别后直接发送" : "仅转成文字";
+  button.setAttribute("aria-label", recording ? "停止录音并识别" : transcribing ? "正在识别语音" : `语音输入，${modeLabel}`);
+  button.title = recording ? "点击停止录音并识别" : transcribing ? "正在使用公司语音模型识别" : `语音输入（${modeLabel}）`;
   if (els.voiceInputStatus) {
-    const label = recording ? "正在聆听…" : requesting ? "正在启用麦克风…" : transcribing ? "正在识别…" : "";
+    const label = recording ? "正在聆听，点击停止" : requesting ? "正在启用麦克风…" : transcribing ? "正在识别…" : "";
     els.voiceInputStatus.textContent = label;
     els.voiceInputStatus.hidden = !label;
   }
 }
 
+function loadVoiceInputMode() {
+  try {
+    const saved = localStorage.getItem("cmhkVoiceInputMode");
+    state.voiceMode = saved === "send" ? "send" : "transcribe";
+  } catch (_error) {
+    state.voiceMode = "transcribe";
+  }
+}
+
+function setVoiceInputMode(mode) {
+  state.voiceMode = mode === "send" ? "send" : "transcribe";
+  try {
+    localStorage.setItem("cmhkVoiceInputMode", state.voiceMode);
+  } catch (_error) {
+    // Private browsing may disable storage; the current choice still applies.
+  }
+  if (els.voiceModeMenu) {
+    els.voiceModeMenu.querySelectorAll("[data-voice-mode]").forEach((option) => {
+      const active = option.dataset.voiceMode === state.voiceMode;
+      option.setAttribute("aria-checked", active ? "true" : "false");
+      const check = option.querySelector(".voice-mode-check");
+      if (check) check.textContent = active ? "✓" : "";
+    });
+  }
+  renderVoiceInputState();
+}
+
 function preferredVoiceMimeType() {
-  const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
+  const candidates = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/mp4;codecs=mp4a.40.2",
+    "audio/mp4",
+  ];
   return candidates.find((type) => window.MediaRecorder?.isTypeSupported(type)) || "";
 }
 
@@ -5123,8 +5354,9 @@ function releaseVoiceStream() {
   state.voiceRecorder = null;
 }
 
-async function transcribeAndSendVoice(blob) {
+async function transcribeVoice(blob, durationMs) {
   try {
+    if (durationMs < 700) throw new Error("录音时间太短，请至少说 1 秒后再停止");
     if (!blob || !blob.size) throw new Error("没有录到可识别的语音");
     if (blob.size > 20 * 1024 * 1024) throw new Error("单次语音不能超过 20 MB");
     state.voiceState = "transcribing";
@@ -5145,7 +5377,12 @@ async function transcribeAndSendVoice(blob) {
     renderChatSubmitState();
     state.voiceState = "idle";
     renderVoiceInputState();
-    els.chatForm.requestSubmit();
+    if (state.voiceMode === "send") {
+      els.chatForm.requestSubmit();
+    } else {
+      els.chatInput.focus();
+      showTaskOperationNotice("语音已转成文字，可修改后手动发送");
+    }
   } catch (error) {
     state.voiceState = "idle";
     renderVoiceInputState();
@@ -5154,17 +5391,32 @@ async function transcribeAndSendVoice(blob) {
   }
 }
 
+async function requestVoiceStream() {
+  const preferredConstraints = {
+    channelCount: { ideal: 1 },
+    echoCancellation: { ideal: true },
+    noiseSuppression: { ideal: true },
+    autoGainControl: { ideal: true },
+  };
+  try {
+    return await navigator.mediaDevices.getUserMedia({ audio: preferredConstraints });
+  } catch (error) {
+    const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+    if (denied) throw error;
+    return navigator.mediaDevices.getUserMedia({ audio: true });
+  }
+}
+
 async function startVoiceInput() {
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-    showTaskOperationNotice("当前浏览器不支持语音输入，请使用最新版 Chrome、Edge 或 Safari");
+    const detail = window.isSecureContext ? "请使用最新版 Chrome、Edge 或 Safari" : "请通过 HTTPS 或本机地址打开页面";
+    showTaskOperationNotice(`当前页面无法使用麦克风，${detail}`);
     return;
   }
   state.voiceState = "requesting";
   renderVoiceInputState();
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-    });
+    const stream = await requestVoiceStream();
     const mimeType = preferredVoiceMimeType();
     const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
     state.voiceStream = stream;
@@ -5176,9 +5428,10 @@ async function startVoiceInput() {
     recorder.addEventListener("stop", () => {
       const audioType = recorder.mimeType || mimeType || "audio/webm";
       const blob = new Blob(state.voiceChunks, { type: audioType });
+      const durationMs = Math.max(0, performance.now() - state.voiceStartedAt);
       state.voiceChunks = [];
       releaseVoiceStream();
-      transcribeAndSendVoice(blob);
+      transcribeVoice(blob, durationMs);
     }, { once: true });
     recorder.addEventListener("error", () => {
       releaseVoiceStream();
@@ -5186,7 +5439,8 @@ async function startVoiceInput() {
       renderVoiceInputState();
       showTaskOperationNotice("录音中断，请重试");
     }, { once: true });
-    recorder.start(250);
+    recorder.start();
+    state.voiceStartedAt = performance.now();
     state.voiceState = "recording";
     renderVoiceInputState();
     state.voiceStopTimer = setTimeout(() => stopVoiceInput(), 120000);
@@ -6057,10 +6311,6 @@ els.chatModal.addEventListener("click", (event) => {
   if (event.target === els.chatModal) els.chatModal.hidden = true;
 });
 
-els.clearChatButton.addEventListener("click", () => {
-  startNewChatThread();
-});
-
 if (els.toggleChatThreadsButton && els.chatWorkspace) {
   els.toggleChatThreadsButton.addEventListener("click", () => {
     setChatSidebarCollapsed(!els.chatWorkspace.classList.contains("is-sidebar-collapsed"));
@@ -6106,10 +6356,34 @@ if (els.chatThreadSearchInput) {
 }
 
 if (els.voiceInputButton) {
+  loadVoiceInputMode();
+  setVoiceInputMode(state.voiceMode);
   renderVoiceInputState();
   els.voiceInputButton.addEventListener("click", () => {
     if (state.voiceState === "recording") stopVoiceInput();
     else if (state.voiceState === "idle") startVoiceInput();
+  });
+}
+
+if (els.voiceModeButton && els.voiceModeMenu) {
+  els.voiceModeButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const willOpen = els.voiceModeMenu.hidden;
+    els.voiceModeMenu.hidden = !willOpen;
+    els.voiceModeButton.setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+      if (els.chatModelMenu) els.chatModelMenu.hidden = true;
+      els.chatModelButton?.setAttribute("aria-expanded", "false");
+      requestAnimationFrame(() => els.voiceModeMenu.querySelector('[aria-checked="true"]')?.focus());
+    }
+  });
+  els.voiceModeMenu.addEventListener("click", (event) => {
+    const option = event.target.closest("[data-voice-mode]");
+    if (!option) return;
+    setVoiceInputMode(option.dataset.voiceMode);
+    els.voiceModeMenu.hidden = true;
+    els.voiceModeButton.setAttribute("aria-expanded", "false");
+    els.voiceInputButton?.focus();
   });
 }
 
@@ -6370,6 +6644,13 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".chat-model-picker")) return;
   els.chatModelMenu.hidden = true;
   els.chatModelButton?.setAttribute("aria-expanded", "false");
+});
+
+document.addEventListener("click", (event) => {
+  if (!els.voiceModeMenu || els.voiceModeMenu.hidden) return;
+  if (event.target.closest(".voice-input-split")) return;
+  els.voiceModeMenu.hidden = true;
+  els.voiceModeButton?.setAttribute("aria-expanded", "false");
 });
 
 if (els.skillMenu) {
@@ -6755,6 +7036,7 @@ document.addEventListener("keydown", (event) => {
       return !/排版预览|版式预览/.test(previewText);
     });
     const monitor = payload.monitor || {};
+    renderStrategicOverview(items);
     const degraded = monitor.status === "degraded";
     syncStatus.classList.toggle("is-degraded", degraded);
     syncStatus.title = monitor.last_error || "";
