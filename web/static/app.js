@@ -1322,15 +1322,6 @@ function renderDecisionDashboard(payload) {
       : '<div class="decision-loading-row">暂无本地竞对正式业绩数据</div>';
   }
 
-  const assetHost = document.getElementById("decisionAssetSummary");
-  if (assetHost) {
-    assetHost.innerHTML = `
-      <div><span>季度 / 半年经营指标</span><strong>${Number(summary.quarterlyRows || 0).toLocaleString("zh-HK")}</strong><small>${Number(summary.quarterRows || 0)} 季度 · ${Number(summary.halfYearRows || 0)} 半年</small></div>
-      <div><span>正式产品资费</span><strong>${Number(summary.formalTariffs || 0).toLocaleString("zh-HK")}</strong><small>${Number(summary.currentTariffs || 0)} 条当前套餐</small></div>
-      <div><span>官方宏观指标</span><strong>${Number(summary.macroRows || 0).toLocaleString("zh-HK")}</strong><small>OFCA / C&amp;SD</small></div>
-    `;
-  }
-
   const tariffHost = document.getElementById("decisionTariffRows");
   if (tariffHost) {
     const tariffs = Array.isArray(data.tariffs) ? data.tariffs : [];
