@@ -274,6 +274,23 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('fetch("/api/chat-audio-transcribe"', app)
         self.assertIn("els.chatForm.requestSubmit();", app)
 
+    def test_chat_composer_keeps_model_voice_and_send_inside_one_card(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        composer_start = markup.index('<div class="chat-composer">')
+        toolbar_start = markup.index('<div class="chat-composer-toolbar">', composer_start)
+        composer_end = markup.index("</form>", toolbar_start)
+        submit_index = markup.index('id="chatSubmitButton"', toolbar_start)
+        self.assertLess(submit_index, composer_end)
+        self.assertIn('placeholder="随心输入"', markup[composer_start:toolbar_start])
+        self.assertIn(".chat-model-picker { position: relative; min-width: 0; margin-left: auto; }", styles)
+        self.assertIn(".chat-model-menu { position: absolute; right: -72px;", styles)
+        self.assertIn("border-radius: 50%", styles)
+        self.assertIn("function renderChatSubmitState()", app)
+        self.assertIn("els.chatSubmitButton.disabled = !state.chatBusy && !ready", app)
+
     def test_reasoning_uses_one_transparent_outline_without_a_filled_header_box(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
         panel_start = styles.index(".model-reasoning {")

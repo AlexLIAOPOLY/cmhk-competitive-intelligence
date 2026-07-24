@@ -312,9 +312,15 @@ function setBusy(value, label = "运行中", action = "all") {
   els.logButton.classList.toggle("log-glowing", anyBusy);
 }
 
+function renderChatSubmitState() {
+  if (!els.chatSubmitButton) return;
+  const ready = Boolean(els.chatInput?.value.trim() || state.chatImageAttachment);
+  els.chatSubmitButton.disabled = !state.chatBusy && !ready;
+  els.chatSubmitButton.classList.toggle("is-ready", !state.chatBusy && ready);
+}
+
 function setChatBusy(value) {
   state.chatBusy = value;
-  els.chatSubmitButton.disabled = false;
   els.chatInput.disabled = false;
   if (els.webSearchToggle) els.webSearchToggle.disabled = false;
   if (els.skillToggle) els.skillToggle.disabled = false;
@@ -325,7 +331,8 @@ function setChatBusy(value) {
   els.chatSubmitButton.title = value ? "暂停生成" : "发送";
   els.chatSubmitButton.innerHTML = value
     ? `<svg viewBox="0 0 24 24" aria-hidden="true" class="chat-submit-icon"><path d="M7 5h4v14H7z"></path><path d="M13 5h4v14h-4z"></path></svg><span class="sr-only">暂停生成</span>`
-    : `<span>发送</span>`;
+    : `<svg viewBox="0 0 24 24" aria-hidden="true" class="chat-submit-icon"><path d="M12 19V5"></path><path d="m6.5 10.5 5.5-5.5 5.5 5.5"></path></svg><span class="sr-only">发送</span>`;
+  renderChatSubmitState();
 }
 
 function renderWebSearchToggle() {
@@ -402,6 +409,7 @@ function renderChatAttachment() {
       <span><strong>${escapeHtml(attachment.name)}</strong><small>${formatBytes(attachment.size)}</small></span>
       <button type="button" id="removeChatImage" aria-label="移除图片">&times;</button>
     </span>` : "";
+  renderChatSubmitState();
 }
 
 function createChatImagePreview(dataUrl, maxEdge = 480) {
@@ -5110,6 +5118,7 @@ async function transcribeAndSendVoice(blob) {
     const existing = els.chatInput.value.trim();
     els.chatInput.value = existing ? `${existing} ${transcript}` : transcript;
     resizeChatInput();
+    renderChatSubmitState();
     state.voiceState = "idle";
     renderVoiceInputState();
     els.chatForm.requestSubmit();
@@ -6005,6 +6014,7 @@ window.clickSuggestion = function(text) {
   }
   els.chatInput.value = text;
   resizeChatInput();
+  renderChatSubmitState();
   els.chatForm.requestSubmit();
 };
 
@@ -6116,6 +6126,7 @@ if (els.chatQueueList) {
       state.chatQueue = state.chatQueue.filter((entry) => entry.id !== queueId);
       renderChatQueue();
       resizeChatInput();
+      renderChatSubmitState();
       els.chatInput.focus();
     }
   });
@@ -6429,6 +6440,7 @@ els.chatForm.addEventListener("submit", async (event) => {
   if (!message && !attachment) return;
   els.chatInput.value = "";
   resizeChatInput();
+  renderChatSubmitState();
   let enrichedMessage = message || "请分析这张图片。";
   if (attachment) {
     try {
@@ -6467,7 +6479,10 @@ els.chatSubmitButton.addEventListener("click", (event) => {
   if (state.chatAbortController) state.chatAbortController.abort();
 });
 
-els.chatInput.addEventListener("input", resizeChatInput);
+els.chatInput.addEventListener("input", () => {
+  resizeChatInput();
+  renderChatSubmitState();
+});
 
 els.chatInput.addEventListener("keydown", (event) => {
   if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
