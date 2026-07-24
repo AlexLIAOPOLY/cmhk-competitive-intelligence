@@ -2518,6 +2518,9 @@ function crawlLogModalIsOpen() {
 function scrollTaskLogToBottom() {
   if (!els.logBox) return;
   const scroll = function () {
+    els.logBox.querySelectorAll(".task-run-process > pre").forEach(function (processLog) {
+      processLog.scrollTop = processLog.scrollHeight;
+    });
     els.logBox.scrollTop = els.logBox.scrollHeight;
   };
   scroll();
@@ -2704,8 +2707,7 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
         + " · " + Number(data.lines || 0) + " 行 · " + Number(data.bytes || 0) + " B";
     }
     if (task.run_status === "running") {
-      if (!silent || wasNearBottom) scrollTaskLogToBottom();
-      else els.logBox.scrollTop = previousScrollTop;
+      scrollTaskLogToBottom();
     } else {
       if (silent && wasNearBottom) scrollTaskLogToBottom();
       else els.logBox.scrollTop = silent ? previousScrollTop : 0;

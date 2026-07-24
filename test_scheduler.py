@@ -129,9 +129,14 @@ class TaskLogScrollTests(unittest.TestCase):
         loader_end = app.index("async function loadCrawlRuns", loader_start)
         loader = app[loader_start:loader_end]
 
+        self.assertIn('els.logBox.querySelectorAll(".task-run-process > pre")', helper)
+        self.assertIn("processLog.scrollTop = processLog.scrollHeight", helper)
         self.assertIn("els.logBox.scrollTop = els.logBox.scrollHeight", helper)
         self.assertGreaterEqual(helper.count("requestAnimationFrame"), 2)
-        self.assertIn("if (!silent || wasNearBottom) scrollTaskLogToBottom();", loader)
+        running_branch = loader[loader.index('if (task.run_status === "running")'):]
+        running_branch = running_branch[:running_branch.index("} else {")]
+        self.assertIn("scrollTaskLogToBottom();", running_branch)
+        self.assertNotIn("wasNearBottom", running_branch)
 
 
 if __name__ == "__main__":
