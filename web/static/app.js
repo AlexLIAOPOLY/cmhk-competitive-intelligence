@@ -55,6 +55,10 @@ const state = {
   voiceStopTimer: null,
   voiceStartedAt: 0,
   voiceMode: "transcribe",
+  voiceDeviceId: "",
+  voiceDevices: [],
+  voiceActiveDeviceLabel: "",
+  voiceDeviceNotice: "",
   chatAutoScroll: true,
   crawlRuns: [],
   activeCrawlRunId: null,
@@ -161,6 +165,8 @@ const els = {
   voiceInputStatus: document.querySelector("#voiceInputStatus"),
   voiceModeButton: document.querySelector("#voiceModeButton"),
   voiceModeMenu: document.querySelector("#voiceModeMenu"),
+  voiceDeviceSelect: document.querySelector("#voiceDeviceSelect"),
+  voiceDeviceStatus: document.querySelector("#voiceDeviceStatus"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
   qualityScore: document.querySelector("#qualityScore"),
@@ -5292,7 +5298,8 @@ function renderVoiceInputState() {
   button.setAttribute("aria-label", recording ? "停止录音并识别" : transcribing ? "正在识别语音" : `语音输入，${modeLabel}`);
   button.title = recording ? "点击停止录音并识别" : transcribing ? "正在使用公司语音模型识别" : `语音输入（${modeLabel}）`;
   if (els.voiceInputStatus) {
-    const label = recording ? "正在聆听，点击停止" : requesting ? "正在启用麦克风…" : transcribing ? "正在识别…" : "";
+    const device = state.voiceActiveDeviceLabel ? `（${state.voiceActiveDeviceLabel}）` : "";
+    const label = recording ? `正在聆听${device}，点击停止` : requesting ? "正在检测麦克风…" : transcribing ? "正在识别…" : "";
     els.voiceInputStatus.textContent = label;
     els.voiceInputStatus.hidden = !label;
   }
@@ -5323,6 +5330,89 @@ function setVoiceInputMode(mode) {
     });
   }
   renderVoiceInputState();
+}
+
+function loadVoiceInputDevice() {
+  try {
+    state.voiceDeviceId = localStorage.getItem("cmhkVoiceInputDeviceId") || "";
+  } catch (_error) {
+    state.voiceDeviceId = "";
+  }
+}
+
+function storeVoiceInputDevice() {
+  try {
+    if (state.voiceDeviceId) localStorage.setItem("cmhkVoiceInputDeviceId", state.voiceDeviceId);
+    else localStorage.removeItem("cmhkVoiceInputDeviceId");
+  } catch (_error) {
+    // The current choice still applies when storage is unavailable.
+  }
+}
+
+function renderVoiceDeviceOptions() {
+  if (!els.voiceDeviceSelect) return;
+  const selectable = state.voiceDevices.filter((device) => !["default", "communications"].includes(device.deviceId));
+  const current = state.voiceDeviceId;
+  els.voiceDeviceSelect.replaceChildren();
+  const automatic = document.createElement("option");
+  automatic.value = "";
+  automatic.textContent = "自动选择（系统默认）";
+  els.voiceDeviceSelect.appendChild(automatic);
+  selectable.forEach((device, index) => {
+    const option = document.createElement("option");
+    option.value = device.deviceId;
+    option.textContent = device.label || `麦克风 ${index + 1}`;
+    els.voiceDeviceSelect.appendChild(option);
+  });
+  els.voiceDeviceSelect.value = selectable.some((device) => device.deviceId === current) ? current : "";
+  if (els.voiceDeviceStatus) {
+    const selected = selectable.find((device) => device.deviceId === state.voiceDeviceId);
+    els.voiceDeviceStatus.textContent = state.voiceDeviceNotice
+      || (state.voiceActiveDeviceLabel ? `当前使用：${state.voiceActiveDeviceLabel}`
+        : selected?.label ? `已指定：${selected.label}`
+          : "每次录音前跟随系统默认设备");
+  }
+}
+
+async function refreshVoiceInputDevices() {
+  if (!navigator.mediaDevices?.enumerateDevices) {
+    renderVoiceDeviceOptions();
+    return;
+  }
+  try {
+    state.voiceDevices = (await navigator.mediaDevices.enumerateDevices())
+      .filter((device) => device.kind === "audioinput");
+    if (
+      state.voiceDeviceId
+      && !state.voiceDevices.some((device) => device.deviceId === state.voiceDeviceId)
+    ) {
+      state.voiceDeviceId = "";
+      state.voiceDeviceNotice = "原设备已断开，已切换为系统默认";
+      storeVoiceInputDevice();
+    }
+  } catch (_error) {
+    state.voiceDevices = [];
+  }
+  renderVoiceDeviceOptions();
+}
+
+function setVoiceInputDevice(deviceId) {
+  state.voiceDeviceId = String(deviceId || "");
+  state.voiceActiveDeviceLabel = "";
+  state.voiceDeviceNotice = "";
+  storeVoiceInputDevice();
+  renderVoiceDeviceOptions();
+  renderVoiceInputState();
+}
+
+function rememberActiveVoiceDevice(stream) {
+  const track = stream?.getAudioTracks?.()[0];
+  if (!track) return;
+  const settings = track.getSettings?.() || {};
+  const known = state.voiceDevices.find((device) => device.deviceId === settings.deviceId);
+  state.voiceActiveDeviceLabel = track.label || known?.label || "系统默认麦克风";
+  state.voiceDeviceNotice = "";
+  renderVoiceDeviceOptions();
 }
 
 function preferredVoiceMimeType() {
@@ -5391,17 +5481,36 @@ async function transcribeVoice(blob, durationMs) {
 }
 
 async function requestVoiceStream() {
-  const preferredConstraints = {
+  const baseConstraints = {
     channelCount: { ideal: 1 },
     echoCancellation: { ideal: true },
     noiseSuppression: { ideal: true },
     autoGainControl: { ideal: true },
+  };
+  const requestedDeviceId = state.voiceDeviceId;
+  const preferredConstraints = {
+    ...baseConstraints,
+    deviceId: requestedDeviceId ? { exact: requestedDeviceId } : { ideal: "default" },
   };
   try {
     return await navigator.mediaDevices.getUserMedia({ audio: preferredConstraints });
   } catch (error) {
     const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
     if (denied) throw error;
+    if (requestedDeviceId) {
+      state.voiceDeviceId = "";
+      state.voiceDeviceNotice = "指定设备不可用，已切换为系统默认";
+      storeVoiceInputDevice();
+      renderVoiceDeviceOptions();
+      try {
+        return await navigator.mediaDevices.getUserMedia({
+          audio: { ...baseConstraints, deviceId: { ideal: "default" } },
+        });
+      } catch (fallbackError) {
+        const fallbackDenied = fallbackError?.name === "NotAllowedError" || fallbackError?.name === "SecurityError";
+        if (fallbackDenied) throw fallbackError;
+      }
+    }
     return navigator.mediaDevices.getUserMedia({ audio: true });
   }
 }
@@ -5415,7 +5524,10 @@ async function startVoiceInput() {
   state.voiceState = "requesting";
   renderVoiceInputState();
   try {
+    await refreshVoiceInputDevices();
     const stream = await requestVoiceStream();
+    rememberActiveVoiceDevice(stream);
+    await refreshVoiceInputDevices();
     const mimeType = preferredVoiceMimeType();
     const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
     state.voiceStream = stream;
@@ -6356,7 +6468,10 @@ if (els.chatThreadSearchInput) {
 
 if (els.voiceInputButton) {
   loadVoiceInputMode();
+  loadVoiceInputDevice();
   setVoiceInputMode(state.voiceMode);
+  renderVoiceDeviceOptions();
+  refreshVoiceInputDevices();
   renderVoiceInputState();
   els.voiceInputButton.addEventListener("click", () => {
     if (state.voiceState === "recording") stopVoiceInput();
@@ -6373,6 +6488,7 @@ if (els.voiceModeButton && els.voiceModeMenu) {
     if (willOpen) {
       if (els.chatModelMenu) els.chatModelMenu.hidden = true;
       els.chatModelButton?.setAttribute("aria-expanded", "false");
+      refreshVoiceInputDevices();
       requestAnimationFrame(() => els.voiceModeMenu.querySelector('[aria-checked="true"]')?.focus());
     }
   });
@@ -6383,6 +6499,19 @@ if (els.voiceModeButton && els.voiceModeMenu) {
     els.voiceModeMenu.hidden = true;
     els.voiceModeButton.setAttribute("aria-expanded", "false");
     els.voiceInputButton?.focus();
+  });
+}
+
+if (els.voiceDeviceSelect) {
+  els.voiceDeviceSelect.addEventListener("change", () => {
+    setVoiceInputDevice(els.voiceDeviceSelect.value);
+  });
+}
+
+if (navigator.mediaDevices?.addEventListener) {
+  navigator.mediaDevices.addEventListener("devicechange", () => {
+    state.voiceActiveDeviceLabel = "";
+    refreshVoiceInputDevices();
   });
 }
 

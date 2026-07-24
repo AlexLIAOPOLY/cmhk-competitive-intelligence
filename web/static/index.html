@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对检测情报中心</title>
-  <link rel="stylesheet" href="/static/styles.css?v=195" />
+  <link rel="stylesheet" href="/static/styles.css?v=197" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -317,6 +317,13 @@
                         <span class="voice-mode-check" aria-hidden="true"></span>
                         <span><b>识别后直接发送</b><small>转写完成后立即提问</small></span>
                       </button>
+                      <div class="voice-device-picker">
+                        <label for="voiceDeviceSelect">收音设备</label>
+                        <select id="voiceDeviceSelect" aria-label="选择收音设备">
+                          <option value="">自动选择（系统默认）</option>
+                        </select>
+                        <small id="voiceDeviceStatus" aria-live="polite">每次录音前跟随系统默认设备</small>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -479,6 +486,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=218"></script>
+    <script src="/static/app.js?v=220"></script>
   </body>
 </html>

@@ -3090,6 +3090,45 @@ select {
 .voice-mode-menu small { margin-top: 2px; color: #71869a; font-size: 11px; line-height: 1.35; }
 .voice-mode-check { min-height: 18px; color: var(--blue-dark); font-size: 13px; font-weight: 800; text-align: center; }
 
+.voice-device-picker {
+  margin-top: 7px;
+  padding: 10px 8px 3px;
+  border-top: 1px solid #e4ebf1;
+}
+
+.voice-device-picker label {
+  display: block;
+  margin-bottom: 6px;
+  color: #64788b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.voice-device-picker select {
+  width: 100%;
+  height: 34px;
+  padding: 0 28px 0 9px;
+  border: 1px solid #cdd9e3;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #263d52;
+  font-size: 12px;
+}
+
+.voice-device-picker select:focus {
+  border-color: var(--blue);
+  outline: 2px solid rgba(0, 103, 177, .12);
+  outline-offset: 0;
+}
+
+.voice-device-picker small {
+  display: block;
+  margin-top: 6px;
+  color: #71869a;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
 @keyframes voice-recording-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(217, 54, 62, .18); }
   50% { box-shadow: 0 0 0 5px rgba(217, 54, 62, 0); }
