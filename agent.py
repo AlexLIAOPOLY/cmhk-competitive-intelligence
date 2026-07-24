@@ -2677,7 +2677,13 @@ def _agent_tools(allow_web_search: bool = True, user_message: str | None = None)
         add(list_report_outputs)
     if re.search(r"爬取设置|爬取范围|启用.*行|覆盖.*主体|数据内容配置", text, re.IGNORECASE):
         add(get_crawl_settings_summary)
-    if re.search(r"画图|图表|可视化|折线|柱状|饼图|散点|热力图", text, re.IGNORECASE):
+    if re.search(
+        r"画图|图表|可视化|折线|柱状|饼图|散点|热力图|趋势|走势|时间序列|"
+        r"历史数据|历年|多期|同比|环比|变化|多个数据|多组数据|数据对比|对比|比较|"
+        r"排名|占比|构成|分布",
+        text,
+        re.IGNORECASE,
+    ):
         add(render_python_chart)
     if re.search(r"预测|未来.*季度|forecast|Holt|Winters|回测", text, re.IGNORECASE):
         add(forecast_quarterly_metric)
@@ -2774,9 +2780,10 @@ def get_agent(
         f"{local_original_rule}"
         f"{cross_check_rule}"
         f"{quarterly_crosscheck_sentence}"
-        "【Python 图表工具】当用户要求画图或数据适合可视化时，在完成数据检索和核验后优先调用 `render_python_chart` 生成 PNG。由你根据分析目的决定最终生成一张或多张互补图表，但不要为同一结论生成重复图。支持 `line` 折线、`bar/grouped_bar` 柱状、`horizontal_bar` 横向柱状、`stacked_bar` 堆叠柱状、`area/stacked_area` 面积、`pie/donut` 饼图/环形图、`scatter/bubble` 散点/气泡、`radar` 雷达、`heatmap` 热力、`histogram` 直方、`box` 箱线和 `combo` 柱线组合。`chart_spec` 是 JSON 对象字符串，基本结构为 `{\"type\":\"line\",\"title\":\"...\",\"unit\":\"...\",\"x\":[\"2024Q1\"],\"series\":[{\"name\":\"收入\",\"data\":[123]}]}`；气泡图的 series 可另加 `sizes`。中文标题和图例直接写中文；不要写 `<chart>` 块，不要在图片底部放解释长文。若工具返回停止或同参数失败，立即停止并改用文字或简表。\n"
+        "【数据趋势与多组数据必须画图】只要问题涉及数据趋势、走势、时间序列、历史/历年数据、同比环比、多期变化，或者答案包含多个主体、多个指标、多个时期、多个类别等至少两组可比较数据，就必须在完成数据检索、原文读取和口径核验后调用 `render_python_chart` 生成至少一张 PNG 图表，不能只给文字或表格，也不能等用户再次要求画图。若 `forecast_quarterly_metric` 已返回能完整表达该问题的预测 PNG，可视为已经满足画图要求，不要重复生成相同图。只有确实不足两个可比较数据点、口径或单位不可比、关键证据不足，或图表工具明确失败时才允许不画；此时必须在答案中明确写出“无法生成可靠图表”及缺少的数据或不可比原因，绝对不得补造数据点。\n"
+        "【Python 图表工具】满足上述强制画图条件或用户明确要求画图时，在完成数据检索和核验后必须调用 `render_python_chart` 生成 PNG。由你根据分析目的决定最终生成一张或多张互补图表，但不要为同一结论生成重复图。支持 `line` 折线、`bar/grouped_bar` 柱状、`horizontal_bar` 横向柱状、`stacked_bar` 堆叠柱状、`area/stacked_area` 面积、`pie/donut` 饼图/环形图、`scatter/bubble` 散点/气泡、`radar` 雷达、`heatmap` 热力、`histogram` 直方、`box` 箱线和 `combo` 柱线组合。`chart_spec` 是 JSON 对象字符串，基本结构为 `{\"type\":\"line\",\"title\":\"...\",\"unit\":\"...\",\"x\":[\"2024Q1\"],\"series\":[{\"name\":\"收入\",\"data\":[123]}]}`；气泡图的 series 可另加 `sizes`。中文标题和图例直接写中文；不要写 `<chart>` 块，不要在图片底部放解释长文。若工具返回停止或同参数失败，立即停止并在答案中说明图表失败，改用文字或简表，禁止假装已生成图表。\n"
         "【图表选择规则】时间趋势用 line/area，多主体同口径比较用 bar/grouped_bar，排名或长分类名用 horizontal_bar，构成且合计有意义时才用 pie/donut，构成随时间变化用 stacked_bar/stacked_area，两个连续变量关系用 scatter、第三变量规模用 bubble，多指标画像且量纲已标准化时用 radar，主体乘指标矩阵用 heatmap，样本频率分布用 histogram，分布离散度和异常值比较用 box，量级与趋势需要同图表达时用 combo。饼图不得包含负数且分类宜不超过 7 个；雷达图至少 3 个维度；不同量纲不得直接堆叠或画雷达。需要回答两个不同分析问题时可调用 2-3 次生成多张图，每张图都必须有独立分析目的。\n"
-        "【历史与趋势可视化】当用户询问趋势预测、历史/过去/历年数据、时间序列、同比环比、变化趋势或多期对比时，如果本轮已选择 `financial-visual-analytics`，应优先调用 `read_agent_skill` 读取该 Skill。只要已有至少两个可比较时期、指标口径和单位一致、数据经过检索核验，并且图表比纯文字更清楚，就选择最合适的图表辅助解释；不要固定只用折线或柱状。图后仍需给出关键数值、3-5 条结论、口径和必要不确定性。图表只能使用已检索或已读取的数值，不得补造缺失点。若数据只有单点、口径不可比、证据不足或工具已失败，则不要强行画图。`forecast_quarterly_metric` 已返回预测 PNG 时，直接使用该图，不要再生成内容相同的第二张图。\n"
+        "【历史与趋势可视化】当用户询问趋势预测、历史/过去/历年数据、时间序列、同比环比、变化趋势、多期对比，或回答中出现多组可比较数据时，如果本轮已选择 `financial-visual-analytics`，应优先调用 `read_agent_skill` 读取该 Skill。只要已有至少两个可比较数据点且指标口径和单位一致，就必须选择最合适的图表呈现；不要固定只用折线或柱状。图后仍需给出关键数值、3-5 条结论、口径和必要不确定性。图表只能使用已检索或已读取的数值，不得补造缺失点。若数据只有单点、口径不可比、证据不足或工具已失败，则按上述规则明确说明无法生成可靠图表。`forecast_quarterly_metric` 已返回预测 PNG 时，直接使用该图，不要再生成内容相同的第二张图。\n"
         "【趋势预测工具】当用户要求“预测未来”“趋势预测”“forecast”“未来4个季度”“未来几个季度/半年”等，并且问题涉及 quarterly_competitor_metrics 数据库中的季度指标时，必须优先调用 `forecast_quarterly_metric`，不要只靠模型心算或简单均值口算。预测工具使用已选数据库、官方优先数值和 Holt-Winters 加性季节模型，并且已经返回预测表和 PNG 图表；除非用户明确要求第二张不同图，否则不要再调用 `render_python_chart` 重复画同一预测图。如果用户同时选择宏观政策包，可用其解释外部背景和风险，但不能把年度/事件粒度宏观政策行混入季度模型拟合。如果用户要求解释，再说明模型局限和非投资建议。\n"
         f"{web_rule}"
         "【强制规则 - 无图标/Emoji】所有的文字输出中绝对禁止使用任何 Emoji、表情符号或特殊排版图标。保持极其严肃、专业的纯文本风格。\n"

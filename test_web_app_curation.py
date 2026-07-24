@@ -675,6 +675,52 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("web_search", captured["tools"])
         self.assertIn("search_local_reports", captured["tools"])
 
+    def test_data_trend_and_multi_group_queries_receive_chart_tool(self) -> None:
+        trend_tools = {
+            tool.name
+            for tool in agent._agent_tools(
+                allow_web_search=True,
+                user_message="请分析中国移动过去五年的收入趋势。",
+            )
+        }
+        comparison_tools = {
+            tool.name
+            for tool in agent._agent_tools(
+                allow_web_search=True,
+                user_message="请比较中国移动、中国联通和中国电信的收入数据。",
+            )
+        }
+
+        self.assertIn("render_python_chart", trend_tools)
+        self.assertIn("render_python_chart", comparison_tools)
+
+    def test_system_prompt_requires_charts_for_trends_and_multiple_data_groups(self) -> None:
+        captured: dict[str, object] = {}
+
+        class FakeLLM:
+            def __init__(self, **kwargs):
+                captured["llm_kwargs"] = kwargs
+
+        def fake_create_react_agent(_llm, tools, prompt):
+            captured["prompt"] = str(prompt)
+            return object()
+
+        with (
+            mock.patch("agent.StableAgentChatDeepSeek", FakeLLM),
+            mock.patch("agent.create_react_agent", side_effect=fake_create_react_agent),
+        ):
+            agent.get_agent(
+                allow_web_search=True,
+                user_message="请比较三家运营商过去五年的收入趋势。",
+            )
+
+        prompt = str(captured["prompt"])
+        self.assertIn("数据趋势与多组数据必须画图", prompt)
+        self.assertIn("必须在完成数据检索、原文读取和口径核验后调用 `render_python_chart`", prompt)
+        self.assertIn("不能只给文字或表格", prompt)
+        self.assertIn("无法生成可靠图表", prompt)
+        self.assertIn("绝对不得补造数据点", prompt)
+
     def test_without_force_web_search_hides_web_tools_without_toggle_notice(self) -> None:
         captured: dict[str, object] = {}
 
