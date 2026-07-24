@@ -646,6 +646,22 @@ def _search_date(value: Any) -> str:
         return match.group(0).replace("/", "-") if match else text[:10]
 
 
+def _timestamp_hkt(value: Any) -> datetime | None:
+    text = _text(value, 80)
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.strip().replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            parsed = parsedate_to_datetime(text)
+        except (TypeError, ValueError, OverflowError):
+            return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=HKT)
+    return parsed.astimezone(HKT)
+
+
 def _category_label(item: dict[str, Any]) -> str:
     text = " ".join(
         (
@@ -1505,7 +1521,18 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
     if not search_date:
         return False, "缺少检索日期"
     if source_date != search_date:
-        return False, "非检索当日发布"
+        published_at = _timestamp_hkt(
+            item.get("published_at") or item.get("source_date")
+        )
+        window_start = _timestamp_hkt(item.get("search_window_start"))
+        window_end = _timestamp_hkt(item.get("search_window_end"))
+        if not (
+            published_at
+            and window_start
+            and window_end
+            and window_start <= published_at <= window_end
+        ):
+            return False, "不在明确检索时间窗口"
     title_years = {int(value) for value in re.findall(r"(?<!\d)(20\d{2})(?!\d)", title)}
     if title_years and int(search_date[:4]) not in title_years and max(title_years) < int(search_date[:4]):
         return False, "标题显示旧年份"

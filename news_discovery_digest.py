@@ -21,6 +21,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import strategic_briefing
+from local_competitor_keywords import mandatory_search_groups, priority_for
 
 
 ROOT = Path(__file__).resolve().parent
@@ -90,10 +91,10 @@ def _term_matches(text: str, term: str) -> bool:
     term = _clean_text(term, 120).strip('"\' ')
     if not term:
         return False
-    lowered = text.lower()
+    lowered = re.sub(r"\s*&\s*", " ", text.lower())
     pieces = [part.strip() for part in re.split(r"[/\\,，；;\n]+", term) if part.strip()]
     for piece in pieces or [term]:
-        token = piece.lower().replace("&", " ").strip()
+        token = re.sub(r"\s*&\s*", " ", piece.lower()).strip()
         if not token:
             continue
         if re.fullmatch(r"[a-z0-9.+-]+", token):
@@ -118,6 +119,7 @@ def _parse_news_feed(
     base_query: str,
     start_at: datetime,
     end_at: datetime,
+    canonical_competitor: str = "",
 ) -> list[dict[str, Any]]:
     root = ET.fromstring(raw)
     output: list[dict[str, Any]] = []
@@ -153,22 +155,38 @@ def _parse_news_feed(
         searchable = f"{relevance_text} {source}"
         digest = hashlib.sha1(f"{title.lower()}|{source.lower()}".encode("utf-8")).hexdigest()[:10]
         lowered = searchable.lower()
-        output.append(
-            {
-                "news_id": f"NEWS-{published_at:%Y%m%d}-{digest}",
-                "title": title,
-                "url": link,
-                "source": source or "公开新闻来源",
-                "published_at": published_at.isoformat(timespec="seconds"),
-                "search_date": end_at.astimezone(HKT).date().isoformat(),
-                "retrieved_at": end_at.astimezone(HKT).isoformat(timespec="seconds"),
-                "module": module,
-                "keywords": [item for item in keywords if _term_matches(searchable, item)][:5],
-                "snippet": snippet,
-                "is_hong_kong": any(term in lowered for term in LOCAL_TERMS),
-                "query": base_query,
-            }
-        )
+        matched_keywords = [
+            item for item in keywords if _term_matches(searchable, item)
+        ][:5]
+        if canonical_competitor:
+            matched_keywords = list(
+                dict.fromkeys([canonical_competitor, *matched_keywords])
+            )[:6]
+        candidate = {
+            "news_id": f"NEWS-{published_at:%Y%m%d}-{digest}",
+            "title": title,
+            "url": link,
+            "source": source or "公开新闻来源",
+            "published_at": published_at.isoformat(timespec="seconds"),
+            "search_date": end_at.astimezone(HKT).date().isoformat(),
+            "search_window_start": start_at.astimezone(HKT).isoformat(
+                timespec="seconds"
+            ),
+            "search_window_end": end_at.astimezone(HKT).isoformat(
+                timespec="seconds"
+            ),
+            "retrieved_at": end_at.astimezone(HKT).isoformat(timespec="seconds"),
+            "module": module,
+            "keywords": matched_keywords,
+            "snippet": snippet,
+            "is_hong_kong": bool(canonical_competitor)
+            or any(term in lowered for term in LOCAL_TERMS),
+            "query": base_query,
+        }
+        if canonical_competitor:
+            candidate["canonical_competitor"] = canonical_competitor
+            candidate["search_origin"] = "mandatory_local_competitor"
+        output.append(candidate)
     return output
 
 
@@ -176,6 +194,7 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
     base_query = _clean_text(plan.get("fallback_query") or plan.get("query"), 1400)
     module = _clean_text(plan.get("module"), 100) or "其他"
     keywords = [_clean_text(item, 120) for item in (plan.get("keywords") or []) if _clean_text(item, 120)]
+    canonical_competitor = _clean_text(plan.get("canonical_competitor"), 120)
     if not base_query:
         return []
     if module in {"香港本地新闻", "政策/法规类"}:
@@ -224,6 +243,7 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
                     base_query=base_query,
                     start_at=start_at,
                     end_at=end_at,
+                    canonical_competitor=canonical_competitor,
                 )
             )
             successful_feeds += 1
@@ -237,7 +257,14 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
 def _deduplicate(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     seen: set[str] = set()
     output: list[dict[str, Any]] = []
-    for item in sorted(items, key=lambda row: row.get("published_at") or "", reverse=True):
+    for item in sorted(
+        items,
+        key=lambda row: (
+            row.get("published_at") or "",
+            bool(row.get("canonical_competitor")),
+        ),
+        reverse=True,
+    ):
         key = re.sub(r"[^a-z0-9\u3400-\u9fff]+", "", _clean_text(item.get("title"), 300).lower())
         if not key or key in seen:
             continue
@@ -246,12 +273,7 @@ def _deduplicate(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return output
 
 
-COMPETITOR_NEWS_QUERIES: tuple[tuple[str, ...], ...] = (
-    ("HKT", "Hong Kong Telecommunications", "香港电讯", "香港電訊"),
-    ("PCCW", "电讯盈科", "電訊盈科"),
-    ("csl", "1O1O", "Club Sim"),
-    ("HKBN", "SmarTone", "HGC", "3 Hong Kong", "i-CABLE"),
-    ("China Telecom", "China Unicom", "CTExcel", "CUniq"),
+BENCHMARK_OPERATOR_QUERIES: tuple[tuple[str, ...], ...] = (
     ("Vodafone", "BT Group", "Deutsche Telekom", "Telefonica"),
     ("AT&T", "Verizon", "T-Mobile", "SK Telecom", "Singtel"),
     ("NTT Docomo", "KDDI", "Telstra", "Airtel", "SoftBank"),
@@ -281,11 +303,49 @@ PRIORITY_NEWS_QUERIES: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
+def _mandatory_competitor_plans() -> list[dict[str, Any]]:
+    plans: list[dict[str, Any]] = []
+    for group in mandatory_search_groups():
+        names = tuple(group["terms"])
+        query = " OR ".join(f'"{name}"' for name in names)
+        plans.append(
+            {
+                "module": "竞争对手",
+                "query": query,
+                "fallback_query": query,
+                "keywords": list(names),
+                "canonical_competitor": group["canonical"],
+                "search_origin": "mandatory_local_competitor",
+            }
+        )
+    return plans
+
+
 def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, Any]], list[str], dict[str, Any]]:
-    spec = strategic_briefing.read_monitoring_spec()
-    base_plans = strategic_briefing._query_plans(spec, strategic_briefing._load_state())
-    competitor_plans: list[dict[str, Any]] = []
-    for names in COMPETITOR_NEWS_QUERIES:
+    errors: list[str] = []
+    try:
+        spec = strategic_briefing.read_monitoring_spec()
+        base_plans = strategic_briefing._query_plans(
+            spec,
+            strategic_briefing._load_state(),
+        )
+    except Exception as exc:
+        # The fixed competitor floor must continue even if the editable Feishu
+        # monitoring sheet is unavailable or temporarily contains no keywords.
+        spec = {
+            "module_count": 0,
+            "keyword_count": 0,
+            "modules": [],
+            "source_urls": [],
+            "fixed_competitor_fallback": True,
+        }
+        base_plans = []
+        errors.append(
+            "监测表不可用，已继续执行后台固定竞对词库: "
+            f"{type(exc).__name__}: {_clean_text(exc, 160)}"
+        )
+    competitor_plans = _mandatory_competitor_plans()
+    for names in BENCHMARK_OPERATOR_QUERIES:
         query = " OR ".join(f'"{name}"' for name in names)
         competitor_plans.append(
             {
@@ -309,7 +369,6 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         )
     plans = competitor_plans + priority_plans + base_plans
     all_items: list[dict[str, Any]] = []
-    errors: list[str] = []
     with ThreadPoolExecutor(max_workers=SEARCH_WORKERS) as executor:
         future_map = {
             executor.submit(
@@ -331,6 +390,9 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
     deduplicated = _deduplicate(all_items)
     module_order = {str(plan.get("module") or "其他"): index for index, plan in enumerate(plans)}
     def competitor_priority(item: dict[str, Any]) -> int:
+        canonical = str(item.get("canonical_competitor") or "")
+        if canonical:
+            return priority_for(canonical)
         text = " ".join(
             str(item.get(key) or "")
             for key in ("title", "snippet", "query", "keywords")

@@ -113,7 +113,11 @@ def _is_noise(item: dict[str, Any]) -> bool:
         snippet_for_relevance = snippet_for_relevance.replace(source.lower(), " ")
     content = f"{title.lower()} {snippet_for_relevance}"
     has_1010_brand = bool(re.search(r"(?<!\d)1010(?:\s*(?:hk|香港|mobile)|\b)", content))
-    has_carrier = _contains_any(content, _carrier_terms) or has_1010_brand
+    has_carrier = (
+        bool(str(item.get("canonical_competitor") or "").strip())
+        or _contains_any(content, _carrier_terms)
+        or has_1010_brand
+    )
     has_strategy = has_carrier or _contains_any(content, _strategic_terms)
 
     matched_keywords = {str(value).lower() for value in item.get("keywords", [])}
