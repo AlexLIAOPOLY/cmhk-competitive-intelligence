@@ -10031,3 +10031,52 @@ body.report-library-open::before {
     max-height: none;
   }
 }
+
+/* Flatten the cockpit shell and remove the decorative title band. */
+.console-shell {
+  margin-top: 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.operations {
+  gap: 10px;
+}
+
+.page-titlebar {
+  display: none;
+}
+
+.command-strip {
+  margin: 0 16px;
+  border: 1px solid rgba(29, 100, 142, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: none;
+}
+
+.insight-board {
+  padding: 0 16px 16px;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.signal-overview,
+.collection-overview,
+.strategy-ticker {
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+@media (min-width: 1501px) and (min-height: 850px) {
+  .insight-board {
+    grid-template-rows: 104px minmax(430px, calc(100vh - 281px));
+  }
+
+  .signal-overview,
+  .collection-overview {
+    height: calc(100vh - 281px);
+  }
+}
