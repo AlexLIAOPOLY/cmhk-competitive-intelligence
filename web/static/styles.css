@@ -10075,3 +10075,89 @@ body.report-library-open::before {
     height: calc(100vh - 281px);
   }
 }
+
+/* Flat information board: hierarchy comes from spacing and rules, not cards. */
+.command-strip {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(29, 100, 142, 0.16);
+  border-radius: 0;
+  background: transparent;
+}
+
+.insight-board::before {
+  display: none;
+}
+
+.strategy-ticker {
+  border: 0;
+  border-bottom: 1px solid rgba(29, 100, 142, 0.16);
+  border-radius: 0;
+  background: transparent;
+}
+
+.strategy-ticker-list {
+  background: transparent;
+}
+
+.signal-overview,
+.collection-overview {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.collection-overview {
+  border-left: 1px solid rgba(29, 100, 142, 0.14);
+}
+
+.signal-kpi,
+.collection-kpi-grid > div {
+  border: 0;
+  border-right: 1px solid rgba(29, 100, 142, 0.13);
+  border-radius: 0;
+  background: transparent;
+}
+
+.signal-kpi.is-primary {
+  background: transparent;
+}
+
+.signal-kpi:last-child,
+.collection-kpi-grid > div:last-child {
+  border-right: 0;
+}
+
+.signal-chart-card,
+.signal-topic-card,
+.collection-section {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.signal-topic-card {
+  border-left: 1px solid rgba(29, 100, 142, 0.13);
+}
+
+.collection-section {
+  border-top: 1px solid rgba(29, 100, 142, 0.13);
+}
+
+.signal-overview-footer {
+  border-top: 1px solid rgba(29, 100, 142, 0.12);
+  border-radius: 0;
+  background: transparent;
+}
+
+@media (max-width: 900px) {
+  .collection-overview,
+  .signal-topic-card {
+    border-left: 0;
+  }
+
+  .collection-overview {
+    border-top: 1px solid rgba(29, 100, 142, 0.14);
+  }
+}
