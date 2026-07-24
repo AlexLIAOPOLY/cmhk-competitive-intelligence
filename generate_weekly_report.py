@@ -49,11 +49,14 @@ BIWEEKLY_WINDOW_DAYS = 14
 MIN_WEEKLY_DETAIL_CHARS = 120
 MAX_WEEKLY_DETAIL_CHARS = 300
 WEEKLY_WRITER_BATCH_SIZE = 5
+WEEKLY_WRITER_RETRY_WORKERS = 4
+WEEKLY_WRITER_TIMEOUT_SECONDS = 60
 WEEKLY_WRITER_PROMPT_VERSION = "strategic-internal-writer-v1"
-WEEKLY_REVIEW_BATCH_SIZE = 4
+WEEKLY_REVIEW_BATCH_SIZE = 5
+WEEKLY_REVIEW_TIMEOUT_SECONDS = 75
 WEEKLY_REVIEW_PROMPT_VERSION = "strategic-internal-reviewer-v2-web-verified"
 MIN_WEEKLY_REPORT_ITEMS = 4
-RECENT_ARTICLE_CACHE_VERSION = "recent-articles-v7"
+RECENT_ARTICLE_CACHE_VERSION = "recent-articles-v10"
 
 
 def dated_weekly_docx_path(
@@ -1053,7 +1056,7 @@ def _call_weekly_writer_llm(items: list[dict]) -> dict:
     )
     try:
         wait_for_internal_ai_slot("weekly-report-writer")
-        with urlopen_with_local_proxy_fallback(request, timeout=120) as response:
+        with urlopen_with_local_proxy_fallback(request, timeout=WEEKLY_WRITER_TIMEOUT_SECONDS) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:500]
@@ -1181,6 +1184,7 @@ def enrich_weekly_items_with_llm(
     items: list[dict],
     progress=print,
     bypass_cache: bool | None = None,
+    fail_on_unresolved: bool = True,
 ) -> list[dict]:
     """Rewrite title/detail in small batches while keeping all evidence fields locked."""
     enriched = [dict(item) for item in items]
@@ -1283,18 +1287,29 @@ def enrich_weekly_items_with_llm(
             progress(
                 f"[周报 3/7] 批次{batch_index + 1}有{len(unresolved_ids)}条未通过质量校验，正在逐条重试……"
             )
-        for item_id in unresolved_ids:
+        def retry_writer_item(item_id: str) -> tuple[str, list[dict]]:
             try:
                 retry_response = _call_weekly_writer_llm([payload_by_id[item_id]])
-                retry_items = retry_response.get("items") or []
-                for result in retry_items:
-                    candidate = dict(result)
-                    if len(retry_items) == 1:
-                        candidate["id"] = item_id
-                    if clean_text(candidate.get("id")) == item_id and apply_result(candidate):
-                        break
+                return item_id, retry_response.get("items") or []
             except Exception:
-                continue
+                return item_id, []
+
+        if unresolved_ids:
+            with ThreadPoolExecutor(
+                max_workers=min(WEEKLY_WRITER_RETRY_WORKERS, len(unresolved_ids))
+            ) as executor:
+                retry_futures = {
+                    executor.submit(retry_writer_item, item_id): item_id
+                    for item_id in unresolved_ids
+                }
+                for future in as_completed(retry_futures):
+                    item_id, retry_items = future.result()
+                    for result in retry_items:
+                        candidate = dict(result)
+                        if len(retry_items) == 1:
+                            candidate["id"] = item_id
+                        if clean_text(candidate.get("id")) == item_id and apply_result(candidate):
+                            break
         fallback_count = len(batch_refs) - generated
         progress(
             f"[周报 3/7] 批次{batch_index + 1}/{total_batches}完成：模型生成{generated}条，"
@@ -1323,6 +1338,7 @@ def enrich_weekly_items_with_llm(
             )
         repair_rows = run_web_research(repair_requests, limit=5, workers=4)
         repair_by_id = {clean_text(row.get("id")): row for row in repair_rows}
+        repair_payloads: dict[int, dict] = {}
         for index in repair_indexes:
             item = enriched[index]
             item_id = f"W{index + 1:03d}"
@@ -1334,7 +1350,7 @@ def enrich_weekly_items_with_llm(
                 "error": research.get("error") or "",
                 "repairAttempt": True,
             }
-            repair_payload = {
+            repair_payloads[index] = {
                 "id": item_id,
                 "section": item.get("section") or "",
                 "subject": item.get("subject") or item.get("tag") or "",
@@ -1357,10 +1373,29 @@ def enrich_weekly_items_with_llm(
                     "请基于原始事实及联网结果修成完整详实的一段，不能删掉该条。"
                 ),
             }
+        progress(
+            f"[周报 3/7] 已取得联网补充证据，正在并行修复{len(repair_payloads)}条正文，"
+            f"并发上限{WEEKLY_WRITER_RETRY_WORKERS}。"
+        )
+
+        def repair_writer_item(index: int) -> tuple[int, dict]:
             try:
-                response = _call_weekly_writer_llm([repair_payload])
+                return index, _call_weekly_writer_llm([repair_payloads[index]])
             except Exception:
-                continue
+                return index, {}
+
+        with ThreadPoolExecutor(
+            max_workers=min(WEEKLY_WRITER_RETRY_WORKERS, len(repair_payloads))
+        ) as executor:
+            repair_futures = {
+                executor.submit(repair_writer_item, index): index
+                for index in repair_payloads
+            }
+            repair_responses = [future.result() for future in as_completed(repair_futures)]
+
+        for index, response in repair_responses:
+            item = enriched[index]
+            item_id = f"W{index + 1:03d}"
             for result in response.get("items") or []:
                 candidate = dict(result)
                 candidate["id"] = item_id
@@ -1383,7 +1418,7 @@ def enrich_weekly_items_with_llm(
             for index in repair_indexes
             if enriched[index].get("writerStatus") == "fallback"
         ]
-        if unresolved_titles:
+        if unresolved_titles and fail_on_unresolved:
             raise RuntimeError(
                 "周报数据修复后仍有条目未通过详细写作门禁，已停止整份报告，不能静默删减："
                 + "；".join(unresolved_titles)
@@ -1451,7 +1486,10 @@ def _call_weekly_quality_reviewer_llm(items: list[dict]) -> dict:
     )
     try:
         wait_for_internal_ai_slot("weekly-report-reviewer")
-        with urlopen_with_local_proxy_fallback(request, timeout=150) as response:
+        with urlopen_with_local_proxy_fallback(
+            request,
+            timeout=WEEKLY_REVIEW_TIMEOUT_SECONDS,
+        ) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:500]
@@ -1536,9 +1574,12 @@ def review_weekly_items_with_ai(
     items: list[dict],
     progress=print,
     bypass_cache: bool = False,
+    replacement_candidates: list[dict] | None = None,
 ) -> tuple[list[dict], dict]:
     """Independently approve/revise/reject every item and return only reviewed items."""
     candidates = [dict(item) for item in items]
+    available_replacements = [dict(item) for item in (replacement_candidates or [])]
+    review_replacement_count = 0
     if not candidates:
         raise RuntimeError("没有可供AI质量审核的双周报条目")
     config = load_ai_config(include_key=True)
@@ -1575,6 +1616,31 @@ def review_weekly_items_with_ai(
                 "detail": item.get("detail") or "",
             },
         }
+
+    def normalized_response_items(response: dict, fallback_id: str = "") -> list[dict]:
+        items_value = response.get("items")
+        if isinstance(items_value, list):
+            return [item for item in items_value if isinstance(item, dict)]
+        if not fallback_id:
+            return []
+        scores = _review_scores(response.get("scores") or response)
+        decision = _normalized_review_decision(response.get("decision"))
+        if decision not in {"approve", "revise", "reject"} and len(scores) == 4:
+            decision = "approve" if min(scores.values()) >= 4 else "reject"
+        if decision not in {"approve", "revise", "reject"}:
+            return []
+        normalized = (
+            dict(response)
+            if isinstance(response.get("scores"), dict)
+            else {
+                "issues": response.get("issues") or [],
+                "reason": response.get("reason") or "",
+            }
+        )
+        normalized["id"] = fallback_id
+        normalized["decision"] = decision
+        normalized["scores"] = scores
+        return [normalized]
 
     def apply_result(result: dict, index: int, cache_key: str, from_cache: bool = False) -> bool:
         source_item = candidates[index]
@@ -1673,7 +1739,8 @@ def review_weekly_items_with_ai(
             completed = set()
             try:
                 response = _call_weekly_reviewer_llm(payload)
-                for result in response.get("items") or []:
+                fallback_id = payload[0]["id"] if len(payload) == 1 else ""
+                for result in normalized_response_items(response, fallback_id):
                     item_id = clean_text(result.get("id"))
                     ref = id_to_ref.get(item_id)
                     if ref and item_id not in completed and apply_result(result, *ref):
@@ -1687,7 +1754,7 @@ def review_weekly_items_with_ai(
                 single_payload = next(entry for entry in payload if entry["id"] == item_id)
                 try:
                     response = _call_weekly_reviewer_llm([single_payload])
-                    response_items = response.get("items") or []
+                    response_items = normalized_response_items(response, item_id)
                     for result in response_items:
                         candidate = dict(result)
                         if len(response_items) == 1:
@@ -1746,10 +1813,190 @@ def review_weekly_items_with_ai(
                 response = _call_weekly_reviewer_llm([payload])
             except Exception:
                 continue
-            for result in response.get("items") or []:
+            for result in normalized_response_items(response, payload["id"]):
                 candidate = dict(result)
                 candidate["id"] = payload["id"]
                 if apply_result(candidate, index, cache_key):
+                    break
+
+    rejected_indexes = [
+        index
+        for index, entry in audit_by_index.items()
+        if entry.get("decision") == "reject"
+    ]
+    if rejected_indexes:
+        progress(
+            f"[周报 5/7] {len(rejected_indexes)}条经审稿模型修订后仍未通过，"
+            "正在改由写作模型依据锁定资料和联网证据重新撰写，再交独立审稿模型复审。"
+        )
+
+        def rewrite_rejected_item(index: int) -> tuple[int, dict | None]:
+            item = candidates[index]
+            item_id = f"W{index + 1:03d}"
+            payload = {
+                "id": item_id,
+                "section": item.get("section") or "",
+                "subject": item.get("subject") or item.get("tag") or "",
+                "source_name": item.get("sourceName") or "公开来源",
+                "event_date": item.get("eventAt") or "",
+                "existing_title": item.get("originalTitle") or item.get("title") or "",
+                "required_fact_ids": ["F001", "F002"],
+                "facts": [
+                    {
+                        "fact_id": "F001",
+                        "value": clean_text(item.get("rawDetail") or item.get("detail"), 6000),
+                    },
+                    {
+                        "fact_id": "F002",
+                        "value": json.dumps(item.get("webResearch") or {}, ensure_ascii=False),
+                    },
+                ],
+                "correction": (
+                    "该条未通过独立审稿。请重新撰写120至300字、至少3个完整句子的正式内参正文；"
+                    "只能使用锁定原始资料及联网结果，不得新增事实、改变日期或删除该条。"
+                ),
+            }
+            try:
+                response = _call_weekly_writer_llm([payload])
+            except Exception:
+                return index, None
+            for result in normalized_response_items(response, payload["id"]):
+                candidate = dict(result)
+                candidate["id"] = item_id
+                normalized = _normalized_weekly_writer_result(candidate, item)
+                if normalized is not None:
+                    return index, normalized
+            return index, None
+
+        rewritten_indexes = []
+        with ThreadPoolExecutor(
+            max_workers=min(WEEKLY_WRITER_RETRY_WORKERS, len(rejected_indexes))
+        ) as executor:
+            futures = {
+                executor.submit(rewrite_rejected_item, index): index
+                for index in rejected_indexes
+            }
+            for future in as_completed(futures):
+                index, normalized = future.result()
+                if normalized is None:
+                    continue
+                candidates[index]["title"] = clean_text(normalized.get("title"), 60)
+                candidates[index]["detail"] = clean_text(
+                    normalized.get("detail"),
+                    MAX_WEEKLY_DETAIL_CHARS,
+                )
+                candidates[index]["writerStatus"] = "llm_rewritten_after_review"
+                rewritten_indexes.append(index)
+
+        for index in rewritten_indexes:
+            payload = review_payload(index)
+            payload["repair_required"] = {
+                "instruction": (
+                    "该条已经由写作模型依据锁定原始资料和联网证据完全重写。"
+                    "请重新独立审核；只有事实、详细度、价值和语言均达到4分才可通过。"
+                ),
+                "previous_review": audit_by_index.get(index) or {},
+            }
+            cache_key = _weekly_review_cache_key(candidates[index], model)
+            try:
+                response = _call_weekly_reviewer_llm([payload])
+            except Exception:
+                continue
+            for result in normalized_response_items(response, payload["id"]):
+                candidate = dict(result)
+                candidate["id"] = payload["id"]
+                if apply_result(candidate, index, cache_key):
+                    break
+
+    rejected_indexes = [
+        index
+        for index, entry in audit_by_index.items()
+        if entry.get("decision") == "reject"
+    ]
+    if rejected_indexes and available_replacements:
+        progress(
+            f"[周报 5/7] {len(rejected_indexes)}条重写后仍未通过，"
+            f"改用本轮剩余{len(available_replacements)}条已核验备用文章逐条替换、联网补证并复审。"
+        )
+        for index in rejected_indexes:
+            original_item = candidates[index]
+            while available_replacements:
+                replacement_index = next(
+                    (
+                        candidate_index
+                        for candidate_index, replacement in enumerate(available_replacements)
+                        if replacement.get("section") == original_item.get("section")
+                    ),
+                    0,
+                )
+                replacement = available_replacements.pop(replacement_index)
+                source_ids = list(original_item.get("sourceIds") or [])
+                replacement["sourceIds"] = source_ids
+                replacement["index"] = original_item.get("index") or index + 1
+                replacement["localIndex"] = original_item.get("localIndex") or 1
+                replacement["originalTitle"] = clean_text(replacement.get("title"), 180)
+                replacement_source = dict(replacement.get("_replacementSource") or {})
+                if source_ids:
+                    replacement_source["sourceId"] = source_ids[0]
+                replacement["_replacementSource"] = replacement_source
+                candidates[index] = replacement
+
+                item_id = f"W{index + 1:03d}"
+                query = (
+                    f"{replacement.get('sourceName') or ''} "
+                    f"{replacement.get('originalTitle') or replacement.get('title') or ''} "
+                    f"{replacement.get('eventAt') or ''} 官方 公告 详情"
+                )
+                research_rows = run_web_research(
+                    [{"id": item_id, "query": query}],
+                    limit=5,
+                    workers=1,
+                )
+                research = research_rows[0] if research_rows else {}
+                if not research.get("results"):
+                    continue
+                replacement["webResearch"] = {
+                    "query": research.get("query") or query,
+                    "provider": research.get("provider") or "",
+                    "results": research.get("results") or [],
+                    "error": research.get("error") or "",
+                    "reviewReplacement": True,
+                }
+                _, normalized = rewrite_rejected_item(index)
+                if normalized is None:
+                    continue
+                replacement["title"] = clean_text(normalized.get("title"), 60)
+                replacement["detail"] = clean_text(
+                    normalized.get("detail"),
+                    MAX_WEEKLY_DETAIL_CHARS,
+                )
+                replacement["writerStatus"] = "llm_review_replacement"
+                payload = review_payload(index)
+                payload["repair_required"] = {
+                    "instruction": (
+                        "原条目多次修复仍不合格，现已换成本轮另一篇具有明确发布日期和直达正文的文章。"
+                        "请结合新条目的锁定资料和实时联网证据独立审核。"
+                    )
+                }
+                cache_key = _weekly_review_cache_key(replacement, model)
+                try:
+                    response = _call_weekly_reviewer_llm([payload])
+                except Exception:
+                    continue
+                passed = False
+                for result in normalized_response_items(response, item_id):
+                    candidate = dict(result)
+                    candidate["id"] = item_id
+                    if apply_result(candidate, index, cache_key):
+                        passed = audit_by_index[index].get("decision") in {"approve", "revise"}
+                        if passed:
+                            break
+                if passed:
+                    review_replacement_count += 1
+                    progress(
+                        f"[周报 5/7] {item_id}已由联网核验备用文章替换并通过独立审核；"
+                        "报告条目数保持不变。"
+                    )
                     break
 
     if allow_cache:
@@ -1779,6 +2026,7 @@ def review_weekly_items_with_ai(
         "rejected": rejected,
         "includedItems": len(reviewed),
         "cacheEnabled": allow_cache,
+        "reviewReplacementCount": review_replacement_count,
         "items": audit_items,
     }
     unresolved = [
@@ -2597,14 +2845,74 @@ def _card_date_values(anchor) -> tuple[list[datetime], object | None]:
     return [], node
 
 
+ARTICLE_NAVIGATION_TITLES = {
+    "terms of service",
+    "privacy policy",
+    "cookie policy",
+    "accessibility",
+    "contact us",
+    "subscribe",
+    "sign in",
+    "log in",
+}
+ARTICLE_GENERIC_TITLES = {
+    "news",
+    "newsroom",
+    "skt newsroom",
+    "press release",
+    "latest news",
+    "partner article",
+    "contributed article",
+    "sponsored content",
+    "advertorial",
+}
+
+
+def _normalized_article_title(value: object) -> str:
+    title = clean_text(value, 220)
+    title = re.sub(r"\s+(?:[|–—-])\s+(?:Total Telecom|GSMA|ENISA|SKT Newsroom).*$", "", title, flags=re.I)
+    return clean_text(title, 180)
+
+
+def _is_navigation_article_title(value: object) -> bool:
+    title = _normalized_article_title(value).lower()
+    return (
+        title in ARTICLE_NAVIGATION_TITLES
+        or bool(re.fullmatch(r"latest releases?(?: more)?", title))
+        or title.endswith("latest releases")
+        or ">> latest releases" in title
+    )
+
+
+def _is_usable_article_title(value: object) -> bool:
+    title = _normalized_article_title(value)
+    return (
+        len(title) >= 12
+        and not _is_navigation_article_title(title)
+        and title.lower() not in ARTICLE_GENERIC_TITLES
+    )
+
+
+def _is_promotional_article_evidence(value: object) -> bool:
+    evidence = clean_text(value, 500).lower()
+    return bool(
+        re.match(
+            r"^(?:partner article|sponsored content|advertorial|paid content)\b",
+            evidence,
+        )
+    )
+
+
 def _article_title_from_card(anchor, card) -> str:
-    title = clean_text(anchor.get("title") or anchor.get_text(" ", strip=True), 180)
-    if len(title) >= 12 and title.lower() not in {"read article", "read more", "more", "view details"}:
+    title = _normalized_article_title(anchor.get("title") or anchor.get_text(" ", strip=True))
+    if _is_navigation_article_title(title):
+        return ""
+    if _is_usable_article_title(title):
         return title
     if card is not None:
         for heading in card.find_all(("h1", "h2", "h3", "h4", "h5")):
-            heading_text = clean_text(heading.get_text(" ", strip=True), 180)
-            if len(heading_text) >= 12:
+            heading_text = _normalized_article_title(heading.get_text(" ", strip=True))
+            if _is_usable_article_title(heading_text):
                 return heading_text
         text = clean_text(card.get_text(" ", strip=True), 220)
         text = re.sub(
@@ -2615,8 +2923,9 @@ def _article_title_from_card(anchor, card) -> str:
             flags=re.I,
         )
         text = re.sub(r"\bRead (?:article|more)\b", "", text, flags=re.I)
-        if len(clean_text(text)) >= 12:
-            return clean_text(text, 180)
+        text = _normalized_article_title(text)
+        if _is_usable_article_title(text):
+            return text
     return ""
 
 
@@ -2686,6 +2995,8 @@ def _discover_articles_from_list(
 
 
 def _fetch_article_evidence(article: dict) -> dict | None:
+    if _is_navigation_article_title(article.get("title")):
+        return None
     try:
         html_text = _fetch_public_html(article["url"], timeout=30)
     except Exception:
@@ -2709,6 +3020,8 @@ def _fetch_article_evidence(article: dict) -> dict | None:
         return None
     container = max(containers, key=lambda value: len(clean_text(value.get_text(" ", strip=True))))
     evidence = clean_text(container.get_text(" ", strip=True), 9000)
+    if _is_promotional_article_evidence(evidence):
+        return None
     page_heading = ""
     heading = container.find(("h1", "h2")) or soup.find("h1")
     if heading is not None:
@@ -2716,15 +3029,26 @@ def _fetch_article_evidence(article: dict) -> dict | None:
     if len(evidence) < 180:
         return None
     item = dict(article)
-    generic_headings = {"news", "newsroom", "skt newsroom", "press release", "latest news"}
-    if len(page_heading) >= 12 and page_heading.lower() not in generic_headings:
-        item["title"] = page_heading
-    else:
-        item["title"] = article["title"]
+    meta_title = ""
+    for selector in ('meta[property="og:title"]', 'meta[name="twitter:title"]'):
+        element = soup.select_one(selector)
+        if element is not None and element.get("content"):
+            meta_title = _normalized_article_title(element.get("content"))
+            if _is_usable_article_title(meta_title):
+                break
+    document_title = _normalized_article_title(soup.title.get_text(" ", strip=True) if soup.title else "")
+    title_candidates = (page_heading, meta_title, document_title, article.get("title"))
+    resolved_title = next(
+        (_normalized_article_title(value) for value in title_candidates if _is_usable_article_title(value)),
+        "",
+    )
+    if not resolved_title:
+        return None
+    item["title"] = resolved_title
     item["rawDetail"] = evidence
     item["detail"] = evidence
     item["eventAt"] = article["publishedAt"]
-    item["subject"] = page_heading or article["title"]
+    item["subject"] = resolved_title
     item["sourceName"] = article.get("sourceName") or source_display_name(article.get("url"))
     item["section"] = strategic_section_for_content(
         item.get("section"),
@@ -2734,6 +3058,20 @@ def _fetch_article_evidence(article: dict) -> dict | None:
         row=int(item.get("row") or 0) or None,
     )
     return item
+
+
+def _cached_recent_article_is_usable(article: object) -> bool:
+    if not isinstance(article, dict):
+        return False
+    return (
+        _is_usable_article_title(article.get("title"))
+        and str(article.get("url") or "").startswith(("http://", "https://"))
+        and parse_report_date(article.get("publishedAt")) is not None
+        and len(clean_text(article.get("rawDetail") or article.get("detail"))) >= 180
+        and not _is_promotional_article_evidence(
+            article.get("rawDetail") or article.get("detail")
+        )
+    )
 
 
 def discover_recent_articles(
@@ -2782,6 +3120,7 @@ def discover_recent_articles(
         "listFetchFailures": 0,
         "discoveredLinks": 0,
         "verifiedArticles": 0,
+        "cacheRejectedArticles": 0,
         "cacheUsed": False,
     }
     if period is not None:
@@ -2808,10 +3147,17 @@ def discover_recent_articles(
     if same_window and cache_age is not None and timedelta(0) <= cache_age <= timedelta(hours=4):
         articles = cached.get("articles") or []
         if isinstance(articles, list):
-            audit["verifiedArticles"] = len(articles)
-            audit["cacheUsed"] = True
-            progress(f"[周报 2/7] 使用4小时内的近期文章缓存，共{len(articles)}条。")
-            return articles, audit
+            usable_articles = [article for article in articles if _cached_recent_article_is_usable(article)]
+            audit["cacheRejectedArticles"] = len(articles) - len(usable_articles)
+            if len(usable_articles) == len(articles):
+                audit["verifiedArticles"] = len(articles)
+                audit["cacheUsed"] = True
+                progress(f"[周报 2/7] 使用4小时内的近期文章缓存，共{len(articles)}条。")
+                return articles, audit
+            progress(
+                f"[周报 2/7] 近期缓存发现{audit['cacheRejectedArticles']}条导航页或伪标题，"
+                "正在重新联网发现正确文章，不能把脏条目交给写作模型。"
+            )
 
     progress(f"[周报 2/7] 正在刷新{len(list_sources)}个近期新闻列表并核验直达文章……")
     discovered = []
@@ -2836,10 +3182,15 @@ def discover_recent_articles(
     verified.sort(key=lambda item: (item["publishedAt"], item["title"]), reverse=True)
     audit["verifiedArticles"] = len(verified)
     if not verified and same_window and isinstance(cached.get("articles"), list):
-        verified = cached["articles"]
+        verified = [
+            article for article in cached["articles"] if _cached_recent_article_is_usable(article)
+        ]
         audit["verifiedArticles"] = len(verified)
         audit["cacheUsed"] = True
-        progress(f"[周报 2/7] 本次刷新未取得可用文章，已回退到上一份同窗口缓存{len(verified)}条。")
+        progress(
+            f"[周报 2/7] 本次刷新未取得可用文章，仅回退到上一份同窗口缓存中的"
+            f"{len(verified)}条合格文章，导航页和伪标题不会回流。"
+        )
     elif verified:
         payload = {
             "version": RECENT_ARTICLE_CACHE_VERSION,
@@ -2888,6 +3239,7 @@ def build_recent_evidence_weekly_model(
         period=period,
     )
     grouped: dict[str, list[dict]] = defaultdict(list)
+    reserve_articles: list[dict] = []
     seen = set()
     def article_priority(article: dict) -> tuple[int, int, str]:
         title = clean_text(article.get("title")).lower()
@@ -2907,8 +3259,46 @@ def build_recent_evidence_weekly_model(
         seen.add(key)
         section = article.get("section") if article.get("section") in SECTION_ORDER else "行业资讯"
         if len(grouped[section]) >= WEEKLY_SECTION_LIMITS.get(section, WEEKLY_MAX_PER_SECTION):
+            reserve_articles.append(article)
             continue
         grouped[section].append(article)
+
+    def source_from_article(article: dict, source_id: str) -> dict:
+        section = article.get("section") if article.get("section") in SECTION_ORDER else "行业资讯"
+        return {
+            "sourceId": source_id,
+            "row": article.get("row") or "",
+            "section": section,
+            "title": article.get("title") or "",
+            "url": article.get("url") or "",
+            "sourceName": article.get("sourceName") or source_display_name(article.get("url")),
+            "object": article.get("subject") or "",
+            "tag": article.get("tag") or "近期动态",
+            "publishedAt": article.get("publishedAt") or "",
+        }
+
+    def item_from_article(
+        article: dict,
+        source_id: str,
+        *,
+        index: int,
+        local_index: int,
+    ) -> dict:
+        section = article.get("section") if article.get("section") in SECTION_ORDER else "行业资讯"
+        return {
+            "row": article.get("row") or "",
+            "section": section,
+            "subject": article.get("subject") or "",
+            "tag": article.get("tag") or "近期动态",
+            "title": article.get("title") or "近期公开信息更新",
+            "detail": article.get("detail") or article.get("rawDetail") or "",
+            "rawDetail": article.get("rawDetail") or "",
+            "eventAt": article.get("publishedAt") or "",
+            "sourceIds": [source_id],
+            "sourceName": article.get("sourceName") or source_display_name(article.get("url")),
+            "index": index,
+            "localIndex": local_index,
+        }
 
     sources = []
     items_for_writing = []
@@ -2918,34 +3308,14 @@ def build_recent_evidence_weekly_model(
         for local_index, article in enumerate(grouped.get(section_name, []), start=1):
             source_id = f"S{source_index}"
             source_index += 1
-            sources.append(
-                {
-                    "sourceId": source_id,
-                    "row": article.get("row") or "",
-                    "section": section_name,
-                    "title": article.get("title") or "",
-                    "url": article.get("url") or "",
-                    "sourceName": article.get("sourceName") or source_display_name(article.get("url")),
-                    "object": article.get("subject") or "",
-                    "tag": article.get("tag") or "近期动态",
-                    "publishedAt": article.get("publishedAt") or "",
-                }
-            )
+            sources.append(source_from_article(article, source_id))
             items_for_writing.append(
-                {
-                    "row": article.get("row") or "",
-                    "section": section_name,
-                    "subject": article.get("subject") or "",
-                    "tag": article.get("tag") or "近期动态",
-                    "title": article.get("title") or "近期公开信息更新",
-                    "detail": article.get("detail") or article.get("rawDetail") or "",
-                    "rawDetail": article.get("rawDetail") or "",
-                    "eventAt": article.get("publishedAt") or "",
-                    "sourceIds": [source_id],
-                    "sourceName": article.get("sourceName") or source_display_name(article.get("url")),
-                    "index": global_index,
-                    "localIndex": local_index,
-                }
+                item_from_article(
+                    article,
+                    source_id,
+                    index=global_index,
+                    local_index=local_index,
+                )
             )
             global_index += 1
 
@@ -2953,9 +3323,76 @@ def build_recent_evidence_weekly_model(
         items_for_writing = enrich_weekly_items_with_llm(
             items_for_writing,
             progress=lambda message: print(message, flush=True),
+            fail_on_unresolved=False,
         )
+        replacement_count = 0
+        replacement_round = 0
+        while True:
+            unresolved_indexes = [
+                index
+                for index, item in enumerate(items_for_writing)
+                if item.get("writerStatus") == "fallback"
+            ]
+            if not unresolved_indexes:
+                break
+            if not reserve_articles:
+                unresolved_titles = [
+                    clean_text(
+                        items_for_writing[index].get("originalTitle")
+                        or items_for_writing[index].get("title"),
+                        80,
+                    )
+                    for index in unresolved_indexes
+                ]
+                raise RuntimeError(
+                    "周报写作未通过且本轮已核验替代文章耗尽，已停止整份报告，不能静默删减："
+                    + "；".join(unresolved_titles)
+                )
+            replacement_round += 1
+            replaced_indexes = []
+            for index in unresolved_indexes:
+                if not reserve_articles:
+                    break
+                current_section = items_for_writing[index].get("section")
+                reserve_index = next(
+                    (
+                        candidate_index
+                        for candidate_index, article in enumerate(reserve_articles)
+                        if article.get("section") == current_section
+                    ),
+                    0,
+                )
+                article = reserve_articles.pop(reserve_index)
+                source_id = str((items_for_writing[index].get("sourceIds") or [""])[0])
+                replacement_item = item_from_article(
+                    article,
+                    source_id,
+                    index=int(items_for_writing[index].get("index") or index + 1),
+                    local_index=int(items_for_writing[index].get("localIndex") or 1),
+                )
+                items_for_writing[index] = replacement_item
+                for source_index_value, source in enumerate(sources):
+                    if source.get("sourceId") == source_id:
+                        sources[source_index_value] = source_from_article(article, source_id)
+                        break
+                replaced_indexes.append(index)
+                replacement_count += 1
+            print(
+                f"[周报 3/7] 第{replacement_round}轮已用{len(replaced_indexes)}条"
+                "本轮联网核验的备用文章替换不可写条目，保持报告条目数不变并重新写作。",
+                flush=True,
+            )
+            rewritten = enrich_weekly_items_with_llm(
+                [items_for_writing[index] for index in replaced_indexes],
+                progress=lambda message: print(message, flush=True),
+                fail_on_unresolved=False,
+            )
+            for index, item in zip(replaced_indexes, rewritten):
+                items_for_writing[index] = item
+        discovery_audit["writerReplacementCount"] = replacement_count
     else:
         print("[周报 3/7] 没有通过标题、发布日期和直达正文三重核验的近期事件，不使用旧内容填充。", flush=True)
+        discovery_audit["writerReplacementCount"] = 0
     discovery_audit["writerFallbackExcluded"] = 0
     used_source_ids = {source_id for item in items_for_writing for source_id in item.get("sourceIds") or []}
     sources = [source for source in sources if source.get("sourceId") in used_source_ids]
@@ -3015,6 +3452,13 @@ def build_recent_evidence_weekly_model(
         "toc": toc,
         "sections": sections,
         "sources": sources,
+        "_reviewReplacementCandidates": [
+            {
+                **item_from_article(article, "", index=0, local_index=0),
+                "_replacementSource": source_from_article(article, ""),
+            }
+            for article in reserve_articles
+        ],
     }
     WEEKLY_USAGE_AUDIT.write_text(
         json.dumps(
@@ -3049,6 +3493,7 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         progress=progress,
         bypass_cache=clean_text(os.environ.get("CMHK_WEEKLY_BYPASS_REVIEW_CACHE")).lower()
         in {"1", "true", "yes", "on"},
+        replacement_candidates=reviewed_model.get("_reviewReplacementCandidates") or [],
     )
     if len(reviewed_items) != len(initial_items):
         raise RuntimeError(
@@ -3071,6 +3516,13 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         for source in reviewed_model.get("sources") or []
         if source.get("sourceId")
     }
+    for item in reviewed_items:
+        replacement_source = item.get("_replacementSource")
+        replacement_source_ids = item.get("sourceIds") or []
+        if isinstance(replacement_source, dict) and replacement_source_ids:
+            source = deepcopy(replacement_source)
+            source["sourceId"] = replacement_source_ids[0]
+            source_by_id[replacement_source_ids[0]] = source
     source_id_map = {old_id: f"S{index}" for index, old_id in enumerate(used_source_ids, start=1)}
     rebuilt_sources = []
     for old_id in used_source_ids:

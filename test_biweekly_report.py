@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
+from bs4 import BeautifulSoup
 from docx import Document
 
 import generate_weekly_report as report
@@ -339,6 +340,10 @@ class BiweeklyContentQualityTests(unittest.TestCase):
         self.assertTrue(llm_call.called, "此用例必须真正走到LLM超时回退分支")
         web_search.assert_called_once()
         self.assertTrue(progress_events, "LLM写作、联网修复和失败关闭必须向页面输出可见进度")
+        progress_text = " ".join(str(args[0]) for args, _ in progress_events if args)
+        self.assertIn("并行修复", progress_text)
+        self.assertGreaterEqual(report.WEEKLY_WRITER_RETRY_WORKERS, 4)
+        self.assertLessEqual(report.WEEKLY_WRITER_TIMEOUT_SECONDS, 60)
 
     def test_social_livelihood_rows_are_classified_as_social_news(self) -> None:
         cases = [
@@ -407,6 +412,175 @@ class BiweeklyContentQualityTests(unittest.TestCase):
             ),
             "本地运营商资讯",
         )
+
+
+class RecentArticleQualityTests(unittest.TestCase):
+    def test_navigation_link_is_not_treated_as_a_news_article(self) -> None:
+        soup = BeautifulSoup(
+            '<article><time>July 24, 2026</time><h3>National economy update</h3>'
+            '<a href="/terms">Terms of Service</a></article>',
+            "html.parser",
+        )
+
+        self.assertEqual(report._article_title_from_card(soup.a, soup.article), "")
+
+    def test_latest_releases_navigation_title_is_rejected(self) -> None:
+        title = "National Bureau of Statistics of China >> Latest Releases"
+        self.assertTrue(report._is_navigation_article_title(title))
+        self.assertTrue(report._is_navigation_article_title("Latest Release More"))
+        self.assertFalse(
+            report._cached_recent_article_is_usable(
+                {
+                    "title": title,
+                    "url": "https://www.stats.gov.cn/english/PressRelease/",
+                    "publishedAt": "2026-07-24",
+                    "rawDetail": "有效正文" * 100,
+                }
+            )
+        )
+
+    def test_partner_article_is_not_admitted_as_independent_news(self) -> None:
+        self.assertTrue(
+            report._is_promotional_article_evidence(
+                "Partner Article This promotional feature discusses a vendor solution."
+            )
+        )
+        self.assertFalse(
+            report._cached_recent_article_is_usable(
+                {
+                    "title": "5G-A: A mobile foundation for embodied AI",
+                    "url": "https://totaltele.com/example",
+                    "publishedAt": "2026-07-22",
+                    "rawDetail": "Partner Article " + "推广正文" * 100,
+                }
+            )
+        )
+
+    def test_generic_contribution_label_uses_the_real_card_heading(self) -> None:
+        expected = "The second fiber migration: Why Germany’s FTTH pioneers are moving to XGS-PON"
+        soup = BeautifulSoup(
+            f'<article><time>July 21, 2026</time><h3>{expected}</h3>'
+            '<a href="/article">Contributed Article</a></article>',
+            "html.parser",
+        )
+
+        self.assertEqual(report._article_title_from_card(soup.a, soup.article), expected)
+
+    def test_article_page_recovers_real_title_from_metadata(self) -> None:
+        expected = "The second fiber migration: Why Germany’s FTTH pioneers are moving to XGS-PON"
+        html = (
+            f'<html><head><meta property="og:title" content="{expected} | Total Telecom"></head>'
+            '<body><main><h2>Contributed Article</h2><p>'
+            + ("Verified network migration evidence. " * 20)
+            + "</p></main></body></html>"
+        )
+        source = {
+            "title": "Contributed Article",
+            "url": "https://totaltele.com/article",
+            "publishedAt": "2026-07-21",
+            "section": "行业资讯",
+            "row": 9,
+        }
+
+        with patch.object(report, "_fetch_public_html", return_value=html):
+            item = report._fetch_article_evidence(source)
+
+        self.assertIsNotNone(item)
+        self.assertEqual(item["title"], expected)
+
+    def test_dirty_fresh_cache_triggers_live_replacement_discovery(self) -> None:
+        now = datetime(2026, 7, 24, 10, 30, tzinfo=HKT)
+        replacement = {
+            "title": "Verified telecom infrastructure investment update",
+            "url": "https://totaltele.com/verified-update/",
+            "publishedAt": "2026-07-23",
+            "section": "行业资讯",
+            "tag": "行业动态",
+            "row": 9,
+            "rawDetail": "Verified evidence. " * 30,
+            "detail": "Verified evidence. " * 30,
+        }
+        cached = {
+            "version": report.RECENT_ARTICLE_CACHE_VERSION,
+            "fetchedAt": now.isoformat(),
+            "windowStart": "2026-07-11",
+            "windowEnd": "2026-07-24",
+            "articles": [
+                {
+                    "title": "Terms of Service",
+                    "url": "https://example.test/terms",
+                    "publishedAt": "2026-07-24",
+                    "rawDetail": "navigation " * 30,
+                }
+            ],
+        }
+        results = [{"row": 9, "raw_records": [{"url": "https://totaltele.com/"}]}]
+        progress: list[str] = []
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "recent.json"
+            cache_path.write_text(json.dumps(cached), encoding="utf-8")
+            with (
+                patch.object(report, "WEEKLY_EVENT_CACHE", cache_path),
+                patch.object(report, "_discover_articles_from_list", return_value=[replacement]) as discover,
+                patch.object(report, "_fetch_article_evidence", return_value=replacement),
+            ):
+                articles, audit = report.discover_recent_articles(
+                    results,
+                    now=now,
+                    progress=progress.append,
+                )
+
+        discover.assert_called_once()
+        self.assertEqual([item["title"] for item in articles], [replacement["title"]])
+        self.assertEqual(audit["cacheRejectedArticles"], 1)
+        self.assertTrue(any("重新联网发现正确文章" in message for message in progress))
+
+    def test_unwritable_items_are_replaced_without_reducing_report_count(self) -> None:
+        articles = [
+            {
+                "title": f"Telecom verified article {index:02d}",
+                "url": f"https://example.test/article-{index}",
+                "publishedAt": "2026-07-23",
+                "section": "行业资讯",
+                "tag": "行业动态",
+                "row": 9,
+                "sourceName": "测试来源",
+                "rawDetail": f"Verified evidence for article {index}. " * 20,
+                "detail": f"Verified evidence for article {index}. " * 20,
+            }
+            for index in range(1, 8)
+        ]
+        calls = 0
+
+        def fake_enrich(items, *args, **kwargs):
+            nonlocal calls
+            calls += 1
+            output = [dict(item) for item in items]
+            for index, item in enumerate(output):
+                item["writerStatus"] = "fallback" if calls == 1 and index < 2 else "llm"
+                if item["writerStatus"] == "llm":
+                    item["title"] = "已完成写作：" + item["title"]
+            return output
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            usage_path = Path(temp_dir) / "usage.json"
+            with (
+                patch.object(
+                    report,
+                    "discover_recent_articles",
+                    return_value=(articles, {"verifiedArticles": len(articles)}),
+                ),
+                patch.object(report, "enrich_weekly_items_with_llm", side_effect=fake_enrich),
+                patch.object(report, "WEEKLY_USAGE_AUDIT", usage_path),
+            ):
+                model = report.build_recent_evidence_weekly_model([])
+            usage = json.loads(usage_path.read_text(encoding="utf-8"))
+
+        output_items = [item for section in model["sections"] for item in section["items"]]
+        self.assertEqual(len(output_items), report.WEEKLY_SECTION_LIMITS["行业资讯"])
+        self.assertEqual(usage["dateAudit"]["writerReplacementCount"], 2)
+        self.assertEqual(len(model["sources"]), len(output_items))
+        self.assertTrue(all(item["writerStatus"] == "llm" for item in output_items))
 
 
 class BiweeklyDocxDirectoryTests(unittest.TestCase):

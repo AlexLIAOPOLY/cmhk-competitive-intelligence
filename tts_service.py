@@ -316,7 +316,7 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
     )
     try:
         wait_for_internal_ai_slot("tts-summary")
-        with urlopen_with_local_proxy_fallback(req, timeout=90) as resp:
+        with urlopen_with_local_proxy_fallback(req, timeout=25) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
             if provider == "openai":
                 output_parts = []

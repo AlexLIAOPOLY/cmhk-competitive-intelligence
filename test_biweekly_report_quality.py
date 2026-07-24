@@ -356,6 +356,217 @@ class IndependentReviewerTests(unittest.TestCase):
         self.assertEqual(rejected, [])
         self.assertTrue(progress_events)
 
+    def test_reviewer_rejection_triggers_writer_rewrite_and_final_review(self) -> None:
+        item = make_item("W001", 1)
+        rejected_response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "decision": "reject",
+                    "scores": {"factuality": 3, "detail": 3, "relevance": 4, "language": 4},
+                    "reason": "正文事实组织和详细度不足",
+                }
+            ]
+        }
+        rewritten_detail = detailed_text("写作模型依据锁定资料和联网证据重新组织了完整事实。")
+        writer_response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "status": "ok",
+                    "title": "联网证据支持的完整重写标题",
+                    "detail": rewritten_detail,
+                    "used_fact_ids": ["F001", "F002"],
+                }
+            ]
+        }
+        approved_response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "decision": "approve",
+                    "scores": {"factuality": 5, "detail": 5, "relevance": 4, "language": 5},
+                    "reason": "重写后达到发布门槛",
+                }
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch.object(
+                    report,
+                    "WEEKLY_REVIEW_CACHE",
+                    Path(temp_dir) / "review-cache.json",
+                    create=True,
+                ),
+                patch.object(
+                    report,
+                    "_call_weekly_quality_reviewer_llm",
+                    side_effect=[rejected_response, rejected_response, approved_response],
+                ) as reviewer_call,
+                patch.object(
+                    report,
+                    "_call_weekly_writer_llm",
+                    return_value=writer_response,
+                ) as writer_call,
+            ):
+                reviewed, audit = report.review_weekly_items_with_ai(
+                    [item],
+                    progress=lambda _message: None,
+                    bypass_cache=True,
+                )
+
+        self.assertEqual(reviewer_call.call_count, 3)
+        writer_call.assert_called_once()
+        self.assertEqual(len(reviewed), 1)
+        self.assertEqual(reviewed[0]["title"], "联网证据支持的完整重写标题")
+        self.assertEqual(reviewed[0]["detail"], rewritten_detail)
+        self.assertEqual(reviewed[0]["writerStatus"], "llm_rewritten_after_review")
+        self.assertEqual(audit["rejectedItems"], 0)
+
+    def test_single_item_score_only_review_response_is_normalized(self) -> None:
+        item = make_item("W001", 1)
+        score_only_response = {
+            "factuality": 5,
+            "detail": 5,
+            "relevance": 4,
+            "language": 5,
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch.object(
+                    report,
+                    "WEEKLY_REVIEW_CACHE",
+                    Path(temp_dir) / "review-cache.json",
+                    create=True,
+                ),
+                patch.object(
+                    report,
+                    "_call_weekly_quality_reviewer_llm",
+                    return_value=score_only_response,
+                ) as reviewer_call,
+                patch.object(
+                    report,
+                    "_call_weekly_writer_llm",
+                    side_effect=AssertionError("合格评分不应触发重写"),
+                ) as writer_call,
+            ):
+                reviewed, audit = report.review_weekly_items_with_ai(
+                    [item],
+                    progress=lambda _message: None,
+                    bypass_cache=True,
+                )
+
+        reviewer_call.assert_called_once()
+        writer_call.assert_not_called()
+        self.assertEqual(len(reviewed), 1)
+        self.assertEqual(reviewed[0]["reviewDecision"], "approve")
+        self.assertEqual(audit["approvedItems"], 1)
+        self.assertEqual(audit["rejectedItems"], 0)
+
+    def test_repeated_rejection_uses_verified_replacement_without_dropping_item(self) -> None:
+        item = make_item("W001", 1)
+        rejected_response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "decision": "reject",
+                    "scores": {"factuality": 3, "detail": 3, "relevance": 3, "language": 4},
+                    "reason": "当前条目仍不适合发布",
+                }
+            ]
+        }
+        rewritten_detail = detailed_text("原条目经过重写但仍由独立审核模型判定不适合发布。")
+        replacement_detail = detailed_text("备用文章依据锁定资料和联网结果形成了完整可核验正文。")
+        writer_responses = [
+            {
+                "items": [
+                    {
+                        "id": "W001",
+                        "status": "ok",
+                        "title": "原条目重写后的标题",
+                        "detail": rewritten_detail,
+                    }
+                ]
+            },
+            {
+                "items": [
+                    {
+                        "id": "W001",
+                        "status": "ok",
+                        "title": "备用文章重写后的标题",
+                        "detail": replacement_detail,
+                    }
+                ]
+            },
+        ]
+        approved_response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "decision": "approve",
+                    "scores": {"factuality": 5, "detail": 5, "relevance": 5, "language": 5},
+                    "reason": "备用文章通过全部门禁",
+                }
+            ]
+        }
+        replacement = make_item("R001", 9, title="备用文章原始标题")
+        replacement["_replacementSource"] = {
+            "sourceId": "",
+            "title": "备用文章原始标题",
+            "url": "https://example.test/replacement",
+            "sourceName": "测试来源",
+            "publishedAt": "2026-07-12",
+        }
+        research = {
+            "id": "W001",
+            "query": "备用文章",
+            "provider": "test-search",
+            "results": [{"title": "备用文章证据", "url": "https://example.test/evidence"}],
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch.object(
+                    report,
+                    "WEEKLY_REVIEW_CACHE",
+                    Path(temp_dir) / "review-cache.json",
+                    create=True,
+                ),
+                patch.object(
+                    report,
+                    "_call_weekly_quality_reviewer_llm",
+                    side_effect=[
+                        rejected_response,
+                        rejected_response,
+                        rejected_response,
+                        approved_response,
+                    ],
+                ),
+                patch.object(
+                    report,
+                    "_call_weekly_writer_llm",
+                    side_effect=writer_responses,
+                ),
+                patch.object(report, "run_web_research", return_value=[research]),
+            ):
+                reviewed, audit = report.review_weekly_items_with_ai(
+                    [item],
+                    progress=lambda _message: None,
+                    bypass_cache=True,
+                    replacement_candidates=[replacement],
+                )
+
+        self.assertEqual(len(reviewed), 1)
+        self.assertEqual(reviewed[0]["title"], "备用文章重写后的标题")
+        self.assertEqual(reviewed[0]["sourceIds"], item["sourceIds"])
+        self.assertEqual(
+            reviewed[0]["_replacementSource"]["url"],
+            "https://example.test/replacement",
+        )
+        self.assertEqual(audit["reviewReplacementCount"], 1)
+        self.assertEqual(audit["rejectedItems"], 0)
+
     def test_unreviewed_or_writer_only_item_cannot_pass_quality_gate(self) -> None:
         item = make_item("W001", 1)
         item["writerStatus"] = "llm"
