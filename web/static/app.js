@@ -4618,7 +4618,7 @@ function addMessage(role, content, markdown = false) {
     avatar.textContent = "您";
   } else {
     const logo = document.createElement("img");
-    logo.src = "/static/assets/logo/xiaojing-ai-logo-mark.png?v=1";
+    logo.src = "/static/assets/logo/xiaojing-ai-logo-mark.png?v=2";
     logo.alt = "";
     avatar.appendChild(logo);
   }
@@ -4687,7 +4687,7 @@ function initialChatEmptyStateHtml() {
   return `
     <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
       <span class="chat-empty-mark" aria-hidden="true">
-        <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=1" alt="" />
+        <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" />
       </span>
       <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
       <p>选择一个方向，或直接在下方输入你的问题</p>

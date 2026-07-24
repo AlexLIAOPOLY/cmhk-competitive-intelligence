@@ -1600,7 +1600,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .chat-fab:hover {
@@ -1631,8 +1631,8 @@ select {
 .chat-fab img {
   position: relative;
   z-index: 1;
-  width: 23px;
-  height: 23px;
+  width: 19px;
+  height: 19px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
@@ -2085,10 +2085,10 @@ select {
 }
 
 .chat-empty-mark img {
-  width: 27px;
-  height: 27px;
+  width: 23px;
+  height: 23px;
   object-fit: contain;
-  opacity: 0.92;
+  opacity: 0.88;
 }
 
 .chat-empty-state h3 {
@@ -2947,14 +2947,14 @@ select {
 .message.assistant .avatar {
   border: 1px solid #d9e1e8;
   background: #fff;
-  box-shadow: 0 3px 10px rgba(31, 65, 92, 0.06);
+  box-shadow: 0 3px 10px rgba(31, 65, 92, 0.05);
 }
 
 .avatar img {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
-  opacity: 0.92;
+  opacity: 0.88;
 }
 
 .message.user .avatar {
