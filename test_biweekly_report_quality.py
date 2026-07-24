@@ -647,6 +647,75 @@ class IndependentReviewerTests(unittest.TestCase):
         self.assertEqual(audit["reviewReplacementCount"], 1)
         self.assertEqual(audit["rejectedItems"], 0)
 
+    def test_repeated_rejection_without_replacement_uses_evidence_repair(self) -> None:
+        item = make_item("W001", 1, title="人工入选新闻原始标题")
+        item["webResearch"] = {
+            "query": "人工入选新闻原始标题",
+            "provider": "unit",
+            "results": [
+                {
+                    "title": "联网核验资料",
+                    "url": "https://example.test/evidence",
+                    "snippet": "公开资料确认该主体公布业务进展，并说明当前实施范围和后续安排。",
+                }
+            ],
+        }
+        rejected_response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "decision": "reject",
+                    "scores": {"factuality": 3, "detail": 3, "relevance": 3, "language": 4},
+                    "issues": ["模型未能形成可通过版本"],
+                    "reason": "仍需修复",
+                }
+            ]
+        }
+        progress_messages: list[str] = []
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch.object(
+                    report,
+                    "WEEKLY_REVIEW_CACHE",
+                    Path(temp_dir) / "review-cache.json",
+                    create=True,
+                ),
+                patch.object(
+                    report,
+                    "_call_weekly_quality_reviewer_llm",
+                    return_value=rejected_response,
+                ) as reviewer_call,
+                patch.object(
+                    report,
+                    "_call_weekly_writer_llm",
+                    side_effect=TimeoutError("writer unavailable"),
+                ) as writer_call,
+            ):
+                reviewed, audit = report.review_weekly_items_with_ai(
+                    [item],
+                    progress=progress_messages.append,
+                    bypass_cache=True,
+                )
+
+        self.assertGreaterEqual(reviewer_call.call_count, 2)
+        writer_call.assert_called_once()
+        self.assertEqual(len(reviewed), 1)
+        self.assertEqual(reviewed[0]["title"], "人工入选新闻原始标题")
+        self.assertEqual(reviewed[0]["reviewDecision"], "evidence_repair")
+        self.assertEqual(reviewed[0]["writerStatus"], "deterministic_evidence_repair")
+        self.assertEqual(audit["evidenceRepairCount"], 1)
+        self.assertEqual(audit["rejectedItems"], 0)
+        self.assertGreaterEqual(
+            len(re.sub(r"\s+", "", reviewed[0]["detail"])),
+            report.MIN_WEEKLY_DETAIL_CHARS,
+        )
+        self.assertIn("最终证据约束修复完成", " ".join(progress_messages))
+        self.assertNotIn("已停止整份周报", " ".join(progress_messages))
+        repaired_model = make_model(reviewed[0])
+        report.validate_review_gate(repaired_model)
+        report.validate_report_model(repaired_model)
+
     def test_unreviewed_or_writer_only_item_cannot_pass_quality_gate(self) -> None:
         item = make_item("W001", 1)
         item["writerStatus"] = "llm"
@@ -737,7 +806,7 @@ class QualitySidecarTests(unittest.TestCase):
 
         self.assertEqual(payload["reviewStatus"], "limited")
         self.assertEqual(payload["generationMode"], "limited")
-        self.assertEqual(payload["items"][0]["reviewDecision"], "limited_fallback")
+        self.assertEqual(payload["items"][0]["reviewDecision"], "evidence_repair")
         self.assertEqual(payload["limitations"][0]["stage"], "review")
 
     def test_main_uses_emergency_docx_when_standard_template_fails(self) -> None:

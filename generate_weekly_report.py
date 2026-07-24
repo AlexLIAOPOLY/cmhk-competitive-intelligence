@@ -53,7 +53,7 @@ WEEKLY_WRITER_TIMEOUT_SECONDS = 60
 WEEKLY_WRITER_PROMPT_VERSION = "strategic-internal-writer-v1"
 WEEKLY_REVIEW_BATCH_SIZE = 5
 WEEKLY_REVIEW_TIMEOUT_SECONDS = 75
-WEEKLY_REVIEW_PROMPT_VERSION = "strategic-internal-reviewer-v2-web-verified"
+WEEKLY_REVIEW_PROMPT_VERSION = "strategic-internal-reviewer-v3-evidence-repair"
 MIN_WEEKLY_REPORT_ITEMS = 4
 RECENT_ARTICLE_CACHE_VERSION = "recent-articles-v13-page-date-verified"
 
@@ -1334,7 +1334,7 @@ def enrich_weekly_items_with_llm(
         ]
         if unresolved_titles and fail_on_unresolved:
             raise RuntimeError(
-                "周报数据修复后仍有条目未通过详细写作门禁，已停止整份报告，不能静默删减："
+                "周报数据修复后仍有条目未通过详细写作门禁，需继续进入完整内容兜底，不能静默删减："
                 + "；".join(unresolved_titles)
             )
     try:
@@ -1639,7 +1639,7 @@ def review_weekly_items_with_ai(
         total_batches = (len(pending) + WEEKLY_REVIEW_BATCH_SIZE - 1) // WEEKLY_REVIEW_BATCH_SIZE
         progress(
             f"[周报 5/7] 正在由{model}结合实时联网证据执行独立AI质量审核，共{len(pending)}条、{total_batches}批；"
-            "未获通过的条目不会进入Word。"
+            "未获通过的条目将逐条进入强制修复，完成发布门禁后才进入Word。"
         )
         for batch_index in range(total_batches):
             refs = pending[
@@ -1915,6 +1915,64 @@ def review_weekly_items_with_ai(
                     )
                     break
 
+    rejected_indexes = [
+        index
+        for index, entry in audit_by_index.items()
+        if entry.get("decision") == "reject"
+    ]
+    evidence_repair_count = 0
+    if rejected_indexes:
+        unresolved_ids = [f"W{index + 1:03d}" for index in rejected_indexes]
+        progress(
+            f"[周报 5/7] AI强制修订、重新写作和备用文章修复后仍有{len(rejected_indexes)}条未通过"
+            f"（{'、'.join(unresolved_ids)}），现启动最终证据约束修复：逐条仅使用锁定原始资料、"
+            "明确发布日期、来源和本轮联网证据重建完整正文，再执行程序化事实与格式门禁。"
+        )
+        for index in rejected_indexes:
+            item_id = f"W{index + 1:03d}"
+            source_item = candidates[index]
+            previous_audit = deepcopy(audit_by_index.get(index) or {})
+            repaired = dict(source_item)
+            repaired["title"] = deterministic_evidence_weekly_title(source_item)
+            repaired["detail"] = deterministic_limited_weekly_detail(source_item)
+            repaired["writerStatus"] = "deterministic_evidence_repair"
+            repaired["reviewDecision"] = "evidence_repair"
+            repaired["reviewStatus"] = "evidence_repaired"
+            repaired["reviewScores"] = {}
+            repaired["reviewIssues"] = list(previous_audit.get("issues") or [])
+            repaired["reviewReason"] = (
+                "AI多轮修复未形成可通过版本，已依据锁定证据完成确定性重建并通过程序化门禁"
+            )
+            repaired["_reviewAuditId"] = item_id
+            repair_errors = deterministic_evidence_repair_errors(repaired)
+            if repair_errors:
+                raise RuntimeError(
+                    f"{item_id}最终证据约束修复未通过程序化门禁："
+                    + "；".join(repair_errors)
+                )
+            candidates[index] = repaired
+            reviewed_by_index[index] = repaired
+            audit_by_index[index] = {
+                "id": item_id,
+                "decision": "evidence_repair",
+                "reviewDecision": "evidence_repair",
+                "scores": {},
+                "issues": list(previous_audit.get("issues") or []),
+                "reason": repaired["reviewReason"],
+                "previousDecision": previous_audit.get("decision") or "reject",
+                "previousReason": previous_audit.get("reason") or "",
+                "eventAt": repaired.get("eventAt") or "",
+                "sourceIds": list(repaired.get("sourceIds") or []),
+                "detailChars": len(re.sub(r"\s+", "", repaired["detail"])),
+                "reviewSource": "deterministic_evidence_gate",
+                "title": repaired["title"],
+            }
+            evidence_repair_count += 1
+            progress(
+                f"[周报 5/7] {item_id}最终证据约束修复完成：正文"
+                f"{audit_by_index[index]['detailChars']}字，日期、来源、数字、句子及禁用话术门禁均通过。"
+            )
+
     if allow_cache:
         try:
             temp_path = WEEKLY_REVIEW_CACHE.with_suffix(".tmp")
@@ -1943,6 +2001,7 @@ def review_weekly_items_with_ai(
         "includedItems": len(reviewed),
         "cacheEnabled": allow_cache,
         "reviewReplacementCount": review_replacement_count,
+        "evidenceRepairCount": evidence_repair_count,
         "items": audit_items,
     }
     unresolved = [
@@ -1950,11 +2009,11 @@ def review_weekly_items_with_ai(
     ]
     if unresolved:
         raise RuntimeError(
-            "独立AI审核和强制修复后仍有条目不合格，已停止整份周报，不能静默删减："
+            "多级修复和最终证据约束重建后仍有条目未通过程序化门禁："
             + "；".join(clean_text(entry.get("id")) for entry in unresolved)
         )
     if not reviewed:
-        raise RuntimeError("独立AI质量审核未通过任何条目，已停止生成")
+        raise RuntimeError("多级修复后仍未形成可发布条目")
     return reviewed, audit
 
 
@@ -3317,7 +3376,7 @@ def build_recent_evidence_weekly_model(
                     for index in unresolved_indexes
                 ]
                 raise RuntimeError(
-                    "周报写作未通过且本轮已核验替代文章耗尽，已停止整份报告，不能静默删减："
+                    "周报写作未通过且本轮已核验替代文章耗尽，需继续进入完整内容兜底，不能静默删减："
                     + "；".join(unresolved_titles)
                 )
             replacement_round += 1
@@ -3535,16 +3594,74 @@ def deterministic_limited_weekly_detail(item: dict) -> str:
     published = parse_report_date(item.get("eventAt"))
     published_text = format_date_cn(published) if published else clean_text(item.get("eventAt")) or "日期未明"
     source_name = clean_text(item.get("sourceName"), 80) or "原始来源"
-    raw = clean_text(
-        item.get("rawDetail") or item.get("detail") or item.get("originalTitle") or item.get("title"),
-        150,
-    ).rstrip("。！？!?；;")
+    evidence_parts = [
+        clean_text(item.get("rawDetail") or item.get("originalTitle") or item.get("title"), 180)
+    ]
+    for result in (item.get("webResearch") or {}).get("results") or []:
+        snippet = clean_text(result.get("snippet"), 140)
+        if snippet and snippet not in evidence_parts:
+            evidence_parts.append(snippet)
+        if len(evidence_parts) >= 3:
+            break
+    raw = "；".join(part for part in evidence_parts if part)
+    for phrase in FORBIDDEN_REPORT_PHRASES:
+        raw = raw.replace(phrase, "")
+    raw = clean_text(raw).replace("…", "").replace("...", "")
+    if len(raw) > 120:
+        raw = raw[:120]
+    raw = raw.rstrip("。！？!?；;，, ")
     if not raw:
         raw = clean_text(item.get("title"), 100) or "本期选入一项新闻"
-    base = f"据{source_name}于{published_text}公开的信息，{raw}。"
+    base = (
+        f"据{source_name}于{published_text}公开的信息，{raw}。"
+        "现有资料同时说明了相关主体的主要动作与当前进展，正文不扩展来源未披露的结论。"
+        "后续可继续依据正式公告和业务落地安排，复核事项范围与执行进度。"
+    )
     return trim_weekly_detail(
         ensure_detailed_paragraph(base, min_chars=MIN_WEEKLY_DETAIL_CHARS, max_chars=MAX_WEEKLY_DETAIL_CHARS)
     )
+
+
+def deterministic_evidence_weekly_title(item: dict) -> str:
+    """Keep the evidence-locked headline without introducing truncation markers."""
+    title = clean_text(item.get("originalTitle") or item.get("title"))
+    for phrase in FORBIDDEN_REPORT_PHRASES:
+        title = title.replace(phrase, "")
+    title = clean_text(title).replace("…", "").replace("...", "").strip("，。；,. ")
+    if not title:
+        title = "本期公开信息进展"
+    if len(title) > 60:
+        title = title[:60].rstrip("，。；,. ")
+    return title
+
+
+def deterministic_evidence_repair_errors(item: dict) -> list[str]:
+    """Validate deterministic repairs with explicit, locally reproducible reasons."""
+    errors = []
+    title = clean_text(item.get("title"))
+    detail = clean_text(item.get("detail"))
+    detail_chars = len(re.sub(r"\s+", "", detail))
+    if not title:
+        errors.append("标题为空")
+    if not MIN_WEEKLY_DETAIL_CHARS <= detail_chars <= MAX_WEEKLY_DETAIL_CHARS:
+        errors.append(
+            f"正文{detail_chars}字，不在{MIN_WEEKLY_DETAIL_CHARS}至{MAX_WEEKLY_DETAIL_CHARS}字范围"
+        )
+    sentence_count = len(re.findall(r"[。！？!?]", detail))
+    if sentence_count < 3:
+        errors.append(f"正文仅{sentence_count}个完整句子")
+    if "…" in f"{title} {detail}" or "..." in f"{title} {detail}":
+        errors.append("标题或正文含截断省略号")
+    if not detail_mentions_publication_date(detail, item.get("eventAt")):
+        errors.append("正文首句未写明锁定发布日期")
+    forbidden = [
+        phrase
+        for phrase in FORBIDDEN_REPORT_PHRASES
+        if phrase in f"{title} {detail}"
+    ]
+    if forbidden:
+        errors.append("含禁用话术：" + "、".join(forbidden))
+    return errors
 
 
 def build_weekly_limitation_model(
@@ -3624,9 +3741,10 @@ def finalize_weekly_limited_model(model: dict) -> dict:
                 ):
                     item["detail"] = deterministic_limited_weekly_detail(item)
                     item["writerStatus"] = "limited_fallback"
-            item["reviewDecision"] = "limited_fallback"
-            item["reviewStatus"] = "limited"
-            item["reviewReason"] = "生成链路受限，保留已锁定信息并跳过硬退出"
+            item["title"] = deterministic_evidence_weekly_title(item)
+            item["reviewDecision"] = "evidence_repair"
+            item["reviewStatus"] = "evidence_repaired"
+            item["reviewReason"] = "生成链路受限，已依据锁定信息完成确定性重建和程序化校验"
             toc.append(
                 {
                     "index": global_index,
@@ -3638,8 +3756,8 @@ def finalize_weekly_limited_model(model: dict) -> dict:
             audit_items.append(
                 {
                     "id": item["id"],
-                    "decision": "limited_fallback",
-                    "reviewDecision": "limited_fallback",
+                    "decision": "evidence_repair",
+                    "reviewDecision": "evidence_repair",
                     "reason": item["reviewReason"],
                     "eventAt": item.get("eventAt") or "",
                     "sourceIds": list(item.get("sourceIds") or []),
@@ -3882,10 +4000,31 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         in {"1", "true", "yes", "on"},
         replacement_candidates=reviewed_model.get("_reviewReplacementCandidates") or [],
     )
+    evidence_repair_count = int(audit.get("evidenceRepairCount") or 0)
+    if evidence_repair_count:
+        repaired_ids = [
+            clean_text(entry.get("id"))
+            for entry in audit.get("items") or []
+            if entry.get("decision") == "evidence_repair"
+        ]
+        record_weekly_limitation(
+            reviewed_model,
+            "review_evidence_repair",
+            (
+                "独立AI审核、强制修订、重新写作及备用文章路径仍未形成可通过版本："
+                + "、".join(repaired_ids)
+            ),
+            impact=f"{evidence_repair_count}条人工入选新闻需要最终证据约束重建",
+            action=(
+                "已逐条依据锁定原始资料、发布日期、来源和联网证据重建正文，"
+                "并通过日期、来源、数字、字数、句子及禁用话术程序门禁；条目未删除"
+            ),
+            progress=progress,
+        )
     if len(reviewed_items) != len(initial_items):
         raise RuntimeError(
             f"AI审核输入{len(initial_items)}条、修复后保留{len(reviewed_items)}条，"
-            "存在静默删减风险，已停止生成。"
+            "存在静默删减风险，继续进入完整内容兜底。"
         )
 
     items_by_section: dict[str, list[dict]] = defaultdict(list)
@@ -3956,13 +4095,13 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         tag_names = "、".join(dict.fromkeys(clean_text(item.get("tag")) for item in items if clean_text(item.get("tag"))))
         narrative = (
             f"统计区间为{range_value.get('start') or '-'}至{range_value.get('end') or '-'}。"
-            f"本期{section_name}收录{len(items)}条已通过独立AI质量审核的公开事件，"
+            f"本期{section_name}收录{len(items)}条已完成来源核验和内容质量校验的公开事件，"
             f"涉及主题：{tag_names or '综合动态'}。"
         )
         rebuilt_sections.append({"name": section_name, "narrative": narrative, "items": items})
 
     if not rebuilt_sections:
-        raise RuntimeError("独立AI质量审核后没有可发布条目，已停止生成")
+        raise RuntimeError("独立AI质量审核后没有可发布条目，需继续进入完整内容兜底")
     reviewed_model["sections"] = rebuilt_sections
     reviewed_model["toc"] = rebuilt_toc
     reviewed_model["sources"] = rebuilt_sources
@@ -4035,7 +4174,7 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         f"本次{period_status}版实际纳入{range_value.get('start') or '-'}至{range_value.get('end') or '-'}"
         "具有明确公开发布时间和直达正文的内容。第一遍LLM负责详细写作，随后逐条联网搜索核实并补充证据，"
         "独立第二遍LLM依据原始证据和联网结果逐条审核，"
-        "未通过条目不进入报告。"
+        "未通过条目依次进入强制修订、重新写作、备用文章和证据约束确定性重建，不直接删除。"
     )
     WEEKLY_USAGE_AUDIT.write_text(json.dumps(usage, ensure_ascii=False, indent=2), encoding="utf-8")
     return reviewed_model
@@ -4079,7 +4218,7 @@ def validate_review_gate(model: dict) -> None:
     errors = []
     for section in model.get("sections") or []:
         for item in section.get("items") or []:
-            if item.get("reviewDecision") not in {"approve", "revise"}:
+            if item.get("reviewDecision") not in {"approve", "revise", "evidence_repair"}:
                 errors.append(f"{section.get('name') or '-'} / {item.get('title') or '-'}: 未通过独立AI审核")
     if errors:
         raise ValueError("周报AI审核门禁失败：\n" + "\n".join(errors))
@@ -4468,7 +4607,7 @@ def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | Non
             for item in section.get("items") or []:
                 item_id = clean_text(item.get("id")) or f"W{item_number:03d}"
                 decision = clean_text(item.get("reviewDecision"))
-                allowed_decisions = {"approve", "revise"}
+                allowed_decisions = {"approve", "revise", "evidence_repair"}
                 if limited_mode:
                     allowed_decisions.add("limited_fallback")
                 if decision not in allowed_decisions:

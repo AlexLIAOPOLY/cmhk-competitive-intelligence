@@ -365,7 +365,7 @@ class ManualWeeklySelectionTests(unittest.TestCase):
         final_item = model["sections"][0]["items"][0]
         self.assertEqual(model["generationMode"], "limited")
         self.assertEqual(final_item["title"], "人工选中的测试新闻")
-        self.assertEqual(final_item["reviewDecision"], "limited_fallback")
+        self.assertEqual(final_item["reviewDecision"], "evidence_repair")
         self.assertGreaterEqual(len(re.sub(r"\s+", "", final_item["detail"])), 120)
         self.assertIn("联网服务不可用", model["generationLimitations"][0]["reason"])
 
