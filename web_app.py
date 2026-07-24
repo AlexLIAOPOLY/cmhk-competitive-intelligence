@@ -193,6 +193,42 @@ def transcribe_chat_audio(payload: dict) -> dict:
     extension = CHAT_AUDIO_MIME_EXTENSIONS.get(mime_type)
     if not extension:
         raise ValueError("不支持当前录音格式")
+    try:
+        converted = subprocess.run(
+            [
+                os.environ.get("CMHK_FFMPEG_BIN") or "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-i",
+                "pipe:0",
+                "-vn",
+                "-ac",
+                "1",
+                "-ar",
+                "16000",
+                "-c:a",
+                "pcm_s16le",
+                "-f",
+                "wav",
+                "pipe:1",
+            ],
+            input=raw,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=20,
+            check=False,
+        )
+    except FileNotFoundError as exc:
+        raise ValueError("服务器音频解码组件未就绪，请联系管理员安装 FFmpeg") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise ValueError("录音解码超时，请缩短录音后重试") from exc
+    if converted.returncode != 0 or len(converted.stdout) <= 44:
+        raise ValueError("录音格式无法解码，请重新录音")
+    raw = converted.stdout
+    mime_type = "audio/wav"
+    extension = "wav"
+
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").strip().rstrip("/")
     api_key = str(config.get("api_key") or "").strip()
@@ -231,6 +267,8 @@ def transcribe_chat_audio(payload: dict) -> dict:
     transcript = str(result.get("text") or result.get("transcript") or "").strip()
     if not transcript:
         raise ValueError("语音模型没有识别出文字，请靠近麦克风后重试")
+    if transcript.rstrip("。！？!?，, ").strip() in {"嗯", "呃", "啊", "唔"}:
+        raise ValueError("只识别到很短的语气词，请确认麦克风输入后靠近说话并重试")
     return {"text": transcript, "model": CHAT_STT_MODEL}
 
 

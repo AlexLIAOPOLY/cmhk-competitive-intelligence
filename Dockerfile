@@ -12,6 +12,7 @@ RUN apt-get update \
         build-essential \
         ca-certificates \
         curl \
+        ffmpeg \
         fonts-noto-cjk \
         fonts-noto-cjk-extra \
         libsndfile1 \

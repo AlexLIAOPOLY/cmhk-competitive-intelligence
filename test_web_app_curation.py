@@ -332,7 +332,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('voiceMode: "transcribe"', app)
         self.assertIn('if (state.voiceMode === "send")', app)
         self.assertIn("els.chatForm.requestSubmit();", app)
-        self.assertIn('showTaskOperationNotice("语音已转成文字，可修改后手动发送")', app)
+        self.assertNotIn("语音已转成文字", app)
         self.assertIn("recorder.start();", app)
 
     def test_chat_composer_keeps_model_voice_and_send_inside_one_card(self) -> None:

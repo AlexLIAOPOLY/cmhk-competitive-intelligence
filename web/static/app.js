@@ -5381,7 +5381,6 @@ async function transcribeVoice(blob, durationMs) {
       els.chatForm.requestSubmit();
     } else {
       els.chatInput.focus();
-      showTaskOperationNotice("语音已转成文字，可修改后手动发送");
     }
   } catch (error) {
     state.voiceState = "idle";
