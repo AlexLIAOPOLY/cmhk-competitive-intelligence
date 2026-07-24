@@ -20,6 +20,7 @@ from crawl_run_registry import (
     register_crawl_run,
     start_crawl_run,
 )
+from scheduled_crawl_news_bridge import capture_completed_crawl
 
 
 ROOT = Path(__file__).resolve().parent
@@ -631,6 +632,54 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
             ),
         )
         return False
+
+    try:
+        news_bridge = capture_completed_crawl(
+            crawl_run_id,
+            rows,
+            captured_at=datetime.now(HKT),
+        )
+    except Exception as exc:
+        bridge_error = f"定时爬虫新闻线索桥接失败：{exc}"
+        logging.exception(bridge_error)
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "done",
+                "ok": False,
+                "stage": "news_bridge",
+                "error": bridge_error,
+            },
+        )
+        register_crawl_run(
+            crawl_return_code=1,
+            duration_ms=round((time.time() - started_monotonic) * 1000),
+            trace_sync=trace_sync,
+            trigger="定时爬虫",
+            scope=env["CMHK_CRAWL_SCOPE"],
+            crawl_run_id=crawl_run_id,
+            started_at_hkt=now.isoformat(timespec="seconds"),
+            stream_log_path=stream_log_path,
+            curation_summary=curation,
+            failure_stage="news_bridge",
+            progress_detail=(
+                "网页抓取、飞书同步和 Agent 审核已完成；"
+                f"{bridge_error}，任务将按退避策略重试。"
+            ),
+        )
+        return False
+
+    curation = {**curation, "news_bridge": news_bridge}
+    append_crawl_run_event(
+        stream_log_path,
+        {
+            "type": "news_bridge",
+            "ok": True,
+            "bootstrap": bool(news_bridge.get("bootstrap")),
+            "pageCount": int(news_bridge.get("page_count") or 0),
+            "signalCount": int(news_bridge.get("signal_count") or 0),
+        },
+    )
 
     completed_once = state.setdefault("completed_once", {})
     if not isinstance(completed_once, dict):

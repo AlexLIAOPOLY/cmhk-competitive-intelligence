@@ -1065,6 +1065,77 @@ def html_to_text(raw: bytes, content_type: str) -> Tuple[str, str]:
     return title, text
 
 
+def extract_news_links(
+    raw: bytes,
+    content_type: str,
+    base_url: str,
+    *,
+    limit: int = 80,
+) -> List[Dict[str, str]]:
+    """Keep article-like links from fixed news/press pages for later delta checks."""
+    if (
+        not raw
+        or "pdf" in (content_type or "").lower()
+        or "json" in (content_type or "").lower()
+        or raw[:4] == b"%PDF"
+    ):
+        return []
+    decoded = raw.decode("utf-8", "replace")
+    soup = BeautifulSoup(decoded, "lxml")
+    markers = re.compile(
+        r"(?:/news(?:room)?/|/news[-_]?updates?/|/press(?:[-_]?releases?)?/|"
+        r"/media[-_]?(?:centre|center|room)/|/article/|/articles/|"
+        r"/announcement/|/announcements/|/insight/|/insights/|/blog/|"
+        r"/story/|/stories/|/gia/general/\d{6}/|press\.php\?prid=|"
+        r"/20\d{2}/(?:0?[1-9]|1[0-2])(?:/|[-_]))",
+        re.I,
+    )
+    output: List[Dict[str, str]] = []
+    seen: set[str] = set()
+    generic_titles = {
+        "news",
+        "newsroom",
+        "read more",
+        "learn more",
+        "more",
+        "details",
+        "press release",
+        "press releases",
+    }
+    for anchor in soup.find_all("a", href=True):
+        target = urljoin(base_url, str(anchor.get("href") or "").strip())
+        try:
+            parsed = urlparse(target)
+        except ValueError:
+            continue
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            continue
+        normalized = parsed._replace(fragment="").geturl()
+        if normalized in seen or not markers.search(normalized):
+            continue
+        title = normalize_text(
+            str(anchor.get("title") or "")
+            or anchor.get_text(" ", strip=True)
+            or str(anchor.get("aria-label") or "")
+        )
+        if title.casefold() in generic_titles:
+            container = anchor.find_parent(["article", "li"])
+            if container is None:
+                container = anchor.find_parent("div")
+            contextual_title = normalize_text(
+                container.get_text(" ", strip=True) if container else ""
+            )
+            if len(contextual_title) > len(title):
+                title = contextual_title
+        if len(title) < 4:
+            continue
+        seen.add(normalized)
+        output.append({"url": normalized, "title": title[:300]})
+        if len(output) >= max(1, limit):
+            break
+    return output
+
+
 def extract_meta_refresh_url(raw: bytes, content_type: str, base_url: str) -> str:
     if not raw or "pdf" in (content_type or "").lower() or raw[:4] == b"%PDF":
         return ""
@@ -1122,6 +1193,7 @@ def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
     ctype = response.headers.get("content-type", "")
     title, text = html_to_text(raw, ctype)
     meta_refresh_url = extract_meta_refresh_url(raw, ctype, str(response.url))
+    discovered_news_links = extract_news_links(raw, ctype, str(response.url))
     return {
         "url": url,
         "final_url": str(response.url),
@@ -1131,6 +1203,7 @@ def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
         "title": title,
         "text": text,
         "meta_refresh_url": meta_refresh_url,
+        "discovered_news_links": discovered_news_links,
         "error": "",
     }
 
@@ -1186,6 +1259,7 @@ def fetch_with_curl(
     title, text = html_to_text(raw, ctype)
     final_url = parts[3] if len(parts) > 3 and parts[3] else url
     meta_refresh_url = extract_meta_refresh_url(raw, ctype, final_url)
+    discovered_news_links = extract_news_links(raw, ctype, final_url)
     return {
         "url": url,
         "final_url": final_url,
@@ -1195,6 +1269,7 @@ def fetch_with_curl(
         "title": title,
         "text": text,
         "meta_refresh_url": meta_refresh_url,
+        "discovered_news_links": discovered_news_links,
         "error": meta.stderr.strip(),
         "method": method_label,
     }
@@ -1568,6 +1643,7 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
         "cache_hit": bool(result.get("cache_hit")),
         "evidence_fallback_used": bool(result.get("evidence_fallback_used")),
         "fallback_reason": result.get("fallback_reason", ""),
+        "discovered_news_links": result.get("discovered_news_links", []),
     }
 
 
@@ -2271,6 +2347,9 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
                         "evidence_fallback_used", False
                     ),
                     "fallback_reason": rec.get("fallback_reason", ""),
+                    "discovered_news_links": rec.get(
+                        "discovered_news_links", []
+                    ),
                 }
             )
 
@@ -2327,6 +2406,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
                 "live_fetch_status",
                 "evidence_fallback_used",
                 "fallback_reason",
+                "discovered_news_links",
             ],
         )
         writer.writeheader()

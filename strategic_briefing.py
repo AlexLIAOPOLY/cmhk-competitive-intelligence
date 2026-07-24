@@ -21,6 +21,10 @@ from opencc import OpenCC
 
 from ai_config import load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
+from scheduled_crawl_news_bridge import (
+    commit_signal_attempts,
+    load_pending_signals,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -64,6 +68,10 @@ GROUP_CHECK_SECONDS = max(300, int(os.environ.get("CMHK_STRATEGY_GROUP_CHECK_SEC
 SCAN_CATCHUP_MINUTES = max(30, int(os.environ.get("CMHK_STRATEGY_SCAN_CATCHUP_MINUTES", "120")))
 MAX_QUERIES_PER_SCAN = max(4, int(os.environ.get("CMHK_STRATEGY_MAX_QUERIES", "24")))
 MAX_CANDIDATES_PER_SCAN = max(3, int(os.environ.get("CMHK_STRATEGY_MAX_CANDIDATES", "12")))
+MAX_SCHEDULED_CRAWL_SIGNALS = max(
+    1,
+    int(os.environ.get("CMHK_STRATEGY_MAX_CRAWL_SIGNALS", "24")),
+)
 FETCH_LIMIT = max(0, int(os.environ.get("CMHK_STRATEGY_FETCH_LIMIT", "10")))
 MONITOR_ENABLED = os.environ.get("CMHK_STRATEGY_MONITOR_ENABLED", "1").strip().lower() not in {
     "0",
@@ -593,6 +601,113 @@ def _candidate_from_result(
     }
 
 
+def _scheduled_signal_canonical_competitor(monitor_object: Any) -> str:
+    text = _clean_text(monitor_object, 240).casefold()
+    mappings = (
+        (("hkt", "pccw", "csl", "1o1o", "1010", "香港电讯", "香港電訊"), "HKT"),
+        (("hkbn", "香港宽频", "香港寬頻"), "HKBN"),
+        (("smartone", "数码通", "數碼通"), "SmarTone"),
+        (("3hk", "3 hong kong", "hutchison", "和记电讯", "和記電訊"), "3 Hong Kong"),
+        (("hgc", "环球全域电讯", "環球全域電訊"), "HGC"),
+        (("i-cable", "有线宽频", "有線寬頻"), "i-CABLE"),
+        (("ctexcel", "china telecom", "中国电信", "中國電信"), "China Telecom Global (Hong Kong)"),
+        (("cuniq", "china unicom", "中国联通", "中國聯通"), "China Unicom Hong Kong"),
+    )
+    for aliases, canonical in mappings:
+        if any(alias in text for alias in aliases):
+            return canonical
+    return ""
+
+
+def _merge_scheduled_crawl_signals(
+    gathered: dict[str, dict[str, Any]],
+    signals: list[dict[str, Any]],
+    now: datetime,
+) -> dict[str, Any]:
+    """Use fixed-crawl discoveries as focused web-search leads."""
+    attempted_signal_ids: list[str] = []
+    search_result_count = 0
+    query_count = 0
+    for signal in signals[:MAX_SCHEDULED_CRAWL_SIGNALS]:
+        signal_id = _clean_text(signal.get("signal_id"), 80)
+        query = _clean_text(signal.get("query"), 300)
+        if not signal_id or not query:
+            continue
+        attempted_signal_ids.append(signal_id)
+        query_count += 1
+        results = _search_recent(query, limit=8)
+        target_domain = _domain(signal.get("target_url") or "")
+        if not results and target_domain:
+            title = _clean_text(signal.get("title"), 180)
+            fallback_query = f"site:{target_domain} {title}".strip()
+            if fallback_query != query:
+                query_count += 1
+                results = _search_recent(fallback_query, limit=8)
+        search_result_count += len(results)
+        keywords = [
+            _clean_text(item, 80)
+            for item in signal.get("keywords") or []
+            if _clean_text(item, 80)
+        ]
+        monitor_object = _clean_text(signal.get("monitor_object"), 200)
+        plan = {
+            "module": _clean_text(signal.get("monitor_category"), 120)
+            or "竞对动态",
+            "keywords": keywords or [monitor_object],
+            "domains": [domain for domain in (target_domain,) if domain],
+        }
+        canonical_competitor = _scheduled_signal_canonical_competitor(
+            monitor_object
+        )
+        for result in results:
+            candidate = _candidate_from_result(result, plan, now)
+            url = candidate.get("url") or ""
+            if not url:
+                continue
+            candidate.update(
+                {
+                    "search_origin": "scheduled_crawl_reference",
+                    "scheduled_crawl_signal_id": signal_id,
+                    "scheduled_crawl_run_id": _clean_text(
+                        signal.get("crawl_run_id"), 100
+                    ),
+                    "scheduled_crawl_config_row": _clean_text(
+                        signal.get("config_row"), 20
+                    ),
+                    "scheduled_crawl_parent_url": _normalize_url(
+                        signal.get("parent_url") or ""
+                    ),
+                    "scheduled_crawl_target_url": _normalize_url(
+                        signal.get("target_url") or ""
+                    ),
+                    "scheduled_crawl_discovered_at": _clean_text(
+                        signal.get("discovered_at"), 60
+                    ),
+                    "search_window_start": _now_iso(now - timedelta(days=2)),
+                    "search_window_end": _now_iso(now),
+                    "score": int(candidate.get("score") or 0) + 25,
+                    "why": (
+                        f"定时爬虫第{_clean_text(signal.get('config_row'), 20) or '?'}行"
+                        f"发现“{_clean_text(signal.get('title'), 100)}”线索；"
+                        + _clean_text(candidate.get("why"), 240)
+                    ),
+                }
+            )
+            if canonical_competitor:
+                candidate["canonical_competitor"] = canonical_competitor
+            previous = gathered.get(url)
+            if previous is None or int(candidate["score"]) > int(
+                previous.get("score") or 0
+            ):
+                gathered[url] = candidate
+    return {
+        "signal_count": min(len(signals), MAX_SCHEDULED_CRAWL_SIGNALS),
+        "attempted_signal_ids": attempted_signal_ids,
+        "query_count": query_count,
+        "search_result_count": search_result_count,
+    }
+
+
 def _enrich_with_crawler(candidates: list[dict[str, Any]]) -> None:
     if FETCH_LIMIT <= 0 or not candidates:
         return
@@ -901,6 +1016,13 @@ def _run_scan(
             previous = gathered.get(url)
             if previous is None or int(candidate["score"]) > int(previous["score"]):
                 gathered[url] = candidate
+    bridge_batch = load_pending_signals(state, now)
+    bridge_stats = _merge_scheduled_crawl_signals(
+        gathered,
+        bridge_batch.get("signals") or [],
+        now,
+    )
+    searched_count += int(bridge_stats.get("search_result_count") or 0)
     full_items = sorted(
         gathered.values(),
         key=lambda item: (-int(item.get("score") or 0), item.get("title") or ""),
@@ -912,7 +1034,10 @@ def _run_scan(
             "slot": slot_key,
             "slot_label": slot_label,
             "spec_hash": spec["spec_hash"],
-            "query_count": len(plans),
+            "query_count": len(plans) + int(bridge_stats.get("query_count") or 0),
+            "scheduled_crawl_signal_count": int(
+                bridge_stats.get("signal_count") or 0
+            ),
             "search_result_count": searched_count,
             "unique_count": len(full_items),
             "items": full_items,
@@ -921,6 +1046,13 @@ def _run_scan(
     import news_review_sheet
 
     gated_items, gate_reasons = news_review_sheet.curate_news_items(full_items)
+    passed_bridge_signal_ids = list(
+        dict.fromkeys(
+            _clean_text(candidate.get("scheduled_crawl_signal_id"), 80)
+            for candidate in gated_items
+            if _clean_text(candidate.get("scheduled_crawl_signal_id"), 80)
+        )
+    )
     seen_urls = set(str(url) for url in state.get("seen_urls") or [])
     ranked = sorted(
         (candidate for candidate in gated_items if candidate.get("url") not in seen_urls),
@@ -971,6 +1103,12 @@ def _run_scan(
     state["last_spec_hash"] = spec["spec_hash"]
     state["last_scan_error"] = ""
     state["feishu_identity"] = identity
+    bridge_commit = commit_signal_attempts(
+        state,
+        list(bridge_stats.get("attempted_signal_ids") or []),
+        passed_bridge_signal_ids,
+        list(bridge_batch.get("expired_signal_ids") or []),
+    )
     run_payload = {
         "slot": slot_key,
         "slot_label": slot_label,
@@ -981,12 +1119,21 @@ def _run_scan(
             "keywords": spec["keyword_count"],
             "source_urls": len(spec["source_urls"]),
         },
-        "query_count": len(plans),
+        "query_count": len(plans) + int(bridge_stats.get("query_count") or 0),
         "search_result_count": searched_count,
         "gate_candidate_count": len(gated_items),
         "gate_filtered_count": len(full_items) - len(gated_items),
         "gate_filtered_reasons": dict(gate_reasons),
         "candidate_count": len(ranked),
+        "scheduled_crawl_bridge": {
+            "pending_signal_count": int(bridge_stats.get("signal_count") or 0),
+            "query_count": int(bridge_stats.get("query_count") or 0),
+            "search_result_count": int(
+                bridge_stats.get("search_result_count") or 0
+            ),
+            "gate_passed_signal_count": len(passed_bridge_signal_ids),
+            **bridge_commit,
+        },
         "news_discovery": {
             "result_count": int(discovery_result.get("result_count") or 0),
             "hong_kong_count": int(discovery_result.get("hong_kong_count") or 0),
@@ -1483,6 +1630,15 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item["ai_category"] = edited["category"]
         item["ai_keywords"] = edited["keywords"]
         item["ai_inclusion_reason"] = edited["inclusion_reason"]
+        if item.get("search_origin") == "scheduled_crawl_reference":
+            row_label = _clean_text(
+                item.get("scheduled_crawl_config_row"), 20
+            ) or "?"
+            provenance = f"定时爬虫第{row_label}行线索经新闻搜索核验"
+            item["ai_inclusion_reason"] = _clean_text(
+                f"{provenance}；{edited['inclusion_reason']}",
+                120,
+            )
         item["ai_region_reason"] = edited["region_reason"]
         item["region"] = edited["region"]
         item["category"] = edited["category"]

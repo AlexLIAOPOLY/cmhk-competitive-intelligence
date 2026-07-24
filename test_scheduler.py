@@ -118,6 +118,71 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertEqual(register.call_args.kwargs["curation_summary"], curation)
         self.assertIn("Agent 审核已完整执行", register.call_args.kwargs["progress_detail"])
 
+    def test_successful_scheduled_run_captures_news_bridge_before_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "run.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            crawl = subprocess.CompletedProcess(["crawl"], 0, stdout="crawl ok\n", stderr="")
+            sync = subprocess.CompletedProcess(
+                ["sync"],
+                0,
+                stdout='{"log_sheet_id":"sheet-1"}',
+                stderr="",
+            )
+            curation = {"agent_run_id": "agent-success", "tasks": 4}
+            bridge = {
+                "crawl_run_id": "crawl-success",
+                "bootstrap": False,
+                "page_count": 12,
+                "signal_count": 2,
+            }
+            with (
+                mock.patch.object(scheduler, "save_state"),
+                mock.patch.object(
+                    scheduler,
+                    "start_crawl_run",
+                    return_value={
+                        "crawl_run_id": "crawl-success",
+                        "stream_log_path": str(log_path),
+                    },
+                ),
+                mock.patch.object(scheduler, "append_crawl_run_event") as append,
+                mock.patch.object(scheduler, "heartbeat_crawl_run"),
+                mock.patch.object(scheduler.subprocess, "run", side_effect=[crawl, sync]),
+                mock.patch.object(
+                    scheduler,
+                    "_run_scheduled_agent_audit",
+                    return_value=(True, 0, curation, {"ok": True}, ""),
+                ),
+                mock.patch.object(
+                    scheduler,
+                    "capture_completed_crawl",
+                    return_value=bridge,
+                ) as capture,
+                mock.patch.object(
+                    scheduler,
+                    "read_live_schedule",
+                    return_value=[{"row": 3, "frequency": "每天 03:00"}],
+                ),
+                mock.patch.object(scheduler, "register_crawl_run") as register,
+            ):
+                ok = scheduler.run_due_rows([3], {})
+
+        self.assertTrue(ok)
+        capture.assert_called_once()
+        self.assertEqual(capture.call_args.args[:2], ("crawl-success", [3]))
+        self.assertEqual(
+            register.call_args.kwargs["curation_summary"]["news_bridge"],
+            bridge,
+        )
+        self.assertTrue(
+            any(
+                call.args[1].get("type") == "news_bridge"
+                and call.args[1].get("signalCount") == 2
+                for call in append.call_args_list
+            )
+        )
+
 
 class TaskLogScrollTests(unittest.TestCase):
     def test_running_task_log_scroll_waits_for_layout_and_stays_at_bottom(self) -> None:
