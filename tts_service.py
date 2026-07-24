@@ -8,6 +8,7 @@ import sys
 import tempfile
 import time
 import json
+import uuid
 from urllib.request import urlretrieve
 from pathlib import Path
 from urllib.parse import quote
@@ -138,6 +139,182 @@ def _write_moss_subtitle_timings(output_path: Path, result: dict, runtime) -> No
         ),
         encoding="utf-8",
     )
+
+
+def _alignment_char_positions(text: str) -> tuple[str, list[int]]:
+    normalized: list[str] = []
+    positions: list[int] = []
+    for index, character in enumerate(str(text or "")):
+        if character.isalnum() or "\u3400" <= character <= "\u9fff":
+            normalized.append(character.casefold())
+            positions.append(index)
+    return "".join(normalized), positions
+
+
+def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict]:
+    transcript = str(transcript or "").strip()
+    normalized_transcript, transcript_positions = _alignment_char_positions(transcript)
+    if not transcript or not normalized_transcript:
+        return []
+
+    aligned_tokens: list[dict] = []
+    normalized_cursor = 0
+    matched_characters = 0
+    for raw_segment in segments or []:
+        if not isinstance(raw_segment, dict):
+            continue
+        token_text = str(raw_segment.get("text") or "")
+        normalized_token, _ = _alignment_char_positions(token_text)
+        if not normalized_token:
+            continue
+        try:
+            start_time = float(raw_segment.get("start"))
+            end_time = float(raw_segment.get("end"))
+        except (TypeError, ValueError):
+            continue
+        if end_time <= start_time:
+            continue
+
+        match_start = normalized_transcript.find(normalized_token, normalized_cursor)
+        if match_start < 0:
+            continue
+        match_end = match_start + len(normalized_token)
+        if match_end > len(transcript_positions):
+            continue
+        char_start = transcript_positions[match_start]
+        char_end = transcript_positions[match_end - 1] + 1
+        aligned_tokens.append(
+            {
+                "text": transcript[char_start:char_end],
+                "start": round(start_time, 3),
+                "end": round(end_time, 3),
+                "charStart": char_start,
+                "charEnd": char_end,
+            }
+        )
+        normalized_cursor = max(normalized_cursor, match_end)
+        matched_characters += len(normalized_token)
+
+    coverage = matched_characters / max(1, len(normalized_transcript))
+    if not aligned_tokens or coverage < 0.85:
+        return []
+
+    sentence_matches = list(re.finditer(r"[^。！？；\n]+[。！？；\n]*", transcript))
+    if not sentence_matches:
+        sentence_matches = [re.match(r".+", transcript)]
+
+    cues: list[dict] = []
+    for sentence_match in sentence_matches:
+        if sentence_match is None:
+            continue
+        sentence_text = sentence_match.group(0).strip()
+        if not sentence_text:
+            continue
+        leading_trim = len(sentence_match.group(0)) - len(sentence_match.group(0).lstrip())
+        sentence_start = sentence_match.start() + leading_trim
+        sentence_end = sentence_start + len(sentence_text)
+        sentence_tokens = [
+            token for token in aligned_tokens
+            if sentence_start <= int(token["charStart"]) < sentence_end
+        ]
+        if not sentence_tokens:
+            continue
+        local_tokens = []
+        for token in sentence_tokens:
+            local_tokens.append(
+                {
+                    "text": token["text"],
+                    "start": token["start"],
+                    "end": token["end"],
+                    "charStart": max(0, int(token["charStart"]) - sentence_start),
+                    "charEnd": min(len(sentence_text), int(token["charEnd"]) - sentence_start),
+                }
+            )
+        cues.append(
+            {
+                "text": sentence_text,
+                "start": local_tokens[0]["start"],
+                "end": local_tokens[-1]["end"],
+                "tokens": local_tokens,
+            }
+        )
+    return cues
+
+
+def _internal_asr_timing_payload(audio_path: Path) -> dict:
+    import urllib.error
+    import urllib.request
+
+    from ai_config import is_internal_ai_base_url, load_ai_config
+
+    config = load_ai_config(include_key=True)
+    base_url = str(config.get("base_url") or "").strip().rstrip("/")
+    api_key = str(config.get("api_key") or "").strip()
+    if not is_internal_ai_base_url(base_url) or not api_key:
+        raise RuntimeError("公司内网语音模型配置不完整")
+
+    boundary = f"----CMHKAudioTiming{uuid.uuid4().hex}"
+    line_break = b"\r\n"
+    body = bytearray()
+    fields = (
+        ("model", os.environ.get("INTERNAL_ASR_MODEL", "Qwen3ASR").strip() or "Qwen3ASR"),
+        ("language", "zh"),
+        ("response_format", "verbose_json"),
+        ("timestamp_granularities[]", "word"),
+    )
+    for name, value in fields:
+        body.extend(f"--{boundary}".encode("ascii") + line_break)
+        body.extend(f'Content-Disposition: form-data; name="{name}"'.encode("ascii") + line_break + line_break)
+        body.extend(str(value).encode("utf-8") + line_break)
+    mime_type = "audio/mpeg" if audio_path.suffix.lower() == ".mp3" else "audio/wav"
+    body.extend(f"--{boundary}".encode("ascii") + line_break)
+    body.extend(
+        f'Content-Disposition: form-data; name="file"; filename="{audio_path.name}"'.encode("utf-8")
+        + line_break
+    )
+    body.extend(f"Content-Type: {mime_type}".encode("ascii") + line_break + line_break)
+    body.extend(audio_path.read_bytes() + line_break)
+    body.extend(f"--{boundary}--".encode("ascii") + line_break)
+
+    request = urllib.request.Request(
+        f"{base_url}/audio/transcriptions",
+        data=bytes(body),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": f"multipart/form-data; boundary={boundary}",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        wait_for_internal_ai_slot("tts-subtitle-alignment")
+        with urllib.request.urlopen(request, timeout=180) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")[:600]
+        raise RuntimeError(f"公司内网语音对齐返回 HTTP {exc.code}: {detail}") from exc
+
+
+def _write_internal_asr_subtitle_timings(output_path: Path) -> dict:
+    result = _internal_asr_timing_payload(output_path)
+    transcript = str(result.get("text") or result.get("transcript") or "").strip()
+    segments = result.get("segments")
+    cues = _build_asr_subtitle_cues(transcript, segments if isinstance(segments, list) else [])
+    if not transcript or not cues:
+        raise RuntimeError("公司内网语音模型未返回可用的逐字时间戳")
+    duration = float(result.get("duration") or cues[-1]["end"])
+    payload = {
+        "version": 2,
+        "backend": "internal-qwen3-asr",
+        "duration": round(duration, 3),
+        "spokenText": transcript,
+        "cues": cues,
+    }
+    output_path.with_suffix(".timings.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return payload
 
 
 def audio_info_for_report(report_path: Path) -> dict:
@@ -1160,10 +1337,23 @@ def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
             "summary": summary,
             "audio": {"exists": False},
         }
-        
+
+    try:
+        timing_payload = _write_internal_asr_subtitle_timings(output_path)
+    except Exception as exc:
+        if output_path.exists():
+            output_path.unlink()
+        subtitle_timing_path_for_report(report_path).unlink(missing_ok=True)
+        return {
+            "ok": False,
+            "error": f"音频已生成，但真实字幕时间轴生成失败：{exc}",
+            "summary": summary,
+            "audio": {"exists": False},
+        }
+
     txt_path = audio_path_for_report_ext(report_path, ".txt")
-    txt_path.write_text(summary, encoding="utf-8")
-    
+    txt_path.write_text(str(timing_payload.get("spokenText") or tts_text), encoding="utf-8")
+
     return {
         "ok": True,
         "created": True,

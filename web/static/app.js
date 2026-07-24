@@ -9,6 +9,7 @@ const state = {
   selectedFiles: new Set(),
   currentAudio: null,
   currentAudioButton: null,
+  audioAnimationFrame: null,
   isScrubbing: false,
   agentTraceLoaded: false,
   webSearchEnabled: true,
@@ -3022,6 +3023,59 @@ function updateProgressFill() {
   bar.style.background = `linear-gradient(to right, var(--blue) ${pct}%, #dde3ea ${pct}%)`;
 }
 
+function stopAudioAnimation() {
+  if (state.audioAnimationFrame !== null) {
+    cancelAnimationFrame(state.audioAnimationFrame);
+    state.audioAnimationFrame = null;
+  }
+}
+
+function startAudioAnimation() {
+  stopAudioAnimation();
+  const tick = () => {
+    if (!state.currentAudio || state.currentAudio.paused || state.currentAudio.ended) {
+      state.audioAnimationFrame = null;
+      return;
+    }
+    updateSubtitles();
+    state.audioAnimationFrame = requestAnimationFrame(tick);
+  };
+  state.audioAnimationFrame = requestAnimationFrame(tick);
+}
+
+function renderTimedSubtitleLine(sentence, cue, index) {
+  const tokens = Array.isArray(cue?.tokens) ? cue.tokens : [];
+  if (!tokens.length) {
+    return `
+      <div class="subtitle-line" data-subtitle-index="${index}">
+        <span class="subtitle-line-fill">${escapeHtml(sentence)}</span>
+        <span class="subtitle-line-text">${escapeHtml(sentence)}</span>
+      </div>
+    `;
+  }
+  let cursor = 0;
+  let content = "";
+  tokens.forEach((token, tokenIndex) => {
+    const start = Math.max(cursor, Math.min(sentence.length, Number(token.charStart) || 0));
+    const end = Math.max(start, Math.min(sentence.length, Number(token.charEnd) || start));
+    if (start > cursor) {
+      content += `<span class="subtitle-token-gap">${escapeHtml(sentence.slice(cursor, start))}</span>`;
+    }
+    if (end > start) {
+      content += `<span class="subtitle-token" data-token-index="${tokenIndex}" data-start="${Number(token.start) || 0}" data-end="${Number(token.end) || 0}">${escapeHtml(sentence.slice(start, end))}</span>`;
+    }
+    cursor = Math.max(cursor, end);
+  });
+  if (cursor < sentence.length) {
+    content += `<span class="subtitle-token-gap">${escapeHtml(sentence.slice(cursor))}</span>`;
+  }
+  return `
+    <div class="subtitle-line has-token-timing" data-subtitle-index="${index}">
+      <span class="subtitle-line-text">${content}</span>
+    </div>
+  `;
+}
+
 function updateSubtitles() {
   const subtitleDiv = document.getElementById("audioSubtitle");
   if (!subtitleDiv || !state.currentAudio || !state.currentAudio.duration || !subtitleDiv.dataset.fullText) return;
@@ -3036,6 +3090,7 @@ function updateSubtitles() {
     cues = [];
   }
   const hasTimedCues = Array.isArray(cues) && cues.length > 0;
+  const hasTokenTimings = hasTimedCues && cues.some((cue) => Array.isArray(cue?.tokens) && cue.tokens.length);
   let sentences;
   let activeIndex = 0;
   let activeProgress = 0;
@@ -3074,14 +3129,11 @@ function updateSubtitles() {
     activeProgress = Math.max(0, Math.min(1, (currentChars - sentenceStart) / activeSentenceLength));
   }
 
-  const renderedKey = JSON.stringify(sentences);
+  const renderedKey = hasTokenTimings ? JSON.stringify(cues) : JSON.stringify(sentences);
   if (subtitleDiv.dataset.renderedSentences !== renderedKey) {
-    const html = sentences.map((sentence, index) => `
-      <div class="subtitle-line" data-subtitle-index="${index}">
-        <span class="subtitle-line-fill">${escapeHtml(sentence)}</span>
-        <span class="subtitle-line-text">${escapeHtml(sentence)}</span>
-      </div>
-    `).join("");
+    const html = sentences.map((sentence, index) => (
+      renderTimedSubtitleLine(sentence, hasTimedCues ? cues[index] : null, index)
+    )).join("");
     subtitleDiv.innerHTML = `<div class="subtitle-spacer"></div>${html}<div class="subtitle-spacer"></div>`;
     subtitleDiv.dataset.renderedSentences = renderedKey;
     subtitleDiv.dataset.activeIndex = "";
@@ -3096,6 +3148,15 @@ function updateSubtitles() {
     line.classList.toggle("is-active", index === activeIndex);
     line.classList.toggle("is-future", index > activeIndex);
     line.style.setProperty("--subtitle-progress", index < activeIndex ? "100%" : index === activeIndex ? `${activeProgress * 100}%` : "0%");
+    line.querySelectorAll(".subtitle-token").forEach((token) => {
+      const start = Number(token.dataset.start || 0);
+      const end = Math.max(Number(token.dataset.end || start), start + 0.01);
+      const tokenProgress = Math.max(0, Math.min(1, (state.currentAudio.currentTime - start) / (end - start)));
+      token.classList.toggle("is-past", state.currentAudio.currentTime >= end);
+      token.classList.toggle("is-active", state.currentAudio.currentTime >= start && state.currentAudio.currentTime < end);
+      token.classList.toggle("is-future", state.currentAudio.currentTime < start);
+      token.style.setProperty("--subtitle-token-progress", `${tokenProgress * 100}%`);
+    });
   });
 
   const activeEl = subtitleDiv.querySelector(`.subtitle-line[data-subtitle-index="${activeIndex}"]`);
@@ -3121,6 +3182,7 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "", 
   
   // Stop previous audio
   if (state.currentAudio) {
+    stopAudioAnimation();
     state.currentAudio.pause();
     if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");
     state.currentAudio.src = "";
@@ -3187,9 +3249,16 @@ function playAudio(url, button = null, fileName = "音频摘要", summary = "", 
     updateSubtitles();
   });
   
-  state.currentAudio.addEventListener("play", updateAudioPlayerUI);
-  state.currentAudio.addEventListener("pause", updateAudioPlayerUI);
+  state.currentAudio.addEventListener("play", () => {
+    updateAudioPlayerUI();
+    startAudioAnimation();
+  });
+  state.currentAudio.addEventListener("pause", () => {
+    updateAudioPlayerUI();
+    stopAudioAnimation();
+  });
   state.currentAudio.addEventListener("ended", () => {
+    stopAudioAnimation();
     updateAudioPlayerUI();
     els.audioProgressBar.value = 0;
     els.audioCurrentTime.textContent = "00:00";
@@ -3264,6 +3333,7 @@ if (audioSpeedBtn) {
 
 if (els.audioCloseBtn) {
   els.audioCloseBtn.addEventListener("click", () => {
+    stopAudioAnimation();
     if (state.currentAudio) {
       state.currentAudio.pause();
       if (state.currentAudioButton) state.currentAudioButton.classList.remove("is-playing");

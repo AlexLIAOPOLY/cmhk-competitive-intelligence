@@ -2,8 +2,14 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from tts_service import _write_moss_subtitle_timings
+from tts_service import (
+    _build_asr_subtitle_cues,
+    _write_internal_asr_subtitle_timings,
+    _write_moss_subtitle_timings,
+    audio_info_for_report,
+)
 
 
 class _FakeRuntime:
@@ -39,6 +45,90 @@ class MossSubtitleTimingTests(unittest.TestCase):
                 for current, following in zip(payload["cues"], payload["cues"][1:])
             )
         )
+
+
+class InternalAsrSubtitleTimingTests(unittest.TestCase):
+    @staticmethod
+    def _segments_for(transcript):
+        tokens = [
+            "Three",
+            *list("香港总收益五十四点四八亿同比增长百分之十七"),
+            *list("下一句"),
+        ]
+        segments = []
+        cursor = 0.0
+        for token in tokens:
+            segments.append({"text": token, "start": cursor, "end": cursor + 0.2})
+            cursor += 0.2
+        return segments
+
+    def test_asr_tokens_are_grouped_into_sentences_with_character_spans(self):
+        transcript = "Three香港总收益五十四点四八亿，同比增长百分之十七。下一句。"
+        cues = _build_asr_subtitle_cues(transcript, self._segments_for(transcript))
+
+        self.assertEqual([cue["text"] for cue in cues], [
+            "Three香港总收益五十四点四八亿，同比增长百分之十七。",
+            "下一句。",
+        ])
+        self.assertEqual(cues[0]["tokens"][0]["text"], "Three")
+        self.assertEqual(cues[0]["tokens"][0]["charStart"], 0)
+        self.assertEqual(cues[0]["tokens"][0]["charEnd"], 5)
+        self.assertEqual(cues[1]["tokens"][0]["charStart"], 0)
+        self.assertLessEqual(cues[0]["end"], cues[1]["start"])
+
+    def test_internal_asr_payload_is_persisted_as_version_two_timings(self):
+        transcript = "Three香港总收益五十四点四八亿，同比增长百分之十七。下一句。"
+        segments = self._segments_for(transcript)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audio_path = Path(temp_dir) / "sample.mp3"
+            audio_path.write_bytes(b"audio")
+            with patch(
+                "tts_service._internal_asr_timing_payload",
+                return_value={"text": transcript, "duration": 7.2, "segments": segments},
+            ):
+                payload = _write_internal_asr_subtitle_timings(audio_path)
+            saved = json.loads(audio_path.with_suffix(".timings.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["version"], 2)
+        self.assertEqual(payload["backend"], "internal-qwen3-asr")
+        self.assertEqual(saved["spokenText"], transcript)
+        self.assertTrue(all(cue.get("tokens") for cue in saved["cues"]))
+
+    def test_low_coverage_asr_result_is_rejected(self):
+        transcript = "这是一段完整但没有正确识别的字幕。"
+        cues = _build_asr_subtitle_cues(
+            transcript,
+            [{"text": "错", "start": 0.0, "end": 0.2}],
+        )
+        self.assertEqual(cues, [])
+
+    def test_audio_info_exposes_precise_token_cues_to_the_frontend(self):
+        transcript = "Three香港。"
+        cues = [{
+            "text": transcript,
+            "start": 0.0,
+            "end": 0.8,
+            "tokens": [{
+                "text": "Three",
+                "start": 0.0,
+                "end": 0.4,
+                "charStart": 0,
+                "charEnd": 5,
+            }],
+        }]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audio_dir = Path(temp_dir)
+            report_path = audio_dir / "report.docx"
+            (audio_dir / "report.mp3").write_bytes(b"audio")
+            (audio_dir / "report.timings.json").write_text(
+                json.dumps({"spokenText": transcript, "cues": cues}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            with patch("tts_service.AUDIO_DIR", audio_dir):
+                info = audio_info_for_report(report_path)
+
+        self.assertEqual(info["spokenText"], transcript)
+        self.assertEqual(info["subtitleCues"][0]["tokens"][0]["text"], "Three")
 
 
 if __name__ == "__main__":

@@ -5119,6 +5119,33 @@ pre {
   background-clip: text;
 }
 
+.subtitle-line.has-token-timing .subtitle-line-text {
+  color: inherit;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
+.subtitle-token {
+  --subtitle-token-progress: 0%;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.subtitle-token.is-past {
+  color: #fff;
+}
+
+.subtitle-token.is-active {
+  color: transparent;
+  background: linear-gradient(90deg, #fff var(--subtitle-token-progress), rgba(255, 255, 255, 0.34) var(--subtitle-token-progress));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.subtitle-token-gap {
+  color: rgba(255, 255, 255, 0.34);
+}
+
 .subtitle-line-fill {
   display: none;
 }
