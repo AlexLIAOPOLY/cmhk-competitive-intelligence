@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import base64
-import csv
 import json
 import mimetypes
 import os
@@ -1337,180 +1336,6 @@ def build_status() -> dict:
         "settings": settings["summary"],
         "ai": load_ai_config(include_key=False),
         "latestOutputText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(latest_crawl_time)) if latest_crawl_time else "未生成",
-    }
-
-
-def _read_csv_dicts(path: Path) -> list[dict[str, str]]:
-    if not path.exists():
-        return []
-    try:
-        with path.open("r", encoding="utf-8-sig", newline="") as handle:
-            return [dict(row) for row in csv.DictReader(handle)]
-    except Exception:
-        return []
-
-
-def build_decision_dashboard_payload() -> dict:
-    """Build the homepage view from decision-relevant knowledge assets."""
-    quarterly_path = (
-        ROOT
-        / "agent_knowledge"
-        / "quarterly_competitor_metrics_2026-06-17"
-        / "official_verified_metrics_2026-06-17.csv"
-    )
-    tariff_dir = ROOT / "agent_knowledge" / "competitor_product_tariffs"
-    tariff_path = tariff_dir / "product_tariffs_formal_agent_records.csv"
-    tariff_gap_path = tariff_dir / "product_tariffs_source_gaps_agent_records.csv"
-    macro_path = (
-        ROOT
-        / "agent_knowledge"
-        / "cmhk_macro_policy_2026-06-19"
-        / "macro_policy_metrics.csv"
-    )
-
-    quarterly_rows = _read_csv_dicts(quarterly_path)
-    tariff_rows = _read_csv_dicts(tariff_path)
-    tariff_gap_rows = _read_csv_dicts(tariff_gap_path)
-    macro_rows = _read_csv_dicts(macro_path)
-
-    verification_counts: dict[str, int] = {}
-    grain_counts: dict[str, int] = {}
-    for row in quarterly_rows:
-        status = str(row.get("verification_status") or "unknown")
-        grain = str(row.get("grain") or "unknown")
-        verification_counts[status] = verification_counts.get(status, 0) + 1
-        grain_counts[grain] = grain_counts.get(grain, 0) + 1
-
-    current_tariffs = [
-        row for row in tariff_rows
-        if str(row.get("时间类型") or "").strip() == "当前"
-    ]
-    tracked_brands = [
-        "csl",
-        "1O1O",
-        "3HK / Hutchison",
-        "SmarTone",
-        "HKBN",
-        "HGC",
-        "i-CABLE",
-        "NETVIGATOR",
-    ]
-    tariff_summary: list[dict] = []
-    for brand in tracked_brands:
-        rows = [row for row in current_tariffs if str(row.get("品牌") or "").strip() == brand]
-        fees = []
-        for row in rows:
-            try:
-                fee = float(str(row.get("月费_HKD") or "").replace(",", "").strip())
-            except ValueError:
-                continue
-            if fee >= 0:
-                fees.append(fee)
-        tariff_summary.append(
-            {
-                "brand": brand,
-                "currentPlans": len(rows),
-                "minMonthlyFee": min(fees) if fees else None,
-                "maxMonthlyFee": max(fees) if fees else None,
-                "verifiedPlans": sum(
-                    1
-                    for row in rows
-                    if str(row.get("核验状态") or "") in {
-                        "official_public_source_structured",
-                        "multi_source_or_multi_snapshot_verified",
-                    }
-                ),
-            }
-        )
-
-    macro_specs = [
-        (
-            "percentage_change_of_gross_domestic_product_and_selected_major_expenditure_components_in_real_terms_con",
-            "香港GDP同比",
-        ),
-        ("mobile_subscriber_penetration_rate", "移动用户渗透率"),
-        ("household_broadband_penetration_rate", "住户宽频渗透率"),
-        ("median_monthly_household_income", "住户月入中位数"),
-        ("statistics_on_labour_force_employment_unemployment_and_underemployment_ur", "失业率"),
-        ("total_retail_sales_val_rs", "零售销货额"),
-    ]
-    macro_summary: list[dict] = []
-    for metric_key, label in macro_specs:
-        candidates = [row for row in macro_rows if row.get("metric_key") == metric_key]
-        if not candidates:
-            continue
-        latest = max(candidates, key=lambda row: str(row.get("period_end") or row.get("period") or ""))
-        macro_summary.append(
-            {
-                "label": label,
-                "period": latest.get("period") or latest.get("period_end") or "",
-                "value": latest.get("official_value") or latest.get("value") or "",
-                "unit": latest.get("official_unit") or latest.get("unit") or "",
-                "sourceUrl": latest.get("official_source_url") or "",
-                "verificationStatus": latest.get("verification_status") or "",
-            }
-        )
-
-    metrics_payload = build_company_metrics_payload()
-    metric_rows = metrics_payload.get("rows") if isinstance(metrics_payload, dict) else []
-    metric_rows = metric_rows if isinstance(metric_rows, list) else []
-    performance_companies = [
-        "HKT / csl / 1O1O",
-        "HKBN",
-        "SmarTone",
-        "3HK / Hutchison",
-        "i-CABLE",
-    ]
-    performance_summary: list[dict] = []
-    for company in performance_companies:
-        rows = [
-            row
-            for row in metric_rows
-            if row.get("company") == company and row.get("sourceType") == "verified-performance"
-        ]
-        by_metric = {}
-        for row in rows:
-            metric = str(row.get("metric") or "")
-            if metric and metric not in by_metric:
-                by_metric[metric] = row
-        latest_row = by_metric.get("最新披露") or {}
-        source_row = by_metric.get("收益") or by_metric.get("EBITDA / 利润") or latest_row
-        sources = source_row.get("sources") if isinstance(source_row, dict) else []
-        first_source = sources[0] if isinstance(sources, list) and sources else {}
-        performance_summary.append(
-            {
-                "company": company,
-                "period": latest_row.get("value") or latest_row.get("disclosure") or "",
-                "disclosureDate": latest_row.get("disclosureDate") or "",
-                "revenue": (by_metric.get("收益") or {}).get("value") or "",
-                "profit": (by_metric.get("EBITDA / 利润") or {}).get("value") or "",
-                "capex": (by_metric.get("资本开支") or {}).get("value") or "",
-                "marketReaction": (by_metric.get("市场反应") or {}).get("value") or "",
-                "strategy": (by_metric.get("战略升级") or {}).get("value") or "",
-                "sourceUrl": first_source.get("url") if isinstance(first_source, dict) else "",
-            }
-        )
-
-    source_paths = [quarterly_path, tariff_path, tariff_gap_path, macro_path]
-    latest_mtime = max((path.stat().st_mtime for path in source_paths if path.exists()), default=time.time())
-    return {
-        "generatedAt": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(latest_mtime)),
-        "summary": {
-            "quarterlyRows": len(quarterly_rows),
-            "quarterRows": grain_counts.get("quarter", 0),
-            "halfYearRows": grain_counts.get("half_year", 0),
-            "officialMatches": verification_counts.get("official_match", 0),
-            "officialConflicts": verification_counts.get("official_conflict", 0),
-            "officialOnly": verification_counts.get("official_only", 0),
-            "quarterlySourceGaps": verification_counts.get("source_gap_confirmed", 0),
-            "formalTariffs": len(tariff_rows),
-            "currentTariffs": len(current_tariffs),
-            "tariffSourceGaps": len(tariff_gap_rows),
-            "macroRows": len(macro_rows),
-        },
-        "performance": performance_summary,
-        "tariffs": tariff_summary,
-        "macro": macro_summary,
     }
 
 
@@ -2981,9 +2806,6 @@ class AppHandler(BaseHTTPRequestHandler):
                     {"ok": False, "error": str(exc), "items": []},
                     status=500,
                 )
-            return
-        if path == "/api/decision-dashboard":
-            json_response(self, {"ok": True, "data": build_decision_dashboard_payload()})
             return
         if path == "/api/company-metrics":
             json_response(
