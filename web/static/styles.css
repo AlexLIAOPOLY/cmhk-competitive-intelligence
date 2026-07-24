@@ -2073,22 +2073,19 @@ select {
 }
 
 .chat-empty-mark {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   margin: 0 auto 18px;
   display: grid;
   place-items: center;
-  border: 1px solid #cbd5de;
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 5px 16px rgba(31, 65, 92, 0.06);
 }
 
 .chat-empty-mark img {
-  width: 23px;
-  height: 23px;
+  width: 38px;
+  height: 38px;
   object-fit: contain;
-  opacity: 0.88;
+  filter: grayscale(1);
+  opacity: 0.28;
 }
 
 .chat-empty-state h3 {
@@ -2945,16 +2942,15 @@ select {
 }
 
 .message.assistant .avatar {
-  border: 1px solid #d9e1e8;
-  background: #fff;
-  box-shadow: 0 3px 10px rgba(31, 65, 92, 0.05);
+  background: transparent;
 }
 
 .avatar img {
-  width: 16px;
-  height: 16px;
+  width: 19px;
+  height: 19px;
   object-fit: contain;
-  opacity: 0.88;
+  filter: grayscale(1);
+  opacity: 0.38;
 }
 
 .message.user .avatar {
@@ -5075,7 +5071,6 @@ pre {
     width: 38px;
     height: 38px;
     margin-bottom: 14px;
-    border-radius: 12px;
   }
 
   .chat-empty-state h3 {
