@@ -1103,38 +1103,6 @@ function renderStrategicOverview(rawItems) {
       : '<div class="signal-topic-empty">近14日暂无已确认信号</div>';
   }
 
-  const recentList = document.getElementById("signalRecentList");
-  if (recentList) {
-    const recentItems = [...items]
-      .sort((left, right) =>
-        String(right.published_at || "").localeCompare(String(left.published_at || ""))
-      )
-      .slice(0, 6);
-    recentList.innerHTML = recentItems.length
-      ? recentItems.map((item, index) => {
-          const url = /^https?:\/\//i.test(String(item.source_url || ""))
-            ? String(item.source_url)
-            : "";
-          const tag = url ? "a" : "article";
-          const linkAttrs = url
-            ? ` href="${escapeHtml(url)}" target="_blank" rel="noreferrer"`
-            : "";
-          const category = String(item.category || "战略动态");
-          return `
-            <${tag} class="signal-recent-row"${linkAttrs}>
-              <span>
-                <i style="background:${strategicCategoryColor(category, index)}"></i>
-                <time>${escapeHtml(formatShortDate(strategicDateKey(item.published_at)))}</time>
-                <b>${escapeHtml(category)}</b>
-              </span>
-              <strong>${escapeHtml(item.title || "战略快讯")}</strong>
-              <p>${escapeHtml(item.summary || "点击查看已确认情报原文。")}</p>
-            </${tag}>
-          `;
-        }).join("")
-      : '<div class="signal-topic-empty">近14日暂无已确认情报</div>';
-  }
-
   const insight = document.getElementById("signalInsightText");
   if (insight) {
     insight.textContent = items.length
@@ -1247,14 +1215,11 @@ function renderCollectionOverview(status) {
 
   const entityHost = document.getElementById("collectionEntityList");
   if (entityHost) {
-    const entityPeak = Math.max(1, ...entities.map((item) => Number(item.value || 0)));
     entityHost.innerHTML = entities.length
       ? entities.slice(0, 8).map((item, index) => `
-          <div class="collection-entity-row" style="--entity-delay:${index * 45}ms">
-            <span>${escapeHtml(item.label || "未标记主体")}</span>
-            <b>${Number(item.value || 0)}</b>
-            <i><span style="width:${Math.max(6, (Number(item.value || 0) / entityPeak) * 100)}%"></span></i>
-          </div>
+          <span style="--entity-delay:${index * 45}ms">
+            ${escapeHtml(item.label || "未标记主体")}<b>${Number(item.value || 0)}</b>
+          </span>
         `).join("")
       : '<div class="collection-empty">暂无主体数据</div>';
   }
