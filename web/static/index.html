@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>战略竞对检测情报中心</title>
+    <title>战略竞对情报驾驶舱</title>
   <link rel="stylesheet" href="/static/styles.css?v=197" />
   </head>
   <body class="dashboard-page">
@@ -21,9 +21,9 @@
       </header>
 
       <section class="console-shell">
-        <section class="operations" aria-label="周报生成流程">
+        <section class="operations" aria-label="战略情报驾驶舱">
           <header class="page-titlebar">
-            <h1>战略竞对检测情报中心</h1>
+            <h1>战略竞对情报驾驶舱</h1>
           </header>
 
           <section class="command-strip">
@@ -43,6 +43,11 @@
             <button class="command-btn btn-report" id="generateButtonSecondary" type="button">
               <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
               生成周报
+            </button>
+            <button class="command-btn btn-library" id="reportLibraryButton" type="button" aria-haspopup="dialog" aria-controls="outputArea">
+              <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7l2 2h9v12H3z"></path><path d="M8 11h8M8 15h6"></path></svg>
+              报告库
+              <span id="reportLibraryCount">--</span>
             </button>
           </section>
 
@@ -114,11 +119,11 @@
             <aside class="strategy-ticker" aria-label="滚动战略快讯">
               <header class="strategy-ticker-header">
                 <div>
-                  <span class="strategy-eyebrow">STRATEGIC SIGNALS</span>
+                  <span class="strategy-eyebrow">LIVE SIGNALS</span>
                   <strong>战略快讯</strong>
-                  <small>人工确认后发布 · 按时间倒序</small>
+                  <small>人工确认 · 点击查看原文</small>
                 </div>
-                <span id="strategySyncStatus"><i aria-hidden="true"></i>每小时同步</span>
+                <span id="strategySyncStatus"><i aria-hidden="true"></i>实时轮播</span>
               </header>
               <div class="strategy-ticker-list" id="strategyTickerList" aria-live="polite">
                 <div class="strategy-ticker-empty">
@@ -131,9 +136,66 @@
                 <a href="https://cmhk-try.feishu.cn/sheets/NB6Gsi9tChARfGtBDpFc6QfOnmb?sheet=n1fzSN" target="_blank" rel="noreferrer">监测规则</a>
               </footer>
             </aside>
+
+            <article class="collection-overview" aria-labelledby="collectionOverviewTitle">
+              <header class="collection-overview-header">
+                <div>
+                  <span>COLLECTION PULSE</span>
+                  <h2 id="collectionOverviewTitle">本轮信息资产</h2>
+                  <p id="collectionCompletedAt">等待最近采集结果</p>
+                </div>
+                <span class="collection-live-badge"><i></i>数据已连接</span>
+              </header>
+
+              <div class="collection-kpi-grid">
+                <div>
+                  <span>监测任务</span>
+                  <strong id="collectionTaskCount">--</strong>
+                  <small id="collectionTaskCoverage">--</small>
+                </div>
+                <div>
+                  <span>有效事实</span>
+                  <strong id="collectionFactCount">--</strong>
+                  <small>已进入发布层</small>
+                </div>
+                <div>
+                  <span>来源证据</span>
+                  <strong id="collectionSourceCount">--</strong>
+                  <small>本轮可追溯来源</small>
+                </div>
+              </div>
+
+              <section class="collection-section" aria-labelledby="collectionCompositionTitle">
+                <div class="collection-section-title">
+                  <strong id="collectionCompositionTitle">采集内容构成</strong>
+                  <span id="collectionCompositionTotal">-- 项</span>
+                </div>
+                <div class="collection-bar-list" id="collectionCompositionList">
+                  <div class="collection-empty">正在读取采集内容</div>
+                </div>
+              </section>
+
+              <section class="collection-section collection-entity-section" aria-labelledby="collectionEntityTitle">
+                <div class="collection-section-title">
+                  <strong id="collectionEntityTitle">重点关注主体</strong>
+                  <span>按采集记录</span>
+                </div>
+                <div class="collection-entity-list" id="collectionEntityList">
+                  <div class="collection-empty">正在汇总主体</div>
+                </div>
+              </section>
+            </article>
           </section>
 
-          <section class="reports-layout" id="outputArea">
+          <section class="reports-layout report-library-drawer" id="outputArea" role="dialog" aria-modal="true" aria-labelledby="reportLibraryTitle" hidden>
+            <header class="report-library-header">
+              <div>
+                <span>REPORT LIBRARY</span>
+                <h2 id="reportLibraryTitle">报告库</h2>
+                <p>集中查看、播放、下载和管理已生成报告</p>
+              </div>
+              <button class="report-library-close" id="closeReportLibraryButton" type="button" aria-label="关闭报告库">&times;</button>
+            </header>
             <section class="section-block output-card weekly-output-card" id="weeklyOutputBlock" aria-label="战略部每周周报">
               <div class="output-toolbar">
                 <div class="output-heading">
@@ -182,6 +244,7 @@
       </section>
 
       <button class="chat-fab" id="chatFab" type="button" aria-label="打开小竞AI">
+        <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=1" alt="" aria-hidden="true" />
         <span>小竞AI</span>
       </button>
 
@@ -233,7 +296,9 @@
             <div class="chat-session">
           <div class="messages" id="messages">
             <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
-              <span class="chat-empty-mark" aria-hidden="true">竞</span>
+              <span class="chat-empty-mark" aria-hidden="true">
+                <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=1" alt="" />
+              </span>
               <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
               <p>选择一个方向，或直接在下方输入你的问题</p>
               <div class="chat-starter-grid">

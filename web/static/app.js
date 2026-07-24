@@ -82,6 +82,10 @@ const els = {
   outputTabs: document.querySelectorAll(".output-tab"),
   weeklyOutputBlock: document.querySelector("#weeklyOutputBlock"),
   performanceOutputBlock: document.querySelector("#performanceOutputBlock"),
+  reportLibraryButton: document.querySelector("#reportLibraryButton"),
+  reportLibraryCount: document.querySelector("#reportLibraryCount"),
+  closeReportLibraryButton: document.querySelector("#closeReportLibraryButton"),
+  outputArea: document.querySelector("#outputArea"),
   fileEditModal: document.querySelector("#fileEditModal"),
   fileEditForm: document.querySelector("#fileEditForm"),
   closeFileEdit: document.querySelector("#closeFileEdit"),
@@ -1162,6 +1166,65 @@ function renderStrategicOverview(rawItems) {
   });
 }
 
+function renderCollectionOverview(status) {
+  const visuals = status.visuals || {};
+  const quality = visuals.quality || {};
+  const rejection = visuals.rejection || {};
+  const crawl = visuals.crawl || {};
+  const settings = status.settings || {};
+  const results = status.results || {};
+  const blocks = Array.isArray(visuals.blocks) ? visuals.blocks : [];
+  const entities = Array.isArray(visuals.entities) ? visuals.entities : [];
+  const taskCount = Number(results.count || settings.totalRows || 0);
+  const enabledRows = Number(settings.enabledRows || 0);
+  const totalRows = Number(settings.totalRows || taskCount || 0);
+  const acceptedFacts = Number(rejection.accepted || 0);
+  const rawSources = Number(quality.rawSources || 0);
+
+  const setText = (id, value) => {
+    const node = document.getElementById(id);
+    if (node) node.textContent = value;
+  };
+  setText("collectionTaskCount", String(taskCount || "--"));
+  setText("collectionTaskCoverage", totalRows ? `覆盖 ${enabledRows}/${totalRows} 项` : "等待任务数据");
+  setText("collectionFactCount", String(acceptedFacts || "--"));
+  setText("collectionSourceCount", String(rawSources || "--"));
+  setText("collectionCompletedAt", crawl.completedAt ? `最近采集 ${crawl.completedAt}` : "等待最近采集结果");
+
+  const compositionTotal = sumValues(blocks);
+  setText("collectionCompositionTotal", `${compositionTotal} 项`);
+  const compositionHost = document.getElementById("collectionCompositionList");
+  if (compositionHost) {
+    const peak = Math.max(1, ...blocks.map((item) => Number(item.value || 0)));
+    const colors = ["#0077c8", "#13a27a", "#7656d6", "#e59a18"];
+    compositionHost.innerHTML = blocks.length
+      ? blocks.slice(0, 4).map((item, index) => {
+          const value = Number(item.value || 0);
+          const share = compositionTotal ? Math.round((value / compositionTotal) * 100) : 0;
+          return `
+            <div class="collection-bar-row">
+              <div><span>${escapeHtml(item.label || "其他信息")}</span><b>${value}</b></div>
+              <div class="collection-bar-track" aria-label="${escapeHtml(item.label || "其他信息")} ${value} 项，占比 ${share}%">
+                <span style="--bar-width:${Math.max(6, (value / peak) * 100)}%;--bar-color:${colors[index % colors.length]}"></span>
+              </div>
+            </div>
+          `;
+        }).join("")
+      : '<div class="collection-empty">暂无采集内容构成</div>';
+  }
+
+  const entityHost = document.getElementById("collectionEntityList");
+  if (entityHost) {
+    entityHost.innerHTML = entities.length
+      ? entities.slice(0, 8).map((item, index) => `
+          <span style="--entity-delay:${index * 45}ms">
+            ${escapeHtml(item.label || "未标记主体")}<b>${Number(item.value || 0)}</b>
+          </span>
+        `).join("")
+      : '<div class="collection-empty">暂无主体数据</div>';
+  }
+}
+
 function renderInsights(status) {
   const visuals = status.visuals || {};
   const crawl = visuals.crawl || {};
@@ -1539,6 +1602,7 @@ function renderFileList() {
   if (els.fileCountText) els.fileCountText.textContent = state.multiSelect ? `选择模式 · 已选 ${selectedCount} / ${files.length}` : `${files.length} 个文件`;
   if (els.weeklyFileCountText) els.weeklyFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${weeklyFiles.length}` : `${weeklyFiles.length} 个文件`;
   if (els.performanceFileCountText) els.performanceFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${performanceFiles.length}` : `${performanceFiles.length} 个文件`;
+  if (els.reportLibraryCount) els.reportLibraryCount.textContent = String(files.length);
   els.multiSelectTriggers.forEach((button) => {
     button.classList.toggle("is-active", state.multiSelect);
   });
@@ -1560,6 +1624,7 @@ function renderStatus(status) {
     els.aiConfigStatus.textContent = `${status.ai.provider} / ${status.ai.model} / ${status.ai.base_url} / ${status.ai.has_api_key ? "API Key 已保存" : "未保存 API Key"}`;
   }
   renderInsights(status);
+  renderCollectionOverview(status);
   state.outputs = status.outputs || [];
   const existing = new Set(state.outputs.map((item) => item.path_str));
   for (const path of state.selectedFiles) {
@@ -4549,7 +4614,14 @@ function addMessage(role, content, markdown = false) {
   node.className = `message ${role}`;
   const avatar = document.createElement("span");
   avatar.className = "avatar";
-  avatar.textContent = role === "user" ? "您" : "AI";
+  if (role === "user") {
+    avatar.textContent = "您";
+  } else {
+    const logo = document.createElement("img");
+    logo.src = "/static/assets/logo/xiaojing-ai-logo-mark.png?v=1";
+    logo.alt = "";
+    avatar.appendChild(logo);
+  }
   const body = document.createElement("div");
   body.className = "message-body";
   const text = document.createElement("div");
@@ -4614,7 +4686,9 @@ function initialChatEmptyStateHtml() {
   ];
   return `
     <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
-      <span class="chat-empty-mark" aria-hidden="true">竞</span>
+      <span class="chat-empty-mark" aria-hidden="true">
+        <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=1" alt="" />
+      </span>
       <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
       <p>选择一个方向，或直接在下方输入你的问题</p>
       <div class="chat-starter-grid">
@@ -6299,6 +6373,32 @@ els.outputTabs.forEach((button) => {
   });
 });
 
+function openReportLibrary() {
+  if (!els.outputArea) return;
+  els.outputArea.hidden = false;
+  document.body.classList.add("report-library-open");
+  window.requestAnimationFrame(() => {
+    els.outputArea.classList.add("is-open");
+    els.closeReportLibraryButton?.focus();
+  });
+}
+
+function closeReportLibrary() {
+  if (!els.outputArea || els.outputArea.hidden) return;
+  els.outputArea.classList.remove("is-open");
+  document.body.classList.remove("report-library-open");
+  window.setTimeout(() => {
+    els.outputArea.hidden = true;
+    els.reportLibraryButton?.focus();
+  }, 220);
+}
+
+if (els.reportLibraryButton) els.reportLibraryButton.addEventListener("click", openReportLibrary);
+if (els.closeReportLibraryButton) els.closeReportLibraryButton.addEventListener("click", closeReportLibrary);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && els.outputArea && !els.outputArea.hidden) closeReportLibrary();
+});
+
 els.testAiConfig.addEventListener("click", () => {
   testAiConfig().catch((error) => {
     els.aiConfigStatus.textContent = `连接失败：${error.message || String(error)}`;
@@ -7066,11 +7166,11 @@ document.addEventListener("keydown", (event) => {
   let resumeTimer = null;
   let pointerPaused = false;
   let focusPaused = false;
-  let touchStartY = 0;
+  let touchStartX = 0;
   let touchStartTime = 0;
-  const autoScrollSpeed = 30;
+  const autoScrollSpeed = 42;
   list.tabIndex = 0;
-  list.setAttribute("aria-label", "战略快讯滚动列表");
+  list.setAttribute("aria-label", "战略快讯横向轮播");
   function escapeValue(value) {
     return String(value == null ? "" : value)
       .replace(/&/g, "&amp;")
@@ -7098,9 +7198,9 @@ document.addEventListener("keydown", (event) => {
     if (scrollAnimation) scrollAnimation.cancel();
     scrollAnimation = null;
     if (resumeTimer) window.clearTimeout(resumeTimer);
-    list.scrollTop = 0;
+    list.scrollLeft = 0;
     const items = Array.from(list.querySelectorAll(".strategy-ticker-item"));
-    if (!items.length || list.scrollHeight <= list.clientHeight + 2) return;
+    if (!items.length) return;
 
     const track = document.createElement("div");
     track.className = "strategy-ticker-track";
@@ -7119,18 +7219,18 @@ document.addEventListener("keydown", (event) => {
     list.replaceChildren(track);
 
     const firstClone = track.querySelector(".strategy-ticker-clone");
-    const cycleHeight = firstClone
-      ? firstClone.offsetTop - items[0].offsetTop
+    const cycleWidth = firstClone
+      ? firstClone.offsetLeft - items[0].offsetLeft
       : 0;
-    if (cycleHeight <= 1) return;
+    if (cycleWidth <= 1) return;
 
     scrollAnimation = track.animate(
       [
         { transform: "translate3d(0, 0, 0)" },
-        { transform: "translate3d(0, -" + cycleHeight + "px, 0)" }
+        { transform: "translate3d(-" + cycleWidth + "px, 0, 0)" }
       ],
       {
-        duration: Math.max(12000, (cycleHeight / autoScrollSpeed) * 1000),
+        duration: Math.max(18000, (cycleWidth / autoScrollSpeed) * 1000),
         iterations: Infinity,
         easing: "linear"
       }
@@ -7150,10 +7250,10 @@ document.addEventListener("keydown", (event) => {
     }, delay || 0);
   }
 
-  function shiftScroll(deltaY) {
+  function shiftScroll(deltaX) {
     if (!scrollAnimation) return;
     const current = Number(scrollAnimation.currentTime) || 0;
-    scrollAnimation.currentTime = current + (deltaY / autoScrollSpeed) * 1000;
+    scrollAnimation.currentTime = current + (deltaX / autoScrollSpeed) * 1000;
   }
 
   function render(payload) {
@@ -7169,7 +7269,7 @@ document.addEventListener("keydown", (event) => {
     syncStatus.classList.toggle("is-degraded", degraded);
     syncStatus.title = monitor.last_error || "";
     syncStatus.innerHTML =
-      '<i aria-hidden="true"></i>' + (degraded ? "同步待恢复" : "每小时同步");
+      '<i aria-hidden="true"></i>' + (degraded ? "同步待恢复" : "实时轮播");
     const scanTimes = Array.isArray(monitor.scan_times) ? monitor.scan_times : [];
     scheduleText.textContent = scanTimes.length
       ? "每日 " + scanTimes.join(" / ") + " 扫描"
@@ -7244,20 +7344,20 @@ document.addEventListener("keydown", (event) => {
   list.addEventListener("wheel", function (event) {
     event.preventDefault();
     pauseScroll();
-    shiftScroll(event.deltaY);
+    shiftScroll(event.deltaX || event.deltaY);
   }, { passive: false });
   list.addEventListener("touchstart", function (event) {
     const touch = event.touches && event.touches[0];
     if (!touch || !scrollAnimation) return;
     pauseScroll();
-    touchStartY = touch.clientY;
+    touchStartX = touch.clientX;
     touchStartTime = Number(scrollAnimation.currentTime) || 0;
   }, { passive: true });
   list.addEventListener("touchmove", function (event) {
     const touch = event.touches && event.touches[0];
     if (!touch || !scrollAnimation) return;
     event.preventDefault();
-    scrollAnimation.currentTime = touchStartTime + ((touchStartY - touch.clientY) / autoScrollSpeed) * 1000;
+    scrollAnimation.currentTime = touchStartTime + ((touchStartX - touch.clientX) / autoScrollSpeed) * 1000;
   }, { passive: false });
   list.addEventListener("touchend", function () {
     resumeScroll(700);
