@@ -415,6 +415,19 @@ class BiweeklyContentQualityTests(unittest.TestCase):
 
 
 class RecentArticleQualityTests(unittest.TestCase):
+    def test_explicit_date_parser_does_not_truncate_days_after_twenty(self) -> None:
+        cases = {
+            "2026-07-23T05:52:23+00:00": "2026-07-23",
+            "2026/07/24 09:30": "2026-07-24",
+            "Jul 22,2026": "2026-07-22",
+            "22 July, 2026": "2026-07-22",
+        }
+
+        for value, expected in cases.items():
+            with self.subTest(value=value):
+                parsed = report._explicit_dates_in_text(value)
+                self.assertEqual([item.date().isoformat() for item in parsed], [expected])
+
     def test_navigation_link_is_not_treated_as_a_news_article(self) -> None:
         soup = BeautifulSoup(
             '<article><time>July 24, 2026</time><h3>National economy update</h3>'
@@ -470,7 +483,8 @@ class RecentArticleQualityTests(unittest.TestCase):
         expected = "The second fiber migration: Why Germany’s FTTH pioneers are moving to XGS-PON"
         html = (
             f'<html><head><meta property="og:title" content="{expected} | Total Telecom"></head>'
-            '<body><main><h2>Contributed Article</h2><p>'
+            '<body><main><time datetime="2026-07-21">21 July 2026</time>'
+            '<h2>Contributed Article</h2><p>'
             + ("Verified network migration evidence. " * 20)
             + "</p></main></body></html>"
         )
@@ -487,6 +501,50 @@ class RecentArticleQualityTests(unittest.TestCase):
 
         self.assertIsNotNone(item)
         self.assertEqual(item["title"], expected)
+        self.assertEqual(item["pagePublishedAt"], "2026-07-21")
+
+    def test_article_page_with_mismatched_publication_date_is_rejected(self) -> None:
+        html = (
+            '<html><head><meta property="article:published_time" content="2007-01-04"></head>'
+            '<body><main><h1>National economy update</h1><p>'
+            + ("Historical statistical information. " * 20)
+            + "</p></main></body></html>"
+        )
+        source = {
+            "title": "National economy update",
+            "url": "https://www.stats.gov.cn/english/nbs/200701/example.html",
+            "publishedAt": "2026-07-24",
+            "section": "经济资讯",
+            "row": 7,
+        }
+
+        with patch.object(report, "_fetch_public_html", return_value=html):
+            self.assertIsNone(report._fetch_article_evidence(source))
+
+    def test_recent_list_page_cannot_be_admitted_as_article(self) -> None:
+        source = {
+            "title": "Market Prices of Important Means of Production",
+            "url": "https://www.stats.gov.cn/english/PressRelease/",
+            "publishedAt": "2026-07-24",
+        }
+
+        with patch.object(report, "_fetch_public_html") as fetch:
+            self.assertIsNone(report._fetch_article_evidence(source))
+        fetch.assert_not_called()
+        self.assertTrue(report._is_recent_list_url(source["url"]))
+
+    def test_cached_article_requires_matching_page_publication_date(self) -> None:
+        article = {
+            "title": "Verified telecom infrastructure investment update",
+            "url": "https://totaltele.com/verified-update/",
+            "publishedAt": "2026-07-23",
+            "pagePublishedAt": "2026-07-22",
+            "rawDetail": "Verified evidence. " * 30,
+        }
+
+        self.assertFalse(report._cached_recent_article_is_usable(article))
+        article["pagePublishedAt"] = "2026-07-23"
+        self.assertTrue(report._cached_recent_article_is_usable(article))
 
     def test_dirty_fresh_cache_triggers_live_replacement_discovery(self) -> None:
         now = datetime(2026, 7, 24, 10, 30, tzinfo=HKT)
@@ -494,6 +552,7 @@ class RecentArticleQualityTests(unittest.TestCase):
             "title": "Verified telecom infrastructure investment update",
             "url": "https://totaltele.com/verified-update/",
             "publishedAt": "2026-07-23",
+            "pagePublishedAt": "2026-07-23",
             "section": "行业资讯",
             "tag": "行业动态",
             "row": 9,

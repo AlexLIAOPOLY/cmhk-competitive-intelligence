@@ -56,7 +56,7 @@ WEEKLY_REVIEW_BATCH_SIZE = 5
 WEEKLY_REVIEW_TIMEOUT_SECONDS = 75
 WEEKLY_REVIEW_PROMPT_VERSION = "strategic-internal-reviewer-v2-web-verified"
 MIN_WEEKLY_REPORT_ITEMS = 4
-RECENT_ARTICLE_CACHE_VERSION = "recent-articles-v10"
+RECENT_ARTICLE_CACHE_VERSION = "recent-articles-v13-page-date-verified"
 
 
 def dated_weekly_docx_path(
@@ -2748,10 +2748,10 @@ def _explicit_dates_in_text(text: str) -> list[datetime]:
     hkt = ZoneInfo("Asia/Hong_Kong")
     values: list[datetime] = []
     patterns = (
-        r"(?<!\d)(20\d{2})[-/.年]\s*(0?[1-9]|1[0-2])[-/.月]\s*(0?[1-9]|[12]\d|3[01])日?",
-        r"(?<!\d)(0?[1-9]|[12]\d|3[01])\s+(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[,]?\s+(20\d{2})",
-        r"(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(0?[1-9]|[12]\d|3[01])(?:st|nd|rd|th)?[,]?\s+(20\d{2})",
-        r"(?<!\d)(0?[1-9]|[12]\d|3[01])\s+(0?[1-9]|1[0-2])\s+(20\d{2})(?!\d)",
+        r"(?<!\d)(20\d{2})[-/.年]\s*(1[0-2]|0?[1-9])[-/.月]\s*(3[01]|[12]\d|0?[1-9])日?",
+        r"(?<!\d)(3[01]|[12]\d|0?[1-9])\s+(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[,]?\s+(20\d{2})",
+        r"(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(3[01]|[12]\d|0?[1-9])(?:st|nd|rd|th)?(?:,\s*|\s+)(20\d{2})",
+        r"(?<!\d)(3[01]|[12]\d|0?[1-9])\s+(1[0-2]|0?[1-9])\s+(20\d{2})(?!\d)",
     )
     month_names = {
         name.lower(): index
@@ -2804,6 +2804,7 @@ def _is_recent_list_url(url: str) -> bool:
         ("totaltele.com", "/"),
         ("mfa.gov.cn", "/eng"),
         ("stats.gov.cn", "/english"),
+        ("stats.gov.cn", "/english/PressRelease"),
         ("news.sktelecom.com", "/en/category/press-center/press-release"),
         ("enisa.europa.eu", "/news"),
     }
@@ -2993,11 +2994,57 @@ def _discover_articles_from_list(
         deduped.values(),
         key=lambda item: (item["publishedAt"], item["title"]),
         reverse=True,
-    )[:5]
+    )[:12]
+
+
+def _page_publication_dates(soup: BeautifulSoup, container) -> list[datetime]:
+    """Extract publication dates from article-owned page fields, not list-card context."""
+    date_texts: list[str] = []
+    publication_fields = {
+        "article:published_time",
+        "article:published",
+        "date",
+        "datepublished",
+        "dc.date",
+        "dc.date.issued",
+        "pubdate",
+        "publishdate",
+        "publish_date",
+        "published",
+        "published_time",
+    }
+    for element in soup.find_all("meta"):
+        field = clean_text(
+            element.get("property")
+            or element.get("name")
+            or element.get("itemprop")
+        ).lower()
+        if field in publication_fields:
+            value = clean_text(element.get("content") or element.get("value"))
+            if value:
+                date_texts.append(value)
+    for element in container.find_all("time"):
+        value = clean_text(element.get("datetime") or element.get_text(" ", strip=True))
+        if value:
+            date_texts.append(value)
+    date_texts.append(clean_text(container.get_text(" ", strip=True), 1800))
+    return sorted(
+        {
+            value
+            for text in date_texts
+            for value in _explicit_dates_in_text(text)
+        }
+    )
 
 
 def _fetch_article_evidence(article: dict) -> dict | None:
-    if _is_navigation_article_title(article.get("title")):
+    if (
+        _is_navigation_article_title(article.get("title"))
+        or _is_recent_list_url(clean_text(article.get("url")))
+    ):
+        return None
+    locked_date = parse_report_date(article.get("publishedAt"))
+    if locked_date is None:
         return None
     try:
         html_text = _fetch_public_html(article["url"], timeout=30)
@@ -3021,6 +3068,9 @@ def _fetch_article_evidence(article: dict) -> dict | None:
     if not containers:
         return None
     container = max(containers, key=lambda value: len(clean_text(value.get_text(" ", strip=True))))
+    page_dates = _page_publication_dates(soup, container)
+    if locked_date.date() not in {value.date() for value in page_dates}:
+        return None
     evidence = clean_text(container.get_text(" ", strip=True), 9000)
     if _is_promotional_article_evidence(evidence):
         return None
@@ -3050,6 +3100,7 @@ def _fetch_article_evidence(article: dict) -> dict | None:
     item["rawDetail"] = evidence
     item["detail"] = evidence
     item["eventAt"] = article["publishedAt"]
+    item["pagePublishedAt"] = locked_date.date().isoformat()
     item["subject"] = resolved_title
     item["sourceName"] = article.get("sourceName") or source_display_name(article.get("url"))
     item["section"] = strategic_section_for_content(
@@ -3065,10 +3116,15 @@ def _fetch_article_evidence(article: dict) -> dict | None:
 def _cached_recent_article_is_usable(article: object) -> bool:
     if not isinstance(article, dict):
         return False
+    published_at = parse_report_date(article.get("publishedAt"))
+    page_published_at = parse_report_date(article.get("pagePublishedAt"))
     return (
         _is_usable_article_title(article.get("title"))
         and str(article.get("url") or "").startswith(("http://", "https://"))
-        and parse_report_date(article.get("publishedAt")) is not None
+        and not _is_recent_list_url(clean_text(article.get("url")))
+        and published_at is not None
+        and page_published_at is not None
+        and published_at.date() == page_published_at.date()
         and len(clean_text(article.get("rawDetail") or article.get("detail"))) >= 180
         and not _is_promotional_article_evidence(
             article.get("rawDetail") or article.get("detail")
