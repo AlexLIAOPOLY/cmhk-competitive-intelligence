@@ -258,6 +258,86 @@ class IndependentReviewerTests(unittest.TestCase):
         researched_item["reviewDecision"] = "approve"
         report.validate_report_model(researched)
 
+    def test_final_review_audit_is_renumbered_after_section_reordering(self) -> None:
+        items = [make_item(f"W00{index}", index) for index in range(1, 5)]
+        for index, item in enumerate(items, start=1):
+            item["sourceIds"] = [f"S{index}"]
+            item["section"] = "行业资讯"
+            item["_reviewAuditId"] = f"W{index:03d}"
+            item["reviewDecision"] = "approve"
+            item["webResearch"] = {
+                "query": f"query-{index}",
+                "provider": "unit",
+                "results": [{"title": f"result-{index}", "url": f"https://verify.test/{index}"}],
+            }
+        items[3]["section"] = "政治资讯"
+        model = {
+            "range": {"start": "2026-07-01", "end": "2026-07-14"},
+            "plannedRange": {"start": "2026-07-01", "end": "2026-07-14"},
+            "periodStatus": "final",
+            "issueDate": "2026-07-14",
+            "asOf": "2026-07-14T10:00:00+08:00",
+            "sections": [{"name": "行业资讯", "narrative": "", "items": items}],
+            "sources": [
+                {
+                    "sourceId": f"S{index}",
+                    "url": f"https://source.test/{index}",
+                    "title": f"source-{index}",
+                    "publishedAt": "2026-07-12",
+                }
+                for index in range(1, 5)
+            ],
+            "toc": [],
+        }
+        audit = {
+            "reviewStatus": "passed",
+            "reviewerModel": "unit-reviewer",
+            "reviewPromptVersion": "unit",
+            "approvedItems": 4,
+            "revisedItems": 0,
+            "rejectedItems": 0,
+            "items": [
+                {
+                    "id": f"W{index:03d}",
+                    "decision": "approve",
+                    "title": f"old-audit-{index}",
+                    "sourceIds": [f"S{index}"],
+                }
+                for index in range(1, 5)
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            usage_path = Path(temp_dir) / "usage.json"
+            usage_path.write_text("{}", encoding="utf-8")
+            with (
+                patch.object(report, "WEEKLY_USAGE_AUDIT", usage_path),
+                patch.object(report, "research_weekly_model_online", return_value=model),
+                patch.object(
+                    report,
+                    "review_weekly_items_with_ai",
+                    return_value=(items, audit),
+                ),
+            ):
+                reviewed = report.apply_weekly_ai_review(
+                    model,
+                    progress=lambda _message: None,
+                )
+
+        final_items = [
+            item for section in reviewed["sections"] for item in section["items"]
+        ]
+        self.assertEqual(final_items[0]["title"], items[3]["title"])
+        self.assertEqual(reviewed["reviewAudit"]["items"][0]["id"], "W001")
+        self.assertEqual(
+            reviewed["reviewAudit"]["items"][0]["title"],
+            items[3]["title"],
+        )
+        self.assertEqual(
+            reviewed["reviewAudit"]["webSearch"]["queries"][0]["query"],
+            "query-4",
+        )
+
     def test_weekly_online_research_fails_closed_when_search_is_unavailable(self) -> None:
         item = make_item("W001", 1)
         model = make_model(item)

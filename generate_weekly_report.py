@@ -1698,6 +1698,7 @@ def review_weekly_items_with_ai(
             reviewed["reviewStatus"] = "ai_reviewed"
             reviewed["reviewScores"] = scores
             reviewed["reviewIssues"] = issues
+            reviewed["_reviewAuditId"] = item_id
             reviewed_by_index[index] = reviewed
             audit_entry["title"] = final_title
             if allow_cache and not from_cache:
@@ -1930,7 +1931,7 @@ def review_weekly_items_with_ai(
                     0,
                 )
                 replacement = available_replacements.pop(replacement_index)
-                source_ids = list(original_item.get("sourceIds") or [])
+                source_ids = list(original_item.get("sourceIds") or [])[:1]
                 replacement["sourceIds"] = source_ids
                 replacement["index"] = original_item.get("index") or index + 1
                 replacement["localIndex"] = original_item.get("localIndex") or 1
@@ -1992,6 +1993,7 @@ def review_weekly_items_with_ai(
                         if passed:
                             break
                 if passed:
+                    audit_by_index[index]["reason"] = "联网核验备用文章替换后通过独立审核"
                     review_replacement_count += 1
                     progress(
                         f"[周报 5/7] {item_id}已由联网核验备用文章替换并通过独立审核；"
@@ -3534,6 +3536,7 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
 
     rebuilt_sections = []
     rebuilt_toc = []
+    final_review_refs: list[tuple[str, str, dict]] = []
     global_index = 1
     range_value = reviewed_model.get("range") or {}
     for section_name in SECTION_ORDER:
@@ -3548,6 +3551,14 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
             ]
             item["index"] = global_index
             item["localIndex"] = local_index
+            new_review_id = f"W{global_index:03d}"
+            final_review_refs.append(
+                (
+                    new_review_id,
+                    clean_text(item.get("_reviewAuditId")) or new_review_id,
+                    item,
+                )
+            )
             rebuilt_toc.append(
                 {
                     "index": global_index,
@@ -3575,7 +3586,44 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
     audit["periodStatus"] = clean_text(reviewed_model.get("periodStatus")) or "final"
     audit["issueDate"] = clean_text(reviewed_model.get("issueDate"))
     audit["asOf"] = clean_text(reviewed_model.get("asOf"))
-    audit["webSearch"] = deepcopy(reviewed_model.get("webResearchAudit") or {})
+    audit_by_old_id = {
+        clean_text(entry.get("id")): entry
+        for entry in audit.get("items") or []
+        if clean_text(entry.get("id"))
+    }
+    final_audit_items = []
+    final_web_queries = []
+    for new_id, old_id, item in final_review_refs:
+        entry = deepcopy(audit_by_old_id.get(old_id) or {})
+        entry.update(
+            {
+                "id": new_id,
+                "title": clean_text(item.get("title"), 120),
+                "eventAt": item.get("eventAt") or "",
+                "sourceIds": list(item.get("sourceIds") or []),
+                "detailChars": len(re.sub(r"\s+", "", clean_text(item.get("detail")))),
+            }
+        )
+        final_audit_items.append(entry)
+        research = item.get("webResearch") or {}
+        results = research.get("results") or []
+        final_web_queries.append(
+            {
+                "id": new_id,
+                "query": research.get("query") or "",
+                "provider": research.get("provider") or "",
+                "results": deepcopy(results),
+                "error": research.get("error") or "",
+            }
+        )
+    audit["items"] = final_audit_items
+    audit["webSearch"] = {
+        "required": True,
+        "searchedItems": len(final_web_queries),
+        "itemsWithResults": sum(bool(entry["results"]) for entry in final_web_queries),
+        "resultCount": sum(len(entry["results"]) for entry in final_web_queries),
+        "queries": final_web_queries,
+    }
     audit["finalIncludedItems"] = sum(len(section["items"]) for section in rebuilt_sections)
     audit["sourceIdMap"] = source_id_map
     reviewed_model["reviewAudit"] = audit
