@@ -777,7 +777,15 @@ class QualitySidecarTests(unittest.TestCase):
             rendered_text = "\n".join(paragraph.text for paragraph in rendered.paragraphs)
 
         self.assertEqual(payload["reviewStatus"], "limited")
-        self.assertIn("本期新闻信息局限说明", rendered_text)
+        self.assertIn("战略内参", rendered_text)
+        for forbidden in (
+            "本期新闻信息局限说明",
+            "生成说明",
+            "模板渲染",
+            "受限模式",
+            "没有人工入选新闻",
+        ):
+            self.assertNotIn(forbidden, rendered_text)
         self.assertTrue(
             any(entry["stage"] == "template_render" for entry in payload["limitations"])
         )

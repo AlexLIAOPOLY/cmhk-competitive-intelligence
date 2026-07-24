@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 import unittest
 from tempfile import TemporaryDirectory
 from pathlib import Path
 from unittest import mock
+
+from docx import Document
 
 import generate_carrier_performance_report as report
 
@@ -106,14 +109,21 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
         def fail(_packs):
             raise RuntimeError("offline")
 
+        limitations = []
+        messages = []
         with TemporaryDirectory() as temp_dir, mock.patch.object(
             report, "PERFORMANCE_AI_AUDIT_PATH", Path(temp_dir) / "audit.json"
         ):
             rewritten = report.rewrite_performance_sections_with_ai(
-                sample_sections(), ai_client=fail, progress=lambda _message: None
+                sample_sections(),
+                ai_client=fail,
+                progress=messages.append,
+                limitations=limitations,
             )
 
         self.assertEqual(rewritten, sample_sections())
+        self.assertTrue(any(item["stage"] == "ai_batch" for item in limitations))
+        self.assertTrue(any("[业绩摘要局限][ai_batch]" in message for message in messages))
 
     def test_online_research_is_passed_to_ai_and_can_support_a_new_number(self) -> None:
         response = {
@@ -161,16 +171,23 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
         self.assertIn("88亿元", rewritten[0]["items"][1])
         self.assertIn("https://example.com/capex", audit)
 
-    def test_company_research_fails_closed_when_all_searches_are_empty(self) -> None:
+    def test_company_research_records_limitations_and_continues_when_searches_are_empty(self) -> None:
         def empty_search(query, _limit):
             return {"query": query, "provider": "", "results": [], "error": "offline"}
 
-        with self.assertRaisesRegex(RuntimeError, "不能静默跳过"):
-            report.research_performance_companies_online(
-                sample_sections(),
-                search_client=empty_search,
-                progress=lambda _message: None,
-            )
+        limitations = []
+        messages = []
+        researched = report.research_performance_companies_online(
+            sample_sections(),
+            search_client=empty_search,
+            progress=messages.append,
+            limitations=limitations,
+        )
+
+        self.assertFalse(researched["测试运营商"]["results"])
+        self.assertEqual(limitations[0]["stage"], "web_research")
+        self.assertIn("两轮公开网页搜索", limitations[0]["reason"])
+        self.assertTrue(any("[业绩摘要局限][web_research]" in message for message in messages))
 
     def test_company_research_repairs_a_first_round_search_gap(self) -> None:
         calls = []
@@ -200,6 +217,60 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
 
         self.assertEqual(len(calls), 2)
         self.assertEqual(researched["测试运营商"]["provider"], "unit")
+
+    def test_template_failure_still_creates_business_only_report_and_audit(self) -> None:
+        model = report.fallback_performance_model([])
+        model["generationLimitations"] = [
+            report.performance_limitation_entry(
+                "web_research",
+                "offline",
+                impact="没有新网页证据",
+                action="保留确定性字段",
+            )
+        ]
+        model["generationMode"] = "limited"
+        with TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            output_path = temp_path / "业绩摘要.docx"
+            with (
+                mock.patch.object(report, "ROOT", temp_path),
+                mock.patch.object(report, "TEMPLATE_PATH", temp_path / "missing-template.docx"),
+                mock.patch.object(report, "build_dynamic_model", return_value=model),
+                mock.patch.object(report, "dated_output_path", return_value=output_path),
+            ):
+                rendered_path = report.render_report()
+
+            self.assertEqual(rendered_path, output_path)
+            self.assertTrue(output_path.exists())
+            sidecar = report.performance_quality_sidecar_path(output_path)
+            self.assertTrue(sidecar.exists())
+            audit = json.loads(sidecar.read_text(encoding="utf-8"))
+            document = Document(output_path)
+            report_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+            report_text += "\n" + "\n".join(
+                cell.text
+                for table in document.tables
+                for row in table.rows
+                for cell in row.cells
+            )
+
+        self.assertEqual(audit["generationMode"], "limited")
+        self.assertTrue(any(item["stage"] == "template_render" for item in audit["limitations"]))
+        for forbidden in report.PERFORMANCE_FORBIDDEN_REPORT_PHRASES:
+            self.assertNotIn(forbidden, report_text)
+
+    def test_source_config_failure_returns_fallback_model_instead_of_raising(self) -> None:
+        messages = []
+        with (
+            mock.patch.object(report, "refresh_feishu_mirror", return_value=None),
+            mock.patch.object(report, "load_source_config", side_effect=ValueError("broken config")),
+        ):
+            model = report.build_dynamic_model(progress=messages.append)
+
+        self.assertEqual(model["generationMode"], "limited")
+        self.assertEqual(len(model["sections"]), len(report.DEFAULT_PERFORMANCE_COMPANIES))
+        self.assertEqual(model["generationLimitations"][0]["stage"], "source_config")
+        self.assertTrue(any("[业绩摘要局限][source_config]" in message for message in messages))
 
 
 if __name__ == "__main__":

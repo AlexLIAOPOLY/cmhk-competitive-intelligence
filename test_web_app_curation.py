@@ -1975,6 +1975,68 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
         self.assertIn("周报已生成", done["message"])
         self.assertIn("tts offline", done["warning"])
 
+    def test_audio_failure_is_a_warning_after_performance_docx_succeeds(self) -> None:
+        events: list[dict] = []
+
+        class FakeHandler:
+            def send_response(self, _status):
+                pass
+
+            def send_header(self, _name, _value):
+                pass
+
+            def end_headers(self):
+                pass
+
+        class ReportProcess:
+            pid = 201
+            returncode = 0
+            stdout = iter(["[生成成功] 最终输出文件：\n"])
+
+            def wait(self):
+                return 0
+
+        class AudioProcess:
+            pid = 202
+            returncode = 0
+
+            def communicate(self):
+                return json.dumps({"ok": False, "error": "tts offline"}), ""
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = Path(temp_dir) / "7月24日运营商业绩摘要.docx"
+            report_path.write_bytes(b"docx")
+            with (
+                mock.patch.object(
+                    web_app.subprocess,
+                    "Popen",
+                    side_effect=[ReportProcess(), AudioProcess()],
+                ),
+                mock.patch.object(
+                    web_app,
+                    "build_status",
+                    return_value={"outputs": [{"name": report_path.name}]},
+                ),
+                mock.patch.object(web_app, "latest_output_path", return_value=report_path),
+                mock.patch.object(
+                    web_app,
+                    "write_sse",
+                    side_effect=lambda _handler, payload: events.append(payload),
+                ),
+            ):
+                web_app._ORIGINAL_STREAM_REPORT_GENERATION(
+                    FakeHandler(),
+                    "generate_carrier_performance_report.py",
+                    "carrier-performance",
+                )
+
+        done = next(event for event in reversed(events) if event.get("type") == "done")
+        self.assertTrue(done["ok"])
+        self.assertTrue(done["reportGenerated"])
+        self.assertTrue(done["completedWithWarnings"])
+        self.assertIn("业绩摘要已生成", done["message"])
+        self.assertIn("tts offline", done["warning"])
+
     def test_sync_weekly_endpoint_allows_long_report_generation(self) -> None:
         completed = subprocess.CompletedProcess(
             args=["python", "generate_weekly_report.py"],
@@ -1987,6 +2049,22 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
             mock.patch.object(web_app, "build_status", return_value={"outputs": []}),
         ):
             result = web_app.run_report_generation()
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(run.call_args.kwargs["timeout"], 900)
+
+    def test_sync_performance_endpoint_allows_long_report_generation(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["python", "generate_carrier_performance_report.py"],
+            returncode=0,
+            stdout="ok",
+            stderr="",
+        )
+        with (
+            mock.patch.object(web_app.subprocess, "run", return_value=completed) as run,
+            mock.patch.object(web_app, "build_status", return_value={"outputs": []}),
+        ):
+            result = web_app.run_carrier_performance_generation()
 
         self.assertTrue(result["ok"])
         self.assertEqual(run.call_args.kwargs["timeout"], 900)

@@ -312,7 +312,11 @@ class ManualWeeklySelectionTests(unittest.TestCase):
         self.assertEqual(model["generationMode"], "limited")
         self.assertEqual(model["reviewAudit"]["reviewStatus"], "limited")
         self.assertEqual(model["range"], period.effective_range)
-        self.assertEqual(model["sections"][0]["items"][0]["title"], "本期新闻信息局限说明")
+        self.assertEqual([section["name"] for section in model["sections"]], report.SECTION_ORDER)
+        self.assertTrue(all(not section["items"] for section in model["sections"]))
+        rendered = report.weekly_to_markdown(model)
+        self.assertNotIn("局限", rendered)
+        self.assertNotIn("没有人工入选新闻", rendered)
         self.assertIn("没有人工入选新闻", model["generationLimitations"][0]["reason"])
 
     def test_online_or_reviewer_failure_keeps_manual_items_in_limited_mode(self) -> None:

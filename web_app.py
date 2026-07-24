@@ -1710,7 +1710,7 @@ def run_carrier_performance_generation() -> dict:
         cwd=str(ROOT),
         text=True,
         capture_output=True,
-        timeout=120,
+        timeout=900,
     )
     status = build_status()
     audio_result = None
@@ -1878,12 +1878,13 @@ def stream_report_generation(
     audio_failed = isinstance(audio_result, dict) and audio_result.get("ok") is False
     task_ok = proc.returncode == 0
     warning_detail = str((audio_result or {}).get("error") or "") if audio_failed else ""
+    report_label = "周报" if report_type == "weekly" else "业绩摘要"
     if task_ok and audio_failed:
-        message = f"周报已生成；语音摘要未完成：{warning_detail}"
+        message = f"{report_label}已生成；语音摘要未完成：{warning_detail}"
     elif task_ok:
         message = "报告及语音摘要均已生成。"
     else:
-        message = "周报生成进程未成功完成。"
+        message = f"{report_label}生成进程未成功完成。"
     write_sse(
         handler,
         {

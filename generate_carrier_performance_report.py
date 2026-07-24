@@ -51,6 +51,18 @@ PERFORMANCE_AI_WORKERS = 4
 PERFORMANCE_AI_TIMEOUT_SECONDS = 65
 PERFORMANCE_SOURCE_WORKERS = 8
 COMPANIES = ["中国移动", "中国电信", "中国联通", "中国铁塔"]
+DEFAULT_PERFORMANCE_COMPANIES = [
+    "中国移动",
+    "中国电信",
+    "中国联通",
+    "中国铁塔",
+    "HKT / csl / 1O1O",
+    "3HK / Hutchison",
+    "SmarTone",
+    "HKBN",
+    "HGC",
+    "i-CABLE",
+]
 FIELD_ORDER = [
     ("dividend", "派息"),
     ("capex", "资本开支"),
@@ -58,6 +70,18 @@ FIELD_ORDER = [
     ("broker", "券商观点"),
     ("market", "市场反应"),
 ]
+PERFORMANCE_FORBIDDEN_REPORT_PHRASES = (
+    "业绩摘要局限",
+    "生成说明",
+    "生成链路",
+    "受限模式",
+    "模板渲染",
+    "联网核实失败",
+    "模型重组失败",
+    "详细原因见",
+    "本轮行情抓取失败",
+    "补采任务",
+)
 METRICS = [
     "营业收入（亿元）",
     "主营业务收入（亿元）",
@@ -213,6 +237,75 @@ def clean_text(value: object, limit: int | None = None) -> str:
     if limit and len(text) > limit:
         return text[: limit - 1].rstrip("，。；,. ") + "…"
     return text
+
+
+def performance_limitation_entry(
+    stage: str,
+    reason: object,
+    *,
+    impact: str,
+    action: str,
+) -> dict:
+    return {
+        "stage": clean_text(stage, 80) or "unknown",
+        "reason": clean_text(reason, 1000) or "未提供具体原因",
+        "impact": clean_text(impact, 500),
+        "action": clean_text(action, 500),
+        "recordedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
+    }
+
+
+def record_performance_limitation(
+    limitations: list[dict],
+    stage: str,
+    reason: object,
+    *,
+    impact: str,
+    action: str,
+    progress=print,
+) -> dict:
+    """Record a detailed reason without allowing it into report content."""
+    entry = performance_limitation_entry(stage, reason, impact=impact, action=action)
+    signature = (entry["stage"], entry["reason"], entry["impact"], entry["action"])
+    if signature not in {
+        (
+            clean_text(existing.get("stage")),
+            clean_text(existing.get("reason")),
+            clean_text(existing.get("impact")),
+            clean_text(existing.get("action")),
+        )
+        for existing in limitations
+        if isinstance(existing, dict)
+    }:
+        limitations.append(entry)
+    progress(
+        f"[业绩摘要局限][{entry['stage']}] 原因：{entry['reason']}；"
+        f"影响：{entry['impact']}；处理：{entry['action']}。"
+    )
+    return entry
+
+
+def performance_quality_sidecar_path(docx_path: Path) -> Path:
+    return docx_path.with_suffix(".quality.json")
+
+
+def write_performance_quality_sidecar(docx_path: Path, model: dict) -> Path:
+    path = performance_quality_sidecar_path(docx_path)
+    payload = {
+        "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
+        "reportFile": docx_path.name,
+        "generationMode": model.get("generationMode") or "normal",
+        "limitations": deepcopy(model.get("generationLimitations") or []),
+        "reportCompanies": [
+            clean_text(section.get("company") or section.get("title"), 120)
+            for section in model.get("sections") or []
+        ],
+        "policy": "报告正文只呈现业务内容；数据、搜索、模型、模板和归档局限只进入日志与本审计文件。",
+    }
+    temp_path = Path(str(path) + ".tmp")
+    temp_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    temp_path.replace(path)
+    return path
 
 
 def compact_market_reaction_text(value: str) -> str:
@@ -371,13 +464,27 @@ def build_dynamic_table(corpus: dict[str, list[str]]) -> list[list[str]]:
     return baseline
 
 
-def summary_table(config: dict, companies: list[str]) -> list[list[str]]:
+def summary_table(
+    config: dict,
+    companies: list[str],
+    *,
+    limitations: list[dict] | None = None,
+    progress=print,
+) -> list[list[str]]:
     rows = [SUMMARY_TABLE_HEADERS]
     for company in companies:
         company_cfg = config["companies"].get(company) or {}
         row = company_cfg.get("table_row") or MAINLAND_SUMMARY_ROWS.get(company)
         if not row:
-            raise ValueError(f"业绩摘要缺少表格行配置：{company}")
+            record_performance_limitation(
+                limitations if limitations is not None else [],
+                "summary_table",
+                f"缺少{company}的汇总表行配置",
+                impact=f"{company}的表格指标无法完整列示",
+                action="保留该公司表格位置并使用未披露占位，正文继续生成",
+                progress=progress,
+            )
+            row = [company, "未披露", "未披露", "未披露", "未披露", "未披露"]
         rows.append([clean_text(value, 80) for value in row])
     return rows
 
@@ -444,7 +551,7 @@ def market_reaction(company_cfg: dict) -> str:
         cached = cache.get(cache_key) or {}
         if cached.get("text"):
             return clean_text(cached["text"], 360)
-        return f"本轮行情抓取失败，已登记补采任务（{clean_text(type(exc).__name__, 32)}）。"
+        return ""
 
 
 def load_source_config() -> dict:
@@ -986,7 +1093,9 @@ def rewrite_performance_sections_with_ai(
     ai_client=call_performance_editor_llm,
     progress=print,
     web_research: dict[str, dict] | None = None,
+    limitations: list[dict] | None = None,
 ) -> list[dict]:
+    limitation_log = limitations if limitations is not None else []
     fact_packs = []
     evidence_by_company: dict[str, dict[str, str]] = {}
     for section in sections:
@@ -1034,6 +1143,15 @@ def rewrite_performance_sections_with_ai(
         audit["batchSize"] = PERFORMANCE_AI_BATCH_SIZE
         audit["workers"] = PERFORMANCE_AI_WORKERS
         audit["batchFallbackCompanies"] = sorted(failed_companies)
+        if failed_companies:
+            record_performance_limitation(
+                limitation_log,
+                "ai_batch",
+                "以下公司所在模型批次未返回可用结果：" + "、".join(sorted(failed_companies)),
+                impact=f"{len(failed_companies)}家公司未采用本轮模型重写文本",
+                action="逐字段保留已核验的确定性证据，不删除公司或字段，继续生成摘要",
+                progress=progress,
+            )
 
         validation_by_company: dict[str, dict[str, dict]] = {}
         repair_packs = []
@@ -1123,7 +1241,15 @@ def rewrite_performance_sections_with_ai(
                 content = candidate if valid else evidence
                 repaired_by_evidence = not valid
                 if not is_publishable_field(content):
-                    raise RuntimeError(f"业绩摘要字段修复失败：{company} / {label}")
+                    record_performance_limitation(
+                        limitation_log,
+                        "ai_field_repair",
+                        f"{company} / {label}的模型结果和锁定证据均未通过发布门禁",
+                        impact=f"{company}的{label}无法使用原字段内容",
+                        action="改用不含技术原因的公开披露状态说明，继续生成摘要",
+                        progress=progress,
+                    )
+                    content = "公开资料未单独披露该项口径。"
                 accepted_fields += int(valid)
                 final_items.append(f"{label}：{content}")
                 field_audit.append(
@@ -1148,11 +1274,30 @@ def rewrite_performance_sections_with_ai(
     except Exception as exc:
         rewritten = sections
         audit["error"] = f"{type(exc).__name__}: {exc}"
-        progress(f"[AI摘要] 模型重组失败，使用已核验的确定性摘要：{type(exc).__name__}")
-    PERFORMANCE_AI_AUDIT_PATH.write_text(
-        json.dumps(audit, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+        record_performance_limitation(
+            limitation_log,
+            "ai_rewrite",
+            f"{type(exc).__name__}: {exc}",
+            impact="公司内网模型未完成业绩字段重组",
+            action="直接保留已核验的确定性摘要，报告继续生成",
+            progress=progress,
+        )
+    audit["generationMode"] = "limited" if limitation_log else "normal"
+    audit["limitations"] = deepcopy(limitation_log)
+    try:
+        PERFORMANCE_AI_AUDIT_PATH.write_text(
+            json.dumps(audit, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except Exception as exc:
+        record_performance_limitation(
+            limitation_log,
+            "ai_audit",
+            exc,
+            impact="AI重组审计文件未能写入",
+            action="保留报告正文并继续生成，不让附属审计阻断主报告",
+            progress=progress,
+        )
     return rewritten
 
 
@@ -1161,7 +1306,9 @@ def research_performance_companies_online(
     *,
     search_client=public_web_search,
     progress=print,
+    limitations: list[dict] | None = None,
 ) -> dict[str, dict]:
+    limitation_log = limitations if limitations is not None else []
     requests = []
     for section in sections:
         company = clean_text(section.get("company"))
@@ -1212,28 +1359,48 @@ def research_performance_companies_online(
             if not (researched.get(company) or {}).get("results")
         ]
     if missing_companies:
-        raise RuntimeError(
-            "业绩摘要联网补搜后仍缺少公司证据，已停止生成，不能静默跳过："
-            + "、".join(missing_companies)
+        record_performance_limitation(
+            limitation_log,
+            "web_research",
+            "两轮公开网页搜索后仍未取得新结果：" + "、".join(missing_companies),
+            impact="这些公司的本轮新网页证据不足，无法用于扩写或新增数字",
+            action="保留配置、官方来源缓存和已核验字段，继续生成摘要",
+            progress=progress,
         )
     with_results = sum(
         bool((researched.get(request["id"]) or {}).get("results")) for request in requests
     )
     progress(
-        f"[业绩摘要 联网核实] 搜索完成：{with_results}/{len(requests)}家公司均取得新网页证据；"
-        "结果将进入AI事实门禁和审计记录。"
+        f"[业绩摘要 联网核实] 搜索完成：{with_results}/{len(requests)}家公司取得新网页证据；"
+        "已有结果进入AI事实门禁，缺失项保留原核验字段并写入审计。"
     )
     return researched
 
 
-def build_performance_sections(config: dict, cache: dict, companies: list[str]) -> list[dict]:
+def build_performance_sections(
+    config: dict,
+    cache: dict,
+    companies: list[str],
+    *,
+    limitations: list[dict] | None = None,
+    progress=print,
+) -> list[dict]:
+    limitation_log = limitations if limitations is not None else []
     sections = []
     confirmed_facts = confirmed_facts_by_report_company(companies)
     used_fact_ids: set[str] = set()
     for company in companies:
         company_cfg = config["companies"].get(company)
         if not company_cfg:
-            raise ValueError(f"业绩摘要来源配置缺少公司：{company}")
+            record_performance_limitation(
+                limitation_log,
+                "company_config",
+                f"来源配置缺少公司：{company}",
+                impact=f"{company}没有可用的结构化业绩字段",
+                action="为该公司保留标准五项结构并使用公开披露状态说明",
+                progress=progress,
+            )
+            company_cfg = {}
         latest_event = company_cfg.get("latest_event") or {}
         latest_label = clean_text(latest_event.get("label"), 80)
         latest_date = clean_text(latest_event.get("date"), 40)
@@ -1264,7 +1431,15 @@ def build_performance_sections(config: dict, cache: dict, companies: list[str]) 
             if not content:
                 content = "公开资料未单独披露该项口径。"
             if not is_publishable_field(content):
-                raise ValueError(f"业绩摘要字段未通过发布质量校验：{company} / {label}")
+                record_performance_limitation(
+                    limitation_log,
+                    "field_validation",
+                    f"{company} / {label}未通过发布质量校验",
+                    impact=f"{company}的{label}原字段不进入报告",
+                    action="使用不含技术原因的公开披露状态说明，继续生成摘要",
+                    progress=progress,
+                )
+                content = "公开资料未单独披露该项口径。"
             content, field_fact_ids = enrich_field_with_confirmed_facts(
                 content,
                 field_key,
@@ -1279,33 +1454,72 @@ def build_performance_sections(config: dict, cache: dict, companies: list[str]) 
         for fact in facts
         if fact.get("id")
     }
-    PERFORMANCE_USAGE_AUDIT_PATH.write_text(
-        json.dumps(
-            {
-                "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
-                "reportCompanies": companies,
-                "acceptedRelevantFacts": len(all_relevant_ids),
-                "usedFacts": len(used_fact_ids),
-                "omittedFacts": len(all_relevant_ids - used_fact_ids),
-                "usedFactIds": sorted(used_fact_ids),
-                "omittedFactIds": sorted(all_relevant_ids - used_fact_ids),
-                "policy": "保持五点结构；派息、资本开支、券商观点和市场反应按字段合并，其余确认经营事实并入战略升级。",
-            },
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
+    try:
+        PERFORMANCE_USAGE_AUDIT_PATH.write_text(
+            json.dumps(
+                {
+                    "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
+                    "reportCompanies": companies,
+                    "acceptedRelevantFacts": len(all_relevant_ids),
+                    "usedFacts": len(used_fact_ids),
+                    "omittedFacts": len(all_relevant_ids - used_fact_ids),
+                    "usedFactIds": sorted(used_fact_ids),
+                    "omittedFactIds": sorted(all_relevant_ids - used_fact_ids),
+                    "policy": "保持五点结构；派息、资本开支、券商观点和市场反应按字段合并，其余确认经营事实并入战略升级。",
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+    except Exception as exc:
+        record_performance_limitation(
+            limitation_log,
+            "fact_usage_audit",
+            exc,
+            impact="事实使用审计文件未能写入",
+            action="保留已构建的业务正文，附属审计失败不阻断报告",
+            progress=progress,
+        )
+    web_research = research_performance_companies_online(
+        sections,
+        progress=progress,
+        limitations=limitation_log,
     )
-    web_research = research_performance_companies_online(sections)
-    return rewrite_performance_sections_with_ai(sections, web_research=web_research)
+    return rewrite_performance_sections_with_ai(
+        sections,
+        web_research=web_research,
+        progress=progress,
+        limitations=limitation_log,
+    )
 
 
-def build_dynamic_model() -> dict:
-    refresh_feishu_mirror()
-    config = load_source_config()
-    cache = crawl_carrier_sources(config)
-    companies = get_all_companies(config)
+def fallback_performance_model(limitations: list[dict] | None = None) -> dict:
+    """Build a technical-message-free report model from deterministic defaults."""
     now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
+    companies = list(DEFAULT_PERFORMANCE_COMPANIES)
+    table = [SUMMARY_TABLE_HEADERS]
+    sections = []
+    for company in companies:
+        row = MAINLAND_SUMMARY_ROWS.get(company) or [
+            company,
+            "未披露",
+            "未披露",
+            "未披露",
+            "未披露",
+            "未披露",
+        ]
+        table.append([clean_text(value, 80) for value in row])
+        sections.append(
+            {
+                "company": company,
+                "title": f"{company}关键摘要",
+                "items": [
+                    f"{label}：公开资料未单独披露该项口径。"
+                    for _field_key, label in FIELD_ORDER
+                ],
+            }
+        )
     return {
         "title": "内地运营商及香港主要竞对关键业绩摘要",
         "subtitle": "战略部（智库）对标分析简报",
@@ -1315,8 +1529,100 @@ def build_dynamic_model() -> dict:
             "未公开或不适用的项目明确标注，供内部决策参考。"
         ),
         "table_caption": "表：内地运营商及香港主要竞对最新关键业绩数据汇总",
-        "table": summary_table(config, companies),
-        "sections": build_performance_sections(config, cache, companies),
+        "table": table,
+        "sections": sections,
+        "generationMode": "limited" if limitations else "normal",
+        "generationLimitations": limitations if limitations is not None else [],
+    }
+
+
+def build_dynamic_model(*, progress=print) -> dict:
+    limitations: list[dict] = []
+    try:
+        refresh_feishu_mirror()
+    except Exception as exc:
+        record_performance_limitation(
+            limitations,
+            "feishu_refresh",
+            exc,
+            impact="本轮未取得最新飞书补充字段",
+            action="使用现有本地配置、镜像和核验字段继续生成",
+            progress=progress,
+        )
+    try:
+        config = load_source_config()
+    except Exception as exc:
+        record_performance_limitation(
+            limitations,
+            "source_config",
+            exc,
+            impact="结构化来源配置无法读取",
+            action="使用确定性十家公司标准模型继续生成摘要",
+            progress=progress,
+        )
+        return fallback_performance_model(limitations)
+    try:
+        cache = crawl_carrier_sources(config)
+    except Exception as exc:
+        record_performance_limitation(
+            limitations,
+            "source_refresh",
+            exc,
+            impact="公开来源正文或缓存未能在本轮完整刷新",
+            action="使用配置内已核验字段继续生成，不新增无证据数字",
+            progress=progress,
+        )
+        cache = {}
+    companies = get_all_companies(config) or list(DEFAULT_PERFORMANCE_COMPANIES)
+    now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
+    try:
+        table = summary_table(
+            config,
+            companies,
+            limitations=limitations,
+            progress=progress,
+        )
+    except Exception as exc:
+        record_performance_limitation(
+            limitations,
+            "summary_table",
+            exc,
+            impact="动态汇总表无法完整构建",
+            action="使用确定性标准表格继续生成摘要",
+            progress=progress,
+        )
+        table = fallback_performance_model(limitations)["table"]
+    try:
+        sections = build_performance_sections(
+            config,
+            cache,
+            companies,
+            limitations=limitations,
+            progress=progress,
+        )
+    except Exception as exc:
+        record_performance_limitation(
+            limitations,
+            "content_build",
+            exc,
+            impact="动态正文未能完整构建",
+            action="使用确定性十家公司五项摘要继续生成",
+            progress=progress,
+        )
+        sections = fallback_performance_model(limitations)["sections"]
+    return {
+        "title": "内地运营商及香港主要竞对关键业绩摘要",
+        "subtitle": "战略部（智库）对标分析简报",
+        "intro": (
+            f"截至{now.year}年{now.month}月{now.day}日，本摘要同步核对内地运营商及香港主要竞对最新可获取的"
+            "年度或中期业绩、后续经营披露、业绩公告及资本市场观点。上市主体与品牌口径分别列示；"
+            "未公开或不适用的项目明确标注，供内部决策参考。"
+        ),
+        "table_caption": "表：内地运营商及香港主要竞对最新关键业绩数据汇总",
+        "table": table,
+        "sections": sections,
+        "generationMode": "limited" if limitations else "normal",
+        "generationLimitations": limitations,
     }
 
 
@@ -1359,45 +1665,154 @@ def render_body_sections(doc: Document, sections: list[dict]) -> None:
             )
 
 
+def sanitize_performance_model(model: dict, *, progress=print) -> dict:
+    """Remove any operational diagnostics before rendering report content."""
+    limitations = model.setdefault("generationLimitations", [])
+    for section in model.get("sections") or []:
+        sanitized_items = []
+        for item in section.get("items") or []:
+            text = clean_text(item, 500)
+            found = [phrase for phrase in PERFORMANCE_FORBIDDEN_REPORT_PHRASES if phrase in text]
+            if found:
+                label, _content = split_item(text)
+                record_performance_limitation(
+                    limitations,
+                    "report_content_sanitization",
+                    f"{section.get('title') or section.get('company') or '未知主体'}字段包含技术性话术：{'、'.join(found)}",
+                    impact="该字段不能进入正式业绩摘要",
+                    action="保留字段标签并替换为公开披露状态说明",
+                    progress=progress,
+                )
+                text = f"{label or '信息'}：公开资料未单独披露该项口径。"
+            sanitized_items.append(text)
+        section["items"] = sanitized_items
+    model["generationMode"] = "limited" if limitations else "normal"
+    return model
+
+
+def render_emergency_performance_docx(model: dict, path: Path) -> None:
+    """Render the same business content without relying on the source template."""
+    doc = Document()
+    title = doc.add_paragraph()
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = title.add_run(str(model.get("title") or "运营商业绩摘要"))
+    run.bold = True
+    run.font.size = Pt(18)
+    subtitle = doc.add_paragraph()
+    subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    subtitle.add_run(str(model.get("subtitle") or "战略部（智库）对标分析简报"))
+    doc.add_paragraph(str(model.get("intro") or ""))
+    caption = doc.add_paragraph()
+    caption.add_run(str(model.get("table_caption") or "关键业绩数据汇总")).bold = True
+    rows = model.get("table") or []
+    if rows:
+        width = max(len(row) for row in rows)
+        table = doc.add_table(rows=len(rows), cols=width)
+        table.style = "Table Grid"
+        for row_index, values in enumerate(rows):
+            for column_index in range(width):
+                table.cell(row_index, column_index).text = (
+                    str(values[column_index]) if column_index < len(values) else ""
+                )
+    for section in model.get("sections") or []:
+        heading = doc.add_paragraph()
+        heading_run = heading.add_run(str(section.get("title") or section.get("company") or "关键摘要"))
+        heading_run.bold = True
+        heading_run.font.size = Pt(13)
+        for item in section.get("items") or []:
+            doc.add_paragraph(str(item), style="List Number")
+    doc.save(str(path))
+
+
 def render_report() -> Path:
-    if not TEMPLATE_PATH.exists():
-        raise FileNotFoundError(f"模板不存在：{TEMPLATE_PATH}")
-    data = build_dynamic_model()
-    doc = Document(str(TEMPLATE_PATH))
-    if len(doc.paragraphs) < 4 or not doc.tables:
-        raise ValueError("运营商业绩摘要模板结构不完整")
-
-    replacements = [
-        data["title"],
-        data["subtitle"],
-        data["intro"],
-        data["table_caption"],
-    ]
-    for paragraph, text in zip(doc.paragraphs[:4], replacements):
-        replace_paragraph_text(paragraph, str(text))
-
-    rows = data.get("table", [])
-    table = doc.tables[0]
-    while len(table.columns) < len(rows[0]):
-        table.add_column(table.columns[-1].width)
-    while len(table.rows) < len(rows):
-        table.add_row()
-    while len(table.rows) > len(rows):
-        table._tbl.remove(table.rows[-1]._tr)
-    for row_cells, values in zip(table.rows, rows):
-        for cell, value in zip(row_cells.cells, values):
-            cell.text = str(value)
-
-    render_body_sections(doc, data.get("sections", []))
-    prune_trailing_empty_paragraphs(doc)
-
+    data = sanitize_performance_model(build_dynamic_model())
     output_path = dated_output_path()
-    doc.save(str(output_path))
+    try:
+        if not TEMPLATE_PATH.exists():
+            raise FileNotFoundError(f"模板不存在：{TEMPLATE_PATH}")
+        doc = Document(str(TEMPLATE_PATH))
+        if len(doc.paragraphs) < 4 or not doc.tables:
+            raise ValueError("运营商业绩摘要模板结构不完整")
+
+        replacements = [
+            data["title"],
+            data["subtitle"],
+            data["intro"],
+            data["table_caption"],
+        ]
+        for paragraph, text in zip(doc.paragraphs[:4], replacements):
+            replace_paragraph_text(paragraph, str(text))
+
+        rows = data.get("table", [])
+        table = doc.tables[0]
+        while len(table.columns) < len(rows[0]):
+            table.add_column(table.columns[-1].width)
+        while len(table.rows) < len(rows):
+            table.add_row()
+        while len(table.rows) > len(rows):
+            table._tbl.remove(table.rows[-1]._tr)
+        for row_cells, values in zip(table.rows, rows):
+            for cell, value in zip(row_cells.cells, values):
+                cell.text = str(value)
+
+        render_body_sections(doc, data.get("sections", []))
+        prune_trailing_empty_paragraphs(doc)
+        doc.save(str(output_path))
+    except Exception as exc:
+        record_performance_limitation(
+            data["generationLimitations"],
+            "template_render",
+            exc,
+            impact="标准Word模板未能完成渲染",
+            action="立即改用应急Word版式输出相同业务内容",
+        )
+        data["generationMode"] = "limited"
+        try:
+            render_emergency_performance_docx(data, output_path)
+        except Exception as emergency_exc:
+            fallback_path = Path("/private/tmp") / output_path.name
+            record_performance_limitation(
+                data["generationLimitations"],
+                "emergency_docx",
+                emergency_exc,
+                impact="项目目录中的应急Word未能写入",
+                action=f"改写至备用路径{fallback_path}",
+            )
+            render_emergency_performance_docx(data, fallback_path)
+            output_path = fallback_path
+
+    try:
+        write_performance_quality_sidecar(output_path, data)
+    except Exception as exc:
+        record_performance_limitation(
+            data["generationLimitations"],
+            "quality_sidecar",
+            exc,
+            impact="同名质量审计文件未能写入",
+            action="保留已成功生成的Word主报告",
+        )
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     archive_dir = ROOT / "archives" / timestamp
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(output_path, archive_dir / output_path.name)
+    try:
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(output_path, archive_dir / output_path.name)
+        sidecar_path = performance_quality_sidecar_path(output_path)
+        if sidecar_path.exists():
+            shutil.copy2(sidecar_path, archive_dir / sidecar_path.name)
+        print(f"[归档成功] 已自动备份此次业绩摘要至: archives/{timestamp}/")
+    except Exception as exc:
+        record_performance_limitation(
+            data["generationLimitations"],
+            "archive",
+            exc,
+            impact="本次自动归档未完成",
+            action="主报告已保留，归档失败不改变生成成功状态",
+        )
+        try:
+            write_performance_quality_sidecar(output_path, data)
+        except Exception:
+            pass
     return output_path
 
 
@@ -1406,9 +1821,29 @@ def main() -> None:
     print("开始生成运营商业绩摘要...")
     print("模板：", TEMPLATE_PATH.name)
     print("数据：", DATA_PATH.name)
-    output_path = render_report()
+    try:
+        output_path = render_report()
+    except Exception as exc:
+        limitations: list[dict] = []
+        record_performance_limitation(
+            limitations,
+            "last_resort",
+            exc,
+            impact="常规生成链路未能返回Word文件",
+            action="使用最小确定性模型在备用路径直接生成Word",
+        )
+        model = fallback_performance_model(limitations)
+        output_path = Path("/private/tmp") / dated_output_path().name
+        render_emergency_performance_docx(model, output_path)
+        try:
+            write_performance_quality_sidecar(output_path, model)
+        except Exception:
+            pass
     print("[生成成功] 最终输出文件：")
     print(" ->", output_path)
+    sidecar_path = performance_quality_sidecar_path(output_path)
+    if sidecar_path.exists():
+        print(" ->", sidecar_path)
     print("==================================================")
 
 

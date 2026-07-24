@@ -3541,12 +3541,7 @@ def deterministic_limited_weekly_detail(item: dict) -> str:
     ).rstrip("。！？!?；;")
     if not raw:
         raw = clean_text(item.get("title"), 100) or "本期选入一项新闻"
-    base = (
-        f"据{source_name}于{published_text}公开的信息，{raw}。"
-        "该条新闻由人工从候选池选入本期双周报，现有材料能够确认其标题、来源和发布时间。"
-        "由于本次智能改写或联网复核环节未完整完成，正文仅整理已保存信息，"
-        "不补充原始材料之外的数字、判断或影响。"
-    )
+    base = f"据{source_name}于{published_text}公开的信息，{raw}。"
     return trim_weekly_detail(
         ensure_detailed_paragraph(base, min_chars=MIN_WEEKLY_DETAIL_CHARS, max_chars=MAX_WEEKLY_DETAIL_CHARS)
     )
@@ -3559,7 +3554,7 @@ def build_weekly_limitation_model(
     reason: object,
     progress=print,
 ) -> dict:
-    """Return a standard-format report that explicitly states why news is limited."""
+    """Return an empty standard-format report while keeping reasons out of the report."""
     hkt = ZoneInfo("Asia/Hong_Kong")
     now = period.as_of if period is not None else datetime.now(hkt)
     if period is None:
@@ -3574,30 +3569,6 @@ def build_weekly_limitation_model(
         report_date = period.issue_date
         range_value = dict(period.effective_range)
         period_status = period.status
-    item = {
-        "id": "W001",
-        "row": "",
-        "section": "行业资讯",
-        "subject": "本期信息说明",
-        "tag": "信息说明",
-        "title": "本期新闻信息局限说明",
-        "detail": (
-            f"截至{format_date_cn(report_date)}，本期统计窗口为"
-            f"{range_value['start']}至{range_value['end']}。"
-            "本次运行未取得可完整核验并用于正文编写的人工入选新闻，因此报告保留标准版式并如实说明信息范围。"
-            "本期不补充未经确认的事件、数字或判断，后续可在人工选材或外部服务恢复后重新生成完整内容。"
-        ),
-        "rawDetail": "",
-        "eventAt": report_date.date().isoformat(),
-        "sourceIds": [],
-        "sourceName": "",
-        "index": 1,
-        "localIndex": 1,
-        "writerStatus": "limited_fallback",
-        "reviewDecision": "limited_fallback",
-        "reviewStatus": "limited",
-        "limitedNotice": True,
-    }
     model = {
         "company": "中国移动香港公司",
         "department": "中国移动香港公司战略部",
@@ -3609,20 +3580,10 @@ def build_weekly_limitation_model(
         "periodStatus": period_status,
         "issueDate": report_date.date().isoformat(),
         "asOf": now.isoformat(timespec="seconds"),
-        "toc": [
-            {
-                "index": 1,
-                "section": "行业资讯",
-                "tag": item["tag"],
-                "title": item["title"],
-            }
-        ],
+        "toc": [],
         "sections": [
-            {
-                "name": "行业资讯",
-                "narrative": "本期仅提供信息局限说明。",
-                "items": [item],
-            }
+            {"name": section_name, "narrative": "", "items": []}
+            for section_name in SECTION_ORDER
         ],
         "sources": [],
         "selectionSource": "feishu_weekly_review",
@@ -3635,7 +3596,7 @@ def build_weekly_limitation_model(
         stage,
         reason,
         impact="未能形成可完整核验的新闻正文",
-        action="生成保留原有周报格式的信息受限版本，不虚构或自动补入新闻",
+        action="保留原有周报格式并输出空栏目；具体原因只写入日志和质量审计",
         progress=progress,
     )
     return finalize_weekly_limited_model(model)
@@ -4203,8 +4164,6 @@ def item_event_time_text(item: dict) -> str:
 
 
 def item_source_plain_text(model: dict, item: dict) -> str:
-    if item.get("limitedNotice"):
-        return f"{item_event_time_text(item)}　信息说明：本期没有可列示的新闻来源"
     parts = []
     for source in item_source_entries(model, item)[:2]:
         name = clean_text(source.get("sourceName")) or source_display_name(source.get("url"))
@@ -4254,14 +4213,11 @@ def weekly_to_markdown(model: dict) -> str:
             lines.append(item["tag"])
             lines.append(item["title"])
             lines.append(item["detail"])
-            if item.get("limitedNotice"):
-                lines.append(f"{item_event_time_text(item)}　信息说明：本期没有可列示的新闻来源")
-            else:
-                source_links = []
-                for source in item_source_entries(model, item)[:2]:
-                    label = clean_text(source.get("sourceId"))
-                    source_links.append(f"[{label}]({clean_text(source.get('url'))})")
-                lines.append(f"{item_event_time_text(item)}　来源：{'、'.join(source_links)}")
+            source_links = []
+            for source in item_source_entries(model, item)[:2]:
+                label = clean_text(source.get("sourceId"))
+                source_links.append(f"[{label}]({clean_text(source.get('url'))})")
+            lines.append(f"{item_event_time_text(item)}　来源：{'、'.join(source_links)}")
             lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -4403,11 +4359,7 @@ def weekly_to_html(model: dict) -> str:
                     f"<a href='{html.escape(clean_text(source.get('url')), quote=True)}'>"
                     f"[{html.escape(clean_text(source.get('sourceId')))}]</a>"
                 )
-            source_text = (
-                "信息说明：本期没有可列示的新闻来源"
-                if item.get("limitedNotice")
-                else f"来源：{'、'.join(source_links)}"
-            )
+            source_text = f"来源：{'、'.join(source_links)}"
             items_html.append(
                 "<article class='weekly-item'>"
                 f"<p class='weekly-item__tag'>{html.escape(item['tag'])}</p>"
@@ -4624,13 +4576,6 @@ def weekly_to_emergency_docx(model: dict, path: Path, reason: object = "") -> No
         add_p(doc, toc_section_text(section.get("name")), size=11, bold=True, after=2)
         for item in section.get("items") or []:
             add_p(doc, toc_item_text(item), size=10, indent=240, after=1)
-    if reason:
-        add_p(
-            doc,
-            f"生成说明：标准模板渲染未完成，本文件使用应急版式导出；新闻内容和局限性记录保持不变。",
-            size=9,
-            after=10,
-        )
     for section in model.get("sections") or []:
         add_p(doc, section.get("name") or "行业资讯", size=15, bold=True, before=10, after=6)
         for item in section.get("items") or []:
@@ -4929,7 +4874,11 @@ def main() -> None:
             f"{model.get('company') or '中国移动香港公司'}\n\n"
             f"{model.get('department') or '中国移动香港公司战略部'}    "
             f"{model.get('generatedDate') or ''}\n\n"
-            "本期周报已进入受限模式，详细原因见同名质量审计文件。\n"
+            "目 录\n\n"
+            + "\n\n".join(f"【{section_name}】\n（本期暂无更新）" for section_name in SECTION_ORDER)
+            + "\n\n"
+            + "\n\n".join(f"{section_name}\n（本期暂无更新）" for section_name in SECTION_ORDER)
+            + "\n"
         )
     try:
         validate_report_text(markdown)
@@ -4960,7 +4909,13 @@ def main() -> None:
         html_text = (
             "<!doctype html><html lang='zh-CN'><meta charset='utf-8'>"
             f"<title>{html.escape(clean_text(model.get('title')) or '战略内参')}</title>"
-            "<body><p>本期周报已进入受限模式，详细原因见同名质量审计文件。</p></body></html>"
+            "<body>"
+            f"<h1>{html.escape(clean_text(model.get('title')) or '战略内参')}</h1>"
+            + "".join(
+                f"<section><h2>{html.escape(section_name)}</h2><p>（本期暂无更新）</p></section>"
+                for section_name in SECTION_ORDER
+            )
+            + "</body></html>"
         )
 
     output_writes = (
