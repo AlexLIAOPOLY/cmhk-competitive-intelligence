@@ -10334,3 +10334,12 @@ body.report-library-open::before {
     border-top: 1px solid rgba(29, 100, 142, 0.13);
   }
 }
+
+/* Keep the top-right shortcuts; hide only the clock text. */
+.header-tools {
+  display: flex;
+}
+
+#headerTime {
+  display: none;
+}
