@@ -638,9 +638,42 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(events[-2]["type"], "run_summary")
         self.assertEqual(events[-2]["status"], "ok")
         self.assertIn("必须调用 `web_search`", captured["message"])
-        self.assertIn("尽量调用 `search_local_reports`", captured["message"])
+        self.assertIn("必须同时调用 `search_local_reports` 和 `web_search`", captured["message"])
+        self.assertIn("两者缺一不可", captured["message"])
+        self.assertIn("本地与联网数据不一致", captured["message"])
+        self.assertIn("无法判断时保留冲突", captured["message"])
         self.assertIn("用户问题：搜一下中国移动最新收入", captured["message"])
         self.assertEqual(captured["stream_mode"], "messages")
+
+    def test_web_enabled_system_prompt_requires_dual_search_for_data(self) -> None:
+        captured: dict[str, object] = {}
+
+        class FakeLLM:
+            def __init__(self, **kwargs):
+                captured["llm_kwargs"] = kwargs
+
+        def fake_create_react_agent(_llm, tools, prompt):
+            captured["tools"] = {tool.name for tool in tools}
+            captured["prompt"] = str(prompt)
+            return object()
+
+        with (
+            mock.patch("agent.StableAgentChatDeepSeek", FakeLLM),
+            mock.patch("agent.create_react_agent", side_effect=fake_create_react_agent),
+        ):
+            agent.get_agent(
+                allow_web_search=True,
+                user_message="请比较中国移动和中国联通的最新收入。",
+            )
+
+        prompt = str(captured["prompt"])
+        self.assertIn("涉及数据时必须双检索", prompt)
+        self.assertIn("必须同时调用 `search_local_reports` 和 `web_search`，缺一不可", prompt)
+        self.assertIn("即使其中一侧无相关结果或证据不足，也必须实际完成该侧检索", prompt)
+        self.assertIn("本地与联网数据不一致", prompt)
+        self.assertIn("不得静默选边", prompt)
+        self.assertIn("web_search", captured["tools"])
+        self.assertIn("search_local_reports", captured["tools"])
 
     def test_without_force_web_search_hides_web_tools_without_toggle_notice(self) -> None:
         captured: dict[str, object] = {}
