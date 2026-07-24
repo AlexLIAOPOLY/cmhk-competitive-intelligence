@@ -89,6 +89,11 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
         self.assertEqual(items[0]["canonical_competitor"], "HKT")
         self.assertEqual(items[0]["url"], YAHOO_TAP_AND_GO_URL)
         self.assertEqual(items[0]["search_origin"], "mandatory_local_competitor")
+        self.assertEqual(items[0]["search_provider"], "google")
+        self.assertEqual(
+            review_sheet._information_flow(items[0]),
+            "后台固定竞对词库 → Google News搜索",
+        )
         self.assertEqual(items[0]["keywords"][0], "HKT")
         self.assertTrue(items[0]["is_hong_kong"])
         self.assertFalse(vote_digest._is_noise(items[0]))

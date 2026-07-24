@@ -9,6 +9,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
     def _existing_row(self):
         return [
             "接受",
+            "待审核",
             "已同步",
             "2026-07-21",
             "香港本地",
@@ -20,6 +21,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "https://example.com/history",
             "HKT",
             "历史入池理由",
+            "新闻搜索爬虫（历史候选）",
         ]
 
     def _new_item(self):
@@ -70,14 +72,14 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             result = review_sheet.sync_candidates([self._new_item()])
 
         self.assertEqual(result["candidate_count"], 2)
-        self.assertEqual([cell_range for cell_range, _ in writes], ["A2:L3"])
-        self.assertEqual(writes[0][1][0][5], "今日新新闻")
+        self.assertEqual([cell_range for cell_range, _ in writes], ["A2:N3"])
+        self.assertEqual(writes[0][1][0][6], "今日新新闻")
         self.assertEqual(writes[0][1][1], self._existing_row())
 
     def test_sync_places_current_batch_first_when_search_dates_match(self):
         writes = []
         existing = self._existing_row()
-        existing[2] = "2026-07-22"
+        existing[3] = "2026-07-22"
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
             mock.patch.object(review_sheet, "_read_rows", return_value=[existing]),
@@ -103,8 +105,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             review_sheet.sync_candidates([self._new_item()])
 
-        self.assertEqual(writes[0][1][0][5], "今日新新闻")
-        self.assertEqual(writes[0][1][1][5], "历史新闻")
+        self.assertEqual(writes[0][1][0][6], "今日新新闻")
+        self.assertEqual(writes[0][1][1][6], "历史新闻")
 
     def test_sync_stops_when_sheet_returns_fewer_rows_than_last_sync(self):
         write = mock.Mock()
@@ -126,6 +128,102 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 review_sheet.sync_candidates([])
 
         write.assert_not_called()
+
+    def test_weekly_status_is_independent_from_app_status(self):
+        row = self._existing_row()
+        row[0] = "不接受"
+        row[1] = "接受"
+
+        parsed = review_sheet._row_dict(row, 2)
+
+        self.assertEqual(parsed["status"], "不接受")
+        self.assertEqual(parsed["weekly_status"], "接受")
+        self.assertEqual(parsed["sync_status"], "已同步")
+        self.assertEqual(
+            parsed["information_flow"],
+            "新闻搜索爬虫（历史候选）",
+        )
+
+    def test_information_flow_distinguishes_three_acquisition_paths(self):
+        self.assertEqual(
+            review_sheet._information_flow(
+                {
+                    "search_origin": "mandatory_local_competitor",
+                    "search_provider": "google",
+                }
+            ),
+            "后台固定竞对词库 → Google News搜索",
+        )
+        self.assertEqual(
+            review_sheet._information_flow(
+                {"search_origin": "scheduled_crawl_reference"}
+            ),
+            "定时页面爬虫发现 → 新闻搜索核验",
+        )
+        self.assertEqual(
+            review_sheet._information_flow(
+                {
+                    "search_origin": "monitoring_sheet_keyword_search",
+                    "search_provider": "bing",
+                }
+            ),
+            "飞书监测表关键词 → Bing News搜索",
+        )
+
+    def test_weekly_candidates_only_include_manual_accepts_inside_window(self):
+        included = self._existing_row()
+        included[0] = "待审核"
+        included[1] = "接受"
+        included[3] = "2026-07-24"
+        included[9] = "2026-07-24"
+        outside = list(included)
+        outside[6] = "窗口外新闻"
+        outside[9] = "2026-07-17"
+        outside[10] = "https://example.com/outside"
+        pending = list(included)
+        pending[1] = "待审核"
+        pending[6] = "未选择新闻"
+        pending[10] = "https://example.com/pending"
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                return_value=[included, outside, pending],
+            ),
+        ):
+            rows, audit = review_sheet.load_weekly_report_candidates(
+                "2026-07-18",
+                "2026-07-24",
+            )
+
+        self.assertEqual([row["title"] for row in rows], ["历史新闻"])
+        self.assertEqual(audit["acceptedRows"], 2)
+        self.assertEqual(audit["includedRows"], 1)
+        self.assertEqual(audit["reasons"]["out_of_window"], 1)
+
+    def test_version_seven_row_migrates_by_inserting_weekly_status(self):
+        legacy = [
+            "接受",
+            "已纳入",
+            "2026-07-24",
+            "国际/行业",
+            "行业动态",
+            "旧标题",
+            "旧摘要",
+            "旧媒体",
+            "2026-07-24",
+            "https://example.com/legacy",
+            "AI",
+            "旧理由",
+        ]
+        migrated = [legacy[0], "待审核", *legacy[1:]]
+
+        parsed = review_sheet._row_dict(migrated, 2)
+
+        self.assertEqual(parsed["weekly_status"], "待审核")
+        self.assertEqual(parsed["title"], "旧标题")
+        self.assertEqual(parsed["source_url"], "https://example.com/legacy")
 
 
 if __name__ == "__main__":

@@ -36,10 +36,11 @@ SHEET_TITLE = os.environ.get("CMHK_NEWS_REVIEW_SHEET_TITLE") or "滚动新闻候
 POLL_SECONDS = max(60, int(os.environ.get("CMHK_NEWS_REVIEW_POLL_SECONDS", "300")))
 MAX_SHEET_ROWS = max(500, int(os.environ.get("CMHK_NEWS_REVIEW_MAX_ROWS", "3000")))
 SHEET_SOURCE = "feishu_review_sheet"
-FORMAT_VERSION = 7
+FORMAT_VERSION = 9
 
 HEADERS = [
     "是否纳入滚动",
+    "是否纳入周报",
     "同步状态",
     "检索日期",
     "地域",
@@ -51,6 +52,7 @@ HEADERS = [
     "原文链接",
     "命中关键词",
     "入池理由",
+    "信息获取流程",
 ]
 
 _LOCK = threading.RLock()
@@ -199,7 +201,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A1:L1",
+        f"{sheet_id}!A1:N1",
         "--style",
         json.dumps(header_style, ensure_ascii=False),
     )
@@ -209,7 +211,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A2:L{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A2:N{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(body_style, ensure_ascii=False),
     )
@@ -219,7 +221,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A2:B{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A2:C{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -235,7 +237,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!C2:C{MAX_SHEET_ROWS}",
+        f"{sheet_id}!D2:D{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -253,7 +255,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!D2:E{MAX_SHEET_ROWS}",
+        f"{sheet_id}!E2:F{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -270,7 +272,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!F2:F{MAX_SHEET_ROWS}",
+        f"{sheet_id}!G2:G{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -287,7 +289,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!G2:G{MAX_SHEET_ROWS}",
+        f"{sheet_id}!H2:H{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -304,7 +306,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!H2:L{MAX_SHEET_ROWS}",
+        f"{sheet_id}!I2:N{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -336,12 +338,26 @@ def _format_sheet(sheet_id: str) -> None:
         "--range",
         f"{sheet_id}!B2:B{MAX_SHEET_ROWS}",
         "--condition-values",
+        json.dumps(["待审核", "接受", "暂缓", "不接受"], ensure_ascii=False),
+        "--colors",
+        json.dumps(["#8F959E", "#16A34A", "#D97706", "#DC2626"]),
+        "--highlight",
+    )
+    _best_effort(
+        "sheets",
+        "+set-dropdown",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--range",
+        f"{sheet_id}!C2:C{MAX_SHEET_ROWS}",
+        "--condition-values",
         json.dumps(["未同步", "已纳入", "已移除", "同步失败"], ensure_ascii=False),
         "--colors",
         json.dumps(["#8F959E", "#2563EB", "#D97706", "#DC2626"]),
         "--highlight",
     )
     widths = [
+        112,
         112,
         108,
         112,
@@ -354,6 +370,7 @@ def _format_sheet(sheet_id: str) -> None:
         420,
         260,
         220,
+        260,
     ]
     for index, width in enumerate(widths, start=1):
         _best_effort(
@@ -417,7 +434,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--frozen-row-count",
         "1",
         "--frozen-col-count",
-        "7",
+        "8",
     )
     _best_effort(
         "sheets",
@@ -427,7 +444,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--sheet-id",
         sheet_id,
         "--range",
-        f"{sheet_id}!A1:L{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A1:N{MAX_SHEET_ROWS}",
         "--filter-view-name",
         "滚动新闻审核视图",
     )
@@ -449,11 +466,20 @@ def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
 
 
 def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) -> list[Any]:
-    width = 10 if format_version <= 5 else 11 if format_version == 6 else len(HEADERS)
+    if format_version <= 5:
+        width = 10
+    elif format_version == 6:
+        width = 11
+    elif format_version == 7:
+        width = 12
+    elif format_version == 8:
+        width = 13
+    else:
+        width = len(HEADERS)
     padded = (list(row) + [""] * width)[:width]
     if format_version <= 5:
         return padded
-    expected_url_index = 8 if format_version == 6 else 9
+    expected_url_index = 8 if format_version == 6 else 9 if format_version == 7 else 10
     shifted_url_index = expected_url_index + 1
     url_at_expected_column = _text(padded[expected_url_index], 1600).lower().startswith(("http://", "https://"))
     url_shifted_one_column = (
@@ -469,7 +495,7 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
             padded[10],
             "历史候选",
         ]
-    if format_version >= 7 and not url_at_expected_column and url_shifted_one_column:
+    if format_version == 7 and not url_at_expected_column and url_shifted_one_column:
         return [
             *padded[:7],
             padded[8],
@@ -478,6 +504,18 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
             padded[11],
             "历史候选",
         ]
+    if format_version >= 8 and not url_at_expected_column and url_shifted_one_column:
+        corrected = [
+            *padded[:8],
+            padded[9],
+            padded[10],
+            padded[11],
+            padded[12],
+            "历史候选",
+        ]
+        if format_version >= 9:
+            corrected.append("新闻搜索爬虫（历史候选）")
+        return corrected
     return padded
 
 
@@ -486,7 +524,16 @@ def _read_rows(
     *,
     format_version: int = FORMAT_VERSION,
 ) -> list[list[Any]]:
-    end_column = "J" if format_version <= 5 else "K" if format_version == 6 else "L"
+    if format_version <= 5:
+        end_column = "J"
+    elif format_version == 6:
+        end_column = "K"
+    elif format_version == 7:
+        end_column = "L"
+    elif format_version == 8:
+        end_column = "M"
+    else:
+        end_column = "N"
     payload = _lark(
         "sheets",
         "+read",
@@ -550,27 +597,43 @@ def ensure_sheet() -> str:
                 str(MAX_SHEET_ROWS - row_count),
             )
         previous_version = int(state.get("format_version") or 0)
-        if not created and previous_version in {5, 6}:
+        if not created and previous_version in {5, 6, 7, 8}:
             legacy_rows = _read_rows(sheet_id, format_version=previous_version)
-            if previous_version == 5:
-                version_six_rows = []
-                for row in legacy_rows:
-                    legacy = (list(row[:10]) + [""] * 10)[:10]
-                    version_six_rows.append(legacy[:5] + [""] + legacy[5:])
+            if previous_version <= 7:
+                if previous_version == 5:
+                    version_six_rows = []
+                    for row in legacy_rows:
+                        legacy = (list(row[:10]) + [""] * 10)[:10]
+                        version_six_rows.append(legacy[:5] + [""] + legacy[5:])
+                else:
+                    version_six_rows = legacy_rows
+                if previous_version <= 6:
+                    legacy_search_date = _search_date(
+                        state.get("last_source_generated_at")
+                    )
+                    version_seven_rows = [
+                        list(row[:2]) + [legacy_search_date] + list(row[2:11])
+                        for row in version_six_rows
+                    ]
+                else:
+                    version_seven_rows = version_six_rows
+                version_eight_rows = [
+                    [row[0], "待审核", *list(row[1:12])]
+                    for row in version_seven_rows
+                ]
             else:
-                version_six_rows = legacy_rows
-            legacy_search_date = _search_date(state.get("last_source_generated_at"))
+                version_eight_rows = legacy_rows
             migrated_rows = [
-                list(row[:2]) + [legacy_search_date] + list(row[2:11])
-                for row in version_six_rows
+                [*list(row[:13]), "新闻搜索爬虫（历史候选）"]
+                for row in version_eight_rows
             ]
             for offset in range(0, len(migrated_rows), 40):
                 chunk = migrated_rows[offset : offset + 40]
                 start_row = 2 + offset
                 end_row = start_row + len(chunk) - 1
-                _write(sheet_id, f"A{start_row}:L{end_row}", chunk)
-        _write(sheet_id, "A1:L1", [HEADERS])
-        _write(sheet_id, "M1:P1", [[""] * 4])
+                _write(sheet_id, f"A{start_row}:N{end_row}", chunk)
+        _write(sheet_id, "A1:N1", [HEADERS])
+        _write(sheet_id, "O1:P1", [[""] * 2])
         if (
             created
             or expanded
@@ -692,8 +755,39 @@ def _news_item_id(url: Any, title: Any) -> str:
     return "NEWS-" + hashlib.sha1(seed).hexdigest()[:14].upper()
 
 
+def _information_flow(item: dict[str, Any], *, historical: bool = False) -> str:
+    explicit = _text(
+        item.get("information_flow") or item.get("acquisition_flow"),
+        300,
+    )
+    if explicit:
+        return explicit
+    origin = _text(item.get("search_origin"), 100)
+    provider = {
+        "bing": "Bing News",
+        "google": "Google News",
+    }.get(_text(item.get("search_provider"), 40).lower(), "")
+    search_step = f"{provider}搜索" if provider else "新闻搜索"
+    if origin == "scheduled_crawl_reference" or item.get(
+        "scheduled_crawl_signal_id"
+    ):
+        return "定时页面爬虫发现 → 新闻搜索核验"
+    if origin == "mandatory_local_competitor":
+        return f"后台固定竞对词库 → {search_step}"
+    if origin == "background_fixed_keywords":
+        return f"后台固定战略词库 → {search_step}"
+    if origin == "monitoring_sheet_keyword_search":
+        return f"飞书监测表关键词 → {search_step}"
+    if item.get("crawl_run_id") and not item.get("query"):
+        return "定时页面爬虫"
+    if historical:
+        return "新闻搜索爬虫（历史候选）"
+    return "新闻搜索爬虫"
+
+
 def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
     return [
+        "待审核",
         "待审核",
         "未同步",
         _search_date(
@@ -711,6 +805,7 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
         _text(item.get("url"), 1600),
         _text(item.get("ai_keywords") or _keywords(item.get("keywords")), 500),
         _text(item.get("ai_inclusion_reason") or item.get("filter_reason") or "战略新闻候选", 300),
+        _information_flow(item),
     ]
 
 def sync_candidates(
@@ -728,7 +823,7 @@ def sync_candidates(
         existing_row_count = 0
         status_priority = {"接受": 4, "暂缓": 3, "待审核": 2, "不接受": 1}
         for index, row in enumerate(rows, start=2):
-            if not row or not _text(row[0], 40):
+            if not row or not any(_text(value, 80) for value in row):
                 continue
             existing_row_count += 1
             parsed = _row_dict(row, index)
@@ -787,10 +882,10 @@ def sync_candidates(
             if source:
                 new_sources.add(source)
             new_values.append(value)
-            existing_status[news_id] = (value[0], value[1])
+            existing_status[news_id] = (value[0], value[2])
             if title_key:
                 existing_title_keys.append(title_key)
-        new_values.sort(key=lambda row: str(row[2] or ""), reverse=True)
+        new_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
         candidate_count = existing_row_count + len(new_values)
         if candidate_count > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
@@ -799,14 +894,14 @@ def sync_candidates(
             for row in rows
         ]
         ordered_values = new_values + existing_values
-        ordered_values.sort(key=lambda row: str(row[2] or ""), reverse=True)
+        ordered_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
         if len(ordered_values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 行数据上限")
         for offset in range(0, len(ordered_values), 40):
             chunk = ordered_values[offset : offset + 40]
             start_row = 2 + offset
             end_row = start_row + len(chunk) - 1
-            _write(sheet_id, f"A{start_row}:L{end_row}", chunk)
+            _write(sheet_id, f"A{start_row}:N{end_row}", chunk)
         state.update(
             {
                 "sheet_id": sheet_id,
@@ -859,23 +954,103 @@ def _normalized_status(value: Any) -> str:
 
 def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
     padded = list(row) + [""] * max(0, len(HEADERS) - len(row))
-    news_id = _news_item_id(padded[9], padded[5])
+    news_id = _news_item_id(padded[10], padded[6])
     return {
         "row_number": row_number,
         "status": _normalized_status(padded[0]),
-        "sync_status": _text(padded[1], 40),
-        "search_date": _text(padded[2], 20),
-        "region": _text(padded[3], 80),
-        "category": _text(padded[4], 120),
-        "title": _text(padded[5], 500),
-        "summary": _text(padded[6], 500),
-        "source": _text(padded[7], 240),
-        "source_date": _text(padded[8], 40),
-        "source_url": _text(padded[9], 1600),
-        "keywords": _text(padded[10], 1800),
-        "note": _text(padded[11], 500),
+        "weekly_status": _normalized_status(padded[1]),
+        "sync_status": _text(padded[2], 40),
+        "search_date": _text(padded[3], 20),
+        "region": _text(padded[4], 80),
+        "category": _text(padded[5], 120),
+        "title": _text(padded[6], 500),
+        "summary": _text(padded[7], 500),
+        "source": _text(padded[8], 240),
+        "source_date": _text(padded[9], 40),
+        "source_url": _text(padded[10], 1600),
+        "keywords": _text(padded[11], 1800),
+        "note": _text(padded[12], 500),
+        "information_flow": _text(padded[13], 300),
         "news_id": news_id,
     }
+
+
+def load_weekly_report_candidates(
+    window_start: str,
+    window_end: str,
+    *,
+    sheet_id: str | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Load only manually approved weekly-report rows inside one report window."""
+    start = _publication_date(window_start)
+    end = _publication_date(window_end)
+    if not start or not end or start > end:
+        raise ValueError("双周报时间窗口必须提供有效的开始和结束日期")
+    resolved_sheet_id = sheet_id or ensure_sheet()
+    rows = [
+        _row_dict(row, index)
+        for index, row in enumerate(_read_rows(resolved_sheet_id), start=2)
+        if row and any(_text(value, 80) for value in row)
+    ]
+    accepted = [row for row in rows if row["weekly_status"] == "接受"]
+    included: list[dict[str, Any]] = []
+    reasons: Counter[str] = Counter()
+    invalid_rows: list[str] = []
+    seen: set[str] = set()
+    for row in accepted:
+        publication_date = _publication_date(row["source_date"])
+        if not publication_date:
+            reasons["date_missing"] += 1
+            continue
+        if publication_date < start or publication_date > end:
+            reasons["out_of_window"] += 1
+            continue
+        missing = [
+            label
+            for label, value in (
+                ("新闻标题", row["title"]),
+                ("内容简介", row["summary"]),
+                ("来源媒体", row["source"]),
+                ("原文链接", row["source_url"]),
+            )
+            if not _text(value, 1600)
+        ]
+        if missing or not row["source_url"].lower().startswith(("http://", "https://")):
+            if not row["source_url"].lower().startswith(("http://", "https://")):
+                missing.append("有效原文链接")
+            invalid_rows.append(
+                f"第{row['row_number']}行缺少{'、'.join(dict.fromkeys(missing))}"
+            )
+            reasons["invalid"] += 1
+            continue
+        identity = row["news_id"]
+        if identity in seen:
+            reasons["duplicate"] += 1
+            continue
+        seen.add(identity)
+        item = dict(row)
+        item["publication_date"] = publication_date
+        included.append(item)
+        reasons["included"] += 1
+    if invalid_rows:
+        raise ValueError("已选择纳入周报的行不完整：" + "；".join(invalid_rows))
+    included.sort(
+        key=lambda row: (row["publication_date"], row["row_number"]),
+        reverse=True,
+    )
+    return included, {
+        "selectionSource": SHEET_SOURCE,
+        "sheetId": resolved_sheet_id,
+        "sheetUrl": _sheet_url(resolved_sheet_id),
+        "windowStart": start,
+        "windowEnd": end,
+        "sheetRows": len(rows),
+        "acceptedRows": len(accepted),
+        "includedRows": len(included),
+        "excludedRows": len(accepted) - len(included),
+        "reasons": dict(reasons),
+    }
+
 
 def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
     with _LOCK:
@@ -883,7 +1058,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
         rows = [
             _row_dict(row, index)
             for index, row in enumerate(_read_rows(sheet_id), start=2)
-            if row and _text(row[0], 80)
+            if row and any(_text(value, 80) for value in row[:2])
         ]
         payload = _read_json(PUBLISHED_PATH, {"items": []})
         published = payload.get("items") if isinstance(payload, dict) else []
@@ -950,6 +1125,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     "source_date": row["source_date"],
                     "region": row["region"],
                     "keywords": row["keywords"],
+                    "information_flow": row["information_flow"],
                     "published_at": row["source_date"],
                     "approved_at": previous.get("approved_at") or now_text,
                     "approved_by": "飞书表格人工审核",
@@ -973,15 +1149,15 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                 if row["status"] != "不接受" or row["sync_status"] != "已移除":
                     _write(
                         sheet_id,
-                        f"A{row['row_number']}:B{row['row_number']}",
-                        [["不接受", "已移除"]],
+                        f"A{row['row_number']}:C{row['row_number']}",
+                        [["不接受", row["weekly_status"], "已移除"]],
                     )
                     changed_rows += 1
                 gate_note = f"门控拒绝：{blocked_reason}"
                 if row["note"] != gate_note:
                     _write(
                         sheet_id,
-                        f"L{row['row_number']}:L{row['row_number']}",
+                        f"M{row['row_number']}:M{row['row_number']}",
                         [[gate_note]],
                     )
                     changed_rows += 1
@@ -996,7 +1172,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             if desired_sync != row["sync_status"]:
                 _write(
                     sheet_id,
-                    f"B{row['row_number']}:B{row['row_number']}",
+                    f"C{row['row_number']}:C{row['row_number']}",
                     [[desired_sync]],
                 )
                 changed_rows += 1
@@ -1007,6 +1183,12 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             "pending_count": sum(row["status"] == "待审核" for row in rows),
             "deferred_count": sum(row["status"] == "暂缓" for row in rows),
             "rejected_count": sum(row["status"] == "不接受" for row in rows),
+            "weekly_accepted_count": sum(
+                row["weekly_status"] == "接受" for row in rows
+            ),
+            "weekly_pending_count": sum(
+                row["weekly_status"] == "待审核" for row in rows
+            ),
             "published_count": len(combined),
             "changed_rows": changed_rows,
         }

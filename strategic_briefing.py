@@ -391,6 +391,7 @@ def _query_plans(spec: dict[str, Any], state: dict[str, Any]) -> list[dict[str, 
                     "domains": domains,
                     "query": source_query,
                     "fallback_query": broad_query,
+                    "search_origin": "monitoring_sheet_keyword_search",
                 }
             )
         if module_plans:
@@ -598,6 +599,10 @@ def _candidate_from_result(
         "searched_at": _now_iso(now),
         "search_date": now.date().isoformat(),
         "fetch_status": "search_index",
+        "search_origin": _clean_text(
+            plan.get("search_origin") or "monitoring_sheet_keyword_search",
+            100,
+        ),
     }
 
 

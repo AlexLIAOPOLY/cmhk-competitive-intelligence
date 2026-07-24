@@ -120,6 +120,7 @@ def _parse_news_feed(
     start_at: datetime,
     end_at: datetime,
     canonical_competitor: str = "",
+    search_origin: str = "",
 ) -> list[dict[str, Any]]:
     root = ET.fromstring(raw)
     output: list[dict[str, Any]] = []
@@ -182,10 +183,14 @@ def _parse_news_feed(
             "is_hong_kong": bool(canonical_competitor)
             or any(term in lowered for term in LOCAL_TERMS),
             "query": base_query,
+            "search_provider": provider,
+            "search_origin": search_origin or "monitoring_sheet_keyword_search",
         }
         if canonical_competitor:
             candidate["canonical_competitor"] = canonical_competitor
-            candidate["search_origin"] = "mandatory_local_competitor"
+            candidate["search_origin"] = (
+                search_origin or "mandatory_local_competitor"
+            )
         output.append(candidate)
     return output
 
@@ -195,6 +200,7 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
     module = _clean_text(plan.get("module"), 100) or "其他"
     keywords = [_clean_text(item, 120) for item in (plan.get("keywords") or []) if _clean_text(item, 120)]
     canonical_competitor = _clean_text(plan.get("canonical_competitor"), 120)
+    search_origin = _clean_text(plan.get("search_origin"), 100)
     if not base_query:
         return []
     if module in {"香港本地新闻", "政策/法规类"}:
@@ -244,6 +250,7 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
                     start_at=start_at,
                     end_at=end_at,
                     canonical_competitor=canonical_competitor,
+                    search_origin=search_origin,
                 )
             )
             successful_feeds += 1
@@ -353,6 +360,7 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
                 "query": query,
                 "fallback_query": query,
                 "keywords": list(names),
+                "search_origin": "background_fixed_keywords",
             }
         )
     priority_plans: list[dict[str, Any]] = []
@@ -365,6 +373,7 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
                 "fallback_query": query,
                 "keywords": list(terms),
                 "lookback_days": 7,
+                "search_origin": "background_fixed_keywords",
             }
         )
     plans = competitor_plans + priority_plans + base_plans
