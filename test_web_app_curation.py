@@ -304,6 +304,10 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('const emptyState = els.messages.querySelector(".chat-empty-state")', app)
         self.assertIn('event.target.closest(".chat-starter-card")', app)
         self.assertIn("els.messages.innerHTML = initialChatEmptyStateHtml()", app)
+        self.assertEqual(markup.count('class="chat-starter-icon '), 4)
+        for tone in ("is-blue", "is-violet", "is-teal", "is-orange"):
+            self.assertIn(tone, markup)
+            self.assertIn(f'"{tone.removeprefix("is-")}"', app)
         self.assertIn("grid-template-columns: repeat(4, minmax(0, 1fr))", styles)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", styles)
 

@@ -4397,11 +4397,17 @@ function chatThreadId() {
 }
 
 function initialChatEmptyStateHtml() {
+  const starterIcons = {
+    performance: `<svg viewBox="0 0 24 24"><path d="M5 19V10"></path><path d="M10 19V6"></path><path d="M15 19v-4"></path><path d="m4 7 5-4 5 4 6-5"></path></svg>`,
+    tariff: `<svg viewBox="0 0 24 24"><path d="M4 5v6l8 8 7-7-8-8H5a1 1 0 0 0-1 1Z"></path><circle cx="8" cy="8" r="1.3"></circle></svg>`,
+    cloud: `<svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.2 9 4.5 4.5 0 0 0 7 18Z"></path><path d="M12 10v5"></path><path d="m9.5 12.5 2.5-2.5 2.5 2.5"></path></svg>`,
+    policy: `<svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.8 2.9 8.1 7 10 4.1-1.9 7-5.2 7-10V6l-7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg>`,
+  };
   const starters = [
-    ["01", "对比竞对经营表现", "收入、利润、用户与 ARPU", "请对比中国移动、中国联通和中国电信最新季度经营表现，列出收入、利润、用户和 ARPU 变化，并标明来源。"],
-    ["02", "查看香港产品资费", "套餐、合约与促销变化", "请对比香港主要竞对最新移动与宽频套餐资费，说明月费、数据量、合约期和促销差异。"],
-    ["03", "追踪云厂商动态", "业绩、AI 投入与战略动作", "请整理主要云厂商近期业绩与 AI 投入变化，判断对 CMHK 的机会和风险。"],
-    ["04", "解读宏观政策影响", "政策、经济与业务影响", "请梳理近期宏观政策与监管变化，并分析其对 CMHK 业务的可能影响。"],
+    ["01", "performance", "blue", "对比竞对经营表现", "收入、利润、用户与 ARPU", "请对比中国移动、中国联通和中国电信最新季度经营表现，列出收入、利润、用户和 ARPU 变化，并标明来源。"],
+    ["02", "tariff", "violet", "查看香港产品资费", "套餐、合约与促销变化", "请对比香港主要竞对最新移动与宽频套餐资费，说明月费、数据量、合约期和促销差异。"],
+    ["03", "cloud", "teal", "追踪云厂商动态", "业绩、AI 投入与战略动作", "请整理主要云厂商近期业绩与 AI 投入变化，判断对 CMHK 的机会和风险。"],
+    ["04", "policy", "orange", "解读宏观政策影响", "政策、经济与业务影响", "请梳理近期宏观政策与监管变化，并分析其对 CMHK 业务的可能影响。"],
   ];
   return `
     <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
@@ -4409,9 +4415,13 @@ function initialChatEmptyStateHtml() {
       <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
       <p>选择一个方向，或直接在下方输入你的问题</p>
       <div class="chat-starter-grid">
-        ${starters.map(([index, title, detail, prompt]) => `
+        ${starters.map(([index, icon, tone, title, detail, prompt]) => `
           <button class="chat-starter-card" type="button" data-prompt="${escapeHtml(prompt)}">
-            <span>${index}</span><strong>${title}</strong><small>${detail}</small>
+            <span class="chat-starter-card-top">
+              <span class="chat-starter-icon is-${tone}" aria-hidden="true">${starterIcons[icon]}</span>
+              <em>${index}</em>
+            </span>
+            <strong>${title}</strong><small>${detail}</small>
           </button>
         `).join("")}
       </div>
