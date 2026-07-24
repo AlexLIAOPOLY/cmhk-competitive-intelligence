@@ -124,8 +124,39 @@ class InternalAsrSubtitleTimingTests(unittest.TestCase):
             token for token in cues[0]["tokens"]
             if any(character.isdigit() for character in token["text"])
         ]
-        self.assertEqual([token["text"] for token in numeric_tokens], ["60.29", "5"])
+        self.assertEqual([token["text"] for token in numeric_tokens], ["60.29", "5%"])
         self.assertTrue(all(token["end"] > token["start"] for token in numeric_tokens))
+        self.assertEqual(numeric_tokens[-1]["text"], "5%")
+
+    def test_display_text_preserves_brand_spelling_instead_of_asr_guess(self):
+        asr_transcript = "香港电信2025年增长4%"
+        display_text = "香港电讯2025年增长4%"
+        segments = [
+            {"text": character, "start": index * 0.2, "end": (index + 1) * 0.2}
+            for index, character in enumerate(asr_transcript)
+            if character != "%"
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audio_path = Path(temp_dir) / "sample.mp3"
+            audio_path.write_bytes(b"audio")
+            with patch(
+                "tts_service._internal_asr_timing_payload",
+                return_value={
+                    "text": asr_transcript,
+                    "duration": 3.0,
+                    "segments": segments,
+                },
+            ):
+                payload = _write_internal_asr_subtitle_timings(audio_path, display_text)
+
+        self.assertEqual(payload["spokenText"], display_text)
+        self.assertIn("香港电讯", payload["cues"][0]["text"])
+        self.assertNotIn("香港电信", payload["cues"][0]["text"])
+        numeric_token = next(
+            token for token in payload["cues"][0]["tokens"]
+            if token["text"].startswith("4")
+        )
+        self.assertEqual(numeric_token["text"], "4%")
 
     def test_audio_info_exposes_precise_token_cues_to_the_frontend(self):
         transcript = "Three香港。"

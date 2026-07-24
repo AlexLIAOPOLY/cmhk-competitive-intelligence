@@ -9,6 +9,7 @@ import tempfile
 import time
 import json
 import uuid
+from difflib import SequenceMatcher
 from urllib.request import urlretrieve
 from pathlib import Path
 from urllib.parse import quote
@@ -195,15 +196,46 @@ def _repair_asr_segment_timings(segments: list[dict]) -> list[dict]:
     return repaired
 
 
-def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict]:
+def _build_asr_subtitle_cues(
+    transcript: str,
+    segments: list[dict],
+    alignment_text: str = "",
+) -> list[dict]:
     transcript = str(transcript or "").strip()
     normalized_transcript, transcript_positions = _alignment_char_positions(transcript)
     if not transcript or not normalized_transcript:
         return []
+    normalized_alignment, _ = _alignment_char_positions(alignment_text or transcript)
+    if not normalized_alignment:
+        return []
+
+    alignment_to_transcript: list[int | None] = [None] * len(normalized_alignment)
+    matcher = SequenceMatcher(
+        None,
+        normalized_alignment,
+        normalized_transcript,
+        autojunk=False,
+    )
+    if alignment_text and matcher.ratio() < 0.75:
+        return []
+    for tag, source_start, source_end, target_start, target_end in matcher.get_opcodes():
+        source_length = source_end - source_start
+        target_length = target_end - target_start
+        if tag == "equal":
+            for offset in range(source_length):
+                alignment_to_transcript[source_start + offset] = target_start + offset
+        elif tag == "replace" and target_length:
+            for offset in range(source_length):
+                projected_offset = min(
+                    target_length - 1,
+                    int(offset * target_length / max(1, source_length)),
+                )
+                alignment_to_transcript[source_start + offset] = target_start + projected_offset
 
     aligned_tokens: list[dict] = []
     normalized_cursor = 0
-    matched_characters = 0
+    projected_cursor = 0
+    matched_transcript_positions: set[int] = set()
     for raw_segment in _repair_asr_segment_timings(segments):
         token_text = str(raw_segment.get("text") or "")
         normalized_token, _ = _alignment_char_positions(token_text)
@@ -214,14 +246,29 @@ def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict
             end_time = float(raw_segment.get("end"))
         except (TypeError, ValueError):
             continue
-        match_start = normalized_transcript.find(normalized_token, normalized_cursor)
+        match_start = normalized_alignment.find(normalized_token, normalized_cursor)
         if match_start < 0:
             continue
         match_end = match_start + len(normalized_token)
-        if match_end > len(transcript_positions):
+        projected_positions = [
+            alignment_to_transcript[index]
+            for index in range(match_start, match_end)
+            if alignment_to_transcript[index] is not None
+        ]
+        if not projected_positions:
             continue
-        char_start = transcript_positions[match_start]
-        char_end = transcript_positions[match_end - 1] + 1
+        projected_start = max(projected_cursor, min(projected_positions))
+        if projected_start >= len(transcript_positions):
+            continue
+        projected_end = min(
+            len(transcript_positions) - 1,
+            projected_start + len(normalized_token) - 1,
+        )
+        char_start = transcript_positions[projected_start]
+        char_end = transcript_positions[projected_end] + 1
+        if any(character.isdigit() for character in transcript[char_start:char_end]):
+            while char_end < len(transcript) and transcript[char_end] in {"%", "％"}:
+                char_end += 1
         aligned_tokens.append(
             {
                 "text": transcript[char_start:char_end],
@@ -232,10 +279,12 @@ def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict
             }
         )
         normalized_cursor = max(normalized_cursor, match_end)
-        matched_characters += len(normalized_token)
+        projected_cursor = projected_end + 1
+        matched_transcript_positions.update(range(projected_start, projected_end + 1))
 
-    coverage = matched_characters / max(1, len(normalized_transcript))
-    if not aligned_tokens or coverage < 0.85:
+    coverage = len(matched_transcript_positions) / max(1, len(normalized_transcript))
+    minimum_coverage = 0.70 if alignment_text else 0.85
+    if not aligned_tokens or coverage < minimum_coverage:
         return []
 
     sentence_matches = list(re.finditer(r"[^。！？；\n]+[。！？；\n]*", transcript))
@@ -260,15 +309,49 @@ def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict
             continue
         local_tokens = []
         for token in sentence_tokens:
-            local_tokens.append(
-                {
-                    "text": token["text"],
-                    "start": token["start"],
-                    "end": token["end"],
-                    "charStart": max(0, int(token["charStart"]) - sentence_start),
-                    "charEnd": min(len(sentence_text), int(token["charEnd"]) - sentence_start),
-                }
+            local_start = max(0, int(token["charStart"]) - sentence_start)
+            local_end = min(len(sentence_text), int(token["charEnd"]) - sentence_start)
+            display_token = sentence_text[local_start:local_end]
+            pieces = list(
+                re.finditer(
+                    r"[A-Za-z0-9]+(?:\.[0-9]+)?[%％]?|[\u3400-\u9fff]",
+                    display_token,
+                )
             )
+            if not pieces:
+                continue
+            if (
+                len(pieces) == 1
+                and pieces[0].start() == 0
+                and pieces[0].end() == len(display_token)
+            ):
+                local_tokens.append(
+                    {
+                        "text": display_token,
+                        "start": token["start"],
+                        "end": token["end"],
+                        "charStart": local_start,
+                        "charEnd": local_end,
+                    }
+                )
+                continue
+            duration = max(0.01, float(token["end"]) - float(token["start"]))
+            weights = [max(1, len(_alignment_char_positions(piece.group(0))[0])) for piece in pieces]
+            total_weight = sum(weights)
+            elapsed_weight = 0
+            for piece, weight in zip(pieces, weights):
+                piece_start = float(token["start"]) + duration * elapsed_weight / total_weight
+                elapsed_weight += weight
+                piece_end = float(token["start"]) + duration * elapsed_weight / total_weight
+                local_tokens.append(
+                    {
+                        "text": piece.group(0),
+                        "start": round(piece_start, 3),
+                        "end": round(piece_end, 3),
+                        "charStart": local_start + piece.start(),
+                        "charEnd": local_start + piece.end(),
+                    }
+                )
         cues.append(
             {
                 "text": sentence_text,
@@ -334,11 +417,16 @@ def _internal_asr_timing_payload(audio_path: Path) -> dict:
         raise RuntimeError(f"公司内网语音对齐返回 HTTP {exc.code}: {detail}") from exc
 
 
-def _write_internal_asr_subtitle_timings(output_path: Path) -> dict:
+def _write_internal_asr_subtitle_timings(output_path: Path, display_text: str = "") -> dict:
     result = _internal_asr_timing_payload(output_path)
-    transcript = str(result.get("text") or result.get("transcript") or "").strip()
+    asr_transcript = str(result.get("text") or result.get("transcript") or "").strip()
+    transcript = str(display_text or asr_transcript).strip()
     segments = result.get("segments")
-    cues = _build_asr_subtitle_cues(transcript, segments if isinstance(segments, list) else [])
+    cues = _build_asr_subtitle_cues(
+        transcript,
+        segments if isinstance(segments, list) else [],
+        asr_transcript,
+    )
     if not transcript or not cues:
         raise RuntimeError("公司内网语音模型未返回可用的逐字时间戳")
     duration = float(result.get("duration") or cues[-1]["end"])
@@ -1378,7 +1466,7 @@ def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
         }
 
     try:
-        timing_payload = _write_internal_asr_subtitle_timings(output_path)
+        timing_payload = _write_internal_asr_subtitle_timings(output_path, summary)
     except Exception as exc:
         if output_path.exists():
             output_path.unlink()
@@ -1391,7 +1479,7 @@ def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
         }
 
     txt_path = audio_path_for_report_ext(report_path, ".txt")
-    txt_path.write_text(str(timing_payload.get("spokenText") or tts_text), encoding="utf-8")
+    txt_path.write_text(summary, encoding="utf-8")
 
     return {
         "ok": True,
