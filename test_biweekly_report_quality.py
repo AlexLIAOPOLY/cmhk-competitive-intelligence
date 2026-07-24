@@ -217,6 +217,55 @@ class StrategicReferenceDocxStructureTests(unittest.TestCase):
 
 
 class IndependentReviewerTests(unittest.TestCase):
+    def test_weekly_online_research_adds_verification_sources_before_review(self) -> None:
+        item = make_item("W001", 1)
+        model = make_model(item)
+
+        def search_client(query, _limit):
+            return {
+                "query": query,
+                "provider": "unit",
+                "results": [
+                    {
+                        "title": "联网核实来源",
+                        "url": "https://verify.example.com/report",
+                        "snippet": "该公开来源交叉确认原稿事实，并补充一项可核验背景。",
+                    }
+                ],
+                "error": "",
+            }
+
+        researched = report.research_weekly_model_online(
+            model,
+            search_client=search_client,
+            progress=lambda _message: None,
+        )
+        researched_item = researched["sections"][0]["items"][0]
+        verification_sources = [
+            source for source in researched["sources"] if source.get("verificationOnly")
+        ]
+
+        self.assertEqual(researched_item["webResearch"]["provider"], "unit")
+        self.assertEqual(len(verification_sources), 1)
+        self.assertIn(verification_sources[0]["sourceId"], researched_item["sourceIds"])
+        self.assertEqual(researched["webResearchAudit"]["itemsWithResults"], 1)
+        researched_item["reviewDecision"] = "approve"
+        report.validate_report_model(researched)
+
+    def test_weekly_online_research_fails_closed_when_search_is_unavailable(self) -> None:
+        item = make_item("W001", 1)
+        model = make_model(item)
+
+        def empty_search(query, _limit):
+            return {"query": query, "provider": "", "results": [], "error": "offline"}
+
+        with self.assertRaisesRegex(RuntimeError, "所有搜索均无可用结果"):
+            report.research_weekly_model_online(
+                model,
+                search_client=empty_search,
+                progress=lambda _message: None,
+            )
+
     def test_independent_reviewer_approves_revises_and_rejects_per_item(self) -> None:
         items = [make_item(f"W00{index}", index) for index in range(1, 4)]
         revised_detail = detailed_text("独立审核模型根据原始事实修订了第二条的表述。")

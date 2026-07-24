@@ -84,6 +84,63 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
 
         self.assertEqual(rewritten, sample_sections())
 
+    def test_online_research_is_passed_to_ai_and_can_support_a_new_number(self) -> None:
+        response = {
+            "companies": [
+                {
+                    "company": "测试运营商",
+                    "fields": {
+                        "capex": "2026年资本开支计划为88亿元。",
+                    },
+                }
+            ]
+        }
+        captured_packs = []
+
+        def ai_client(packs):
+            captured_packs.extend(packs)
+            return response, "test-model"
+
+        web_research = {
+            "测试运营商": {
+                "query": "测试运营商 2026 资本开支",
+                "provider": "unit",
+                "results": [
+                    {
+                        "title": "测试运营商公布2026年资本开支计划",
+                        "url": "https://example.com/capex",
+                        "snippet": "公司公布2026年资本开支计划为88亿元。",
+                    }
+                ],
+                "error": "",
+            }
+        }
+        with TemporaryDirectory() as temp_dir, mock.patch.object(
+            report, "PERFORMANCE_AI_AUDIT_PATH", Path(temp_dir) / "audit.json"
+        ):
+            rewritten = report.rewrite_performance_sections_with_ai(
+                sample_sections(),
+                ai_client=ai_client,
+                progress=lambda _message: None,
+                web_research=web_research,
+            )
+            audit = (Path(temp_dir) / "audit.json").read_text(encoding="utf-8")
+
+        self.assertEqual(captured_packs[0]["web_research"], web_research["测试运营商"])
+        self.assertIn("88亿元", rewritten[0]["items"][1])
+        self.assertIn("https://example.com/capex", audit)
+
+    def test_company_research_fails_closed_when_all_searches_are_empty(self) -> None:
+        def empty_search(query, _limit):
+            return {"query": query, "provider": "", "results": [], "error": "offline"}
+
+        with self.assertRaisesRegex(RuntimeError, "所有搜索均无可用结果"):
+            report.research_performance_companies_online(
+                sample_sections(),
+                search_client=empty_search,
+                progress=lambda _message: None,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
