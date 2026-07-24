@@ -4340,6 +4340,8 @@ function scrollMessagesToBottom(options = {}) {
 }
 
 function addMessage(role, content, markdown = false) {
+  const emptyState = els.messages.querySelector(".chat-empty-state");
+  if (emptyState) emptyState.remove();
   const node = document.createElement("div");
   node.className = `message ${role}`;
   const avatar = document.createElement("span");
@@ -4394,19 +4396,31 @@ function chatThreadId() {
   return `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function initialAssistantText() {
-  return "您好！我是小竞AI，面向 CMHK 竞对、云厂商和宏观政策数据的分析型 Agent。我可以帮您：<br>1. <b>查数据</b>：检索本地三类数据库，说明覆盖主体、期间、指标口径和来源。<br>2. <b>核来源</b>：优先使用官方值，标明 verification_count、source-gap 和冲突状态。<br>3. <b>看趋势</b>：基于季度、半年度和年度历史数据做趋势判断与预测边界说明。<br>4. <b>找外部信息</b>：需要时联网检索公开网页，并把来源带回回答。<br>请问今天需要分析什么？";
+function initialChatEmptyStateHtml() {
+  const starters = [
+    ["01", "对比竞对经营表现", "收入、利润、用户与 ARPU", "请对比中国移动、中国联通和中国电信最新季度经营表现，列出收入、利润、用户和 ARPU 变化，并标明来源。"],
+    ["02", "查看香港产品资费", "套餐、合约与促销变化", "请对比香港主要竞对最新移动与宽频套餐资费，说明月费、数据量、合约期和促销差异。"],
+    ["03", "追踪云厂商动态", "业绩、AI 投入与战略动作", "请整理主要云厂商近期业绩与 AI 投入变化，判断对 CMHK 的机会和风险。"],
+    ["04", "解读宏观政策影响", "政策、经济与业务影响", "请梳理近期宏观政策与监管变化，并分析其对 CMHK 业务的可能影响。"],
+  ];
+  return `
+    <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
+      <span class="chat-empty-mark" aria-hidden="true">竞</span>
+      <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
+      <p>选择一个方向，或直接在下方输入你的问题</p>
+      <div class="chat-starter-grid">
+        ${starters.map(([index, title, detail, prompt]) => `
+          <button class="chat-starter-card" type="button" data-prompt="${escapeHtml(prompt)}">
+            <span>${index}</span><strong>${title}</strong><small>${detail}</small>
+          </button>
+        `).join("")}
+      </div>
+    </section>
+  `;
 }
 
 function resetChatMessages() {
-  els.messages.innerHTML = `
-    <div class="message assistant">
-      <span class="avatar">AI</span>
-      <div class="message-body">
-        <div class="message-text">${initialAssistantText()}</div>
-      </div>
-    </div>
-  `;
+  els.messages.innerHTML = initialChatEmptyStateHtml();
 }
 
 function renderChatThreadList() {
@@ -6017,6 +6031,13 @@ window.clickSuggestion = function(text) {
   renderChatSubmitState();
   els.chatForm.requestSubmit();
 };
+
+els.messages.addEventListener("click", (event) => {
+  const starter = event.target.closest(".chat-starter-card");
+  if (!starter) return;
+  const prompt = String(starter.dataset.prompt || "").trim();
+  if (prompt) window.clickSuggestion(prompt);
+});
 
 els.closeChatButton.addEventListener("click", () => {
   els.chatModal.hidden = true;
