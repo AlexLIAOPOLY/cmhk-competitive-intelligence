@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
-  <link rel="stylesheet" href="/static/styles.css?v=199" />
+  <link rel="stylesheet" href="/static/styles.css?v=200" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -48,79 +48,36 @@
           </section>
 
           <section class="insight-board" aria-label="战略情报态势看板">
-            <article class="signal-overview" aria-labelledby="signalOverviewTitle">
-              <header class="signal-overview-header">
+            <article class="signal-overview decision-main" aria-labelledby="decisionPerformanceTitle">
+              <header class="signal-overview-header decision-main-header">
                 <div>
-                  <span class="signal-overview-eyebrow">INTELLIGENCE OVERVIEW</span>
-                  <h2 id="signalOverviewTitle">近14日情报态势</h2>
-                  <p>仅统计战略部人工确认的有效快讯</p>
+                  <span class="signal-overview-eyebrow">MARKET &amp; COMPETITOR BENCHMARK</span>
+                  <h2 id="decisionPerformanceTitle">香港竞对经营对标</h2>
+                  <p>最新正式披露 · 收益、利润、资本开支与市场反应</p>
                 </div>
-                <span class="signal-window-badge">滚动 14 天</span>
+                <span class="signal-window-badge" id="decisionUpdatedAt">正在同步</span>
               </header>
 
-              <div class="signal-kpi-grid" aria-label="关键情报指标">
-                <div class="signal-kpi is-primary">
-                  <span>确认信号</span>
-                  <strong id="signalCount">--</strong>
-                  <small>近14日</small>
-                </div>
-                <div class="signal-kpi">
-                  <span>竞对动态</span>
-                  <strong id="competitorSignalCount">--</strong>
-                  <small id="competitorSignalShare">占比 --</small>
-                </div>
-                <div class="signal-kpi">
-                  <span>活跃主题</span>
-                  <strong id="activeTopicCount">--</strong>
-                  <small>已确认分类</small>
-                </div>
-                <div class="signal-kpi">
-                  <span>最新信号</span>
-                  <strong id="latestSignalDate">--</strong>
-                  <small id="latestSignalCount">等待同步</small>
-                </div>
+              <div class="decision-macro-strip" id="decisionMacroStrip" aria-label="香港市场脉搏">
+                <div class="decision-loading-row">正在读取香港市场与宏观指标</div>
               </div>
 
-              <div class="signal-analysis-grid">
-                <section class="signal-chart-card" aria-labelledby="signalTrendTitle">
-                  <div class="signal-chart-heading">
-                    <div>
-                      <strong id="signalTrendTitle">每日信号趋势</strong>
-                      <span>按主题堆叠</span>
-                    </div>
-                    <span id="signalTrendTotal">-- 条</span>
-                  </div>
-                  <div class="signal-trend-chart">
-                    <canvas id="signalTrendCanvas"></canvas>
-                  </div>
-                </section>
-                <section class="signal-topic-card" aria-labelledby="signalTopicTitle">
-                  <div class="signal-chart-heading">
-                    <div>
-                      <strong id="signalTopicTitle">主题热度</strong>
-                      <span>确认信号构成</span>
-                    </div>
-                  </div>
-                  <div class="signal-topic-list" id="signalTopicList">
-                    <div class="signal-topic-empty">正在汇总主题</div>
-                  </div>
-                </section>
-                <section class="signal-recent-panel" aria-labelledby="signalRecentTitle">
-                  <div class="signal-chart-heading">
-                    <div>
-                      <strong id="signalRecentTitle">最近确认情报</strong>
-                      <span>按发布时间倒序</span>
-                    </div>
-                  </div>
-                  <div class="signal-recent-list" id="signalRecentList">
-                    <div class="signal-topic-empty">正在读取最新情报</div>
-                  </div>
-                </section>
-              </div>
+              <section class="decision-performance" aria-label="香港竞对最新经营指标">
+                <div class="decision-table-head" aria-hidden="true">
+                  <span>公司 / 披露</span>
+                  <span>收益</span>
+                  <span>利润 / EBITDA</span>
+                  <span>资本开支</span>
+                  <span>市场反应</span>
+                </div>
+                <div class="decision-performance-rows" id="decisionPerformanceRows">
+                  <div class="decision-loading-row">正在读取最新正式业绩</div>
+                </div>
+              </section>
 
-              <footer class="signal-overview-footer">
-                <span class="signal-insight-dot" aria-hidden="true"></span>
-                <p id="signalInsightText">正在读取已确认战略快讯并生成态势摘要。</p>
+              <footer class="decision-attention">
+                <strong>本页原则</strong>
+                <span>只展示正式披露、正式资费和官方宏观指标；冲突采用官方值，缺口不估算。</span>
               </footer>
             </article>
             <aside class="strategy-ticker" aria-label="滚动战略快讯">
@@ -144,51 +101,37 @@
               </footer>
             </aside>
 
-            <article class="collection-overview" aria-labelledby="collectionOverviewTitle">
+            <article class="collection-overview decision-side" aria-labelledby="decisionTariffTitle">
               <header class="collection-overview-header">
                 <div>
-                  <span>COLLECTION PULSE</span>
-                  <h2 id="collectionOverviewTitle">本轮信息资产</h2>
-                  <p id="collectionCompletedAt">等待最近采集结果</p>
+                  <span>PRICING &amp; EVIDENCE WATCH</span>
+                  <h2 id="decisionTariffTitle">资费竞争与验证风险</h2>
+                  <p>香港主要品牌当前公开套餐与待关注口径</p>
                 </div>
-                <span class="collection-live-badge"><i></i>数据已连接</span>
+                <span class="collection-live-badge"><i></i>正式数据</span>
               </header>
 
-              <div class="collection-kpi-grid">
-                <div>
-                  <span>监测任务</span>
-                  <strong id="collectionTaskCount">--</strong>
-                  <small id="collectionTaskCoverage">--</small>
-                </div>
-                <div>
-                  <span>有效事实</span>
-                  <strong id="collectionFactCount">--</strong>
-                  <small>已进入发布层</small>
-                </div>
-                <div>
-                  <span>来源证据</span>
-                  <strong id="collectionSourceCount">--</strong>
-                  <small>本轮可追溯来源</small>
-                </div>
+              <div class="decision-asset-summary" id="decisionAssetSummary">
+                <div class="decision-loading-row">正在读取季度、资费与宏观数据资产</div>
               </div>
 
-              <section class="collection-section" aria-labelledby="collectionCompositionTitle">
+              <section class="collection-section decision-tariff-section" aria-labelledby="decisionTariffRowsTitle">
                 <div class="collection-section-title">
-                  <strong id="collectionCompositionTitle">采集内容构成</strong>
-                  <span id="collectionCompositionTotal">-- 项</span>
+                  <strong id="decisionTariffRowsTitle">当前资费区间</strong>
+                  <span>月费 HKD</span>
                 </div>
-                <div class="collection-bar-list" id="collectionCompositionList">
-                  <div class="collection-empty">正在读取采集内容</div>
+                <div class="decision-tariff-rows" id="decisionTariffRows">
+                  <div class="decision-loading-row">正在汇总主要品牌套餐</div>
                 </div>
               </section>
 
-              <section class="collection-section collection-entity-section" aria-labelledby="collectionEntityTitle">
+              <section class="collection-section decision-risk-section" aria-labelledby="decisionRiskTitle">
                 <div class="collection-section-title">
-                  <strong id="collectionEntityTitle">重点关注主体</strong>
-                  <span>按采集记录</span>
+                  <strong id="decisionRiskTitle">必须关注的验证风险</strong>
+                  <span>禁止静默估算</span>
                 </div>
-                <div class="collection-entity-list" id="collectionEntityList">
-                  <div class="collection-empty">正在汇总主体</div>
+                <div class="decision-risk-rows" id="decisionRiskRows">
+                  <div class="decision-loading-row">正在读取冲突与来源缺口</div>
                 </div>
               </section>
             </article>
@@ -558,6 +501,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=221"></script>
+    <script src="/static/app.js?v=222"></script>
   </body>
 </html>

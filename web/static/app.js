@@ -1260,6 +1260,114 @@ function renderCollectionOverview(status) {
   }
 }
 
+function formatDecisionMetric(value, unit) {
+  const number = Number(value);
+  const unitText = String(unit || "");
+  if (!Number.isFinite(number)) return `${value || "--"}${unitText ? ` ${unitText}` : ""}`;
+  if (unitText === "percent") return `${number.toLocaleString("zh-HK", { maximumFractionDigits: 1 })}%`;
+  if (unitText === "HKD") return `HK$${number.toLocaleString("zh-HK", { maximumFractionDigits: 0 })}`;
+  if (unitText === "HKD million") return `HK$${number.toLocaleString("zh-HK", { maximumFractionDigits: 0 })}m`;
+  if (unitText === "subscriptions") {
+    return `${(number / 1000000).toLocaleString("zh-HK", { maximumFractionDigits: 1 })}m`;
+  }
+  return `${number.toLocaleString("zh-HK", { maximumFractionDigits: 1 })}${unitText ? ` ${unitText}` : ""}`;
+}
+
+function renderDecisionDashboard(payload) {
+  const data = payload && typeof payload === "object" ? payload : {};
+  const summary = data.summary || {};
+  const updatedAt = document.getElementById("decisionUpdatedAt");
+  if (updatedAt) updatedAt.textContent = data.generatedAt ? `数据更新 ${data.generatedAt.slice(5, 16)}` : "数据已连接";
+
+  const macroHost = document.getElementById("decisionMacroStrip");
+  if (macroHost) {
+    const macros = Array.isArray(data.macro) ? data.macro.slice(0, 6) : [];
+    macroHost.innerHTML = macros.length
+      ? macros.map((item) => {
+          const url = /^https?:\/\//i.test(String(item.sourceUrl || "")) ? String(item.sourceUrl) : "";
+          const tag = url ? "a" : "div";
+          const linkAttrs = url ? ` href="${escapeHtml(url)}" target="_blank" rel="noreferrer"` : "";
+          return `
+            <${tag} class="decision-macro-item"${linkAttrs}>
+              <span>${escapeHtml(item.label || "市场指标")}</span>
+              <strong>${escapeHtml(formatDecisionMetric(item.value, item.unit))}</strong>
+              <small>${escapeHtml(item.period || "最新官方期")}</small>
+            </${tag}>
+          `;
+        }).join("")
+      : '<div class="decision-loading-row">暂无可展示的官方宏观指标</div>';
+  }
+
+  const performanceHost = document.getElementById("decisionPerformanceRows");
+  if (performanceHost) {
+    const performance = Array.isArray(data.performance) ? data.performance : [];
+    performanceHost.innerHTML = performance.length
+      ? performance.map((item) => {
+          const url = /^https?:\/\//i.test(String(item.sourceUrl || "")) ? String(item.sourceUrl) : "";
+          const tag = url ? "a" : "div";
+          const linkAttrs = url ? ` href="${escapeHtml(url)}" target="_blank" rel="noreferrer"` : "";
+          return `
+            <${tag} class="decision-performance-row"${linkAttrs}>
+              <span class="decision-company">
+                <strong>${escapeHtml(item.company || "未命名主体")}</strong>
+                <small>${escapeHtml(item.period || "等待披露")}${item.disclosureDate ? ` · ${escapeHtml(item.disclosureDate)}` : ""}</small>
+              </span>
+              <span title="${escapeHtml(item.revenue || "")}">${escapeHtml(item.revenue || "未披露")}</span>
+              <span title="${escapeHtml(item.profit || "")}">${escapeHtml(item.profit || "未披露")}</span>
+              <span title="${escapeHtml(item.capex || "")}">${escapeHtml(item.capex || "未单列")}</span>
+              <span title="${escapeHtml(item.marketReaction || item.strategy || "")}">${escapeHtml(item.marketReaction || item.strategy || "待观察")}</span>
+            </${tag}>
+          `;
+        }).join("")
+      : '<div class="decision-loading-row">暂无本地竞对正式业绩数据</div>';
+  }
+
+  const assetHost = document.getElementById("decisionAssetSummary");
+  if (assetHost) {
+    assetHost.innerHTML = `
+      <div><span>季度 / 半年经营指标</span><strong>${Number(summary.quarterlyRows || 0).toLocaleString("zh-HK")}</strong><small>${Number(summary.quarterRows || 0)} 季度 · ${Number(summary.halfYearRows || 0)} 半年</small></div>
+      <div><span>正式产品资费</span><strong>${Number(summary.formalTariffs || 0).toLocaleString("zh-HK")}</strong><small>${Number(summary.currentTariffs || 0)} 条当前套餐</small></div>
+      <div><span>官方宏观指标</span><strong>${Number(summary.macroRows || 0).toLocaleString("zh-HK")}</strong><small>OFCA / C&amp;SD</small></div>
+    `;
+  }
+
+  const tariffHost = document.getElementById("decisionTariffRows");
+  if (tariffHost) {
+    const tariffs = Array.isArray(data.tariffs) ? data.tariffs : [];
+    tariffHost.innerHTML = tariffs.length
+      ? tariffs.map((item) => {
+          const hasMinFee = item.minMonthlyFee !== null && item.minMonthlyFee !== "" && Number.isFinite(Number(item.minMonthlyFee));
+          const hasMaxFee = item.maxMonthlyFee !== null && item.maxMonthlyFee !== "" && Number.isFinite(Number(item.maxMonthlyFee));
+          const minFee = hasMinFee ? `HK$${Number(item.minMonthlyFee).toLocaleString("zh-HK")}` : "--";
+          const maxFee = hasMaxFee ? `HK$${Number(item.maxMonthlyFee).toLocaleString("zh-HK")}` : "--";
+          return `
+            <div class="decision-tariff-row">
+              <strong>${escapeHtml(item.brand || "其他品牌")}</strong>
+              <span>${minFee} – ${maxFee}</span>
+              <small>${Number(item.currentPlans || 0)} 条当前套餐</small>
+            </div>
+          `;
+        }).join("")
+      : '<div class="decision-loading-row">暂无当前正式资费</div>';
+  }
+
+  const riskHost = document.getElementById("decisionRiskRows");
+  if (riskHost) {
+    riskHost.innerHTML = `
+      <div><strong>${Number(summary.officialConflicts || 0).toLocaleString("zh-HK")}</strong><span>官方口径冲突</span><small>回答时采用 official_value，并说明标准化口径差异</small></div>
+      <div><strong>${Number(summary.quarterlySourceGaps || 0).toLocaleString("zh-HK")}</strong><span>经营披露缺口</span><small>未发现公开季度或半年表，不得估算</small></div>
+      <div><strong>${Number(summary.tariffSourceGaps || 0).toLocaleString("zh-HK")}</strong><span>资费来源缺口</span><small>缺第二来源或页面无可结构化月费</small></div>
+    `;
+  }
+}
+
+async function fetchDecisionDashboard() {
+  const response = await fetch("/api/decision-dashboard", { cache: "no-store" });
+  const payload = await response.json();
+  if (!response.ok || !payload.ok) throw new Error(payload.error || "决策看板同步失败");
+  renderDecisionDashboard(payload.data || {});
+}
+
 function renderInsights(status) {
   const visuals = status.visuals || {};
   const crawl = visuals.crawl || {};
@@ -7070,6 +7178,8 @@ window.addEventListener("beforeunload", abandonPendingChatApproval);
 setClock();
 setInterval(setClock, 30000);
 loadChatThreads();
+fetchDecisionDashboard().catch((error) => console.error("决策看板初始化失败", error));
+setInterval(() => fetchDecisionDashboard().catch(console.error), 300000);
 fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);
 });
@@ -7299,7 +7409,6 @@ document.addEventListener("keydown", (event) => {
       return !/排版预览|版式预览/.test(previewText);
     });
     const monitor = payload.monitor || {};
-    renderStrategicOverview(items);
     const degraded = monitor.status === "degraded";
     syncStatus.classList.toggle("is-degraded", degraded);
     syncStatus.title = monitor.last_error || "";

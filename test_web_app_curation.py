@@ -21,6 +21,21 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报.docx"))
 
 
+class DecisionDashboardTests(unittest.TestCase):
+    def test_homepage_dashboard_prioritizes_decision_datasets(self) -> None:
+        payload = web_app.build_decision_dashboard_payload()
+
+        self.assertGreater(payload["summary"]["quarterlyRows"], 0)
+        self.assertGreater(payload["summary"]["formalTariffs"], 0)
+        self.assertGreater(payload["summary"]["macroRows"], 0)
+        self.assertEqual(
+            [row["company"] for row in payload["performance"]],
+            ["HKT / csl / 1O1O", "HKBN", "SmarTone", "3HK / Hutchison", "i-CABLE"],
+        )
+        self.assertIn("香港GDP同比", [row["label"] for row in payload["macro"]])
+        self.assertIn("HKBN", [row["brand"] for row in payload["tariffs"]])
+
+
 class ChatThreadPersistenceTests(unittest.TestCase):
     def test_assistant_message_preserves_exactly_three_generated_suggestions(self) -> None:
         clean = web_app._clean_chat_message({
