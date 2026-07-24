@@ -10,10 +10,12 @@ import sys
 import tempfile
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
 from decimal import Decimal
 from datetime import datetime
 from pathlib import Path
+import time
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -44,6 +46,10 @@ PERFORMANCE_USAGE_AUDIT_PATH = ROOT / "carrier_performance_fact_usage.json"
 PERFORMANCE_AI_AUDIT_PATH = ROOT / "carrier_performance_ai_audit.json"
 RESULTS_DIR = ROOT / "results"
 PERFORMANCE_AI_PROMPT_VERSION = "carrier-performance-editor-v2-web-verified"
+PERFORMANCE_AI_BATCH_SIZE = 2
+PERFORMANCE_AI_WORKERS = 4
+PERFORMANCE_AI_TIMEOUT_SECONDS = 65
+PERFORMANCE_SOURCE_WORKERS = 8
 COMPANIES = ["中国移动", "中国电信", "中国联通", "中国铁塔"]
 FIELD_ORDER = [
     ("dividend", "派息"),
@@ -566,35 +572,85 @@ def crawl_carrier_sources(config: dict) -> dict:
         "User-Agent": "CMHK-CarrierPerformanceBot/1.0 (+internal research; public sources only)",
         "Accept": "text/html,application/pdf;q=0.9,*/*;q=0.8",
     }
+    jobs = []
+    for company, company_cfg in config.get("companies", {}).items():
+        for source in company_cfg.get("sources", []):
+            url = str(source.get("url") or "").strip()
+            if url:
+                jobs.append((company, source, url))
+    print(
+        f"[业绩摘要 来源刷新] 正在并行刷新{len(jobs)}个公开来源，"
+        f"最多{min(PERFORMANCE_SOURCE_WORKERS, len(jobs)) if jobs else 0}路并发。"
+    )
+    fetched: list[tuple[str, dict] | None] = [None] * len(jobs)
     with httpx.Client(headers=headers, follow_redirects=True, timeout=httpx.Timeout(25.0, connect=8.0)) as client:
-        for company, company_cfg in config.get("companies", {}).items():
-            for source in company_cfg.get("sources", []):
-                url = str(source.get("url") or "").strip()
-                if not url:
-                    continue
-                key = f"{company}|{url}"
-                item = {
-                    "company": company,
-                    "label": source.get("label", ""),
-                    "source_type": source.get("type", ""),
-                    "url": url,
-                    "ok": False,
-                    "text": "",
-                    "error": "",
+        def fetch_source(company: str, source: dict, url: str) -> tuple[str, dict]:
+            key = f"{company}|{url}"
+            item = {
+                "company": company,
+                "label": source.get("label", ""),
+                "source_type": source.get("type", ""),
+                "url": url,
+                "ok": False,
+                "text": "",
+                "error": "",
+            }
+            try:
+                response = client.get(url)
+                response.raise_for_status()
+                item["text"] = clean_text(decode_response_text(response), 16000)
+                item["ok"] = bool(item["text"])
+                item["status_code"] = response.status_code
+            except Exception as exc:
+                previous = cached_sources.get(key, {}) if isinstance(cached_sources, dict) else {}
+                item["text"] = previous.get("text", "")
+                item["ok"] = bool(item["text"])
+                item["error"] = str(exc)
+                item["from_cache"] = bool(item["text"])
+            return key, item
+
+        if jobs:
+            with ThreadPoolExecutor(
+                max_workers=min(PERFORMANCE_SOURCE_WORKERS, len(jobs))
+            ) as executor:
+                futures = {
+                    executor.submit(fetch_source, company, source, url): index
+                    for index, (company, source, url) in enumerate(jobs)
                 }
-                try:
-                    response = client.get(url)
-                    response.raise_for_status()
-                    item["text"] = clean_text(decode_response_text(response), 16000)
-                    item["ok"] = bool(item["text"])
-                    item["status_code"] = response.status_code
-                except Exception as exc:
-                    previous = cached_sources.get(key, {}) if isinstance(cached_sources, dict) else {}
-                    item["text"] = previous.get("text", "")
-                    item["ok"] = bool(item["text"])
-                    item["error"] = str(exc)
-                    item["from_cache"] = bool(item["text"])
-                next_cache["sources"][key] = item
+                for future in as_completed(futures):
+                    index = futures[future]
+                    company, source, url = jobs[index]
+                    try:
+                        fetched[index] = future.result()
+                    except Exception as exc:
+                        key = f"{company}|{url}"
+                        previous = (
+                            cached_sources.get(key, {})
+                            if isinstance(cached_sources, dict)
+                            else {}
+                        )
+                        fetched[index] = (
+                            key,
+                            {
+                                "company": company,
+                                "label": source.get("label", ""),
+                                "source_type": source.get("type", ""),
+                                "url": url,
+                                "ok": bool(previous.get("text")),
+                                "text": previous.get("text", ""),
+                                "error": str(exc),
+                                "from_cache": bool(previous.get("text")),
+                            },
+                        )
+    for entry in fetched:
+        if entry:
+            key, item = entry
+            next_cache["sources"][key] = item
+    print(
+        f"[业绩摘要 来源刷新] 完成："
+        f"{sum(bool(item.get('ok')) for item in next_cache['sources'].values())}/"
+        f"{len(next_cache['sources'])}个来源取得正文或缓存证据。"
+    )
     CACHE_PATH.write_text(json.dumps(next_cache, ensure_ascii=False, indent=2), encoding="utf-8")
     return next_cache
 
@@ -817,8 +873,30 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
     )
     try:
         wait_for_internal_ai_slot("carrier-performance-editor")
-        with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+        started = time.monotonic()
+        with urlopen_with_local_proxy_fallback(
+            request,
+            timeout=PERFORMANCE_AI_TIMEOUT_SECONDS,
+        ) as response:
+            chunks = []
+            while True:
+                remaining = PERFORMANCE_AI_TIMEOUT_SECONDS - (time.monotonic() - started)
+                if remaining <= 0:
+                    raise TimeoutError(
+                        f"业绩摘要模型超过{PERFORMANCE_AI_TIMEOUT_SECONDS}秒总等待上限"
+                    )
+                try:
+                    response.fp.raw._sock.settimeout(max(1.0, remaining))
+                except (AttributeError, OSError):
+                    pass
+                reader = getattr(response, "read1", response.read)
+                chunk = reader(64 * 1024)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                if sum(len(value) for value in chunks) > 8 * 1024 * 1024:
+                    raise RuntimeError("业绩摘要模型响应超过8MB安全上限")
+            payload = json.loads(b"".join(chunks).decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:500]
         raise RuntimeError(f"业绩摘要模型 HTTP {exc.code}: {detail}") from exc
@@ -834,6 +912,59 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
     else:
         content = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
     return extract_json_payload(content), model
+
+
+def call_performance_editor_batches(
+    fact_packs: list[dict],
+    *,
+    ai_client=call_performance_editor_llm,
+    batch_size: int = PERFORMANCE_AI_BATCH_SIZE,
+    workers: int = PERFORMANCE_AI_WORKERS,
+    progress=print,
+) -> tuple[dict[str, dict], str, set[str]]:
+    batches = [
+        fact_packs[index : index + max(1, batch_size)]
+        for index in range(0, len(fact_packs), max(1, batch_size))
+    ]
+    returned: dict[str, dict] = {}
+    failed_companies: set[str] = set()
+    model = ""
+    if not batches:
+        return returned, model, failed_companies
+    progress(
+        f"[AI摘要] 已拆成{len(batches)}批，每批最多{max(1, batch_size)}家公司，"
+        f"最多{min(max(1, workers), len(batches))}路并行。"
+    )
+    with ThreadPoolExecutor(max_workers=min(max(1, workers), len(batches))) as executor:
+        futures = {
+            executor.submit(ai_client, batch): (batch_index, batch)
+            for batch_index, batch in enumerate(batches, start=1)
+        }
+        for future in as_completed(futures):
+            batch_index, batch = futures[future]
+            companies = [clean_text(pack.get("company")) for pack in batch]
+            try:
+                response, response_model = future.result()
+                model = model or response_model
+                batch_returned = {
+                    clean_text(item.get("company")): item
+                    for item in response.get("companies") or []
+                    if isinstance(item, dict) and clean_text(item.get("company"))
+                }
+                returned.update(batch_returned)
+                missing = set(companies) - set(batch_returned)
+                failed_companies.update(missing)
+                progress(
+                    f"[AI摘要] 第{batch_index}/{len(batches)}批完成，"
+                    f"返回{len(batch_returned)}/{len(companies)}家公司。"
+                )
+            except Exception as exc:
+                failed_companies.update(companies)
+                progress(
+                    f"[AI摘要] 第{batch_index}/{len(batches)}批未在时限内完成，"
+                    f"{len(companies)}家公司直接保留核验证据：{type(exc).__name__}。"
+                )
+    return returned, model, failed_companies
 
 
 def valid_ai_performance_field(field_key: str, candidate: object, evidence: object) -> tuple[bool, str, str]:
@@ -893,22 +1024,28 @@ def rewrite_performance_sections_with_ai(
         "companies": [],
     }
     try:
-        progress(f"[AI摘要] 正在把{len(fact_packs)}家公司核验事实交给公司内网模型重组……")
-        response, model = ai_client(fact_packs)
+        progress(f"[AI摘要] 正在把{len(fact_packs)}家公司核验事实分批交给公司内网模型重组……")
+        returned, model, failed_companies = call_performance_editor_batches(
+            fact_packs,
+            ai_client=ai_client,
+            progress=progress,
+        )
         audit["model"] = model
-        returned = {
-            clean_text(item.get("company")): item
-            for item in response.get("companies") or []
-            if isinstance(item, dict) and clean_text(item.get("company"))
+        audit["batchSize"] = PERFORMANCE_AI_BATCH_SIZE
+        audit["workers"] = PERFORMANCE_AI_WORKERS
+        audit["batchFallbackCompanies"] = sorted(failed_companies)
+
+        validation_by_company: dict[str, dict[str, dict]] = {}
+        repair_packs = []
+        packs_by_company = {
+            clean_text(pack.get("company")): pack for pack in fact_packs
         }
-        rewritten = []
-        accepted_fields = 0
         for section in sections:
             company = clean_text(section.get("company"))
             result_fields = (returned.get(company) or {}).get("fields") or {}
-            final_items = []
-            field_audit = []
-            for field_key, label in FIELD_ORDER:
+            company_validation = {}
+            invalid_reasons = []
+            for field_key, _label in FIELD_ORDER:
                 evidence = evidence_by_company[company][field_key]
                 validation_evidence = {
                     "field": evidence,
@@ -919,35 +1056,70 @@ def rewrite_performance_sections_with_ai(
                     result_fields.get(field_key),
                     validation_evidence,
                 )
-                retried = False
+                company_validation[field_key] = {
+                    "valid": valid,
+                    "candidate": candidate,
+                    "reason": reason,
+                    "retried": False,
+                }
                 if not valid:
-                    retry_pack = next(pack for pack in fact_packs if pack["company"] == company)
-                    retry_pack = {
-                        **retry_pack,
+                    invalid_reasons.append(f"{field_key}：{reason or '模型漏写'}")
+            validation_by_company[company] = company_validation
+            if invalid_reasons and company not in failed_companies:
+                repair_packs.append(
+                    {
+                        **packs_by_company[company],
                         "correction": (
-                            f"字段{field_key}上次未通过门禁：{reason or '模型漏写'}。"
-                            "请结合evidence和web_research修正或补齐，不得省略该字段、不得新增无证据数字。"
+                            "以下字段未通过门禁，请在一次响应中全部修正或补齐："
+                            + "；".join(invalid_reasons)
+                            + "。必须结合evidence和web_research，不得省略字段、不得新增无证据数字。"
                         ),
                     }
-                    try:
-                        retry_response, _ = ai_client([retry_pack])
-                        retry_company = next(
-                            (
-                                item
-                                for item in retry_response.get("companies") or []
-                                if clean_text(item.get("company")) == company
-                            ),
-                            {},
-                        )
-                        retry_candidate = (retry_company.get("fields") or {}).get(field_key)
-                        valid, candidate, reason = valid_ai_performance_field(
-                            field_key,
-                            retry_candidate,
-                            validation_evidence,
-                        )
-                        retried = True
-                    except Exception as retry_exc:
-                        reason = f"{reason}；重试失败：{type(retry_exc).__name__}"
+                )
+
+        repair_returned: dict[str, dict] = {}
+        if repair_packs:
+            progress(
+                f"[AI摘要] {len(repair_packs)}家公司存在字段问题，"
+                "改为每家公司一次集中修复，不再逐字段串行重试。"
+            )
+            repair_returned, repair_model, _repair_failures = call_performance_editor_batches(
+                repair_packs,
+                ai_client=ai_client,
+                batch_size=1,
+                progress=progress,
+            )
+            audit["model"] = audit["model"] or repair_model
+        audit["repairRequests"] = len(repair_packs)
+
+        rewritten = []
+        accepted_fields = 0
+        for section in sections:
+            company = clean_text(section.get("company"))
+            repair_fields = (repair_returned.get(company) or {}).get("fields") or {}
+            final_items = []
+            field_audit = []
+            for field_key, label in FIELD_ORDER:
+                evidence = evidence_by_company[company][field_key]
+                validation_evidence = {
+                    "field": evidence,
+                    "web_research": (web_research or {}).get(company) or {},
+                }
+                state = validation_by_company[company][field_key]
+                valid = state["valid"]
+                candidate = state["candidate"]
+                reason = state["reason"]
+                retried = bool(repair_fields) and not valid
+                if retried:
+                    retry_valid, retry_candidate, retry_reason = valid_ai_performance_field(
+                        field_key,
+                        repair_fields.get(field_key),
+                        validation_evidence,
+                    )
+                    if retry_valid:
+                        valid, candidate, reason = True, retry_candidate, ""
+                    else:
+                        reason = f"{reason}；集中修复未通过：{retry_reason}"
                 content = candidate if valid else evidence
                 repaired_by_evidence = not valid
                 if not is_publishable_field(content):

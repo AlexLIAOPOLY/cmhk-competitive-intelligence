@@ -25,6 +25,37 @@ def sample_sections() -> list[dict]:
 
 
 class CarrierPerformanceAiEditorTests(unittest.TestCase):
+    def test_editor_requests_are_split_into_small_parallel_batches(self) -> None:
+        packs = [
+            {
+                "company": f"测试运营商{index}",
+                "title": "测试",
+                "evidence": {},
+                "web_research": {},
+            }
+            for index in range(5)
+        ]
+        batch_sizes = []
+
+        def ai_client(batch):
+            batch_sizes.append(len(batch))
+            return {
+                "companies": [
+                    {"company": pack["company"], "fields": {}} for pack in batch
+                ]
+            }, "test-model"
+
+        returned, model, failed = report.call_performance_editor_batches(
+            packs,
+            ai_client=ai_client,
+            progress=lambda _message: None,
+        )
+
+        self.assertEqual(sorted(batch_sizes), [1, 2, 2])
+        self.assertEqual(len(returned), 5)
+        self.assertEqual(model, "test-model")
+        self.assertEqual(failed, set())
+
     def test_rewrite_keeps_structure_and_accepts_grounded_fields(self) -> None:
         response = {
             "companies": [
