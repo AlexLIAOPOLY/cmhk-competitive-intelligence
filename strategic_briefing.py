@@ -1195,6 +1195,19 @@ def _enforce_region_from_source_evidence(region: str, source_item: dict[str, Any
     return region
 
 
+def _enforce_category_from_monitoring_context(
+    category: str, source_item: dict[str, Any] | None
+) -> str:
+    """Keep deterministic monitoring buckets from being weakened by AI editing."""
+    if not isinstance(source_item, dict):
+        return category
+    module = _clean_text(source_item.get("module"), 120)
+    filter_reason = _clean_text(source_item.get("filter_reason"), 240)
+    if module == "竞争对手" or "竞对" in filter_reason or "运营商" in filter_reason:
+        return "竞对动态"
+    return category
+
+
 def _candidate_editor_key(item: dict[str, Any]) -> str:
     payload = {
         "version": AI_EDITOR_VERSION,
@@ -1272,6 +1285,7 @@ def _validated_ai_copy(
     region = _enforce_region_from_source_evidence(region, source_item)
     if not category:
         raise RuntimeError("公司内部 AI 未返回分类")
+    category = _enforce_category_from_monitoring_context(category, source_item)
     if should_include and not keywords:
         raise RuntimeError("公司内部 AI 未返回命中关键词")
     if len(inclusion_reason) < 8:
@@ -1375,7 +1389,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "region必须依据新闻事件主体、明确发生地和受影响市场判断。"
                     "来源媒体、媒体域名、报道语言及媒体所在地绝不能作为地域证据；"
                     "香港媒体报道中国内地或海外事件仍应判为国际/行业。"
-                    "category根据事件实质给出简洁业务分类。keywords只能从输入matched_keywords中选择"
+                    "category根据事件实质给出简洁业务分类；输入category为‘竞对动态’或监测模块为"
+                    "‘竞争对手’时，category必须为‘竞对动态’，不得改成‘行业动态’。"
+                    "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
                     "inclusion_reason直接说明其战略价值，不复述规则。"
                     "region_reason简述事件地域证据。只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
@@ -1418,7 +1434,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
                             "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
                             "should_include只有在新闻与matched_keywords存在正文证据和战略信息价值时才为true。"
-                            "category按事件实质分类；keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
+                            "category按事件实质分类；输入category为‘竞对动态’或监测模块为‘竞争对手’时，"
+                            "category必须为‘竞对动态’，不得改成‘行业动态’；"
+                            "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
                             "并用顿号分隔；inclusion_reason说明战略价值；"
                             "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
                         ),

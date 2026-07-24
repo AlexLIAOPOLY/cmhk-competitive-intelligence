@@ -84,6 +84,27 @@ class StrategicBriefingTests(unittest.TestCase):
             "香港本地",
         )
 
+    def test_competitor_module_overrides_ai_industry_category(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "T-Mobile上调2026年自由现金流预期",
+                "summary": "T-Mobile上调全年自由现金流指引，并维持服务收入展望。",
+                "should_include": True,
+                "region": "国际/行业",
+                "category": "行业动态",
+                "keywords": "T-Mobile",
+                "inclusion_reason": "运营商业绩指引直接反映竞对经营表现。",
+                "region_reason": "事件主体和受影响市场均位于美国。",
+            },
+            require_review_fields=True,
+            allowed_keywords="T-Mobile",
+            source_item={
+                "module": "竞争对手",
+                "source_title": "T-Mobile raises 2026 free cash flow outlook",
+            },
+        )
+        self.assertEqual(result["category"], "竞对动态")
+
     def test_approved_brief_prompt_requires_simplified_chinese(self):
         with mock.patch.object(
             briefing,
