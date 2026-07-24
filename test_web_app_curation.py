@@ -291,6 +291,22 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("function renderChatSubmitState()", app)
         self.assertIn("els.chatSubmitButton.disabled = !state.chatBusy && !ready", app)
 
+    def test_new_chat_uses_adapted_competitive_intelligence_starter_cards(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn("今天想从哪类竞争情报开始？", markup)
+        self.assertEqual(markup.count('class="chat-starter-card"'), 4)
+        for title in ("对比竞对经营表现", "查看香港产品资费", "追踪云厂商动态", "解读宏观政策影响"):
+            self.assertIn(title, markup)
+            self.assertIn(title, app)
+        self.assertIn('const emptyState = els.messages.querySelector(".chat-empty-state")', app)
+        self.assertIn('event.target.closest(".chat-starter-card")', app)
+        self.assertIn("els.messages.innerHTML = initialChatEmptyStateHtml()", app)
+        self.assertIn("grid-template-columns: repeat(4, minmax(0, 1fr))", styles)
+        self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", styles)
+
     def test_reasoning_uses_one_transparent_outline_without_a_filled_header_box(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
         panel_start = styles.index(".model-reasoning {")
@@ -1803,6 +1819,86 @@ class AgentForecastDatasetBoundaryTests(unittest.TestCase):
             agent.SELECTED_DATASET_IDS.reset(token)
 
         self.assertIsNone(path)
+
+
+class WeeklyReportFailOpenWebTests(unittest.TestCase):
+    def test_audio_failure_is_a_warning_after_weekly_docx_succeeds(self) -> None:
+        events: list[dict] = []
+
+        class FakeHandler:
+            def send_response(self, _status):
+                pass
+
+            def send_header(self, _name, _value):
+                pass
+
+            def end_headers(self):
+                pass
+
+        class ReportProcess:
+            pid = 101
+            returncode = 0
+            stdout = iter(["[生成成功] 最终输出文件：\n"])
+
+            def wait(self):
+                return 0
+
+        class AudioProcess:
+            pid = 102
+            returncode = 0
+
+            def communicate(self):
+                return json.dumps({"ok": False, "error": "tts offline"}), ""
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = Path(temp_dir) / "7月24日周报.docx"
+            report_path.write_bytes(b"docx")
+            with (
+                mock.patch.object(
+                    web_app.subprocess,
+                    "Popen",
+                    side_effect=[ReportProcess(), AudioProcess()],
+                ),
+                mock.patch.object(
+                    web_app,
+                    "build_status",
+                    return_value={"outputs": [{"name": report_path.name}]},
+                ),
+                mock.patch.object(web_app, "latest_output_path", return_value=report_path),
+                mock.patch.object(
+                    web_app,
+                    "write_sse",
+                    side_effect=lambda _handler, payload: events.append(payload),
+                ),
+            ):
+                web_app._ORIGINAL_STREAM_REPORT_GENERATION(
+                    FakeHandler(),
+                    "generate_weekly_report.py",
+                    "weekly",
+                )
+
+        done = next(event for event in reversed(events) if event.get("type") == "done")
+        self.assertTrue(done["ok"])
+        self.assertTrue(done["reportGenerated"])
+        self.assertTrue(done["completedWithWarnings"])
+        self.assertIn("周报已生成", done["message"])
+        self.assertIn("tts offline", done["warning"])
+
+    def test_sync_weekly_endpoint_allows_long_report_generation(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["python", "generate_weekly_report.py"],
+            returncode=0,
+            stdout="ok",
+            stderr="",
+        )
+        with (
+            mock.patch.object(web_app.subprocess, "run", return_value=completed) as run,
+            mock.patch.object(web_app, "build_status", return_value={"outputs": []}),
+        ):
+            result = web_app.run_report_generation()
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(run.call_args.kwargs["timeout"], 900)
 
 
 if __name__ == "__main__":

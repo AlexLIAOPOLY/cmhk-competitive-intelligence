@@ -717,6 +717,71 @@ class QualitySidecarTests(unittest.TestCase):
         self.assertEqual(payload["issueDate"], "2026-07-17")
         self.assertEqual(payload["items"][0]["reviewDecision"], "approve")
 
+    def test_limited_report_writes_an_honest_quality_sidecar(self) -> None:
+        model = make_model()
+        report.record_weekly_limitation(
+            model,
+            "review",
+            "独立审核暂不可用",
+            impact="未完成独立审核",
+            action="保留锁定来源并以受限模式输出",
+            progress=lambda _message: None,
+        )
+        model = report.finalize_weekly_limited_model(model)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "limited.docx"
+            report.weekly_to_emergency_docx(model, output_path, reason="模板不可用")
+            sidecar_path = report.weekly_quality_sidecar_path(output_path)
+            payload = json.loads(sidecar_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["reviewStatus"], "limited")
+        self.assertEqual(payload["generationMode"], "limited")
+        self.assertEqual(payload["items"][0]["reviewDecision"], "limited_fallback")
+        self.assertEqual(payload["limitations"][0]["stage"], "review")
+
+    def test_main_uses_emergency_docx_when_standard_template_fails(self) -> None:
+        period = report.resolve_weekly_period(
+            now=report.parse_report_date("2026-07-15T10:00:00+08:00")
+        )
+        model = report.build_weekly_limitation_model(
+            period,
+            stage="selection",
+            reason="没有人工入选新闻",
+            progress=lambda _message: None,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            output_path = temp_path / "7月15日周报.docx"
+            with (
+                patch.object(report, "ROOT", temp_path),
+                patch.object(report, "WEEKLY_MD", temp_path / "weekly_report.md"),
+                patch.object(report, "WEEKLY_HTML", temp_path / "weekly_report.html"),
+                patch.object(report, "TEMPLATE_MD", temp_path / "weekly_report_template.md"),
+                patch.object(report, "AGENT_MD_ALIAS", temp_path / "agent_report.md"),
+                patch.object(report, "AGENT_HTML_ALIAS", temp_path / "agent_report.html"),
+                patch.object(report, "WEEKLY_AI_QUALITY_AUDIT", temp_path / "weekly_quality.json"),
+                patch.object(report, "SOURCE_WORD_TEMPLATE", temp_path / "missing-template.docx"),
+                patch.object(report, "resolve_weekly_period", return_value=period),
+                patch.object(report, "load_results", return_value=[]),
+                patch.object(report, "build_weekly_model", return_value=model),
+                patch.object(report, "dated_weekly_docx_path", return_value=output_path),
+            ):
+                report.main()
+
+            self.assertTrue(output_path.exists())
+            sidecar_path = report.weekly_quality_sidecar_path(output_path)
+            self.assertTrue(sidecar_path.exists())
+            payload = json.loads(sidecar_path.read_text(encoding="utf-8"))
+            rendered = Document(output_path)
+            rendered_text = "\n".join(paragraph.text for paragraph in rendered.paragraphs)
+
+        self.assertEqual(payload["reviewStatus"], "limited")
+        self.assertIn("本期新闻信息局限说明", rendered_text)
+        self.assertTrue(
+            any(entry["stage"] == "template_render" for entry in payload["limitations"])
+        )
+
 
 class LlmCacheBypassTests(unittest.TestCase):
     def test_writer_cache_can_be_bypassed_for_a_fresh_llm_review_cycle(self) -> None:

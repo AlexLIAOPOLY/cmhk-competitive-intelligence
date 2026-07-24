@@ -300,6 +300,71 @@ class ManualWeeklySelectionTests(unittest.TestCase):
         old_curated.assert_not_called()
         old_recent.assert_not_called()
 
+    def test_no_manual_selection_returns_a_limited_report_instead_of_stopping(self) -> None:
+        period = report.resolve_weekly_period(now=FIXED_NOW)
+        with patch.object(
+            report,
+            "build_review_sheet_weekly_model",
+            side_effect=RuntimeError("没有人工入选新闻"),
+        ):
+            model = report.build_weekly_model([], period=period)
+
+        self.assertEqual(model["generationMode"], "limited")
+        self.assertEqual(model["reviewAudit"]["reviewStatus"], "limited")
+        self.assertEqual(model["range"], period.effective_range)
+        self.assertEqual(model["sections"][0]["items"][0]["title"], "本期新闻信息局限说明")
+        self.assertIn("没有人工入选新闻", model["generationLimitations"][0]["reason"])
+
+    def test_online_or_reviewer_failure_keeps_manual_items_in_limited_mode(self) -> None:
+        period = report.resolve_weekly_period(now=FIXED_NOW)
+        item = {
+            "section": "行业资讯",
+            "tag": "业务动态",
+            "title": "人工选中的测试新闻",
+            "detail": "测试摘要。",
+            "rawDetail": "测试主体公布业务进展，涉及网络建设和企业服务安排。",
+            "eventAt": "2026-07-15",
+            "sourceIds": ["S1"],
+            "sourceName": "测试来源",
+            "writerStatus": "fallback",
+        }
+        manual_model = {
+            "company": "中国移动香港公司",
+            "department": "中国移动香港公司战略部",
+            "generatedDate": "2026年7月15日",
+            "title": "战略内参",
+            "range": period.effective_range,
+            "plannedRange": period.planned_range,
+            "periodStatus": "final",
+            "issueDate": "2026-07-15",
+            "asOf": FIXED_NOW.isoformat(),
+            "toc": [],
+            "sections": [{"name": "行业资讯", "narrative": "", "items": [item]}],
+            "sources": [
+                {
+                    "sourceId": "S1",
+                    "url": "https://example.test/news",
+                    "sourceName": "测试来源",
+                    "publishedAt": "2026-07-15",
+                }
+            ],
+            "selectionSource": "feishu_weekly_review",
+            "generationMode": "normal",
+            "generationLimitations": [],
+        }
+        with (
+            patch.object(report, "build_review_sheet_weekly_model", return_value=manual_model),
+            patch.object(report, "apply_weekly_ai_review", side_effect=RuntimeError("联网服务不可用")),
+        ):
+            model = report.build_weekly_model([], period=period)
+
+        final_item = model["sections"][0]["items"][0]
+        self.assertEqual(model["generationMode"], "limited")
+        self.assertEqual(final_item["title"], "人工选中的测试新闻")
+        self.assertEqual(final_item["reviewDecision"], "limited_fallback")
+        self.assertGreaterEqual(len(re.sub(r"\s+", "", final_item["detail"])), 120)
+        self.assertIn("联网服务不可用", model["generationLimitations"][0]["reason"])
+
 
 class BiweeklyContentQualityTests(unittest.TestCase):
     def test_strategic_reference_uses_the_six_required_sections_in_order(self) -> None:

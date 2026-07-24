@@ -3482,6 +3482,236 @@ def review_sheet_section(row: dict) -> str:
     return "行业资讯"
 
 
+def weekly_limitation_entry(
+    stage: str,
+    reason: object,
+    *,
+    impact: str,
+    action: str,
+) -> dict:
+    return {
+        "stage": clean_text(stage, 80) or "unknown",
+        "reason": clean_text(reason, 1000) or "未提供具体原因",
+        "impact": clean_text(impact, 500),
+        "action": clean_text(action, 500),
+        "recordedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
+    }
+
+
+def record_weekly_limitation(
+    model: dict,
+    stage: str,
+    reason: object,
+    *,
+    impact: str,
+    action: str,
+    progress=print,
+) -> dict:
+    """Mark a report as limited without stopping generation."""
+    entry = weekly_limitation_entry(stage, reason, impact=impact, action=action)
+    model["generationMode"] = "limited"
+    limitations = model.setdefault("generationLimitations", [])
+    signature = (entry["stage"], entry["reason"], entry["impact"], entry["action"])
+    if signature not in {
+        (
+            clean_text(existing.get("stage")),
+            clean_text(existing.get("reason")),
+            clean_text(existing.get("impact")),
+            clean_text(existing.get("action")),
+        )
+        for existing in limitations
+        if isinstance(existing, dict)
+    }:
+        limitations.append(entry)
+    progress(
+        f"[周报局限][{entry['stage']}] {entry['reason']}；"
+        f"影响：{entry['impact']}；处理：{entry['action']}。"
+    )
+    return entry
+
+
+def deterministic_limited_weekly_detail(item: dict) -> str:
+    """Build a factual, source-locked paragraph when AI writing is unavailable."""
+    published = parse_report_date(item.get("eventAt"))
+    published_text = format_date_cn(published) if published else clean_text(item.get("eventAt")) or "日期未明"
+    source_name = clean_text(item.get("sourceName"), 80) or "原始来源"
+    raw = clean_text(
+        item.get("rawDetail") or item.get("detail") or item.get("originalTitle") or item.get("title"),
+        150,
+    ).rstrip("。！？!?；;")
+    if not raw:
+        raw = clean_text(item.get("title"), 100) or "本期选入一项新闻"
+    base = (
+        f"据{source_name}于{published_text}公开的信息，{raw}。"
+        "该条新闻由人工从候选池选入本期双周报，现有材料能够确认其标题、来源和发布时间。"
+        "由于本次智能改写或联网复核环节未完整完成，正文仅整理已保存信息，"
+        "不补充原始材料之外的数字、判断或影响。"
+    )
+    return trim_weekly_detail(
+        ensure_detailed_paragraph(base, min_chars=MIN_WEEKLY_DETAIL_CHARS, max_chars=MAX_WEEKLY_DETAIL_CHARS)
+    )
+
+
+def build_weekly_limitation_model(
+    period: WeeklyPeriod | None,
+    *,
+    stage: str,
+    reason: object,
+    progress=print,
+) -> dict:
+    """Return a standard-format report that explicitly states why news is limited."""
+    hkt = ZoneInfo("Asia/Hong_Kong")
+    now = period.as_of if period is not None else datetime.now(hkt)
+    if period is None:
+        start, end_exclusive = biweekly_date_range(now)
+        report_date = now
+        range_value = {
+            "start": start.date().isoformat(),
+            "end": (end_exclusive - timedelta(days=1)).date().isoformat(),
+        }
+        period_status = "final"
+    else:
+        report_date = period.issue_date
+        range_value = dict(period.effective_range)
+        period_status = period.status
+    item = {
+        "id": "W001",
+        "row": "",
+        "section": "行业资讯",
+        "subject": "本期信息说明",
+        "tag": "信息说明",
+        "title": "本期新闻信息局限说明",
+        "detail": (
+            f"截至{format_date_cn(report_date)}，本期统计窗口为"
+            f"{range_value['start']}至{range_value['end']}。"
+            "本次运行未取得可完整核验并用于正文编写的人工入选新闻，因此报告保留标准版式并如实说明信息范围。"
+            "本期不补充未经确认的事件、数字或判断，后续可在人工选材或外部服务恢复后重新生成完整内容。"
+        ),
+        "rawDetail": "",
+        "eventAt": report_date.date().isoformat(),
+        "sourceIds": [],
+        "sourceName": "",
+        "index": 1,
+        "localIndex": 1,
+        "writerStatus": "limited_fallback",
+        "reviewDecision": "limited_fallback",
+        "reviewStatus": "limited",
+        "limitedNotice": True,
+    }
+    model = {
+        "company": "中国移动香港公司",
+        "department": "中国移动香港公司战略部",
+        "generatedDate": format_date_cn(report_date),
+        "issueLabel": weekly_issue_label(period),
+        "title": "战略内参",
+        "range": range_value,
+        "plannedRange": dict(period.planned_range) if period is not None else dict(range_value),
+        "periodStatus": period_status,
+        "issueDate": report_date.date().isoformat(),
+        "asOf": now.isoformat(timespec="seconds"),
+        "toc": [
+            {
+                "index": 1,
+                "section": "行业资讯",
+                "tag": item["tag"],
+                "title": item["title"],
+            }
+        ],
+        "sections": [
+            {
+                "name": "行业资讯",
+                "narrative": "本期仅提供信息局限说明。",
+                "items": [item],
+            }
+        ],
+        "sources": [],
+        "selectionSource": "feishu_weekly_review",
+        "_reviewReplacementCandidates": [],
+        "generationMode": "limited",
+        "generationLimitations": [],
+    }
+    record_weekly_limitation(
+        model,
+        stage,
+        reason,
+        impact="未能形成可完整核验的新闻正文",
+        action="生成保留原有周报格式的信息受限版本，不虚构或自动补入新闻",
+        progress=progress,
+    )
+    return finalize_weekly_limited_model(model)
+
+
+def finalize_weekly_limited_model(model: dict) -> dict:
+    """Attach deterministic content and an auditable limited-mode review record."""
+    model["generationMode"] = "limited"
+    model.setdefault("generationLimitations", [])
+    audit_items = []
+    toc = []
+    global_index = 1
+    for section in model.get("sections") or []:
+        for local_index, item in enumerate(section.get("items") or [], start=1):
+            item["id"] = f"W{global_index:03d}"
+            item["index"] = global_index
+            item["localIndex"] = local_index
+            item["section"] = section.get("name") or item.get("section") or "行业资讯"
+            if not item.get("limitedNotice"):
+                detail = clean_text(item.get("detail"))
+                if (
+                    item.get("writerStatus") == "fallback"
+                    or len(re.sub(r"\s+", "", detail)) < MIN_WEEKLY_DETAIL_CHARS
+                    or len(re.findall(r"[。！？!?]", detail)) < 3
+                ):
+                    item["detail"] = deterministic_limited_weekly_detail(item)
+                    item["writerStatus"] = "limited_fallback"
+            item["reviewDecision"] = "limited_fallback"
+            item["reviewStatus"] = "limited"
+            item["reviewReason"] = "生成链路受限，保留已锁定信息并跳过硬退出"
+            toc.append(
+                {
+                    "index": global_index,
+                    "section": item["section"],
+                    "tag": item.get("tag") or "近期动态",
+                    "title": item.get("title") or "本期信息说明",
+                }
+            )
+            audit_items.append(
+                {
+                    "id": item["id"],
+                    "decision": "limited_fallback",
+                    "reviewDecision": "limited_fallback",
+                    "reason": item["reviewReason"],
+                    "eventAt": item.get("eventAt") or "",
+                    "sourceIds": list(item.get("sourceIds") or []),
+                    "detailChars": len(re.sub(r"\s+", "", clean_text(item.get("detail")))),
+                }
+            )
+            global_index += 1
+    model["toc"] = toc
+    range_value = dict(model.get("range") or {})
+    audit = {
+        "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
+        "reviewStatus": "limited",
+        "generationMode": "limited",
+        "limitations": deepcopy(model.get("generationLimitations") or []),
+        "reviewerModel": "",
+        "reviewPromptVersion": WEEKLY_REVIEW_PROMPT_VERSION,
+        "window": range_value,
+        "plannedWindow": dict(model.get("plannedRange") or range_value),
+        "periodStatus": clean_text(model.get("periodStatus")) or "final",
+        "issueDate": clean_text(model.get("issueDate")),
+        "asOf": clean_text(model.get("asOf")),
+        "approvedItems": 0,
+        "revisedItems": 0,
+        "rejectedItems": 0,
+        "finalIncludedItems": len(audit_items),
+        "items": audit_items,
+        "webSearch": {"required": True, "status": "limited", "queries": []},
+    }
+    model["reviewAudit"] = audit
+    model["qualityAudit"] = audit
+    return model
+
+
 def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
     from news_review_sheet import load_weekly_report_candidates
 
@@ -3563,21 +3793,26 @@ def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
                 "localIndex": 0,
             }
         )
-    items = enrich_weekly_items_with_llm(
-        items,
-        progress=lambda message: print(message, flush=True),
-        fail_on_unresolved=False,
-    )
+    writer_failure = ""
+    try:
+        items = enrich_weekly_items_with_llm(
+            items,
+            progress=lambda message: print(message, flush=True),
+            fail_on_unresolved=False,
+        )
+    except Exception as exc:
+        writer_failure = clean_text(exc, 1000)
+        for item in items:
+            item["writerStatus"] = "fallback"
     unresolved = [
         clean_text(item.get("originalTitle") or item.get("title"), 100)
         for item in items
         if item.get("writerStatus") == "fallback"
     ]
-    if unresolved:
-        raise RuntimeError(
-            "飞书人工选中的新闻写作未通过，已停止整份报告且不会用其他新闻替换："
-            + "；".join(unresolved)
-        )
+    for item in items:
+        if item.get("writerStatus") == "fallback":
+            item["detail"] = deterministic_limited_weekly_detail(item)
+            item["writerStatus"] = "limited_fallback"
 
     items_by_section: dict[str, list[dict]] = defaultdict(list)
     for item in items:
@@ -3631,7 +3866,17 @@ def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
         "sources": sources,
         "selectionSource": "feishu_weekly_review",
         "_reviewReplacementCandidates": [],
+        "generationMode": "normal",
+        "generationLimitations": [],
     }
+    if unresolved:
+        record_weekly_limitation(
+            model,
+            "writer",
+            writer_failure or ("下列新闻未通过智能写作：" + "；".join(unresolved)),
+            impact=f"{len(unresolved)}条新闻未取得完整智能改写结果",
+            action="保留人工入选新闻，依据原始标题、摘要、来源和日期生成确定性正文",
+        )
     WEEKLY_USAGE_AUDIT.write_text(
         json.dumps(
             {
@@ -3837,8 +4082,36 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
 
 def build_weekly_model(results: list[dict], period: WeeklyPeriod | None = None) -> dict:
     del results
-    model = build_review_sheet_weekly_model(period=period)
-    return apply_weekly_ai_review(model, progress=lambda message: print(message, flush=True))
+    try:
+        model = build_review_sheet_weekly_model(period=period)
+    except Exception as exc:
+        return build_weekly_limitation_model(
+            period,
+            stage="selection",
+            reason=exc,
+            progress=lambda message: print(message, flush=True),
+        )
+    try:
+        reviewed = apply_weekly_ai_review(
+            model,
+            progress=lambda message: print(message, flush=True),
+        )
+        if model.get("generationMode") == "limited":
+            reviewed["generationMode"] = "limited"
+            reviewed["generationLimitations"] = deepcopy(model.get("generationLimitations") or [])
+            return finalize_weekly_limited_model(reviewed)
+        reviewed.setdefault("generationMode", "normal")
+        reviewed.setdefault("generationLimitations", [])
+        return reviewed
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "research_or_review",
+            exc,
+            impact="联网核验或独立AI审核未完整完成",
+            action="保留人工入选且来源已锁定的新闻，以受限模式继续生成",
+        )
+        return finalize_weekly_limited_model(model)
 
 
 def validate_review_gate(model: dict) -> None:
@@ -3930,6 +4203,8 @@ def item_event_time_text(item: dict) -> str:
 
 
 def item_source_plain_text(model: dict, item: dict) -> str:
+    if item.get("limitedNotice"):
+        return f"{item_event_time_text(item)}　信息说明：本期没有可列示的新闻来源"
     parts = []
     for source in item_source_entries(model, item)[:2]:
         name = clean_text(source.get("sourceName")) or source_display_name(source.get("url"))
@@ -3979,11 +4254,14 @@ def weekly_to_markdown(model: dict) -> str:
             lines.append(item["tag"])
             lines.append(item["title"])
             lines.append(item["detail"])
-            source_links = []
-            for source in item_source_entries(model, item)[:2]:
-                label = clean_text(source.get("sourceId"))
-                source_links.append(f"[{label}]({clean_text(source.get('url'))})")
-            lines.append(f"{item_event_time_text(item)}　来源：{'、'.join(source_links)}")
+            if item.get("limitedNotice"):
+                lines.append(f"{item_event_time_text(item)}　信息说明：本期没有可列示的新闻来源")
+            else:
+                source_links = []
+                for source in item_source_entries(model, item)[:2]:
+                    label = clean_text(source.get("sourceId"))
+                    source_links.append(f"[{label}]({clean_text(source.get('url'))})")
+                lines.append(f"{item_event_time_text(item)}　来源：{'、'.join(source_links)}")
             lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -4125,13 +4403,18 @@ def weekly_to_html(model: dict) -> str:
                     f"<a href='{html.escape(clean_text(source.get('url')), quote=True)}'>"
                     f"[{html.escape(clean_text(source.get('sourceId')))}]</a>"
                 )
+            source_text = (
+                "信息说明：本期没有可列示的新闻来源"
+                if item.get("limitedNotice")
+                else f"来源：{'、'.join(source_links)}"
+            )
             items_html.append(
                 "<article class='weekly-item'>"
                 f"<p class='weekly-item__tag'>{html.escape(item['tag'])}</p>"
                 f"<h4>{html.escape(item['title'])}</h4>"
                 f"<p>{html.escape(item['detail'])}</p>"
                 f"<p class='weekly-item__source'>{html.escape(item_event_time_text(item))}　"
-                f"来源：{'、'.join(source_links)}</p>"
+                f"{source_text}</p>"
                 "</article>"
             )
         sections_html.append(
@@ -4212,8 +4495,13 @@ def weekly_quality_sidecar_path(docx_path: Path) -> Path:
 def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | None = None) -> Path:
     if not docx_path.exists():
         raise FileNotFoundError(f"Word文件不存在，无法绑定质量审计：{docx_path}")
-    if clean_text(audit.get("reviewStatus")).lower() != "passed":
-        raise ValueError("独立AI审核未通过，不能写入已通过的Word质量审计")
+    review_status = clean_text(audit.get("reviewStatus")).lower()
+    limited_mode = (
+        clean_text(audit.get("generationMode")).lower() == "limited"
+        or clean_text((model or {}).get("generationMode")).lower() == "limited"
+    )
+    if review_status != "passed" and not (limited_mode and review_status == "limited"):
+        raise ValueError("质量审核既非通过状态，也非明确记录局限的受限状态")
 
     audit_items = {
         clean_text(entry.get("id")): entry
@@ -4228,8 +4516,11 @@ def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | Non
             for item in section.get("items") or []:
                 item_id = clean_text(item.get("id")) or f"W{item_number:03d}"
                 decision = clean_text(item.get("reviewDecision"))
-                if decision not in {"approve", "revise"}:
-                    raise ValueError(f"{item_id}没有通过独立AI审核，不能绑定质量审计")
+                allowed_decisions = {"approve", "revise"}
+                if limited_mode:
+                    allowed_decisions.add("limited_fallback")
+                if decision not in allowed_decisions:
+                    raise ValueError(f"{item_id}没有可审计的质量决定，不能绑定质量审计")
                 audit_entry = audit_items.get(item_id) or {}
                 normalized_items.append(
                     {
@@ -4280,7 +4571,13 @@ def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | Non
         or "final",
         "issueDate": audit.get("issueDate") or ((model or {}).get("issueDate") if model else "") or "",
         "asOf": audit.get("asOf") or ((model or {}).get("asOf") if model else "") or "",
-        "reviewStatus": "passed",
+        "reviewStatus": review_status,
+        "generationMode": "limited" if limited_mode else "normal",
+        "limitations": deepcopy(
+            audit.get("limitations")
+            or ((model or {}).get("generationLimitations") if model else [])
+            or []
+        ),
         "reviewerModel": audit.get("reviewerModel") or audit.get("reviewModel") or "",
         "reviewPromptVersion": audit.get("reviewPromptVersion") or WEEKLY_REVIEW_PROMPT_VERSION,
         "webSearch": audit.get("webSearch") or {},
@@ -4307,6 +4604,51 @@ def weekly_to_docx(model: dict, path: Path) -> None:
     audit = model.get("reviewAudit") or model.get("qualityAudit")
     if isinstance(audit, dict):
         write_weekly_quality_sidecar(path, audit, model=model)
+
+
+def weekly_to_emergency_docx(model: dict, path: Path, reason: object = "") -> None:
+    """Create a readable Word file without depending on the source template."""
+    doc = Document()
+    add_p(doc, model.get("company") or "中国移动香港公司", size=18, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
+    issue_suffix = f"　{clean_text(model.get('issueLabel'))}" if clean_text(model.get("issueLabel")) else ""
+    add_p(
+        doc,
+        f"{model.get('department') or '中国移动香港公司战略部'}    "
+        f"{model.get('generatedDate') or ''}{issue_suffix}",
+        size=11,
+        align=WD_ALIGN_PARAGRAPH.CENTER,
+    )
+    add_p(doc, model.get("title") or "战略内参", size=20, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, after=12)
+    add_p(doc, "目 录", size=14, bold=True)
+    for section in model.get("sections") or []:
+        add_p(doc, toc_section_text(section.get("name")), size=11, bold=True, after=2)
+        for item in section.get("items") or []:
+            add_p(doc, toc_item_text(item), size=10, indent=240, after=1)
+    if reason:
+        add_p(
+            doc,
+            f"生成说明：标准模板渲染未完成，本文件使用应急版式导出；新闻内容和局限性记录保持不变。",
+            size=9,
+            after=10,
+        )
+    for section in model.get("sections") or []:
+        add_p(doc, section.get("name") or "行业资讯", size=15, bold=True, before=10, after=6)
+        for item in section.get("items") or []:
+            add_p(doc, item.get("tag") or "综合动态", size=9, bold=True, after=2)
+            add_p(doc, item.get("title") or "本期信息说明", size=12, bold=True, after=4)
+            add_p(doc, item.get("detail") or "", size=11, after=3)
+            add_p(doc, item_source_plain_text(model, item), size=8, after=8)
+    doc.save(path)
+    audit = model.get("reviewAudit") or model.get("qualityAudit")
+    if isinstance(audit, dict):
+        try:
+            write_weekly_quality_sidecar(path, audit, model=model)
+        except Exception as exc:
+            print(
+                f"[周报局限][quality_sidecar] {exc}；"
+                "影响：应急Word的质量审计文件未写入；处理：保留已成功生成的Word主报告。",
+                flush=True,
+            )
 
 
 def has_drawing(paragraph) -> bool:
@@ -4521,8 +4863,18 @@ def render_into_source_template(model: dict) -> Document:
 
 def main() -> None:
     print("============== 开始生成战略内参双周报 ==============", flush=True)
-    results = load_results()
     period = resolve_weekly_period()
+    results = []
+    load_failure = ""
+    try:
+        results = load_results()
+    except Exception as exc:
+        load_failure = clean_text(exc, 1000)
+        print(
+            f"[周报局限][input_data] {load_failure}；"
+            "影响：底层历史数据未能加载；处理：继续使用飞书人工选材生成周报。",
+            flush=True,
+        )
     period_message = (
         f"本次滚动14日统计区间为{period.planned_range['start']}至"
         f"{period.planned_range['end']}，当前直接生成正式版。"
@@ -4533,47 +4885,174 @@ def main() -> None:
         flush=True,
     )
     model = build_weekly_model(results, period=period)
+    if load_failure:
+        record_weekly_limitation(
+            model,
+            "input_data",
+            load_failure,
+            impact="底层历史数据未能加载，但飞书人工选材仍可使用",
+            action="不阻断周报，继续使用飞书人工入选新闻",
+        )
+        model = finalize_weekly_limited_model(model)
     print("[周报 6/7] 正在执行段落字数、事件时间、联网来源和审核状态确定性校验……", flush=True)
-    validate_report_model(model)
+    if model.get("generationMode") == "limited":
+        print("[周报 6/7] 当前为受限模式；严格门禁结果只记录局限，不阻断输出。", flush=True)
+    try:
+        validate_report_model(model)
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "validation",
+            exc,
+            impact="部分内容未满足完整发布门禁",
+            action="保留可确认信息并在质量审计中标记受限，继续生成周报",
+        )
+        model = finalize_weekly_limited_model(model)
     
     print("\n--- 报告内容统计 ---")
     for section in model["sections"]:
         print(f"[{section['name']}]: 收录 {len(section['items'])} 条事件")
         
     print("\n[周报 7/7] 正在渲染并导出Word、HTML、Markdown和质量审计……", flush=True)
-    markdown = weekly_to_markdown(model)
-    validate_report_text(markdown)
-    WEEKLY_MD.write_text(markdown, encoding="utf-8")
-    TEMPLATE_MD.write_text(weekly_template_markdown(), encoding="utf-8")
-    html_text = weekly_to_html(model)
-    WEEKLY_HTML.write_text(html_text, encoding="utf-8")
-    AGENT_MD_ALIAS.write_text(markdown, encoding="utf-8")
-    AGENT_HTML_ALIAS.write_text(html_text, encoding="utf-8")
-    weekly_to_docx(model, weekly_docx)
+    try:
+        markdown = weekly_to_markdown(model)
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "markdown_render",
+            exc,
+            impact="Markdown正文未能按标准结构渲染",
+            action="使用最小文本说明并继续生成Word主报告",
+        )
+        model = finalize_weekly_limited_model(model)
+        markdown = (
+            f"{model.get('company') or '中国移动香港公司'}\n\n"
+            f"{model.get('department') or '中国移动香港公司战略部'}    "
+            f"{model.get('generatedDate') or ''}\n\n"
+            "本期周报已进入受限模式，详细原因见同名质量审计文件。\n"
+        )
+    try:
+        validate_report_text(markdown)
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "text_validation",
+            exc,
+            impact="文本包含不符合正式版规范的表达",
+            action="保留内容并明确标记受限，不中止Word生成",
+        )
+        model = finalize_weekly_limited_model(model)
+        try:
+            markdown = weekly_to_markdown(model)
+        except Exception:
+            pass
+    try:
+        html_text = weekly_to_html(model)
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "html_render",
+            exc,
+            impact="HTML正文未能按标准结构渲染",
+            action="使用最小HTML说明并继续生成Word主报告",
+        )
+        model = finalize_weekly_limited_model(model)
+        html_text = (
+            "<!doctype html><html lang='zh-CN'><meta charset='utf-8'>"
+            f"<title>{html.escape(clean_text(model.get('title')) or '战略内参')}</title>"
+            "<body><p>本期周报已进入受限模式，详细原因见同名质量审计文件。</p></body></html>"
+        )
+
+    output_writes = (
+        (WEEKLY_MD, markdown, "markdown"),
+        (WEEKLY_HTML, html_text, "html"),
+        (AGENT_MD_ALIAS, markdown, "markdown_alias"),
+        (AGENT_HTML_ALIAS, html_text, "html_alias"),
+        (TEMPLATE_MD, weekly_template_markdown(), "template_markdown"),
+    )
+    for output_path, content, stage in output_writes:
+        try:
+            output_path.write_text(content, encoding="utf-8")
+        except Exception as exc:
+            record_weekly_limitation(
+                model,
+                stage,
+                exc,
+                impact=f"{output_path.name}未能写入",
+                action="继续生成Word主报告，其他格式失败不再中止整条链路",
+            )
+            model = finalize_weekly_limited_model(model)
+
+    try:
+        weekly_to_docx(model, weekly_docx)
+    except Exception as exc:
+        if weekly_docx.exists():
+            record_weekly_limitation(
+                model,
+                "quality_sidecar",
+                exc,
+                impact="Word已生成，但质量审计文件未完整写入",
+                action="保留Word主报告并继续，不因附属审计文件中止",
+            )
+            model = finalize_weekly_limited_model(model)
+            try:
+                write_weekly_quality_sidecar(
+                    weekly_docx,
+                    model.get("reviewAudit") or {},
+                    model=model,
+                )
+            except Exception as sidecar_exc:
+                print(f"[周报局限][quality_sidecar] 二次写入仍失败：{sidecar_exc}", flush=True)
+        else:
+            record_weekly_limitation(
+                model,
+                "template_render",
+                exc,
+                impact="标准Word模板未能完成渲染",
+                action="立即改用应急Word版式输出相同内容",
+            )
+            model = finalize_weekly_limited_model(model)
+            try:
+                weekly_to_emergency_docx(model, weekly_docx, reason=exc)
+            except Exception as emergency_exc:
+                fallback_docx = Path("/private/tmp") / weekly_docx.name
+                print(
+                    f"[周报局限][emergency_docx] {emergency_exc}；"
+                    f"处理：改写至备用路径{fallback_docx}。",
+                    flush=True,
+                )
+                weekly_to_emergency_docx(model, fallback_docx, reason=emergency_exc)
+                weekly_docx = fallback_docx
     quality_sidecar = weekly_quality_sidecar_path(weekly_docx)
     # SOURCE_WORD_TEMPLATE is an input asset. Never overwrite the repository
     # fallback template while generating a report.
     
     print("\n[生成成功] 最终输出文件：")
-    print(" ->", WEEKLY_MD)
-    print(" ->", WEEKLY_HTML)
+    for output_path in (WEEKLY_MD, WEEKLY_HTML):
+        if output_path.exists():
+            print(" ->", output_path)
     print(" ->", weekly_docx)
-    print(" ->", quality_sidecar)
-    print(" ->", TEMPLATE_MD)
+    if quality_sidecar.exists():
+        print(" ->", quality_sidecar)
+    if TEMPLATE_MD.exists():
+        print(" ->", TEMPLATE_MD)
     
     # Archiving logic
     import shutil
-    import datetime
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     archive_dir = ROOT / "archives" / timestamp
-    archive_dir.mkdir(parents=True, exist_ok=True)
-    
-    shutil.copy2(WEEKLY_MD, archive_dir / WEEKLY_MD.name)
-    shutil.copy2(WEEKLY_HTML, archive_dir / WEEKLY_HTML.name)
-    shutil.copy2(weekly_docx, archive_dir / weekly_docx.name)
-    shutil.copy2(quality_sidecar, archive_dir / quality_sidecar.name)
-    
-    print(f"\n[归档成功] 已自动备份此次报告至: archives/{timestamp}/")
+    try:
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        for output_path in (WEEKLY_MD, WEEKLY_HTML, weekly_docx, quality_sidecar):
+            if output_path.exists():
+                shutil.copy2(output_path, archive_dir / output_path.name)
+        print(f"\n[归档成功] 已自动备份此次报告至: archives/{timestamp}/")
+    except Exception as exc:
+        print(
+            f"\n[周报局限][archive] {exc}；影响：本次自动归档未完成；"
+            "处理：主报告已保留，归档失败不改变生成成功状态。",
+            flush=True,
+        )
     print("==================================================")
 
 

@@ -1642,7 +1642,7 @@ def run_report_generation() -> dict:
         cwd=str(ROOT),
         text=True,
         capture_output=True,
-        timeout=120,
+        timeout=900,
     )
     status = build_status()
     audio_result = None
@@ -1838,15 +1838,24 @@ def stream_report_generation(
             write_sse(handler, {"type": "log", "text": f"❌ 语音摘要生成失败: {exc}"})
 
     audio_failed = isinstance(audio_result, dict) and audio_result.get("ok") is False
-    task_ok = proc.returncode == 0 and not audio_failed
-    failure_detail = str((audio_result or {}).get("error") or "") if audio_failed else ""
+    task_ok = proc.returncode == 0
+    warning_detail = str((audio_result or {}).get("error") or "") if audio_failed else ""
+    if task_ok and audio_failed:
+        message = f"周报已生成；语音摘要未完成：{warning_detail}"
+    elif task_ok:
+        message = "报告及语音摘要均已生成。"
+    else:
+        message = "周报生成进程未成功完成。"
     write_sse(
         handler,
         {
             "type": "done",
             "ok": task_ok,
-            "error": failure_detail,
-            "message": "报告及语音摘要均已生成。" if task_ok else failure_detail,
+            "completedWithWarnings": task_ok and audio_failed,
+            "reportGenerated": task_ok,
+            "error": "" if task_ok else message,
+            "warning": warning_detail,
+            "message": message,
             "durationMs": round((time.time() - started) * 1000),
             "audio": audio_result,
             "status": status,
