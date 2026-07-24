@@ -143,7 +143,7 @@
   min-height: 0;
   overflow: auto;
   padding: 5px 12px 3px 25px;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scrollbar-width: none;
 }
 
@@ -5081,7 +5081,8 @@ pre {
 }
 
 .subtitle-spacer {
-  height: 30px;
+  height: 70px;
+  flex: 0 0 auto;
 }
 
 .subtitle-line {

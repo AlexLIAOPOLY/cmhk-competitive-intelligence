@@ -3139,7 +3139,6 @@ function updateSubtitles() {
     subtitleDiv.dataset.activeIndex = "";
   }
 
-  const activeChanged = subtitleDiv.dataset.activeIndex !== String(activeIndex);
   subtitleDiv.dataset.activeIndex = String(activeIndex);
 
   subtitleDiv.querySelectorAll(".subtitle-line").forEach((line) => {
@@ -3160,9 +3159,13 @@ function updateSubtitles() {
   });
 
   const activeEl = subtitleDiv.querySelector(`.subtitle-line[data-subtitle-index="${activeIndex}"]`);
-  if (activeEl && activeChanged && subtitleDiv.style.display !== "none") {
+  if (activeEl && subtitleDiv.style.display !== "none") {
+    const spacerHeight = Math.max(0, subtitleDiv.clientHeight / 2);
+    subtitleDiv.querySelectorAll(".subtitle-spacer").forEach((spacer) => {
+      spacer.style.height = `${spacerHeight}px`;
+    });
     const scrollTarget = activeEl.offsetTop - subtitleDiv.clientHeight / 2 + activeEl.clientHeight / 2;
-    subtitleDiv.scrollTo({ top: scrollTarget, behavior: "smooth" });
+    subtitleDiv.scrollTop = Math.max(0, scrollTarget);
   }
 }
 

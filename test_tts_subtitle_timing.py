@@ -102,6 +102,31 @@ class InternalAsrSubtitleTimingTests(unittest.TestCase):
         )
         self.assertEqual(cues, [])
 
+    def test_zero_duration_numeric_tokens_are_interpolated_and_preserved(self):
+        transcript = "收益60.29亿港元，同比增长5%。"
+        segments = [
+            {"text": "收", "start": 0.0, "end": 0.2},
+            {"text": "益", "start": 0.2, "end": 0.4},
+            {"text": "6029", "start": 0.4, "end": 0.4},
+            {"text": "亿", "start": 1.2, "end": 1.4},
+            {"text": "港", "start": 1.4, "end": 1.6},
+            {"text": "元", "start": 1.6, "end": 1.8},
+            {"text": "同", "start": 1.8, "end": 2.0},
+            {"text": "比", "start": 2.0, "end": 2.2},
+            {"text": "增", "start": 2.2, "end": 2.4},
+            {"text": "长", "start": 2.4, "end": 2.6},
+            {"text": "5", "start": 2.6, "end": 2.6},
+        ]
+        cues = _build_asr_subtitle_cues(transcript, segments)
+
+        self.assertEqual(len(cues), 1)
+        numeric_tokens = [
+            token for token in cues[0]["tokens"]
+            if any(character.isdigit() for character in token["text"])
+        ]
+        self.assertEqual([token["text"] for token in numeric_tokens], ["60.29", "5"])
+        self.assertTrue(all(token["end"] > token["start"] for token in numeric_tokens))
+
     def test_audio_info_exposes_precise_token_cues_to_the_frontend(self):
         transcript = "Three香港。"
         cues = [{

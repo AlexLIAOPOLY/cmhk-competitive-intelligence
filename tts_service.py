@@ -151,6 +151,50 @@ def _alignment_char_positions(text: str) -> tuple[str, list[int]]:
     return "".join(normalized), positions
 
 
+def _repair_asr_segment_timings(segments: list[dict]) -> list[dict]:
+    repaired: list[dict] = []
+    for raw_segment in segments or []:
+        if not isinstance(raw_segment, dict):
+            continue
+        text = str(raw_segment.get("text") or "")
+        if not text.strip():
+            continue
+        try:
+            start = max(0.0, float(raw_segment.get("start")))
+            end = max(0.0, float(raw_segment.get("end")))
+        except (TypeError, ValueError):
+            continue
+        repaired.append({"text": text, "start": start, "end": end})
+
+    index = 0
+    while index < len(repaired):
+        if repaired[index]["end"] > repaired[index]["start"]:
+            index += 1
+            continue
+        run_start = index
+        while index < len(repaired) and repaired[index]["end"] <= repaired[index]["start"]:
+            index += 1
+        run_end = index
+        left = repaired[run_start]["start"]
+        if run_start:
+            left = max(left, repaired[run_start - 1]["end"])
+        right = next(
+            (
+                repaired[next_index]["start"]
+                for next_index in range(run_end, len(repaired))
+                if repaired[next_index]["start"] > left
+            ),
+            left + 0.12 * (run_end - run_start),
+        )
+        step = max(0.01, (right - left) / max(1, run_end - run_start))
+        for offset, segment_index in enumerate(range(run_start, run_end)):
+            start = left + step * offset
+            end = right if segment_index == run_end - 1 else left + step * (offset + 1)
+            repaired[segment_index]["start"] = start
+            repaired[segment_index]["end"] = max(start + 0.01, end)
+    return repaired
+
+
 def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict]:
     transcript = str(transcript or "").strip()
     normalized_transcript, transcript_positions = _alignment_char_positions(transcript)
@@ -160,9 +204,7 @@ def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict
     aligned_tokens: list[dict] = []
     normalized_cursor = 0
     matched_characters = 0
-    for raw_segment in segments or []:
-        if not isinstance(raw_segment, dict):
-            continue
+    for raw_segment in _repair_asr_segment_timings(segments):
         token_text = str(raw_segment.get("text") or "")
         normalized_token, _ = _alignment_char_positions(token_text)
         if not normalized_token:
@@ -172,9 +214,6 @@ def _build_asr_subtitle_cues(transcript: str, segments: list[dict]) -> list[dict
             end_time = float(raw_segment.get("end"))
         except (TypeError, ValueError):
             continue
-        if end_time <= start_time:
-            continue
-
         match_start = normalized_transcript.find(normalized_token, normalized_cursor)
         if match_start < 0:
             continue
