@@ -150,24 +150,49 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 {
                     "search_origin": "mandatory_local_competitor",
                     "search_provider": "google",
+                    "canonical_competitor": "HKT",
+                    "keywords": ["HKT", "Tap & Go"],
                 }
             ),
-            "后台固定竞对词库 → Google News搜索",
+            "后台固定竞对词库（HKT；命中：HKT、Tap & Go） → Google News搜索",
         )
         self.assertEqual(
             review_sheet._information_flow(
-                {"search_origin": "scheduled_crawl_reference"}
+                {
+                    "search_origin": "scheduled_crawl_reference",
+                    "scheduled_crawl_config_row": "18",
+                    "scheduled_crawl_parent_url": "https://www.hkt.com/news/",
+                    "keywords": ["HKT", "5G"],
+                }
             ),
-            "定时页面爬虫发现 → 新闻搜索核验",
+            "定时页面爬虫（配置第18行；hkt.com；命中：HKT、5G）发现 → 新闻搜索核验",
         )
         self.assertEqual(
             review_sheet._information_flow(
                 {
                     "search_origin": "monitoring_sheet_keyword_search",
                     "search_provider": "bing",
+                    "module": "竞争对手",
+                    "keywords": ["香港电讯", "5G"],
                 }
             ),
-            "飞书监测表关键词 → Bing News搜索",
+            "飞书监测表关键词（模块：竞争对手；命中：香港电讯、5G） → Bing News搜索",
+        )
+        self.assertEqual(
+            review_sheet._information_flow(
+                {
+                    "search_origin": "background_fixed_keywords",
+                    "module": "政策监管",
+                    "keywords": ["OFCA"],
+                }
+            ),
+            "后台固定战略词库（模块：政策监管；命中：OFCA） → 新闻搜索",
+        )
+
+    def test_historical_flow_states_the_evidence_limit_and_matched_keyword(self):
+        self.assertEqual(
+            review_sheet._historical_information_flow("HKT、Tap & Go"),
+            "历史新闻搜索（搜索引擎未留存；命中：HKT、Tap & Go）",
         )
 
     def test_weekly_candidates_only_include_manual_accepts_inside_window(self):

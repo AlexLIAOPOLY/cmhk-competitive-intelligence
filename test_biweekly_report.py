@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from docx import Document
 
 import generate_weekly_report as report
+import news_review_sheet
 
 
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -57,49 +58,56 @@ class FrozenDateTime(datetime):
 
 
 class WeeklyIssuePeriodTests(unittest.TestCase):
-    @staticmethod
-    def write_period_config(path: Path) -> None:
-        path.write_text(
-            json.dumps(
-                {
-                    "periodStart": "2026-07-07",
-                    "periodEnd": "2026-07-17",
-                    "issueDate": "2026-07-17",
-                    "cadenceDays": 14,
-                }
-            ),
-            encoding="utf-8",
+    def test_each_run_uses_the_latest_fourteen_hkt_calendar_days(self) -> None:
+        period = report.resolve_weekly_period(now=FIXED_NOW)
+
+        self.assertEqual(period.planned_range, {"start": "2026-07-02", "end": "2026-07-15"})
+        self.assertEqual(period.effective_range, period.planned_range)
+        self.assertEqual(period.issue_date.date(), date(2026, 7, 15))
+        self.assertEqual(period.status, "final")
+        self.assertEqual(period.source, "rolling-14-day")
+
+    def test_the_window_moves_forward_one_day_on_the_next_run_date(self) -> None:
+        next_period = report.resolve_weekly_period(
+            now=datetime(2026, 7, 16, 8, 0, tzinfo=HKT)
         )
 
-    def test_current_issue_keeps_planned_range_but_marks_early_run_as_draft(self) -> None:
+        self.assertEqual(next_period.planned_range, {"start": "2026-07-03", "end": "2026-07-16"})
+        self.assertEqual(next_period.issue_date.date(), date(2026, 7, 16))
+        self.assertEqual(next_period.status, "final")
+
+    def test_legacy_schedule_and_environment_overrides_cannot_change_the_window(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             config_path = Path(temp_dir) / "period.json"
-            self.write_period_config(config_path)
-            draft = report.resolve_weekly_period(now=FIXED_NOW, config_path=config_path, environ={})
-            final = report.resolve_weekly_period(
-                now=datetime(2026, 7, 17, 9, 0, tzinfo=HKT),
-                config_path=config_path,
-                environ={},
+            config_path.write_text(
+                json.dumps(
+                    {
+                        "periodStart": "2026-07-07",
+                        "periodEnd": "2026-07-17",
+                        "issueDate": "2026-07-17",
+                        "cadenceDays": 14,
+                    }
+                ),
+                encoding="utf-8",
             )
-
-        self.assertEqual(draft.planned_range, {"start": "2026-07-07", "end": "2026-07-17"})
-        self.assertEqual(draft.effective_range, {"start": "2026-07-07", "end": "2026-07-15"})
-        self.assertEqual(draft.status, "draft")
-        self.assertEqual(final.effective_range, final.planned_range)
-        self.assertEqual(final.status, "final")
-
-    def test_explicit_issue_boundaries_filter_both_curated_and_future_rows(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            config_path = Path(temp_dir) / "period.json"
-            self.write_period_config(config_path)
             period = report.resolve_weekly_period(
-                now=datetime(2026, 7, 17, 12, 0, tzinfo=HKT),
+                now=FIXED_NOW,
                 config_path=config_path,
-                environ={},
+                environ={
+                    "CMHK_WEEKLY_PERIOD_START": "2026-01-01",
+                    "CMHK_WEEKLY_PERIOD_END": "2026-01-14",
+                },
             )
+
+        self.assertEqual(period.planned_range, {"start": "2026-07-02", "end": "2026-07-15"})
+
+    def test_rolling_boundaries_filter_older_and_future_rows(self) -> None:
+        period = report.resolve_weekly_period(
+            now=datetime(2026, 7, 17, 12, 0, tzinfo=HKT)
+        )
         rows = [
-            make_row("before", "2026-07-06"),
-            make_row("start", "2026-07-07"),
+            make_row("before", "2026-07-03"),
+            make_row("start", "2026-07-04"),
             make_row("end", "2026-07-17"),
             make_row("after", "2026-07-18"),
         ]
@@ -107,62 +115,8 @@ class WeeklyIssuePeriodTests(unittest.TestCase):
         included, audit = report.filter_biweekly_rows(rows, period=period)
 
         self.assertEqual([row["id"] for row in included], ["start", "end"])
-        self.assertEqual(audit["windowStart"], "2026-07-07")
+        self.assertEqual(audit["windowStart"], "2026-07-04")
         self.assertEqual(audit["windowEnd"], "2026-07-17")
-
-    def test_early_draft_rejects_dates_after_its_actual_as_of_day(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            config_path = Path(temp_dir) / "period.json"
-            self.write_period_config(config_path)
-            period = report.resolve_weekly_period(now=FIXED_NOW, config_path=config_path, environ={})
-        rows = [make_row("today", "2026-07-15"), make_row("not_yet", "2026-07-16")]
-
-        included, audit = report.filter_biweekly_rows(rows, period=period)
-
-        self.assertEqual([row["id"] for row in included], ["today"])
-        self.assertEqual(audit["windowEnd"], "2026-07-15")
-        self.assertEqual(audit["plannedWindowEnd"], "2026-07-17")
-        self.assertEqual(audit["periodStatus"], "draft")
-
-    def test_schedule_advances_to_the_next_fourteen_day_issue(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            config_path = Path(temp_dir) / "period.json"
-            self.write_period_config(config_path)
-            next_period = report.resolve_weekly_period(
-                now=datetime(2026, 7, 18, 8, 0, tzinfo=HKT),
-                config_path=config_path,
-                environ={},
-            )
-
-        self.assertEqual(next_period.planned_range, {"start": "2026-07-18", "end": "2026-07-31"})
-        self.assertEqual(next_period.effective_range, {"start": "2026-07-18", "end": "2026-07-18"})
-        self.assertEqual(next_period.issue_date.date(), date(2026, 7, 31))
-        self.assertEqual(next_period.status, "draft")
-
-    def test_early_issue_filename_keeps_its_as_of_date_without_draft_label(self) -> None:
-        path = report.dated_weekly_docx_path(
-            date(2026, 7, 17),
-            draft_as_of=date(2026, 7, 15),
-        )
-        self.assertTrue(path.name.startswith("7月17日周报（截至7月15日）"))
-        self.assertNotIn("草稿", path.name)
-
-    def test_invalid_issue_period_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            config_path = Path(temp_dir) / "period.json"
-            config_path.write_text(
-                json.dumps(
-                    {
-                        "periodStart": "2026-07-17",
-                        "periodEnd": "2026-07-07",
-                        "issueDate": "2026-07-17",
-                    }
-                ),
-                encoding="utf-8",
-            )
-            with self.assertRaisesRegex(ValueError, "结束日"):
-                report.resolve_weekly_period(now=FIXED_NOW, config_path=config_path, environ={})
-
 
 class BiweeklyDateFilteringTests(unittest.TestCase):
     def test_fourteen_calendar_day_boundary_is_inclusive(self) -> None:
@@ -264,6 +218,87 @@ class BiweeklyDateFilteringTests(unittest.TestCase):
         assert model is not None
         self.assertEqual(model["range"], {"start": "2026-07-02", "end": "2026-07-15"})
         self.assertEqual([source["row"] for source in model["sources"]], ["included"])
+
+
+class ManualWeeklySelectionTests(unittest.TestCase):
+    def test_review_sheet_model_uses_manual_rows_and_keeps_period_window(self) -> None:
+        period = report.WeeklyPeriod(
+            as_of=datetime(2026, 7, 24, 10, 0, tzinfo=HKT),
+            planned_start=datetime(2026, 7, 11, tzinfo=HKT),
+            planned_end_exclusive=datetime(2026, 7, 25, tzinfo=HKT),
+            effective_end_exclusive=datetime(2026, 7, 25, tzinfo=HKT),
+            issue_date=datetime(2026, 7, 24, tzinfo=HKT),
+            status="final",
+            source="unit",
+            cadence_days=None,
+        )
+        rows = [
+            {
+                "row_number": 2,
+                "title": "中国联通发布5G-A网络能力",
+                "summary": "中国联通公布5G-A网络建设进展和上行速率指标。",
+                "source": "测试媒体",
+                "source_url": "https://example.test/unicom",
+                "publication_date": "2026-07-24",
+                "category": "竞对动态",
+                "region": "国际/行业",
+                "keywords": "中国联通、5G-A",
+            }
+        ]
+        audit = {
+            "acceptedRows": 1,
+            "includedRows": 1,
+            "windowStart": "2026-07-11",
+            "windowEnd": "2026-07-24",
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audit_path = Path(temp_dir) / "usage.json"
+            with (
+                patch.object(
+                    news_review_sheet,
+                    "load_weekly_report_candidates",
+                    return_value=(rows, audit),
+                ),
+                patch.object(
+                    report,
+                    "enrich_weekly_items_with_llm",
+                    side_effect=lambda items, *args, **kwargs: items,
+                ),
+                patch.object(report, "WEEKLY_USAGE_AUDIT", audit_path),
+            ):
+                model = report.build_review_sheet_weekly_model(period)
+
+        self.assertEqual(model["selectionSource"], "feishu_weekly_review")
+        self.assertEqual(model["range"], {"start": "2026-07-11", "end": "2026-07-24"})
+        self.assertEqual(model["plannedRange"], {"start": "2026-07-11", "end": "2026-07-24"})
+        self.assertEqual(model["sources"][0]["row"], "2")
+        self.assertEqual(model["sections"][0]["name"], "国际资讯")
+
+    def test_build_weekly_model_never_falls_back_to_old_automatic_selection(self) -> None:
+        manual_model = {
+            "selectionSource": "feishu_weekly_review",
+            "sections": [{"name": "行业资讯", "items": [{"title": "人工选择"}]}],
+        }
+        with (
+            patch.object(
+                report,
+                "build_review_sheet_weekly_model",
+                return_value=manual_model,
+            ) as manual_builder,
+            patch.object(report, "build_curated_weekly_model") as old_curated,
+            patch.object(report, "build_recent_evidence_weekly_model") as old_recent,
+            patch.object(
+                report,
+                "apply_weekly_ai_review",
+                side_effect=lambda model, progress: model,
+            ),
+        ):
+            result = report.build_weekly_model([], period=None)
+
+        self.assertIs(result, manual_model)
+        manual_builder.assert_called_once_with(period=None)
+        old_curated.assert_not_called()
+        old_recent.assert_not_called()
 
 
 class BiweeklyContentQualityTests(unittest.TestCase):

@@ -92,7 +92,7 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
         self.assertEqual(items[0]["search_provider"], "google")
         self.assertEqual(
             review_sheet._information_flow(items[0]),
-            "后台固定竞对词库 → Google News搜索",
+            "后台固定竞对词库（HKT；命中：HKT、Tap & Go） → Google News搜索",
         )
         self.assertEqual(items[0]["keywords"][0], "HKT")
         self.assertTrue(items[0]["is_hong_kong"])

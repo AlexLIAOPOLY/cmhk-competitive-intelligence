@@ -624,7 +624,7 @@ def ensure_sheet() -> str:
             else:
                 version_eight_rows = legacy_rows
             migrated_rows = [
-                [*list(row[:13]), "新闻搜索爬虫（历史候选）"]
+                [*list(row[:13]), _historical_information_flow(row[11])]
                 for row in version_eight_rows
             ]
             for offset in range(0, len(migrated_rows), 40):
@@ -660,6 +660,12 @@ def _keywords(value: Any) -> str:
     if isinstance(value, list):
         return "、".join(_text(item, 80) for item in value if _text(item, 80))
     return _text(value, 500)
+
+
+def _historical_information_flow(value: Any) -> str:
+    keywords = _keywords(value)
+    detail = f"；命中：{keywords}" if keywords else ""
+    return f"历史新闻搜索（搜索引擎未留存{detail}）"
 
 
 def _publication_date(value: Any) -> str:
@@ -755,6 +761,38 @@ def _news_item_id(url: Any, title: Any) -> str:
     return "NEWS-" + hashlib.sha1(seed).hexdigest()[:14].upper()
 
 
+def _flow_keywords(item: dict[str, Any]) -> str:
+    value = (
+        item.get("ai_keywords")
+        or item.get("matched_keywords")
+        or item.get("keywords")
+    )
+    if isinstance(value, list):
+        terms = [_text(term, 60) for term in value if _text(term, 60)]
+    else:
+        terms = [
+            _text(term, 60)
+            for term in re.split(r"[、,，|]+", _text(value, 300))
+            if _text(term, 60)
+        ]
+    return "、".join(dict.fromkeys(terms[:5]))
+
+
+def _flow_context(item: dict[str, Any], *, include_competitor: bool = False) -> str:
+    details: list[str] = []
+    if include_competitor:
+        competitor = _text(item.get("canonical_competitor"), 80)
+        if competitor:
+            details.append(competitor)
+    module = _text(item.get("module") or item.get("category"), 80)
+    if module and (not include_competitor or not details):
+        details.append(f"模块：{module}")
+    keywords = _flow_keywords(item)
+    if keywords:
+        details.append(f"命中：{keywords}")
+    return "；".join(details)
+
+
 def _information_flow(item: dict[str, Any], *, historical: bool = False) -> str:
     explicit = _text(
         item.get("information_flow") or item.get("acquisition_flow"),
@@ -771,13 +809,34 @@ def _information_flow(item: dict[str, Any], *, historical: bool = False) -> str:
     if origin == "scheduled_crawl_reference" or item.get(
         "scheduled_crawl_signal_id"
     ):
-        return "定时页面爬虫发现 → 新闻搜索核验"
+        crawl_details: list[str] = []
+        config_row = _text(item.get("scheduled_crawl_config_row"), 20)
+        if config_row:
+            crawl_details.append(f"配置第{config_row}行")
+        parent_url = _text(
+            item.get("scheduled_crawl_parent_url")
+            or item.get("scheduled_crawl_target_url"),
+            1600,
+        )
+        parent_domain = (
+            urlparse(parent_url).hostname or ""
+        ).lower().removeprefix("www.")
+        if parent_domain:
+            crawl_details.append(parent_domain)
+        keywords = _flow_keywords(item)
+        if keywords:
+            crawl_details.append(f"命中：{keywords}")
+        detail_text = f"（{'；'.join(crawl_details)}）" if crawl_details else ""
+        return f"定时页面爬虫{detail_text}发现 → {search_step}核验"
     if origin == "mandatory_local_competitor":
-        return f"后台固定竞对词库 → {search_step}"
+        context = _flow_context(item, include_competitor=True)
+        return f"后台固定竞对词库{f'（{context}）' if context else ''} → {search_step}"
     if origin == "background_fixed_keywords":
-        return f"后台固定战略词库 → {search_step}"
+        context = _flow_context(item)
+        return f"后台固定战略词库{f'（{context}）' if context else ''} → {search_step}"
     if origin == "monitoring_sheet_keyword_search":
-        return f"飞书监测表关键词 → {search_step}"
+        context = _flow_context(item)
+        return f"飞书监测表关键词{f'（{context}）' if context else ''} → {search_step}"
     if item.get("crawl_run_id") and not item.get("query"):
         return "定时页面爬虫"
     if historical:

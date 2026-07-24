@@ -44,7 +44,6 @@ WEEKLY_LLM_CACHE = ROOT / "weekly_report_llm_cache.json"
 WEEKLY_REVIEW_CACHE = ROOT / "weekly_report_review_cache.json"
 WEEKLY_AI_QUALITY_AUDIT = ROOT / "weekly_report_ai_quality_audit.json"
 WEEKLY_EVENT_CACHE = ROOT / "weekly_report_recent_events_cache.json"
-WEEKLY_PERIOD_CONFIG = ROOT / "weekly_report_period.json"
 BIWEEKLY_WINDOW_DAYS = 14
 MIN_WEEKLY_DETAIL_CHARS = 120
 MAX_WEEKLY_DETAIL_CHARS = 300
@@ -672,132 +671,47 @@ class WeeklyPeriod:
         }
 
 
-def _period_day(value: object, field_name: str) -> datetime:
-    parsed = parse_report_date(value)
-    if parsed is None:
-        raise ValueError(f"{field_name}必须是完整日期，例如2026-07-17")
-    return parsed.replace(hour=0, minute=0, second=0, microsecond=0)
-
-
 def resolve_weekly_period(
     now: datetime | None = None,
     *,
     config_path: Path | None = None,
     environ: dict[str, str] | None = None,
 ) -> WeeklyPeriod:
-    """Resolve the issue period once so every content path uses identical dates.
+    """Return the rolling 14-natural-day window ending on the HKT run date.
 
-    One-off environment overrides take precedence over the local schedule file.
-    The schedule can declare a 14-day cadence so later issues advance without
-    accidentally reusing this issue's dates.
+    ``config_path`` and ``environ`` remain in the signature for compatibility
+    with existing callers, but fixed issue schedules and date overrides no
+    longer affect weekly-report selection.
     """
 
     hkt = ZoneInfo("Asia/Hong_Kong")
     current = now or datetime.now(hkt)
     current = current.replace(tzinfo=hkt) if current.tzinfo is None else current.astimezone(hkt)
-    env = os.environ if environ is None else environ
-    path = WEEKLY_PERIOD_CONFIG if config_path is None else Path(config_path)
-    config: dict = {}
-    if path.exists():
-        try:
-            loaded = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            raise ValueError(f"周报时间配置无法读取：{path} ({exc})") from exc
-        if not isinstance(loaded, dict):
-            raise ValueError(f"周报时间配置必须是JSON对象：{path}")
-        if loaded.get("enabled", True) is not False:
-            config = loaded
-
-    env_start = clean_text(env.get("CMHK_WEEKLY_PERIOD_START"))
-    env_end = clean_text(env.get("CMHK_WEEKLY_PERIOD_END"))
-    env_issue = clean_text(env.get("CMHK_WEEKLY_ISSUE_DATE"))
-    has_env_override = bool(env_start or env_end or env_issue)
-
-    if has_env_override:
-        if not env_start or not env_end:
-            raise ValueError("使用周报日期环境变量时必须同时提供CMHK_WEEKLY_PERIOD_START和CMHK_WEEKLY_PERIOD_END")
-        planned_start = _period_day(env_start, "周报开始日")
-        planned_end = _period_day(env_end, "周报结束日")
-        issue_date = _period_day(env_issue or env_end, "周报发出日")
-        cadence_days = None
-        source = "environment"
-    elif config:
-        planned_start = _period_day(config.get("periodStart"), "periodStart")
-        planned_end = _period_day(config.get("periodEnd"), "periodEnd")
-        issue_date = _period_day(config.get("issueDate") or config.get("periodEnd"), "issueDate")
-        try:
-            cadence_days = int(config.get("cadenceDays") or 0) or None
-        except (TypeError, ValueError) as exc:
-            raise ValueError("cadenceDays必须是正整数") from exc
-        if cadence_days is not None and cadence_days < 1:
-            raise ValueError("cadenceDays必须是正整数")
-        source = str(path)
-    else:
-        planned_start, planned_end_exclusive = biweekly_date_range(current)
-        planned_end = planned_end_exclusive - timedelta(days=1)
-        issue_date = planned_end
-        cadence_days = None
-        source = "rolling-14-day-fallback"
-
-    if planned_end < planned_start:
-        raise ValueError("周报结束日不能早于开始日")
-    if issue_date < planned_end:
-        raise ValueError("周报发出日不能早于统计结束日")
-    initial_window_days = (planned_end.date() - planned_start.date()).days + 1
-    if initial_window_days > BIWEEKLY_WINDOW_DAYS:
-        raise ValueError(f"双周内容区间不能超过{BIWEEKLY_WINDOW_DAYS}个自然日")
-
-    if cadence_days is not None:
-        if issue_date.date() != planned_end.date():
-            raise ValueError("启用自动双周节奏时issueDate必须等于periodEnd")
-        if current.date() > planned_end.date():
-            elapsed_days = (current.date() - planned_end.date()).days
-            cycle = (elapsed_days + cadence_days - 1) // cadence_days
-            previous_issue = planned_end + timedelta(days=(cycle - 1) * cadence_days)
-            planned_start = previous_issue + timedelta(days=1)
-            planned_end = planned_end + timedelta(days=cycle * cadence_days)
-            issue_date = issue_date + timedelta(days=cycle * cadence_days)
-
-    if current.date() < planned_start.date():
-        raise ValueError(
-            f"本期统计尚未开始：计划区间为{planned_start.date().isoformat()}至{planned_end.date().isoformat()}"
-        )
-    planned_end_exclusive = planned_end + timedelta(days=1)
-    current_end_exclusive = current.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-    effective_end_exclusive = min(planned_end_exclusive, current_end_exclusive)
-    status = "final" if effective_end_exclusive >= planned_end_exclusive else "draft"
+    del config_path, environ
+    planned_start, planned_end_exclusive = biweekly_date_range(current)
+    issue_date = planned_end_exclusive - timedelta(days=1)
     return WeeklyPeriod(
         as_of=current,
         planned_start=planned_start,
         planned_end_exclusive=planned_end_exclusive,
-        effective_end_exclusive=effective_end_exclusive,
+        effective_end_exclusive=planned_end_exclusive,
         issue_date=issue_date,
-        status=status,
-        source=source,
-        cadence_days=cadence_days,
+        status="final",
+        source="rolling-14-day",
+        cadence_days=None,
     )
 
 
 def weekly_issue_label(period: WeeklyPeriod | None = None) -> str:
-    base = clean_text(os.environ.get("CMHK_WEEKLY_ISSUE_LABEL"))
-    if period is None or period.status == "final":
-        return base
-    draft = f"草稿（内容截至{format_date_cn(period.effective_end)}）"
-    return f"{base}　{draft}" if base else draft
+    del period
+    return clean_text(os.environ.get("CMHK_WEEKLY_ISSUE_LABEL"))
 
 
 def weekly_period_policy(period: WeeklyPeriod) -> str:
     planned = period.planned_range
-    effective = period.effective_range
-    if period.status == "draft":
-        return (
-            f"本期计划统计区间为{planned['start']}至{planned['end']}；当前草稿只纳入"
-            f"{effective['start']}至{effective['end']}具有明确公开发布时间和直达正文的内容，"
-            "到正式发出日必须重新刷新并生成最终版。"
-        )
     return (
-        f"本期统计区间为{planned['start']}至{planned['end']}；仅纳入具有明确公开发布时间和"
-        "直达正文的内容。"
+        f"本次运行按香港当天向前倒推13天，统计区间为{planned['start']}至{planned['end']}；"
+        "仅纳入具有明确公开发布时间和直达正文的内容。"
     )
 
 
@@ -3534,14 +3448,223 @@ def build_recent_evidence_weekly_model(
     return model
 
 
+def review_sheet_section(row: dict) -> str:
+    category = clean_text(row.get("category")).lower()
+    region = clean_text(row.get("region")).lower()
+    text = " ".join(
+        clean_text(row.get(key)).lower()
+        for key in ("category", "region", "title", "summary", "keywords")
+    )
+    if any(token in category for token in ("政策", "监管")):
+        return "政治资讯"
+    if any(token in category for token in ("宏观", "经济")):
+        return "经济资讯"
+    if any(token in category for token in ("社会", "民生")):
+        return "社会资讯"
+    if "香港本地" in region and any(
+        token in text
+        for token in (
+            "hkt",
+            "csl",
+            "1o1o",
+            "3hk",
+            "和记",
+            "数码通",
+            "smartone",
+            "hkbn",
+            "香港宽频",
+            "有线宽频",
+        )
+    ):
+        return "本地运营商资讯"
+    if "竞对" in category and "香港本地" not in region:
+        return "国际资讯"
+    return "行业资讯"
+
+
+def build_review_sheet_weekly_model(period: WeeklyPeriod | None = None) -> dict:
+    from news_review_sheet import load_weekly_report_candidates
+
+    hkt = ZoneInfo("Asia/Hong_Kong")
+    now = period.as_of if period is not None else datetime.now(hkt)
+    if period is None:
+        start, end_exclusive = biweekly_date_range(now)
+        report_date = now
+        planned_range = {
+            "start": start.date().isoformat(),
+            "end": (end_exclusive - timedelta(days=1)).date().isoformat(),
+        }
+        period_status = "final"
+        period_policy = (
+            f"本期统计区间为{planned_range['start']}至{planned_range['end']}；"
+            "仅纳入飞书滚动新闻候选池中人工标记为“是否纳入周报=接受”的新闻。"
+        )
+    else:
+        start = period.planned_start
+        end_exclusive = period.effective_end_exclusive
+        report_date = period.issue_date
+        planned_range = period.planned_range
+        period_status = period.status
+        period_policy = weekly_period_policy(period)
+    effective_range = {
+        "start": start.date().isoformat(),
+        "end": (end_exclusive - timedelta(days=1)).date().isoformat(),
+    }
+    rows, selection_audit = load_weekly_report_candidates(
+        effective_range["start"],
+        effective_range["end"],
+    )
+    print(
+        f"[周报 2/7] 已读取飞书人工选材：本期窗口"
+        f"{effective_range['start']}至{effective_range['end']}，"
+        f"标记接受{selection_audit['acceptedRows']}条，窗口内有效{len(rows)}条。",
+        flush=True,
+    )
+    if not rows:
+        raise RuntimeError(
+            f"本期双周窗口{effective_range['start']}至{effective_range['end']}"
+            "没有“是否纳入周报=接受”的有效新闻；请先在飞书表人工选择。"
+        )
+
+    sources: list[dict] = []
+    items: list[dict] = []
+    for index, row in enumerate(rows, start=1):
+        source_id = f"S{index}"
+        section = review_sheet_section(row)
+        tag = clean_text(row.get("category"), 24) or "人工精选"
+        sources.append(
+            {
+                "sourceId": source_id,
+                "row": str(row.get("row_number") or ""),
+                "section": section,
+                "title": clean_text(row.get("title"), 160),
+                "url": clean_text(row.get("source_url"), 1600),
+                "sourceName": clean_text(row.get("source"), 120)
+                or source_display_name(row.get("source_url")),
+                "object": clean_text(row.get("region"), 80),
+                "tag": tag,
+                "publishedAt": row.get("publication_date") or "",
+            }
+        )
+        items.append(
+            {
+                "row": str(row.get("row_number") or ""),
+                "section": section,
+                "subject": clean_text(row.get("region"), 80),
+                "tag": tag,
+                "title": clean_text(row.get("title"), 160),
+                "detail": clean_text(row.get("summary"), 1200),
+                "rawDetail": clean_text(row.get("summary"), 1200),
+                "eventAt": row.get("publication_date") or "",
+                "sourceIds": [source_id],
+                "sourceName": clean_text(row.get("source"), 120)
+                or source_display_name(row.get("source_url")),
+                "index": index,
+                "localIndex": 0,
+            }
+        )
+    items = enrich_weekly_items_with_llm(
+        items,
+        progress=lambda message: print(message, flush=True),
+        fail_on_unresolved=False,
+    )
+    unresolved = [
+        clean_text(item.get("originalTitle") or item.get("title"), 100)
+        for item in items
+        if item.get("writerStatus") == "fallback"
+    ]
+    if unresolved:
+        raise RuntimeError(
+            "飞书人工选中的新闻写作未通过，已停止整份报告且不会用其他新闻替换："
+            + "；".join(unresolved)
+        )
+
+    items_by_section: dict[str, list[dict]] = defaultdict(list)
+    for item in items:
+        items_by_section[item["section"]].append(item)
+    sections = []
+    toc = []
+    global_index = 1
+    for section_name in SECTION_ORDER:
+        section_items = items_by_section.get(section_name, [])
+        if not section_items:
+            continue
+        for local_index, item in enumerate(section_items, start=1):
+            item["index"] = global_index
+            item["localIndex"] = local_index
+            toc.append(
+                {
+                    "index": global_index,
+                    "section": section_name,
+                    "tag": item["tag"],
+                    "title": item["title"],
+                }
+            )
+            global_index += 1
+        tag_names = "、".join(
+            dict.fromkeys(item["tag"] for item in section_items)
+        )
+        sections.append(
+            {
+                "name": section_name,
+                "narrative": (
+                    f"统计区间为{effective_range['start']}至{effective_range['end']}。"
+                    f"本期{section_name}收录{len(section_items)}条飞书人工精选新闻，"
+                    f"涉及主题：{tag_names or '综合动态'}。"
+                ),
+                "items": section_items,
+            }
+        )
+    model = {
+        "company": "中国移动香港公司",
+        "department": "中国移动香港公司战略部",
+        "generatedDate": format_date_cn(report_date),
+        "issueLabel": weekly_issue_label(period),
+        "title": "战略内参",
+        "range": effective_range,
+        "plannedRange": planned_range,
+        "periodStatus": period_status,
+        "issueDate": report_date.date().isoformat(),
+        "asOf": now.isoformat(timespec="seconds"),
+        "toc": toc,
+        "sections": sections,
+        "sources": sources,
+        "selectionSource": "feishu_weekly_review",
+        "_reviewReplacementCandidates": [],
+    }
+    WEEKLY_USAGE_AUDIT.write_text(
+        json.dumps(
+            {
+                "generatedAt": now.isoformat(timespec="seconds"),
+                "usedFacts": len(items),
+                "dateAudit": selection_audit,
+                "selectionSource": "feishu_weekly_review",
+                "policy": (
+                    period_policy
+                    + " 入报选择只认飞书“是否纳入周报”人工状态；程序不得自动增补或替换新闻。"
+                ),
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return model
+
+
 def apply_weekly_ai_review(model: dict, progress=print) -> dict:
     """Run the central reviewer after curated/recent paths converge, then rebuild the model."""
     initial_items = [
         item for section in model.get("sections") or [] for item in section.get("items") or []
     ]
-    if len(initial_items) < MIN_WEEKLY_REPORT_ITEMS:
+    minimum_items = (
+        1
+        if model.get("selectionSource") == "feishu_weekly_review"
+        else MIN_WEEKLY_REPORT_ITEMS
+    )
+    if len(initial_items) < minimum_items:
         raise RuntimeError(
-            f"本期仅找到{len(initial_items)}条合格候选，少于最低{MIN_WEEKLY_REPORT_ITEMS}条；"
+            f"本期仅找到{len(initial_items)}条合格候选，少于最低{minimum_items}条；"
             "应继续补搜和修复数据，不能生成内容过少的周报。"
         )
     reviewed_model = research_weekly_model_online(model, progress=progress)
@@ -3713,13 +3836,8 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
 
 
 def build_weekly_model(results: list[dict], period: WeeklyPeriod | None = None) -> dict:
-    curated_model = build_curated_weekly_model(period=period)
-    if curated_model:
-        model = curated_model
-    else:
-        # Never fall back to the old hard-coded cumulative facts: their crawler
-        # timestamps are not publication dates and would re-introduce stale items.
-        model = build_recent_evidence_weekly_model(results, period=period)
+    del results
+    model = build_review_sheet_weekly_model(period=period)
     return apply_weekly_ai_review(model, progress=lambda message: print(message, flush=True))
 
 
@@ -4405,19 +4523,11 @@ def main() -> None:
     print("============== 开始生成战略内参双周报 ==============", flush=True)
     results = load_results()
     period = resolve_weekly_period()
-    if period.status == "draft":
-        period_message = (
-            f"本期计划统计区间{period.planned_range['start']}至{period.planned_range['end']}，"
-            f"当前生成草稿，仅覆盖至{period.effective_range['end']}；"
-            f"{period.issue_date.date().isoformat()}正式发出前必须重新运行。"
-        )
-        weekly_docx = dated_weekly_docx_path(period.issue_date, draft_as_of=period.effective_end)
-    else:
-        period_message = (
-            f"本期统计区间{period.planned_range['start']}至{period.planned_range['end']}已完整，"
-            "当前生成正式版。"
-        )
-        weekly_docx = dated_weekly_docx_path(period.issue_date)
+    period_message = (
+        f"本次滚动14日统计区间为{period.planned_range['start']}至"
+        f"{period.planned_range['end']}，当前直接生成正式版。"
+    )
+    weekly_docx = dated_weekly_docx_path(period.issue_date)
     print(
         f"[周报 1/7] {period_message} 已加载{len(results)}条底层爬取数据。",
         flush=True,
