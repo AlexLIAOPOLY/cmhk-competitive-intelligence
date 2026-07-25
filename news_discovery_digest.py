@@ -42,7 +42,23 @@ RESULTS_PER_QUERY = max(10, int(os.environ.get("CMHK_NEWS_RESULTS_PER_QUERY", "3
 MAX_RESULTS = max(20, int(os.environ.get("CMHK_NEWS_MAX_RESULTS", "120")))
 PAGE_SIZE = min(10, max(5, int(os.environ.get("CMHK_NEWS_PAGE_SIZE", "8"))))
 SEARCH_WORKERS = min(8, max(2, int(os.environ.get("CMHK_NEWS_SEARCH_WORKERS", "6"))))
-
+AGENTIC_SEARCH_ENABLED = os.environ.get("CMHK_NEWS_AGENTIC_SEARCH", "1").strip().lower() not in {
+    "0",
+    "false",
+    "no",
+}
+AGENTIC_EXPANSION_LIMIT = min(
+    24,
+    max(4, int(os.environ.get("CMHK_NEWS_AGENTIC_EXPANSION_QUERIES", "12"))),
+)
+AGENTIC_FOLLOWUP_LIMIT = min(
+    12,
+    max(2, int(os.environ.get("CMHK_NEWS_AGENTIC_FOLLOWUP_QUERIES", "6"))),
+)
+AGENTIC_AI_ATTEMPTS = min(
+    3,
+    max(1, int(os.environ.get("CMHK_NEWS_AGENTIC_AI_ATTEMPTS", "2"))),
+)
 LOCAL_MODULES = {"竞争对手", "政策/法规类", "香港本地新闻", "市场/产品类"}
 LOCAL_TERMS = (
     "香港", "hong kong", "hkt", "pccw", "csl", "1o1o", "hkbn", "hgc",
@@ -121,6 +137,9 @@ def _parse_news_feed(
     end_at: datetime,
     canonical_competitor: str = "",
     search_origin: str = "",
+    semantic_relevance: bool = False,
+    agentic_intent: str = "",
+    agentic_reason: str = "",
 ) -> list[dict[str, Any]]:
     root = ET.fromstring(raw)
     output: list[dict[str, Any]] = []
@@ -151,6 +170,9 @@ def _parse_news_feed(
         if not (start_at <= published_at <= end_at):
             continue
         relevance_text = f"{title} {snippet}"
+        # Agentic Search broadens and refines the query, but every returned
+        # article must still match at least one associated monitoring term.
+        # This prevents search-engine fuzziness from displacing fixed results.
         if not _relevant(relevance_text, keywords):
             continue
         searchable = f"{relevance_text} {source}"
@@ -159,10 +181,13 @@ def _parse_news_feed(
         matched_keywords = [
             item for item in keywords if _term_matches(searchable, item)
         ][:5]
+        literal_keyword_match = bool(matched_keywords)
         if canonical_competitor:
             matched_keywords = list(
                 dict.fromkeys([canonical_competitor, *matched_keywords])
             )[:6]
+        if semantic_relevance and not matched_keywords:
+            matched_keywords = list(dict.fromkeys(keywords))[:5]
         candidate = {
             "news_id": f"NEWS-{published_at:%Y%m%d}-{digest}",
             "title": title,
@@ -185,7 +210,12 @@ def _parse_news_feed(
             "query": base_query,
             "search_provider": provider,
             "search_origin": search_origin or "monitoring_sheet_keyword_search",
+            "literal_keyword_match": literal_keyword_match,
         }
+        if semantic_relevance:
+            candidate["semantic_relevance"] = True
+            candidate["agentic_intent"] = agentic_intent
+            candidate["agentic_reason"] = agentic_reason
         if canonical_competitor:
             candidate["canonical_competitor"] = canonical_competitor
             candidate["search_origin"] = (
@@ -201,6 +231,9 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
     keywords = [_clean_text(item, 120) for item in (plan.get("keywords") or []) if _clean_text(item, 120)]
     canonical_competitor = _clean_text(plan.get("canonical_competitor"), 120)
     search_origin = _clean_text(plan.get("search_origin"), 100)
+    semantic_relevance = bool(plan.get("semantic_relevance"))
+    agentic_intent = _clean_text(plan.get("agentic_intent"), 300)
+    agentic_reason = _clean_text(plan.get("agentic_reason"), 300)
     if not base_query:
         return []
     if module in {"香港本地新闻", "政策/法规类"}:
@@ -251,6 +284,9 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
                     end_at=end_at,
                     canonical_competitor=canonical_competitor,
                     search_origin=search_origin,
+                    semantic_relevance=semantic_relevance,
+                    agentic_intent=agentic_intent,
+                    agentic_reason=agentic_reason,
                 )
             )
             successful_feeds += 1
@@ -328,6 +364,282 @@ def _mandatory_competitor_plans() -> list[dict[str, Any]]:
     return plans
 
 
+def _normalized_query(value: Any) -> str:
+    return re.sub(r"\s+", " ", _clean_text(value, 1400)).strip().casefold()
+
+
+def _coverage_digest(
+    items: list[dict[str, Any]],
+    *,
+    errors: list[str],
+) -> dict[str, Any]:
+    modules: dict[str, int] = {}
+    competitors: dict[str, int] = {}
+    for item in items:
+        module = _clean_text(item.get("module"), 100) or "其他"
+        modules[module] = modules.get(module, 0) + 1
+        canonical = _clean_text(item.get("canonical_competitor"), 120)
+        if canonical:
+            competitors[canonical] = competitors.get(canonical, 0) + 1
+    expected_competitors = list(
+        dict.fromkeys(str(group["canonical"]) for group in mandatory_search_groups())
+    )
+    samples = [
+        {
+            "module": _clean_text(item.get("module"), 80),
+            "title": _clean_text(item.get("title"), 180),
+            "source": _clean_text(item.get("source"), 80),
+            "keywords": [
+                _clean_text(keyword, 60)
+                for keyword in (item.get("keywords") or [])[:5]
+            ],
+        }
+        for item in items[:20]
+    ]
+    return {
+        "result_count": len(items),
+        "module_counts": modules,
+        "competitor_counts": competitors,
+        "missing_fixed_competitors": [
+            name for name in expected_competitors if not competitors.get(name)
+        ],
+        "query_error_count": len(errors),
+        "sample_results": samples,
+    }
+
+
+def _agentic_monitoring_context(spec: dict[str, Any]) -> dict[str, Any]:
+    modules = []
+    for module in spec.get("modules") or []:
+        if not isinstance(module, dict):
+            continue
+        modules.append(
+            {
+                "name": _clean_text(module.get("name"), 120),
+                "keywords": [
+                    _clean_text(keyword, 80)
+                    for keyword in (module.get("keywords") or [])[:15]
+                    if _clean_text(keyword, 80)
+                ],
+                "preferred_domains": list(
+                    dict.fromkeys(
+                        urlparse(str(url)).hostname or ""
+                        for url in (module.get("source_urls") or [])
+                        if urlparse(str(url)).hostname
+                    )
+                )[:5],
+            }
+        )
+    fixed_competitors: dict[str, list[str]] = {}
+    for group in mandatory_search_groups():
+        fixed_competitors.setdefault(str(group["canonical"]), [])
+        fixed_competitors[str(group["canonical"])].extend(
+            str(term) for term in group["terms"]
+        )
+    return {
+        "modules": modules,
+        "fixed_competitors": {
+            name: list(dict.fromkeys(aliases))[:8]
+            for name, aliases in fixed_competitors.items()
+        },
+        "benchmark_operators": [
+            list(group) for group in BENCHMARK_OPERATOR_QUERIES
+        ],
+        "priority_topics": [
+            {"module": module, "terms": list(terms)}
+            for module, terms in PRIORITY_NEWS_QUERIES
+        ],
+    }
+
+
+def _normalize_agentic_plans(
+    payload: dict[str, Any],
+    *,
+    phase: str,
+    existing_queries: set[str],
+    limit: int,
+) -> list[dict[str, Any]]:
+    raw_queries = payload.get("queries") or payload.get("follow_up_queries") or []
+    if not isinstance(raw_queries, list):
+        return []
+    plans: list[dict[str, Any]] = []
+    for raw in raw_queries:
+        if not isinstance(raw, dict):
+            continue
+        query = _clean_text(raw.get("query"), 700)
+        normalized = _normalized_query(query)
+        if len(query) < 4 or not normalized or normalized in existing_queries:
+            continue
+        raw_keywords = raw.get("keywords") or raw.get("monitoring_terms") or []
+        if isinstance(raw_keywords, str):
+            raw_keywords = re.split(r"[,，、;；|\n]+", raw_keywords)
+        keywords = list(
+            dict.fromkeys(
+                _clean_text(keyword, 100)
+                for keyword in raw_keywords
+                if _clean_text(keyword, 100)
+            )
+        )[:8]
+        if not keywords:
+            continue
+        module = _clean_text(raw.get("module"), 100) or "其他"
+        try:
+            lookback_days = min(7, max(0, int(raw.get("lookback_days") or 0)))
+        except (TypeError, ValueError):
+            lookback_days = 0
+        plans.append(
+            {
+                "module": module,
+                "query": query,
+                "fallback_query": query,
+                "keywords": keywords,
+                "lookback_days": lookback_days,
+                "search_origin": f"agentic_{phase}",
+                "semantic_relevance": True,
+                "agentic_intent": _clean_text(raw.get("intent"), 300),
+                "agentic_reason": _clean_text(raw.get("reason"), 300),
+            }
+        )
+        existing_queries.add(normalized)
+        if len(plans) >= limit:
+            break
+    return plans
+
+
+def _call_agentic_search_agent(
+    *,
+    phase: str,
+    spec: dict[str, Any],
+    coverage: dict[str, Any],
+    existing_plans: list[dict[str, Any]],
+    start_at: datetime,
+    end_at: datetime,
+    limit: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    existing_queries = {
+        _normalized_query(plan.get("fallback_query") or plan.get("query"))
+        for plan in existing_plans
+    }
+    monitoring_context = _agentic_monitoring_context(spec)
+    system_prompt = (
+        "你是香港电信竞对情报的 Agentic Search Planner。只输出合法 JSON 对象，结构为"
+        "{\"sufficient\":true或false,\"assessment\":\"覆盖判断\","
+        "\"queries\":[{\"module\":\"监测模块\",\"query\":\"可直接交给新闻搜索引擎的查询\","
+        "\"keywords\":[\"关联监控词\"],\"intent\":\"要找的事件类型\","
+        "\"reason\":\"为什么现有搜索可能漏掉\",\"lookback_days\":0到7}]}。"
+        "固定监控、飞书关键词搜索和03:00爬虫信号已经由系统执行，你只能补充查询，不得删除、替代或缩减它们。"
+        "根据已检索结果识别未覆盖公司、品牌别名、同义表达、事件类型和主题缺口，再提出少量高价值补搜。"
+        "查询应组合主体/别名与事件意图，例如业绩指引、网络建设、资费调整、合作并购、监管影响、"
+        "AI/云/数据中心投资、管理层变化；可使用中英文同义词，但不要只是原关键词逐字重排。"
+        "每条查询必须同时包含主体和至少一个事件意图词；禁止仅罗列公司或品牌别名做综合监测，"
+        "因为固定搜索已经覆盖这些名称。missing_fixed_competitors表示结果缺口，不表示名称查询未执行。"
+        "为确保JSON稳定，query字段内禁止使用英文双引号字符，主体名称直接写即可；所有字符串必须正确转义。"
+        "不要生成网址、新闻事实或不在监控范围内的新主体。避免重复现有查询。"
+        "若覆盖充分可返回 sufficient=true 和空 queries。"
+    )
+    user_payload = {
+        "phase": phase,
+        "time_window": {
+            "start": start_at.astimezone(HKT).isoformat(timespec="seconds"),
+            "end": end_at.astimezone(HKT).isoformat(timespec="seconds"),
+        },
+        "query_limit": limit,
+        "monitoring_context": monitoring_context,
+        "current_coverage": coverage,
+        "existing_queries": [
+            _clean_text(plan.get("fallback_query") or plan.get("query"), 240)
+            for plan in existing_plans[-40:]
+        ],
+    }
+    last_error = ""
+    for attempt in range(1, AGENTIC_AI_ATTEMPTS + 1):
+        try:
+            attempt_payload = dict(user_payload)
+            if attempt > 1:
+                attempt_payload["format_correction"] = (
+                    "上一次输出不是合法JSON。请重新生成完整JSON对象；"
+                    "query字段不要包含英文双引号，不要输出Markdown或解释文字。"
+                )
+            response = strategic_briefing._call_internal_ai(
+                system_prompt,
+                json.dumps(attempt_payload, ensure_ascii=False),
+                max_tokens=max(1800, limit * 180),
+            )
+            plans = _normalize_agentic_plans(
+                response,
+                phase=phase,
+                existing_queries=existing_queries,
+                limit=limit,
+            )
+            return plans, {
+                "status": "completed",
+                "attempts": attempt,
+                "sufficient": bool(response.get("sufficient")),
+                "assessment": _clean_text(response.get("assessment"), 500),
+                "query_count": len(plans),
+            }
+        except Exception as exc:
+            last_error = f"{type(exc).__name__}: {_clean_text(exc, 300)}"
+            logging.warning(
+                "Agentic Search %s 规划失败 %s/%s：%s",
+                phase,
+                attempt,
+                AGENTIC_AI_ATTEMPTS,
+                last_error,
+            )
+    return [], {
+        "status": "failed",
+        "attempts": AGENTIC_AI_ATTEMPTS,
+        "sufficient": False,
+        "assessment": "",
+        "query_count": 0,
+        "error": last_error,
+    }
+
+
+def _execute_search_plans(
+    plans: list[dict[str, Any]],
+    *,
+    start_at: datetime,
+    end_at: datetime,
+) -> tuple[list[dict[str, Any]], list[str], dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    errors: list[str] = []
+    zero_result_queries: list[str] = []
+    with ThreadPoolExecutor(max_workers=SEARCH_WORKERS) as executor:
+        future_map = {
+            executor.submit(
+                _google_news_search,
+                plan,
+                end_at - timedelta(days=int(plan.get("lookback_days") or 0))
+                if int(plan.get("lookback_days") or 0) > 0
+                else start_at,
+                end_at,
+            ): plan
+            for plan in plans
+        }
+        for future in as_completed(future_map):
+            plan = future_map[future]
+            try:
+                found = future.result()
+                items.extend(found)
+                if not found:
+                    zero_result_queries.append(
+                        _clean_text(plan.get("query"), 300)
+                    )
+            except Exception as exc:
+                errors.append(
+                    f"{_clean_text(plan.get('module'), 80)}: "
+                    f"{type(exc).__name__}: {_clean_text(exc, 160)}"
+                )
+    return items, errors, {
+        "query_count": len(plans),
+        "result_count": len(items),
+        "zero_result_count": len(zero_result_queries),
+        "zero_result_queries": zero_result_queries[:30],
+    }
+
+
 def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, Any]], list[str], dict[str, Any]]:
     errors: list[str] = []
     try:
@@ -377,25 +689,102 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
             }
         )
     plans = competitor_plans + priority_plans + base_plans
-    all_items: list[dict[str, Any]] = []
-    with ThreadPoolExecutor(max_workers=SEARCH_WORKERS) as executor:
-        future_map = {
-            executor.submit(
-                _google_news_search,
-                plan,
-                end_at - timedelta(days=int(plan.get("lookback_days") or 0))
-                if int(plan.get("lookback_days") or 0) > 0
-                else start_at,
-                end_at,
-            ): plan
-            for plan in plans
-        }
-        for future in as_completed(future_map):
-            plan = future_map[future]
-            try:
-                all_items.extend(future.result())
-            except Exception as exc:
-                errors.append(f"{_clean_text(plan.get('module'), 80)}: {type(exc).__name__}: {_clean_text(exc, 160)}")
+    all_items, search_errors, legacy_stats = _execute_search_plans(
+        plans,
+        start_at=start_at,
+        end_at=end_at,
+    )
+    errors.extend(search_errors)
+    agentic_trace: dict[str, Any] = {
+        "enabled": AGENTIC_SEARCH_ENABLED,
+        "mode": "fixed_monitoring_plus_agentic_gap_search",
+        "fixed_query_count": len(plans),
+        "fixed_result_count": len(all_items),
+        "fixed_search": legacy_stats,
+        "rounds": [],
+    }
+    if AGENTIC_SEARCH_ENABLED:
+        coverage = _coverage_digest(_deduplicate(all_items), errors=errors)
+        expansion_plans, expansion_trace = _call_agentic_search_agent(
+            phase="expansion",
+            spec=spec,
+            coverage=coverage,
+            existing_plans=plans,
+            start_at=start_at,
+            end_at=end_at,
+            limit=AGENTIC_EXPANSION_LIMIT,
+        )
+        expansion_items, expansion_errors, expansion_stats = _execute_search_plans(
+            expansion_plans,
+            start_at=start_at,
+            end_at=end_at,
+        )
+        all_items.extend(expansion_items)
+        errors.extend(expansion_errors)
+        expansion_trace["search"] = expansion_stats
+        agentic_trace["rounds"].append({"phase": "expansion", **expansion_trace})
+        executed_plans = plans + expansion_plans
+
+        followup_plans: list[dict[str, Any]] = []
+        followup_items: list[dict[str, Any]] = []
+        if expansion_trace.get("status") == "failed":
+            followup_trace = {
+                "status": "skipped",
+                "reason": "expansion_planner_failed",
+                "query_count": 0,
+            }
+            followup_errors: list[str] = []
+            followup_stats = {
+                "query_count": 0,
+                "result_count": 0,
+                "zero_result_count": 0,
+                "zero_result_queries": [],
+            }
+        elif expansion_trace.get("sufficient") and not expansion_plans:
+            followup_trace = {
+                "status": "skipped",
+                "reason": "coverage_already_sufficient",
+                "query_count": 0,
+            }
+            followup_errors = []
+            followup_stats = {
+                "query_count": 0,
+                "result_count": 0,
+                "zero_result_count": 0,
+                "zero_result_queries": [],
+            }
+        else:
+            combined = _deduplicate(all_items)
+            followup_coverage = _coverage_digest(combined, errors=errors)
+            followup_plans, followup_trace = _call_agentic_search_agent(
+                phase="followup",
+                spec=spec,
+                coverage=followup_coverage,
+                existing_plans=executed_plans,
+                start_at=start_at,
+                end_at=end_at,
+                limit=AGENTIC_FOLLOWUP_LIMIT,
+            )
+            followup_items, followup_errors, followup_stats = _execute_search_plans(
+                followup_plans,
+                start_at=start_at,
+                end_at=end_at,
+            )
+        all_items.extend(followup_items)
+        errors.extend(followup_errors)
+        followup_trace["search"] = followup_stats
+        agentic_trace["rounds"].append({"phase": "followup", **followup_trace})
+        agentic_trace["agentic_query_count"] = len(expansion_plans) + len(followup_plans)
+        agentic_trace["agentic_result_count"] = len(expansion_items) + len(followup_items)
+        agentic_trace["coverage_before"] = coverage
+        agentic_trace["coverage_after"] = _coverage_digest(
+            _deduplicate(all_items),
+            errors=errors,
+        )
+    else:
+        agentic_trace["agentic_query_count"] = 0
+        agentic_trace["agentic_result_count"] = 0
+    spec = {**spec, "agentic_search": agentic_trace}
     deduplicated = _deduplicate(all_items)
     module_order = {str(plan.get("module") or "其他"): index for index, plan in enumerate(plans)}
     def competitor_priority(item: dict[str, Any]) -> int:
@@ -584,6 +973,7 @@ def send_digest(now: datetime | None = None, *, morning: bool | None = None) -> 
         "result_count": len(items),
         "hong_kong_count": sum(bool(item.get("is_hong_kong")) for item in items),
         "query_errors": errors,
+        "agentic_search": spec.get("agentic_search") or {},
         "message_ids": message_ids,
         "items": items,
     }

@@ -6,6 +6,20 @@ import strategic_briefing
 
 
 class NewsReviewSheetSyncTests(unittest.TestCase):
+    def test_information_flow_labels_agentic_search_round(self):
+        flow = review_sheet._information_flow(
+            {
+                "search_origin": "agentic_followup",
+                "search_provider": "google",
+                "module": "竞争对手",
+                "keywords": ["T-Mobile"],
+            }
+        )
+        self.assertEqual(
+            flow,
+            "Agentic Search 缺口复查（模块：竞争对手；命中：T-Mobile） → Google News搜索",
+        )
+
     def _existing_row(self):
         return [
             "接受",

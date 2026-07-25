@@ -1143,6 +1143,7 @@ def _run_scan(
             "result_count": int(discovery_result.get("result_count") or 0),
             "hong_kong_count": int(discovery_result.get("hong_kong_count") or 0),
             "query_error_count": len(discovery_result.get("query_errors") or []),
+            "agentic_search": discovery_result.get("agentic_search") or {},
             "error": discovery_result.get("error") or "",
         },
         "message_id": message_id,

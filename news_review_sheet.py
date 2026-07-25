@@ -837,6 +837,13 @@ def _information_flow(item: dict[str, Any], *, historical: bool = False) -> str:
     if origin == "monitoring_sheet_keyword_search":
         context = _flow_context(item)
         return f"飞书监测表关键词{f'（{context}）' if context else ''} → {search_step}"
+    if origin in {"agentic_expansion", "agentic_followup"}:
+        context = _flow_context(item)
+        round_label = "覆盖补搜" if origin == "agentic_expansion" else "缺口复查"
+        return (
+            f"Agentic Search {round_label}"
+            f"{f'（{context}）' if context else ''} → {search_step}"
+        )
     if item.get("crawl_run_id") and not item.get("query"):
         return "定时页面爬虫"
     if historical:
