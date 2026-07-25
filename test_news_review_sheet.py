@@ -20,6 +20,52 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "Agentic Search 缺口复查（模块：竞争对手；命中：T-Mobile） → Google News搜索",
         )
 
+    def test_current_competitor_product_news_is_kept_for_human_review(self):
+        keep, reason = review_sheet._review_news_candidate(
+            {
+                "title": "数码通推出限时5G套餐优惠",
+                "snippet": "数码通公布新的5G套餐优惠及客户服务安排。",
+                "url": "https://example.com/news/2026/07/26/smartone-plan",
+                "source": "PR Newswire",
+                "published_at": "2026-07-26T08:00:00+08:00",
+                "search_date": "2026-07-26",
+                "keywords": ["SmarTone", "数码通"],
+                "module": "竞争对手",
+            }
+        )
+        self.assertTrue(keep)
+        self.assertEqual(reason, "香港直接竞对新闻")
+
+    def test_competitor_query_metadata_alone_is_not_entity_evidence(self):
+        relevant, reason = review_sheet._competitor_relevance(
+            {
+                "title": "Panthers player eager to return after injury",
+                "snippet": "The football player discussed the upcoming season.",
+                "source": "Sports News",
+                "url": "https://example.com/sports/player-return",
+                "keywords": ["HKT", "csl"],
+                "module": "竞争对手",
+            }
+        )
+        self.assertFalse(relevant)
+        self.assertEqual(reason, "未直接关联竞对或香港电信市场")
+
+    def test_ambiguous_csl_sports_reference_is_not_competitor_news(self):
+        keep, reason = review_sheet._review_news_candidate(
+            {
+                "title": "Panthers player eager to return after injury",
+                "snippet": "CSL reporter interviews the football player about the season.",
+                "source": "AOL",
+                "url": "https://example.com/sports/player-return",
+                "published_at": "2026-07-26T08:00:00+08:00",
+                "search_date": "2026-07-26",
+                "keywords": ["HKT", "csl"],
+                "module": "竞争对手",
+            }
+        )
+        self.assertFalse(keep)
+        self.assertEqual(reason, "生活、体育或误命中新闻")
+
     def _existing_row(self):
         return [
             "接受",

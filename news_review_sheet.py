@@ -18,6 +18,8 @@ from typing import Any
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
+from local_competitor_keywords import all_aliases
+
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "strategy_briefing"
@@ -1733,13 +1735,41 @@ def _competitor_relevance(item: dict[str, Any]) -> tuple[bool, str]:
         (
             _text(item.get("title"), 500),
             _text(item.get("snippet"), 1800),
-            _text(item.get("source"), 240),
-            _text(item.get("url"), 1800),
-            _text(item.get("keywords"), 800),
         )
     )
-    if _DIRECT_COMPETITOR_RE.search(text):
-        return True, "香港直接竞对新闻"
+    for publisher in (
+        _text(item.get("source"), 240),
+        urlparse(_text(item.get("url"), 1800)).netloc,
+    ):
+        publisher = publisher.removeprefix("www.")
+        if publisher:
+            text = re.sub(re.escape(publisher), " ", text, flags=re.I)
+    lowered = text.casefold()
+    ambiguous_aliases = {"csl", "1o1o", "1010", "now tv", "now e", "n mobile"}
+    for alias in all_aliases():
+        term = _text(alias, 120).casefold()
+        if not term:
+            continue
+        if re.fullmatch(r"[a-z0-9.+& -]+", term):
+            if re.search(
+                rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])",
+                lowered,
+            ):
+                if (
+                    term in ambiguous_aliases
+                    and not _HK_TELECOM_MARKET_RE.search(text)
+                ):
+                    continue
+                return True, "香港直接竞对新闻"
+        elif term in lowered:
+            return True, "香港直接竞对新闻"
+    direct_match = _DIRECT_COMPETITOR_RE.search(text)
+    if direct_match:
+        if (
+            direct_match.group(0).casefold() != "csl"
+            or _HK_TELECOM_MARKET_RE.search(text)
+        ):
+            return True, "香港直接竞对新闻"
     if _BENCHMARK_OPERATOR_RE.search(text):
         if (
             _CORPORATE_CHANGE_RE.search(text)
@@ -1796,6 +1826,8 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
     if "bing.com/aclick" in lower_url or "googleadservices" in lower_url:
         return False, "广告跳转"
     source_text = f"{_text(item.get('source'), 200)} {lower_url}".lower()
+    competitor_relevant, relevance_reason = _competitor_relevance(item)
+    direct_competitor = bool(_DIRECT_COMPETITOR_RE.search(text))
     if "fund.eastmoney.com" in source_text or "天天基金" in source_text:
         return False, "基金或行情页面"
     if any(marker in path for marker in _STATIC_PATH_MARKERS):
@@ -1804,11 +1836,18 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         return False, "北部都会区静态页面"
     if "chinaelections.org" in source_text or _STATIC_TITLE_RE.search(title):
         return False, "静态文件或资料页"
-    if _NOISE_RE.search(f"{lower_text} {source_text}"):
+    if _NOISE_RE.search(f"{lower_text} {source_text}") and not competitor_relevant:
         return False, "生活、体育或误命中新闻"
-    if re.search(r"(?:codex\s*micro|实体键盘|實體鍵盤|限量版键盘|限量版鍵盤)", lower_text, re.I):
+    if (
+        re.search(
+            r"(?:codex\s*micro|实体键盘|實體鍵盤|限量版键盘|限量版鍵盤)",
+            lower_text,
+            re.I,
+        )
+        and not competitor_relevant
+    ):
         return False, "消费型AI硬件新品"
-    if _PRODUCT_AD_RE.search(lower_text):
+    if _PRODUCT_AD_RE.search(lower_text) and not competitor_relevant:
         return False, "消费产品或套餐广告"
     if (
         _BENCHMARK_OPERATOR_RE.search(text)
@@ -1816,10 +1855,8 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         and _NON_TELECOM_CORPORATE_RE.search(text)
     ):
         return False, "非电信资产或业务事件"
-    direct_competitor = bool(_DIRECT_COMPETITOR_RE.search(text))
     if _FINANCE_RE.search(lower_text) and not direct_competitor:
         relevance_reason = "待AI审核的资本市场新闻"
-    competitor_relevant, relevance_reason = _competitor_relevance(item)
     if not competitor_relevant:
         if _POLICY_RE.search(text) and (
             _STRATEGIC_RE.search(text)

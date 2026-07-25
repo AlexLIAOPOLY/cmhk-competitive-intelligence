@@ -122,6 +122,62 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("业绩或现金流指引", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("地域与分类是两个独立维度", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
 
+    def test_competitor_candidate_is_included_even_when_ai_marks_it_unimportant(self):
+        item = {
+            "module": "竞争对手",
+            "category": "行业动态",
+            "title": "T-Mobile推出常规客户服务更新",
+            "snippet": "T-Mobile announced a routine customer service update.",
+            "keywords": ["T-Mobile"],
+            "source": "Example News",
+            "url": "https://example.com/news/t-mobile-service",
+            "ai_title": "T-Mobile更新客户服务安排",
+            "ai_summary": "T-Mobile公布常规客户服务调整，涉及现有用户的服务安排。",
+            "ai_should_include": False,
+            "ai_region": "国际/行业",
+            "ai_category": "行业动态",
+            "ai_keywords": "T-Mobile",
+            "ai_inclusion_reason": "模型认为事件规模较小，不建议纳入候选池。",
+            "ai_region_reason": "事件主体和受影响市场均位于美国。",
+        }
+
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(briefing, "_call_internal_ai") as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertTrue(result[0]["ai_should_include"])
+        self.assertEqual(result[0]["category"], "行业动态")
+        self.assertIn("竞对动态", result[0]["ai_inclusion_reason"])
+        ai_call.assert_not_called()
+
+    def test_candidate_editor_marks_verified_competitor_context(self):
+        payload = briefing._candidate_editor_input(
+            "1234567890abcdef",
+            {
+                "module": "竞争对手",
+                "title": "HKBN launches a broadband service update",
+                "snippet": "HKBN announced the service change in Hong Kong.",
+                "keywords": ["HKBN"],
+            },
+        )
+        self.assertTrue(payload["competitor_candidate"])
+
+    def test_ambiguous_competitor_alias_requires_telecom_context(self):
+        self.assertFalse(
+            briefing._is_competitor_candidate(
+                {
+                    "module": "竞争对手",
+                    "title": "Player returns after injury",
+                    "snippet": "CSL reporter interviews the football player.",
+                    "keywords": ["csl"],
+                }
+            )
+        )
+
     def test_approved_brief_prompt_requires_simplified_chinese(self):
         with mock.patch.object(
             briefing,
