@@ -887,7 +887,7 @@ def sync_candidates(
         rows = _read_rows(sheet_id)
         existing_status: dict[str, tuple[str, str]] = {}
         existing_rows_by_id: dict[str, list[Any]] = {}
-        existing_title_keys: list[str] = []
+        existing_history_items: list[dict[str, Any]] = []
         existing_row_count = 0
         status_priority = {"接受": 4, "暂缓": 3, "待审核": 2, "不接受": 1}
         for index, row in enumerate(rows, start=2):
@@ -911,9 +911,7 @@ def sync_candidates(
                 parsed["sync_status"] or "未同步",
             )
             existing_rows_by_id[parsed["news_id"]] = normalized_row
-            title_key = _normalized_news_title(parsed["title"])
-            if title_key:
-                existing_title_keys.append(title_key)
+            existing_history_items.append(parsed)
         state = _read_json(STATE_PATH, {})
         try:
             previous_candidate_count = int(state.get("last_candidate_count") or 0)
@@ -925,9 +923,17 @@ def sync_candidates(
                 f"当前 {existing_row_count} 条，上次 {previous_candidate_count} 条"
             )
         curated_items, gate_reasons = curate_news_items(list(items))
-        from strategic_briefing import polish_candidates_before_review
+        from strategic_briefing import (
+            agent_semantic_deduplicate_candidates,
+            polish_candidates_before_review,
+        )
 
         prepared_items = polish_candidates_before_review(curated_items)
+        semantic_result = agent_semantic_deduplicate_candidates(
+            prepared_items,
+            existing_history_items,
+        )
+        prepared_items = semantic_result["kept"]
         archived_count = len(existing_rows_by_id)
         new_values: list[list[Any]] = []
         new_count = 0
@@ -936,12 +942,6 @@ def sync_candidates(
         new_sources: set[str] = set()
         for item in prepared_items:
             news_id = _text(item.get("news_id"), 80)
-            title_key = _normalized_news_title(item.get("ai_title") or item.get("title"))
-            if news_id in existing_status or any(
-                _event_titles_duplicate(title_key, existing_title)
-                for existing_title in existing_title_keys
-            ):
-                continue
             value = _candidate_row(item, generated_at)
             new_count += 1
             new_category_counts[_text(item.get("category") or "未分类", 80)] += 1
@@ -951,8 +951,6 @@ def sync_candidates(
                 new_sources.add(source)
             new_values.append(value)
             existing_status[news_id] = (value[0], value[2])
-            if title_key:
-                existing_title_keys.append(title_key)
         new_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
         candidate_count = existing_row_count + len(new_values)
         if candidate_count > MAX_SHEET_ROWS - 1:
@@ -986,6 +984,10 @@ def sync_candidates(
                 "last_new_region_counts": dict(new_region_counts),
                 "last_new_source_count": len(new_sources),
                 "last_ai_processed_count": len(prepared_items),
+                "last_semantic_duplicate_count": len(semantic_result["duplicates"]),
+                "last_semantic_deferred_count": len(semantic_result["deferred"]),
+                "last_semantic_history_count": semantic_result["history_count"],
+                "last_semantic_history_shards": semantic_result["history_shards"],
                 "last_sync_at": _now_iso(),
                 "group_notifications_paused": _group_notifications_paused(),
             }
@@ -1004,6 +1006,10 @@ def sync_candidates(
             "new_region_counts": dict(new_region_counts),
             "new_source_count": len(new_sources),
             "existing_count": len(existing_status),
+            "semantic_duplicate_count": len(semantic_result["duplicates"]),
+            "semantic_deferred_count": len(semantic_result["deferred"]),
+            "semantic_history_count": semantic_result["history_count"],
+            "semantic_history_shards": semantic_result["history_shards"],
         }
 
 def _normalized_status(value: Any) -> str:
@@ -1883,7 +1889,6 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
 
 def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], Counter[str]]:
     kept: dict[str, dict[str, Any]] = {}
-    title_keys: list[str] = []
     reasons: Counter[str] = Counter()
     for source_item in items:
         if not isinstance(source_item, dict):
@@ -1895,12 +1900,7 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
             continue
         url_key = _canonical_news_url(item.get("url"))
         title_key = _normalized_news_title(item.get("title"))
-        if (
-            not url_key
-            or not title_key
-            or url_key in kept
-            or any(_event_titles_duplicate(title_key, existing) for existing in title_keys)
-        ):
+        if not url_key or not title_key or url_key in kept:
             reasons["重复新闻"] += 1
             continue
         item["region"] = (
@@ -1921,7 +1921,6 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
         item["filter_reason"] = reason
         item["news_id"] = _news_item_id(item.get("url"), item.get("title"))
         kept[url_key] = item
-        title_keys.append(title_key)
     result = list(kept.values())
     category_priority = {"竞对动态": 0, "政策监管": 1, "宏观经济": 2, "其他待筛": 9}
     result.sort(

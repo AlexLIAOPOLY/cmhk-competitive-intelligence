@@ -10,6 +10,7 @@ import subprocess
 import threading
 import time
 from datetime import datetime, time as clock_time, timedelta
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode, urlparse, urlunparse
@@ -34,8 +35,17 @@ STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
-AI_EDITOR_VERSION = 10
+SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
+AI_EDITOR_VERSION = 12
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
+SEMANTIC_DEDUPE_BATCH_SIZE = max(
+    1,
+    min(8, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_BATCH_SIZE", "4"))),
+)
+SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE = max(
+    40,
+    min(300, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE", "180"))),
+)
 _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "分类必须结合monitoring_module、rule_category、新闻主体和事件实质综合判断。"
     "当主体是T-Mobile、中国电信、HKT、Vodafone等被监测运营商，且内容是财报、"
@@ -46,6 +56,10 @@ _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "英特尔、AMD、英伟达等技术厂商若只是因CPU、算力、AI等技术监控词命中，"
     "应归为‘行业动态’，不得自动视作电信竞对；只有监控模块明确将该企业列为竞争对手时"
     "才可归为‘竞对动态’。"
+    "只有标题或摘要明确出现被监测运营商，且该运营商是事件主体、对象或被实质讨论时，"
+    "才可归为‘竞对动态’；泛香港5G基站、频谱、网络质量或市场趋势必须归为‘行业动态’。"
+    "AI、算力、CPU、基站、港澳等通用关键词不能证明标题中的公司就是被监测竞对，"
+    "不得据此虚构‘被监测竞对’身份。"
     "不要因为地域是‘国际/行业’就把分类写成‘行业动态’；地域与分类是两个独立维度。"
     "rule_category是规则层初判，除非正文证据明确表明其不适用，否则应优先沿用；"
     "如需改写，必须依据事件实质选择更准确的业务分类。"
@@ -1592,8 +1606,12 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
                     "仅媒体提及、同名误命中、泛社会新闻或关键词没有正文证据时必须为false。"
                     "competitor_candidate=true只表示上游发现了可能的竞对词命中，不能当作主体已经确认。"
+                    "competitor_candidate=false时更不能把通用关键词命中的任意公司臆断为被监测竞对。"
                     "必须结合标题和摘要核实被监测竞对确实是事件主体、事件对象或被实质讨论的企业；"
                     "仅缩写重名、媒体名称、体育队名、人名、地名或正文中偶然出现监控词时必须为false。"
+                    "特别注意同名实体：只有香港电讯品牌csl才是竞对，澳洲生物科技公司CSL Limited及其"
+                    "股票、利润、评级不是竞对；1010若是数字或股价、CTG若指Chattogram地名、"
+                    "HGC若指无关公司或职位缩写，也必须判false。必须按事件语境判断，不能只看命中词。"
                     "一旦核实确为竞对信息，无论事件规模大小，should_include都必须为true。"
                     "竞对的产品与资费、促销、客户服务、经营数据、网络建设、技术、合作、投资并购、"
                     "管理层、监管和资本市场信息均应纳入，不得以‘战略价值不够大、只是常规经营、"
@@ -1652,6 +1670,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "competitor_candidate=true只表示上游发现疑似竞对词命中，不能替代语义核实。"
                             "先根据标题和摘要确认被监测竞对确实是事件主体、对象或被实质讨论的企业；"
                             "缩写重名、媒体名、体育队名、人名、地名及偶然提词必须排除。"
+                            "特别注意：只有香港电讯品牌csl才是竞对；澳洲生物科技公司CSL Limited的"
+                            "股票、利润和评级不是竞对。1010数字/股价、CTG地名、HGC无关缩写也必须排除。"
                             "确认是真实竞对信息后，无论事件大小should_include都必须为true；"
                             "常规经营、产品资费、促销、客户服务、网络技术、合作投资、"
                             "管理层及资本市场信息都不得因不够重大而淘汰。"
@@ -1723,6 +1743,398 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item["ai_editor_version"] = AI_EDITOR_VERSION
         polished_items.append(item)
     return polished_items
+
+
+def _semantic_dedupe_candidate(item: dict[str, Any], order: int) -> dict[str, Any]:
+    candidate_id = _clean_text(item.get("news_id"), 80)
+    if not candidate_id:
+        candidate_id = hashlib.sha256(
+            (
+                _normalize_url(item.get("url") or item.get("source_url") or "")
+                + "|"
+                + _clean_text(item.get("ai_title") or item.get("title"), 500)
+            ).encode("utf-8")
+        ).hexdigest()[:20]
+    return {
+        "id": candidate_id,
+        "order": order,
+        "title": _clean_text(item.get("ai_title") or item.get("title"), 240),
+        "summary": _clean_text(
+            item.get("ai_summary")
+            or item.get("summary")
+            or item.get("snippet")
+            or item.get("description"),
+            500,
+        ),
+        "published_at": _clean_text(
+            item.get("source_date") or item.get("published_at"), 40
+        ),
+        "source": _clean_text(item.get("source") or item.get("source_domain"), 120),
+        "url": _normalize_url(item.get("url") or item.get("source_url") or ""),
+        "category": _clean_text(item.get("category") or item.get("ai_category"), 80),
+    }
+
+
+def _semantic_dedupe_history(item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": _clean_text(item.get("news_id") or item.get("id"), 80),
+        "title": _clean_text(item.get("title") or item.get("ai_title"), 240),
+        "summary": _clean_text(item.get("summary") or item.get("ai_summary"), 360),
+        "published_at": _clean_text(
+            item.get("source_date") or item.get("published_at"), 40
+        ),
+        "source": _clean_text(item.get("source"), 120),
+        "url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+    }
+
+
+def _semantic_priority_history(
+    candidate: dict[str, Any],
+    history: list[dict[str, Any]],
+    *,
+    limit: int = 12,
+) -> list[dict[str, Any]]:
+    candidate_url = _normalize_url(candidate.get("url") or "")
+    candidate_title = _clean_text(candidate.get("title"), 240).casefold()
+    candidate_summary = _clean_text(candidate.get("summary"), 500).casefold()
+    candidate_text = f"{candidate_title} {candidate_summary}"
+    candidate_terms = {
+        term
+        for term in re.findall(r"[a-z0-9&.+-]{2,}|[\u4e00-\u9fff]{2,}", candidate_text)
+        if term
+    }
+
+    def score(entry: dict[str, Any]) -> tuple[float, str]:
+        entry_url = _normalize_url(entry.get("url") or "")
+        entry_title = _clean_text(entry.get("title"), 240).casefold()
+        entry_summary = _clean_text(entry.get("summary"), 360).casefold()
+        entry_text = f"{entry_title} {entry_summary}"
+        entry_terms = {
+            term
+            for term in re.findall(r"[a-z0-9&.+-]{2,}|[\u4e00-\u9fff]{2,}", entry_text)
+            if term
+        }
+        overlap = len(candidate_terms & entry_terms) / max(
+            1, min(len(candidate_terms), len(entry_terms))
+        )
+        title_similarity = SequenceMatcher(
+            None,
+            re.sub(r"\W+", "", candidate_title),
+            re.sub(r"\W+", "", entry_title),
+        ).ratio()
+        exact_url = 1.0 if candidate_url and candidate_url == entry_url else 0.0
+        same_date = (
+            1.0
+            if candidate.get("published_at")
+            and candidate.get("published_at") == entry.get("published_at")
+            else 0.0
+        )
+        return (
+            exact_url * 100.0
+            + title_similarity * 8.0
+            + overlap * 5.0
+            + same_date,
+            entry.get("id") or "",
+        )
+
+    ranked = sorted(history, key=score, reverse=True)
+    return ranked[: max(1, limit)]
+
+
+def _validated_semantic_dedupe_decisions(
+    response: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    *,
+    valid_duplicate_ids: set[str],
+    identity_matches: dict[str, set[str]],
+) -> dict[str, dict[str, Any]]:
+    response_items = response.get("items") if isinstance(response, dict) else []
+    response_map = {
+        _clean_text(entry.get("id"), 80): entry
+        for entry in response_items or []
+        if isinstance(entry, dict) and _clean_text(entry.get("id"), 80)
+    }
+    decisions: dict[str, dict[str, Any]] = {}
+    for candidate in candidates:
+        candidate_id = candidate["id"]
+        raw = response_map.get(candidate_id)
+        if not isinstance(raw, dict):
+            raise RuntimeError(f"Agent 未返回候选 {candidate_id} 的去重结论")
+        raw_duplicate = raw.get("is_duplicate")
+        if isinstance(raw_duplicate, bool):
+            is_duplicate = raw_duplicate
+        elif str(raw_duplicate).strip().lower() in {"true", "1", "yes", "是", "重复"}:
+            is_duplicate = True
+        elif str(raw_duplicate).strip().lower() in {"false", "0", "no", "否", "不重复"}:
+            is_duplicate = False
+        else:
+            raise RuntimeError(f"Agent 未返回候选 {candidate_id} 的重复布尔值")
+        duplicate_of = _clean_text(raw.get("duplicate_of"), 80)
+        reason = _to_simplified_chinese(raw.get("reason"), 160)
+        if len(reason) < 8:
+            raise RuntimeError(f"Agent 未解释候选 {candidate_id} 的去重依据")
+        if is_duplicate:
+            if not duplicate_of or duplicate_of not in valid_duplicate_ids:
+                raise RuntimeError(
+                    f"Agent 为候选 {candidate_id} 返回了无效重复对象 {duplicate_of}"
+                )
+        else:
+            duplicate_of = ""
+        required_matches = identity_matches.get(candidate_id) or set()
+        if required_matches and (
+            not is_duplicate or duplicate_of not in required_matches
+        ):
+            raise RuntimeError(
+                f"Agent 对候选 {candidate_id} 的结论否认了同ID或同URL身份匹配"
+            )
+        decisions[candidate_id] = {
+            "id": candidate_id,
+            "is_duplicate": is_duplicate,
+            "duplicate_of": duplicate_of,
+            "reason": reason,
+        }
+    return decisions
+
+
+def _call_semantic_dedupe_agent(
+    candidates: list[dict[str, Any]],
+    *,
+    history: list[dict[str, Any]],
+    priority_history: list[dict[str, Any]],
+    earlier_candidates: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    reference_items = [*priority_history, *history, *earlier_candidates]
+    valid_duplicate_ids = {
+        entry["id"]
+        for entry in reference_items
+        if _clean_text(entry.get("id"), 80)
+    }
+    for index, candidate in enumerate(candidates):
+        valid_duplicate_ids.update(
+            entry["id"]
+            for entry in candidates[:index]
+            if _clean_text(entry.get("id"), 80)
+        )
+    identity_matches: dict[str, set[str]] = {}
+    for candidate in candidates:
+        candidate_id = candidate["id"]
+        candidate_url = _normalize_url(candidate.get("url") or "")
+        matches = {
+            _clean_text(entry.get("id"), 80)
+            for entry in [
+                *reference_items,
+                *[
+                    prior
+                    for prior in candidates
+                    if prior["order"] < candidate["order"]
+                ],
+            ]
+            if _clean_text(entry.get("id"), 80)
+            and (
+                _clean_text(entry.get("id"), 80) == candidate_id
+                or (
+                    candidate_url
+                    and candidate_url == _normalize_url(entry.get("url") or "")
+                )
+            )
+        }
+        if matches:
+            identity_matches[candidate_id] = matches
+    prompt = (
+        "你是新闻事件语义去重 Agent，拥有最终去重判断权。只输出合法JSON对象，结构为"
+        "{\"items\":[{\"id\":\"当前候选id\",\"is_duplicate\":true或false,"
+        "\"duplicate_of\":\"历史或更早候选id；不重复时为空\","
+        "\"reason\":\"判断依据\"}]}。必须逐条返回当前候选，id原样保留。"
+        "重复的定义是两条记录讲述同一个现实世界事件、同一次公告、同一份财报、"
+        "同一项产品发布或同一笔交易，即使标题、语言、媒体和措辞不同也算重复。"
+        "同一家公司、同一行业主题、相近关键词或同一天发生但属于不同动作时绝不算重复。"
+        "不得仅凭标题词重合判断，必须综合标题、摘要、发布时间、主体、动作和关键数字。"
+        "duplicate_of只能引用history或earlier_candidates，或当前列表中顺序更早的候选；"
+        "priority_history是程序从全历史中召回的高可能匹配项，只用于帮助定位，不代表已经重复；"
+        "必须优先逐条核对priority_history，尤其是URL相同、主体动作相同或关键数字相同的记录。"
+        "identity_matches列出同ID或规范化URL完全相同的身份匹配；这已证明是同一条记录，"
+        "必须判is_duplicate=true并从对应ID中选择duplicate_of。"
+        "证据不足时判为不重复。不要Markdown，不要输出未提供的事实。"
+    )
+    response = _call_internal_ai(
+        prompt,
+        json.dumps(
+            {
+                "current_candidates": candidates,
+                "priority_history": priority_history,
+                "identity_matches": {
+                    key: sorted(value) for key, value in identity_matches.items()
+                },
+                "history": history,
+                "earlier_candidates": earlier_candidates,
+            },
+            ensure_ascii=False,
+        ),
+        max_tokens=max(1200, len(candidates) * 320),
+    )
+    return _validated_semantic_dedupe_decisions(
+        response,
+        candidates,
+        valid_duplicate_ids=valid_duplicate_ids,
+        identity_matches=identity_matches,
+    )
+
+
+def agent_semantic_deduplicate_candidates(
+    items: list[dict[str, Any]],
+    history_items: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Let the internal Agent decide whether candidates duplicate any prior event."""
+    if not items:
+        return {
+            "kept": [],
+            "duplicates": [],
+            "deferred": [],
+            "decisions": [],
+            "history_count": len(history_items),
+        }
+    candidates = [
+        _semantic_dedupe_candidate(item, order)
+        for order, item in enumerate(items, start=1)
+    ]
+    item_by_id = {
+        candidate["id"]: item for candidate, item in zip(candidates, items)
+    }
+    history = [
+        entry
+        for entry in (_semantic_dedupe_history(item) for item in history_items)
+        if entry["id"] and entry["title"]
+    ]
+    chunks = [
+        history[offset : offset + SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE]
+        for offset in range(0, len(history), SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE)
+    ] or [[]]
+    priority_by_id = {
+        candidate["id"]: _semantic_priority_history(candidate, history)
+        for candidate in candidates
+    }
+    aggregate: dict[str, dict[str, Any]] = {
+        candidate["id"]: {
+            "id": candidate["id"],
+            "is_duplicate": False,
+            "duplicate_of": "",
+            "reason": "Agent 已核对全部历史分片，未发现同一事件。",
+            "assessed_shards": 0,
+            "errors": [],
+        }
+        for candidate in candidates
+    }
+    for offset in range(0, len(candidates), SEMANTIC_DEDUPE_BATCH_SIZE):
+        batch = candidates[offset : offset + SEMANTIC_DEDUPE_BATCH_SIZE]
+        earlier = candidates[:offset]
+        for shard_index, history_chunk in enumerate(chunks, start=1):
+            active = [
+                candidate
+                for candidate in batch
+                if not aggregate[candidate["id"]]["is_duplicate"]
+            ]
+            if not active:
+                break
+            try:
+                priority_history = list(
+                    {
+                        entry["id"]: entry
+                        for candidate in active
+                        for entry in priority_by_id[candidate["id"]]
+                    }.values()
+                )
+                decisions = _call_semantic_dedupe_agent(
+                    active,
+                    history=history_chunk,
+                    priority_history=priority_history,
+                    earlier_candidates=earlier,
+                )
+            except Exception as batch_exc:
+                logging.error(
+                    "语义去重 Agent 批量判断失败，本批 %s 条逐条重试：%s",
+                    len(active),
+                    _clean_text(batch_exc, 240),
+                )
+                decisions = {}
+                for candidate in active:
+                    try:
+                        decisions.update(
+                            _call_semantic_dedupe_agent(
+                                [candidate],
+                                history=history_chunk,
+                                priority_history=priority_by_id[candidate["id"]],
+                                earlier_candidates=[
+                                    prior
+                                    for prior in candidates
+                                    if prior["order"] < candidate["order"]
+                                ],
+                            )
+                        )
+                    except Exception as exc:
+                        aggregate[candidate["id"]]["errors"].append(
+                            f"shard {shard_index}: {_clean_text(exc, 240)}"
+                        )
+            for candidate in active:
+                decision = decisions.get(candidate["id"])
+                if not decision:
+                    continue
+                record = aggregate[candidate["id"]]
+                record["assessed_shards"] += 1
+                if decision["is_duplicate"]:
+                    record.update(
+                        {
+                            "is_duplicate": True,
+                            "duplicate_of": decision["duplicate_of"],
+                            "reason": decision["reason"],
+                        }
+                    )
+
+    kept: list[dict[str, Any]] = []
+    duplicates: list[dict[str, Any]] = []
+    deferred: list[dict[str, Any]] = []
+    for candidate in candidates:
+        decision = aggregate[candidate["id"]]
+        source_item = item_by_id[candidate["id"]]
+        if decision["is_duplicate"]:
+            duplicates.append(
+                {
+                    "item": source_item,
+                    "duplicate_of": decision["duplicate_of"],
+                    "reason": decision["reason"],
+                }
+            )
+        elif decision["errors"] or decision["assessed_shards"] != len(chunks):
+            deferred.append(
+                {
+                    "item": source_item,
+                    "errors": decision["errors"]
+                    or [
+                        f"Agent 只完成 {decision['assessed_shards']}/{len(chunks)} 个历史分片"
+                    ],
+                }
+            )
+        else:
+            kept.append(source_item)
+    audit = {
+        "version": 1,
+        "generated_at": _now_iso(),
+        "history_count": len(history),
+        "history_shards": len(chunks),
+        "candidate_count": len(items),
+        "kept_count": len(kept),
+        "duplicate_count": len(duplicates),
+        "deferred_count": len(deferred),
+        "decisions": list(aggregate.values()),
+    }
+    _atomic_write_json(SEMANTIC_DEDUPE_AUDIT_PATH, audit)
+    return {
+        "kept": kept,
+        "duplicates": duplicates,
+        "deferred": deferred,
+        "decisions": audit["decisions"],
+        "history_count": len(history),
+        "history_shards": len(chunks),
+    }
 
 
 def _polish_approved_brief(brief: dict[str, Any]) -> dict[str, Any]:

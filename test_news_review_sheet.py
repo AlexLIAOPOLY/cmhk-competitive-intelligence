@@ -100,6 +100,17 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "category": "行业动态",
         }
 
+    @staticmethod
+    def _semantic_keep(items, history):
+        return {
+            "kept": items,
+            "duplicates": [],
+            "deferred": [],
+            "decisions": [],
+            "history_count": len(history),
+            "history_shards": 1,
+        }
+
     def test_sync_places_new_rows_above_history_and_preserves_history(self):
         writes = []
         with (
@@ -127,6 +138,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 strategic_briefing,
                 "polish_candidates_before_review",
                 side_effect=lambda items: items,
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "agent_semantic_deduplicate_candidates",
+                side_effect=self._semantic_keep,
             ),
         ):
             result = review_sheet.sync_candidates([self._new_item()])
@@ -161,6 +177,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 strategic_briefing,
                 "polish_candidates_before_review",
                 side_effect=lambda items: items,
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "agent_semantic_deduplicate_candidates",
+                side_effect=self._semantic_keep,
             ),
         ):
             review_sheet.sync_candidates([self._new_item()])

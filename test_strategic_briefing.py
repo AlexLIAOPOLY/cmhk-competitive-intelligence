@@ -122,6 +122,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("业绩或现金流指引", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("地域与分类是两个独立维度", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("技术监控词命中", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
+        self.assertIn("泛香港5G基站", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
 
     def test_competitor_candidate_uses_ai_semantic_decision_without_hard_override(self):
         item = {
@@ -187,6 +188,184 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_title"], single_result["title"])
         self.assertEqual(ai_call.call_count, 2)
 
+    def test_semantic_agent_deduplicates_same_event_with_different_headline(self):
+        item = {
+            "news_id": "candidate-1",
+            "ai_title": "Verizon第二季度业绩超出预期",
+            "ai_summary": "Verizon公布第二季度财报，收入与用户表现超过市场预期。",
+            "source_date": "2026-07-25",
+            "source": "媒体甲",
+            "url": "https://example.com/verizon-results-cn",
+        }
+        history = [
+            {
+                "news_id": "history-1",
+                "title": "Verizon Q2 results beat expectations",
+                "summary": "The carrier reported its second-quarter revenue and subscriber results.",
+                "source_date": "2026-07-25",
+                "source": "媒体乙",
+                "source_url": "https://example.com/verizon-results-en",
+            }
+        ]
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value={
+                    "items": [
+                        {
+                            "id": "candidate-1",
+                            "is_duplicate": True,
+                            "duplicate_of": "history-1",
+                            "reason": "两条记录均描述Verizon同一份第二季度财报及同一组业绩结果。",
+                        }
+                    ]
+                },
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], history)
+
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(len(result["duplicates"]), 1)
+        self.assertEqual(result["duplicates"][0]["duplicate_of"], "history-1")
+
+    def test_semantic_priority_history_surfaces_exact_url_before_similar_topics(self):
+        candidate = {
+            "id": "candidate",
+            "title": "Verizon门店举办返校季活动",
+            "summary": "Verizon门店向家庭赠送背包。",
+            "published_at": "2026-07-25",
+            "url": "https://example.com/verizon-backpack?utm_source=rss",
+        }
+        history = [
+            {
+                "id": "same-topic",
+                "title": "Verizon开展暑期客户活动",
+                "summary": "Verizon在多个城市举办客户活动。",
+                "published_at": "2026-07-25",
+                "url": "https://example.com/verizon-summer",
+            },
+            {
+                "id": "same-url",
+                "title": "Local Verizon stores host backpack giveaways",
+                "summary": "Stores give backpacks to families for back-to-school.",
+                "published_at": "2026-07-25",
+                "url": "https://example.com/verizon-backpack",
+            },
+        ]
+
+        ranked = briefing._semantic_priority_history(candidate, history)
+
+        self.assertEqual(ranked[0]["id"], "same-url")
+
+    def test_semantic_agent_keeps_different_events_from_same_competitor(self):
+        item = {
+            "news_id": "candidate-2",
+            "ai_title": "Verizon在纽约扩建5G网络",
+            "ai_summary": "Verizon宣布在纽约新增5G基站并扩大网络覆盖。",
+            "source_date": "2026-07-26",
+            "source": "媒体甲",
+            "url": "https://example.com/verizon-5g",
+        }
+        history = [
+            {
+                "news_id": "history-2",
+                "title": "Verizon公布第二季度财报",
+                "summary": "Verizon披露收入、利润和用户数据。",
+                "source_date": "2026-07-25",
+                "source": "媒体乙",
+                "source_url": "https://example.com/verizon-results",
+            }
+        ]
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value={
+                    "items": [
+                        {
+                            "id": "candidate-2",
+                            "is_duplicate": False,
+                            "duplicate_of": "",
+                            "reason": "两条新闻虽涉及同一公司，但分别是网络扩建和财报披露两个不同事件。",
+                        }
+                    ]
+                },
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], history)
+
+        self.assertEqual(result["kept"], [item])
+        self.assertEqual(result["duplicates"], [])
+
+    def test_semantic_agent_failure_defers_candidate_instead_of_bypassing(self):
+        item = {
+            "news_id": "candidate-3",
+            "ai_title": "香港宽频推出企业服务",
+            "ai_summary": "香港宽频公布新的企业连接服务及客户安排。",
+            "source_date": "2026-07-26",
+            "source": "媒体甲",
+            "url": "https://example.com/hkbn-enterprise",
+        }
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=RuntimeError("Agent unavailable"),
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], [])
+
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["duplicates"], [])
+        self.assertEqual(len(result["deferred"]), 1)
+
+    def test_semantic_agent_cannot_deny_same_id_or_url_identity_match(self):
+        item = {
+            "news_id": "same-id",
+            "ai_title": "Verizon门店举办返校季活动",
+            "ai_summary": "Verizon门店向家庭赠送背包。",
+            "source_date": "2026-07-25",
+            "source": "媒体甲",
+            "url": "https://example.com/verizon-backpack",
+        }
+        history = [
+            {
+                "news_id": "same-id",
+                "title": "Local Verizon stores host backpack giveaways",
+                "summary": "Stores give backpacks to families.",
+                "source_date": "2026-07-25",
+                "source": "媒体乙",
+                "source_url": "https://example.com/verizon-backpack",
+            }
+        ]
+        invalid_response = {
+            "items": [
+                {
+                    "id": "same-id",
+                    "is_duplicate": False,
+                    "duplicate_of": "",
+                    "reason": "模型错误地认为标题语言不同，所以不是同一事件记录。",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value=invalid_response,
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], history)
+
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["duplicates"], [])
+        self.assertEqual(len(result["deferred"]), 1)
+
     def test_candidate_editor_marks_verified_competitor_context(self):
         payload = briefing._candidate_editor_input(
             "1234567890abcdef",
@@ -210,6 +389,45 @@ class StrategicBriefingTests(unittest.TestCase):
                 }
             )
         )
+
+    def test_editor_tells_agent_to_distinguish_hong_kong_csl_from_csl_limited(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "CSL profit expected to remain flat in FY27",
+            "snippet": "A broker maintained its rating on the Australian company.",
+            "keywords": ["csl"],
+            "source": "Market News",
+            "url": "https://example.com/news/csl-rating",
+        }
+        ai_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "title": "CSL预计FY27利润持平",
+                    "summary": "券商预计澳洲CSL公司FY27利润持平，并维持其股票评级。",
+                    "should_include": False,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "csl",
+                    "inclusion_reason": "主体是澳洲生物科技公司CSL Limited，并非香港csl电讯品牌。",
+                    "region_reason": "事件主体为澳洲公司。",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value=ai_result,
+            ) as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(result, [])
+        self.assertIn("澳洲生物科技公司CSL Limited", ai_call.call_args.args[0])
 
     def test_approved_brief_prompt_requires_simplified_chinese(self):
         with mock.patch.object(
