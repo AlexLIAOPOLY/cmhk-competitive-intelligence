@@ -34,7 +34,7 @@ STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
-AI_EDITOR_VERSION = 8
+AI_EDITOR_VERSION = 10
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "分类必须结合monitoring_module、rule_category、新闻主体和事件实质综合判断。"
@@ -43,6 +43,9 @@ _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "管理层或经营策略时，应归为‘竞对动态’。"
     "只有新闻讨论跨多家公司的共同趋势、全行业统计、通用技术演进或行业整体变化，"
     "且不是以某一家被监测运营商的经营动作为核心时，才归为‘行业动态’。"
+    "英特尔、AMD、英伟达等技术厂商若只是因CPU、算力、AI等技术监控词命中，"
+    "应归为‘行业动态’，不得自动视作电信竞对；只有监控模块明确将该企业列为竞争对手时"
+    "才可归为‘竞对动态’。"
     "不要因为地域是‘国际/行业’就把分类写成‘行业动态’；地域与分类是两个独立维度。"
     "rule_category是规则层初判，除非正文证据明确表明其不适用，否则应优先沿用；"
     "如需改写，必须依据事件实质选择更准确的业务分类。"
@@ -1588,10 +1591,13 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "先判断should_include：只有新闻与输入matched_keywords中的至少一个监控词存在"
                     "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
                     "仅媒体提及、同名误命中、泛社会新闻或关键词没有正文证据时必须为false。"
-                    "competitor_candidate=true表示上游已通过时间、独立新闻形态、主体命中和去重门禁的竞对候选；"
-                    "这类候选无论事件规模大小，should_include都必须为true。竞对的产品与资费、促销、"
-                    "客户服务、经营数据、网络建设、技术、合作、投资并购、管理层、监管和资本市场信息均应纳入，"
-                    "不得以‘战略价值不够大、只是常规经营、只是产品信息’为由淘汰。"
+                    "competitor_candidate=true只表示上游发现了可能的竞对词命中，不能当作主体已经确认。"
+                    "必须结合标题和摘要核实被监测竞对确实是事件主体、事件对象或被实质讨论的企业；"
+                    "仅缩写重名、媒体名称、体育队名、人名、地名或正文中偶然出现监控词时必须为false。"
+                    "一旦核实确为竞对信息，无论事件规模大小，should_include都必须为true。"
+                    "竞对的产品与资费、促销、客户服务、经营数据、网络建设、技术、合作、投资并购、"
+                    "管理层、监管和资本市场信息均应纳入，不得以‘战略价值不够大、只是常规经营、"
+                    "只是产品信息’为由淘汰。"
                     "title须为简洁准确的简体中文标题，品牌名和必要缩写可保留。"
                     "summary须用简体中文写一至两句、最多96个中文字符直接说明发生了什么，"
                     "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
@@ -1610,11 +1616,11 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             )
         except Exception as exc:
             logging.error(
-                "公司内部 AI 批量编辑失败，本批 %s 条留待下轮重试：%s",
+                "公司内部 AI 批量编辑失败，本批 %s 条立即降级为逐条重试：%s",
                 len(batch),
                 _clean_text(exc, 240),
             )
-            continue
+            response = {}
         response_items = response.get("items") if isinstance(response, dict) else []
         response_map = {
             str(entry.get("id") or ""): entry
@@ -1643,9 +1649,12 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
                             "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
                             "should_include只有在新闻与matched_keywords存在正文证据和战略信息价值时才为true。"
-                            "若competitor_candidate=true，表示上游已确认时效、新闻形态和竞对主体，"
-                            "则无论事件规模大小should_include必须为true；常规经营、产品资费、促销、"
-                            "客户服务、网络技术、合作投资、管理层及资本市场信息都不得因不够重大而淘汰。"
+                            "competitor_candidate=true只表示上游发现疑似竞对词命中，不能替代语义核实。"
+                            "先根据标题和摘要确认被监测竞对确实是事件主体、对象或被实质讨论的企业；"
+                            "缩写重名、媒体名、体育队名、人名、地名及偶然提词必须排除。"
+                            "确认是真实竞对信息后，无论事件大小should_include都必须为true；"
+                            "常规经营、产品资费、促销、客户服务、网络技术、合作投资、"
+                            "管理层及资本市场信息都不得因不够重大而淘汰。"
                             f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                             "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
                             "并用顿号分隔；inclusion_reason说明战略价值；"
@@ -1688,21 +1697,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         edited = resolved.get(_candidate_editor_key(item))
         if not edited:
             continue
-        if _is_competitor_candidate(item) and not edited["should_include"]:
-            source_keywords = item.get("keywords") or []
-            if isinstance(source_keywords, str):
-                source_keywords = re.split(r"[,，、;；|\n]+", source_keywords)
-            edited = {
-                **edited,
-                "should_include": True,
-                "keywords": edited["keywords"]
-                or "、".join(
-                    _clean_text(keyword, 80)
-                    for keyword in source_keywords
-                    if _clean_text(keyword, 80)
-                ),
-                "inclusion_reason": "时效内竞对动态，保留进入候选池供人工审核。",
-            }
         item.setdefault("source_title", _clean_text(item.get("title"), 500))
         item["ai_title"] = edited["title"]
         item["ai_summary"] = edited["summary"]

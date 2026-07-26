@@ -121,8 +121,9 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("T-Mobile", payload["matched_keywords"])
         self.assertIn("业绩或现金流指引", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("地域与分类是两个独立维度", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
+        self.assertIn("技术监控词命中", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
 
-    def test_competitor_candidate_is_included_even_when_ai_marks_it_unimportant(self):
+    def test_competitor_candidate_uses_ai_semantic_decision_without_hard_override(self):
         item = {
             "module": "竞争对手",
             "category": "行业动态",
@@ -148,11 +149,43 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.polish_candidates_before_review([item])
 
-        self.assertEqual(len(result), 1)
-        self.assertTrue(result[0]["ai_should_include"])
-        self.assertEqual(result[0]["category"], "行业动态")
-        self.assertIn("竞对动态", result[0]["ai_inclusion_reason"])
+        self.assertEqual(result, [])
         ai_call.assert_not_called()
+
+    def test_batch_editor_failure_immediately_retries_each_item(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "HKBN推出企业宽频服务更新",
+            "snippet": "HKBN announced an enterprise broadband service update in Hong Kong.",
+            "keywords": ["HKBN"],
+            "source": "Example News",
+            "url": "https://example.com/news/hkbn-broadband",
+        }
+        single_result = {
+            "title": "香港宽频更新企业宽频服务",
+            "summary": "香港宽频在香港推出企业宽频服务更新，调整企业客户的网络服务安排。",
+            "should_include": True,
+            "region": "香港本地",
+            "category": "竞对动态",
+            "keywords": "HKBN",
+            "inclusion_reason": "直接反映香港宽频的企业客户产品与服务变化。",
+            "region_reason": "事件主体及受影响市场均在香港。",
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=[ValueError("unterminated JSON"), single_result],
+            ) as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_title"], single_result["title"])
+        self.assertEqual(ai_call.call_count, 2)
 
     def test_candidate_editor_marks_verified_competitor_context(self):
         payload = briefing._candidate_editor_input(
