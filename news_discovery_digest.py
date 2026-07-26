@@ -57,7 +57,7 @@ AGENTIC_FOLLOWUP_LIMIT = min(
 )
 AGENTIC_AI_ATTEMPTS = min(
     3,
-    max(1, int(os.environ.get("CMHK_NEWS_AGENTIC_AI_ATTEMPTS", "2"))),
+    max(1, int(os.environ.get("CMHK_NEWS_AGENTIC_AI_ATTEMPTS", "3"))),
 )
 LOCAL_MODULES = {"竞争对手", "政策/法规类", "香港本地新闻", "市场/产品类"}
 LOCAL_TERMS = (
@@ -466,7 +466,13 @@ def _normalize_agentic_plans(
     for raw in raw_queries:
         if not isinstance(raw, dict):
             continue
-        query = _clean_text(raw.get("query"), 700)
+        raw_query = " ".join(str(raw.get("query") or "").split())
+        # A useful Agentic query is intentionally narrow. Reject runaway
+        # all-operator queries instead of silently truncating them into an
+        # invalid or misleading search expression.
+        if len(raw_query) > 180:
+            continue
+        query = _clean_text(raw_query, 180)
         normalized = _normalized_query(query)
         if len(query) < 4 or not normalized or normalized in existing_queries:
             continue
@@ -483,23 +489,33 @@ def _normalize_agentic_plans(
         if not keywords:
             continue
         module = _clean_text(raw.get("module"), 100) or "其他"
+        competitor_evidence = " ".join([query, *keywords])
+        canonical_matches = {
+            str(group["canonical"])
+            for group in mandatory_search_groups()
+            if any(
+                _term_matches(competitor_evidence, str(alias))
+                for alias in group["terms"]
+            )
+        }
         try:
             lookback_days = min(7, max(0, int(raw.get("lookback_days") or 0)))
         except (TypeError, ValueError):
             lookback_days = 0
-        plans.append(
-            {
-                "module": module,
-                "query": query,
-                "fallback_query": query,
-                "keywords": keywords,
-                "lookback_days": lookback_days,
-                "search_origin": f"agentic_{phase}",
-                "semantic_relevance": True,
-                "agentic_intent": _clean_text(raw.get("intent"), 300),
-                "agentic_reason": _clean_text(raw.get("reason"), 300),
-            }
-        )
+        plan = {
+            "module": module,
+            "query": query,
+            "fallback_query": query,
+            "keywords": keywords,
+            "lookback_days": lookback_days,
+            "search_origin": f"agentic_{phase}",
+            "semantic_relevance": True,
+            "agentic_intent": _clean_text(raw.get("intent"), 300),
+            "agentic_reason": _clean_text(raw.get("reason"), 300),
+        }
+        if len(canonical_matches) == 1:
+            plan["canonical_competitor"] = next(iter(canonical_matches))
+        plans.append(plan)
         existing_queries.add(normalized)
         if len(plans) >= limit:
             break
@@ -515,12 +531,29 @@ def _call_agentic_search_agent(
     start_at: datetime,
     end_at: datetime,
     limit: int,
+    target_competitor: str = "",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     existing_queries = {
         _normalized_query(plan.get("fallback_query") or plan.get("query"))
         for plan in existing_plans
     }
     monitoring_context = _agentic_monitoring_context(spec)
+    target_competitor = _clean_text(target_competitor, 120)
+    target_aliases = list(
+        (monitoring_context.get("fixed_competitors") or {}).get(
+            target_competitor,
+            [],
+        )
+    )
+    if target_competitor:
+        monitoring_context = {
+            **monitoring_context,
+            "fixed_competitors": {
+                target_competitor: target_aliases,
+            },
+            "benchmark_operators": [],
+            "priority_topics": [],
+        }
     system_prompt = (
         "你是香港电信竞对情报的 Agentic Search Planner。只输出合法 JSON 对象，结构为"
         "{\"sufficient\":true或false,\"assessment\":\"覆盖判断\","
@@ -536,10 +569,28 @@ def _call_agentic_search_agent(
         "AI/云/数据中心投资、管理层变化；可使用中英文同义词，但不要只是原关键词逐字重排。"
         "每条查询必须同时包含主体和至少一个事件意图词；禁止仅罗列公司或品牌别名做综合监测，"
         "因为固定搜索已经覆盖这些名称。missing_fixed_competitors表示结果缺口，不表示名称查询未执行。"
+        "每条查询只针对一个canonical竞对，最多包含3个该竞对别名和2组事件意图词；"
+        "query最多180个字符。禁止把所有运营商拼进同一查询，禁止重复同一个词，"
+        "禁止为了填满长度反复输出同义词。queries数量不得超过query_limit。"
         "为确保JSON稳定，query字段内禁止使用英文双引号字符，主体名称直接写即可；所有字符串必须正确转义。"
         "不要生成网址、新闻事实或不在监控范围内的新主体。避免重复现有查询。"
         "若覆盖充分可返回 sufficient=true 和空 queries。"
     )
+    if target_competitor:
+        system_prompt += (
+            f"本次唯一目标是{target_competitor}。只能为该竞对生成最多1条查询，"
+            "不得出现其他运营商；若现有结果已覆盖该竞对则返回sufficient=true和空queries。"
+        )
+    existing_query_values = [
+        _clean_text(plan.get("fallback_query") or plan.get("query"), 240)
+        for plan in existing_plans
+    ]
+    if target_competitor and target_aliases:
+        existing_query_values = [
+            query
+            for query in existing_query_values
+            if any(_term_matches(query, alias) for alias in target_aliases)
+        ]
     user_payload = {
         "phase": phase,
         "time_window": {
@@ -548,12 +599,20 @@ def _call_agentic_search_agent(
         },
         "query_limit": limit,
         "monitoring_context": monitoring_context,
-        "current_coverage": coverage,
-        "existing_queries": [
-            _clean_text(plan.get("fallback_query") or plan.get("query"), 240)
-            for plan in existing_plans[-40:]
-        ],
+        "current_coverage": {
+            **coverage,
+            "missing_fixed_competitors": (
+                [target_competitor]
+                if target_competitor
+                else coverage.get("missing_fixed_competitors") or []
+            ),
+            "sample_results": list(coverage.get("sample_results") or [])[:8],
+        },
+        "existing_queries": existing_query_values[-12 if target_competitor else -40 :],
     }
+    if target_competitor:
+        user_payload["target_competitor"] = target_competitor
+        user_payload["target_aliases"] = target_aliases
     last_error = ""
     for attempt in range(1, AGENTIC_AI_ATTEMPTS + 1):
         try:
@@ -561,12 +620,18 @@ def _call_agentic_search_agent(
             if attempt > 1:
                 attempt_payload["format_correction"] = (
                     "上一次输出不是合法JSON。请重新生成完整JSON对象；"
-                    "query字段不要包含英文双引号，不要输出Markdown或解释文字。"
+                    "query字段不要包含英文双引号，不要输出Markdown或解释文字；"
+                    "每条query只写一个竞对、最多3个别名和2组事件意图，"
+                    "最多180个字符且任何词不得重复。"
                 )
             response = strategic_briefing._call_internal_ai(
                 system_prompt,
                 json.dumps(attempt_payload, ensure_ascii=False),
-                max_tokens=max(1800, limit * 180),
+                # Follow-up plans include a coverage assessment plus several
+                # structured queries. A smaller budget intermittently cut the
+                # JSON before the closing object, so leave enough room for a
+                # complete response and retry malformed output independently.
+                max_tokens=max(2600, limit * 320),
             )
             plans = _normalize_agentic_plans(
                 response,
@@ -574,10 +639,18 @@ def _call_agentic_search_agent(
                 existing_queries=existing_queries,
                 limit=limit,
             )
+            if target_competitor:
+                for plan in plans:
+                    plan["canonical_competitor"] = target_competitor
+            sufficient = bool(response.get("sufficient"))
+            if not sufficient and not plans:
+                raise RuntimeError(
+                    "Agent判断仍有覆盖缺口，但未返回通过校验的补搜查询"
+                )
             return plans, {
                 "status": "completed",
                 "attempts": attempt,
-                "sufficient": bool(response.get("sufficient")),
+                "sufficient": sufficient,
                 "assessment": _clean_text(response.get("assessment"), 500),
                 "query_count": len(plans),
             }
@@ -597,6 +670,79 @@ def _call_agentic_search_agent(
         "assessment": "",
         "query_count": 0,
         "error": last_error,
+    }
+
+
+def _call_agentic_followup_agents(
+    *,
+    spec: dict[str, Any],
+    coverage: dict[str, Any],
+    existing_plans: list[dict[str, Any]],
+    start_at: datetime,
+    end_at: datetime,
+    limit: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Plan the second round one missing competitor at a time.
+
+    A single all-competitor request can make the model concatenate every alias
+    and event word into one unbounded query. Per-target calls keep the Agent's
+    authority while making each decision small, auditable and retryable.
+    """
+    targets = [
+        _clean_text(value, 120)
+        for value in coverage.get("missing_fixed_competitors") or []
+        if _clean_text(value, 120)
+    ][:limit]
+    if not targets:
+        return [], {
+            "status": "completed",
+            "attempts": 0,
+            "sufficient": True,
+            "assessment": "Agentic扩展结果已覆盖全部固定竞对，无需第二轮补搜。",
+            "query_count": 0,
+            "targets": [],
+        }
+    plans: list[dict[str, Any]] = []
+    target_traces: list[dict[str, Any]] = []
+    evolving_plans = list(existing_plans)
+    for target in targets:
+        target_plans, trace = _call_agentic_search_agent(
+            phase="followup",
+            spec=spec,
+            coverage=coverage,
+            existing_plans=evolving_plans,
+            start_at=start_at,
+            end_at=end_at,
+            limit=1,
+            target_competitor=target,
+        )
+        plans.extend(target_plans)
+        evolving_plans.extend(target_plans)
+        target_traces.append({"target": target, **trace})
+    completed_count = sum(
+        trace.get("status") == "completed" for trace in target_traces
+    )
+    status = (
+        "completed"
+        if completed_count == len(target_traces)
+        else "partial"
+        if completed_count
+        else "failed"
+    )
+    assessments = list(
+        dict.fromkeys(
+            _clean_text(trace.get("assessment"), 240)
+            for trace in target_traces
+            if _clean_text(trace.get("assessment"), 240)
+        )
+    )
+    return plans, {
+        "status": status,
+        "attempts": sum(int(trace.get("attempts") or 0) for trace in target_traces),
+        "sufficient": all(bool(trace.get("sufficient")) for trace in target_traces),
+        "assessment": "；".join(assessments)[:500],
+        "query_count": len(plans),
+        "targets": target_traces,
     }
 
 
@@ -759,8 +905,7 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         else:
             combined = _deduplicate(all_items)
             followup_coverage = _coverage_digest(combined, errors=errors)
-            followup_plans, followup_trace = _call_agentic_search_agent(
-                phase="followup",
+            followup_plans, followup_trace = _call_agentic_followup_agents(
                 spec=spec,
                 coverage=followup_coverage,
                 existing_plans=executed_plans,

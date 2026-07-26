@@ -14,6 +14,76 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 
 class AgenticNewsSearchTests(unittest.TestCase):
+    def test_agentic_planner_has_room_and_retries_for_complete_json(self):
+        spec = {
+            "modules": [{"name": "竞争对手", "keywords": ["HKT"], "source_urls": []}]
+        }
+        with mock.patch.object(
+            strategic_briefing,
+            "_call_internal_ai",
+            return_value={
+                "sufficient": True,
+                "assessment": "覆盖充分",
+                "queries": [],
+            },
+        ) as call:
+            plans, trace = digest._call_agentic_search_agent(
+                phase="followup",
+                spec=spec,
+                coverage={"result_count": 1},
+                existing_plans=[],
+                start_at=datetime(2026, 7, 25, 8, 0, tzinfo=HKT),
+                end_at=datetime(2026, 7, 25, 15, 0, tzinfo=HKT),
+                limit=6,
+            )
+
+        self.assertEqual(plans, [])
+        self.assertEqual(trace["status"], "completed")
+        self.assertEqual(digest.AGENTIC_AI_ATTEMPTS, 3)
+        self.assertGreaterEqual(call.call_args.kwargs["max_tokens"], 2600)
+        self.assertIn("query最多180个字符", call.call_args.args[0])
+
+    def test_target_planner_retries_gap_without_valid_query_and_sets_canonical(self):
+        responses = [
+            {
+                "sufficient": False,
+                "assessment": "仍有缺口",
+                "queries": [],
+            },
+            {
+                "sufficient": False,
+                "assessment": "需要补搜HGC网络建设",
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": "HGC Global Communications 网络建设",
+                        "keywords": ["HGC Global Communications"],
+                        "intent": "网络建设",
+                    }
+                ],
+            },
+        ]
+        with mock.patch.object(
+            strategic_briefing,
+            "_call_internal_ai",
+            side_effect=responses,
+        ) as call:
+            plans, trace = digest._call_agentic_search_agent(
+                phase="followup",
+                spec={"modules": []},
+                coverage={"missing_fixed_competitors": ["HGC"]},
+                existing_plans=[],
+                start_at=datetime(2026, 7, 25, 8, 0, tzinfo=HKT),
+                end_at=datetime(2026, 7, 25, 15, 0, tzinfo=HKT),
+                limit=1,
+                target_competitor="HGC",
+            )
+
+        self.assertEqual(call.call_count, 2)
+        self.assertEqual(trace["status"], "completed")
+        self.assertEqual(trace["attempts"], 2)
+        self.assertEqual(plans[0]["canonical_competitor"], "HGC")
+
     def test_agentic_plan_keeps_monitoring_term_relevance_guard(self):
         raw = b"""<?xml version="1.0" encoding="UTF-8"?>
         <rss><channel><item>
@@ -87,6 +157,68 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(plans[0]["search_origin"], "agentic_expansion")
         self.assertTrue(plans[0]["semantic_relevance"])
         self.assertIn("subscriber growth", plans[0]["query"])
+        self.assertEqual(plans[0]["canonical_competitor"], "HKT")
+
+    def test_agentic_plan_rejects_runaway_all_operator_query(self):
+        plans = digest._normalize_agentic_plans(
+            {
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": "HKT " + " OR 裁员" * 60,
+                        "keywords": ["HKT"],
+                        "intent": "失控的超长查询",
+                    }
+                ]
+            },
+            phase="followup",
+            existing_queries=set(),
+            limit=6,
+        )
+
+        self.assertEqual(plans, [])
+
+    def test_followup_planning_isolated_by_missing_competitor(self):
+        def fake_planner(**kwargs):
+            target = kwargs["target_competitor"]
+            return (
+                [
+                    {
+                        "query": f"{target} 资费调整",
+                        "fallback_query": f"{target} 资费调整",
+                    }
+                ],
+                {
+                    "status": "completed",
+                    "attempts": 1,
+                    "sufficient": False,
+                    "assessment": f"补搜{target}",
+                    "query_count": 1,
+                },
+            )
+
+        with mock.patch.object(
+            digest,
+            "_call_agentic_search_agent",
+            side_effect=fake_planner,
+        ) as planner:
+            plans, trace = digest._call_agentic_followup_agents(
+                spec={"modules": []},
+                coverage={
+                    "missing_fixed_competitors": ["HKT", "SmarTone"],
+                },
+                existing_plans=[],
+                start_at=datetime(2026, 7, 25, 8, 0, tzinfo=HKT),
+                end_at=datetime(2026, 7, 25, 15, 0, tzinfo=HKT),
+                limit=6,
+            )
+
+        self.assertEqual(len(plans), 2)
+        self.assertEqual(trace["status"], "completed")
+        self.assertEqual(
+            [call.kwargs["target_competitor"] for call in planner.call_args_list],
+            ["HKT", "SmarTone"],
+        )
 
     def test_collect_news_keeps_fixed_search_when_agentic_planner_fails(self):
         spec = {
