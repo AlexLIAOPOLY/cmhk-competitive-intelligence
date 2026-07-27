@@ -715,6 +715,31 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("font-size: 24px;", styles)
         self.assertIn("margin-top: auto;", styles)
 
+    def test_homepage_keeps_report_badge_without_news_hover_or_global_dashboard(self) -> None:
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        backend = (web_app.ROOT / "web_app.py").read_text(encoding="utf-8")
+
+        self.assertIn('id="reportLibraryNewDot"', markup)
+        self.assertNotIn('data-signal-filter="competitor"', markup)
+        self.assertNotIn('id="signalNewsPreview"', markup)
+        self.assertNotIn("signalPreviewItems", app)
+        self.assertNotIn("showSignalNewsPreview", app)
+        self.assertNotIn("data-signal-entity", app)
+        self.assertNotIn("onHover: (_event, elements, chart)", app)
+        self.assertIn('REPORT_LIBRARY_SEEN_STORAGE_KEY = "cmhk.report-library.last-seen-mtime.v1"', app)
+        self.assertIn("markReportLibrarySeen();", app)
+        self.assertNotIn(".signal-news-preview", styles)
+        self.assertNotIn(".signal-topic-card .signal-news-preview", styles)
+        self.assertNotIn(".collection-entity-list > span:hover", styles)
+        self.assertIn(".report-library-new-dot", styles)
+        self.assertNotIn('id="dashboardBtn"', markup)
+        self.assertNotIn('id="dashboardModal"', markup)
+        self.assertNotIn("openDashboard", app)
+        self.assertNotIn("sampleItems", app)
+        self.assertNotIn('path == "/api/dashboard"', backend)
+        self.assertNotIn(".dashboard-modal-content", styles)
     def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
         cleaned = web_app._clean_chat_message({
             "role": "assistant",

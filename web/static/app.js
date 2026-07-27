@@ -64,10 +64,6 @@ const state = {
   activeCrawlRunId: null,
   crawlLogPollTimer: null,
   crawlLogPollBusy: false,
-  strategicSignals: [],
-  latestStrategicSignalDate: "",
-  signalPreviewKey: "",
-  signalPreviewHideTimer: null,
   reportLibraryBaselineReady: false,
 };
 
@@ -1116,162 +1112,6 @@ function formatShortDate(dateKey) {
   return `${Number(parts[1])}/${Number(parts[2])}`;
 }
 
-function signalPreviewItems(filter, category = "", dateKey = "") {
-  const items = [...state.strategicSignals];
-  if (filter === "competitor") return items.filter((item) => item.category === "竞对动态");
-  if (filter === "category") return items.filter((item) => item.category === category);
-  if (filter === "date") return items.filter((item) => strategicDateKey(item.published_at) === dateKey);
-  if (filter === "date-category") {
-    return items.filter((item) => strategicDateKey(item.published_at) === dateKey && item.category === category);
-  }
-  if (filter === "latest") {
-    return items.filter((item) => strategicDateKey(item.published_at) === state.latestStrategicSignalDate);
-  }
-  if (filter === "entity") {
-    const entity = String(category || "").toLowerCase();
-    if (entity === "行业资讯") return items.filter((item) => item.category !== "竞对动态");
-    const aliases = {
-      hkbn: ["hkbn", "香港宽频", "香港寬頻"],
-      hkt: ["hkt", "香港电讯", "香港電訊"],
-      csl: ["csl"],
-      "1o1o": ["1o1o", "1010"],
-      "3hk": ["3hk", "和记电讯香港", "和記電訊香港", "three hong kong"],
-      hutchison: ["hutchison", "和记电讯香港", "和記電訊香港"],
-      smartone: ["smartone", "数码通", "數碼通"],
-    };
-    const terms = aliases[entity] || [entity];
-    return items.filter((item) => {
-      const text = [item.title, item.summary, item.keywords, item.source].filter(Boolean).join(" ").toLowerCase();
-      return terms.some((term) => text.includes(term));
-    });
-  }
-  return items;
-}
-
-function cancelSignalPreviewHide() {
-  if (!state.signalPreviewHideTimer) return;
-  window.clearTimeout(state.signalPreviewHideTimer);
-  state.signalPreviewHideTimer = null;
-}
-
-function hideSignalNewsPreview() {
-  const preview = document.getElementById("signalNewsPreview");
-  const topicList = document.getElementById("signalTopicList");
-  if (!preview) return;
-  preview.hidden = true;
-  if (topicList) topicList.hidden = false;
-  state.signalPreviewKey = "";
-}
-
-function scheduleSignalPreviewHide() {
-  cancelSignalPreviewHide();
-  state.signalPreviewHideTimer = window.setTimeout(hideSignalNewsPreview, 140);
-}
-
-function showSignalNewsPreview(items, label, anchor, key) {
-  const preview = document.getElementById("signalNewsPreview");
-  const title = document.getElementById("signalNewsPreviewTitle");
-  const count = document.getElementById("signalNewsPreviewCount");
-  const list = document.getElementById("signalNewsPreviewList");
-  const topicList = document.getElementById("signalTopicList");
-  if (!preview || !title || !count || !list || !topicList || !anchor) return;
-  cancelSignalPreviewHide();
-  const sortedItems = [...items].sort((left, right) => {
-    const dateCompare = String(right.published_at || "").localeCompare(String(left.published_at || ""));
-    return dateCompare || String(right.approved_at || "").localeCompare(String(left.approved_at || ""));
-  });
-  const previewKey = `${key}:${sortedItems.map((item) => item.id || item.source_url || item.title).join("|")}`;
-  title.textContent = label;
-  count.textContent = `${sortedItems.length} 条`;
-  if (state.signalPreviewKey !== previewKey) {
-    list.innerHTML = sortedItems.length
-      ? sortedItems.slice(0, 3).map((item) => {
-          const safeUrl = /^https?:\/\//i.test(String(item.source_url || "")) ? escapeHtml(item.source_url) : "";
-          const titleHtml = escapeHtml(item.title || "未命名新闻");
-          const headline = safeUrl
-            ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${titleHtml}</a>`
-            : `<strong>${titleHtml}</strong>`;
-          return `
-            <article class="signal-news-preview-item">
-              ${headline}
-              <span>${escapeHtml(formatShortDate(strategicDateKey(item.published_at)))} · ${escapeHtml(item.source || item.category || "已确认来源")}</span>
-            </article>
-          `;
-        }).join("")
-      : '<div class="signal-news-preview-empty">当前范围暂无对应新闻</div>';
-    state.signalPreviewKey = previewKey;
-  }
-  topicList.hidden = true;
-  preview.hidden = false;
-}
-
-function showSignalPreviewForFilter(filter, label, anchor) {
-  const items = filter === "topics" ? signalPreviewItems("all") : signalPreviewItems(filter);
-  showSignalNewsPreview(items, label, anchor, `filter:${filter}`);
-}
-
-function initSignalNewsInteractions() {
-  document.querySelectorAll(".signal-kpi[data-signal-filter]").forEach((node) => {
-    const show = () => showSignalPreviewForFilter(
-      node.dataset.signalFilter || "all",
-      node.dataset.signalLabel || "对应新闻",
-      node
-    );
-    node.addEventListener("mouseenter", show);
-    node.addEventListener("focus", show);
-    node.addEventListener("mouseleave", scheduleSignalPreviewHide);
-    node.addEventListener("blur", scheduleSignalPreviewHide);
-  });
-  const topicList = document.getElementById("signalTopicList");
-  if (topicList) {
-    topicList.addEventListener("mouseover", (event) => {
-      const row = event.target.closest(".signal-topic-row[data-signal-category]");
-      if (!row || row.contains(event.relatedTarget)) return;
-      const category = row.dataset.signalCategory || "其他动态";
-      showSignalNewsPreview(signalPreviewItems("category", category), `${category}新闻`, row, `category:${category}`);
-    });
-    topicList.addEventListener("mouseout", (event) => {
-      const row = event.target.closest(".signal-topic-row[data-signal-category]");
-      if (!row || row.contains(event.relatedTarget)) return;
-      scheduleSignalPreviewHide();
-    });
-    topicList.addEventListener("focusin", (event) => {
-      const row = event.target.closest(".signal-topic-row[data-signal-category]");
-      if (!row) return;
-      const category = row.dataset.signalCategory || "其他动态";
-      showSignalNewsPreview(signalPreviewItems("category", category), `${category}新闻`, row, `category:${category}`);
-    });
-    topicList.addEventListener("focusout", scheduleSignalPreviewHide);
-  }
-  const preview = document.getElementById("signalNewsPreview");
-  if (preview) {
-    preview.addEventListener("mouseenter", cancelSignalPreviewHide);
-    preview.addEventListener("mouseleave", scheduleSignalPreviewHide);
-  }
-  const entityList = document.getElementById("collectionEntityList");
-  if (entityList) {
-    const showEntity = (row) => {
-      const entity = row.dataset.signalEntity || "";
-      showSignalNewsPreview(signalPreviewItems("entity", entity), `${entity}关联新闻`, row, `entity:${entity}`);
-    };
-    entityList.addEventListener("mouseover", (event) => {
-      const row = event.target.closest("[data-signal-entity]");
-      if (!row || row.contains(event.relatedTarget)) return;
-      showEntity(row);
-    });
-    entityList.addEventListener("mouseout", (event) => {
-      const row = event.target.closest("[data-signal-entity]");
-      if (!row || row.contains(event.relatedTarget)) return;
-      scheduleSignalPreviewHide();
-    });
-    entityList.addEventListener("focusin", (event) => {
-      const row = event.target.closest("[data-signal-entity]");
-      if (row) showEntity(row);
-    });
-    entityList.addEventListener("focusout", scheduleSignalPreviewHide);
-  }
-}
-
 function renderStrategicOverview(rawItems) {
   const dateKeys = recentDateKeys(14);
   const allowedDates = new Set(dateKeys);
@@ -1298,9 +1138,6 @@ function renderStrategicOverview(rawItems) {
     return key > latest ? key : latest;
   }, "");
   const latestCount = latestDate ? Number(byDate.get(latestDate) || 0) : 0;
-  state.strategicSignals = items;
-  state.latestStrategicSignalDate = latestDate;
-
   const setText = (id, value) => {
     const node = document.getElementById(id);
     if (node) node.textContent = value;
@@ -1324,7 +1161,7 @@ function renderStrategicOverview(rawItems) {
           const color = strategicCategoryColor(category, index);
           const share = items.length ? Math.round((count / items.length) * 100) : 0;
           return `
-            <div class="signal-topic-row" tabindex="0" data-signal-category="${escapeHtml(category)}" aria-label="查看${escapeHtml(category)}对应新闻">
+            <div class="signal-topic-row">
               <div><i style="background:${color}"></i><span>${escapeHtml(category)}</span><b>${count}</b></div>
               <div class="signal-topic-track" aria-label="${escapeHtml(category)} ${count} 条，占比 ${share}%">
                 <span style="width:${Math.max(8, (count / peak) * 100)}%;background:${color}"></span>
@@ -1356,21 +1193,6 @@ function renderStrategicOverview(rawItems) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
-      onHover: (_event, elements, chart) => {
-        if (!elements.length) {
-          scheduleSignalPreviewHide();
-          return;
-        }
-        const active = elements.find((element) => Number(chart.data.datasets[element.datasetIndex]?.data?.[element.index] || 0) > 0);
-        if (!active) {
-          scheduleSignalPreviewHide();
-          return;
-        }
-        const dateKey = dateKeys[active.index];
-        const category = String(chart.data.datasets[active.datasetIndex]?.label || "其他动态");
-        const matching = signalPreviewItems("date-category", category, dateKey);
-        showSignalNewsPreview(matching, `${formatShortDate(dateKey)} · ${category}`, chart.canvas, `chart:${dateKey}:${category}`);
-      },
       layout: { padding: { top: 8, right: 4 } },
       plugins: {
         legend: { display: false },
@@ -1470,7 +1292,7 @@ function renderCollectionOverview(status) {
       entityHost.dataset.signature = entitySignature;
       entityHost.innerHTML = entities.length
         ? entities.slice(0, 8).map((item) => `
-            <span tabindex="0" title="悬停查看关联新闻" data-signal-entity="${escapeHtml(item.label || "未标记主体")}">
+            <span>
               ${escapeHtml(item.label || "未标记主体")}<b>${Number(item.value || 0)}</b>
             </span>
           `).join("")
@@ -7314,7 +7136,6 @@ window.addEventListener("beforeunload", abandonPendingChatApproval);
 setClock();
 setInterval(setClock, 30000);
 loadChatThreads();
-initSignalNewsInteractions();
 fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);
 });

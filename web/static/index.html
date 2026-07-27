@@ -57,22 +57,22 @@
               </header>
 
               <div class="signal-kpi-grid" aria-label="关键情报指标">
-                <div class="signal-kpi is-primary" tabindex="0" title="悬停查看对应新闻" data-signal-filter="all" data-signal-label="全部确认信号" aria-describedby="signalNewsPreview">
+                <div class="signal-kpi is-primary">
                   <span>确认信号</span>
                   <strong id="signalCount">--</strong>
                   <small>近14日</small>
                 </div>
-                <div class="signal-kpi" tabindex="0" title="悬停查看对应新闻" data-signal-filter="competitor" data-signal-label="竞对动态" aria-describedby="signalNewsPreview">
+                <div class="signal-kpi">
                   <span>竞对动态</span>
                   <strong id="competitorSignalCount">--</strong>
                   <small id="competitorSignalShare">占比 --</small>
                 </div>
-                <div class="signal-kpi" tabindex="0" title="悬停查看对应新闻" data-signal-filter="topics" data-signal-label="活跃主题" aria-describedby="signalNewsPreview">
+                <div class="signal-kpi">
                   <span>活跃主题</span>
                   <strong id="activeTopicCount">--</strong>
                   <small>已确认分类</small>
                 </div>
-                <div class="signal-kpi" tabindex="0" title="悬停查看对应新闻" data-signal-filter="latest" data-signal-label="最新信号" aria-describedby="signalNewsPreview">
+                <div class="signal-kpi">
                   <span>最新信号</span>
                   <strong id="latestSignalDate">--</strong>
                   <small id="latestSignalCount">等待同步</small>
@@ -101,13 +101,6 @@
                   </div>
                   <div class="signal-topic-list" id="signalTopicList">
                     <div class="signal-topic-empty">正在汇总主题</div>
-                  </div>
-                  <div class="signal-news-preview" id="signalNewsPreview" aria-live="polite" hidden>
-                    <header>
-                      <strong id="signalNewsPreviewTitle">对应新闻</strong>
-                      <span id="signalNewsPreviewCount">0 条</span>
-                    </header>
-                    <div class="signal-news-preview-list" id="signalNewsPreviewList"></div>
                   </div>
                 </section>
               </div>
@@ -530,6 +523,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=226"></script>
+    <script src="/static/app.js?v=227"></script>
   </body>
 </html>
