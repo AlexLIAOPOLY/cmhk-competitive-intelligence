@@ -1003,7 +1003,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("两者缺一不可", captured["message"])
         self.assertEqual(captured["stream_mode"], "messages")
 
-    def test_web_enabled_system_prompt_leaves_tool_choice_to_agent(self) -> None:
+    def test_web_enabled_system_prompt_requests_web_and_local_data_verification(self) -> None:
         captured: dict[str, object] = {}
 
         class FakeLLM:
@@ -1031,9 +1031,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         prompt = str(captured["prompt"])
         self.assertIn("自主选择", prompt)
-        self.assertIn("是否调用以及如何组合", prompt)
+        self.assertIn("联网搜索已开启", prompt)
+        self.assertIn("涉及外部事实或数据时，应主动使用联网搜索", prompt)
+        self.assertIn("同时检索本地资料并交叉核验", prompt)
+        self.assertIn("任一侧无结果或两侧不一致都要明确说明", prompt)
+        self.assertIn("是否调用工具以及如何组合", prompt)
         self.assertIn("不要误称环境不支持", prompt)
-        self.assertNotIn("涉及数据时必须双检索", prompt)
         self.assertNotIn("数据趋势与多组数据必须画图", prompt)
         self.assertIn("本轮消息准确发送时间: 2026-07-27T18:23:45+08:00", prompt)
         self.assertIn("后端在每条消息到达时重新计算", prompt)
@@ -1325,6 +1328,32 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 ]
             ),
             [],
+        )
+
+    def test_follow_up_parser_rejects_explanatory_paragraphs_from_answer(self) -> None:
+        self.assertEqual(
+            agent._normalize_follow_up_suggestions(
+                [
+                    "数据来源与核验：以上数据优先采用官方披露值，并已与标准化表进行交叉核验。",
+                    "数据完整性：当前数据覆盖了从2016年Q1至2026年Q1的完整季度序列，共41个数据点。",
+                    "分析局限性：本次分析仅基于中国移动的总体营业收入，如需深入洞察则要继续查询。",
+                ]
+            ),
+            [],
+        )
+        self.assertEqual(
+            agent._normalize_follow_up_suggestions(
+                [
+                    "中国移动收入增长的主要驱动因素是什么？",
+                    "对比中国移动和中国联通的收入趋势",
+                    "请分析5G发展对收入的影响",
+                ]
+            ),
+            [
+                "中国移动收入增长的主要驱动因素是什么？",
+                "对比中国移动和中国联通的收入趋势",
+                "请分析5G发展对收入的影响",
+            ],
         )
 
     def test_conversation_history_includes_each_messages_saved_time(self) -> None:

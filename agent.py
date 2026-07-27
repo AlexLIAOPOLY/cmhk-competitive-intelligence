@@ -194,9 +194,12 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
         r"web_search|read_webpage|search_local_reports)",
         re.IGNORECASE,
     )
-    request_like = re.compile(
-        r"(?:如何|为什么|为何|什么|哪些|哪个|是否|能否|怎么|多少|何时|哪里|"
-        r"查看|分析|对比|比较|评估|梳理|解释|预测|计算|核验|了解|说明|展示|总结|制定)"
+    question_start = re.compile(
+        r"^(?:请|帮我|麻烦|我想|我要|如何|为什么|为何|什么|哪些|哪个|是否|能否|"
+        r"可否|可以|怎么|多少|何时|哪里)"
+    )
+    action_start = re.compile(
+        r"^(?:查看|分析|对比|比较|评估|梳理|解释|预测|计算|核验|了解|说明|展示|总结|制定|补充)"
     )
     normalized: list[str] = []
     for item in items:
@@ -206,12 +209,19 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
         text = re.sub(r"^推荐追问\s*[:：]\s*", "", text).strip()
         text = re.sub(r"(?:相关)?文件来源", "官方来源", text)
         text = re.sub(r"[*_`]+", "", text)
-        text = re.sub(r"\s+", " ", text)[:120].strip()
+        text = re.sub(r"\s+", " ", text).strip()
+        early_heading = re.match(r"^[^：:?？]{1,16}[：:]", text)
+        request_like = (
+            text.endswith(("？", "?"))
+            or bool(question_start.search(text))
+            or (bool(action_start.search(text)) and not early_heading)
+        )
         if (
             not text
+            or len(text) > 60
             or blocked.search(text)
             or text in normalized
-            or not (request_like.search(text) or text.endswith(("？", "?")))
+            or not request_like
         ):
             continue
         normalized.append(text)
@@ -298,7 +308,8 @@ def _ensure_ai_follow_up_suggestions(
             content=(
                 "根据用户问题和当前回答，自主生成3个自然、具体、互不重复的简体中文后续问题，"
                 "让用户可以直接点击继续对话。每一项都应是完整的提问或请求，不能是答案片段、"
-                "标题、单个年份或Q1/Q2数值。每个不超过40字。只输出JSON字符串数组。"
+                "标题、单个年份或Q1/Q2数值，也不要写成“数据完整性：……”这类说明段落。"
+                "每个不超过40字。只输出JSON字符串数组。"
             )
         ),
         HumanMessage(
@@ -2689,6 +2700,12 @@ def get_agent(
         f"- 位置推断: {runtime_context.get('location_hint') or 'unknown'}",
     ]
     runtime_context_text = "\n".join(runtime_lines)
+    web_search_instruction = (
+        "联网搜索已开启。当前问题涉及外部事实或数据时，应主动使用联网搜索；涉及数据时，"
+        "同时检索本地资料并交叉核验，任一侧无结果或两侧不一致都要明确说明。\n"
+        if allow_web_search
+        else ""
+    )
 
     system_message = (
         "你是中国移动战略部公开信息监测系统的小竞AI。理解用户意图，自主选择可用的 "
@@ -2696,8 +2713,10 @@ def get_agent(
         "当前运行上下文：\n"
         f"{runtime_context_text}\n"
         "上述时间由后端在每条消息到达时重新计算；理解“今天、现在、最近、上一季度”等相对时间时使用它。\n"
-        "工具描述已经说明各项能力。联网开关开启时，联网工具可用；是否调用以及如何组合，"
-        "由你根据当前问题和已有证据自行判断。前端选择的数据库是实际访问边界，只使用本轮"
+        "工具描述已经说明各项能力。"
+        f"{web_search_instruction}"
+        "除此之外，是否调用工具以及如何组合，由你根据当前问题和已有证据自行判断。"
+        "前端选择的数据库是实际访问边界，只使用本轮"
         "可见的数据和真实工具结果，不臆造未读取内容。\n"
         "用户明确要求某个当前可用工具能够生成的产物时，直接调用该工具，不要误称环境不支持。\n"
         "使用数据时保留指标名称、期间、单位和工具提供的数字来源编号。若证据本身存在明确"
