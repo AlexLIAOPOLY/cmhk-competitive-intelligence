@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import json
 import operator
 import os
@@ -66,6 +67,20 @@ GLOBAL_CRAWL_ARTIFACTS = [
     "run_log.json",
     "final_audit.md",
 ]
+
+
+def restore_compressed_checkpoint() -> Path:
+    """Restore a GitHub-safe compressed checkpoint on first workflow use."""
+    checkpoint_path = DATA_DIR / "checkpoints.sqlite"
+    compressed_path = DATA_DIR / "checkpoints.sqlite.gz"
+    if checkpoint_path.exists() or not compressed_path.exists():
+        return checkpoint_path
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    temporary_path = DATA_DIR / "checkpoints.sqlite.restore"
+    with gzip.open(compressed_path, "rb") as source, temporary_path.open("wb") as target:
+        shutil.copyfileobj(source, target)
+    os.replace(temporary_path, checkpoint_path)
+    return checkpoint_path
 OFFICIAL_HOST_TERMS = (
     "hkexnews.hk",
     "hkex.com.hk",
@@ -2616,7 +2631,7 @@ def build_graph():
         from langgraph.checkpoint.sqlite import SqliteSaver
 
         DATA_DIR.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(DATA_DIR / "checkpoints.sqlite", check_same_thread=False)
+        connection = sqlite3.connect(restore_compressed_checkpoint(), check_same_thread=False)
         checkpointer = SqliteSaver(connection)
     except ImportError:
         pass

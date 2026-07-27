@@ -144,6 +144,11 @@ if [[ -f "$CHECKPOINT_SOURCE" ]]; then
   mkdir -p "$TMP_DIR/curation_data"
   sqlite3 "$CHECKPOINT_SOURCE" \
     ".backup '$TMP_DIR/curation_data/checkpoints.sqlite'"
+  CHECKPOINT_BYTES="$(wc -c < "$TMP_DIR/curation_data/checkpoints.sqlite" | tr -d ' ')"
+  if (( CHECKPOINT_BYTES > 95000000 )); then
+    echo "Compressing large SQLite snapshot (${CHECKPOINT_BYTES} bytes) for GitHub..."
+    gzip -1 -f "$TMP_DIR/curation_data/checkpoints.sqlite"
+  fi
 fi
 
 cat > "$TMP_DIR/PRIVATE_SNAPSHOT.md" <<EOF
