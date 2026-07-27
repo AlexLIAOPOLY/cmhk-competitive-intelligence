@@ -8903,8 +8903,7 @@ a.strategy-ticker-item {
   background: linear-gradient(135deg, #e9f6fd, #f3fbff);
 }
 
-.signal-kpi > span,
-.signal-kpi small {
+.signal-kpi > span {
   display: block;
   overflow: hidden;
   color: #6f8493;
@@ -9472,8 +9471,7 @@ a.strategy-ticker-item {
   animation-delay: 140ms;
 }
 
-.collection-kpi-grid span,
-.collection-kpi-grid small {
+.collection-kpi-grid span {
   display: block;
   overflow: hidden;
   color: #738895;
@@ -10045,26 +10043,24 @@ body.report-library-open::before {
 
 .signal-kpi,
 .collection-kpi-grid > div {
-  min-height: 82px;
-  padding: 10px 14px 9px;
+  min-height: 64px;
+  padding: 9px 14px 8px;
 }
 
 .signal-kpi > span,
-.signal-kpi small,
-.collection-kpi-grid span,
-.collection-kpi-grid small {
+.collection-kpi-grid span {
   font-size: 12px;
 }
 
 .signal-kpi strong,
 .collection-kpi-grid strong {
-  margin: 4px 0 2px;
+  margin: 4px 0 0;
   font-size: 28px;
 }
 
 .signal-analysis-grid {
   grid-template-columns: minmax(0, 1.95fr) minmax(250px, 0.95fr);
-  height: calc(100% - 177px);
+  height: calc(100% - 137px);
   min-height: 230px;
   margin-top: 18px;
 }

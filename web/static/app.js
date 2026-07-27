@@ -1131,20 +1131,14 @@ function renderStrategicOverview(rawItems) {
     const key = strategicDateKey(item.published_at);
     return key > latest ? key : latest;
   }, "");
-  const latestCount = latestDate ? Number(byDate.get(latestDate) || 0) : 0;
   const setText = (id, value) => {
     const node = document.getElementById(id);
     if (node) node.textContent = value;
   };
   setText("signalCount", String(items.length));
   setText("competitorSignalCount", String(competitorCount));
-  setText(
-    "competitorSignalShare",
-    items.length ? `占比 ${Math.round((competitorCount / items.length) * 100)}%` : "暂无信号"
-  );
   setText("activeTopicCount", String(categories.length));
   setText("latestSignalDate", latestDate ? formatShortDate(latestDate) : "--");
-  setText("latestSignalCount", latestDate ? `当日 ${latestCount} 条` : "等待同步");
   setText("signalTrendTotal", `${items.length} 条`);
 
   const topicList = document.getElementById("signalTopicList");
@@ -1226,14 +1220,11 @@ function renderCollectionOverview(status) {
   const visuals = status.visuals || {};
   const quality = visuals.quality || {};
   const rejection = visuals.rejection || {};
-  const crawl = visuals.crawl || {};
   const settings = status.settings || {};
   const results = status.results || {};
   const blocks = Array.isArray(visuals.blocks) ? visuals.blocks : [];
   const entities = Array.isArray(visuals.entities) ? visuals.entities : [];
   const taskCount = Number(results.count || settings.totalRows || 0);
-  const enabledRows = Number(settings.enabledRows || 0);
-  const totalRows = Number(settings.totalRows || taskCount || 0);
   const acceptedFacts = Number(rejection.accepted || 0);
   const rawSources = Number(quality.rawSources || 0);
 
@@ -1242,7 +1233,6 @@ function renderCollectionOverview(status) {
     if (node) node.textContent = value;
   };
   setText("collectionTaskCount", String(taskCount || "--"));
-  setText("collectionTaskCoverage", totalRows ? `覆盖 ${enabledRows}/${totalRows} 项` : "等待任务数据");
   setText("collectionFactCount", String(acceptedFacts || "--"));
   setText("collectionSourceCount", String(rawSources || "--"));
 

@@ -714,6 +714,11 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn("仅统计战略部人工确认的有效快讯", markup)
         self.assertNotIn("collectionCompletedAt", markup)
         self.assertNotIn("最近采集", app)
+        for copy in ("近14日</small>", "占比 --", "已确认分类", "等待同步</small>", "已进入发布层", "本轮可追溯来源"):
+            self.assertNotIn(copy, markup)
+        self.assertNotIn("competitorSignalShare", app)
+        self.assertNotIn("latestSignalCount", app)
+        self.assertNotIn("collectionTaskCoverage", app)
         self.assertIn("Dense, flat dashboard", styles)
         self.assertIn("font-size: 24px;", styles)
         self.assertIn("margin-top: auto;", styles)
