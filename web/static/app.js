@@ -5940,6 +5940,8 @@ function compactChatHistory() {
     .map((item) => ({
       role: item.role === "assistant" ? "assistant" : "user",
       content: String(item.content || "").replace(/\s+/g, " ").trim().slice(0, 1800),
+      createdAt: item.createdAt || "",
+      completedAt: item.completedAt || "",
     }))
     .filter((item) => item.content);
 }

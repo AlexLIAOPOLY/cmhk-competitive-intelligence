@@ -960,7 +960,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("get_crawl_settings_summary", tool_names)
         self.assertIn("list_crawl_runs", tool_names)
 
-    def test_force_web_search_injects_tool_instruction(self) -> None:
+    def test_web_toggle_enables_capability_without_injecting_tool_workflow(self) -> None:
         captured: dict[str, str] = {}
 
         class FakeAgent:
@@ -975,15 +975,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(events[-1], {"type": "done"})
         self.assertEqual(events[-2]["type"], "run_summary")
         self.assertEqual(events[-2]["status"], "ok")
-        self.assertIn("必须调用 `web_search`", captured["message"])
-        self.assertIn("必须同时调用 `search_local_reports` 和 `web_search`", captured["message"])
-        self.assertIn("两者缺一不可", captured["message"])
-        self.assertIn("本地与联网数据不一致", captured["message"])
-        self.assertIn("无法判断时保留冲突", captured["message"])
-        self.assertIn("用户问题：搜一下中国移动最新收入", captured["message"])
+        self.assertEqual(captured["message"], "搜一下中国移动最新收入")
+        self.assertNotIn("必须调用", captured["message"])
+        self.assertNotIn("两者缺一不可", captured["message"])
         self.assertEqual(captured["stream_mode"], "messages")
 
-    def test_web_enabled_system_prompt_requires_dual_search_for_data(self) -> None:
+    def test_web_enabled_system_prompt_leaves_tool_choice_to_agent(self) -> None:
         captured: dict[str, object] = {}
 
         class FakeLLM:
@@ -1002,19 +999,21 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             agent.get_agent(
                 allow_web_search=True,
                 user_message="请比较中国移动和中国联通的最新收入。",
+                runtime_context={
+                    "current_time": "2026-07-27T18:23:45+08:00",
+                    "timezone": "HKT",
+                    "utc_offset": "+0800",
+                },
             )
 
         prompt = str(captured["prompt"])
-        self.assertIn("涉及数据时必须双检索", prompt)
-        self.assertIn("必须同时调用 `search_local_reports` 和 `web_search`，缺一不可", prompt)
-        self.assertIn("即使其中一侧无相关结果或证据不足，也必须实际完成该侧检索", prompt)
-        self.assertIn("本地与联网数据不一致", prompt)
-        self.assertIn("不得静默选边", prompt)
-        self.assertIn("本轮任务完成性", prompt)
-        self.assertIn("不得询问用户是否允许继续读取、搜索或分析", prompt)
-        self.assertIn("联网结果质量", prompt)
-        self.assertIn("优先使用 OFCA", prompt)
-        self.assertIn("禁止“是否需要我”“您希望”“要不要”", prompt)
+        self.assertIn("自主选择", prompt)
+        self.assertIn("是否调用以及如何组合", prompt)
+        self.assertIn("不要误称环境不支持", prompt)
+        self.assertNotIn("涉及数据时必须双检索", prompt)
+        self.assertNotIn("数据趋势与多组数据必须画图", prompt)
+        self.assertIn("本轮消息准确发送时间: 2026-07-27T18:23:45+08:00", prompt)
+        self.assertIn("后端在每条消息到达时重新计算", prompt)
         self.assertIn("web_search", captured["tools"])
         self.assertIn("search_local_reports", captured["tools"])
 
@@ -1038,7 +1037,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ]
         with (
             mock.patch("agent._search_with_searxng", return_value=poisoned),
-            mock.patch("agent._read_webpage_text", return_value="OFCA官网原文：5G频谱政策里程碑。"),
+            mock.patch("agent._read_webpage_text") as read_webpage,
         ):
             result = agent.web_search.invoke({
                 "query": "香港 5G 频谱 政策 事件 时间线 2024 2025 2026",
@@ -1048,13 +1047,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("ofca.gov.hk", result)
         self.assertIn("香港通讯及频谱政策里程碑", result)
         self.assertIn("已过滤 3 个", result)
-        self.assertIn("已自动读取联网官方原文", result)
-        self.assertIn("OFCA官网原文", result)
+        read_webpage.assert_not_called()
         self.assertNotIn("drom.ru", result)
         self.assertNotIn("OnlyFans", result)
         self.assertNotIn("www.google.com", result)
 
-    def test_local_data_search_automatically_reads_the_most_relevant_reference(self) -> None:
+    def test_local_data_search_returns_sources_without_hidden_original_read(self) -> None:
         chunks = [
             {
                 "source": "agent_knowledge/cmhk_macro_policy_2026-06-19/manifest.json",
@@ -1076,18 +1074,14 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                     return_value={"chunks": chunks, "audit": {"retained_chunks": 2}},
                 ),
                 mock.patch("agent.retrieval_quality", return_value={"status": "ok"}),
-                mock.patch(
-                    "agent._read_local_reference_text",
-                    return_value="[本地引用: macro_policy_metrics.csv]\n2019,5G频谱政策事件",
-                ),
+                mock.patch("agent._read_local_reference_text") as read_reference,
             ):
                 result = agent.search_local_reports.invoke({"query": "香港5G频谱政策"})
         finally:
             agent.CURRENT_USER_REQUEST.reset(request_token)
 
-        self.assertIn("已自动读取本地原文", result)
-        self.assertIn("2019,5G频谱政策事件", result)
         self.assertIn("macro_policy_metrics.csv", result)
+        read_reference.assert_not_called()
 
     def test_generic_web_search_returns_no_sources_when_every_result_is_irrelevant(self) -> None:
         poisoned = [
@@ -1126,7 +1120,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("render_python_chart", trend_tools)
         self.assertIn("render_python_chart", comparison_tools)
 
-    def test_system_prompt_requires_charts_for_trends_and_multiple_data_groups(self) -> None:
+    def test_system_prompt_exposes_chart_capability_without_mandate(self) -> None:
         captured: dict[str, object] = {}
 
         class FakeLLM:
@@ -1135,6 +1129,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         def fake_create_react_agent(_llm, tools, prompt):
             captured["prompt"] = str(prompt)
+            captured["tools"] = {tool.name for tool in tools}
             return object()
 
         with (
@@ -1147,11 +1142,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             )
 
         prompt = str(captured["prompt"])
-        self.assertIn("数据趋势与多组数据必须画图", prompt)
-        self.assertIn("必须在完成数据检索、原文读取和口径核验后调用 `render_python_chart`", prompt)
-        self.assertIn("不能只给文字或表格", prompt)
-        self.assertIn("无法生成可靠图表", prompt)
-        self.assertIn("绝对不得补造数据点", prompt)
+        self.assertIn("render_python_chart", captured["tools"])
+        self.assertNotIn("数据趋势与多组数据必须画图", prompt)
+        self.assertNotIn("不能只给文字或表格", prompt)
 
     def test_without_force_web_search_hides_web_tools_without_toggle_notice(self) -> None:
         captured: dict[str, object] = {}
@@ -1206,7 +1199,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             captured["tools"],
             {"search_chat_history", "get_system_status", "list_crawl_runs", "get_crawl_settings_summary"},
         )
-        self.assertIn("语言与可见推理稳定性", captured["prompt"])
+        self.assertIn("理解用户意图，自主选择", captured["prompt"])
 
     def test_dynamic_tool_routing_keeps_every_tool_available_by_intent(self) -> None:
         default_names = {tool.name for tool in agent._agent_tools(allow_web_search=True)}
@@ -1273,7 +1266,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             )
         )
 
-    def test_completion_contract_catches_long_semantic_cutoff_after_full_stop(self) -> None:
+    def test_complete_prose_does_not_require_ui_suggestion_footer(self) -> None:
         seemingly_finished = (
             "这段回答虽然以句号结束，但它只写完了用户要求的第一部分。"
             "模型有时会在网关或上下文限制下提前停止，finish_reason 仍可能被记录成 stop。"
@@ -1281,25 +1274,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             "这里再补足一些正文长度，用来模拟真实的长回答在某一段末尾突然结束。"
         )
 
-        self.assertTrue(
-            agent._looks_like_incomplete_model_answer(
-                seemingly_finished,
-                require_completion_footer=True,
-            )
-        )
-        self.assertFalse(
-            agent._looks_like_incomplete_model_answer(
-                seemingly_finished
-                + '\n<suggestions>["继续分析", "查看来源", "对比趋势"]</suggestions>',
-                require_completion_footer=True,
-            )
-        )
-        self.assertFalse(
-            agent._looks_like_incomplete_model_answer(
-                "4。",
-                require_completion_footer=True,
-            )
-        )
+        self.assertFalse(agent._looks_like_incomplete_model_answer(seemingly_finished))
+        self.assertFalse(agent._looks_like_incomplete_model_answer("4。"))
 
     def test_follow_up_parser_accepts_model_format_variants(self) -> None:
         self.assertEqual(
@@ -1315,6 +1291,43 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             ),
             ["甲问题？", "乙问题？", "丙问题？"],
         )
+
+    def test_follow_up_parser_rejects_answer_fragments_and_metric_values(self) -> None:
+        self.assertEqual(
+            agent._normalize_follow_up_suggestions(
+                [
+                    "*2016年**：全年收入呈现季节性波动。",
+                    "Q1: 1,775.04 亿元人民币 [来源 1]",
+                    "Q2: 1,928.47 亿元人民币 [来源 2]",
+                ]
+            ),
+            [],
+        )
+
+    def test_conversation_history_includes_each_messages_saved_time(self) -> None:
+        context = agent._format_conversation_history(
+            [
+                {
+                    "role": "user",
+                    "content": "上一条用户消息",
+                    "createdAt": "2026-07-27T10:00:00.000Z",
+                },
+                {
+                    "role": "assistant",
+                    "content": "上一条AI回答",
+                    "createdAt": "2026-07-27T10:00:01.000Z",
+                    "completedAt": "2026-07-27T10:00:05.000Z",
+                },
+            ]
+        )
+
+        self.assertIn("用户 [发送时间 2026-07-27T10:00:00.000Z]", context)
+        self.assertIn("AI [发送时间 2026-07-27T10:00:01.000Z; 完成时间 2026-07-27T10:00:05.000Z]", context)
+
+    def test_frontend_sends_saved_message_times_with_conversation_history(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn('createdAt: item.createdAt || ""', app)
+        self.assertIn('completedAt: item.completedAt || ""', app)
 
     def test_existing_three_ai_suggestions_do_not_add_an_extra_model_call(self) -> None:
         answer = '完整回答。\n<suggestions>["具体问题一？", "具体问题二？", "具体问题三？"]</suggestions>'
@@ -1359,8 +1372,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(len(items), 3)
         self.assertFalse(any("是否需要我" in item or "您希望" in item for item in items))
         prompt = str(model.invoke.call_args.args[0][0].content)
-        self.assertIn("可由用户直接点击发送", prompt)
-        self.assertIn("禁止把本轮本应完成的工作推给下一轮", prompt)
+        self.assertIn("用户可以直接点击继续对话", prompt)
+        self.assertIn("自主生成3个自然", prompt)
 
     def test_missing_or_placeholder_suggestions_are_generated_by_dedicated_model(self) -> None:
         response = agent.AIMessage(
@@ -1402,22 +1415,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertLess(events.index(suggestion_event), next(i for i, event in enumerate(events) if event.get("type") == "run_summary"))
         self.assertEqual(events[-1], {"type": "done"})
 
-    def test_explicit_structure_validator_requires_all_requested_sections_and_summary(self) -> None:
-        request = "写约800字分析，分成五节，每节完整收束，最后总结三点。"
-        complete = (
-            "## 一、背景\n第一节完整。\n## 二、网络\n第二节完整。\n"
-            "## 三、业务\n第三节完整。\n## 四、产业\n第四节完整。\n"
-            "## 五、风险\n第五节完整。\n## 总结三点\n"
-            "- 方向确定。\n- 节奏受制。\n- 香港有机会。"
-        )
-
-        self.assertTrue(agent._answer_satisfies_explicit_structure(request, complete))
-        self.assertFalse(
-            agent._answer_satisfies_explicit_structure(
-                request,
-                complete.replace("## 五、风险\n第五节完整。\n", ""),
-            )
-        )
+    def test_application_does_not_install_explicit_structure_gate(self) -> None:
+        self.assertFalse(hasattr(agent, "_answer_satisfies_explicit_structure"))
 
     def test_chat_stream_requires_explicit_done_event_before_finalizing(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -1486,9 +1485,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIs(result, complete_result)
         self.assertEqual(generate.call_count, 2)
 
-    def test_required_original_read_keeps_tools_enabled_during_repair(self) -> None:
-        # Some providers return an empty assistant message after a tool result.
-        # A pending original-source requirement must still force the next tool.
+    def test_search_marker_does_not_force_an_original_read(self) -> None:
         incomplete_message = agent.AIMessage(content="")
         tool_message = agent.AIMessage(
             content="",
@@ -1535,13 +1532,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate(messages, tools=tools)
 
-        self.assertIs(result, tool_result)
-        self.assertEqual(generate.call_count, 2)
-        self.assertEqual(generate.call_args_list[1].kwargs["tools"], tools)
-        self.assertEqual(generate.call_args_list[1].kwargs["tool_choice"], "required")
-        self.assertIn("只能返回其中指定的结构化工具调用", generate.call_args_list[1].args[0][0].content)
+        self.assertIs(result, incomplete_result)
+        self.assertEqual(generate.call_count, 1)
 
-    def test_trend_answer_must_call_chart_tool_before_final_text(self) -> None:
+    def test_trend_answer_is_not_blocked_when_agent_chooses_text(self) -> None:
         text_only = agent.AIMessage(
             content=(
                 "中国移动收入长期向上，最近增速有所放缓。"
@@ -1595,10 +1589,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 tools=tools,
             )
 
-        self.assertIs(result, chart_result)
-        self.assertEqual(generate.call_count, 2)
-        self.assertEqual(generate.call_args_list[1].kwargs["tool_choice"], "required")
-        self.assertIn("必须调用 `render_python_chart`", generate.call_args_list[1].args[0][0].content)
+        self.assertIs(result, text_result)
+        self.assertEqual(generate.call_count, 1)
 
     def test_completed_chart_allows_trend_final_answer(self) -> None:
         complete = agent.AIMessage(
@@ -1633,7 +1625,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIs(result, complete_result)
         self.assertEqual(generate.call_count, 1)
 
-    def test_repeated_text_only_trend_answer_gets_deterministic_chart_call(self) -> None:
+    def test_text_only_trend_answer_does_not_get_deterministic_chart_call(self) -> None:
         text_only_1 = agent.AIMessage(
             content=(
                 "中国移动收入总体上升。"
@@ -1687,14 +1679,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate(messages, tools=tools)
 
-        self.assertIs(result, result_2)
-        recovered = result.generations[0].message
-        self.assertEqual(recovered.tool_calls[0]["name"], "render_python_chart")
-        spec = json.loads(recovered.tool_calls[0]["args"]["chart_spec"])
-        self.assertEqual(spec["x"], ["Q1 2016", "Q2 2016"])
-        self.assertEqual(generate.call_count, 2)
+        self.assertIs(result, result_1)
+        self.assertEqual(generate.call_count, 1)
+        self.assertFalse(result.generations[0].message.tool_calls)
 
-    def test_dual_retrieval_answer_must_disclose_comparison_status(self) -> None:
+    def test_dual_retrieval_does_not_force_a_disclosure_rewrite(self) -> None:
         incomplete = agent.AIMessage(
             content=(
                 "中国移动收入总体上升，相关来源如下。"
@@ -1741,80 +1730,24 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate(messages, tools=[agent.render_python_chart])
 
-        self.assertIs(result, result_2)
-        self.assertEqual(generate.call_count, 2)
-        self.assertIn("本地与联网核验说明", generate.call_args_list[1].args[0][0].content)
+        self.assertIs(result, result_1)
+        self.assertEqual(generate.call_count, 1)
 
-    def test_dual_source_disclosure_validator_requires_both_sides_and_status(self) -> None:
-        self.assertFalse(
-            agent.StableAgentChatDeepSeek._has_dual_source_disclosure(
-                "数据来自官方报告，网络来源见引用区。"
-            )
-        )
-        self.assertTrue(
-            agent.StableAgentChatDeepSeek._has_dual_source_disclosure(
-                "本地与联网核验说明：两侧期间和单位不可比，不能认定一致。"
-            )
-        )
+    def test_dual_source_disclosure_gate_is_removed(self) -> None:
+        self.assertFalse(hasattr(agent.StableAgentChatDeepSeek, "_has_dual_source_disclosure"))
 
     def test_process_cleanup_does_not_discard_data_table_before_conclusion(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         self.assertNotIn("text = text.slice(formalStart).trim();", app)
         self.assertNotIn("const formalStart = text.search(", app)
 
-    def test_tool_limit_recovers_chart_from_verified_metric_rows(self) -> None:
-        evidence = [
-            (
-                "精确季度指标行：subject=中国移动; period=Q1 2016; metric_key=revenue; "
-                "metric_zh=营业收入/收益; grain=quarter; standardized_value=177504 millions CNY; "
-                "official_value=177504 millions CNY; verification_count=3;\n"
-                "精确季度指标行：subject=中国移动; period=Q2 2016; metric_key=revenue; "
-                "metric_zh=营业收入/收益; grain=quarter; standardized_value=192847 millions CNY; "
-                "official_value=192847 millions CNY; verification_count=3;"
-            )
-        ]
-        chart_tool = mock.Mock()
-        chart_tool.invoke.return_value = (
-            "Python 图表已生成：\n\n![中国移动收入趋势](/api/agent-charts/chart.png)"
-        )
-        with mock.patch("agent.render_python_chart", chart_tool):
-            recovered = agent._recover_chart_after_tool_limit("看看移动的收入趋势", evidence)
+    def test_tool_limit_does_not_generate_a_chart_outside_the_agent(self) -> None:
+        self.assertFalse(hasattr(agent, "_recover_chart_after_tool_limit"))
 
-        self.assertIsNotNone(recovered)
-        args, result = recovered
-        spec = json.loads(json.loads(args)["chart_spec"])
-        self.assertEqual(spec["x"], ["Q1 2016", "Q2 2016"])
-        self.assertEqual(spec["series"][0]["data"], [177504.0, 192847.0])
-        self.assertIn("Python 图表已生成", result)
-        chart_tool.invoke.assert_called_once()
+    def test_required_read_gate_is_removed(self) -> None:
+        self.assertFalse(hasattr(agent.StableAgentChatDeepSeek, "_has_pending_required_read"))
 
-    def test_completed_original_reads_clear_older_required_markers(self) -> None:
-        messages = [
-            agent.ToolMessage(
-                content="【强制下一步】请调用 `read_local_reference`。",
-                tool_call_id="call-local-search",
-                name="search_local_reports",
-            ),
-            agent.ToolMessage(
-                content="【强制下一步】请调用 `read_webpage`。",
-                tool_call_id="call-web-search",
-                name="web_search",
-            ),
-            agent.ToolMessage(
-                content="[本地引用: data/example.md]\n原文。",
-                tool_call_id="call-local-read",
-                name="read_local_reference",
-            ),
-            agent.ToolMessage(
-                content="官网原文。",
-                tool_call_id="call-web-read",
-                name="read_webpage",
-            ),
-        ]
-
-        self.assertFalse(agent.StableAgentChatDeepSeek._has_pending_required_read(messages))
-
-    def test_model_retries_when_long_answer_ends_cleanly_without_completion_footer(self) -> None:
+    def test_long_complete_answer_does_not_require_completion_footer(self) -> None:
         partial_message = agent.AIMessage(
             content=(
                 "第一部分已经分析完毕，但第二部分和最终结论尚未生成。"
@@ -1854,10 +1787,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate([agent.HumanMessage(content="请分两部分完整回答")])
 
-        self.assertIs(result, complete_result)
-        self.assertEqual(generate.call_count, 2)
+        self.assertIs(result, partial_result)
+        self.assertEqual(generate.call_count, 1)
 
-    def test_repaired_complete_answer_gets_footer_without_being_discarded(self) -> None:
+    def test_complete_answer_is_not_rewritten_to_add_footer(self) -> None:
         first_message = agent.AIMessage(
             content=(
                 "第一版回答只覆盖了请求的前半部分，虽然句号完整，但缺少后续比较和结论。"
@@ -1893,12 +1826,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate([agent.HumanMessage(content="请完整比较并给出结论")])
 
-        self.assertIs(result, repaired_result)
-        self.assertEqual(generate.call_count, 2)
-        self.assertTrue(repaired_message.content.startswith(repaired_text))
-        self.assertTrue(repaired_message.content.endswith("</suggestions>"))
+        self.assertIs(result, first_result)
+        self.assertEqual(generate.call_count, 1)
+        self.assertNotIn("<suggestions>", first_message.content)
 
-    def test_length_finish_is_accepted_when_requested_structure_is_complete(self) -> None:
+    def test_provider_length_finish_still_uses_engineering_recovery(self) -> None:
         complete_text = (
             "## 一、背景\n第一节完整。\n## 二、网络\n第二节完整。\n"
             "## 三、业务\n第三节完整。\n## 四、产业\n第四节完整。\n"
@@ -1926,8 +1858,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             result = model._generate([agent.HumanMessage(content=request)])
 
         self.assertIs(result, complete_result)
-        self.assertEqual(generate.call_count, 1)
-        self.assertTrue(complete_message.content.endswith("</suggestions>"))
+        self.assertGreater(generate.call_count, 1)
 
     def test_incomplete_retry_uses_bounded_tool_free_context(self) -> None:
         incomplete_message = agent.AIMessage(
@@ -2287,7 +2218,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(results[0]["name"], "get_system_status")
         self.assertIn("系统状态正常", results[0]["content"])
 
-    def test_plain_greeting_uses_model_with_history_as_background_only(self) -> None:
+    def test_plain_greeting_keeps_context_without_special_tool_gate(self) -> None:
         captured: dict[str, str] = {}
 
         class FakeAgent:
@@ -2313,11 +2244,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(events[-2]["toolCount"], 0)
         self.assertEqual(events[-1], {"type": "done"})
         self.assertEqual(captured["stream_mode"], "messages")
-        self.assertIn("普通寒暄", captured["message"])
+        self.assertNotIn("普通寒暄", captured["message"])
         self.assertIn("中国铁塔", captured["message"])
         self.assertIn("只能作为背景", captured["message"])
         self.assertIn("不能自动把历史主题补全为本轮问题", captured["message"])
-        self.assertNotIn("quarterly_competitor_metrics", captured["message"])
+        self.assertIn("quarterly_competitor_metrics", captured["message"])
         self.assertNotIn("长期记忆召回", captured["message"])
 
     def test_explicit_follow_up_prefers_fresh_same_thread_history(self) -> None:
@@ -2348,7 +2279,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("必须先调用 `search_chat_history`", captured["message"])
         self.assertNotIn("你必须调用 `web_search`", captured["message"])
 
-    def test_user_profile_question_routes_to_memory_and_history_without_dataset_guessing(self) -> None:
+    def test_user_profile_question_is_not_wrapped_in_a_forced_workflow(self) -> None:
         captured: dict[str, str] = {}
 
         class FakeAgent:
@@ -2374,14 +2305,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(events[-2]["toolCount"], 0)
         self.assertEqual(events[-1], {"type": "done"})
         self.assertEqual(captured["stream_mode"], "messages")
-        self.assertIn("询问自己的身份、偏好、兴趣或用户画像", captured["message"])
-        self.assertIn("先调用 `search_agent_memory`", captured["message"])
-        self.assertIn("再调用 `search_chat_history`", captured["message"])
-        self.assertIn("明确证据", captured["message"])
-        self.assertIn("基于历史用户问题的推断", captured["message"])
-        self.assertIn("不要根据当前项目、当前数据库选择或上一次问题断言用户身份", captured["message"])
+        self.assertNotIn("先调用 `search_agent_memory`", captured["message"])
+        self.assertNotIn("再调用 `search_chat_history`", captured["message"])
         self.assertIn("中国铁塔", captured["message"])
-        self.assertNotIn("quarterly_competitor_metrics", captured["message"])
+        self.assertIn("quarterly_competitor_metrics", captured["message"])
         self.assertNotIn("quarterly_competitor_data", captured["message"])
 
     def test_profile_chat_history_search_returns_recent_user_questions(self) -> None:
@@ -2557,7 +2484,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("请继续整理昨天的战略周报", result)
         self.assertNotIn("正在分析请求", result)
 
-    def test_stream_marks_ambiguous_input_for_history_before_clarification(self) -> None:
+    def test_ambiguous_input_does_not_disable_available_capabilities(self) -> None:
         captured: dict[str, object] = {}
 
         class FakeAgent:
@@ -2572,9 +2499,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         with mock.patch("agent.get_agent", side_effect=fake_get_agent):
             list(agent.stream_agent("富裕", force_web_search=True, active_thread_id="thread-now"))
 
-        self.assertFalse(captured["allow_web_search"])
-        self.assertIn("必须先调用 `search_chat_history`", captured["message"])
-        self.assertIn("查不到相关历史后才能简洁追问", captured["message"])
+        self.assertTrue(captured["allow_web_search"])
+        self.assertEqual(captured["message"], "富裕")
 
     def test_disabled_web_search_prompt_does_not_explain_toggle_state(self) -> None:
         captured: dict[str, object] = {}
@@ -2603,9 +2529,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("请打开联网搜索", prompt)
         self.assertNotIn("打开联网搜索", prompt)
         self.assertNotIn("工具开关状态", prompt)
-        self.assertIn("goal_readiness_audits", prompt)
-        self.assertIn("superseded", prompt)
-        self.assertIn("目标级审计优先", prompt)
+        self.assertIn("自主选择可用的", prompt)
+        self.assertNotIn("必须双检索", prompt)
 
     def test_disabled_web_search_notice_is_removed_from_stream(self) -> None:
         class FakeAgent:

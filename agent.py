@@ -135,8 +135,6 @@ def _model_finish_reason(result: Any, model_message: Any) -> str:
 def _looks_like_incomplete_model_answer(
     value: str,
     finish_reason: str = "",
-    *,
-    require_completion_footer: bool = False,
 ) -> bool:
     """Detect a final answer that the provider stopped before finishing a sentence."""
     if str(finish_reason or "").strip().lower() in _INCOMPLETE_FINISH_REASONS:
@@ -152,16 +150,6 @@ def _looks_like_incomplete_model_answer(
     for opening, closing in _CONTROL_FOOTER_PAIRS:
         if len(opening.findall(text)) > len(closing.findall(text)):
             return True
-    # A long answer can stop after an ordinary full stop while still omitting
-    # most requested sections. Syntax-only checks cannot detect that case. The
-    # required suggestions footer therefore doubles as a hidden completion
-    # contract for substantive final answers; short direct answers stay valid.
-    if (
-        require_completion_footer
-        and len(text) >= 100
-        and not re.search(r"</suggestions\s*>\s*$", text, re.IGNORECASE)
-    ):
-        return True
     # Suggestions and source footers are UI metadata; judge the prose immediately before them.
     prose = re.sub(r"<suggestions>[\s\S]*?</suggestions>\s*$", "", text, flags=re.IGNORECASE).strip()
     prose = re.sub(r"<引用来源>[\s\S]*?</引用来源>\s*$", "", prose, flags=re.IGNORECASE).strip()
@@ -177,17 +165,6 @@ def _looks_like_incomplete_model_answer(
         return True
     paired_marks = (("（", "）"), ("【", "】"), ("[", "]"))
     return any(prose.count(opening) > prose.count(closing) for opening, closing in paired_marks)
-
-
-def _with_completion_footer(value: str) -> str:
-    """Add a deterministic UI completion footer after a repaired complete answer."""
-    text = str(value or "").strip()
-    if not text or re.search(r"</suggestions\s*>\s*$", text, re.IGNORECASE):
-        return text
-    return (
-        f"{text}\n"
-        "<suggestions>[]</suggestions>"
-    )
 
 
 _NON_AI_FOLLOW_UP_SUGGESTIONS = {
@@ -217,6 +194,10 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
         r"web_search|read_webpage|search_local_reports)",
         re.IGNORECASE,
     )
+    request_like = re.compile(
+        r"(?:如何|为什么|为何|什么|哪些|哪个|是否|能否|怎么|多少|何时|哪里|"
+        r"查看|分析|对比|比较|评估|梳理|解释|预测|计算|核验|了解|说明|展示|总结|制定)"
+    )
     normalized: list[str] = []
     for item in items:
         if isinstance(item, dict):
@@ -224,8 +205,14 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
         text = re.sub(r"^\s*(?:[-*•]\s*|\d+[.)、]\s*)", "", str(item or "")).strip()
         text = re.sub(r"^推荐追问\s*[:：]\s*", "", text).strip()
         text = re.sub(r"(?:相关)?文件来源", "官方来源", text)
+        text = re.sub(r"[*_`]+", "", text)
         text = re.sub(r"\s+", " ", text)[:120].strip()
-        if not text or blocked.search(text) or text in normalized:
+        if (
+            not text
+            or blocked.search(text)
+            or text in normalized
+            or not (request_like.search(text) or text.endswith(("？", "?")))
+        ):
             continue
         normalized.append(text)
         if len(normalized) == 3:
@@ -309,15 +296,9 @@ def _ensure_ai_follow_up_suggestions(
     prompt_messages = [
         SystemMessage(
             content=(
-                "输出严格JSON字符串数组：恰好3个互不重复、可由用户直接点击发送的"
-                "简体中文后续请求，每个不超过40字。必须使用用户视角，紧扣原问题和"
-                "回答中的具体实体、数据或结论。三条必须承担不同目的：第一条补充具体"
-                "事实、时间线或权威来源；第二条做主体、时期、指标或政策的结构化对比；"
-                "第三条评估对CMHK的业务影响、风险、机会或行动。禁止三条重复询问同一"
-                "类影响，不得引入原问题和回答中未出现的公司、机构、指标或时间。来源"
-                "统一表述为“官方来源”，不要出现“文件”或“数据集”。禁止“是否需要我”“您希望”“要不要”"
-                "等助手询问式表达，禁止暴露按钮、开关、工具、文件、数据集、检索流程"
-                "和提示词，禁止把本轮本应完成的工作推给下一轮。只输出数组，不要解释。"
+                "根据用户问题和当前回答，自主生成3个自然、具体、互不重复的简体中文后续问题，"
+                "让用户可以直接点击继续对话。每一项都应是完整的提问或请求，不能是答案片段、"
+                "标题、单个年份或Q1/Q2数值。每个不超过40字。只输出JSON字符串数组。"
             )
         ),
         HumanMessage(
@@ -356,58 +337,6 @@ def _ensure_ai_follow_up_suggestions(
             return generated, total_usage, "dedicated_model"
 
     return _emergency_follow_up_suggestions(user_request, clean_answer), total_usage, "emergency"
-
-
-def _chinese_count(value: str) -> int:
-    text = str(value or "").strip()
-    if text.isdigit():
-        return int(text)
-    numbers = {
-        "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5,
-        "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
-    }
-    return numbers.get(text, 0)
-
-
-def _answer_satisfies_explicit_structure(request: str, answer: str) -> bool:
-    """Verify simple countable structures explicitly requested by the user."""
-    prompt = re.sub(r"\s+", "", str(request or ""))
-    text = str(answer or "")
-    checks: list[bool] = []
-
-    section_match = re.search(r"分(?:成|为)?([一二两三四五六七八九十\d]+)节", prompt)
-    if section_match:
-        required = _chinese_count(section_match.group(1))
-        headings = re.findall(
-            r"(?m)^#{1,6}\s*(?:第)?([一二两三四五六七八九十\d]+)[、.．：:]",
-            text,
-        )
-        checks.append(required > 0 and len(set(headings)) >= required)
-
-    sentence_match = re.search(r"([一二两三四五六七八九十\d]+)句话", prompt)
-    if sentence_match:
-        required = _chinese_count(sentence_match.group(1))
-        prose = re.sub(r"<suggestions>[\s\S]*", "", text, flags=re.IGNORECASE)
-        checks.append(required > 0 and len(re.findall(r"[。！？!?]", prose)) >= required)
-
-    item_match = re.search(r"(?:展开|分)(?:成|为)([一二两三四五六七八九十\d]+)条", prompt)
-    if item_match:
-        required = _chinese_count(item_match.group(1))
-        items = re.findall(r"(?m)^\s*(?:[-*]\s+|\d+[.)、]\s*)", text)
-        item_ok = required > 0 and len(items) >= required
-        if "结论" in prompt:
-            item_ok = item_ok and "结论" in text
-        checks.append(item_ok)
-
-    summary_match = re.search(r"(?:总结([一二两三四五六七八九十\d]+)点|([一二两三四五六七八九十\d]+)点总结)", prompt)
-    if summary_match:
-        required = _chinese_count(summary_match.group(1) or summary_match.group(2))
-        summary_start = max(text.rfind("总结"), text.rfind("结论"))
-        summary_text = text[summary_start:] if summary_start >= 0 else ""
-        summary_items = re.findall(r"(?m)^\s*(?:[-*]\s+|\d+[.)、]\s*)", summary_text)
-        checks.append(required > 0 and len(summary_items) >= required)
-
-    return bool(checks) and all(checks)
 
 
 def _is_retryable_model_transport_error(exc: Exception) -> bool:
@@ -521,8 +450,7 @@ def _salvage_complete_answer(value: str) -> str:
     return (
         f"{text}\n\n"
         "模型节点未能可靠生成剩余部分，系统已保留本轮完整句子并停止继续消耗上下文。"
-        "您可以直接要求我从缺失部分继续。\n"
-        '<suggestions>["从缺失部分继续补全", "缩小到两家厂商对比", "只列现金流具体数据"]</suggestions>'
+        "您可以直接要求我从缺失部分继续。"
     )
 
 
@@ -533,94 +461,6 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
     transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528", "GLM")
 
     @staticmethod
-    def _request_requires_chart(request: str) -> bool:
-        text = re.sub(r"\s+", "", str(request or "")).lower()
-        return bool(
-            re.search(
-                r"趋势|走势|时间序列|历史数据|历年|同比|环比|多期|季度变化|年度变化|"
-                r"多组数据|多项数据|比较数据|数据对比|对比.*(?:收入|利润|用户|份额|指标)|"
-                r"(?:收入|利润|用户|份额|指标).*对比|排名|占比|构成|分布|画图|图表|可视化",
-                text,
-            )
-        )
-
-    @staticmethod
-    def _has_completed_chart(messages: Any) -> bool:
-        return any(
-            isinstance(message, ToolMessage)
-            and str(getattr(message, "name", "") or "")
-            in {"render_python_chart", "forecast_quarterly_metric"}
-            for message in messages
-        )
-
-    @staticmethod
-    def _available_tool_names(tools: Any) -> set[str]:
-        names: set[str] = set()
-        for tool in tools or []:
-            if isinstance(tool, dict):
-                function = tool.get("function")
-                name = function.get("name") if isinstance(function, dict) else tool.get("name")
-            else:
-                name = getattr(tool, "name", "")
-            if name:
-                names.add(str(name))
-        return names
-
-    @staticmethod
-    def _requires_dual_source_disclosure(messages: Any) -> bool:
-        completed = {
-            str(getattr(message, "name", "") or "")
-            for message in messages
-            if isinstance(message, ToolMessage)
-        }
-        return {"search_local_reports", "web_search"}.issubset(completed)
-
-    @staticmethod
-    def _has_dual_source_disclosure(content: str) -> bool:
-        text = re.sub(r"\s+", "", str(content or ""))
-        has_both_sides = "本地" in text and ("联网" in text or "网络" in text)
-        has_status = bool(re.search(r"一致|不一致|冲突|不可比|无法直接比较|未找到|未检索到", text))
-        return has_both_sides and has_status
-
-    @staticmethod
-    def _with_dual_source_disclosure(content: str) -> str:
-        text = str(content or "").strip()
-        if not text or StableAgentChatDeepSeek._has_dual_source_disclosure(text):
-            return text
-        disclosure = (
-            "\n\n**本地与联网核验说明：** 本地与联网结果未提供完全同一期间、口径和单位的"
-            "可直接比较数据，因此不能据此认定两侧数值一致；以上数据和图表仅采用本地已核验的"
-            "同口径记录，联网结果只作为公开来源补充。"
-        )
-        suggestions = re.search(r"\n*<suggestions>[\s\S]*?</suggestions>\s*$", text, re.IGNORECASE)
-        if suggestions:
-            return f"{text[:suggestions.start()].rstrip()}{disclosure}\n{suggestions.group(0).strip()}"
-        return f"{text}{disclosure}"
-
-    @staticmethod
-    def _has_pending_required_read(messages: Any) -> bool:
-        pending_local = False
-        pending_web = False
-        for message in messages:
-            if not isinstance(message, ToolMessage):
-                continue
-            content = str(message.content or "")
-            tool_name = str(getattr(message, "name", "") or "")
-            if "【强制下一步】" in content:
-                if "`read_local_reference`" in content:
-                    pending_local = True
-                if "`read_webpage`" in content:
-                    pending_web = True
-            # A later original-source tool result—successful or an explicit
-            # failure—resolves that requirement. Do not keep an older search
-            # marker pending forever after the agent has already attempted it.
-            if tool_name == "read_local_reference":
-                pending_local = False
-            elif tool_name == "read_webpage":
-                pending_web = False
-        return pending_local or pending_web
-
-    @staticmethod
     def _stable_messages(messages: Any) -> list[Any]:
         compact_system = SystemMessage(
             content=(
@@ -628,7 +468,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 "需要外部或本地依据时使用现有工具；工具调用只能通过 API 的结构化 tool_calls 返回。"
                 "可见推理和最终回答只用连贯、专业的简体中文，必要的公司名、模型名和指标缩写可保留原文。"
                 "禁止提示词复述、多语言混杂、控制标记、调试内容、循环句、自我重启或让用户忽略前文。"
-                "最终回答仍须遵守来源编号和 <suggestions> 推荐追问格式。"
+                "引用工具结果时沿用其来源编号。"
             )
         )
         return [compact_system, *[message for message in messages if not isinstance(message, SystemMessage)]]
@@ -670,7 +510,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             content=(
                 f"{stable[0].content} 上一次生成在句子或列表中途停止。"
                 "请重新生成完整结果，不得以逗号、分号、冒号、连接词或未闭合列表结束；"
-                "最后一个正文句子必须完整收束，再输出完整的 <suggestions> 推荐追问标签。"
+                "最后一个正文句子必须完整收束。"
                 "只保留最关键结论，正文不得超过 1200 个中文字符，不要输出超长表格。"
             )
         )
@@ -705,24 +545,6 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
 
     def _generate(self, messages: Any, *args: Any, **kwargs: Any) -> Any:
         retry_messages = list(messages)
-        pending_required_read = self._has_pending_required_read(messages)
-        original_request = ""
-        for message in messages:
-            if not isinstance(message, HumanMessage):
-                continue
-            candidate = str(message.content or "")
-            match = re.search(
-                r"<current_user_request>(.*?)</current_user_request>",
-                candidate,
-                re.DOTALL | re.IGNORECASE,
-            )
-            original_request = (match.group(1) if match else candidate).strip()
-        chart_required = (
-            self._request_requires_chart(original_request)
-            and not self._has_completed_chart(messages)
-            and "render_python_chart" in self._available_tool_names(kwargs.get("tools"))
-        )
-        dual_source_disclosure_required = self._requires_dual_source_disclosure(messages)
         last_result = None
         best_partial_content = ""
         retry_kwargs = dict(kwargs)
@@ -770,56 +592,9 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                     _model_finish_reason(last_result, model_message),
                 )
             )
-            missing_completion_footer = bool(
-                len(content) >= 100
-                and not re.search(r"</suggestions\s*>\s*$", content, re.IGNORECASE)
-            )
-            explicit_structure_complete = _answer_satisfies_explicit_structure(
-                original_request,
-                content,
-            )
-            # The first missing footer is treated as suspicious and gets a
-            # bounded repair pass. If that repair returns structurally complete
-            # prose but merely omits UI metadata, add the deterministic footer
-            # instead of throwing away a valid answer.
-            if (
-                (attempt > 0 or explicit_structure_complete)
-                and not tool_calls
-                and missing_completion_footer
-                and (
-                    not structurally_incomplete
-                    or (
-                        explicit_structure_complete
-                        and not _looks_like_incomplete_model_answer(content)
-                    )
-                )
-                and not _looks_like_unstable_model_text(content)
-            ):
-                content = _with_completion_footer(content)
-                model_message.content = content
-                if explicit_structure_complete:
-                    response_metadata = dict(getattr(model_message, "response_metadata", None) or {})
-                    response_metadata["finish_reason"] = "stop"
-                    response_metadata["completion_contract"] = "explicit_structure_verified"
-                    model_message.response_metadata = response_metadata
             incomplete_answer = bool(
                 not tool_calls
-                and (
-                    pending_required_read
-                    or chart_required
-                    or (
-                        dual_source_disclosure_required
-                        and not self._has_dual_source_disclosure(content)
-                    )
-                    or (
-                        content
-                        and _looks_like_incomplete_model_answer(
-                            content,
-                            _model_finish_reason(last_result, model_message),
-                            require_completion_footer=True,
-                        )
-                    )
-                )
+                and structurally_incomplete
             )
             if incomplete_answer and len(content) > len(best_partial_content):
                 best_partial_content = content
@@ -830,88 +605,17 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             if malformed_tool_call and retry_kwargs.get("tools"):
                 retry_kwargs["tool_choice"] = "required"
             if incomplete_answer:
-                if pending_required_read and retry_kwargs.get("tools"):
-                    # A search result can explicitly require an original-source
-                    # read. Never convert that state into a tool-free rewrite:
-                    # doing so let the fallback model invent dates from search
-                    # snippets. Force the required structured tool call first.
-                    retry_messages = self._stable_messages(messages)
-                    retry_messages[0].content = (
-                        f"{retry_messages[0].content} 工具结果中仍有【强制下一步】未执行。"
-                        "此轮只能返回其中指定的结构化工具调用，不能输出最终正文。"
-                    )
-                    retry_kwargs["tool_choice"] = "required"
-                elif chart_required and retry_kwargs.get("tools"):
-                    retry_messages = self._stable_messages(messages)
-                    retry_messages[0].content = (
-                        f"{retry_messages[0].content} 当前用户问题涉及数据趋势、对比或多组数据，"
-                        "但本轮尚未取得任何图表工具结果。此轮必须调用 `render_python_chart`；"
-                        "只能使用已核验、口径和单位可比的真实数据点，不能输出最终正文，"
-                        "不能声称调用过尚未实际调用的模型或工具。"
-                    )
-                    retry_kwargs["tool_choice"] = "required"
-                elif dual_source_disclosure_required:
-                    retry_messages = self._completion_retry_messages(messages, content)
-                    retry_messages[0].content = (
-                        f"{retry_messages[0].content} 本轮已经同时取得本地与联网检索结果。"
-                        "最终回答必须单列“本地与联网核验说明”，明确写出两侧一致、不一致、"
-                        "冲突、不可比或某一侧未找到同口径数据的状态，不能只把网络链接列在来源区。"
-                    )
-                    retry_kwargs = {
-                        key: value
-                        for key, value in retry_kwargs.items()
-                        if key not in {"tools", "tool_choice", "parallel_tool_calls"}
-                    }
-                else:
-                    # A full-context rewrite repeatedly resends every tool result
-                    # and is exactly what produced six-figure token usage in one
-                    # failed turn. Repair from a bounded evidence digest and do
-                    # not let the repair call enter another tool loop.
-                    retry_messages = self._completion_retry_messages(messages, best_partial_content)
-                    retry_kwargs = {
-                        key: value
-                        for key, value in retry_kwargs.items()
-                        if key not in {"tools", "tool_choice", "parallel_tool_calls"}
-                    }
+                # Repair only a genuinely truncated or malformed answer. The
+                # application does not prescribe which business tools or
+                # sections the Agent must have chosen.
+                retry_messages = self._completion_retry_messages(messages, best_partial_content)
+                retry_kwargs = {
+                    key: value
+                    for key, value in retry_kwargs.items()
+                    if key not in {"tools", "tool_choice", "parallel_tool_calls"}
+                }
             else:
                 retry_messages = self._stable_messages(messages)
-
-        if pending_required_read and kwargs.get("tools"):
-            raise RuntimeError("模型未执行工具结果中要求的原文读取，已阻止使用搜索摘要直接作答。")
-        if chart_required:
-            chart_spec = _verified_metric_chart_spec(
-                original_request,
-                [
-                    str(message.content or "")
-                    for message in messages
-                    if isinstance(message, ToolMessage)
-                ],
-            )
-            generations = list(getattr(last_result, "generations", None) or [])
-            if chart_spec and generations:
-                chart_spec_json = json.dumps(chart_spec, ensure_ascii=False)
-                generations[0].message = AIMessage(
-                    content="",
-                    tool_calls=[{
-                        "name": "render_python_chart",
-                        "args": {"chart_spec": chart_spec_json},
-                        "id": (
-                            "call_required_chart_"
-                            f"{hashlib.sha256(chart_spec_json.encode()).hexdigest()[:16]}"
-                        ),
-                        "type": "tool_call",
-                    }],
-                )
-                return last_result
-            raise RuntimeError("该问题要求用图表呈现趋势或比较，但模型未实际调用图表工具，已阻止纯文字回答。")
-        if dual_source_disclosure_required:
-            generations = list(getattr(last_result, "generations", None) or [])
-            model_message = getattr(generations[0], "message", None) if generations else None
-            if model_message is not None:
-                model_message.content = self._with_dual_source_disclosure(
-                    str(getattr(model_message, "content", "") or "")
-                )
-                return last_result
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
         fallback_messages = self._completion_retry_messages(messages, best_partial_content)
@@ -933,17 +637,6 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             if fallback_name and model_message is not None:
                 self._annotate_transport_fallback(model_message, fallback_name)
             content = str(getattr(model_message, "content", "") or "")
-            if (
-                len(content) >= 100
-                and not re.search(r"</suggestions\s*>\s*$", content, re.IGNORECASE)
-                and not _looks_like_incomplete_model_answer(
-                    content,
-                    _model_finish_reason(fallback_result, model_message),
-                )
-                and not _looks_like_unstable_model_text(content)
-            ):
-                content = _with_completion_footer(content)
-                model_message.content = content
             if content and len(content) > len(best_partial_content):
                 best_partial_content = content
             additional = getattr(model_message, "additional_kwargs", None)
@@ -953,7 +646,6 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 and not _looks_like_incomplete_model_answer(
                     content,
                     _model_finish_reason(fallback_result, model_message),
-                    require_completion_footer=True,
                 )
                 and not _looks_like_unstable_model_text(content)
                 and not _looks_like_unstable_model_text(reasoning)
@@ -962,17 +654,12 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
         generations = list(getattr(last_result, "generations", None) or [])
         if generations:
             salvaged = _salvage_complete_answer(best_partial_content)
-            if salvaged and len(salvaged) >= 100 and not re.search(
-                r"</suggestions\s*>\s*$", salvaged, re.IGNORECASE
-            ):
-                salvaged = ""
             generations[0].message = AIMessage(
                 content=(
                     salvaged
                     or (
                         "模型节点本轮未能生成可靠的完整回答，系统已停止重复消耗上下文。"
-                        "请缩小范围后继续。\n"
-                        '<suggestions>["缩小问题范围后重试", "指定需要分析的主体", "查看当前可用的数据集"]</suggestions>'
+                        "请缩小范围后继续。"
                     )
                 ),
                 additional_kwargs={"reasoning_content": "检测到模型输出异常，已使用短上下文修复并停止重复重写。"},
@@ -990,36 +677,6 @@ FRONTEND_SKILL_ORDER = [
     "trend-forecasting",
     "financial-visual-analytics",
 ]
-SKILL_ROUTING_RULES = [
-    (
-        "quarterly-competitor-metrics",
-        r"竞对|季度|半年度|经营数据|财务|收入|营收|利润|EBITDA|ARPU|同比|环比|中国移动|中国联通|中国电信|中国铁塔|HKT|SmarTone|Hutchison|HKBN",
-    ),
-    (
-        "cloud-vendor-metrics",
-        r"云厂商|云收入|云业务|AWS|Azure|Google Cloud|Alibaba Cloud|阿里云|腾讯云|Huawei Cloud|华为云|Oracle Cloud|cloud revenue",
-    ),
-    (
-        "macro-policy-context",
-        r"宏观|政策|监管|5G|频谱|OFCA|香港电信|电信市场|宽带|移动用户|SIM|实名|监管政策|公共机构|宏观环境",
-    ),
-    (
-        "trend-forecasting",
-        r"预测|趋势|未来|forecast|Holt|Winters|回测|naive|seasonal|模型|适用性|风险边界",
-    ),
-    (
-        "financial-visual-analytics",
-        r"画图|图表|可视化|趋势图|柱状图|折线图|饼图|环形图|面积图|散点图|气泡图|雷达图|热力图|直方图|箱线图|组合图|历史数据|过去数据|历年|历史走势|时间序列|同比|环比|变化趋势|趋势分析|数据对比|占比|构成|分布|相关性",
-    ),
-    (
-        "executive-briefing",
-        r"简报|战略简报|汇报|总结|一页纸|关键证据|重点提炼|风险建议|行动项|管理层|领导|结论先行",
-    ),
-]
-SKILL_BYPASS_PATTERN = re.compile(
-    r"历史聊天|聊天记录|之前聊|早先|上一轮|前台发送测试|长期记忆|记忆条目|你记住|列出记忆|你好|您好|谢谢|ok|测试",
-    re.IGNORECASE,
-)
 WEB_SEARCH_INDEX_LOCK = threading.Lock()
 WEB_SEARCH_NEXT_INDEX = 6
 SELECTED_DATASET_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_DATASET_IDS", default=None)
@@ -1222,100 +879,16 @@ def available_agent_skills() -> list[dict[str, Any]]:
 def _selected_skill_context(skill_ids: list[str] | None, message: str = "") -> str:
     if not skill_ids:
         return ""
-    allowed = {item["id"] for item in available_agent_skills()}
-    selected = [
-        re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
-        for skill_id in skill_ids
-    ]
-    matched = [
-        skill_id
-        for skill_id, pattern in SKILL_ROUTING_RULES
-        if skill_id in selected and re.search(pattern, _clean_search_text(message, 1200), re.IGNORECASE)
-    ][:2]
-    if not matched:
-        return (
-            "前端已选择 Agent Skills，但本轮问题未命中具体 Skill。"
-            "不要展开、复述或猜测这些 Skill 的内容；直接按用户原始问题回答。"
-        )
-    blocks: list[str] = [
-        "以下仅列出与本轮问题匹配的 Agent Skill 发现信息。"
-        "这不是完整 Skill 指令；如果本轮确实需要某个 Skill 的完整规则，再调用 `read_agent_skill(skill_id)` 读取完整 SKILL.md。"
-    ]
-    for skill_id in matched:
+    by_id = {item["id"]: item for item in available_agent_skills()}
+    lines: list[str] = []
+    for skill_id in skill_ids[:5]:
         clean_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
-        if clean_id not in allowed:
-            continue
-        item = next((row for row in available_agent_skills() if row.get("id") == clean_id), None)
+        item = by_id.get(clean_id)
         if item:
-            blocks.append(
-                "\n".join(
-                    [
-                        f"## Skill: {clean_id}",
-                        f"- 标题: {item.get('title') or clean_id}",
-                        f"- 简介: {item.get('description') or item.get('summary') or ''}",
-                        f"- 数据: {item.get('data') or ''}",
-                        f"- 路径: {item.get('path') or ''}",
-                    ]
-                )
+            lines.append(
+                f"- {clean_id}: {item.get('description') or item.get('summary') or item.get('title') or clean_id}"
             )
-    return "\n\n".join(blocks)
-
-
-def _skill_routing_instruction(
-    message: str,
-    selected_skill_ids: list[str] | None,
-    loaded_skill_ids: list[str] | None,
-) -> str:
-    selected = {
-        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
-        for item in (selected_skill_ids or [])
-        if str(item or "").strip()
-    }
-    if not selected:
-        return ""
-    clean_message = _clean_search_text(message, 1200)
-    if not clean_message:
-        return ""
-    if SKILL_BYPASS_PATTERN.search(clean_message):
-        return (
-            "Skill 路由判断：本轮更像历史聊天、记忆审计、寒暄或简单测试。"
-            "不要为了流程感读取 Skill；优先直接回答或调用更相关的工具。"
-        )
-    loaded = {
-        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
-        for item in (loaded_skill_ids or [])
-        if str(item or "").strip()
-    }
-    matched: list[str] = []
-    for skill_id, pattern in SKILL_ROUTING_RULES:
-        if skill_id in selected and re.search(pattern, clean_message, re.IGNORECASE):
-            matched.append(skill_id)
-    explicit_forecast = bool(
-        re.search(r"预测|未来|forecast|Holt|Winters|回测|naive|seasonal|模型预测", clean_message, re.IGNORECASE)
-    )
-    if "financial-visual-analytics" in matched and not explicit_forecast:
-        matched = ["financial-visual-analytics"] + [
-            skill_id
-            for skill_id in matched
-            if skill_id not in {"financial-visual-analytics", "trend-forecasting"}
-        ]
-    if not matched:
-        return (
-            "Skill 路由判断：本轮未明显命中已选 Skill 的领域任务。"
-            "如问题后续需要数据分析、政策解读、趋势预测或战略简报，再选择性读取相关 Skill。"
-        )
-    target = matched[:2]
-    unread = [skill_id for skill_id in target if skill_id not in loaded]
-    if unread:
-        return (
-            "Skill 路由判断：本轮问题明显需要已选 Skill 支撑。"
-            f"在正式分析前，优先调用 `read_agent_skill` 读取这些最相关 Skill：{', '.join(unread)}。"
-            "最多读取 1-2 个最相关 Skill，不要把所有已选 Skill 全部读一遍；读取后再调用数据库检索、原文核验、预测或图表工具。"
-        )
-    return (
-        "Skill 路由判断：本轮命中的相关 Skill 此前已读取过。"
-        f"可沿用这些 Skill 的规则：{', '.join(target)}；只有任务切换或规则不确定时才再次读取。"
-    )
+    return "\n".join(lines)
 
 
 def _looks_like_blocked_or_encoded_text(text: str) -> bool:
@@ -1700,8 +1273,7 @@ def _require_action_confirmation(name: str, payload: Any = None, description: st
 @tool
 def read_agent_skill(skill_id: str) -> str:
     """读取本轮已选择的 Agent Skill 完整 SKILL.md 指令。
-    当你准备使用某个前端已选 Agent Skill 时，必须先调用此工具读取完整指令；
-    `load_agent_skills` 只表示前端选择了哪些 Skill，不等于已经阅读和执行了 Skill。
+    Agent 可在需要专业分析方法时读取前端已选择的 Skill。
     """
     clean_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
     if not clean_id:
@@ -1798,7 +1370,7 @@ def list_crawl_runs(limit: int = 5) -> str:
 def search_local_reports(query: str) -> str:
     """搜索本地的战略部周报、审计日志和之前爬取过的网页数据。
     当你需要了解公司的最新动态、特定主体的近期情况，或是爬虫的执行历史时，请使用此工具。
-    若用户问题包含“收入同比”“营收同比”“营业收入同比”“收入增长”“revenue_growth_yoy”“YoY”等词，query 必须保留这些同比/增长关键词，不能简化成“收入”或“营业收入”。
+    query 应保留用户原始指标语义，例如区分收入同比与收入。
     """
     limit_message = _register_heavy_search_invocation("search_local_reports")
     if limit_message:
@@ -1844,35 +1416,6 @@ def search_local_reports(query: str) -> str:
                 meta_links.append(link)
                 
     text_output = "\n\n".join(result)
-    current_request = CURRENT_USER_REQUEST.get()
-    needs_original = bool(
-        re.search(
-            r"数据|数值|日期|时间线|历年|趋势|收入|利润|用户|份额|对比|"
-            r"政策|频谱|牌照|影响|评估|核验|准确|来源",
-            current_request,
-            re.IGNORECASE,
-        )
-    )
-    if needs_original:
-        source_candidates = [
-            str(chunk.get("source") or "")
-            for chunk in chunks
-            if str(chunk.get("source") or "").strip()
-        ]
-        preferred_source = next(
-            (
-                source
-                for source in source_candidates
-                if not re.search(r"(?:^|/)(?:manifest\.json|README\.md)$", source, re.IGNORECASE)
-            ),
-            source_candidates[0] if source_candidates else "",
-        )
-        if preferred_source:
-            original_text = _read_local_reference_text(preferred_source)
-            text_output += (
-                f"\n\n【已自动读取本地原文：{preferred_source}】\n"
-                f"{original_text[:4500]}"
-            )
     meta_data = {
         "type": "meta",
         "sources": [chunk["source"] for chunk in chunks],
@@ -2018,37 +1561,6 @@ def web_search(query: str, max_results: int = 5) -> str:
             "不得引用这些被过滤页面；请改用更具体的实体、指标或官方机构名称重试。"
         )
 
-    original_source_url = ""
-    original_source_text = ""
-    if official_domains:
-        original_candidates: list[dict[str, str]] = []
-        seen_original_urls: set[str] = set()
-        # Curated regulator entry points are ordered by task relevance. Try
-        # them before noisy engine results so a generic regulator homepage
-        # cannot displace a substantive policy document.
-        for item in [*official_seeds, *results]:
-            candidate_url = item.get("url") or ""
-            if not candidate_url or candidate_url in seen_original_urls:
-                continue
-            seen_original_urls.add(candidate_url)
-            original_candidates.append(item)
-        last_failure = ""
-        for item in original_candidates[:8]:
-            candidate_text = _read_webpage_text(item["url"])
-            if candidate_text.startswith(
-                ("网页读取失败", "网页读取跳过", "PDF读取失败", "读取网页 ")
-            ):
-                last_failure = candidate_text
-                continue
-            original_source_url = item["url"]
-            original_source_text = candidate_text
-            if all(existing.get("url") != original_source_url for existing in results):
-                results = [*results[: max(0, limit - 1)], item]
-            break
-        if not original_source_text:
-            original_source_url = original_candidates[0]["url"] if original_candidates else ""
-            original_source_text = last_failure or "联网官方原文读取失败：没有可尝试的官方页面。"
-
     lines = []
     references = []
     links = []
@@ -2077,16 +1589,9 @@ def web_search(query: str, max_results: int = 5) -> str:
             f"[联网检索质量] 已过滤 {discarded_count} 个与查询无关或低质量的结果；"
             "下列来源才可用于回答。\n\n"
         )
-    original_source_note = ""
-    if official_domains and original_source_url:
-        original_source_note = (
-            f"\n\n【已自动读取联网官方原文：{original_source_url}】\n"
-            f"{original_source_text[:5000]}"
-        )
     return (
         quality_note
         + "\n\n".join(lines)
-        + original_source_note
         + f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
     )
 
@@ -2711,7 +2216,7 @@ def get_system_status() -> str:
 def search_agent_memory(query: str, limit: int = 5) -> str:
     """搜索小竞AI本地长期运行记忆。
     当用户询问偏好、之前确认过的生产规则、长期约束、上下文管理策略或历史工作流时使用。
-    记忆只作为辅助上下文；正式数据结论仍必须以当前选择数据库、官方来源和审计文件为准。
+    记忆只作为辅助上下文，不代替当前选择数据库和实际工具结果。
     """
     rows = search_memories(query, limit=limit)
     if not rows:
@@ -3174,29 +2679,10 @@ def get_agent(
     
     tools = _agent_tools(allow_web_search=allow_web_search, user_message=user_message)
 
-    if allow_web_search:
-        source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`web_search` 或其他工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号（对应 [来源 1], [来源 2] 的编号）。本地检索通常使用 [1]-[5]，联网搜索通常从 [6] 开始编号；必须沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
-        retrieval_pairing_rule = "【涉及数据时必须双检索】本轮既然已启用联网搜索，只要用户问题涉及或答案依赖任何数据、数值或可核验事实（包括但不限于日期、金额、比例、数量、排名、指标、财报、市场份额、用户规模、政策参数、行业与竞对动态），就必须同时调用 `search_local_reports` 和 `web_search`，缺一不可：先检索本地监测、数据集和周报，再检索联网公开来源。即使其中一侧无相关结果或证据不足，也必须实际完成该侧检索，并在答案中如实说明该侧未检出或证据不足；不得因为另一侧已有答案而跳过。每个检索工具本轮只调用一次，应把必要实体和指标合并进一次查询；已有结果后禁止为了改写答案而重复检索。只有完全不涉及数据或可核验事实的纯创作、寒暄、改写等任务，才不要求双检索。\n"
-        cross_check_rule = "【本地与联网交叉校验】双检索后必须逐项对照本地与联网结果。当日期、统计期、主体、定义、单位、币种、金额、比例、数量或结论存在任何不一致时，必须在回答中显著指出“本地与联网数据不一致”，并分别列出本地资料值及口径、联网公开来源值及口径、差异的可能原因，以及建议采用的可信口径；无法判断时明确保留冲突，不得静默选边，也不得把冲突数据混合成一个确定结论。两侧一致时可正常合并表述并分别引用来源。\n"
-        local_original_rule = "【本地原文优先】`search_local_reports` 会在检索结果末尾自动附上首个最相关本地原文，标记为“已自动读取本地原文”；出现该标记即视为已经完成一次本地原文读取，不要再为同一内容重复调用 `read_local_reference`。只有所需具体条目未包含在自动原文中时，才最多读取 2 个更精确的本地来源。如果本地检索没有相关来源，说明本地原文不足。不要在没有本地依据的情况下连续打开外部网页。\n"
-        quarterly_crosscheck_sentence = "`needs_official_row_crosscheck` 只能作为线索，正式结论必须继续联网或读取官方来源核验。"
-        web_rule = "【联网搜索】当用户明确要求上网、联网搜索、查最新公开信息，或本地资料不足以回答时，必须调用 `web_search`。已知政府/监管主题的结果会自动附上首个可读官方原文，标记为“已自动读取联网官方原文”；出现该标记后不要为同一内容重复调用 `read_webpage`。只有用户要求其他网页全文或自动原文仍不包含关键事实时，才对最多 2 个不同关键结果调用 `read_webpage`。若读取返回失败、跳过、浏览器验证或 PDF 抽取失败，不要反复读取同一类链接。\n"
-        completion_rule = "【本轮任务完成性】对本轮问题所必需的检索、读取原文、口径核验和只读分析必须在本轮直接完成，不得询问用户是否允许继续读取、搜索或分析，也不得把“读取某文件/数据集”“继续联网搜索”等本轮应完成的工作包装成推荐追问。自动附带的本地/联网原文足以支持结论时，应立即交叉核验并完成回答，不得重复搜索。只有工具达到上限、来源不可访问或数据确实不存在时才停止，并明确说明具体证据缺口。\n"
-        web_quality_rule = "【联网结果质量】联网搜索结果必须与用户查询中的主体、指标和地域相关。若 `web_search` 明确表示已过滤无关结果、未返回相关结果，或返回页面显然属于其他主题、其他国家/语言的无关内容，禁止引用、总结或把它们计作联网核验；应使用更具体的实体名、官方机构名或 `site:` 官方域名重新检索。涉及香港电讯、5G、频谱和监管政策时优先使用 OFCA（ofca.gov.hk）或通讯事务管理局（coms-auth.hk）官方来源。\n"
-    else:
-        source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`read_local_reference` 或其他本地工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号，并沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
-        retrieval_pairing_rule = "【本地检索优先】优先调用 `search_local_reports`、`list_local_datasets`、`read_local_reference` 等当前可用工具回答，不得声称使用了未实际调用的工具，不得编造检索结果。用户要求搜索、查最新或公开资料时，也直接按本地可用数据检索和回答；资料不足时，只说明缺少的具体本地依据，并给出可以继续核验的本地数据路径或来源。不要解释当前工具开关、联网能力或前端配置状态。\n"
-        cross_check_rule = "【本地核验优先】基于本地标准化数据集、周报、爬虫结果、审计日志和已保存来源进行回答；资料不足时只说明缺少哪些数据或依据。\n"
-        local_original_rule = "【本地原文优先】`search_local_reports` 只是本地检索摘要；只要问题涉及数据、财报、收入、对比、结论判断或口径核对，并且你已经调用了 `search_local_reports`，就必须至少对一个最相关的本地来源调用 `read_local_reference`（例如 `weekly_report.md` 或 `row_2.json`）查看原文后再回答。如果本地检索结果没有相关来源，才说明本地原文不足。\n"
-        quarterly_crosscheck_sentence = "`needs_official_row_crosscheck` 只能作为线索，正式结论必须读取本地已保存官方来源或本地引用原文核验。"
-        web_rule = "【回答方式】只输出答案本身，不额外解释当前能力配置、联网能力或前端设置，也不要引导用户调整前端设置；本地依据不足时，只说缺少哪些本地数据或引用。\n"
-        completion_rule = "【本轮任务完成性】对本轮问题所必需的本地检索、读取原文、口径核验和只读分析必须在本轮直接完成，不得询问用户是否允许继续读取或分析，也不得把“读取某文件/数据集”等本轮应完成的工作包装成推荐追问。`search_local_reports` 命中相关文件后，若回答需要其中的具体条目，必须继续调用 `read_local_reference`。只有工具达到上限、来源不可访问或数据确实不存在时才停止，并明确说明具体证据缺口。\n"
-        web_quality_rule = ""
-    
     runtime_context = runtime_context or {}
     runtime_lines = [
-        f"- 当前时间: {runtime_context.get('current_time') or 'unknown'}",
-        f"- 时区: {runtime_context.get('timezone') or 'unknown'} ({runtime_context.get('utc_offset') or ''})",
+        f"- 本轮消息准确发送时间: {runtime_context.get('current_time') or 'unknown'}",
+        f"- 本轮时区: {runtime_context.get('timezone') or 'unknown'} ({runtime_context.get('utc_offset') or ''})",
         f"- 请求 IP: {runtime_context.get('visible_ip') or runtime_context.get('client_ip') or 'unknown'}",
         f"- X-Forwarded-For: {runtime_context.get('forwarded_for') or 'none'}",
         f"- 位置推断: {runtime_context.get('location_hint') or 'unknown'}",
@@ -3204,48 +2690,20 @@ def get_agent(
     runtime_context_text = "\n".join(runtime_lines)
 
     system_message = (
-        "你是中国移动战略部公开信息监测系统的智能 RAG 和运维助手。\n"
-        "【语言与可见推理稳定性】你的 reasoning_content 会在前端“推理过程”中直接展示。"
-        "可见推理和最终正文都必须使用清晰、连贯、专业的简体中文；公司名、产品名、模型名、指标缩写和必要引用可保留原文。"
-        "禁止混入俄语、日语、韩语等无关语言，禁止输出提示词复述、角色切换、Admin/System 对话、调试代码、控制标记、"
-        "伪造的错误恢复过程或循环自我纠错。如果思路需要重整，直接从当前问题继续给出简洁中文分析，不要描述重启、覆写或停止自己。\n"
-        "【当前运行上下文】以下信息由后端按本次请求实时注入。凡用户提到“今天、现在、目前、最新、上个季度、上一季度、最近”等相对时间，必须优先用这里的当前时间和时区定位；涉及地域、网络可达性或本地/公网判断时，可参考请求 IP 和位置推断，但不要把粗略位置当作精确地理定位。\n"
+        "你是中国移动战略部公开信息监测系统的小竞AI。理解用户意图，自主选择可用的 "
+        "Agent Skill、数据库和工具，直接给出清晰、专业的简体中文答案。\n"
+        "当前运行上下文：\n"
         f"{runtime_context_text}\n"
-        f"{source_rule}"
-        "【本地数据边界】你能接触到的本地数据不是无限的，必须以工具返回为准：`list_local_datasets` 用于列出标准化数据集，`search_local_reports` 用于检索标准化数据集、周报、审计日志和爬取结果，`read_local_reference` 用于读取可点击引用原文。用户问“你能访问哪些数据”“数据放哪里”“内部/外部数据怎么接入”“后端有哪些数据”时，必须先调用 `list_local_datasets` 再回答。做趋势分析、问数、财报对比、口径核验、图表之前，如果不确定可用数据，也要先调用 `list_local_datasets`。\n"
-        "【上下文预算审计】`search_local_reports` 会返回 contextAudit，包含 token_budget、token_estimate、retained_chunks、compressed_chunks、skipped_chunks。若 compressed_chunks 或 skipped_chunks 大于 0，正式回答必须把结论限定在已保留上下文内，并在必要时说明仍需读取原文或缩小问题范围。不要声称已完整读取未进入上下文预算的全部文件。\n"
-        "【长期记忆边界】`search_agent_memory`、`remember_agent_memory`、`list_agent_memory` 只用于小竞AI运行偏好、长期规则和已验证流程。长期记忆不能替代本轮用户指令、前端数据库选择、官方来源、审计文件或工具返回结果；若记忆与本轮上下文冲突，必须以本轮上下文为准。\n"
-        "【历史聊天边界】`search_chat_history` 是跨线程、只读、持久化的历史对话工具，支持 query、start_time、end_time、role、thread_id、limit 和 context_window。当前问题依赖此前聊天、用户提到上一轮/早先/某日/某时刻/当时/那次、要求核对过去谁说过什么，或含糊指代确实需要回看时，由你自主调用；纯时间检索时 query 可以留空。相对时间必须先用当前运行上下文换算为 ISO 8601 再传入。不要只凭最近 8 条上下文或长期记忆猜测，也不要为与历史无关的当前事实查询无故调用。旧消息若只返回会话时间范围，必须明确其时间精度较低，不得伪称为逐条准确时间。回答要区分“历史聊天记录命中”和“长期记忆命中”。\n"
-        "【用户画像边界】当用户问“我是谁”“你了解我什么”“我对什么感兴趣”“我的偏好/关注点是什么”等身份、偏好或用户画像问题时，必须优先调用 `search_agent_memory` 和 `search_chat_history`。只把明确记忆和历史聊天中用户自己发出的消息当证据；历史里 AI 曾经做过的猜测、当前选择的数据库、项目环境或最近一次数据主题不能作为个人身份或兴趣证据。若没有明确证据，必须说“不确定”，并把基于用户历史问题的判断标成“可能/倾向”。\n"
-        "【Agent Skill 渐进加载】前端选择的 Skill 不是固定开场流程，但它们是专业分析方法。历史聊天查询、寒暄、简单问答、纯记忆审计和无需领域规则的问题，不要为了流程感读取 Skill；但当用户要求分析竞对经营数据、云厂商数据、宏观政策、趋势预测或战略简报时，应优先读取最相关的 1-2 个已选 Skill，再按 Skill 方法调用数据库检索、原文核验、预测或图表工具。不要把所有已选 Skill 全部读一遍。\n"
-        "【新增数据规范】后续新增内部或外部数据时，默认放入项目根目录 `agent_knowledge/<dataset_id>/`。每个数据集至少提供 `manifest.json`，建议同时提供 `README.md`、结构化 `data.csv` 或 `data.json`、摘要 `summary.md`、来源 `sources.json`。允许被后端索引和引用的文本文件扩展名只有 `.md`、`.txt`、`.json`、`.csv`、`.tsv`。`manifest.json` 应写明 id、title、summary、source_type、scope、tags、keywords、entrypoints、updated_at、quality。除非工具列出，否则不要声称自己能读取其他本地目录。\n"
-        "【数据库选择边界】前端数据库按钮是强访问边界。只有本轮用户已选择的 `agent_knowledge` 数据库才允许被 `list_local_datasets`、`search_local_reports` 和 `read_local_reference` 读取或引用；未选择的数据集不可见。不得根据历史提示、路径记忆或未调用工具的信息声称知道未选择数据库的内容。若季度、核心公司或云厂商数据集被选择，按工具返回的 manifest、CSV/JSON 行和引用原文回答；`verification_count>=2` 表示该行已完成多来源核验，`official_conflict` 表示正式回答采用 `official_value` 并说明标准化值与官方披露冲突。\n"
-        "【目标级审计优先】当用户询问“现在数据是否完整/准确/能否预测/数据库是否正常/来源是否可靠/目标完成到哪一步”或要求给出正式数据质量结论时，如果已选择 `goal_readiness_audits`、`knowledge_integrity_audits`、`source_evidence_audits`、`source_url_reachability_audits`、`forecast_readiness_audits` 或 `agent_dataset_visibility_audits`，必须先检索并读取相关审计。正式回答要以这些审计中的 pass/fail、row_count、verification_count、official_value/source_gap 和 API 可见性结果为准；不要只凭主数据包或历史记忆判断完成度。被 manifest 标记为 `superseded`、`hidden` 或 `archived` 的数据包不得作为默认数据库或正式结论来源。\n"
-        "【宏观政策数据包】若用户询问 CMHK 预测、趋势判断、香港电信市场、5G、频谱、移动用户、宽带渗透率、SIM 实名、监管政策或宏观环境，并且已选择 `cmhk_macro_policy_*` 数据库，必须检索并读取该数据包。宏观政策包用于解释市场背景、外生变量和政策事件；年度/事件粒度记录不得替代公司季度数据，也不得把政策事件直接当作收入/利润预测目标。正式结论仍使用 `official_value`，`source_gap_confirmed` 不得估算。\n"
-        "【竞对产品资费数据库】若已选择 `competitor_product_tariffs`，在回答套餐价格、历史资费、产品比较、覆盖或缺口问题前，必须先检索 `product_tariffs_agent_context.md` 理解字段和边界。价格与套餐结论只可使用 `product_tariffs_formal_agent_records.csv` 中 `record_class=formal_product_tariff` 的行；来源可得性、缺口或未入正式表原因才读取 `product_tariffs_source_gaps_agent_records.csv` 和 `product_tariffs_followup_agent_records.csv`。不得把 source-gap、单源候选或近似报价作为正式价格、趋势样本或预测输入；不同品牌、期间、合约期、客户分段、数据量/速率和附加条件不可因价格相同而强行合并。HKT/csl/1O1O 的 `official_public_source_structured` 表示官方公开来源结构化，不得伪称它等于双来源核验。产品资费包不是财务或季度经营指标包，不得用其替代收入、用户数或财务预测数据。\n"
-        "【精确指标边界】问数时必须严格保持用户要的指标，不得把派生指标改写成基础指标。尤其是：`收入同比`、`营收同比`、`营业收入同比`、`收入增长`、`revenue_growth_yoy`、`YoY` 对应 `metric_key=revenue_growth_yoy`，不是 `revenue`；`EBITDA率` 对应 `metric_key=ebitda_margin`，不是 `ebitda`；`经营利润率` 对应 `operating_margin`，不是 `operating_income`；`毛利率` 对应 `gross_margin`，不是 `gross_profit`。调用 `search_local_reports` 时必须把这些关键词原样带入 query，最终回答也必须引用命中的同一指标行。\n"
-        "【表格输出限制】除非用户明确要求导出完整 CSV/Excel，否则最终回答中的 Markdown 表格最多输出 30 行、8 列；超过范围时先给摘要和关键行，并提示用户缩小范围或导出文件。Markdown 表格必须一次性输出完整表头、分隔行和完整数据行，每一行都以 `|` 结尾；单个指标优先用项目符号，不要为了一个数值强行输出表格。后端会对超限表格做截断，不要把大表格分批塞进同一条回答。\n"
-        "【爬虫日志调度】每次全量爬虫完成后，系统会登记 `agent_knowledge/crawl_run_logs/`：本地只保存运行索引和摘要，完整逐 URL 日志与 Agent 处理流程写入飞书日志子表。用户问上次爬虫、失败链接、覆盖率、日志在哪、Agent 是否处理完成时，必须先调用 `list_crawl_runs`；需要更细节再用 `search_local_reports` 或 `read_local_reference` 读取 `run_log.tsv`、`coverage_report.tsv`、`final_audit.md`。\n"
-        "【操作工具决策权】用户要求生成周报、生成运营商业绩摘要、全量爬取、查看输出文件、查看爬取设置或查看系统状态时，由你根据用户真实意图自行决定是否调用 `trigger_report_generation`、`trigger_carrier_performance_report_generation`、`trigger_full_crawl`、`list_report_outputs`、`get_crawl_settings_summary`、`get_system_status` 等工具。不要把“输出预测表”“生成预测图”“正式结论”等分析表达误判成报告生成；只有用户确实要产出 Word 周报或业绩摘要时才调用生成类工具。\n"
-        "【前端展示边界】前端会按事件顺序展示工具调用卡片；工具调用行会自动显示“读取 Skill / 检索数据库 / 联网搜索 / 读取原文”等过程说明。最终正文严禁重复检索过程、工具状态或准备动作，例如“联网已搜到”“本地检索结果只返回”“本地数据已命中”“CSV文件很大”“我继续检索”“我再读取”“数据充足”等。最终正文只输出结论、数据、依据、口径差异和必要不确定性。\n"
-        f"{completion_rule}"
-        f"{web_quality_rule}"
-        f"{retrieval_pairing_rule}"
-        f"{local_original_rule}"
-        f"{cross_check_rule}"
-        f"{quarterly_crosscheck_sentence}"
-        "【数据趋势与多组数据必须画图】只要问题涉及数据趋势、走势、时间序列、历史/历年数据、同比环比、多期变化，或者答案包含多个主体、多个指标、多个时期、多个类别等至少两组可比较数据，就必须在完成数据检索、原文读取和口径核验后调用 `render_python_chart` 生成至少一张 PNG 图表，不能只给文字或表格，也不能等用户再次要求画图。若 `forecast_quarterly_metric` 已返回能完整表达该问题的预测 PNG，可视为已经满足画图要求，不要重复生成相同图。只有确实不足两个可比较数据点、口径或单位不可比、关键证据不足，或图表工具明确失败时才允许不画；此时必须在答案中明确写出“无法生成可靠图表”及缺少的数据或不可比原因，绝对不得补造数据点。\n"
-        "【趋势回答完整性】用户只问“趋势/走势”时，默认分析已披露的历史数据，不得擅自扩展为未来预测。只有用户明确提出“预测、未来、forecast”等要求，才可调用预测工具并输出预测值。严禁在没有对应工具调用结果时声称“已调用模型/已生成预测/已画图”。趋势或多组数据回答应展示关键数据表、图表、趋势方向与转折、最新可比期、单位和口径，并说明本地与联网数据是否一致；不能只给一句结论。\n"
-        "【Python 图表工具】满足上述强制画图条件或用户明确要求画图时，在完成数据检索和核验后必须调用 `render_python_chart` 生成 PNG。由你根据分析目的决定最终生成一张或多张互补图表，但不要为同一结论生成重复图。支持 `line` 折线、`bar/grouped_bar` 柱状、`horizontal_bar` 横向柱状、`stacked_bar` 堆叠柱状、`area/stacked_area` 面积、`pie/donut` 饼图/环形图、`scatter/bubble` 散点/气泡、`radar` 雷达、`heatmap` 热力、`histogram` 直方、`box` 箱线和 `combo` 柱线组合。`chart_spec` 是 JSON 对象字符串，基本结构为 `{\"type\":\"line\",\"title\":\"...\",\"unit\":\"...\",\"x\":[\"2024Q1\"],\"series\":[{\"name\":\"收入\",\"data\":[123]}]}`；气泡图的 series 可另加 `sizes`。中文标题和图例直接写中文；不要写 `<chart>` 块，不要在图片底部放解释长文。若工具返回停止或同参数失败，立即停止并在答案中说明图表失败，改用文字或简表，禁止假装已生成图表。\n"
-        "【图表选择规则】时间趋势用 line/area，多主体同口径比较用 bar/grouped_bar，排名或长分类名用 horizontal_bar，构成且合计有意义时才用 pie/donut，构成随时间变化用 stacked_bar/stacked_area，两个连续变量关系用 scatter、第三变量规模用 bubble，多指标画像且量纲已标准化时用 radar，主体乘指标矩阵用 heatmap，样本频率分布用 histogram，分布离散度和异常值比较用 box，量级与趋势需要同图表达时用 combo。饼图不得包含负数且分类宜不超过 7 个；雷达图至少 3 个维度；不同量纲不得直接堆叠或画雷达。需要回答两个不同分析问题时可调用 2-3 次生成多张图，每张图都必须有独立分析目的。\n"
-        "【历史与趋势可视化】当用户询问趋势预测、历史/过去/历年数据、时间序列、同比环比、变化趋势、多期对比，或回答中出现多组可比较数据时，如果本轮已选择 `financial-visual-analytics`，应优先调用 `read_agent_skill` 读取该 Skill。只要已有至少两个可比较数据点且指标口径和单位一致，就必须选择最合适的图表呈现；不要固定只用折线或柱状。图后仍需给出关键数值、3-5 条结论、口径和必要不确定性。图表只能使用已检索或已读取的数值，不得补造缺失点。若数据只有单点、口径不可比、证据不足或工具已失败，则按上述规则明确说明无法生成可靠图表。`forecast_quarterly_metric` 已返回预测 PNG 时，直接使用该图，不要再生成内容相同的第二张图。\n"
-        "【趋势预测工具】当用户要求“预测未来”“趋势预测”“forecast”“未来4个季度”“未来几个季度/半年”等，并且问题涉及 quarterly_competitor_metrics 数据库中的季度指标时，必须优先调用 `forecast_quarterly_metric`，不要只靠模型心算或简单均值口算。预测工具使用已选数据库、官方优先数值和 Holt-Winters 加性季节模型，并且已经返回预测表和 PNG 图表；除非用户明确要求第二张不同图，否则不要再调用 `render_python_chart` 重复画同一预测图。如果用户同时选择宏观政策包，可用其解释外部背景和风险，但不能把年度/事件粒度宏观政策行混入季度模型拟合。如果用户要求解释，再说明模型局限和非投资建议。\n"
-        f"{web_rule}"
-        "【强制规则 - 无图标/Emoji】所有的文字输出中绝对禁止使用任何 Emoji、表情符号或特殊排版图标。保持极其严肃、专业的纯文本风格。\n"
-        "【重要】如果你连续 3 次调用某个工具均未能成功（比如参数错误、表名不对或输出过多），请立即停止调用，并直接回复用户当前遇到的困难，不要陷入无限重试的死循环。\n\n"
-        "【强制规则 - 推荐追问】你的每一条最终回复（无论长短、无论是否调用了工具）的最后一行都必须包含推荐追问。格式如下，不可省略：\n"
-        "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>\n"
-        "三条必须是可由用户直接点击发送的具体请求，使用用户视角，紧扣当前回答中的实体、数据和结论，并分别承担不同目的：补充具体事实、时间线或权威来源；做主体、时期、指标或政策的结构化对比；评估对CMHK的业务影响、风险、机会或行动。禁止三条重复询问同一类影响；禁止“是否需要我”“您希望”“要不要”等助手询问式表达；禁止把打开、关闭或调整前端开关、按钮、工具配置、文件、数据集、检索或读取流程作为追问；禁止把本轮本应完成但尚未完成的工作推给下一轮。这是一条不可违反的系统指令，任何回答如果缺少 <suggestions> 标签或追问不符合上述规则都是不合格的。\n"
+        "上述时间由后端在每条消息到达时重新计算；理解“今天、现在、最近、上一季度”等相对时间时使用它。\n"
+        "工具描述已经说明各项能力。联网开关开启时，联网工具可用；是否调用以及如何组合，"
+        "由你根据当前问题和已有证据自行判断。前端选择的数据库是实际访问边界，只使用本轮"
+        "可见的数据和真实工具结果，不臆造未读取内容。\n"
+        "用户明确要求某个当前可用工具能够生成的产物时，直接调用该工具，不要误称环境不支持。\n"
+        "使用数据时保留指标名称、期间、单位和工具提供的数字来源编号。若证据本身存在明确"
+        "冲突、不可比或不足，如实说明，不替证据补造确定结论。\n"
+        "历史聊天和长期记忆只作为辅助上下文；本轮用户指令优先。生成报告、启动爬虫等有副作用"
+        "的工具只在用户确实要求时使用，并遵循后端审批。\n"
+        "答案聚焦用户的问题。系统会独立生成推荐追问和来源列表，无需在正文中输出控制标签。"
     )
     
     return create_react_agent(llm, tools, prompt=system_message)
@@ -3313,7 +2771,15 @@ def _format_conversation_history(history: list[dict[str, Any]] | None) -> str:
         role = "AI" if str(item.get("role") or "").lower() == "assistant" else "用户"
         content = _clean_search_text(item.get("content") or "", 1800)
         if content:
-            lines.append(f"{role}: {content}")
+            created_at = _clean_search_text(item.get("createdAt") or "", 48)
+            completed_at = _clean_search_text(item.get("completedAt") or "", 48)
+            time_parts = []
+            if created_at:
+                time_parts.append(f"发送时间 {created_at}")
+            if role == "AI" and completed_at:
+                time_parts.append(f"完成时间 {completed_at}")
+            time_text = f" [{'; '.join(time_parts)}]" if time_parts else ""
+            lines.append(f"{role}{time_text}: {content}")
     if not lines:
         return ""
     return "同一聊天线程的最近对话如下，用于理解代词、继续追问和上一轮结论；若与本轮用户新指令冲突，以本轮新指令为准。\n" + "\n".join(lines)
@@ -3477,7 +2943,7 @@ def _finalize_after_tool_limit(
 
     This path is never used for normal answers. It replaces an otherwise
     unbounded ReAct loop with one tool-free model call, preserving the existing
-    answer and recommendation format while sharply reducing failure latency.
+    answer while sharply reducing failure latency.
     """
     config = load_ai_config()
     bounded_evidence: list[str] = []
@@ -3494,14 +2960,7 @@ def _finalize_after_tool_limit(
                 "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
                 "证据不足时明确说明缺少什么，不得编造。正文控制在 1200 个中文字符以内，"
                 "必须完整收束，不得停在逗号、冒号、连接词或未闭合列表。保留工具结果中的"
-                "数字来源编号。检索结果若含“已自动读取本地原文”或“已自动读取联网官方原文”，"
-                "必须使用其中的原文事实完成用户当前请求，不能误称只有搜索摘要。最后一行必须输出完整的"
-                "如果已有“Python 图表已生成”结果，必须结合该图表给出数据表、趋势方向、"
-                "转折或波动、最新可比期、单位和口径，并说明本地与联网数据是否一致；不能只给一句结论。"
-                "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。三条追问必须是"
-                "用户可直接点击发送的具体请求；禁止“是否需要我”“您希望”“要不要”等"
-                "助手询问式表达，禁止暴露工具、文件、数据集或检索流程；不得把当前请求中尚未完成的"
-                "读取、检索、核验或分析工作推给下一轮。"
+                "数字来源编号。"
             )
         ),
         HumanMessage(
@@ -3537,105 +2996,20 @@ def _finalize_after_tool_limit(
         if (
             content
             and not _looks_like_unstable_model_text(content)
-            and not _looks_like_incomplete_model_answer(
-                content,
-                require_completion_footer=True,
-            )
+            and not _looks_like_incomplete_model_answer(content)
         ):
             return content, _message_token_usage(response)
     content = _salvage_complete_answer(best_partial)
-    if content and len(content) >= 100 and not re.search(
-        r"</suggestions\s*>\s*$", content, re.IGNORECASE
-    ):
-        content = ""
     if not content:
         content = (
-            "本轮检索已达到安全上限，现有资料不足以可靠完成全部比较。"
-            "系统已停止重复检索，避免返回残缺或未经核验的结论。"
-            "请指定要比较的主体、日期范围或数据类型后继续。\n"
-            "<suggestions>[\"指定要比较的竞对主体\", \"指定最近两周的起止日期\", \"查看当前可用的数据集\"]</suggestions>"
+            "本轮已达到工具调用上限，系统已停止重复调用。"
+            "现有资料不足以可靠完成回答，请缩小范围后继续。"
         )
     return content, _message_token_usage(last_response) if last_response is not None else {
         "inputTokens": 0,
         "outputTokens": 0,
         "totalTokens": 0,
     }
-
-
-def _verified_metric_chart_spec(
-    original_user_message: str,
-    tool_evidence: list[str],
-) -> dict[str, Any] | None:
-    """Extract a chart spec from exact verified metric rows in tool evidence."""
-    if not StableAgentChatDeepSeek._request_requires_chart(original_user_message):
-        return None
-    exact_rows: list[dict[str, Any]] = []
-    row_pattern = re.compile(
-        r"subject=(?P<subject>[^;\r\n]+);\s*"
-        r"period=(?P<period>[^;\r\n]+);\s*"
-        r"metric_key=(?P<metric_key>[^;\r\n]+);\s*"
-        r"metric_zh=(?P<metric_zh>[^;\r\n]+);\s*"
-        r"grain=(?P<grain>[^;\r\n]+);\s*"
-        r"standardized_value=(?P<value>-?[\d,.]+)\s+(?P<unit>[^;\r\n]+);",
-        re.IGNORECASE,
-    )
-    for evidence in tool_evidence:
-        for match in row_pattern.finditer(str(evidence or "")):
-            value = _parse_metric_number(match.group("value"))
-            if value is None:
-                continue
-            exact_rows.append({**match.groupdict(), "value": value})
-    if len(exact_rows) < 2:
-        return None
-
-    request_compact = re.sub(r"\s+", "", original_user_message)
-    subject_candidates = [
-        subject
-        for subject in {row["subject"] for row in exact_rows}
-        if subject in request_compact
-        or (subject == "中国移动" and "移动" in request_compact)
-    ]
-    subject = subject_candidates[0] if subject_candidates else exact_rows[0]["subject"]
-    subject_rows = [row for row in exact_rows if row["subject"] == subject]
-    group_counts: dict[tuple[str, str, str], int] = {}
-    for row in subject_rows:
-        key = (row["metric_key"], row["metric_zh"], row["unit"])
-        group_counts[key] = group_counts.get(key, 0) + 1
-    if not group_counts:
-        return None
-    metric_key, metric_zh, unit = max(group_counts, key=group_counts.get)
-    rows = [
-        row
-        for row in subject_rows
-        if (row["metric_key"], row["metric_zh"], row["unit"]) == (metric_key, metric_zh, unit)
-    ]
-    unique_by_period = {row["period"]: row for row in rows}
-    rows = sorted(unique_by_period.values(), key=lambda row: _period_sort_key_for_forecast(row["period"]))
-    if len(rows) < 2:
-        return None
-
-    return {
-        "type": "line",
-        "title": f"{subject}{metric_zh}趋势",
-        "unit": unit.replace("millions CNY", "百万元人民币"),
-        "x": [row["period"] for row in rows],
-        "series": [{"name": metric_zh, "data": [row["value"] for row in rows]}],
-    }
-
-
-def _recover_chart_after_tool_limit(
-    original_user_message: str,
-    tool_evidence: list[str],
-) -> tuple[str, str] | None:
-    """Build a chart from exact verified metric rows before emergency finalization."""
-    chart_spec = _verified_metric_chart_spec(original_user_message, tool_evidence)
-    if not chart_spec:
-        return None
-    args = json.dumps({"chart_spec": json.dumps(chart_spec, ensure_ascii=False)}, ensure_ascii=False)
-    result = render_python_chart.invoke({"chart_spec": json.dumps(chart_spec, ensure_ascii=False)})
-    if "Python 图表已生成" not in str(result):
-        return None
-    return args, str(result)
 
 
 def stream_agent(
@@ -3654,7 +3028,6 @@ def stream_agent(
     _reset_web_search_indexes()
     original_user_message = message
     plain_conversation = _is_plain_conversational_query(message)
-    profile_query = _is_user_profile_query(message)
     ambiguous_history_probe = _should_probe_chat_history_for_ambiguity(message)
     same_thread_continuation = bool(conversation_history) and _is_explicit_chat_continuation(message)
     if same_thread_continuation:
@@ -3662,25 +3035,11 @@ def stream_agent(
         # user message. Prefer that exact, freshest thread context over a
         # cross-thread persistence search, which can lag by one save cycle.
         ambiguous_history_probe = False
-    if plain_conversation:
-        force_web_search = False
-        selected_skill_ids = []
-        selected_dataset_ids = []
-        loaded_skill_ids = []
-    if profile_query:
-        force_web_search = False
-        selected_skill_ids = []
-        selected_dataset_ids = []
-        loaded_skill_ids = []
-    if ambiguous_history_probe or same_thread_continuation:
-        # First understand whether this is a continuation of prior work. Web
-        # and database retrieval would otherwise guess a topic too early.
-        force_web_search = False
     try:
-        captured_memory = None if (plain_conversation or profile_query) else auto_capture_user_memory(message)
+        captured_memory = None if plain_conversation else auto_capture_user_memory(message)
     except Exception:
         captured_memory = None
-    recalled_memory = "" if (plain_conversation or profile_query) else memory_context(message, limit=5)
+    recalled_memory = "" if plain_conversation else memory_context(message, limit=5)
     selected_dataset_set = {
         re.sub(r"[^A-Za-z0-9_.\-\u4e00-\u9fff]", "", str(item or ""))
         for item in (selected_dataset_ids or [])
@@ -3689,11 +3048,6 @@ def stream_agent(
     selected_skill_set = {
         re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
         for item in (selected_skill_ids or [])
-        if str(item or "").strip()
-    }
-    loaded_skill_set = {
-        re.sub(r"[^A-Za-z0-9_.-]", "", str(item or ""))
-        for item in (loaded_skill_ids or [])
         if str(item or "").strip()
     }
     dataset_token = SELECTED_DATASET_IDS.set(selected_dataset_set)
@@ -3751,7 +3105,6 @@ def stream_agent(
         yield event
 
     skill_context = _selected_skill_context(selected_skill_ids, original_user_message)
-    skill_routing_instruction = _skill_routing_instruction(message, selected_skill_ids, loaded_skill_ids)
     # Selected skills and datasets are injected as model context below. They are not
     # rendered as fake tool calls; the UI should only show tools the Agent chose.
     if recalled_memory:
@@ -3764,114 +3117,16 @@ def stream_agent(
     if history_context:
         message = f"{history_context}\n\n本轮用户问题：{message}"
     if skill_context:
-        loaded_skill_note = ""
-        loaded_selected = sorted(selected_skill_set & loaded_skill_set)
-        if loaded_selected:
-            loaded_skill_note = (
-                "本聊天线程此前已经读取过以下 Skill 的完整 SKILL.md："
-                f"{', '.join(loaded_selected)}。"
-                "若本轮只是延续同一问题且前文规则足够，不要重复调用 `read_agent_skill`；"
-                "只有任务切换、规则不确定或需要确认具体步骤时才再次读取。\n"
-            )
         message = (
-            "用户已在前端手动选择以下 Agent Skills。下面只是 Skill 发现信息，不是完整指令。"
-            "你可以自行判断是否需要读取某个 Skill 的完整 SKILL.md；"
-            "如果本轮只是历史聊天查询、寒暄、简单问答、纯记忆审计，或无需领域规则，直接回答或调用更相关的工具，不要固定先读 Skill。"
-            "如果该 Skill 已在本聊天线程前序回合读取过，且本轮只是延续同一问题，可以直接沿用前文规则。\n\n"
-            f"{loaded_skill_note}"
+            "前端已选择的 Agent Skill：\n"
             f"{skill_context}\n\n"
-            f"{skill_routing_instruction}\n\n"
             f"用户问题：{message}"
         )
-    background_dataset_ids = default_background_dataset_ids()
     if selected_dataset_set:
-        background_note = ""
-        if background_dataset_ids:
-            background_note = (
-                "\n后台还会默认加载以下支撑数据库，仅用于运行追溯、历史记录、爬虫审计和排错，"
-                "不要把它们展示为用户需要手动选择的主数据库："
-                f"{', '.join(sorted(background_dataset_ids))}。\n"
-            )
         message = (
-            "用户已在前端数据库按钮中选择以下本地数据库。本轮只能把这些数据库发送给 AI；"
-            "除后台默认支撑库外，未列出的 agent_knowledge 数据库视为不可见，不能读取、引用或声称知道。\n"
-            f"已选择数据库 id：{', '.join(sorted(selected_dataset_set))}\n\n"
-            f"{background_note}"
+            f"前端已选择的本地数据库 id：{', '.join(sorted(selected_dataset_set))}\n\n"
             f"用户问题：{message}"
         )
-    else:
-        background_note = ""
-        if background_dataset_ids:
-            background_note = (
-                "后端仍会默认加载支撑数据库，用于运行追溯、历史记录、爬虫审计和排错："
-                f"{', '.join(sorted(background_dataset_ids))}。"
-                "这些不是用户主动选择的业务主数据库，不得用来替代用户未选择的业务数据。\n"
-            )
-        message = (
-            "用户本轮没有在前端数据库按钮中选择任何本地数据库。"
-            "后端不会发送任何前端业务数据库内容；不得列举、猜测、引用或声称知道未选择业务数据库的名称、路径或内容。"
-            "如需数据库内容，只能提示用户先在前端数据库按钮中选择。"
-            "仍可使用周报、审计日志、运行日志等基础本地引用和其他被允许工具。"
-            f"{background_note}\n"
-            f"用户问题：{message}"
-        )
-    if plain_conversation:
-        background_context = f"{history_context}\n\n" if history_context else ""
-        message = (
-            "本轮用户只是普通寒暄或询问你的身份能力。请由模型自然生成简洁中文回答，"
-            "不要调用任何工具，不要检索数据库，不要引用长期记忆。你可以看到同线程历史，"
-            "但历史只用于理解对话背景；不要把历史里的公司、指标或数据主题当成本轮问题，"
-            "除非本轮短句明确是在继续上一个问题。\n\n"
-            f"{background_context}"
-            f"用户问题：{original_user_message}"
-        )
-    elif profile_query:
-        background_context = f"{history_context}\n\n" if history_context else ""
-        message = (
-            "本轮用户在询问自己的身份、偏好、兴趣或用户画像。"
-            "请先调用 `search_agent_memory` 查找明确长期记忆，再调用 `search_chat_history` 检索已保存聊天线程；"
-            "不要调用数据库检索、不要读取 Agent Skill、不要联网搜索。"
-            "回答时必须把“明确证据”和“基于历史用户问题的推断”分开；"
-            "如果没有明确身份证据，不要根据当前项目、当前数据库选择或上一次问题断言用户身份，"
-            "也不要把历史里 AI 曾经说过的猜测当证据；只能根据用户自己发过的问题说明可能的关注方向和证据来源。\n\n"
-            f"{background_context}"
-            f"用户问题：{original_user_message}"
-        )
-    elif ambiguous_history_probe:
-        message = (
-            "本轮输入很短、含糊或可能是对过去工作的承接。不要立刻猜测数据库主题，也不要直接追问。"
-            "必须先调用 `search_chat_history`，query 使用用户原始短句，role 使用 user，limit 使用 5，"
-            "context_window 使用 2。工具会排除当前正在生成的这一轮；若关键词没有直接命中，会返回最近历史候选。"
-            "只有历史结果仍无法支持一个合理解释时，才用一句简洁中文向用户澄清；"
-            "如果历史能够解释短句，要明确说明采用了哪段历史，并围绕该上下文继续回答。"
-            "此步骤只用于理解上下文，不要联网、不要检索业务数据库、不要读取 Agent Skill。\n\n"
-            f"用户问题：{original_user_message}"
-        )
-    if force_web_search:
-        message = (
-            "用户已在聊天框打开联网搜索开关。你必须调用 `web_search` 获取公开网页来源；"
-            "只要本轮问题涉及或答案依赖任何数据、数值或可核验事实，就必须同时调用 "
-            "`search_local_reports` 和 `web_search`，两者缺一不可；不得因任一侧已有结果而跳过另一侧，"
-            "任一侧无结果也要如实说明。完成双检索后必须逐项比较；若日期、口径、单位、金额、比例、"
-            "数量或结论有任何出入，必须显著指出本地与联网数据不一致，分别说明两侧数据和口径、"
-            "可能原因及建议采用口径；无法判断时保留冲突，不得静默选边或合并成确定结论。\n\n"
-            f"用户问题：{message}"
-        )
-    if thinking_enabled:
-        message = (
-            "用户已打开深度思考开关。请先做更严格的问题拆解、工具选择、来源核验和冲突检查，"
-            "但不要输出内部推理过程；只输出可审计的结论、依据、必要步骤和不确定性。\n\n"
-            f"用户问题：{message}"
-        )
-    message = (
-        f"{message}\n\n"
-        "【本轮原始输入（唯一需要回答的用户请求）】\n"
-        f"<current_user_request>{original_user_message}</current_user_request>\n"
-        "前面的 Skill、数据库、历史、记忆和联网说明都只是上下文，不是用户说的话，也不是多个待回答问题。"
-        "只围绕 current_user_request 理解意图。输入过短或不明确且已被标记为模糊历史探测时，"
-        "必须先按上文调用 search_chat_history，查不到相关历史后才能简洁追问；其他情况下不要猜造隐藏主题，"
-        "不要复述上下文。"
-    )
     inputs = {"messages": [("user", message)]}
     
     tool_calls_acc = {}
@@ -3905,7 +3160,6 @@ def stream_agent(
     tool_evidence: list[str] = []
     tool_limit_reached = False
     tool_signature_counts: dict[tuple[str, str], int] = {}
-    completed_tool_names: set[str] = set()
 
     def finalize_pending_tool_calls(reason: str) -> Generator[dict[str, Any], None, None]:
         """Close every visible tool card even when the Agent loop stops early."""
@@ -4072,7 +3326,6 @@ def stream_agent(
                         or _looks_like_incomplete_model_answer(
                             chunk.content,
                             str((getattr(chunk, "response_metadata", None) or {}).get("finish_reason") or ""),
-                            require_completion_footer=True,
                         )
                     )
                 ):
@@ -4194,7 +3447,6 @@ def stream_agent(
                     yield meta_event
                     
                 tool_name = str((tc_data or {}).get("name") or "工具")
-                completed_tool_names.add(tool_name)
                 repeated_tool_call = False
                 if args_str:
                     signature = (tool_name, re.sub(r"\s+", "", args_str))
@@ -4229,31 +3481,6 @@ def stream_agent(
                 "Agent 事件流已经结束，但没有收到此工具的返回结果。"
             )
         if tool_limit_reached:
-            recovered_chart = _recover_chart_after_tool_limit(
-                original_user_message,
-                tool_evidence,
-            )
-            if recovered_chart:
-                chart_args, chart_result = recovered_chart
-                chart_call_id = f"recovered-chart-{hashlib.sha256(chart_args.encode()).hexdigest()[:12]}"
-                start_event = {
-                    "type": "tool_call_start",
-                    "id": chart_call_id,
-                    "name": "render_python_chart",
-                    "processText": _tool_process_text("render_python_chart"),
-                }
-                recorder.observe(start_event)
-                yield start_event
-                result_event = {
-                    "type": "tool_call_result",
-                    "id": chart_call_id,
-                    "name": "render_python_chart",
-                    "args": chart_args,
-                    "content": chart_result,
-                }
-                recorder.observe(result_event)
-                yield result_event
-                tool_evidence.append(chart_result)
             final_text, final_usage = _finalize_after_tool_limit(
                 original_user_message,
                 tool_evidence,
@@ -4279,21 +3506,6 @@ def stream_agent(
         tail_text = table_limiter.flush()
         if tail_text:
             event = {"type": "delta", "text": tail_text}
-            recorder.observe(event)
-            yield event
-        if (
-            force_web_search
-            and {"search_local_reports", "web_search"}.issubset(completed_tool_names)
-            and not StableAgentChatDeepSeek._has_dual_source_disclosure(
-                "".join(recorder.answer_parts)
-            )
-        ):
-            disclosure_text = (
-                "\n\n**本地与联网核验说明：** 本地与联网结果未提供完全同一期间、口径和单位的"
-                "可直接比较数据，因此不能据此认定两侧数值一致；以上数据和图表仅采用本地已核验的"
-                "同口径记录，联网结果只作为公开来源补充。"
-            )
-            event = {"type": "delta", "text": disclosure_text}
             recorder.observe(event)
             yield event
         suggestions_event = follow_up_event()
