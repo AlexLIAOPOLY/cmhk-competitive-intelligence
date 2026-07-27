@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
-  <link rel="stylesheet" href="/static/styles.css?v=199" />
+  <link rel="stylesheet" href="/static/styles.css?v=202" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -15,7 +15,6 @@
         <div class="header-tools">
           <span id="headerTime">-</span>
           <a class="icon-button nav-link" href="/company-data.html" title="公司指标表" aria-label="公司指标表">▦</a>
-          <button class="icon-button" id="dashboardBtn" type="button" title="全局看板" aria-label="全局看板">📊</button>
           <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
         </div>
       </header>
@@ -43,7 +42,8 @@
             <button class="command-btn btn-library" id="reportLibraryButton" type="button" aria-haspopup="dialog" aria-controls="outputArea">
               <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7l2 2h9v12H3z"></path><path d="M8 11h8M8 15h6"></path></svg>
               报告库
-              <span id="reportLibraryCount">--</span>
+              <span class="report-library-count" id="reportLibraryCount">--</span>
+              <span class="report-library-new-dot" id="reportLibraryNewDot" aria-label="有新报告" hidden></span>
             </button>
           </section>
 
@@ -57,22 +57,22 @@
               </header>
 
               <div class="signal-kpi-grid" aria-label="关键情报指标">
-                <div class="signal-kpi is-primary">
+                <div class="signal-kpi is-primary" tabindex="0" title="悬停查看对应新闻" data-signal-filter="all" data-signal-label="全部确认信号" aria-describedby="signalNewsPreview">
                   <span>确认信号</span>
                   <strong id="signalCount">--</strong>
                   <small>近14日</small>
                 </div>
-                <div class="signal-kpi">
+                <div class="signal-kpi" tabindex="0" title="悬停查看对应新闻" data-signal-filter="competitor" data-signal-label="竞对动态" aria-describedby="signalNewsPreview">
                   <span>竞对动态</span>
                   <strong id="competitorSignalCount">--</strong>
                   <small id="competitorSignalShare">占比 --</small>
                 </div>
-                <div class="signal-kpi">
+                <div class="signal-kpi" tabindex="0" title="悬停查看对应新闻" data-signal-filter="topics" data-signal-label="活跃主题" aria-describedby="signalNewsPreview">
                   <span>活跃主题</span>
                   <strong id="activeTopicCount">--</strong>
                   <small>已确认分类</small>
                 </div>
-                <div class="signal-kpi">
+                <div class="signal-kpi" tabindex="0" title="悬停查看对应新闻" data-signal-filter="latest" data-signal-label="最新信号" aria-describedby="signalNewsPreview">
                   <span>最新信号</span>
                   <strong id="latestSignalDate">--</strong>
                   <small id="latestSignalCount">等待同步</small>
@@ -101,6 +101,13 @@
                   </div>
                   <div class="signal-topic-list" id="signalTopicList">
                     <div class="signal-topic-empty">正在汇总主题</div>
+                  </div>
+                  <div class="signal-news-preview" id="signalNewsPreview" aria-live="polite" hidden>
+                    <header>
+                      <strong id="signalNewsPreviewTitle">对应新闻</strong>
+                      <span id="signalNewsPreviewCount">0 条</span>
+                    </header>
+                    <div class="signal-news-preview-list" id="signalNewsPreviewList"></div>
                   </div>
                 </section>
               </div>
@@ -423,21 +430,6 @@
         </div>
       </section>
 
-      </section>
-
-      <section class="modal-backdrop" id="dashboardModal" hidden>
-        <div class="settings-modal dashboard-modal-content">
-          <header>
-            <div>
-              <h2>企业情报全景看板</h2>
-              <p>多维数据统计与企业级洞察 (置信度评估)</p>
-            </div>
-            <button class="close-btn" id="closeDashboardBtn" type="button" aria-label="关闭">&times;</button>
-          </header>
-          <div class="dashboard-grid" id="dashboardCardGrid">
-            <!-- Cards will be injected here by app.js -->
-          </div>
-        </div>
       </section>
 
       <section class="modal-backdrop" id="aiSettingsModal" hidden>
