@@ -1245,7 +1245,6 @@ function renderCollectionOverview(status) {
   setText("collectionTaskCoverage", totalRows ? `覆盖 ${enabledRows}/${totalRows} 项` : "等待任务数据");
   setText("collectionFactCount", String(acceptedFacts || "--"));
   setText("collectionSourceCount", String(rawSources || "--"));
-  setText("collectionCompletedAt", crawl.completedAt ? `最近采集 ${crawl.completedAt}` : "等待最近采集结果");
 
   const compositionTotal = sumValues(blocks);
   setText("collectionCompositionTotal", `${compositionTotal} 项`);

@@ -8871,12 +8871,6 @@ a.strategy-ticker-item {
   line-height: 1.3;
 }
 
-.signal-overview-header p {
-  margin: 2px 0 0;
-  color: #758997;
-  font-size: 10px;
-}
-
 .signal-window-badge {
   flex: 0 0 auto;
   padding: 5px 9px;
@@ -9430,15 +9424,6 @@ a.strategy-ticker-item {
   color: #17384f;
   font-size: 18px;
   line-height: 1.3;
-}
-
-.collection-overview-header p {
-  margin: 3px 0 0;
-  overflow: hidden;
-  color: #788d9b;
-  font-size: 9px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .collection-live-badge {
@@ -10045,19 +10030,13 @@ body.report-library-open::before {
 
 .signal-overview-header,
 .collection-overview-header {
-  min-height: 58px;
+  min-height: 36px;
 }
 
 .signal-overview-header h2,
 .collection-overview-header h2 {
   font-size: 24px;
   letter-spacing: 0.01em;
-}
-
-.signal-overview-header p,
-.collection-overview-header p {
-  margin-top: 5px;
-  font-size: 12px;
 }
 
 .signal-kpi-grid {
