@@ -35,8 +35,9 @@ STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
+AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 12
+AI_EDITOR_VERSION = 13
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
@@ -1459,6 +1460,17 @@ def _validated_ai_copy(
         raise RuntimeError("公司内部 AI 未返回有效入池理由")
     if len(region_reason) < 4:
         raise RuntimeError("公司内部 AI 未返回有效地域依据")
+    if (
+        not should_include
+        and isinstance(source_item, dict)
+        and _is_competitor_candidate(source_item)
+        and re.search(
+            r"(?:不是|非|不属于|未列入|不在).{0,8}(?:目标|监控|被监测).{0,5}竞对|"
+            r"(?:目标|监控|被监测).{0,5}竞对.{0,8}(?:不是|非|不属于|未列入|不在)",
+            inclusion_reason,
+        )
+    ):
+        raise RuntimeError("公司内部 AI 错误否认正式监控配置中的竞对范围")
     return {
         **result,
         "should_include": should_include,
@@ -1523,6 +1535,7 @@ def _is_competitor_candidate(item: dict[str, Any]) -> bool:
 
 
 def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
+    competitor_candidate = _is_competitor_candidate(item)
     return {
         "id": key[:16],
         "title": _clean_text(item.get("source_title") or item.get("title"), 500),
@@ -1540,7 +1553,8 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
         "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
         "matched_keywords": _clean_text(item.get("keywords"), 800),
         "rule_gate_reason": _clean_text(item.get("filter_reason"), 240),
-        "competitor_candidate": _is_competitor_candidate(item),
+        "competitor_candidate": competitor_candidate,
+        "monitoring_scope_confirmed": competitor_candidate,
     }
 
 
@@ -1554,6 +1568,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         cache = {}
     resolved: dict[str, dict[str, str]] = {}
     pending: list[tuple[str, dict[str, Any]]] = []
+    deferred_reviews: list[dict[str, str]] = []
     for item in items:
         key = _candidate_editor_key(item)
         existing = {
@@ -1612,6 +1627,13 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "特别注意同名实体：只有香港电讯品牌csl才是竞对，澳洲生物科技公司CSL Limited及其"
                     "股票、利润、评级不是竞对；1010若是数字或股价、CTG若指Chattogram地名、"
                     "HGC若指无关公司或职位缩写，也必须判false。必须按事件语境判断，不能只看命中词。"
+                    "matched_keywords来自正式监控配置；当competitor_candidate=true且标题或摘要能够确认"
+                    "命中的运营商确为事件主体、合作对象或被实质讨论的企业时，该运营商就是被监测竞对，"
+                    "不得再以‘不是目标竞对、不是香港公司、缺乏香港影响’为由判false。"
+                    "monitoring_scope_confirmed=true是程序依据正式配置给出的权威范围标记，不得否认；"
+                    "它不代表事件一定相关，仍须排除媒体名、同名实体和偶然提词。"
+                    "国际对标运营商同样属于竞对监控范围，包括但不限于KDDI、AT&T、Verizon、T-Mobile、"
+                    "Vodafone、Orange、Telstra、Singtel、NTT Docomo、SoftBank和Jio。"
                     "一旦核实确为竞对信息，无论事件规模大小，should_include都必须为true。"
                     "竞对的产品与资费、促销、客户服务、经营数据、网络建设、技术、合作、投资并购、"
                     "管理层、监管和资本市场信息均应纳入，不得以‘战略价值不够大、只是常规经营、"
@@ -1672,6 +1694,13 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "缩写重名、媒体名、体育队名、人名、地名及偶然提词必须排除。"
                             "特别注意：只有香港电讯品牌csl才是竞对；澳洲生物科技公司CSL Limited的"
                             "股票、利润和评级不是竞对。1010数字/股价、CTG地名、HGC无关缩写也必须排除。"
+                            "matched_keywords来自正式监控配置；competitor_candidate=true且标题或摘要确认"
+                            "命中的运营商是事件主体、合作对象或被实质讨论时，该运营商就是被监测竞对，"
+                            "不得以‘不是目标竞对、不是香港公司、缺乏香港影响’为由淘汰。"
+                            "monitoring_scope_confirmed=true是正式配置的权威范围标记，不得否认，"
+                            "但仍需排除媒体名、同名实体和偶然提词。"
+                            "KDDI、AT&T、Verizon、T-Mobile、Vodafone、Orange、Telstra、Singtel、"
+                            "NTT Docomo、SoftBank、Jio等国际对标运营商也在竞对监控范围内。"
                             "确认是真实竞对信息后，无论事件大小should_include都必须为true；"
                             "常规经营、产品资费、促销、客户服务、网络技术、合作投资、"
                             "管理层及资本市场信息都不得因不够重大而淘汰。"
@@ -1690,10 +1719,18 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         source_item=_item,
                     )
                 except Exception as exc:
+                    error = _clean_text(exc, 240)
                     logging.error(
                         "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
                         source["id"],
-                        _clean_text(exc, 240),
+                        error,
+                    )
+                    deferred_reviews.append(
+                        {
+                            "id": source["id"],
+                            "title": source["title"],
+                            "error": error,
+                        }
                     )
                     continue
             resolved[key] = edited
@@ -1742,6 +1779,27 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item["ai_polished_at"] = _now_iso()
         item["ai_editor_version"] = AI_EDITOR_VERSION
         polished_items.append(item)
+    _atomic_write_json(
+        AI_EDITOR_AUDIT_PATH,
+        {
+            "version": 1,
+            "generated_at": _now_iso(),
+            "input_count": len(items),
+            "resolved_count": len(resolved),
+            "included_count": len(polished_items),
+            "excluded_count": len(resolved) - len(polished_items),
+            "deferred_count": len(deferred_reviews),
+            "deferred": deferred_reviews,
+        },
+    )
+    if deferred_reviews:
+        sample = "；".join(
+            f"{entry['id']} {entry['error']}" for entry in deferred_reviews[:3]
+        )
+        raise RuntimeError(
+            "公司内部 AI 候选审核未完整完成，"
+            f"{len(deferred_reviews)}/{len(items)} 条已延期且本轮禁止写表；{sample}"
+        )
     return polished_items
 
 
@@ -1786,6 +1844,61 @@ def _semantic_dedupe_history(item: dict[str, Any]) -> dict[str, Any]:
         "source": _clean_text(item.get("source"), 120),
         "url": _normalize_url(item.get("source_url") or item.get("url") or ""),
     }
+
+
+def _deterministic_event_signature(item: dict[str, Any]) -> str:
+    text = " ".join(
+        (
+            _clean_text(item.get("title") or item.get("ai_title"), 300),
+            _clean_text(
+                item.get("summary")
+                or item.get("ai_summary")
+                or item.get("snippet"),
+                600,
+            ),
+        )
+    ).casefold()
+    entity_patterns = (
+        ("verizon", r"(?<![a-z0-9])verizon(?![a-z0-9])"),
+        ("att", r"(?<![a-z0-9])at&t(?![a-z0-9])|(?<![a-z0-9])att(?![a-z0-9])"),
+        ("kddi", r"(?<![a-z0-9])kddi(?![a-z0-9])"),
+        ("tmobile", r"(?<![a-z0-9])t-?mobile(?![a-z0-9])"),
+        ("vodafone", r"(?<![a-z0-9])vodafone(?![a-z0-9])"),
+        ("telstra", r"(?<![a-z0-9])telstra(?![a-z0-9])|澳洲电信|澳洲電信"),
+        ("softbank", r"(?<![a-z0-9])softbank(?![a-z0-9])|软银|軟銀"),
+    )
+    entity = next(
+        (name for name, pattern in entity_patterns if re.search(pattern, text, re.I)),
+        "",
+    )
+    if not entity:
+        return ""
+    if re.search(r"backpack|背包|书包|書包", text, re.I) and re.search(
+        r"giveaway|school rocks|back[- ]to[- ]school|返校|开学|開學|赠送|贈送|派发|派發|免费|免費",
+        text,
+        re.I,
+    ):
+        return f"{entity}:backpack-giveaway"
+    if re.search(r"earnings|results|财报|財報|业绩|業績|获利|獲利", text, re.I) and re.search(
+        r"buyback|share repurchase|回购|回購",
+        text,
+        re.I,
+    ):
+        return f"{entity}:earnings-buyback"
+    return ""
+
+
+def _event_dates_close(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    try:
+        left_date = datetime.fromisoformat(
+            _clean_text(left.get("published_at"), 40)[:10]
+        ).date()
+        right_date = datetime.fromisoformat(
+            _clean_text(right.get("published_at"), 40)[:10]
+        ).date()
+    except ValueError:
+        return False
+    return abs((left_date - right_date).days) <= 3
 
 
 def _semantic_priority_history(
@@ -2025,6 +2138,64 @@ def agent_semantic_deduplicate_candidates(
         }
         for candidate in candidates
     }
+    history_by_id = {
+        entry["id"]: entry for entry in history if _clean_text(entry.get("id"), 80)
+    }
+    history_by_url = {
+        _normalize_url(entry.get("url") or ""): entry
+        for entry in history
+        if _normalize_url(entry.get("url") or "")
+    }
+    history_by_signature: dict[str, list[dict[str, Any]]] = {}
+    for entry in history:
+        signature = _deterministic_event_signature(entry)
+        if signature:
+            history_by_signature.setdefault(signature, []).append(entry)
+    earlier_by_id: dict[str, dict[str, Any]] = {}
+    earlier_by_url: dict[str, dict[str, Any]] = {}
+    earlier_by_signature: dict[str, list[dict[str, Any]]] = {}
+    for candidate in candidates:
+        candidate_id = candidate["id"]
+        candidate_url = _normalize_url(candidate.get("url") or "")
+        candidate_signature = _deterministic_event_signature(candidate)
+        signature_match = next(
+            (
+                entry
+                for entry in [
+                    *history_by_signature.get(candidate_signature, []),
+                    *earlier_by_signature.get(candidate_signature, []),
+                ]
+                if candidate_signature and _event_dates_close(candidate, entry)
+            ),
+            None,
+        )
+        exact_match = (
+            history_by_id.get(candidate_id)
+            or earlier_by_id.get(candidate_id)
+            or (history_by_url.get(candidate_url) if candidate_url else None)
+            or (earlier_by_url.get(candidate_url) if candidate_url else None)
+            or signature_match
+        )
+        if exact_match:
+            reason = (
+                "程序高置信事件去重：候选与历史或更早候选的运营商、核心动作和发布时间匹配。"
+                if signature_match
+                else "程序确定性去重：候选与历史或更早候选的ID或规范化URL完全相同。"
+            )
+            aggregate[candidate_id].update(
+                {
+                    "is_duplicate": True,
+                    "duplicate_of": exact_match["id"],
+                    "reason": reason,
+                    "assessed_shards": len(chunks),
+                }
+            )
+            continue
+        earlier_by_id[candidate_id] = candidate
+        if candidate_url:
+            earlier_by_url[candidate_url] = candidate
+        if candidate_signature:
+            earlier_by_signature.setdefault(candidate_signature, []).append(candidate)
     for offset in range(0, len(candidates), SEMANTIC_DEDUPE_BATCH_SIZE):
         batch = candidates[offset : offset + SEMANTIC_DEDUPE_BATCH_SIZE]
         earlier = candidates[:offset]
@@ -2089,6 +2260,39 @@ def agent_semantic_deduplicate_candidates(
                             "reason": decision["reason"],
                         }
                     )
+
+    independently_confirmed: list[dict[str, Any]] = []
+    for candidate in candidates:
+        record = aggregate[candidate["id"]]
+        if (
+            record["is_duplicate"]
+            or record["errors"]
+            or record["assessed_shards"] != len(chunks)
+        ):
+            continue
+        try:
+            decisions = _call_semantic_dedupe_agent(
+                [candidate],
+                history=[],
+                priority_history=priority_by_id[candidate["id"]],
+                earlier_candidates=independently_confirmed,
+            )
+            decision = decisions[candidate["id"]]
+        except Exception as exc:
+            record["errors"].append(
+                f"independent confirmation: {_clean_text(exc, 240)}"
+            )
+            continue
+        if decision["is_duplicate"]:
+            record.update(
+                {
+                    "is_duplicate": True,
+                    "duplicate_of": decision["duplicate_of"],
+                    "reason": decision["reason"],
+                }
+            )
+        else:
+            independently_confirmed.append(candidate)
 
     kept: list[dict[str, Any]] = []
     duplicates: list[dict[str, Any]] = []

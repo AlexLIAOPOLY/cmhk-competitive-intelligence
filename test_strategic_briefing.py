@@ -198,6 +198,92 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_title"], single_result["title"])
         self.assertEqual(ai_call.call_count, 2)
 
+    def test_editor_defers_incomplete_ai_batch_instead_of_returning_empty_success(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "KDDI与Globe合作改造零售门店",
+            "snippet": "KDDI and Globe announced a retail store partnership.",
+            "keywords": ["KDDI"],
+            "source": "Example News",
+            "url": "https://example.com/news/kddi-globe",
+        }
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=RuntimeError("rate limited"),
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "本轮禁止写表"):
+                briefing.polish_candidates_before_review([item])
+
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(audit["input_count"], 1)
+        self.assertEqual(audit["resolved_count"], 0)
+        self.assertEqual(audit["deferred_count"], 1)
+
+    def test_editor_retries_ai_that_denies_configured_competitor_scope(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "Globe partners with Japan's KDDI to reinvent retail stores",
+            "snippet": "Globe Telecom is partnering with KDDI on physical retail.",
+            "keywords": ["KDDI"],
+            "source": "Example News",
+            "url": "https://example.com/news/kddi-globe",
+        }
+        wrong = {
+            "title": "Globe与日本KDDI合作重塑零售门店",
+            "summary": "Globe与日本KDDI达成合作，共同优化实体零售门店体验。",
+            "should_include": False,
+            "region": "国际/行业",
+            "category": "行业动态",
+            "keywords": "KDDI",
+            "inclusion_reason": "KDDI不是目标竞对，因此不纳入监控。",
+            "region_reason": "事件发生在菲律宾与日本市场。",
+        }
+        corrected = {
+            **wrong,
+            "should_include": True,
+            "category": "竞对动态",
+            "inclusion_reason": "KDDI是正式监控的国际对标运营商，合作事项属于竞对动态。",
+        }
+        with (
+            mock.patch.object(
+                briefing,
+                "_read_json",
+                return_value={
+                    "items": {briefing._candidate_editor_key(item): wrong}
+                },
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value=corrected,
+            ) as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_category"], "竞对动态")
+        self.assertTrue(ai_call.called)
+        self.assertTrue(
+            ai_call.call_args.args[1].find("monitoring_scope_confirmed") >= 0
+        )
+
     def test_semantic_agent_deduplicates_same_event_with_different_headline(self):
         item = {
             "news_id": "candidate-1",
@@ -239,6 +325,111 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["kept"], [])
         self.assertEqual(len(result["duplicates"]), 1)
         self.assertEqual(result["duplicates"][0]["duplicate_of"], "history-1")
+
+    def test_semantic_agent_independently_confirms_same_batch_events(self):
+        first = {
+            "news_id": "candidate-a",
+            "ai_title": "Verizon门店连续第14年举办免费背包活动",
+            "ai_summary": "Verizon授权门店在返校季向家庭免费派发背包。",
+            "source_date": "2026-07-26",
+            "source": "媒体甲",
+            "url": "https://example.com/verizon-backpack-a",
+        }
+        second = {
+            "news_id": "candidate-b",
+            "ai_title": "Verizon TCC举办返校季背包赠送活动",
+            "ai_summary": "Verizon门店举办School Rocks活动并向学生免费赠送背包。",
+            "source_date": "2026-07-26",
+            "source": "媒体乙",
+            "url": "https://example.com/verizon-backpack-b",
+        }
+        responses = [
+            {
+                "items": [
+                    {
+                        "id": "candidate-a",
+                        "is_duplicate": False,
+                        "duplicate_of": "",
+                        "reason": "当前历史中没有相同活动记录。",
+                    },
+                    {
+                        "id": "candidate-b",
+                        "is_duplicate": False,
+                        "duplicate_of": "",
+                        "reason": "批量初审暂未确认与其他记录重复。",
+                    },
+                ]
+            },
+            {
+                "items": [
+                    {
+                        "id": "candidate-a",
+                        "is_duplicate": False,
+                        "duplicate_of": "",
+                        "reason": "独立复核未发现更早的相同活动。",
+                    }
+                ]
+            },
+            {
+                "items": [
+                    {
+                        "id": "candidate-b",
+                        "is_duplicate": True,
+                        "duplicate_of": "candidate-a",
+                        "reason": "两条记录均为Verizon返校季免费背包派发活动。",
+                    }
+                ]
+            },
+        ]
+        with (
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=responses,
+            ),
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates(
+                [first, second],
+                [],
+            )
+
+        self.assertEqual(result["kept"], [first])
+        self.assertEqual(len(result["duplicates"]), 1)
+        self.assertEqual(result["duplicates"][0]["duplicate_of"], "candidate-a")
+
+    def test_semantic_dedupe_uses_high_confidence_competitor_event_signature(self):
+        item = {
+            "news_id": "candidate-erie",
+            "ai_title": "Verizon门店参与Erie社区返校季背包赠送活动",
+            "ai_summary": "Verizon门店参与School Rocks活动并向学生免费赠送书包。",
+            "source_date": "2026-07-27",
+            "source": "媒体甲",
+            "url": "https://example.com/verizon-erie",
+        }
+        history = [
+            {
+                "news_id": "history-backpack",
+                "title": "Verizon门店举办返校季背包赠送活动",
+                "summary": "Verizon门店向家庭免费派发背包。",
+                "source_date": "2026-07-25",
+                "source": "媒体乙",
+                "source_url": "https://example.com/verizon-backpack",
+            }
+        ]
+        with (
+            mock.patch.object(briefing, "_call_internal_ai") as ai_call,
+            mock.patch.object(briefing, "_atomic_write_json"),
+        ):
+            result = briefing.agent_semantic_deduplicate_candidates([item], history)
+
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(len(result["duplicates"]), 1)
+        self.assertEqual(
+            result["duplicates"][0]["duplicate_of"],
+            "history-backpack",
+        )
+        ai_call.assert_not_called()
 
     def test_semantic_priority_history_surfaces_exact_url_before_similar_topics(self):
         candidate = {
@@ -352,29 +543,20 @@ class StrategicBriefingTests(unittest.TestCase):
                 "source_url": "https://example.com/verizon-backpack",
             }
         ]
-        invalid_response = {
-            "items": [
-                {
-                    "id": "same-id",
-                    "is_duplicate": False,
-                    "duplicate_of": "",
-                    "reason": "模型错误地认为标题语言不同，所以不是同一事件记录。",
-                }
-            ]
-        }
         with (
             mock.patch.object(
                 briefing,
                 "_call_internal_ai",
-                return_value=invalid_response,
-            ),
+            ) as ai_call,
             mock.patch.object(briefing, "_atomic_write_json"),
         ):
             result = briefing.agent_semantic_deduplicate_candidates([item], history)
 
         self.assertEqual(result["kept"], [])
-        self.assertEqual(result["duplicates"], [])
-        self.assertEqual(len(result["deferred"]), 1)
+        self.assertEqual(len(result["duplicates"]), 1)
+        self.assertEqual(result["duplicates"][0]["duplicate_of"], "same-id")
+        self.assertEqual(result["deferred"], [])
+        ai_call.assert_not_called()
 
     def test_candidate_editor_marks_verified_competitor_context(self):
         payload = briefing._candidate_editor_input(
@@ -438,6 +620,47 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(result, [])
         self.assertIn("澳洲生物科技公司CSL Limited", ai_call.call_args.args[0])
+
+    def test_editor_prompt_declares_verified_international_operator_as_monitored_competitor(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "Globe partners with Japan's KDDI to reinvent retail stores",
+            "snippet": "Globe Telecom is partnering with KDDI on physical retail.",
+            "keywords": ["KDDI"],
+            "source": "Example News",
+            "url": "https://example.com/news/kddi-globe",
+        }
+        ai_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "title": "Globe与KDDI合作改造零售门店",
+                    "summary": "Globe与日本运营商KDDI合作优化实体零售体验并探索业务增长机会。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "竞对动态",
+                    "keywords": "KDDI",
+                    "inclusion_reason": "反映被监测国际运营商KDDI的渠道合作动态。",
+                    "region_reason": "事件主体为菲律宾与日本运营商。",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value=ai_result,
+            ) as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        prompt = ai_call.call_args.args[0]
+        self.assertIn("该运营商就是被监测竞对", prompt)
+        self.assertIn("KDDI、AT&T、Verizon", prompt)
 
     def test_approved_brief_prompt_requires_simplified_chinese(self):
         with mock.patch.object(

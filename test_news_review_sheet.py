@@ -209,6 +209,51 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(writes[0][1][0][6], "今日新新闻")
         self.assertEqual(writes[0][1][1][6], "历史新闻")
 
+    def test_sync_collapses_existing_rich_link_duplicates_and_keeps_manual_decision(self):
+        pending = self._existing_row()
+        pending[0] = "待审核"
+        pending[10] = [
+            {
+                "link": "https://example.com/news/same-event",
+                "text": "阅读原文",
+                "type": "url",
+            }
+        ]
+        rejected = list(pending)
+        rejected[0] = "不接受"
+        rejected[6] = "同一事件的人工拒绝记录"
+        writes = []
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                return_value=[pending, rejected],
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda _sheet_id, cell_range, values: writes.append(
+                    (cell_range, values)
+                ),
+            ),
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "curate_news_items",
+                return_value=([], {}),
+            ),
+        ):
+            result = review_sheet.sync_candidates([])
+
+        self.assertEqual(result["candidate_count"], 1)
+        self.assertEqual(writes[0][0], "A2:N2")
+        self.assertEqual(writes[0][1][0][0], "不接受")
+        self.assertEqual(writes[0][1][0][6], "同一事件的人工拒绝记录")
+        self.assertEqual(writes[1][0], "A3:N3")
+        self.assertEqual(writes[1][1], [[""] * len(review_sheet.HEADERS)])
+
     def test_sync_stops_when_sheet_returns_fewer_rows_than_last_sync(self):
         write = mock.Mock()
         with (
@@ -230,6 +275,53 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         write.assert_not_called()
 
+    def test_load_curated_latest_propagates_ai_review_failure(self):
+        source = {
+            "generated_at": "2026-07-27T09:41:27+08:00",
+            "items": [self._new_item()],
+        }
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_json",
+                side_effect=lambda path, default: (
+                    source if path == review_sheet.LATEST_PATH else default
+                ),
+            ),
+            mock.patch.object(
+                review_sheet,
+                "curate_news_items",
+                return_value=(source["items"], {}),
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "polish_candidates_before_review",
+                side_effect=RuntimeError("AI review deferred"),
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "AI review deferred"):
+                review_sheet._load_curated_latest()
+
+    def test_run_cycle_records_failed_ai_review_without_syncing_sheet(self):
+        sync = mock.Mock()
+        with (
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(review_sheet, "_write_json") as write_json,
+            mock.patch.object(
+                review_sheet,
+                "_load_curated_latest",
+                side_effect=RuntimeError("AI review deferred"),
+            ),
+            mock.patch.object(review_sheet, "sync_candidates", sync),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "AI review deferred"):
+                review_sheet.run_cycle(force=True)
+
+        sync.assert_not_called()
+        state = write_json.call_args.args[1]
+        self.assertEqual(state["last_poll_status"], "failed")
+        self.assertIn("AI review deferred", state["last_poll_error"])
+
     def test_weekly_status_is_independent_from_app_status(self):
         row = self._existing_row()
         row[0] = "不接受"
@@ -243,6 +335,31 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(
             parsed["information_flow"],
             "新闻搜索爬虫（历史候选）",
+        )
+
+    def test_row_dict_extracts_real_url_from_feishu_rich_link_cell(self):
+        row = self._existing_row()
+        row[10] = [
+            {
+                "cellPosition": None,
+                "link": "https://example.com/news/rich-link",
+                "text": "阅读原文",
+                "type": "url",
+            }
+        ]
+
+        parsed = review_sheet._row_dict(row, 2)
+
+        self.assertEqual(
+            parsed["source_url"],
+            "https://example.com/news/rich-link",
+        )
+        self.assertEqual(
+            parsed["news_id"],
+            review_sheet._news_item_id(
+                "https://example.com/news/rich-link",
+                row[6],
+            ),
         )
 
     def test_information_flow_distinguishes_three_acquisition_paths(self):

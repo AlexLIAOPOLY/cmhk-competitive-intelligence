@@ -89,6 +89,25 @@ def _text(value: Any, limit: int = 4000) -> str:
     return " ".join(str(value or "").replace("\x00", " ").split())[:limit]
 
 
+def _cell_link(value: Any, limit: int = 1800) -> str:
+    entries = value if isinstance(value, list) else [value]
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        link = _text(entry.get("link"), limit)
+        if link:
+            return link
+    if isinstance(value, dict):
+        return _text(value.get("text"), limit)
+    if isinstance(value, list):
+        return " ".join(
+            _text(entry.get("text"), limit)
+            for entry in value
+            if isinstance(entry, dict) and _text(entry.get("text"), limit)
+        )[:limit]
+    return _text(value, limit)
+
+
 def _lark(*parts: str, timeout: int = 120) -> dict[str, Any]:
     environment = os.environ.copy()
     for name in (
@@ -889,7 +908,7 @@ def sync_candidates(
         existing_rows_by_id: dict[str, list[Any]] = {}
         existing_history_items: list[dict[str, Any]] = []
         existing_row_count = 0
-        status_priority = {"接受": 4, "暂缓": 3, "待审核": 2, "不接受": 1}
+        status_priority = {"接受": 4, "不接受": 3, "暂缓": 2, "待审核": 1}
         for index, row in enumerate(rows, start=2):
             if not row or not any(_text(value, 80) for value in row):
                 continue
@@ -952,13 +971,10 @@ def sync_candidates(
             new_values.append(value)
             existing_status[news_id] = (value[0], value[2])
         new_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
-        candidate_count = existing_row_count + len(new_values)
+        candidate_count = len(existing_rows_by_id) + len(new_values)
         if candidate_count > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
-        existing_values = [
-            (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
-            for row in rows
-        ]
+        existing_values = list(existing_rows_by_id.values())
         ordered_values = new_values + existing_values
         ordered_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
         if len(ordered_values) > MAX_SHEET_ROWS - 1:
@@ -968,6 +984,14 @@ def sync_candidates(
             start_row = 2 + offset
             end_row = start_row + len(chunk) - 1
             _write(sheet_id, f"A{start_row}:N{end_row}", chunk)
+        if len(ordered_values) < existing_row_count:
+            clear_start = 2 + len(ordered_values)
+            clear_count = existing_row_count - len(ordered_values)
+            _write(
+                sheet_id,
+                f"A{clear_start}:N{clear_start + clear_count - 1}",
+                [[""] * len(HEADERS) for _ in range(clear_count)],
+            )
         state.update(
             {
                 "sheet_id": sheet_id,
@@ -1028,7 +1052,8 @@ def _normalized_status(value: Any) -> str:
 
 def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
     padded = list(row) + [""] * max(0, len(HEADERS) - len(row))
-    news_id = _news_item_id(padded[10], padded[6])
+    source_url = _cell_link(padded[10], 1600)
+    news_id = _news_item_id(source_url, padded[6])
     return {
         "row_number": row_number,
         "status": _normalized_status(padded[0]),
@@ -1041,7 +1066,7 @@ def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
         "summary": _text(padded[7], 500),
         "source": _text(padded[8], 240),
         "source_date": _text(padded[9], 40),
-        "source_url": _text(padded[10], 1600),
+        "source_url": source_url,
         "keywords": _text(padded[11], 1800),
         "note": _text(padded[12], 500),
         "information_flow": _text(padded[13], 300),
@@ -1981,14 +2006,13 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
             generated_at = _text(payload.get("generated_at"), 60)
     if combined:
         curated, reasons = curate_news_items(combined)
-        try:
-            from strategic_briefing import polish_candidates_before_review
+        from strategic_briefing import polish_candidates_before_review
 
-            polished = polish_candidates_before_review(curated)
-            curated = polished
+        try:
+            curated = polish_candidates_before_review(curated)
         except Exception as exc:
-            logging.exception("公司内部 AI 候选审核失败，将在下轮重试: %s", exc)
-            curated = []
+            logging.exception("公司内部 AI 候选审核失败，本轮禁止写表并等待重试: %s", exc)
+            raise
         category_counts = Counter(
             _text(item.get("category") or "未分类", 80) for item in curated
         )
@@ -2032,12 +2056,19 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
         now_epoch = time.time()
         if not force and now_epoch - float(state.get("last_poll_epoch") or 0) < POLL_SECONDS:
             return {"status": "throttled", "sheet_url": state.get("sheet_url") or ""}
-        items, latest = _load_curated_latest()
-        sync_result = sync_candidates(
-            items,
-            generated_at=_text(latest.get("generated_at"), 40),
-            slot_label=_text(latest.get("slot_label"), 80),
-        )
+        try:
+            items, latest = _load_curated_latest()
+            sync_result = sync_candidates(
+                items,
+                generated_at=_text(latest.get("generated_at"), 40),
+                slot_label=_text(latest.get("slot_label"), 80),
+            )
+        except Exception as exc:
+            state["last_poll_error"] = _text(exc, 600)
+            state["last_poll_error_at"] = _now_iso()
+            state["last_poll_status"] = "failed"
+            _write_json(STATE_PATH, state)
+            raise
         review_result = apply_reviews(sync_result["sheet_id"])
         state = _read_json(STATE_PATH, {})
         state.update(
@@ -2045,6 +2076,8 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
                 "last_poll_epoch": now_epoch,
                 "last_poll_at": _now_iso(),
                 "last_poll_result": review_result,
+                "last_poll_error": "",
+                "last_poll_status": "ok",
                 "last_source_summary": latest,
             }
         )
