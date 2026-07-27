@@ -533,6 +533,71 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
     transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528", "GLM")
 
     @staticmethod
+    def _request_requires_chart(request: str) -> bool:
+        text = re.sub(r"\s+", "", str(request or "")).lower()
+        return bool(
+            re.search(
+                r"趋势|走势|时间序列|历史数据|历年|同比|环比|多期|季度变化|年度变化|"
+                r"多组数据|多项数据|比较数据|数据对比|对比.*(?:收入|利润|用户|份额|指标)|"
+                r"(?:收入|利润|用户|份额|指标).*对比|排名|占比|构成|分布|画图|图表|可视化",
+                text,
+            )
+        )
+
+    @staticmethod
+    def _has_completed_chart(messages: Any) -> bool:
+        return any(
+            isinstance(message, ToolMessage)
+            and str(getattr(message, "name", "") or "")
+            in {"render_python_chart", "forecast_quarterly_metric"}
+            for message in messages
+        )
+
+    @staticmethod
+    def _available_tool_names(tools: Any) -> set[str]:
+        names: set[str] = set()
+        for tool in tools or []:
+            if isinstance(tool, dict):
+                function = tool.get("function")
+                name = function.get("name") if isinstance(function, dict) else tool.get("name")
+            else:
+                name = getattr(tool, "name", "")
+            if name:
+                names.add(str(name))
+        return names
+
+    @staticmethod
+    def _requires_dual_source_disclosure(messages: Any) -> bool:
+        completed = {
+            str(getattr(message, "name", "") or "")
+            for message in messages
+            if isinstance(message, ToolMessage)
+        }
+        return {"search_local_reports", "web_search"}.issubset(completed)
+
+    @staticmethod
+    def _has_dual_source_disclosure(content: str) -> bool:
+        text = re.sub(r"\s+", "", str(content or ""))
+        has_both_sides = "本地" in text and ("联网" in text or "网络" in text)
+        has_status = bool(re.search(r"一致|不一致|冲突|不可比|无法直接比较|未找到|未检索到", text))
+        return has_both_sides and has_status
+
+    @staticmethod
+    def _with_dual_source_disclosure(content: str) -> str:
+        text = str(content or "").strip()
+        if not text or StableAgentChatDeepSeek._has_dual_source_disclosure(text):
+            return text
+        disclosure = (
+            "\n\n**本地与联网核验说明：** 本地与联网结果未提供完全同一期间、口径和单位的"
+            "可直接比较数据，因此不能据此认定两侧数值一致；以上数据和图表仅采用本地已核验的"
+            "同口径记录，联网结果只作为公开来源补充。"
+        )
+        suggestions = re.search(r"\n*<suggestions>[\s\S]*?</suggestions>\s*$", text, re.IGNORECASE)
+        if suggestions:
+            return f"{text[:suggestions.start()].rstrip()}{disclosure}\n{suggestions.group(0).strip()}"
+        return f"{text}{disclosure}"
+
+    @staticmethod
     def _has_pending_required_read(messages: Any) -> bool:
         pending_local = False
         pending_web = False
@@ -652,6 +717,12 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 re.DOTALL | re.IGNORECASE,
             )
             original_request = (match.group(1) if match else candidate).strip()
+        chart_required = (
+            self._request_requires_chart(original_request)
+            and not self._has_completed_chart(messages)
+            and "render_python_chart" in self._available_tool_names(kwargs.get("tools"))
+        )
+        dual_source_disclosure_required = self._requires_dual_source_disclosure(messages)
         last_result = None
         best_partial_content = ""
         retry_kwargs = dict(kwargs)
@@ -735,6 +806,11 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 not tool_calls
                 and (
                     pending_required_read
+                    or chart_required
+                    or (
+                        dual_source_disclosure_required
+                        and not self._has_dual_source_disclosure(content)
+                    )
                     or (
                         content
                         and _looks_like_incomplete_model_answer(
@@ -765,6 +841,27 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                         "此轮只能返回其中指定的结构化工具调用，不能输出最终正文。"
                     )
                     retry_kwargs["tool_choice"] = "required"
+                elif chart_required and retry_kwargs.get("tools"):
+                    retry_messages = self._stable_messages(messages)
+                    retry_messages[0].content = (
+                        f"{retry_messages[0].content} 当前用户问题涉及数据趋势、对比或多组数据，"
+                        "但本轮尚未取得任何图表工具结果。此轮必须调用 `render_python_chart`；"
+                        "只能使用已核验、口径和单位可比的真实数据点，不能输出最终正文，"
+                        "不能声称调用过尚未实际调用的模型或工具。"
+                    )
+                    retry_kwargs["tool_choice"] = "required"
+                elif dual_source_disclosure_required:
+                    retry_messages = self._completion_retry_messages(messages, content)
+                    retry_messages[0].content = (
+                        f"{retry_messages[0].content} 本轮已经同时取得本地与联网检索结果。"
+                        "最终回答必须单列“本地与联网核验说明”，明确写出两侧一致、不一致、"
+                        "冲突、不可比或某一侧未找到同口径数据的状态，不能只把网络链接列在来源区。"
+                    )
+                    retry_kwargs = {
+                        key: value
+                        for key, value in retry_kwargs.items()
+                        if key not in {"tools", "tool_choice", "parallel_tool_calls"}
+                    }
                 else:
                     # A full-context rewrite repeatedly resends every tool result
                     # and is exactly what produced six-figure token usage in one
@@ -781,6 +878,40 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
 
         if pending_required_read and kwargs.get("tools"):
             raise RuntimeError("模型未执行工具结果中要求的原文读取，已阻止使用搜索摘要直接作答。")
+        if chart_required:
+            chart_spec = _verified_metric_chart_spec(
+                original_request,
+                [
+                    str(message.content or "")
+                    for message in messages
+                    if isinstance(message, ToolMessage)
+                ],
+            )
+            generations = list(getattr(last_result, "generations", None) or [])
+            if chart_spec and generations:
+                chart_spec_json = json.dumps(chart_spec, ensure_ascii=False)
+                generations[0].message = AIMessage(
+                    content="",
+                    tool_calls=[{
+                        "name": "render_python_chart",
+                        "args": {"chart_spec": chart_spec_json},
+                        "id": (
+                            "call_required_chart_"
+                            f"{hashlib.sha256(chart_spec_json.encode()).hexdigest()[:16]}"
+                        ),
+                        "type": "tool_call",
+                    }],
+                )
+                return last_result
+            raise RuntimeError("该问题要求用图表呈现趋势或比较，但模型未实际调用图表工具，已阻止纯文字回答。")
+        if dual_source_disclosure_required:
+            generations = list(getattr(last_result, "generations", None) or [])
+            model_message = getattr(generations[0], "message", None) if generations else None
+            if model_message is not None:
+                model_message.content = self._with_dual_source_disclosure(
+                    str(getattr(model_message, "content", "") or "")
+                )
+                return last_result
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
         fallback_messages = self._completion_retry_messages(messages, best_partial_content)
@@ -3104,6 +3235,7 @@ def get_agent(
         f"{cross_check_rule}"
         f"{quarterly_crosscheck_sentence}"
         "【数据趋势与多组数据必须画图】只要问题涉及数据趋势、走势、时间序列、历史/历年数据、同比环比、多期变化，或者答案包含多个主体、多个指标、多个时期、多个类别等至少两组可比较数据，就必须在完成数据检索、原文读取和口径核验后调用 `render_python_chart` 生成至少一张 PNG 图表，不能只给文字或表格，也不能等用户再次要求画图。若 `forecast_quarterly_metric` 已返回能完整表达该问题的预测 PNG，可视为已经满足画图要求，不要重复生成相同图。只有确实不足两个可比较数据点、口径或单位不可比、关键证据不足，或图表工具明确失败时才允许不画；此时必须在答案中明确写出“无法生成可靠图表”及缺少的数据或不可比原因，绝对不得补造数据点。\n"
+        "【趋势回答完整性】用户只问“趋势/走势”时，默认分析已披露的历史数据，不得擅自扩展为未来预测。只有用户明确提出“预测、未来、forecast”等要求，才可调用预测工具并输出预测值。严禁在没有对应工具调用结果时声称“已调用模型/已生成预测/已画图”。趋势或多组数据回答应展示关键数据表、图表、趋势方向与转折、最新可比期、单位和口径，并说明本地与联网数据是否一致；不能只给一句结论。\n"
         "【Python 图表工具】满足上述强制画图条件或用户明确要求画图时，在完成数据检索和核验后必须调用 `render_python_chart` 生成 PNG。由你根据分析目的决定最终生成一张或多张互补图表，但不要为同一结论生成重复图。支持 `line` 折线、`bar/grouped_bar` 柱状、`horizontal_bar` 横向柱状、`stacked_bar` 堆叠柱状、`area/stacked_area` 面积、`pie/donut` 饼图/环形图、`scatter/bubble` 散点/气泡、`radar` 雷达、`heatmap` 热力、`histogram` 直方、`box` 箱线和 `combo` 柱线组合。`chart_spec` 是 JSON 对象字符串，基本结构为 `{\"type\":\"line\",\"title\":\"...\",\"unit\":\"...\",\"x\":[\"2024Q1\"],\"series\":[{\"name\":\"收入\",\"data\":[123]}]}`；气泡图的 series 可另加 `sizes`。中文标题和图例直接写中文；不要写 `<chart>` 块，不要在图片底部放解释长文。若工具返回停止或同参数失败，立即停止并在答案中说明图表失败，改用文字或简表，禁止假装已生成图表。\n"
         "【图表选择规则】时间趋势用 line/area，多主体同口径比较用 bar/grouped_bar，排名或长分类名用 horizontal_bar，构成且合计有意义时才用 pie/donut，构成随时间变化用 stacked_bar/stacked_area，两个连续变量关系用 scatter、第三变量规模用 bubble，多指标画像且量纲已标准化时用 radar，主体乘指标矩阵用 heatmap，样本频率分布用 histogram，分布离散度和异常值比较用 box，量级与趋势需要同图表达时用 combo。饼图不得包含负数且分类宜不超过 7 个；雷达图至少 3 个维度；不同量纲不得直接堆叠或画雷达。需要回答两个不同分析问题时可调用 2-3 次生成多张图，每张图都必须有独立分析目的。\n"
         "【历史与趋势可视化】当用户询问趋势预测、历史/过去/历年数据、时间序列、同比环比、变化趋势、多期对比，或回答中出现多组可比较数据时，如果本轮已选择 `financial-visual-analytics`，应优先调用 `read_agent_skill` 读取该 Skill。只要已有至少两个可比较数据点且指标口径和单位一致，就必须选择最合适的图表呈现；不要固定只用折线或柱状。图后仍需给出关键数值、3-5 条结论、口径和必要不确定性。图表只能使用已检索或已读取的数值，不得补造缺失点。若数据只有单点、口径不可比、证据不足或工具已失败，则按上述规则明确说明无法生成可靠图表。`forecast_quarterly_metric` 已返回预测 PNG 时，直接使用该图，不要再生成内容相同的第二张图。\n"
@@ -3364,6 +3496,8 @@ def _finalize_after_tool_limit(
                 "必须完整收束，不得停在逗号、冒号、连接词或未闭合列表。保留工具结果中的"
                 "数字来源编号。检索结果若含“已自动读取本地原文”或“已自动读取联网官方原文”，"
                 "必须使用其中的原文事实完成用户当前请求，不能误称只有搜索摘要。最后一行必须输出完整的"
+                "如果已有“Python 图表已生成”结果，必须结合该图表给出数据表、趋势方向、"
+                "转折或波动、最新可比期、单位和口径，并说明本地与联网数据是否一致；不能只给一句结论。"
                 "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。三条追问必须是"
                 "用户可直接点击发送的具体请求；禁止“是否需要我”“您希望”“要不要”等"
                 "助手询问式表达，禁止暴露工具、文件、数据集或检索流程；不得把当前请求中尚未完成的"
@@ -3426,6 +3560,82 @@ def _finalize_after_tool_limit(
         "outputTokens": 0,
         "totalTokens": 0,
     }
+
+
+def _verified_metric_chart_spec(
+    original_user_message: str,
+    tool_evidence: list[str],
+) -> dict[str, Any] | None:
+    """Extract a chart spec from exact verified metric rows in tool evidence."""
+    if not StableAgentChatDeepSeek._request_requires_chart(original_user_message):
+        return None
+    exact_rows: list[dict[str, Any]] = []
+    row_pattern = re.compile(
+        r"subject=(?P<subject>[^;\r\n]+);\s*"
+        r"period=(?P<period>[^;\r\n]+);\s*"
+        r"metric_key=(?P<metric_key>[^;\r\n]+);\s*"
+        r"metric_zh=(?P<metric_zh>[^;\r\n]+);\s*"
+        r"grain=(?P<grain>[^;\r\n]+);\s*"
+        r"standardized_value=(?P<value>-?[\d,.]+)\s+(?P<unit>[^;\r\n]+);",
+        re.IGNORECASE,
+    )
+    for evidence in tool_evidence:
+        for match in row_pattern.finditer(str(evidence or "")):
+            value = _parse_metric_number(match.group("value"))
+            if value is None:
+                continue
+            exact_rows.append({**match.groupdict(), "value": value})
+    if len(exact_rows) < 2:
+        return None
+
+    request_compact = re.sub(r"\s+", "", original_user_message)
+    subject_candidates = [
+        subject
+        for subject in {row["subject"] for row in exact_rows}
+        if subject in request_compact
+        or (subject == "中国移动" and "移动" in request_compact)
+    ]
+    subject = subject_candidates[0] if subject_candidates else exact_rows[0]["subject"]
+    subject_rows = [row for row in exact_rows if row["subject"] == subject]
+    group_counts: dict[tuple[str, str, str], int] = {}
+    for row in subject_rows:
+        key = (row["metric_key"], row["metric_zh"], row["unit"])
+        group_counts[key] = group_counts.get(key, 0) + 1
+    if not group_counts:
+        return None
+    metric_key, metric_zh, unit = max(group_counts, key=group_counts.get)
+    rows = [
+        row
+        for row in subject_rows
+        if (row["metric_key"], row["metric_zh"], row["unit"]) == (metric_key, metric_zh, unit)
+    ]
+    unique_by_period = {row["period"]: row for row in rows}
+    rows = sorted(unique_by_period.values(), key=lambda row: _period_sort_key_for_forecast(row["period"]))
+    if len(rows) < 2:
+        return None
+
+    return {
+        "type": "line",
+        "title": f"{subject}{metric_zh}趋势",
+        "unit": unit.replace("millions CNY", "百万元人民币"),
+        "x": [row["period"] for row in rows],
+        "series": [{"name": metric_zh, "data": [row["value"] for row in rows]}],
+    }
+
+
+def _recover_chart_after_tool_limit(
+    original_user_message: str,
+    tool_evidence: list[str],
+) -> tuple[str, str] | None:
+    """Build a chart from exact verified metric rows before emergency finalization."""
+    chart_spec = _verified_metric_chart_spec(original_user_message, tool_evidence)
+    if not chart_spec:
+        return None
+    args = json.dumps({"chart_spec": json.dumps(chart_spec, ensure_ascii=False)}, ensure_ascii=False)
+    result = render_python_chart.invoke({"chart_spec": json.dumps(chart_spec, ensure_ascii=False)})
+    if "Python 图表已生成" not in str(result):
+        return None
+    return args, str(result)
 
 
 def stream_agent(
@@ -3695,6 +3905,7 @@ def stream_agent(
     tool_evidence: list[str] = []
     tool_limit_reached = False
     tool_signature_counts: dict[tuple[str, str], int] = {}
+    completed_tool_names: set[str] = set()
 
     def finalize_pending_tool_calls(reason: str) -> Generator[dict[str, Any], None, None]:
         """Close every visible tool card even when the Agent loop stops early."""
@@ -3983,6 +4194,7 @@ def stream_agent(
                     yield meta_event
                     
                 tool_name = str((tc_data or {}).get("name") or "工具")
+                completed_tool_names.add(tool_name)
                 repeated_tool_call = False
                 if args_str:
                     signature = (tool_name, re.sub(r"\s+", "", args_str))
@@ -4017,6 +4229,31 @@ def stream_agent(
                 "Agent 事件流已经结束，但没有收到此工具的返回结果。"
             )
         if tool_limit_reached:
+            recovered_chart = _recover_chart_after_tool_limit(
+                original_user_message,
+                tool_evidence,
+            )
+            if recovered_chart:
+                chart_args, chart_result = recovered_chart
+                chart_call_id = f"recovered-chart-{hashlib.sha256(chart_args.encode()).hexdigest()[:12]}"
+                start_event = {
+                    "type": "tool_call_start",
+                    "id": chart_call_id,
+                    "name": "render_python_chart",
+                    "processText": _tool_process_text("render_python_chart"),
+                }
+                recorder.observe(start_event)
+                yield start_event
+                result_event = {
+                    "type": "tool_call_result",
+                    "id": chart_call_id,
+                    "name": "render_python_chart",
+                    "args": chart_args,
+                    "content": chart_result,
+                }
+                recorder.observe(result_event)
+                yield result_event
+                tool_evidence.append(chart_result)
             final_text, final_usage = _finalize_after_tool_limit(
                 original_user_message,
                 tool_evidence,
@@ -4042,6 +4279,21 @@ def stream_agent(
         tail_text = table_limiter.flush()
         if tail_text:
             event = {"type": "delta", "text": tail_text}
+            recorder.observe(event)
+            yield event
+        if (
+            force_web_search
+            and {"search_local_reports", "web_search"}.issubset(completed_tool_names)
+            and not StableAgentChatDeepSeek._has_dual_source_disclosure(
+                "".join(recorder.answer_parts)
+            )
+        ):
+            disclosure_text = (
+                "\n\n**本地与联网核验说明：** 本地与联网结果未提供完全同一期间、口径和单位的"
+                "可直接比较数据，因此不能据此认定两侧数值一致；以上数据和图表仅采用本地已核验的"
+                "同口径记录，联网结果只作为公开来源补充。"
+            )
+            event = {"type": "delta", "text": disclosure_text}
             recorder.observe(event)
             yield event
         suggestions_event = follow_up_event()

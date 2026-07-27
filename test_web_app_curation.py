@@ -1541,6 +1541,253 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(generate.call_args_list[1].kwargs["tool_choice"], "required")
         self.assertIn("只能返回其中指定的结构化工具调用", generate.call_args_list[1].args[0][0].content)
 
+    def test_trend_answer_must_call_chart_tool_before_final_text(self) -> None:
+        text_only = agent.AIMessage(
+            content=(
+                "中国移动收入长期向上，最近增速有所放缓。"
+                '<suggestions>["查看利润趋势", "对比中国电信", "查看收入构成"]</suggestions>'
+            )
+        )
+        chart_call = agent.AIMessage(
+            content="",
+            tool_calls=[
+                {
+                    "name": "render_python_chart",
+                    "args": {
+                        "chart_spec": (
+                            '{"type":"line","title":"中国移动收入趋势","unit":"亿元",'
+                            '"x":["2023","2024"],"series":[{"name":"收入","data":[10093,10408]}]}'
+                        )
+                    },
+                    "id": "call-chart",
+                    "type": "tool_call",
+                }
+            ],
+        )
+        text_result = mock.Mock(
+            generations=[mock.Mock(message=text_only, generation_info={"finish_reason": "stop"})]
+        )
+        chart_result = mock.Mock(
+            generations=[mock.Mock(message=chart_call, generation_info={"finish_reason": "tool_calls"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        tools = [
+            {
+                "type": "function",
+                "function": {"name": "render_python_chart", "parameters": {"type": "object"}},
+            }
+        ]
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[text_result, chart_result],
+        ) as generate:
+            result = model._generate(
+                [agent.HumanMessage(content="看看移动的收入趋势")],
+                tools=tools,
+            )
+
+        self.assertIs(result, chart_result)
+        self.assertEqual(generate.call_count, 2)
+        self.assertEqual(generate.call_args_list[1].kwargs["tool_choice"], "required")
+        self.assertIn("必须调用 `render_python_chart`", generate.call_args_list[1].args[0][0].content)
+
+    def test_completed_chart_allows_trend_final_answer(self) -> None:
+        complete = agent.AIMessage(
+            content=(
+                "中国移动收入历史趋势总体向上，表格、图表、口径及本地与联网核验结果如下。"
+                '<suggestions>["查看利润趋势", "对比中国电信", "查看收入构成"]</suggestions>'
+            )
+        )
+        complete_result = mock.Mock(
+            generations=[mock.Mock(message=complete, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        messages = [
+            agent.HumanMessage(content="看看移动的收入趋势"),
+            agent.ToolMessage(
+                content="![中国移动收入趋势](/api/agent-charts/example.png)",
+                tool_call_id="call-chart",
+                name="render_python_chart",
+            ),
+        ]
+
+        with mock.patch.object(agent.ChatDeepSeek, "_generate", return_value=complete_result) as generate:
+            result = model._generate(messages, tools=[agent.render_python_chart])
+
+        self.assertIs(result, complete_result)
+        self.assertEqual(generate.call_count, 1)
+
+    def test_repeated_text_only_trend_answer_gets_deterministic_chart_call(self) -> None:
+        text_only_1 = agent.AIMessage(
+            content=(
+                "中国移动收入总体上升。"
+                '<suggestions>["查看利润", "对比电信", "查看用户"]</suggestions>'
+            )
+        )
+        text_only_2 = agent.AIMessage(
+            content=(
+                "中国移动收入趋势向上。"
+                '<suggestions>["查看利润", "对比电信", "查看用户"]</suggestions>'
+            )
+        )
+        result_1 = mock.Mock(
+            generations=[mock.Mock(message=text_only_1, generation_info={"finish_reason": "stop"})]
+        )
+        result_2 = mock.Mock(
+            generations=[mock.Mock(message=text_only_2, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        messages = [
+            agent.HumanMessage(content="看看移动的收入趋势"),
+            agent.ToolMessage(
+                content=(
+                    "精确季度指标行：subject=中国移动; period=Q1 2016; metric_key=revenue; "
+                    "metric_zh=营业收入/收益; grain=quarter; standardized_value=177504 millions CNY;\n"
+                    "精确季度指标行：subject=中国移动; period=Q2 2016; metric_key=revenue; "
+                    "metric_zh=营业收入/收益; grain=quarter; standardized_value=192847 millions CNY;"
+                ),
+                tool_call_id="call-local",
+                name="search_local_reports",
+            ),
+        ]
+        tools = [
+            {
+                "type": "function",
+                "function": {"name": "render_python_chart", "parameters": {"type": "object"}},
+            }
+        ]
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[result_1, result_2],
+        ) as generate:
+            result = model._generate(messages, tools=tools)
+
+        self.assertIs(result, result_2)
+        recovered = result.generations[0].message
+        self.assertEqual(recovered.tool_calls[0]["name"], "render_python_chart")
+        spec = json.loads(recovered.tool_calls[0]["args"]["chart_spec"])
+        self.assertEqual(spec["x"], ["Q1 2016", "Q2 2016"])
+        self.assertEqual(generate.call_count, 2)
+
+    def test_dual_retrieval_answer_must_disclose_comparison_status(self) -> None:
+        incomplete = agent.AIMessage(
+            content=(
+                "中国移动收入总体上升，相关来源如下。"
+                '<suggestions>["查看利润", "对比电信", "查看用户"]</suggestions>'
+            )
+        )
+        repaired = agent.AIMessage(
+            content=(
+                "中国移动收入总体上升。\n\n"
+                "**本地与联网核验说明：** 本地季度数据与联网年度行业数据口径不可比，"
+                "因此不能认定数值一致。"
+                '<suggestions>["查看利润", "对比电信", "查看用户"]</suggestions>'
+            )
+        )
+        result_1 = mock.Mock(
+            generations=[mock.Mock(message=incomplete, generation_info={"finish_reason": "stop"})]
+        )
+        result_2 = mock.Mock(
+            generations=[mock.Mock(message=repaired, generation_info={"finish_reason": "stop"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        messages = [
+            agent.HumanMessage(content="看看移动的收入趋势"),
+            agent.ToolMessage(content="本地数据", tool_call_id="local", name="search_local_reports"),
+            agent.ToolMessage(content="联网数据", tool_call_id="web", name="web_search"),
+            agent.ToolMessage(
+                content="![趋势图](/generated-charts/chart.png)",
+                tool_call_id="chart",
+                name="render_python_chart",
+            ),
+        ]
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[result_1, result_2],
+        ) as generate:
+            result = model._generate(messages, tools=[agent.render_python_chart])
+
+        self.assertIs(result, result_2)
+        self.assertEqual(generate.call_count, 2)
+        self.assertIn("本地与联网核验说明", generate.call_args_list[1].args[0][0].content)
+
+    def test_dual_source_disclosure_validator_requires_both_sides_and_status(self) -> None:
+        self.assertFalse(
+            agent.StableAgentChatDeepSeek._has_dual_source_disclosure(
+                "数据来自官方报告，网络来源见引用区。"
+            )
+        )
+        self.assertTrue(
+            agent.StableAgentChatDeepSeek._has_dual_source_disclosure(
+                "本地与联网核验说明：两侧期间和单位不可比，不能认定一致。"
+            )
+        )
+
+    def test_process_cleanup_does_not_discard_data_table_before_conclusion(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertNotIn("text = text.slice(formalStart).trim();", app)
+        self.assertNotIn("const formalStart = text.search(", app)
+
+    def test_tool_limit_recovers_chart_from_verified_metric_rows(self) -> None:
+        evidence = [
+            (
+                "精确季度指标行：subject=中国移动; period=Q1 2016; metric_key=revenue; "
+                "metric_zh=营业收入/收益; grain=quarter; standardized_value=177504 millions CNY; "
+                "official_value=177504 millions CNY; verification_count=3;\n"
+                "精确季度指标行：subject=中国移动; period=Q2 2016; metric_key=revenue; "
+                "metric_zh=营业收入/收益; grain=quarter; standardized_value=192847 millions CNY; "
+                "official_value=192847 millions CNY; verification_count=3;"
+            )
+        ]
+        chart_tool = mock.Mock()
+        chart_tool.invoke.return_value = (
+            "Python 图表已生成：\n\n![中国移动收入趋势](/api/agent-charts/chart.png)"
+        )
+        with mock.patch("agent.render_python_chart", chart_tool):
+            recovered = agent._recover_chart_after_tool_limit("看看移动的收入趋势", evidence)
+
+        self.assertIsNotNone(recovered)
+        args, result = recovered
+        spec = json.loads(json.loads(args)["chart_spec"])
+        self.assertEqual(spec["x"], ["Q1 2016", "Q2 2016"])
+        self.assertEqual(spec["series"][0]["data"], [177504.0, 192847.0])
+        self.assertIn("Python 图表已生成", result)
+        chart_tool.invoke.assert_called_once()
+
     def test_completed_original_reads_clear_older_required_markers(self) -> None:
         messages = [
             agent.ToolMessage(

@@ -4320,10 +4320,6 @@ function stripAssistantControlText(content) {
   const processMarkers = ASSISTANT_PROCESS_MARKERS;
   const processSentencePattern = new RegExp(`(^|[。！？]\\s*)${processMarkers}[^。！？]*(?:[。！？]|$)`, "g");
   text = text.replace(processSentencePattern, (match, prefix) => (prefix && prefix.trim() ? prefix.trim() : "")).trim();
-  const formalStart = text.search(/\n?\s*(?:数据汇总（自然年收入|##\s*中国铁塔|中国铁塔6年收入趋势|结论[：:])/);
-  if (formalStart > 0 && new RegExp(processMarkers).test(text.slice(0, formalStart))) {
-    text = text.slice(formalStart).trim();
-  }
   const processLinePattern = new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?:。|$)\\s*$`);
   text = text
     .split(/\n+/)
