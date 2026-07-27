@@ -488,6 +488,34 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("content.innerHTML = markdownToHtml(content._rawReasoning)", reasoning_renderer)
         self.assertNotIn("content.textContent = content._rawReasoning", reasoning_renderer)
 
+    def test_frontend_finalizes_orphaned_tool_cards_for_live_and_restored_chats(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function finalizePendingAssistantToolEvents")
+        end = app.index("function renderAssistantToolEvent", start)
+        snippet = app[start:end] + "\n" + (
+            "const timeline = ["
+            "{type:'tool_call_start',id:'done-1',name:'web_search'},"
+            "{type:'tool_call_result',id:'done-1',name:'web_search',content:'ok'},"
+            "{type:'tool_call_start',id:'pending-1',name:'read_webpage'}"
+            "];"
+            "const finalized = finalizePendingAssistantToolEvents(timeline);"
+            "console.log(JSON.stringify({finalized,timeline}));"
+        )
+        completed = subprocess.run(
+            ["node", "-e", snippet],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        result = json.loads(completed.stdout)
+
+        self.assertEqual(len(result["finalized"]), 1)
+        self.assertEqual(result["finalized"][0]["id"], "pending-1")
+        self.assertIn("没有收到此工具的返回结果", result["finalized"][0]["content"])
+        self.assertEqual(len(result["timeline"]), 4)
+        self.assertIn("finalizePendingAssistantToolEvents(timeline);", app)
+        self.assertIn("finalizePendingAssistantToolEvents(assistantTimeline);", app)
+
     def test_reasoning_stream_starts_a_new_block_after_each_non_reasoning_event(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         start = app.index("function appendModelReasoning")
@@ -1554,6 +1582,62 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(answer, final)
         self.assertEqual(finalize.call_count, 1)
         self.assertFalse(any(event.get("type") == "error" for event in events))
+        self.assertEqual(events[-1].get("type"), "done")
+
+    def test_tool_limit_emits_terminal_results_for_parallel_calls_left_pending(self) -> None:
+        class FakeAgent:
+            def stream(self, inputs, stream_mode=None, config=None):
+                yield agent.AIMessage(
+                    content="",
+                    tool_calls=[
+                        {
+                            "name": "search_local_reports",
+                            "args": {"query": "云厂商"},
+                            "id": "call-limit",
+                            "type": "tool_call",
+                        },
+                        {
+                            "name": "web_search",
+                            "args": {"query": "云厂商业绩"},
+                            "id": "call-web",
+                            "type": "tool_call",
+                        },
+                        {
+                            "name": "read_webpage",
+                            "args": {"url": "https://example.com"},
+                            "id": "call-page",
+                            "type": "tool_call",
+                        },
+                    ],
+                ), {}
+                yield agent.ToolMessage(
+                    content=(
+                        "search_local_reports 已达到本轮调用上限（3 次），"
+                        "请停止继续调用该工具。"
+                    ),
+                    tool_call_id="call-limit",
+                ), {}
+                raise AssertionError("达到上限后不应继续消费 Agent 循环")
+
+        final = '已基于现有结果完成回答。<suggestions>["一", "二", "三"]</suggestions>'
+        with (
+            mock.patch("agent.get_agent", return_value=FakeAgent()),
+            mock.patch(
+                "agent._finalize_after_tool_limit",
+                return_value=(final, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
+            ),
+        ):
+            events = list(agent.stream_agent("分析云厂商", thinking_enabled=False))
+
+        results = {
+            event.get("id"): event
+            for event in events
+            if event.get("type") == "tool_call_result"
+        }
+        self.assertEqual(set(results), {"call-limit", "call-web", "call-page"})
+        self.assertIn("达到本轮调用上限", results["call-limit"]["content"])
+        self.assertIn("系统不再等待", results["call-web"]["content"])
+        self.assertIn("系统不再等待", results["call-page"]["content"])
         self.assertEqual(events[-1].get("type"), "done")
 
     def test_three_identical_tool_calls_are_finalized_without_consuming_a_fourth(self) -> None:

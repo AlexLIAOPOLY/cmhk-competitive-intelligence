@@ -3332,6 +3332,7 @@ def stream_agent(
     inputs = {"messages": [("user", message)]}
     
     tool_calls_acc = {}
+    pending_tool_calls: dict[str, dict[str, str]] = {}
     emitted_process_tools: set[str] = set()
     disabled_web_notice_prefixes = (
         "联网搜索已关闭",
@@ -3361,6 +3362,21 @@ def stream_agent(
     tool_evidence: list[str] = []
     tool_limit_reached = False
     tool_signature_counts: dict[tuple[str, str], int] = {}
+
+    def finalize_pending_tool_calls(reason: str) -> Generator[dict[str, Any], None, None]:
+        """Close every visible tool card even when the Agent loop stops early."""
+        for tool_call_id, pending in list(pending_tool_calls.items()):
+            tc_data = tool_calls_acc.get(tool_call_id) or pending
+            event = {
+                "type": "tool_call_result",
+                "id": tool_call_id,
+                "name": str(tc_data.get("name") or pending.get("name") or "工具"),
+                "args": str(tc_data.get("args") or ""),
+                "content": f"工具调用已停止：{reason}",
+            }
+            pending_tool_calls.pop(tool_call_id, None)
+            recorder.observe(event)
+            yield event
 
     def chunk_reasoning_text(chunk: AIMessage | AIMessageChunk) -> str:
         """Read provider reasoning fields without mixing them into the final answer."""
@@ -3568,6 +3584,10 @@ def stream_agent(
                             if thinking_enabled:
                                 yield thinking_event(f"准备调用工具：{tc.get('name') or '工具'}。")
                             process_tool_name = tc.get("name") or "工具"
+                            pending_tool_calls[tc_id] = {
+                                "id": str(tc_id),
+                                "name": str(process_tool_name),
+                            }
                             process_text = ""
                             if process_tool_name not in emitted_process_tools:
                                 emitted_process_tools.add(process_tool_name)
@@ -3590,6 +3610,7 @@ def stream_agent(
                 tc_data = tool_calls_acc.get(chunk.tool_call_id)
                 if tc_data:
                     args_str = tc_data.get("args", "")
+                pending_tool_calls.pop(str(chunk.tool_call_id or ""), None)
                 
                 content = chunk.content
                 raw_tool_content = str(content or "")
@@ -3648,10 +3669,20 @@ def stream_agent(
                 yield event
                 if reached_tool_limit or repeated_tool_call:
                     tool_limit_reached = True
+                    stop_reason = (
+                        "本轮已达到工具调用上限，系统不再等待此调用返回。"
+                        if reached_tool_limit
+                        else "检测到重复工具调用，系统已停止继续等待。"
+                    )
+                    yield from finalize_pending_tool_calls(stop_reason)
                     close_events = getattr(events, "close", None)
                     if callable(close_events):
                         close_events()
                     break
+        if pending_tool_calls:
+            yield from finalize_pending_tool_calls(
+                "Agent 事件流已经结束，但没有收到此工具的返回结果。"
+            )
         if tool_limit_reached:
             final_text, final_usage = _finalize_after_tool_limit(
                 original_user_message,
@@ -3703,6 +3734,10 @@ def stream_agent(
         yield {"type": "done"}
     except Exception as e:
         error_text = str(e)
+        if pending_tool_calls:
+            yield from finalize_pending_tool_calls(
+                "Agent 执行已经结束，但没有收到此工具的返回结果。"
+            )
         recoverable_completion_failure = (
             "Recursion limit" in error_text
             or "GRAPH_RECURSION_LIMIT" in error_text

@@ -5274,6 +5274,7 @@ function appendToolCallCard(node, event) {
   const body = messageBody(node);
   if (!body) return;
   const id = event.id || `${event.name || "tool"}-${node.querySelectorAll(".tool-details").length}`;
+  const technicalName = event.name || "tool";
   let card = node.querySelector(`.tool-details[data-tool-id="${CSS.escape(id)}"]`);
   if (!card) {
     card = document.createElement("details");
@@ -5290,12 +5291,11 @@ function appendToolCallCard(node, event) {
     `;
     appendStreamBlock(node, card);
   }
-  card.dataset.toolName = event.name || technicalName;
+  card.dataset.toolName = technicalName;
   const iconNode = card.querySelector(".tool-icon");
   const labelNode = card.querySelector(".tool-label");
   const nameNode = card.querySelector(".tool-name");
   const bodyNode = card.querySelector(".tool-body");
-  const technicalName = event.name || "tool";
   if (iconNode) iconNode.innerHTML = iconSvg(toolIconName(technicalName));
   if (labelNode) labelNode.textContent = toolFriendlyName(technicalName);
   if (nameNode) nameNode.textContent = technicalName;
@@ -5312,6 +5312,30 @@ function appendToolCallCard(node, event) {
     }
     bodyNode.hidden = !args && !event.content;
   }
+}
+
+function finalizePendingAssistantToolEvents(timeline, reason = "") {
+  if (!Array.isArray(timeline) || !timeline.length) return [];
+  const pending = new Map();
+  timeline.forEach((event) => {
+    if (!event || typeof event !== "object" || !event.id) return;
+    if (event.type === "tool_call_start") {
+      pending.set(String(event.id), event);
+    } else if (event.type === "tool_call_result") {
+      pending.delete(String(event.id));
+    }
+  });
+  const content = reason || "工具调用未完成：回答已经结束，但没有收到此工具的返回结果。";
+  const finalized = [...pending.values()].map((startEvent) => ({
+    type: "tool_call_result",
+    id: String(startEvent.id),
+    name: String(startEvent.name || "tool"),
+    processText: "",
+    args: String(startEvent.args || ""),
+    content,
+  }));
+  timeline.push(...finalized);
+  return finalized;
 }
 
 function renderAssistantToolEvent(node, event, insertedChartUrls = null) {
@@ -5397,6 +5421,7 @@ function restoreAssistantTimeline(node, timeline) {
   if (!Array.isArray(timeline) || !timeline.length) return false;
   const body = messageBody(node);
   if (!body) return false;
+  finalizePendingAssistantToolEvents(timeline);
   body.innerHTML = "";
   const insertedChartUrls = new Set();
   timeline.forEach((event) => {
@@ -6077,6 +6102,12 @@ async function sendChat(message, options = {}) {
         const event = JSON.parse(line.replace(/^data:\s*/, ""));
         
         if (event.type === "done") {
+          const finalizedToolEvents = finalizePendingAssistantToolEvents(assistantTimeline);
+          finalizedToolEvents.forEach((toolEvent) => renderToolEvent(toolEvent));
+          if (finalizedToolEvents.length && assistantHistoryEntry) {
+            assistantHistoryEntry.timeline = assistantTimeline;
+            scheduleDraftPersist();
+          }
           isDone = true;
           break;
         } else if (event.type === "suggestions") {
