@@ -1579,8 +1579,9 @@ select {
   right: 32px;
   bottom: 32px;
   z-index: 15;
+  width: 64px;
   height: 64px;
-  padding: 0 28px;
+  padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 32px;
   background: 
@@ -1600,7 +1601,6 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
 }
 
 .chat-fab:hover {
@@ -1616,16 +1616,6 @@ select {
 
 .chat-fab::after {
   animation-delay: 0.7s;
-}
-
-.chat-fab span {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  letter-spacing: 1px;
 }
 
 .chat-fab img {
@@ -8375,8 +8365,9 @@ body.dashboard-page {
   .chat-fab {
     right: 14px;
     bottom: 14px;
+    width: 52px;
     height: 52px;
-    padding: 0 20px;
+    padding: 0;
   }
 
 }

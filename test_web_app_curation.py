@@ -272,6 +272,19 @@ class ChatImageAnalysisTests(unittest.TestCase):
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_chat_launcher_is_icon_only_and_keeps_an_accessible_name(self) -> None:
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        launcher_start = markup.index('<button class="chat-fab"')
+        launcher_end = markup.index("</button>", launcher_start)
+        launcher = markup[launcher_start:launcher_end]
+
+        self.assertIn('title="打开小竞AI"', launcher)
+        self.assertIn('aria-label="打开小竞AI"', launcher)
+        self.assertIn("xiaojing-ai-logo-mark.png", launcher)
+        self.assertNotIn("<span>", launcher)
+        self.assertIn("width: 64px;\n  height: 64px;\n  padding: 0;", styles)
+
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         self.assertIn('createdAt: new Date().toISOString()', app)
