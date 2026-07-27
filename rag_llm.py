@@ -739,11 +739,79 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
         key in lowered_question
         for key in ["最新", "最近", "latest", "recent", "current", "last quarter", "latest quarter"]
     )
+    series_intent = not periods and any(
+        key in lowered_question
+        for key in [
+            "趋势",
+            "走势",
+            "时间序列",
+            "历年",
+            "历史",
+            "长期",
+            "近年",
+            "多年",
+            "过去",
+            "变化",
+            "trend",
+            "time series",
+            "historical",
+        ]
+    )
     if latest_intent:
         filtered.sort(
             key=lambda row: _latest_period_score(f"{row.get('period', '')} {row.get('period_end', '')}"),
             reverse=True,
         )
+
+    source = csv_path.relative_to(ROOT).as_posix()
+    if series_intent:
+        grouped: dict[tuple[str, str, str], list[dict[str, str]]] = {}
+        for row in filtered:
+            unit = (row.get("official_unit") or row.get("unit") or "").strip()
+            key = (
+                (row.get("subject") or "").strip(),
+                (row.get("metric_key") or "").strip(),
+                unit,
+            )
+            grouped.setdefault(key, []).append(row)
+
+        series_chunks: list[dict[str, Any]] = []
+        for (subject, metric_key, unit), group_rows in grouped.items():
+            ordered = sorted(
+                group_rows,
+                key=lambda row: _latest_period_score(
+                    f"{row.get('period', '')} {row.get('period_end', '')}"
+                ),
+            )
+            points = []
+            conflicts = []
+            for row in ordered:
+                period = (row.get("period") or "").strip()
+                value = (row.get("official_value") or row.get("value") or "").strip()
+                if period and value:
+                    points.append(f"{period}={value}")
+                if (row.get("verification_status") or "").strip() == "official_conflict":
+                    conflicts.append(period)
+            if not points:
+                continue
+            metric_zh = (ordered[0].get("metric_zh") or metric_key).strip()
+            text = (
+                f"完整季度时间序列：subject={subject}; metric_key={metric_key}; metric_zh={metric_zh}; "
+                f"coverage={ordered[0].get('period')} 至 {ordered[-1].get('period')}; "
+                f"points={len(points)}; unit={unit}; period_values={'; '.join(points)}. "
+                "各期优先使用 official_value，缺失时使用 standardized_value。"
+            )
+            if conflicts:
+                text += f" official_conflict_periods={', '.join(conflicts)}，这些期间应说明口径冲突。"
+            series_chunks.append(
+                {
+                    "source": source,
+                    "text": text,
+                    "links": [{"label": source, "url": _local_ref(source)}],
+                }
+            )
+        if series_chunks:
+            return series_chunks
 
     chunks: list[dict[str, Any]] = []
     for row in filtered[:12]:
@@ -764,7 +832,6 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             "回答时：只要 verification_count>=2 即代表该行已有多来源核验；"
             "若 verification_status=official_conflict，正式数值采用 official_value，并说明标准化表与官方披露冲突。"
         )
-        source = csv_path.relative_to(ROOT).as_posix()
         chunks.append({"source": source, "text": text, "links": [{"label": source, "url": _local_ref(source)}]})
     return chunks
 

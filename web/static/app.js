@@ -4680,6 +4680,7 @@ function rerenderAssistantMarkdown(node) {
     html = renderCitationMarkers(html, node);
     textNode.innerHTML = html;
   });
+  dedupeAssistantChartImages(node);
 }
 
 function isMessagesNearBottom(threshold = 96) {
@@ -5130,6 +5131,25 @@ function appendStableChartImage(node, chartImage) {
   block.dataset.chartUrl = chartImage.url;
   block.innerHTML = inlineMarkdown(chartImage.markdown);
   appendStreamBlock(node, block);
+  dedupeAssistantChartImages(node);
+}
+
+function dedupeAssistantChartImages(node) {
+  const body = messageBody(node);
+  if (!body) return;
+  const toolChartUrls = new Set(
+    Array.from(body.querySelectorAll(".chart-result-block[data-chart-url]"))
+      .map((block) => block.dataset.chartUrl)
+      .filter(Boolean)
+  );
+  if (!toolChartUrls.size) return;
+  assistantAnswerNodes(node).forEach((answerNode) => {
+    answerNode.querySelectorAll(".chat-image-wrapper img").forEach((image) => {
+      if (toolChartUrls.has(image.getAttribute("src") || "")) {
+        image.closest(".chat-image-wrapper")?.remove();
+      }
+    });
+  });
 }
 
 function appendAssistantActionLine(node, event) {
@@ -5457,6 +5477,7 @@ function restoreAssistantTimeline(node, timeline) {
       textNode._rawMarkdown = String(event.text || "");
       appendStreamBlock(node, textNode);
       setCurrentMessageContent(node, textNode._rawMarkdown, true, textNode);
+      dedupeAssistantChartImages(node);
       return;
     }
     if (event.type === "tool_call_start" || event.type === "tool_call_result") {
@@ -6070,6 +6091,7 @@ async function sendChat(message, options = {}) {
       let html = markdownToHtml(cleaned);
       html = renderCitationMarkers(html, assistantNode);
       textNode.innerHTML = html;
+      dedupeAssistantChartImages(assistantNode);
       if (suggestionsHTML) {
         textNode.insertAdjacentHTML("beforeend", suggestionsHTML);
       }
@@ -6282,6 +6304,7 @@ async function sendChat(message, options = {}) {
         html = renderCitationMarkers(html, assistantNode);
         segmentNode.innerHTML = html;
       });
+      dedupeAssistantChartImages(assistantNode);
 
       // Inject citation footer if we have reference data
       const storedRefs = assistantNode.dataset.references ? JSON.parse(assistantNode.dataset.references) : null;

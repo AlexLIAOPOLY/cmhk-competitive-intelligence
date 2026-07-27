@@ -1371,6 +1371,7 @@ def search_local_reports(query: str) -> str:
     """搜索本地的战略部周报、审计日志和之前爬取过的网页数据。
     当你需要了解公司的最新动态、特定主体的近期情况，或是爬虫的执行历史时，请使用此工具。
     query 应保留用户原始指标语义，例如区分收入同比与收入。
+    趋势查询会把同一主体和指标的完整可见时间序列压缩在一个结果片段中。
     """
     limit_message = _register_heavy_search_invocation("search_local_reports")
     if limit_message:

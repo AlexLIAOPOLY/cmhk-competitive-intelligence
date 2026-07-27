@@ -11,6 +11,7 @@ from unittest import mock
 from pathlib import Path
 
 import agent
+import rag_llm
 import web_app
 
 
@@ -944,6 +945,28 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self._follow_up_patcher.stop()
+
+    def test_trend_retrieval_exposes_the_full_quarterly_series(self) -> None:
+        chunks = rag_llm._quarterly_exact_metric_chunks(
+            "看看中国移动近年的收入趋势",
+            dataset_ids={"quarterly_competitor_metrics_2026-06-18"},
+        )
+
+        revenue = next(
+            chunk for chunk in chunks
+            if "subject=中国移动" in chunk["text"] and "metric_key=revenue" in chunk["text"]
+        )
+        self.assertIn("coverage=Q1 2016 至 Q1 2026", revenue["text"])
+        self.assertIn("points=41", revenue["text"])
+        self.assertIn("Q1 2016=177504", revenue["text"])
+        self.assertIn("Q1 2026=266478", revenue["text"])
+
+    def test_frontend_deduplicates_a_chart_repeated_in_the_final_answer(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn("function dedupeAssistantChartImages(node)", app)
+        self.assertIn('body.querySelectorAll(".chart-result-block[data-chart-url]")', app)
+        self.assertIn('image.closest(".chat-image-wrapper")?.remove()', app)
+        self.assertGreaterEqual(app.count("dedupeAssistantChartImages("), 4)
 
     def test_plain_search_question_is_not_intercepted_when_web_toggle_is_off(self) -> None:
         self.assertIsNone(web_app.check_local_action("搜一下移动和联通的收入趋势"))
