@@ -1139,8 +1139,6 @@ function renderStrategicOverview(rawItems) {
     return key > latest ? key : latest;
   }, "");
   const latestCount = latestDate ? Number(byDate.get(latestDate) || 0) : 0;
-  const activeDays = Array.from(byDate.values()).filter((count) => count > 0).length;
-  const topCategory = categories[0] || ["暂无主题", 0];
 
   const setText = (id, value) => {
     const node = document.getElementById(id);
@@ -1174,13 +1172,6 @@ function renderStrategicOverview(rawItems) {
           `;
         }).join("")
       : '<div class="signal-topic-empty">近14日暂无已确认信号</div>';
-  }
-
-  const insight = document.getElementById("signalInsightText");
-  if (insight) {
-    insight.textContent = items.length
-      ? `${topCategory[0]}最活跃，共 ${topCategory[1]} 条；${activeDays} 天出现新信号，竞对动态占 ${Math.round((competitorCount / items.length) * 100)}%。`
-      : "近14日暂无已确认战略快讯，请等待下一轮人工筛选结果。";
   }
 
   const categoryOrder = categories.map((entry) => entry[0]);

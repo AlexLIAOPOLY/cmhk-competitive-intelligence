@@ -10180,3 +10180,182 @@ body.report-library-open::before {
 .command-strip > div {
   display: none;
 }
+
+/* Dense, flat dashboard: use type and measured spacing instead of decorative panels. */
+.signal-overview,
+.collection-overview {
+  padding: 22px 24px 20px;
+}
+
+.signal-overview-header,
+.collection-overview-header {
+  min-height: 58px;
+}
+
+.signal-overview-header h2,
+.collection-overview-header h2 {
+  font-size: 24px;
+  letter-spacing: 0.01em;
+}
+
+.signal-overview-header p,
+.collection-overview-header p {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.signal-kpi-grid {
+  margin-top: 15px;
+}
+
+.signal-kpi,
+.collection-kpi-grid > div {
+  min-height: 82px;
+  padding: 10px 14px 9px;
+}
+
+.signal-kpi > span,
+.signal-kpi small,
+.collection-kpi-grid span,
+.collection-kpi-grid small {
+  font-size: 12px;
+}
+
+.signal-kpi strong,
+.collection-kpi-grid strong {
+  margin: 4px 0 2px;
+  font-size: 28px;
+}
+
+.signal-analysis-grid {
+  grid-template-columns: minmax(0, 1.95fr) minmax(250px, 0.95fr);
+  height: calc(100% - 177px);
+  min-height: 230px;
+  margin-top: 18px;
+}
+
+.signal-chart-card,
+.signal-topic-card {
+  padding: 13px 14px 10px;
+}
+
+.signal-chart-heading {
+  min-height: 38px;
+}
+
+.signal-chart-heading strong {
+  font-size: 15px;
+}
+
+.signal-chart-heading span {
+  font-size: 11px;
+}
+
+.signal-chart-heading > span {
+  font-size: 13px;
+}
+
+.signal-trend-chart {
+  height: calc(100% - 40px);
+}
+
+.signal-topic-list {
+  gap: 13px;
+  padding-top: 10px;
+}
+
+.signal-topic-row > div:first-child,
+.signal-topic-row b {
+  font-size: 12px;
+}
+
+.signal-topic-track {
+  height: 5px;
+  margin-top: 5px;
+}
+
+.collection-overview {
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-kpi-grid {
+  margin-top: 15px;
+}
+
+.collection-section {
+  margin-top: 18px;
+  padding: 15px 0 12px;
+}
+
+.collection-section-title {
+  margin-bottom: 13px;
+}
+
+.collection-section-title strong {
+  font-size: 15px;
+}
+
+.collection-section-title span {
+  font-size: 11px;
+}
+
+.collection-bar-list {
+  gap: 11px;
+}
+
+.collection-bar-row > div:first-child,
+.collection-bar-row b {
+  font-size: 12px;
+}
+
+.collection-bar-track {
+  height: 6px;
+  margin-top: 5px;
+}
+
+.collection-entity-section {
+  margin-top: auto;
+  padding-bottom: 2px;
+}
+
+.collection-entity-list {
+  gap: 8px;
+}
+
+.collection-entity-list > span {
+  gap: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.collection-entity-list b {
+  font-size: 12px;
+}
+
+@media (max-width: 1180px) {
+  .signal-overview,
+  .collection-overview {
+    padding: 18px;
+  }
+
+  .signal-overview-header h2,
+  .collection-overview-header h2 {
+    font-size: 21px;
+  }
+
+  .signal-kpi strong,
+  .collection-kpi-grid strong {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 900px) {
+  .signal-analysis-grid {
+    height: auto;
+  }
+
+  .collection-entity-section {
+    margin-top: 18px;
+  }
+}

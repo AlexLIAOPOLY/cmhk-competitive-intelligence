@@ -661,6 +661,19 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn("animation: cockpit-bar-grow", styles)
         self.assertNotIn("animation: cockpit-rise 400ms", styles)
 
+    def test_dashboard_uses_dense_flat_hierarchy_without_low_value_status_copy(self) -> None:
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertNotIn("滚动 14 天", markup)
+        self.assertNotIn("数据已连接", markup)
+        self.assertNotIn('id="signalInsightText"', markup)
+        self.assertNotIn("竞对动态最活跃", app)
+        self.assertIn("Dense, flat dashboard", styles)
+        self.assertIn("font-size: 24px;", styles)
+        self.assertIn("margin-top: auto;", styles)
+
     def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
         cleaned = web_app._clean_chat_message({
             "role": "assistant",
