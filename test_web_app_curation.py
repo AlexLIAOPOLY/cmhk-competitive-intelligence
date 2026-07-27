@@ -285,6 +285,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("xiaojing-ai-logo-mark.png", launcher)
         self.assertNotIn("<span>", launcher)
         self.assertIn("width: 64px;\n  height: 64px;\n  padding: 0;", styles)
+        self.assertIn(".chat-fab img {\n  position: relative;\n  z-index: 1;\n  width: 47%;\n  height: 47%;", styles)
 
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

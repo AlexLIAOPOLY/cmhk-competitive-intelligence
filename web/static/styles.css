@@ -1621,8 +1621,8 @@ select {
 .chat-fab img {
   position: relative;
   z-index: 1;
-  width: 19px;
-  height: 19px;
+  width: 47%;
+  height: 47%;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
