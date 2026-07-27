@@ -6,6 +6,7 @@ PRIVATE_REMOTE="${PRIVATE_REMOTE:-private}"
 PRIVATE_MAIN="${PRIVATE_MAIN:-main}"
 ROOT="$(git rev-parse --show-toplevel)"
 BRANCH="${1:-$(git branch --show-current)}"
+RUNTIME_ROOT="${CMHK_RUNTIME_ROOT:-/Users/liaowang/cmhk_public_crawl_app}"
 
 if [[ -z "$BRANCH" ]]; then
   echo "Refusing to synchronize from a detached HEAD." >&2
@@ -77,9 +78,71 @@ rsync -a --delete \
   --exclude '/SNAPSHOT_FILE_MANIFEST.tsv' \
   "$ROOT/" "$TMP_DIR/"
 
-if [[ -f "$ROOT/curation_data/checkpoints.sqlite" ]]; then
+if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
+  echo "Overlaying current operational data from runtime: $RUNTIME_ROOT"
+
+  for runtime_dir in \
+    results \
+    curation_data \
+    strategy_briefing \
+    agent_chat_threads \
+    agent_runs \
+    agent_knowledge \
+    task_runs
+  do
+    if [[ ! -d "$RUNTIME_ROOT/$runtime_dir" ]]; then
+      continue
+    fi
+    mkdir -p "$TMP_DIR/$runtime_dir"
+    rsync -a --delete \
+      --exclude '__pycache__/' \
+      --exclude '*.pyc' \
+      --exclude '*.pyo' \
+      --exclude '*.log' \
+      --exclude '*.pid' \
+      --exclude '*.lock' \
+      --exclude 'backups/' \
+      --exclude 'cache_backups/' \
+      --exclude 'checkpoints.sqlite' \
+      --exclude 'checkpoints.sqlite-shm' \
+      --exclude 'checkpoints.sqlite-wal' \
+      "$RUNTIME_ROOT/$runtime_dir/" "$TMP_DIR/$runtime_dir/"
+  done
+
+  # The web report library reads root-level Word files. The persistent runtime,
+  # not the development checkout, is authoritative for this generated state.
+  find "$TMP_DIR" -maxdepth 1 -type f -name '*.docx' -delete
+  rsync -a \
+    --include='/*.docx' \
+    --exclude='/*' \
+    "$RUNTIME_ROOT/" "$TMP_DIR/"
+
+  # Overlay root-level generated indexes and audits without allowing an older
+  # runtime copy to replace application source code.
+  rsync -a \
+    --include='/carrier_performance_*.json' \
+    --include='/company_metrics*.json' \
+    --include='/coverage_report.tsv' \
+    --include='/final_audit.md' \
+    --include='/feishu_latest_*.json' \
+    --include='/report_file_metadata.json' \
+    --include='/run_log*.json' \
+    --include='/run_log*.tsv' \
+    --include='/scheduler_state.json' \
+    --include='/weekly_report*.json' \
+    --include='/weekly_report*.md' \
+    --include='/weekly_report*.html' \
+    --exclude='/*' \
+    "$RUNTIME_ROOT/" "$TMP_DIR/"
+fi
+
+CHECKPOINT_SOURCE="$ROOT/curation_data/checkpoints.sqlite"
+if [[ -f "$RUNTIME_ROOT/curation_data/checkpoints.sqlite" ]]; then
+  CHECKPOINT_SOURCE="$RUNTIME_ROOT/curation_data/checkpoints.sqlite"
+fi
+if [[ -f "$CHECKPOINT_SOURCE" ]]; then
   mkdir -p "$TMP_DIR/curation_data"
-  sqlite3 "$ROOT/curation_data/checkpoints.sqlite" \
+  sqlite3 "$CHECKPOINT_SOURCE" \
     ".backup '$TMP_DIR/curation_data/checkpoints.sqlite'"
 fi
 
@@ -87,6 +150,7 @@ cat > "$TMP_DIR/PRIVATE_SNAPSHOT.md" <<EOF
 # Private complete-project snapshot
 
 - Source directory: local CMHK project workspace
+- Runtime data overlay: $RUNTIME_ROOT
 - Generated at: $(date '+%Y-%m-%d %H:%M:%S %z')
 - Public development repository: AlexLIAOPOLY/cmhk-competitive-intelligence
 - Private snapshot repository: AlexLIAOPOLY/cmhk-public-crawl-private
