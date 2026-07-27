@@ -9708,8 +9708,6 @@ a.strategy-ticker-item {
   height: 100%;
   border-radius: inherit;
   background: var(--bar-color);
-  transform-origin: left center;
-  animation: cockpit-bar-grow 720ms 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .collection-entity-section {

@@ -1268,22 +1268,29 @@ function renderCollectionOverview(status) {
   setText("collectionCompositionTotal", `${compositionTotal} 项`);
   const compositionHost = document.getElementById("collectionCompositionList");
   if (compositionHost) {
-    const peak = Math.max(1, ...blocks.map((item) => Number(item.value || 0)));
-    const colors = ["#0077c8", "#13a27a", "#7656d6", "#e59a18"];
-    compositionHost.innerHTML = blocks.length
-      ? blocks.slice(0, 4).map((item, index) => {
-          const value = Number(item.value || 0);
-          const share = compositionTotal ? Math.round((value / compositionTotal) * 100) : 0;
-          return `
-            <div class="collection-bar-row">
-              <div><span>${escapeHtml(item.label || "其他信息")}</span><b>${value}</b></div>
-              <div class="collection-bar-track" aria-label="${escapeHtml(item.label || "其他信息")} ${value} 项，占比 ${share}%">
-                <span style="--bar-width:${Math.max(6, (value / peak) * 100)}%;--bar-color:${colors[index % colors.length]}"></span>
+    const compositionSignature = blocks
+      .slice(0, 4)
+      .map((item) => `${String(item.label || "其他信息")}:${Number(item.value || 0)}`)
+      .join("|");
+    if (compositionHost.dataset.signature !== compositionSignature) {
+      compositionHost.dataset.signature = compositionSignature;
+      const peak = Math.max(1, ...blocks.map((item) => Number(item.value || 0)));
+      const colors = ["#0077c8", "#13a27a", "#7656d6", "#e59a18"];
+      compositionHost.innerHTML = blocks.length
+        ? blocks.slice(0, 4).map((item, index) => {
+            const value = Number(item.value || 0);
+            const share = compositionTotal ? Math.round((value / compositionTotal) * 100) : 0;
+            return `
+              <div class="collection-bar-row">
+                <div><span>${escapeHtml(item.label || "其他信息")}</span><b>${value}</b></div>
+                <div class="collection-bar-track" aria-label="${escapeHtml(item.label || "其他信息")} ${value} 项，占比 ${share}%">
+                  <span style="--bar-width:${Math.max(6, (value / peak) * 100)}%;--bar-color:${colors[index % colors.length]}"></span>
+                </div>
               </div>
-            </div>
-          `;
-        }).join("")
-      : '<div class="collection-empty">暂无采集内容构成</div>';
+            `;
+          }).join("")
+        : '<div class="collection-empty">暂无采集内容构成</div>';
+    }
   }
 
   const entityHost = document.getElementById("collectionEntityList");

@@ -650,6 +650,14 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("els.composerUploadImageButton.disabled = state.chatImageAnalysisBusy;", app)
         self.assertNotIn("当前模型不支持图片，请先切换到视觉模型。", app)
 
+    def test_collection_composition_bars_do_not_replay_on_status_polling(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn("const compositionSignature = blocks", app)
+        self.assertIn("compositionHost.dataset.signature !== compositionSignature", app)
+        self.assertNotIn("animation: cockpit-bar-grow", styles)
+
     def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
         cleaned = web_app._clean_chat_message({
             "role": "assistant",
