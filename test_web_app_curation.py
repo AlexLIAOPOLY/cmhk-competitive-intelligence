@@ -656,7 +656,10 @@ class FrontendCitationRenderingTests(unittest.TestCase):
 
         self.assertIn("const compositionSignature = blocks", app)
         self.assertIn("compositionHost.dataset.signature !== compositionSignature", app)
+        self.assertIn("const entitySignature = entities", app)
+        self.assertIn("entityHost.dataset.signature !== entitySignature", app)
         self.assertNotIn("animation: cockpit-bar-grow", styles)
+        self.assertNotIn("animation: cockpit-rise 400ms", styles)
 
     def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
         cleaned = web_app._clean_chat_message({

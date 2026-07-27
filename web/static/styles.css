@@ -9730,7 +9730,6 @@ a.strategy-ticker-item {
   color: #496879;
   background: #eff7fb;
   font-size: 8px;
-  animation: cockpit-rise 400ms var(--entity-delay) ease-out both;
 }
 
 .collection-entity-list b {

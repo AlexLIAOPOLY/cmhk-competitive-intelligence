@@ -1295,13 +1295,20 @@ function renderCollectionOverview(status) {
 
   const entityHost = document.getElementById("collectionEntityList");
   if (entityHost) {
-    entityHost.innerHTML = entities.length
-      ? entities.slice(0, 8).map((item, index) => `
-          <span style="--entity-delay:${index * 45}ms">
-            ${escapeHtml(item.label || "未标记主体")}<b>${Number(item.value || 0)}</b>
-          </span>
-        `).join("")
-      : '<div class="collection-empty">暂无主体数据</div>';
+    const entitySignature = entities
+      .slice(0, 8)
+      .map((item) => `${String(item.label || "未标记主体")}:${Number(item.value || 0)}`)
+      .join("|");
+    if (entityHost.dataset.signature !== entitySignature) {
+      entityHost.dataset.signature = entitySignature;
+      entityHost.innerHTML = entities.length
+        ? entities.slice(0, 8).map((item) => `
+            <span>
+              ${escapeHtml(item.label || "未标记主体")}<b>${Number(item.value || 0)}</b>
+            </span>
+          `).join("")
+        : '<div class="collection-empty">暂无主体数据</div>';
+    }
   }
 }
 
