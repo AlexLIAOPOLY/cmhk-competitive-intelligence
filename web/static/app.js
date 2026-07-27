@@ -68,7 +68,6 @@ const state = {
 };
 
 const els = {
-  headerTime: document.querySelector("#headerTime"),
   statusSummary: document.querySelector("#statusSummary"),
   fileList: document.getElementById("fileList"),
   weeklyFileList: document.getElementById("weeklyFileList"),
@@ -195,11 +194,6 @@ function formatBytes(size) {
   if (size > 1024 * 1024) return `${(size / 1024 / 1024).toFixed(1)} MB`;
   if (size > 1024) return `${Math.round(size / 1024)} KB`;
   return `${size} B`;
-}
-
-function setClock() {
-  const now = new Date();
-  els.headerTime.textContent = `${now.toLocaleString("zh-CN", { hour12: false })} · Asia/Hong_Kong`;
 }
 
 function showTaskOperationNotice(message) {
@@ -7133,8 +7127,6 @@ els.chatInput.addEventListener("keydown", (event) => {
 
 window.addEventListener("beforeunload", abandonPendingChatApproval);
 
-setClock();
-setInterval(setClock, 30000);
 loadChatThreads();
 fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);

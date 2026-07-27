@@ -10388,3 +10388,118 @@ button.command-btn:disabled {
 .strategy-ticker-item::before {
   display: none;
 }
+
+/* Single-row workspace header: keep frequent navigation visible and move report creation into its library. */
+.brand-bar {
+  height: 60px;
+  flex-wrap: nowrap;
+}
+
+.header-tools {
+  width: auto;
+  margin-left: auto;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.header-runtime-status {
+  display: none !important;
+}
+
+.topbar-command {
+  position: relative;
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 13px;
+  white-space: nowrap;
+}
+
+.console-shell {
+  min-height: calc(100vh - 60px);
+  margin-top: 0;
+}
+
+.operations {
+  gap: 0;
+}
+
+.report-library-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.report-library-header-actions .command-btn {
+  flex: 0 0 auto;
+  height: 34px;
+  white-space: nowrap;
+}
+
+@media (min-width: 1281px) {
+  .console-shell {
+    height: calc(100vh - 60px);
+    min-height: 640px;
+  }
+
+  .operations {
+    height: 100%;
+  }
+
+  .insight-board {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: 104px minmax(0, 1fr);
+  }
+
+  .signal-overview,
+  .collection-overview {
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .brand-bar {
+    height: 60px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .cm-logo-image {
+    width: 118px;
+    height: 32px;
+  }
+
+  .header-tools {
+    width: auto;
+    min-width: 0;
+    gap: 5px;
+  }
+
+  .topbar-command {
+    min-height: 34px;
+    max-height: 34px;
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+
+  .header-tools .icon-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .report-library-header {
+    align-items: flex-start;
+  }
+
+  .report-library-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .report-library-header-actions .command-btn {
+    min-height: 34px;
+    max-height: 34px;
+  }
+}

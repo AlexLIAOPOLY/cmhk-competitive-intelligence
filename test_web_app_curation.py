@@ -740,6 +740,25 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn("sampleItems", app)
         self.assertNotIn('path == "/api/dashboard"', backend)
         self.assertNotIn(".dashboard-modal-content", styles)
+
+    def test_homepage_uses_one_row_header_and_report_generation_lives_in_library(self) -> None:
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertNotIn('id="headerTime"', markup)
+        self.assertNotIn("function setClock()", app)
+        self.assertNotIn('<section class="command-strip">', markup)
+        self.assertIn('class="command-btn btn-fetch topbar-command" id="crawlButtonSecondary"', markup)
+        self.assertIn('class="command-btn btn-library topbar-command" id="reportLibraryButton"', markup)
+        library_header = markup[markup.index('<header class="report-library-header">'):]
+        self.assertIn('id="generatePerformanceButton"', library_header)
+        self.assertIn('id="generateButtonSecondary"', library_header)
+        self.assertIn(".report-library-header-actions", styles)
+        self.assertIn(".header-runtime-status", styles)
+        self.assertIn("height: calc(100vh - 60px);", styles)
+        self.assertIn("grid-template-rows: 104px minmax(0, 1fr);", styles)
+
     def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
         cleaned = web_app._clean_chat_message({
             "role": "assistant",
