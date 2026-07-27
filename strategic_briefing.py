@@ -1016,6 +1016,21 @@ def _send_scan_message(
     return message_id, str(payload.get("_identity") or "")
 
 
+def _require_scan_downstream_success(
+    discovery_result: dict[str, Any],
+    review_result: dict[str, Any],
+) -> None:
+    errors: list[str] = []
+    discovery_error = _clean_text(discovery_result.get("error"), 300)
+    review_error = _clean_text(review_result.get("error"), 300)
+    if discovery_error:
+        errors.append("新闻发现：" + discovery_error)
+    if review_error:
+        errors.append("飞书审核表：" + review_error)
+    if errors:
+        raise RuntimeError("战略快讯下游处理失败；" + "；".join(errors))
+
+
 def _run_scan(
     now: datetime,
     slot_key: str,
@@ -1105,6 +1120,7 @@ def _run_scan(
     except Exception as exc:
         review_result = {"error": _clean_text(exc, 300)}
         logging.exception("战略快讯扫描完成，但飞书审核表同步失败")
+    _require_scan_downstream_success(discovery_result, review_result)
     message_id, identity = _send_scan_message(
         now=now,
         slot_label=slot_label,

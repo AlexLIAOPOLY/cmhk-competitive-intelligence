@@ -322,6 +322,57 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(state["last_poll_status"], "failed")
         self.assertIn("AI review deferred", state["last_poll_error"])
 
+    def test_run_cycle_skips_reprocessing_when_source_is_unchanged(self):
+        state = {
+            "last_poll_epoch": 0,
+            "last_source_generated_at": "2026-07-27T09:41:27+08:00",
+            "last_source_summary": {
+                "generated_at": "2026-07-27T09:41:27+08:00",
+                "candidate_count": 29,
+            },
+            "sheet_id": "sheet",
+            "sheet_url": "https://example.com/sheet",
+            "last_candidate_count": 277,
+        }
+        load_latest = mock.Mock()
+        sync = mock.Mock()
+        with (
+            mock.patch.object(review_sheet, "_read_json", return_value=state),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "_current_source_generated_at",
+                return_value="2026-07-27T09:41:27+08:00",
+            ),
+            mock.patch.object(review_sheet, "_load_curated_latest", load_latest),
+            mock.patch.object(review_sheet, "sync_candidates", sync),
+            mock.patch.object(
+                review_sheet,
+                "apply_reviews",
+                return_value={"changed_rows": 0},
+            ) as apply_reviews,
+        ):
+            result = review_sheet.run_cycle()
+
+        load_latest.assert_not_called()
+        sync.assert_not_called()
+        apply_reviews.assert_called_once_with("sheet")
+        self.assertTrue(result["source_unchanged"])
+        self.assertEqual(result["sheet_candidate_count"], 277)
+
+    def test_legacy_notice_builder_does_not_sync_candidates_twice(self):
+        with (
+            mock.patch.object(review_sheet, "_load_curated_latest") as load_latest,
+            mock.patch.object(review_sheet, "sync_candidates") as sync,
+            mock.patch.object(review_sheet, "apply_reviews") as apply_reviews,
+        ):
+            cards = review_sheet.build_notice_cards(items=[self._new_item()])
+
+        self.assertEqual(cards, [])
+        load_latest.assert_not_called()
+        sync.assert_not_called()
+        apply_reviews.assert_not_called()
+
     def test_weekly_status_is_independent_from_app_status(self):
         row = self._existing_row()
         row[0] = "不接受"

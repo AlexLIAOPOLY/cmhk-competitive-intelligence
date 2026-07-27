@@ -7,6 +7,18 @@ import strategic_briefing as briefing
 
 
 class StrategicBriefingTests(unittest.TestCase):
+    def test_scan_downstream_error_cannot_be_recorded_as_completed(self):
+        with self.assertRaisesRegex(RuntimeError, "飞书审核表"):
+            briefing._require_scan_downstream_success(
+                {"result_count": 29},
+                {"error": "'history_shards'"},
+            )
+
+        briefing._require_scan_downstream_success(
+            {"result_count": 29},
+            {"status": "ok", "new_count": 1},
+        )
+
     def test_empty_semantic_dedupe_reports_zero_history_shards(self):
         result = briefing.agent_semantic_deduplicate_candidates(
             [],

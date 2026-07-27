@@ -1981,12 +1981,7 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
 
 
 def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    paths = [
-        LATEST_PATH,
-        Path("/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/news_discovery_latest.json"),
-        STATE_PATH.parent / "news_discovery_full.json",
-        Path("/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/news_discovery_full.json"),
-    ]
+    paths = _news_source_paths()
     combined: list[dict[str, Any]] = []
     generated_at = ""
     source_paths: list[str] = []
@@ -2050,26 +2045,73 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         "group_notifications_paused": _group_notifications_paused(),
     }
 
+
+def _news_source_paths() -> list[Path]:
+    return [
+        LATEST_PATH,
+        Path("/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/news_discovery_latest.json"),
+        STATE_PATH.parent / "news_discovery_full.json",
+        Path("/Users/liaowang/cmhk_public_crawl_app/strategy_briefing/news_discovery_full.json"),
+    ]
+
+
+def _current_source_generated_at() -> str:
+    seen_paths: set[str] = set()
+    for path in _news_source_paths():
+        path_key = str(path)
+        if path_key in seen_paths:
+            continue
+        seen_paths.add(path_key)
+        payload = _read_json(path, {})
+        items = payload.get("items") if isinstance(payload, dict) else []
+        if not isinstance(items, list) or not items:
+            continue
+        return _text(payload.get("generated_at"), 60)
+    return ""
+
 def run_cycle(*, force: bool = False) -> dict[str, Any]:
     with _LOCK:
         state = _read_json(STATE_PATH, {})
         now_epoch = time.time()
         if not force and now_epoch - float(state.get("last_poll_epoch") or 0) < POLL_SECONDS:
             return {"status": "throttled", "sheet_url": state.get("sheet_url") or ""}
+        source_generated_at = _current_source_generated_at()
+        source_unchanged = (
+            not force
+            and bool(source_generated_at)
+            and source_generated_at
+            == _text(state.get("last_source_generated_at"), 60)
+            and bool(_text(state.get("sheet_id"), 80))
+        )
         try:
-            items, latest = _load_curated_latest()
-            sync_result = sync_candidates(
-                items,
-                generated_at=_text(latest.get("generated_at"), 40),
-                slot_label=_text(latest.get("slot_label"), 80),
-            )
+            if source_unchanged:
+                latest = (
+                    state.get("last_source_summary")
+                    if isinstance(state.get("last_source_summary"), dict)
+                    else {}
+                )
+                sync_result = {
+                    "sheet_id": _text(state.get("sheet_id"), 80),
+                    "sheet_url": _text(state.get("sheet_url"), 1600),
+                    "candidate_count": int(state.get("last_candidate_count") or 0),
+                    "new_count": 0,
+                    "semantic_duplicate_count": 0,
+                    "semantic_deferred_count": 0,
+                }
+            else:
+                items, latest = _load_curated_latest()
+                sync_result = sync_candidates(
+                    items,
+                    generated_at=_text(latest.get("generated_at"), 40),
+                    slot_label=_text(latest.get("slot_label"), 80),
+                )
+            review_result = apply_reviews(sync_result["sheet_id"])
         except Exception as exc:
             state["last_poll_error"] = _text(exc, 600)
             state["last_poll_error_at"] = _now_iso()
             state["last_poll_status"] = "failed"
             _write_json(STATE_PATH, state)
             raise
-        review_result = apply_reviews(sync_result["sheet_id"])
         state = _read_json(STATE_PATH, {})
         state.update(
             {
@@ -2084,6 +2126,7 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
         _write_json(STATE_PATH, state)
         return {
             "status": "ok",
+            "source_unchanged": source_unchanged,
             **latest,
             **sync_result,
             **review_result,
@@ -2094,20 +2137,8 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
 
 def build_notice_cards(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
     del args, kwargs
-    items, latest = _load_curated_latest()
-    result = sync_candidates(
-        items,
-        generated_at=_text(latest.get("generated_at"), 40),
-        slot_label=_text(latest.get("slot_label"), 80),
-    )
-    apply_reviews(result["sheet_id"])
-    state = _read_json(STATE_PATH, {})
-    paused = _group_notifications_paused()
-    state["group_notifications_paused"] = paused
-    if paused:
-        state["group_notifications_paused_at"] = _now_iso()
-    else:
-        state.pop("group_notifications_paused_at", None)
-        state["group_notifications_resumed_at"] = _now_iso()
-    _write_json(STATE_PATH, state)
+    # The Agentic discovery callback only suppresses its legacy per-item cards.
+    # The owning 09:00/15:00 scan invokes run_cycle(force=True) exactly once
+    # after discovery completes, so syncing here would write the same batch
+    # twice and make the final group summary incorrectly report zero new rows.
     return []
