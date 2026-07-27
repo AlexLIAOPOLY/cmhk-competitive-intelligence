@@ -10359,3 +10359,117 @@ body.report-library-open::before {
     margin-top: 18px;
   }
 }
+
+/* Quiet command actions: one restrained system with functional state differences. */
+.command-strip {
+  gap: 8px;
+  padding: 10px 16px;
+}
+
+.command-btn,
+.btn-fetch,
+.btn-summary,
+.btn-report,
+.btn-library {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(74, 105, 124, 0.18);
+  border-radius: 7px;
+  color: #405b6c;
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 620;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+.command-btn svg {
+  width: 15px;
+  height: 15px;
+  color: #6d8290;
+  opacity: 1;
+}
+
+.btn-summary {
+  color: #35667f;
+  background: rgba(239, 247, 251, 0.72);
+}
+
+.btn-summary svg {
+  color: #5b8aa2;
+}
+
+.btn-report {
+  color: #356553;
+  background: rgba(241, 249, 246, 0.76);
+  font-weight: 650;
+}
+
+.btn-report svg {
+  color: #5b8977;
+}
+
+.btn-library {
+  color: #465f6e;
+  background: rgba(247, 249, 250, 0.78);
+}
+
+.command-btn:hover,
+.btn-fetch:hover,
+.btn-summary:hover,
+.btn-report:hover,
+.btn-library:hover {
+  border-color: rgba(39, 108, 148, 0.3);
+  color: #1f526f;
+  background: #f3f8fa;
+  box-shadow: none;
+  transform: none;
+}
+
+.command-btn:active,
+.btn-fetch:active,
+.btn-summary:active,
+.btn-report:active,
+.btn-library:active {
+  border-color: rgba(39, 108, 148, 0.36);
+  color: #173f56;
+  background: #eaf2f6;
+  box-shadow: none;
+  transform: none;
+}
+
+.command-btn:focus-visible {
+  outline: 2px solid rgba(0, 119, 200, 0.28);
+  outline-offset: 2px;
+}
+
+.btn-library > span {
+  min-width: 19px;
+  height: 19px;
+  margin-left: 1px;
+  padding: 0 5px;
+  color: #5d7280;
+  background: #edf2f4;
+  font-size: 9px;
+}
+
+button.command-btn.is-task-blocked,
+button.command-btn:disabled {
+  color: #8797a1;
+  border-color: rgba(93, 116, 130, 0.12);
+  background: rgba(246, 248, 249, 0.7);
+  box-shadow: none;
+  opacity: 0.62;
+}
+
+@media (max-width: 760px) {
+  .command-btn,
+  .command-strip .command-btn {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+  }
+}
