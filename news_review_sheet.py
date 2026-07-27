@@ -1810,6 +1810,26 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         )
         window_start = _timestamp_hkt(item.get("search_window_start"))
         window_end = _timestamp_hkt(item.get("search_window_end"))
+        search_origin = _text(item.get("search_origin"), 100)
+        is_news_search = (
+            search_origin.startswith("agentic_")
+            or search_origin
+            in {
+                "background_fixed_keywords",
+                "mandatory_local_competitor",
+                "monitoring_sheet_keyword_search",
+            }
+        )
+        if (
+            is_news_search
+            and window_start
+            and window_end
+            and (
+                window_end < window_start
+                or (window_end - window_start).total_seconds() > 36 * 3600
+            )
+        ):
+            return False, "新闻搜索入库窗口异常"
         if not (
             published_at
             and window_start

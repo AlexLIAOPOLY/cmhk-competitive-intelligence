@@ -151,6 +151,84 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
             any("已继续执行后台固定竞对词库" in error for error in errors)
         )
 
+    def test_agentic_lookback_does_not_expand_admission_window(self):
+        admission_start = datetime(2026, 7, 26, 8, 0, tzinfo=HKT)
+        admission_end = datetime(2026, 7, 26, 15, 0, tzinfo=HKT)
+        calls = []
+
+        def fake_search(plan, start_at, end_at, **kwargs):
+            calls.append((plan, start_at, end_at, kwargs))
+            return []
+
+        with mock.patch.object(digest, "_google_news_search", side_effect=fake_search):
+            digest._execute_search_plans(
+                [
+                    {
+                        "module": "竞争对手",
+                        "query": "HKT",
+                        "keywords": ["HKT"],
+                        "lookback_days": 7,
+                    }
+                ],
+                start_at=admission_start,
+                end_at=admission_end,
+            )
+
+        self.assertEqual(calls[0][1], datetime(2026, 7, 19, 15, 0, tzinfo=HKT))
+        self.assertEqual(calls[0][3]["admission_start_at"], admission_start)
+        self.assertEqual(calls[0][3]["admission_end_at"], admission_end)
+
+    def test_collect_news_rejects_old_item_returned_by_agentic_provider(self):
+        admission_start = datetime(2026, 7, 26, 8, 0, tzinfo=HKT)
+        admission_end = datetime(2026, 7, 26, 15, 0, tzinfo=HKT)
+        stale_item = {
+            "news_id": "NEWS-20260721-stale",
+            "title": "HKT launches an AI service",
+            "url": "https://example.com/hkt-ai",
+            "source": "Example",
+            "published_at": "2026-07-21T09:00:00+08:00",
+            "search_date": "2026-07-26",
+            "search_window_start": "2026-07-19T15:00:00+08:00",
+            "search_window_end": "2026-07-26T15:00:00+08:00",
+            "module": "竞争对手",
+            "keywords": ["HKT"],
+            "search_origin": "agentic_expansion",
+        }
+        with (
+            mock.patch.object(
+                strategic_briefing,
+                "read_monitoring_spec",
+                return_value={"revision": "test", "modules": []},
+            ),
+            mock.patch.object(strategic_briefing, "_query_plans", return_value=[]),
+            mock.patch.object(
+                digest,
+                "_execute_search_plans",
+                side_effect=[([stale_item], [], {}), ([], [], {})],
+            ),
+            mock.patch.object(
+                digest,
+                "_call_agentic_search_agent",
+                return_value=([], {"status": "ok", "sufficient": True}),
+            ),
+        ):
+            items, _, spec = digest.collect_news(admission_start, admission_end)
+
+        self.assertEqual(items, [])
+        self.assertEqual(
+            spec["agentic_search"]["admission_gate"]["rejected_count"],
+            1,
+        )
+
+    def test_morning_window_only_overlaps_previous_afternoon_run(self):
+        start_at, end_at = digest._window(
+            datetime(2026, 7, 27, 9, 16, tzinfo=HKT),
+            True,
+        )
+
+        self.assertEqual(start_at, datetime(2026, 7, 26, 14, 0, tzinfo=HKT))
+        self.assertEqual(end_at, datetime(2026, 7, 27, 9, 16, tzinfo=HKT))
+
 
 if __name__ == "__main__":
     unittest.main()

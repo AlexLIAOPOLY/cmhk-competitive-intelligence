@@ -1992,6 +1992,7 @@ def agent_semantic_deduplicate_candidates(
             "deferred": [],
             "decisions": [],
             "history_count": len(history_items),
+            "history_shards": 0,
         }
     candidates = [
         _semantic_dedupe_candidate(item, order)

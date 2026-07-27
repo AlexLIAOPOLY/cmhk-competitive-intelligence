@@ -140,6 +140,8 @@ def _parse_news_feed(
     semantic_relevance: bool = False,
     agentic_intent: str = "",
     agentic_reason: str = "",
+    retrieval_start_at: datetime | None = None,
+    retrieval_end_at: datetime | None = None,
 ) -> list[dict[str, Any]]:
     root = ET.fromstring(raw)
     output: list[dict[str, Any]] = []
@@ -201,6 +203,12 @@ def _parse_news_feed(
             "search_window_end": end_at.astimezone(HKT).isoformat(
                 timespec="seconds"
             ),
+            "retrieval_window_start": (
+                retrieval_start_at or start_at
+            ).astimezone(HKT).isoformat(timespec="seconds"),
+            "retrieval_window_end": (
+                retrieval_end_at or end_at
+            ).astimezone(HKT).isoformat(timespec="seconds"),
             "retrieved_at": end_at.astimezone(HKT).isoformat(timespec="seconds"),
             "module": module,
             "keywords": matched_keywords,
@@ -225,7 +233,18 @@ def _parse_news_feed(
     return output
 
 
-def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: datetime) -> list[dict[str, Any]]:
+def _google_news_search(
+    plan: dict[str, Any],
+    start_at: datetime,
+    end_at: datetime,
+    *,
+    admission_start_at: datetime | None = None,
+    admission_end_at: datetime | None = None,
+) -> list[dict[str, Any]]:
+    retrieval_start_at = start_at
+    retrieval_end_at = end_at
+    admission_start_at = admission_start_at or start_at
+    admission_end_at = admission_end_at or end_at
     base_query = _clean_text(plan.get("fallback_query") or plan.get("query"), 1400)
     module = _clean_text(plan.get("module"), 100) or "其他"
     keywords = [_clean_text(item, 120) for item in (plan.get("keywords") or []) if _clean_text(item, 120)]
@@ -280,13 +299,15 @@ def _google_news_search(plan: dict[str, Any], start_at: datetime, end_at: dateti
                     module=module,
                     keywords=keywords,
                     base_query=base_query,
-                    start_at=start_at,
-                    end_at=end_at,
+                    start_at=admission_start_at,
+                    end_at=admission_end_at,
                     canonical_competitor=canonical_competitor,
                     search_origin=search_origin,
                     semantic_relevance=semantic_relevance,
                     agentic_intent=agentic_intent,
                     agentic_reason=agentic_reason,
+                    retrieval_start_at=retrieval_start_at,
+                    retrieval_end_at=retrieval_end_at,
                 )
             )
             successful_feeds += 1
@@ -764,6 +785,8 @@ def _execute_search_plans(
                 if int(plan.get("lookback_days") or 0) > 0
                 else start_at,
                 end_at,
+                admission_start_at=start_at,
+                admission_end_at=end_at,
             ): plan
             for plan in plans
         }
@@ -932,6 +955,36 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
     else:
         agentic_trace["agentic_query_count"] = 0
         agentic_trace["agentic_result_count"] = 0
+    admission_items: list[dict[str, Any]] = []
+    admission_rejected = 0
+    for item in all_items:
+        try:
+            published_at = datetime.fromisoformat(
+                str(item.get("published_at") or "").replace("Z", "+00:00")
+            )
+            if published_at.tzinfo is None:
+                published_at = published_at.replace(tzinfo=HKT)
+            published_at = published_at.astimezone(HKT)
+        except (TypeError, ValueError):
+            admission_rejected += 1
+            continue
+        if start_at <= published_at <= end_at:
+            item["search_window_start"] = start_at.astimezone(HKT).isoformat(
+                timespec="seconds"
+            )
+            item["search_window_end"] = end_at.astimezone(HKT).isoformat(
+                timespec="seconds"
+            )
+            admission_items.append(item)
+        else:
+            admission_rejected += 1
+    all_items = admission_items
+    agentic_trace["admission_gate"] = {
+        "window_start": start_at.astimezone(HKT).isoformat(timespec="seconds"),
+        "window_end": end_at.astimezone(HKT).isoformat(timespec="seconds"),
+        "accepted_count": len(all_items),
+        "rejected_count": admission_rejected,
+    }
     spec = {**spec, "agentic_search": agentic_trace}
     deduplicated = _deduplicate(all_items)
     module_order = {str(plan.get("module") or "其他"): index for index, plan in enumerate(plans)}
@@ -978,8 +1031,10 @@ def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
         # Retain one hour of overlap for articles indexed shortly after the 09:00 run.
         # Downstream URL/title deduplication prevents overlap from becoming new rows.
         return today.replace(hour=8), now
-    days_back = 3 if now.weekday() == 0 else 1
-    return today - timedelta(days=days_back), now
+    # The morning run covers the period after the previous 15:00 run, with one
+    # hour of overlap. Search plans may retrieve older context, but the admission
+    # gate above never lets that wider lookback become a writable candidate.
+    return (today - timedelta(days=1)).replace(hour=14), now
 
 
 def _send_card(card: dict[str, Any]) -> str:

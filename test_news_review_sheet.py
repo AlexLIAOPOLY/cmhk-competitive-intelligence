@@ -36,6 +36,26 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertTrue(keep)
         self.assertEqual(reason, "香港直接竞对新闻")
 
+    def test_seven_day_agentic_window_is_rejected_before_review(self):
+        keep, reason = review_sheet._review_news_candidate(
+            {
+                "title": "HKT Tech Week 2026展示AI方案",
+                "snippet": "香港电讯展示企业AI及网络方案。",
+                "url": "https://example.com/news/hkt-tech-week-2026",
+                "source": "Example",
+                "published_at": "2026-07-21T18:44:10+08:00",
+                "search_date": "2026-07-26",
+                "search_window_start": "2026-07-19T15:00:46+08:00",
+                "search_window_end": "2026-07-26T15:00:46+08:00",
+                "search_origin": "agentic_expansion",
+                "keywords": ["HKT"],
+                "module": "竞争对手",
+            }
+        )
+
+        self.assertFalse(keep)
+        self.assertEqual(reason, "新闻搜索入库窗口异常")
+
     def test_competitor_query_metadata_alone_is_not_entity_evidence(self):
         relevant, reason = review_sheet._competitor_relevance(
             {

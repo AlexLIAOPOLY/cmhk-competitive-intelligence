@@ -7,6 +7,16 @@ import strategic_briefing as briefing
 
 
 class StrategicBriefingTests(unittest.TestCase):
+    def test_empty_semantic_dedupe_reports_zero_history_shards(self):
+        result = briefing.agent_semantic_deduplicate_candidates(
+            [],
+            [{"news_id": "old", "title": "历史新闻"}],
+        )
+
+        self.assertEqual(result["kept"], [])
+        self.assertEqual(result["history_count"], 1)
+        self.assertEqual(result["history_shards"], 0)
+
     def _approved_brief(self) -> dict:
         return {
             "id": "NEWS-TEST",
