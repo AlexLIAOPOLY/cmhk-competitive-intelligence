@@ -375,6 +375,24 @@ function visibleChatModels() {
   return state.chatModels.filter(isConversationalModel);
 }
 
+const CHAT_MODEL_STORAGE_KEY = "cmhk.chat.selected-model.v1";
+
+function getRememberedChatModel() {
+  try {
+    return String(window.localStorage.getItem(CHAT_MODEL_STORAGE_KEY) || "").trim();
+  } catch (_error) {
+    return "";
+  }
+}
+
+function rememberChatModel(modelName) {
+  try {
+    window.localStorage.setItem(CHAT_MODEL_STORAGE_KEY, String(modelName || "").trim());
+  } catch (_error) {
+    // 浏览器禁用站点存储时，继续使用当前会话中的模型即可。
+  }
+}
+
 function chatModelTags(modelName) {
   const value = String(modelName || "").trim();
   const normalized = value.toLowerCase();
@@ -405,12 +423,11 @@ function renderChatModelControls() {
     if (els.chatModelButtonLabel) els.chatModelButtonLabel.textContent = state.chatModel || models[0];
     renderChatModelOptions();
   }
-  const supportsImages = modelSupportsImages(state.chatModel);
   if (els.composerUploadImageButton) {
-    els.composerUploadImageButton.disabled = !supportsImages || state.chatImageAnalysisBusy;
-    els.composerUploadImageButton.title = supportsImages ? "上传图片并由当前模型理解" : "当前模型未声明视觉能力";
+    els.composerUploadImageButton.disabled = state.chatImageAnalysisBusy;
+    els.composerUploadImageButton.title = "上传或粘贴图片，由视觉模型识别后继续回答";
     const hint = els.composerUploadImageButton.querySelector("small");
-    if (hint) hint.textContent = supportsImages ? "PNG、JPG、WebP、GIF" : "当前模型不支持";
+    if (hint) hint.textContent = "PNG、JPG、WebP、GIF";
   }
 }
 
@@ -452,6 +469,55 @@ function createChatImagePreview(dataUrl, maxEdge = 480) {
   });
 }
 
+function readChatImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error || new Error("图片读取失败"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function pastedChatImageName(file) {
+  const originalName = String(file?.name || "").trim();
+  if (originalName && originalName !== "image.png") return originalName;
+  const extensionByType = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  };
+  const extension = extensionByType[String(file?.type || "").toLowerCase()] || "png";
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  return `clipboard-${stamp}.${extension}`;
+}
+
+async function attachChatImageFile(file, { pasted = false } = {}) {
+  if (!file || !String(file.type || "").toLowerCase().startsWith("image/")) return false;
+  if (file.size > 8 * 1024 * 1024) {
+    showTaskOperationNotice("图片不能超过 8 MB。");
+    return false;
+  }
+  try {
+    const dataUrl = await readChatImageFile(file);
+    const previewDataUrl = await createChatImagePreview(dataUrl);
+    state.chatImageAttachment = {
+      name: pasted ? pastedChatImageName(file) : (file.name || pastedChatImageName(file)),
+      size: file.size,
+      dataUrl,
+      previewDataUrl,
+    };
+    renderChatAttachment();
+    if (els.composerPlusMenu) els.composerPlusMenu.hidden = true;
+    els.chatInput.focus();
+    if (pasted) showTaskOperationNotice("图片已粘贴，可继续输入问题或直接发送。");
+    return true;
+  } catch (error) {
+    showTaskOperationNotice(error.message || "图片读取失败。");
+    return false;
+  }
+}
+
 async function loadChatModelOptions() {
   const configResponse = await fetch("/api/ai-config", { cache: "no-store" });
   const configData = await configResponse.json();
@@ -470,6 +536,10 @@ async function loadChatModelOptions() {
     if (!data.ok) throw new Error(data.error || "模型列表获取失败");
     state.chatModels = Array.isArray(data.models) ? data.models : state.chatModels;
     if (state.chatModel && !state.chatModels.includes(state.chatModel)) state.chatModels.unshift(state.chatModel);
+    const rememberedModel = getRememberedChatModel();
+    if (rememberedModel && state.chatModels.includes(rememberedModel)) {
+      state.chatModel = rememberedModel;
+    }
   } catch (error) {
     console.warn("聊天模型列表加载失败，保留当前模型", error);
   }
@@ -492,7 +562,7 @@ async function switchChatModel(model) {
   if (!data.ok) throw new Error(data.error || "模型切换失败");
   state.chatAiConfig = data.config;
   state.chatModel = model;
-  state.chatImageAttachment = modelSupportsImages(model) ? state.chatImageAttachment : null;
+  rememberChatModel(model);
   renderChatModelControls();
   renderChatAttachment();
 }
@@ -508,7 +578,10 @@ async function analyzeChatImage(attachment, question) {
     });
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "图片理解失败");
-    return String(data.description || "").trim();
+    return {
+      description: String(data.description || "").trim(),
+      model: String(data.model || state.chatModel || "视觉模型"),
+    };
   } finally {
     state.chatImageAnalysisBusy = false;
     renderChatModelControls();
@@ -6758,37 +6831,33 @@ if (els.composerUploadFileButton) {
 
 if (els.composerUploadImageButton) {
   els.composerUploadImageButton.addEventListener("click", () => {
-    if (!modelSupportsImages(state.chatModel)) return;
     if (els.chatImageInput) els.chatImageInput.click();
   });
 }
 
 if (els.chatImageInput) {
-  els.chatImageInput.addEventListener("change", () => {
+  els.chatImageInput.addEventListener("change", async () => {
     const file = els.chatImageInput.files && els.chatImageInput.files[0];
     if (!file) return;
-    if (!modelSupportsImages(state.chatModel)) {
-      showTaskOperationNotice("当前模型不支持图片，请先切换到视觉模型。");
-      els.chatImageInput.value = "";
-      return;
-    }
-    if (file.size > 8 * 1024 * 1024) {
-      showTaskOperationNotice("图片不能超过 8 MB。");
-      els.chatImageInput.value = "";
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const dataUrl = String(reader.result || "");
-      const previewDataUrl = await createChatImagePreview(dataUrl);
-      state.chatImageAttachment = { name: file.name, size: file.size, dataUrl, previewDataUrl };
-      renderChatAttachment();
-      els.composerPlusMenu.hidden = true;
-      els.chatInput.focus();
-    };
-    reader.readAsDataURL(file);
+    await attachChatImageFile(file);
+    els.chatImageInput.value = "";
   });
 }
+
+els.chatInput.addEventListener("paste", (event) => {
+  const clipboard = event.clipboardData;
+  if (!clipboard) return;
+  const imageItem = Array.from(clipboard.items || []).find(
+    (item) => item.kind === "file" && String(item.type || "").toLowerCase().startsWith("image/"),
+  );
+  const imageFile = imageItem?.getAsFile()
+    || Array.from(clipboard.files || []).find(
+      (file) => String(file.type || "").toLowerCase().startsWith("image/"),
+    );
+  if (!imageFile) return;
+  event.preventDefault();
+  attachChatImageFile(imageFile, { pasted: true });
+});
 
 if (els.chatAttachmentPreview) {
   els.chatAttachmentPreview.addEventListener("click", (event) => {
@@ -6984,8 +7053,8 @@ els.chatForm.addEventListener("submit", async (event) => {
   let enrichedMessage = message || "请分析这张图片。";
   if (attachment) {
     try {
-      const description = await analyzeChatImage(attachment, enrichedMessage);
-      enrichedMessage = `${enrichedMessage}\n\n[图片内容（由 ${state.chatModel} 识别）]\n${description}`;
+      const imageAnalysis = await analyzeChatImage(attachment, enrichedMessage);
+      enrichedMessage = `${enrichedMessage}\n\n[图片内容（由 ${imageAnalysis.model} 识别）]\n${imageAnalysis.description}`;
       state.chatImageAttachment = null;
       if (els.chatImageInput) els.chatImageInput.value = "";
       renderChatAttachment();

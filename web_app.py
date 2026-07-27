@@ -126,9 +126,13 @@ def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:
 
 def analyze_chat_image(payload: dict) -> dict:
     config = load_ai_config(include_key=True)
-    model = str(payload.get("model") or config.get("model") or "").strip()
-    if not re.search(r"(?:vision|multimodal|omni|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3|kimi[-_.]?k2\.5)", model, flags=re.I):
-        raise ValueError("当前模型未声明视觉能力，请先在输入框切换到视觉模型")
+    requested_model = str(payload.get("model") or config.get("model") or "").strip()
+    vision_pattern = r"(?:vision|multimodal|omni|(?:^|[-_.])vl(?:[-_.]|$)|qwen[^/]*vl|internvl|llava|gpt-4o|gpt-4\.1|gemini|claude-3|kimi[-_.]?k2\.5)"
+    model = requested_model
+    if not re.search(vision_pattern, model, flags=re.I):
+        model = str(os.environ.get("CMHK_CHAT_IMAGE_MODEL") or "Kimi-K2.5").strip()
+    if not re.search(vision_pattern, model, flags=re.I):
+        raise ValueError("未配置可用的图片识别模型")
     data_url = str(payload.get("image") or "").strip()
     match = re.fullmatch(r"data:(image/(?:png|jpeg|webp|gif));base64,([A-Za-z0-9+/=\s]+)", data_url, flags=re.I)
     if not match:
@@ -162,9 +166,12 @@ def analyze_chat_image(payload: dict) -> dict:
     wait_for_internal_ai_slot("chat-image-analyze")
     with urllib.request.urlopen(request, timeout=90) as response:
         result = json.loads(response.read().decode("utf-8"))
-    content = (((result.get("choices") or [{}])[0].get("message") or {}).get("content") or "")
+    message = ((result.get("choices") or [{}])[0].get("message") or {})
+    content = message.get("content") or message.get("reasoning_content") or ""
     if isinstance(content, list):
         content = "\n".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
+    elif isinstance(content, dict):
+        content = content.get("text") or content.get("content") or ""
     description = str(content).strip()
     if not description:
         raise ValueError("视觉模型没有返回可用的图片描述")

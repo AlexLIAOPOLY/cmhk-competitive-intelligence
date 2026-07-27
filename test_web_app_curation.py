@@ -235,6 +235,42 @@ class ChatAudioTranscriptionTests(unittest.TestCase):
                 web_app.transcribe_chat_audio(payload)
 
 
+class ChatImageAnalysisTests(unittest.TestCase):
+    def test_text_chat_model_uses_dedicated_vision_model_for_images(self) -> None:
+        response = mock.MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = json.dumps({
+            "choices": [{"message": {"content": "", "reasoning_content": "图片中包含一张趋势图。"}}],
+        }).encode("utf-8")
+        payload = {
+            "model": "deepseek-v4",
+            "image": "data:image/png;base64,iVBORw0KGgo=",
+            "filename": "clipboard.png",
+            "question": "请分析",
+        }
+
+        with (
+            mock.patch.object(
+                web_app,
+                "load_ai_config",
+                return_value={
+                    "model": "deepseek-v4",
+                    "base_url": "https://api.cmhk-private.example/v1",
+                    "api_key": "secret",
+                },
+            ),
+            mock.patch.object(web_app, "is_internal_ai_base_url", return_value=True),
+            mock.patch.object(web_app, "wait_for_internal_ai_slot"),
+            mock.patch.object(web_app.urllib.request, "urlopen", return_value=response) as urlopen,
+        ):
+            result = web_app.analyze_chat_image(payload)
+
+        request_body = json.loads(urlopen.call_args.args[0].data.decode("utf-8"))
+        self.assertEqual(request_body["model"], "Kimi-K2.5")
+        self.assertEqual(result["model"], "Kimi-K2.5")
+        self.assertIn("趋势图", result["description"])
+
+
 class FrontendCitationRenderingTests(unittest.TestCase):
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -589,6 +625,30 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertEqual(cleaned["displayContent"], "这个怎么说")
         self.assertEqual(cleaned["imagePreview"]["name"], "example.png")
         self.assertTrue(cleaned["imagePreview"]["dataUrl"].startswith("data:image/png;base64,"))
+
+    def test_chat_composer_accepts_clipboard_images_without_changing_text_paste(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+
+        self.assertIn('placeholder="随心输入" title="可直接粘贴图片"', markup)
+        self.assertIn('els.chatInput.addEventListener("paste"', app)
+        self.assertIn("event.clipboardData", app)
+        self.assertIn('item.kind === "file"', app)
+        self.assertIn('startsWith("image/")', app)
+        self.assertIn("event.preventDefault();", app)
+        self.assertIn("attachChatImageFile(imageFile, { pasted: true });", app)
+        self.assertIn("if (!imageFile) return;", app)
+
+    def test_chat_model_choice_is_remembered_in_browser_storage(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn('CHAT_MODEL_STORAGE_KEY = "cmhk.chat.selected-model.v1"', app)
+        self.assertIn("window.localStorage.getItem(CHAT_MODEL_STORAGE_KEY)", app)
+        self.assertIn("window.localStorage.setItem(CHAT_MODEL_STORAGE_KEY", app)
+        self.assertIn("const rememberedModel = getRememberedChatModel();", app)
+        self.assertIn("rememberChatModel(model);", app)
+        self.assertIn("els.composerUploadImageButton.disabled = state.chatImageAnalysisBusy;", app)
+        self.assertNotIn("当前模型不支持图片，请先切换到视觉模型。", app)
 
     def test_answer_metrics_are_persisted_with_chat_history(self) -> None:
         cleaned = web_app._clean_chat_message({
