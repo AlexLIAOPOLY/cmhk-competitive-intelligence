@@ -210,8 +210,11 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
     if not isinstance(items, (list, tuple)):
         return []
     blocked = re.compile(
-        r"(?:联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|"
-        r"web_search|read_webpage)",
+        r"(?:是否需要我|需要我(?:来)?|要我(?:来)?|您希望|你希望|"
+        r"是否需要|要不要|需不需要|我可以(?:为你|为您)?|"
+        r"读取.*(?:具体)?文件|数据集中的|调用.*工具|内部工具|"
+        r"联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|"
+        r"web_search|read_webpage|search_local_reports)",
         re.IGNORECASE,
     )
     normalized: list[str] = []
@@ -220,6 +223,7 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
             item = item.get("question") or item.get("text") or item.get("suggestion")
         text = re.sub(r"^\s*(?:[-*•]\s*|\d+[.)、]\s*)", "", str(item or "")).strip()
         text = re.sub(r"^推荐追问\s*[:：]\s*", "", text).strip()
+        text = re.sub(r"(?:相关)?文件来源", "官方来源", text)
         text = re.sub(r"\s+", " ", text)[:120].strip()
         if not text or blocked.search(text) or text in normalized:
             continue
@@ -268,17 +272,20 @@ def _extract_follow_up_suggestions(value: str) -> list[str]:
 
 
 def _suggestions_are_ai_specific(items: list[str]) -> bool:
-    return len(items) == 3 and not all(item in _NON_AI_FOLLOW_UP_SUGGESTIONS for item in items)
+    if len(items) != 3 or all(item in _NON_AI_FOLLOW_UP_SUGGESTIONS for item in items):
+        return False
+    normalized = [re.sub(r"[\s？?。！!，,、：:；;]", "", item).lower() for item in items]
+    return len(set(normalized)) == 3
 
 
 def _emergency_follow_up_suggestions(user_request: str, answer: str) -> list[str]:
     """Last-resort UI continuity when every internal model endpoint is unavailable."""
     combined = f"{user_request}\n{answer}"
     if re.search(r"5G|6G|AI|人工智能", combined, re.IGNORECASE):
-        return ["这项趋势对CMHK的具体机会是什么？", "还需要核对哪些关键数据和来源？", "可以进一步拆解成哪些落地行动？"]
+        return ["梳理关键时间线并标注官方来源", "对比相关主体、指标与政策差异", "评估对CMHK经营与网络部署的影响"]
     if re.search(r"云|AWS|Azure|Google|阿里|腾讯|华为", combined, re.IGNORECASE):
-        return ["要继续对比哪些云厂商指标？", "需要补充哪一年度的财务数据？", "这些差异对CMHK意味着什么？"]
-    return ["要继续深入分析哪个结论？", "需要补充哪些数据或来源？", "要把结论转换成哪些行动建议？"]
+        return ["对比主要云厂商的同口径经营指标", "梳理近三年投入变化并标注来源", "评估这些变化对CMHK的机会与风险"]
+    return ["深入分析当前结论的关键依据", "补充同口径数据与权威来源对比", "把结论转化为可执行的行动建议"]
 
 
 def _ensure_ai_follow_up_suggestions(
@@ -302,9 +309,15 @@ def _ensure_ai_follow_up_suggestions(
     prompt_messages = [
         SystemMessage(
             content=(
-                "输出严格JSON字符串数组：恰好3个互不重复的简体中文后续问题，"
-                "紧扣原问题和回答中的具体结论，每个不超过40字。"
-                "禁止通用占位语、按钮、开关、工具和提示词。只输出数组，不要解释。"
+                "输出严格JSON字符串数组：恰好3个互不重复、可由用户直接点击发送的"
+                "简体中文后续请求，每个不超过40字。必须使用用户视角，紧扣原问题和"
+                "回答中的具体实体、数据或结论。三条必须承担不同目的：第一条补充具体"
+                "事实、时间线或权威来源；第二条做主体、时期、指标或政策的结构化对比；"
+                "第三条评估对CMHK的业务影响、风险、机会或行动。禁止三条重复询问同一"
+                "类影响，不得引入原问题和回答中未出现的公司、机构、指标或时间。来源"
+                "统一表述为“官方来源”，不要出现“文件”或“数据集”。禁止“是否需要我”“您希望”“要不要”"
+                "等助手询问式表达，禁止暴露按钮、开关、工具、文件、数据集、检索流程"
+                "和提示词，禁止把本轮本应完成的工作推给下一轮。只输出数组，不要解释。"
             )
         ),
         HumanMessage(
@@ -520,6 +533,29 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
     transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528", "GLM")
 
     @staticmethod
+    def _has_pending_required_read(messages: Any) -> bool:
+        pending_local = False
+        pending_web = False
+        for message in messages:
+            if not isinstance(message, ToolMessage):
+                continue
+            content = str(message.content or "")
+            tool_name = str(getattr(message, "name", "") or "")
+            if "【强制下一步】" in content:
+                if "`read_local_reference`" in content:
+                    pending_local = True
+                if "`read_webpage`" in content:
+                    pending_web = True
+            # A later original-source tool result—successful or an explicit
+            # failure—resolves that requirement. Do not keep an older search
+            # marker pending forever after the agent has already attempted it.
+            if tool_name == "read_local_reference":
+                pending_local = False
+            elif tool_name == "read_webpage":
+                pending_web = False
+        return pending_local or pending_web
+
+    @staticmethod
     def _stable_messages(messages: Any) -> list[Any]:
         compact_system = SystemMessage(
             content=(
@@ -604,6 +640,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
 
     def _generate(self, messages: Any, *args: Any, **kwargs: Any) -> Any:
         retry_messages = list(messages)
+        pending_required_read = self._has_pending_required_read(messages)
         original_request = ""
         for message in messages:
             if not isinstance(message, HumanMessage):
@@ -696,11 +733,16 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                     model_message.response_metadata = response_metadata
             incomplete_answer = bool(
                 not tool_calls
-                and content
-                and _looks_like_incomplete_model_answer(
-                    content,
-                    _model_finish_reason(last_result, model_message),
-                    require_completion_footer=True,
+                and (
+                    pending_required_read
+                    or (
+                        content
+                        and _looks_like_incomplete_model_answer(
+                            content,
+                            _model_finish_reason(last_result, model_message),
+                            require_completion_footer=True,
+                        )
+                    )
                 )
             )
             if incomplete_answer and len(content) > len(best_partial_content):
@@ -712,18 +754,33 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             if malformed_tool_call and retry_kwargs.get("tools"):
                 retry_kwargs["tool_choice"] = "required"
             if incomplete_answer:
-                # A full-context rewrite repeatedly resends every tool result
-                # and is exactly what produced six-figure token usage in one
-                # failed turn. Repair from a bounded evidence digest and do not
-                # let the repair call enter another tool loop.
-                retry_messages = self._completion_retry_messages(messages, best_partial_content)
-                retry_kwargs = {
-                    key: value
-                    for key, value in retry_kwargs.items()
-                    if key not in {"tools", "tool_choice", "parallel_tool_calls"}
-                }
+                if pending_required_read and retry_kwargs.get("tools"):
+                    # A search result can explicitly require an original-source
+                    # read. Never convert that state into a tool-free rewrite:
+                    # doing so let the fallback model invent dates from search
+                    # snippets. Force the required structured tool call first.
+                    retry_messages = self._stable_messages(messages)
+                    retry_messages[0].content = (
+                        f"{retry_messages[0].content} 工具结果中仍有【强制下一步】未执行。"
+                        "此轮只能返回其中指定的结构化工具调用，不能输出最终正文。"
+                    )
+                    retry_kwargs["tool_choice"] = "required"
+                else:
+                    # A full-context rewrite repeatedly resends every tool result
+                    # and is exactly what produced six-figure token usage in one
+                    # failed turn. Repair from a bounded evidence digest and do
+                    # not let the repair call enter another tool loop.
+                    retry_messages = self._completion_retry_messages(messages, best_partial_content)
+                    retry_kwargs = {
+                        key: value
+                        for key, value in retry_kwargs.items()
+                        if key not in {"tools", "tool_choice", "parallel_tool_calls"}
+                    }
             else:
                 retry_messages = self._stable_messages(messages)
+
+        if pending_required_read and kwargs.get("tools"):
+            raise RuntimeError("模型未执行工具结果中要求的原文读取，已阻止使用搜索摘要直接作答。")
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
         fallback_messages = self._completion_retry_messages(messages, best_partial_content)
@@ -876,6 +933,20 @@ def _register_tool_invocation(tool_name: str, limit: int) -> str | None:
             "直接基于已经返回的资料给出结论、表格或图表。"
         )
     return None
+
+
+def _register_heavy_search_invocation(tool_name: str) -> str | None:
+    """Run an expensive retrieval once; keep accidental repeats cheap and bounded."""
+    state = TOOL_RUN_STATE.get()
+    counts = state.setdefault("counts", {}) if state is not None else {}
+    previous = int(counts.get(tool_name) or 0)
+    if previous in {1, 2}:
+        counts[tool_name] = previous + 1
+        return (
+            f"{tool_name} 本轮已经完成，且首次结果已附带最相关原文。"
+            "不要重复检索；请直接交叉核验已有本地与联网证据并完成当前用户请求。"
+        )
+    return _register_tool_invocation(tool_name, 3)
 
 
 class MarkdownTableLimiter:
@@ -1154,6 +1225,126 @@ def _normalize_search_results(items: list[dict[str, Any]], limit: int) -> list[d
         if len(results) >= limit:
             break
     return results
+
+
+_SEARCH_QUERY_STOP_WORDS = {
+    "一下", "一下子", "相关", "资料", "信息", "最新", "事件", "时间线",
+    "the", "and", "for", "with", "from", "latest", "news", "information",
+}
+
+
+def _search_query_terms(query: str) -> list[str]:
+    clean = _clean_search_text(query, 240).lower()
+    candidates = re.findall(r"[a-z][a-z0-9.+-]{1,}|[\u4e00-\u9fff]{2,}", clean)
+    domain_markers = (
+        "香港", "频谱", "政策", "监管", "拍卖", "分配", "续期", "牌照",
+        "通讯事务", "通讯办", "人口", "收入", "利润", "用户", "覆盖",
+        "云计算", "人工智能", "资本开支",
+    )
+    candidates.extend(marker for marker in domain_markers if marker in clean)
+    terms: list[str] = []
+    for term in candidates:
+        term = term.strip().lower()
+        if (
+            not term
+            or term in _SEARCH_QUERY_STOP_WORDS
+            or re.fullmatch(r"(?:19|20)\d{2}", term)
+            or term.isdigit()
+            or term in terms
+        ):
+            continue
+        terms.append(term)
+    return terms[:16]
+
+
+def _search_result_domain(url: str) -> str:
+    return urlparse(str(url or "")).netloc.lower().split(":", 1)[0].removeprefix("www.")
+
+
+def _filter_relevant_search_results(
+    items: list[dict[str, str]],
+    query: str,
+    limit: int,
+    *,
+    required_domains: tuple[str, ...] = (),
+) -> tuple[list[dict[str, str]], int]:
+    """Reject search-engine poisoning and unrelated pages before they reach the model."""
+    terms = _search_query_terms(query)
+    required = tuple(domain.lower().removeprefix("www.") for domain in required_domains)
+    blocked_root_pages = {
+        "google.com", "yandex.ru", "bing.com", "baidu.com", "duckduckgo.com",
+    }
+    blocked_content = re.compile(
+        r"(?:onlyfans|成人视频|色情|成人视频|авто|автомоб|коврик|багажник)",
+        re.IGNORECASE,
+    )
+    accepted: list[dict[str, str]] = []
+    for item in items:
+        domain = _search_result_domain(item.get("url") or "")
+        path = urlparse(item.get("url") or "").path.strip("/")
+        haystack = " ".join(
+            [item.get("title") or "", item.get("snippet") or "", item.get("url") or ""]
+        ).lower()
+        if (
+            (domain in blocked_root_pages and not path)
+            or blocked_content.search(haystack)
+            or (required and not any(domain == wanted or domain.endswith("." + wanted) for wanted in required))
+        ):
+            continue
+        matched = {term for term in terms if term in haystack}
+        minimum = 1 if len(terms) <= 2 else 2
+        domain_match = bool(
+            required and any(domain == wanted or domain.endswith("." + wanted) for wanted in required)
+        )
+        if not domain_match and len(matched) < minimum:
+            continue
+        accepted.append(item)
+        if len(accepted) >= limit:
+            break
+    return accepted, max(0, len(items) - len(accepted))
+
+
+def _official_search_context(query: str) -> tuple[tuple[str, ...], list[dict[str, str]]]:
+    """Return trustworthy official entry points for domains with known authoritative sources."""
+    text = str(query or "")
+    if re.search(r"香港|Hong\s*Kong|OFCA|通讯事务|通訊事務", text, re.IGNORECASE) and re.search(
+        r"5G|6G|频谱|頻譜|电讯|電訊|通讯|通訊|监管|監管", text, re.IGNORECASE
+    ):
+        year = datetime.now().year
+        return (
+            ("ofca.gov.hk", "coms-auth.hk"),
+            [
+                {
+                    "title": "OFCA：香港通讯及频谱政策里程碑",
+                    "url": "https://www.ofca.gov.hk/tc/news_info/milestones/index.html",
+                    "snippet": "香港5G频谱分配、拍卖、牌照及监管政策的官方时间线入口。",
+                },
+                {
+                    "title": "OFCA：香港无线电频谱拍卖",
+                    "url": "https://www.ofca.gov.hk/tc/industry_focus/radio_spectrum/auctions/index.html",
+                    "snippet": "香港各移动频段拍卖、分配结果、牌照条款及频谱使用费的官方入口。",
+                },
+                {
+                    "title": f"OFCA：{year}至{year + 2}年频谱发布计划",
+                    "url": f"https://www.ofca.gov.hk/filemanager/ofca/en/content_144/spectrum_plan{year}_en.pdf",
+                    "snippet": "香港未来三年可供分配及重新分配频谱的官方计划。",
+                },
+            ],
+        )
+    if re.search(r"香港|Hong\s*Kong|C&SD|统计处|統計處", text, re.IGNORECASE) and re.search(
+        r"人口|住户|住戶|收入|GDP|消费|消費|就业|就業|统计|統計", text, re.IGNORECASE
+    ):
+        return (
+            ("censtatd.gov.hk",),
+            [
+                {
+                    "title": "香港政府统计处：统计数据",
+                    "url": "https://www.censtatd.gov.hk/en/",
+                    "snippet": "香港人口、住户、收入、消费、就业及本地生产总值的官方统计入口。",
+                }
+            ],
+        )
+    return (), []
 
 
 def _unwrap_search_redirect(url: str) -> str:
@@ -1478,7 +1669,7 @@ def search_local_reports(query: str) -> str:
     当你需要了解公司的最新动态、特定主体的近期情况，或是爬虫的执行历史时，请使用此工具。
     若用户问题包含“收入同比”“营收同比”“营业收入同比”“收入增长”“revenue_growth_yoy”“YoY”等词，query 必须保留这些同比/增长关键词，不能简化成“收入”或“营业收入”。
     """
-    limit_message = _register_tool_invocation("search_local_reports", 3)
+    limit_message = _register_heavy_search_invocation("search_local_reports")
     if limit_message:
         return limit_message
     chunks = retrieve_context(query, limit=6, dataset_ids=_effective_selected_dataset_ids())
@@ -1522,6 +1713,35 @@ def search_local_reports(query: str) -> str:
                 meta_links.append(link)
                 
     text_output = "\n\n".join(result)
+    current_request = CURRENT_USER_REQUEST.get()
+    needs_original = bool(
+        re.search(
+            r"数据|数值|日期|时间线|历年|趋势|收入|利润|用户|份额|对比|"
+            r"政策|频谱|牌照|影响|评估|核验|准确|来源",
+            current_request,
+            re.IGNORECASE,
+        )
+    )
+    if needs_original:
+        source_candidates = [
+            str(chunk.get("source") or "")
+            for chunk in chunks
+            if str(chunk.get("source") or "").strip()
+        ]
+        preferred_source = next(
+            (
+                source
+                for source in source_candidates
+                if not re.search(r"(?:^|/)(?:manifest\.json|README\.md)$", source, re.IGNORECASE)
+            ),
+            source_candidates[0] if source_candidates else "",
+        )
+        if preferred_source:
+            original_text = _read_local_reference_text(preferred_source)
+            text_output += (
+                f"\n\n【已自动读取本地原文：{preferred_source}】\n"
+                f"{original_text[:4500]}"
+            )
     meta_data = {
         "type": "meta",
         "sources": [chunk["source"] for chunk in chunks],
@@ -1533,16 +1753,7 @@ def search_local_reports(query: str) -> str:
     return f"{text_output}\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
 
 
-@tool
-def read_local_reference(source: str) -> str:
-    """读取本地引用文件的原文内容。
-    当 `search_local_reports` 返回 `weekly_report.md`、`final_audit.md`、`coverage_report.tsv`、`run_log.tsv` 或 `row_*.json`
-    等本地来源，而你需要查看更完整上下文、核对本地口径或追溯原始抓取结果时，优先使用此工具。
-    参数可以是文件名，也可以是 `/references/...` 链接。
-    """
-    limit_message = _register_tool_invocation("read_local_reference", 2)
-    if limit_message:
-        return limit_message
+def _read_local_reference_text(source: str) -> str:
     import web_app
 
     clean = str(source or "").strip()
@@ -1570,12 +1781,25 @@ def read_local_reference(source: str) -> str:
 
 
 @tool
+def read_local_reference(source: str) -> str:
+    """读取本地引用文件的原文内容。
+    当 `search_local_reports` 返回 `weekly_report.md`、`final_audit.md`、`coverage_report.tsv`、`run_log.tsv` 或 `row_*.json`
+    等本地来源，而你需要查看更完整上下文、核对本地口径或追溯原始抓取结果时，优先使用此工具。
+    参数可以是文件名，也可以是 `/references/...` 链接。
+    """
+    limit_message = _register_tool_invocation("read_local_reference", 2)
+    if limit_message:
+        return limit_message
+    return _read_local_reference_text(source)
+
+
+@tool
 def web_search(query: str, max_results: int = 5) -> str:
     """联网搜索公开网页信息。
     当用户要求“上网搜一下”“联网搜索”“查最新消息”“找公开来源”或本地 RAG 没有足够信息时使用。
     优先使用自托管 SearXNG（环境变量 SEARXNG_URL/CMHK_SEARXNG_URL），否则使用开源 DDGS/DuckDuckGo 搜索库。
     """
-    limit_message = _register_tool_invocation("web_search", 3)
+    limit_message = _register_heavy_search_invocation("web_search")
     if limit_message:
         return limit_message
     query = _search_query_from_instruction(query)
@@ -1617,12 +1841,82 @@ def web_search(query: str, max_results: int = 5) -> str:
         except Exception as exc:
             failures.append(f"Brave: {_clean_search_text(exc, 120)}")
             results = []
-    if not results:
+    official_domains, official_seeds = _official_search_context(query)
+    if not results and official_seeds:
+        results = list(official_seeds)
+        provider = "official_entrypoints"
+    elif not results:
         detail = "；".join(failures[-4:]) if failures else "搜索源没有返回结果"
         return (
             f"联网搜索未返回可用网页结果。查询：{query}。搜索源状态：{detail}。"
             "建议稍后重试，或配置稳定的自托管 SearXNG：设置 SEARXNG_URL 后重启后端。"
         )
+
+    raw_result_count = len(results)
+    relevant_results, discarded_count = _filter_relevant_search_results(results, query, limit)
+    if official_domains:
+        official_results, _ = _filter_relevant_search_results(
+            results,
+            query,
+            limit,
+            required_domains=official_domains,
+        )
+        merged: list[dict[str, str]] = []
+        seen_urls: set[str] = set()
+        # For known regulator/government topics, fail closed to the official
+        # domains. SEO-poisoned pages can repeat query terms in hidden snippets
+        # and must never be reintroduced merely because keyword scoring passed.
+        for item in [*official_results, *official_seeds]:
+            url = item.get("url") or ""
+            if not url or url in seen_urls:
+                continue
+            seen_urls.add(url)
+            merged.append(item)
+            if len(merged) >= limit:
+                break
+        results = merged
+        if official_seeds and not official_results:
+            provider = f"{provider}+official_entrypoints"
+    else:
+        results = relevant_results
+    if not results:
+        detail = "；".join(failures[-4:]) if failures else f"{provider} 返回的页面均与查询无关"
+        return (
+            f"联网搜索未返回与查询相关的可用网页结果。查询：{query}。"
+            f"已过滤 {raw_result_count} 个无关或低质量结果。搜索源状态：{detail}。"
+            "不得引用这些被过滤页面；请改用更具体的实体、指标或官方机构名称重试。"
+        )
+
+    original_source_url = ""
+    original_source_text = ""
+    if official_domains:
+        original_candidates: list[dict[str, str]] = []
+        seen_original_urls: set[str] = set()
+        # Curated regulator entry points are ordered by task relevance. Try
+        # them before noisy engine results so a generic regulator homepage
+        # cannot displace a substantive policy document.
+        for item in [*official_seeds, *results]:
+            candidate_url = item.get("url") or ""
+            if not candidate_url or candidate_url in seen_original_urls:
+                continue
+            seen_original_urls.add(candidate_url)
+            original_candidates.append(item)
+        last_failure = ""
+        for item in original_candidates[:8]:
+            candidate_text = _read_webpage_text(item["url"])
+            if candidate_text.startswith(
+                ("网页读取失败", "网页读取跳过", "PDF读取失败", "读取网页 ")
+            ):
+                last_failure = candidate_text
+                continue
+            original_source_url = item["url"]
+            original_source_text = candidate_text
+            if all(existing.get("url") != original_source_url for existing in results):
+                results = [*results[: max(0, limit - 1)], item]
+            break
+        if not original_source_text:
+            original_source_url = original_candidates[0]["url"] if original_candidates else ""
+            original_source_text = last_failure or "联网官方原文读取失败：没有可尝试的官方页面。"
 
     lines = []
     references = []
@@ -1640,11 +1934,30 @@ def web_search(query: str, max_results: int = 5) -> str:
     meta_data = {
         "type": "meta",
         "provider": provider,
+        "discardedIrrelevant": discarded_count,
+        "officialDomains": list(official_domains),
         "sources": [item["title"] for item in results],
         "links": links,
         "references": references,
     }
-    return "\n\n".join(lines) + f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
+    quality_note = ""
+    if discarded_count:
+        quality_note = (
+            f"[联网检索质量] 已过滤 {discarded_count} 个与查询无关或低质量的结果；"
+            "下列来源才可用于回答。\n\n"
+        )
+    original_source_note = ""
+    if official_domains and original_source_url:
+        original_source_note = (
+            f"\n\n【已自动读取联网官方原文：{original_source_url}】\n"
+            f"{original_source_text[:5000]}"
+        )
+    return (
+        quality_note
+        + "\n\n".join(lines)
+        + original_source_note
+        + f"\n<metadata>{json.dumps(meta_data, ensure_ascii=False)}</metadata>"
+    )
 
 @tool
 def trigger_crawl(row_id: int) -> str:
@@ -1814,12 +2127,7 @@ def get_crawl_settings_summary() -> str:
         + "\n".join(preview)
     )
 
-@tool
-def read_webpage(url: str) -> str:
-    """访问并读取指定 URL 的纯文本内容。
-    当用户提供一个网页链接，并要求你阅读、总结或提取其中的信息时，使用此工具。
-    对 PDF 财报或公告链接会尝试抽取 PDF 文本；对反爬、二进制或浏览器验证页面会返回失败原因。
-    """
+def _read_webpage_text(url: str) -> str:
     from bs4 import BeautifulSoup
     try:
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0', 'Accept': 'text/html,text/plain;q=0.9,*/*;q=0.1'})
@@ -1867,6 +2175,15 @@ def read_webpage(url: str) -> str:
         return text[:10000]
     except Exception as e:
         return f"读取网页 {url} 失败: {str(e)}"
+
+
+@tool
+def read_webpage(url: str) -> str:
+    """访问并读取指定 URL 的纯文本内容。
+    当用户提供一个网页链接，并要求你阅读、总结或提取其中的信息时，使用此工具。
+    对 PDF 财报或公告链接会尝试抽取 PDF 文本；对反爬、二进制或浏览器验证页面会返回失败原因。
+    """
+    return _read_webpage_text(url)
 
 
 def _decode_chart_spec_payload(chart_spec: Any) -> dict[str, Any]:
@@ -2728,11 +3045,13 @@ def get_agent(
 
     if allow_web_search:
         source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`web_search` 或其他工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号（对应 [来源 1], [来源 2] 的编号）。本地检索通常使用 [1]-[5]，联网搜索通常从 [6] 开始编号；必须沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
-        retrieval_pairing_rule = "【涉及数据时必须双检索】本轮既然已启用联网搜索，只要用户问题涉及或答案依赖任何数据、数值或可核验事实（包括但不限于日期、金额、比例、数量、排名、指标、财报、市场份额、用户规模、政策参数、行业与竞对动态），就必须同时调用 `search_local_reports` 和 `web_search`，缺一不可：先检索本地监测、数据集和周报，再检索联网公开来源。即使其中一侧无相关结果或证据不足，也必须实际完成该侧检索，并在答案中如实说明该侧未检出或证据不足；不得因为另一侧已有答案而跳过。只有完全不涉及数据或可核验事实的纯创作、寒暄、改写等任务，才不要求双检索。\n"
+        retrieval_pairing_rule = "【涉及数据时必须双检索】本轮既然已启用联网搜索，只要用户问题涉及或答案依赖任何数据、数值或可核验事实（包括但不限于日期、金额、比例、数量、排名、指标、财报、市场份额、用户规模、政策参数、行业与竞对动态），就必须同时调用 `search_local_reports` 和 `web_search`，缺一不可：先检索本地监测、数据集和周报，再检索联网公开来源。即使其中一侧无相关结果或证据不足，也必须实际完成该侧检索，并在答案中如实说明该侧未检出或证据不足；不得因为另一侧已有答案而跳过。每个检索工具本轮只调用一次，应把必要实体和指标合并进一次查询；已有结果后禁止为了改写答案而重复检索。只有完全不涉及数据或可核验事实的纯创作、寒暄、改写等任务，才不要求双检索。\n"
         cross_check_rule = "【本地与联网交叉校验】双检索后必须逐项对照本地与联网结果。当日期、统计期、主体、定义、单位、币种、金额、比例、数量或结论存在任何不一致时，必须在回答中显著指出“本地与联网数据不一致”，并分别列出本地资料值及口径、联网公开来源值及口径、差异的可能原因，以及建议采用的可信口径；无法判断时明确保留冲突，不得静默选边，也不得把冲突数据混合成一个确定结论。两侧一致时可正常合并表述并分别引用来源。\n"
-        local_original_rule = "【本地原文优先】`search_local_reports` 只是本地检索摘要；只要问题涉及数据、财报、收入、对比、结论判断或口径核对，并且你已经调用了 `search_local_reports`，就必须至少对一个最相关的本地来源调用 `read_local_reference`（例如 `weekly_report.md` 或 `row_2.json`）查看原文后再回答。如果本地检索结果没有相关来源，才说明本地原文不足。不要在没有读本地引用原文的情况下连续打开外部网页。\n"
+        local_original_rule = "【本地原文优先】`search_local_reports` 会在检索结果末尾自动附上首个最相关本地原文，标记为“已自动读取本地原文”；出现该标记即视为已经完成一次本地原文读取，不要再为同一内容重复调用 `read_local_reference`。只有所需具体条目未包含在自动原文中时，才最多读取 2 个更精确的本地来源。如果本地检索没有相关来源，说明本地原文不足。不要在没有本地依据的情况下连续打开外部网页。\n"
         quarterly_crosscheck_sentence = "`needs_official_row_crosscheck` 只能作为线索，正式结论必须继续联网或读取官方来源核验。"
-        web_rule = "【联网搜索】当用户明确要求上网、联网搜索、查最新公开信息，或本地资料不足以回答时，必须调用 `web_search`。搜索后仍需用 [1], [2] 标注具体事实来源；只有用户要求打开网页全文或搜索摘要不足以核实时，才对最多 2 个关键结果调用 `read_webpage`。若 `read_webpage` 返回失败、跳过、浏览器验证或 PDF 抽取失败，不要反复读取同一类链接，应改用搜索摘要、本地引用和其他公开来源交叉验证。\n"
+        web_rule = "【联网搜索】当用户明确要求上网、联网搜索、查最新公开信息，或本地资料不足以回答时，必须调用 `web_search`。已知政府/监管主题的结果会自动附上首个可读官方原文，标记为“已自动读取联网官方原文”；出现该标记后不要为同一内容重复调用 `read_webpage`。只有用户要求其他网页全文或自动原文仍不包含关键事实时，才对最多 2 个不同关键结果调用 `read_webpage`。若读取返回失败、跳过、浏览器验证或 PDF 抽取失败，不要反复读取同一类链接。\n"
+        completion_rule = "【本轮任务完成性】对本轮问题所必需的检索、读取原文、口径核验和只读分析必须在本轮直接完成，不得询问用户是否允许继续读取、搜索或分析，也不得把“读取某文件/数据集”“继续联网搜索”等本轮应完成的工作包装成推荐追问。自动附带的本地/联网原文足以支持结论时，应立即交叉核验并完成回答，不得重复搜索。只有工具达到上限、来源不可访问或数据确实不存在时才停止，并明确说明具体证据缺口。\n"
+        web_quality_rule = "【联网结果质量】联网搜索结果必须与用户查询中的主体、指标和地域相关。若 `web_search` 明确表示已过滤无关结果、未返回相关结果，或返回页面显然属于其他主题、其他国家/语言的无关内容，禁止引用、总结或把它们计作联网核验；应使用更具体的实体名、官方机构名或 `site:` 官方域名重新检索。涉及香港电讯、5G、频谱和监管政策时优先使用 OFCA（ofca.gov.hk）或通讯事务管理局（coms-auth.hk）官方来源。\n"
     else:
         source_rule = "【强制规则 - 来源引用】当你的回答参考了 `search_local_reports`、`read_local_reference` 或其他本地工具返回的上下文时，必须在文中用 [1], [2] 等格式进行内联标号，并沿用工具结果中的实际编号。**请将标号紧跟在每一条具体的数据或事实后面**，绝对不要把一堆标号集中放在大标题上或段落末尾。禁止使用 `[来源: 文件名]`、`[来源: 机构名]`、`[source: ...]` 这种名称型标注，只能使用数字标号。**禁止在回答末尾自行输出任何 <引用来源>、<references> 等参考文献列表**，系统会自动展示。\n"
         retrieval_pairing_rule = "【本地检索优先】优先调用 `search_local_reports`、`list_local_datasets`、`read_local_reference` 等当前可用工具回答，不得声称使用了未实际调用的工具，不得编造检索结果。用户要求搜索、查最新或公开资料时，也直接按本地可用数据检索和回答；资料不足时，只说明缺少的具体本地依据，并给出可以继续核验的本地数据路径或来源。不要解释当前工具开关、联网能力或前端配置状态。\n"
@@ -2740,6 +3059,8 @@ def get_agent(
         local_original_rule = "【本地原文优先】`search_local_reports` 只是本地检索摘要；只要问题涉及数据、财报、收入、对比、结论判断或口径核对，并且你已经调用了 `search_local_reports`，就必须至少对一个最相关的本地来源调用 `read_local_reference`（例如 `weekly_report.md` 或 `row_2.json`）查看原文后再回答。如果本地检索结果没有相关来源，才说明本地原文不足。\n"
         quarterly_crosscheck_sentence = "`needs_official_row_crosscheck` 只能作为线索，正式结论必须读取本地已保存官方来源或本地引用原文核验。"
         web_rule = "【回答方式】只输出答案本身，不额外解释当前能力配置、联网能力或前端设置，也不要引导用户调整前端设置；本地依据不足时，只说缺少哪些本地数据或引用。\n"
+        completion_rule = "【本轮任务完成性】对本轮问题所必需的本地检索、读取原文、口径核验和只读分析必须在本轮直接完成，不得询问用户是否允许继续读取或分析，也不得把“读取某文件/数据集”等本轮应完成的工作包装成推荐追问。`search_local_reports` 命中相关文件后，若回答需要其中的具体条目，必须继续调用 `read_local_reference`。只有工具达到上限、来源不可访问或数据确实不存在时才停止，并明确说明具体证据缺口。\n"
+        web_quality_rule = ""
     
     runtime_context = runtime_context or {}
     runtime_lines = [
@@ -2776,6 +3097,8 @@ def get_agent(
         "【爬虫日志调度】每次全量爬虫完成后，系统会登记 `agent_knowledge/crawl_run_logs/`：本地只保存运行索引和摘要，完整逐 URL 日志与 Agent 处理流程写入飞书日志子表。用户问上次爬虫、失败链接、覆盖率、日志在哪、Agent 是否处理完成时，必须先调用 `list_crawl_runs`；需要更细节再用 `search_local_reports` 或 `read_local_reference` 读取 `run_log.tsv`、`coverage_report.tsv`、`final_audit.md`。\n"
         "【操作工具决策权】用户要求生成周报、生成运营商业绩摘要、全量爬取、查看输出文件、查看爬取设置或查看系统状态时，由你根据用户真实意图自行决定是否调用 `trigger_report_generation`、`trigger_carrier_performance_report_generation`、`trigger_full_crawl`、`list_report_outputs`、`get_crawl_settings_summary`、`get_system_status` 等工具。不要把“输出预测表”“生成预测图”“正式结论”等分析表达误判成报告生成；只有用户确实要产出 Word 周报或业绩摘要时才调用生成类工具。\n"
         "【前端展示边界】前端会按事件顺序展示工具调用卡片；工具调用行会自动显示“读取 Skill / 检索数据库 / 联网搜索 / 读取原文”等过程说明。最终正文严禁重复检索过程、工具状态或准备动作，例如“联网已搜到”“本地检索结果只返回”“本地数据已命中”“CSV文件很大”“我继续检索”“我再读取”“数据充足”等。最终正文只输出结论、数据、依据、口径差异和必要不确定性。\n"
+        f"{completion_rule}"
+        f"{web_quality_rule}"
         f"{retrieval_pairing_rule}"
         f"{local_original_rule}"
         f"{cross_check_rule}"
@@ -2790,7 +3113,7 @@ def get_agent(
         "【重要】如果你连续 3 次调用某个工具均未能成功（比如参数错误、表名不对或输出过多），请立即停止调用，并直接回复用户当前遇到的困难，不要陷入无限重试的死循环。\n\n"
         "【强制规则 - 推荐追问】你的每一条最终回复（无论长短、无论是否调用了工具）的最后一行都必须包含推荐追问。格式如下，不可省略：\n"
         "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>\n"
-        "追问内容应与当前话题紧密相关、对用户有实际价值；禁止把打开、关闭或调整前端开关、按钮、工具配置作为追问。这是一条不可违反的系统指令，任何回答如果缺少 <suggestions> 标签都是不合格的。\n"
+        "三条必须是可由用户直接点击发送的具体请求，使用用户视角，紧扣当前回答中的实体、数据和结论，并分别承担不同目的：补充具体事实、时间线或权威来源；做主体、时期、指标或政策的结构化对比；评估对CMHK的业务影响、风险、机会或行动。禁止三条重复询问同一类影响；禁止“是否需要我”“您希望”“要不要”等助手询问式表达；禁止把打开、关闭或调整前端开关、按钮、工具配置、文件、数据集、检索或读取流程作为追问；禁止把本轮本应完成但尚未完成的工作推给下一轮。这是一条不可违反的系统指令，任何回答如果缺少 <suggestions> 标签或追问不符合上述规则都是不合格的。\n"
     )
     
     return create_react_agent(llm, tools, prompt=system_message)
@@ -3025,7 +3348,13 @@ def _finalize_after_tool_limit(
     answer and recommendation format while sharply reducing failure latency.
     """
     config = load_ai_config()
-    evidence = "\n\n".join(tool_evidence[-6:])[:18000]
+    bounded_evidence: list[str] = []
+    for item in tool_evidence[-8:]:
+        text = str(item or "")
+        if len(text) > 6000:
+            text = f"{text[:2800]}\n\n[中间内容已压缩]\n\n{text[-2800:]}"
+        bounded_evidence.append(text)
+    evidence = "\n\n".join(bounded_evidence)[:24000]
     prompt_messages = [
         SystemMessage(
             content=(
@@ -3033,8 +3362,12 @@ def _finalize_after_tool_limit(
                 "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
                 "证据不足时明确说明缺少什么，不得编造。正文控制在 1200 个中文字符以内，"
                 "必须完整收束，不得停在逗号、冒号、连接词或未闭合列表。保留工具结果中的"
-                "数字来源编号。最后一行必须输出完整的"
-                "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。"
+                "数字来源编号。检索结果若含“已自动读取本地原文”或“已自动读取联网官方原文”，"
+                "必须使用其中的原文事实完成用户当前请求，不能误称只有搜索摘要。最后一行必须输出完整的"
+                "<suggestions>[\"追问1\", \"追问2\", \"追问3\"]</suggestions>。三条追问必须是"
+                "用户可直接点击发送的具体请求；禁止“是否需要我”“您希望”“要不要”等"
+                "助手询问式表达，禁止暴露工具、文件、数据集或检索流程；不得把当前请求中尚未完成的"
+                "读取、检索、核验或分析工作推给下一轮。"
             )
         ),
         HumanMessage(

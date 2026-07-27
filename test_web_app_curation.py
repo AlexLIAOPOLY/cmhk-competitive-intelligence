@@ -366,6 +366,43 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("streamedSuggestions.length === 3 ? streamedSuggestions : embeddedSuggestions", app)
         self.assertIn('if (arr.length !== 3) return "";', app)
 
+    def test_frontend_hides_assistant_centered_and_internal_process_suggestions(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function normalizeSuggestionList")
+        end = app.index("function suggestionChipsHtml", start)
+        snippet = app[start:end] + "\n" + (
+            "console.log(JSON.stringify(normalizeSuggestionList(["
+            "'是否需要我读取该数据集中的具体文件？',"
+            "'您希望重点了解哪一类政策？',"
+            "'梳理香港5G频谱政策时间线并标注来源'"
+            "])));"
+        )
+        completed = subprocess.run(["node", "-e", snippet], check=True, capture_output=True, text=True)
+
+        self.assertEqual(
+            json.loads(completed.stdout),
+            ["梳理香港5G频谱政策时间线并标注来源"],
+        )
+
+    def test_historical_bad_5g_suggestions_receive_contextual_safe_fallbacks(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function generateFallbackSuggestions")
+        end = app.index("function normalizeSuggestionList", start)
+        snippet = app[start:end] + "\n" + (
+            "console.log(JSON.stringify(generateFallbackSuggestions("
+            "'需要了解5G频谱政策事件的时间线和影响评估'"
+            ")));"
+        )
+        completed = subprocess.run(["node", "-e", snippet], check=True, capture_output=True, text=True)
+        suggestions = json.loads(completed.stdout)
+
+        self.assertEqual(len(suggestions), 3)
+        self.assertIn("官方来源", suggestions[0])
+        self.assertIn("各频段", suggestions[1])
+        self.assertIn("CMHK", suggestions[2])
+        self.assertIn("restoreAssistantMessageExtras(node, normalizedItem, previousUserMessage);", app)
+        self.assertIn("normalizedSuggestions.length === 3", app)
+
     def test_voice_dictation_uses_company_stt_and_gives_user_a_send_choice(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
@@ -973,8 +1010,102 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("即使其中一侧无相关结果或证据不足，也必须实际完成该侧检索", prompt)
         self.assertIn("本地与联网数据不一致", prompt)
         self.assertIn("不得静默选边", prompt)
+        self.assertIn("本轮任务完成性", prompt)
+        self.assertIn("不得询问用户是否允许继续读取、搜索或分析", prompt)
+        self.assertIn("联网结果质量", prompt)
+        self.assertIn("优先使用 OFCA", prompt)
+        self.assertIn("禁止“是否需要我”“您希望”“要不要”", prompt)
         self.assertIn("web_search", captured["tools"])
         self.assertIn("search_local_reports", captured["tools"])
+
+    def test_web_search_filters_poisoned_results_and_supplies_official_entrypoints(self) -> None:
+        poisoned = [
+            {
+                "title": "Омода С7 2025 года",
+                "url": "https://www.drom.ru/reviews/omoda/c7/1461493/",
+                "snippet": "Автомобиль 2025 2026.",
+            },
+            {
+                "title": "Google",
+                "url": "https://www.google.com/",
+                "snippet": "Search.",
+            },
+            {
+                "title": "成人视频",
+                "url": "https://example.invalid/adult",
+                "snippet": "OnlyFans.",
+            },
+        ]
+        with (
+            mock.patch("agent._search_with_searxng", return_value=poisoned),
+            mock.patch("agent._read_webpage_text", return_value="OFCA官网原文：5G频谱政策里程碑。"),
+        ):
+            result = agent.web_search.invoke({
+                "query": "香港 5G 频谱 政策 事件 时间线 2024 2025 2026",
+                "max_results": 5,
+            })
+
+        self.assertIn("ofca.gov.hk", result)
+        self.assertIn("香港通讯及频谱政策里程碑", result)
+        self.assertIn("已过滤 3 个", result)
+        self.assertIn("已自动读取联网官方原文", result)
+        self.assertIn("OFCA官网原文", result)
+        self.assertNotIn("drom.ru", result)
+        self.assertNotIn("OnlyFans", result)
+        self.assertNotIn("www.google.com", result)
+
+    def test_local_data_search_automatically_reads_the_most_relevant_reference(self) -> None:
+        chunks = [
+            {
+                "source": "agent_knowledge/cmhk_macro_policy_2026-06-19/manifest.json",
+                "text": "宏观政策数据集。",
+                "links": [],
+            },
+            {
+                "source": "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.csv",
+                "text": "5G频谱政策事件记录。",
+                "links": [],
+            },
+        ]
+        request_token = agent.CURRENT_USER_REQUEST.set("梳理香港5G频谱政策时间线和影响")
+        try:
+            with (
+                mock.patch("agent.retrieve_context", return_value=chunks),
+                mock.patch(
+                    "agent.build_context_package",
+                    return_value={"chunks": chunks, "audit": {"retained_chunks": 2}},
+                ),
+                mock.patch("agent.retrieval_quality", return_value={"status": "ok"}),
+                mock.patch(
+                    "agent._read_local_reference_text",
+                    return_value="[本地引用: macro_policy_metrics.csv]\n2019,5G频谱政策事件",
+                ),
+            ):
+                result = agent.search_local_reports.invoke({"query": "香港5G频谱政策"})
+        finally:
+            agent.CURRENT_USER_REQUEST.reset(request_token)
+
+        self.assertIn("已自动读取本地原文", result)
+        self.assertIn("2019,5G频谱政策事件", result)
+        self.assertIn("macro_policy_metrics.csv", result)
+
+    def test_generic_web_search_returns_no_sources_when_every_result_is_irrelevant(self) -> None:
+        poisoned = [
+            {
+                "title": "Completely unrelated car review",
+                "url": "https://example.com/cars/1",
+                "snippet": "A vehicle review with no matching topic.",
+            }
+        ]
+        with mock.patch("agent._search_with_searxng", return_value=poisoned):
+            result = agent.web_search.invoke({
+                "query": "AWS quarterly revenue operating margin",
+                "max_results": 5,
+            })
+
+        self.assertIn("未返回与查询相关的可用网页结果", result)
+        self.assertIn("已过滤 1 个", result)
+        self.assertNotIn("[来源", result)
 
     def test_data_trend_and_multi_group_queries_receive_chart_tool(self) -> None:
         trend_tools = {
@@ -1194,6 +1325,43 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(usage["totalTokens"], 0)
         self.assertEqual(source, "answer")
 
+    def test_assistant_centered_or_internal_process_suggestions_are_rejected(self) -> None:
+        bad_answer = (
+            "已完成当前回答。"
+            '<suggestions>["是否需要我读取该数据集中的具体文件？",'
+            '"您希望重点了解哪一类政策？",'
+            '"是否需要结合CMHK经营数据继续分析？"]</suggestions>'
+        )
+        response = agent.AIMessage(
+            content=(
+                '["梳理香港5G频谱政策时间线并标注来源",'
+                '"对比各频段的分配时间与牌照期限",'
+                '"评估频谱政策对CMHK网络投资的影响"]'
+            )
+        )
+        model = mock.Mock()
+        model.invoke.return_value = response
+        with (
+            mock.patch("agent.ChatDeepSeek", return_value=model),
+            mock.patch("agent.load_ai_config", return_value={
+                "model": "deepseek-v4",
+                "api_key": "test",
+                "base_url": "http://internal/v1",
+                "extra_parameters": {},
+            }),
+        ):
+            items, _, source = self._real_follow_up_generator(
+                "分析香港5G频谱政策时间线",
+                bad_answer,
+            )
+
+        self.assertEqual(source, "dedicated_model")
+        self.assertEqual(len(items), 3)
+        self.assertFalse(any("是否需要我" in item or "您希望" in item for item in items))
+        prompt = str(model.invoke.call_args.args[0][0].content)
+        self.assertIn("可由用户直接点击发送", prompt)
+        self.assertIn("禁止把本轮本应完成的工作推给下一轮", prompt)
+
     def test_missing_or_placeholder_suggestions_are_generated_by_dedicated_model(self) -> None:
         response = agent.AIMessage(
             content='["CMHK应优先验证哪个场景？", "需要补充哪些香港数据？", "如何安排下一步试点？"]',
@@ -1317,6 +1485,87 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         self.assertIs(result, complete_result)
         self.assertEqual(generate.call_count, 2)
+
+    def test_required_original_read_keeps_tools_enabled_during_repair(self) -> None:
+        # Some providers return an empty assistant message after a tool result.
+        # A pending original-source requirement must still force the next tool.
+        incomplete_message = agent.AIMessage(content="")
+        tool_message = agent.AIMessage(
+            content="",
+            tool_calls=[
+                {
+                    "name": "read_webpage",
+                    "args": {"url": "https://www.ofca.gov.hk/example"},
+                    "id": "call-read-webpage",
+                    "type": "tool_call",
+                }
+            ],
+        )
+        incomplete_result = mock.Mock(
+            generations=[mock.Mock(message=incomplete_message, generation_info={"finish_reason": "stop"})]
+        )
+        tool_result = mock.Mock(
+            generations=[mock.Mock(message=tool_message, generation_info={"finish_reason": "tool_calls"})]
+        )
+        config = agent.load_ai_config()
+        model = agent.StableAgentChatDeepSeek(
+            model="deepseek-v4",
+            api_key=config.get("api_key", ""),
+            api_base=config.get("base_url", ""),
+            disable_streaming=True,
+            max_retries=1,
+        )
+        messages = [
+            agent.HumanMessage(content="请核验香港5G频谱政策。"),
+            agent.ToolMessage(
+                content=(
+                    "搜索摘要。\n\n【强制下一步】本轮问题要求官方事实核验，"
+                    "请调用 `read_webpage` 读取官网原文。"
+                ),
+                tool_call_id="call-search",
+                name="web_search",
+            ),
+        ]
+        tools = [{"type": "function", "function": {"name": "read_webpage", "parameters": {"type": "object"}}}]
+
+        with mock.patch.object(
+            agent.ChatDeepSeek,
+            "_generate",
+            side_effect=[incomplete_result, tool_result],
+        ) as generate:
+            result = model._generate(messages, tools=tools)
+
+        self.assertIs(result, tool_result)
+        self.assertEqual(generate.call_count, 2)
+        self.assertEqual(generate.call_args_list[1].kwargs["tools"], tools)
+        self.assertEqual(generate.call_args_list[1].kwargs["tool_choice"], "required")
+        self.assertIn("只能返回其中指定的结构化工具调用", generate.call_args_list[1].args[0][0].content)
+
+    def test_completed_original_reads_clear_older_required_markers(self) -> None:
+        messages = [
+            agent.ToolMessage(
+                content="【强制下一步】请调用 `read_local_reference`。",
+                tool_call_id="call-local-search",
+                name="search_local_reports",
+            ),
+            agent.ToolMessage(
+                content="【强制下一步】请调用 `read_webpage`。",
+                tool_call_id="call-web-search",
+                name="web_search",
+            ),
+            agent.ToolMessage(
+                content="[本地引用: data/example.md]\n原文。",
+                tool_call_id="call-local-read",
+                name="read_local_reference",
+            ),
+            agent.ToolMessage(
+                content="官网原文。",
+                tool_call_id="call-web-read",
+                name="read_webpage",
+            ),
+        ]
+
+        self.assertFalse(agent.StableAgentChatDeepSeek._has_pending_required_read(messages))
 
     def test_model_retries_when_long_answer_ends_cleanly_without_completion_footer(self) -> None:
         partial_message = agent.AIMessage(
@@ -1481,19 +1730,22 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("tools", generate.call_args_list[1].kwargs)
         self.assertIn("1200 个中文字符", retry_text)
 
-    def test_search_local_reports_stops_after_three_calls(self) -> None:
+    def test_search_local_reports_repeats_are_cheap_then_stop(self) -> None:
         token = agent.TOOL_RUN_STATE.set({"counts": {}})
         try:
             with mock.patch("agent.retrieve_context", return_value=[]):
-                for _ in range(3):
-                    self.assertEqual(
-                        agent.search_local_reports.invoke({"query": "现金流"}),
-                        "没有找到相关的本地报告信息。",
-                    )
+                self.assertEqual(
+                    agent.search_local_reports.invoke({"query": "现金流"}),
+                    "没有找到相关的本地报告信息。",
+                )
+                duplicate_1 = agent.search_local_reports.invoke({"query": "现金流"})
+                duplicate_2 = agent.search_local_reports.invoke({"query": "现金流"})
                 limited = agent.search_local_reports.invoke({"query": "现金流"})
         finally:
             agent.TOOL_RUN_STATE.reset(token)
 
+        self.assertIn("已经完成", duplicate_1)
+        self.assertIn("已经完成", duplicate_2)
         self.assertIn("达到本轮调用上限（3 次）", limited)
 
     def test_large_retrieval_tools_have_bounded_call_limits(self) -> None:

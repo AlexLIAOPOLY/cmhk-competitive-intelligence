@@ -4932,6 +4932,7 @@ async function openChatThread(threadId) {
     if (!state.chatHistory.length) {
       resetChatMessages();
     } else {
+      let previousUserMessage = "";
       state.chatHistory.forEach((item) => {
         const role = normalizeStoredChatRole(item && item.role);
         const content = normalizeStoredChatContent(item && item.content, role === "assistant");
@@ -4943,7 +4944,8 @@ async function openChatThread(threadId) {
         if (role === "user" && item && item.imagePreview) {
           appendUserImagePreview(node, item.imagePreview);
         }
-        restoreAssistantMessageExtras(node, normalizedItem);
+        if (role === "user") previousUserMessage = content;
+        restoreAssistantMessageExtras(node, normalizedItem, previousUserMessage);
       });
     }
     renderChatThreadList();
@@ -5776,10 +5778,14 @@ function generateFallbackSuggestions(userMessage) {
   const suggestions = [];
 
   // Context-aware suggestions based on keywords in the user's message
-  if (/HKT|csl|1O1O|和电/i.test(msg)) {
+  if (/5G|6G|频谱|頻譜|监管政策|監管政策/i.test(msg)) {
+    suggestions.push("梳理关键时间线并标注官方来源");
+    suggestions.push("对比各频段的分配时间、用途与牌照期限");
+    suggestions.push("评估政策对 CMHK 网络投资与部署的影响");
+  } else if (/HKT|csl|1O1O|和电/i.test(msg)) {
     suggestions.push("帮我对比 HKT 和 3HK 的最新财报数据");
     suggestions.push("HKT 最近有什么 5G 相关动态？");
-    suggestions.push("触发爬虫更新 HKT 的最新数据");
+    suggestions.push("评估 HKT 最新变化对 CMHK 的影响");
   } else if (/3HK|Hutchison|和记/i.test(msg)) {
     suggestions.push("3HK 最近的用户增长情况如何？");
     suggestions.push("对比 3HK 和 SmarTone 的套餐价格");
@@ -5795,7 +5801,7 @@ function generateFallbackSuggestions(userMessage) {
   } else if (/周报|报告|总结/i.test(msg)) {
     suggestions.push("帮我分析本周最重要的 3 个竞争情报");
     suggestions.push("对比最近两周的竞对动态变化");
-    suggestions.push("触发全量爬虫更新所有数据源");
+    suggestions.push("把关键变化转化为 CMHK 行动建议");
   } else if (/爬虫|爬取|抓取/i.test(msg)) {
     suggestions.push("查看最近一次爬虫的执行日志");
     suggestions.push("哪些数据源爬取失败了？");
@@ -5806,9 +5812,9 @@ function generateFallbackSuggestions(userMessage) {
     suggestions.push("搜索本地最新的爬取结果");
   } else {
     // Generic fallback
-    suggestions.push("帮我总结一下本周竞对的关键动态");
-    suggestions.push("搜索最近关于 5G 和 AI 的行业趋势");
-    suggestions.push("查看所有竞对的最新财报数据对比");
+    suggestions.push("深入分析当前结论的关键依据");
+    suggestions.push("补充同口径数据与权威来源对比");
+    suggestions.push("把结论转化为可执行的行动建议");
   }
 
   return suggestions.slice(0, 3);
@@ -5816,9 +5822,9 @@ function generateFallbackSuggestions(userMessage) {
 
 function normalizeSuggestionList(items) {
   if (!Array.isArray(items)) return [];
-  const blocked = /(联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|web_search|read_webpage)/i;
+  const blocked = /(是否需要我|需要我(?:来)?|要我(?:来)?|您希望|你希望|是否需要|要不要|需不需要|我可以(?:为你|为您)?|读取.*(?:具体)?文件|数据集中的|调用.*工具|内部工具|联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|web_search|read_webpage|search_local_reports)/i;
   return items
-    .map((item) => String(item || "").trim().replace(/^推荐追问\s*[:：]\s*/, ""))
+    .map((item) => String(item || "").trim().replace(/^推荐追问\s*[:：]\s*/, "").replace(/(?:相关)?文件来源/g, "官方来源"))
     .filter((item) => item && !blocked.test(item))
     .slice(0, 3);
 }
@@ -5898,11 +5904,15 @@ function appendAssistantMetrics(node, metrics) {
   body.appendChild(meta);
 }
 
-function restoreAssistantMessageExtras(node, item) {
+function restoreAssistantMessageExtras(node, item, previousUserMessage = "") {
   if (!node || !item || item.role !== "assistant") return;
   const references = Array.isArray(item.references) ? item.references : [];
   const links = Array.isArray(item.links) ? item.links : [];
-  const suggestions = normalizeSuggestionList(item.suggestions || parseSuggestionTag(item.content));
+  const storedSuggestions = item.suggestions || parseSuggestionTag(item.content);
+  const normalizedSuggestions = normalizeSuggestionList(storedSuggestions);
+  const suggestions = normalizedSuggestions.length === 3
+    ? normalizedSuggestions
+    : generateFallbackSuggestions(previousUserMessage || item.content);
   if (references.length) node.dataset.references = JSON.stringify(references);
   if (links.length) node.dataset.links = JSON.stringify(links);
   restoreAssistantTimeline(node, item.timeline);
