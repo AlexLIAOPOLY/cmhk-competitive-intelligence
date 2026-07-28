@@ -40,6 +40,7 @@ const state = {
   pendingChatApproval: null,
   chatHistory: [],
   chatThreads: [],
+  chatStarters: [],
   activeThreadId: null,
   chatQueue: [],
   chatThreadSearch: "",
@@ -4785,19 +4786,14 @@ function chatThreadId() {
   return `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function initialChatEmptyStateHtml() {
+function initialChatEmptyStateHtml(starters = state.chatStarters) {
   const starterIcons = {
     performance: `<svg viewBox="0 0 24 24"><path d="M5 19V10"></path><path d="M10 19V6"></path><path d="M15 19v-4"></path><path d="m4 7 5-4 5 4 6-5"></path></svg>`,
     tariff: `<svg viewBox="0 0 24 24"><path d="M4 5v6l8 8 7-7-8-8H5a1 1 0 0 0-1 1Z"></path><circle cx="8" cy="8" r="1.3"></circle></svg>`,
     cloud: `<svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.2 9 4.5 4.5 0 0 0 7 18Z"></path><path d="M12 10v5"></path><path d="m9.5 12.5 2.5-2.5 2.5 2.5"></path></svg>`,
     policy: `<svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.8 2.9 8.1 7 10 4.1-1.9 7-5.2 7-10V6l-7-3Z"></path><path d="m9 12 2 2 4-4"></path></svg>`,
   };
-  const starters = [
-    ["01", "performance", "blue", "对比竞对经营表现", "收入、利润、用户与 ARPU", "请对比中国移动、中国联通和中国电信最新季度经营表现，列出收入、利润、用户和 ARPU 变化，并标明来源。"],
-    ["02", "tariff", "violet", "查看香港产品资费", "套餐、合约与促销变化", "请对比香港主要竞对最新移动与宽频套餐资费，说明月费、数据量、合约期和促销差异。"],
-    ["03", "cloud", "teal", "追踪云厂商动态", "业绩、AI 投入与战略动作", "请整理主要云厂商近期业绩与 AI 投入变化，判断对 CMHK 的机会和风险。"],
-    ["04", "policy", "orange", "解读宏观政策影响", "政策、经济与业务影响", "请梳理近期宏观政策与监管变化，并分析其对 CMHK 业务的可能影响。"],
-  ];
+  const visibleStarters = Array.isArray(starters) ? starters.slice(0, 4) : [];
   return `
     <section class="chat-empty-state" aria-labelledby="chatEmptyTitle">
       <span class="chat-empty-mark" aria-hidden="true">
@@ -4806,13 +4802,13 @@ function initialChatEmptyStateHtml() {
       <h3 id="chatEmptyTitle">今天想从哪类竞争情报开始？</h3>
       <p>选择一个方向，或直接在下方输入你的问题</p>
       <div class="chat-starter-grid">
-        ${starters.map(([index, icon, tone, title, detail, prompt]) => `
-          <button class="chat-starter-card" type="button" data-prompt="${escapeHtml(prompt)}">
+        ${visibleStarters.map((starter, position) => `
+          <button class="chat-starter-card" type="button" data-prompt="${escapeHtml(starter.prompt)}">
             <span class="chat-starter-card-top">
-              <span class="chat-starter-icon is-${tone}" aria-hidden="true">${starterIcons[icon]}</span>
-              <em>${index}</em>
+              <span class="chat-starter-icon is-${escapeHtml(starter.tone)}" aria-hidden="true">${starterIcons[starter.icon] || starterIcons.performance}</span>
+              <em>${String(position + 1).padStart(2, "0")}</em>
             </span>
-            <strong>${title}</strong><small>${detail}</small>
+            <strong>${escapeHtml(starter.title)}</strong><small>${escapeHtml(starter.detail)}</small>
           </button>
         `).join("")}
       </div>
@@ -4822,6 +4818,20 @@ function initialChatEmptyStateHtml() {
 
 function resetChatMessages() {
   els.messages.innerHTML = initialChatEmptyStateHtml();
+}
+
+async function loadChatStarters({ render = false } = {}) {
+  try {
+    const response = await fetch("/api/chat-starters", { cache: "no-store" });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok || !Array.isArray(payload.starters)) {
+      throw new Error(payload.error || "推荐方向加载失败");
+    }
+    state.chatStarters = payload.starters.slice(0, 4);
+  } catch (error) {
+    console.warn("推荐方向加载失败", error);
+  }
+  if (render && !state.chatHistory.length) resetChatMessages();
 }
 
 function renderChatThreadList() {
@@ -4919,12 +4929,13 @@ function persistActiveThread() {
   return chatPersistChain;
 }
 
-function startNewChatThread() {
+async function startNewChatThread() {
   state.activeThreadId = chatThreadId();
   state.chatHistory = [];
   state.agentContextKey = "";
   state.loadedSkillIds = new Set();
   state.chatQueue = [];
+  await loadChatStarters();
   resetChatMessages();
   renderChatQueue();
   renderChatThreadList();
@@ -7170,6 +7181,7 @@ els.chatInput.addEventListener("keydown", (event) => {
 
 window.addEventListener("beforeunload", abandonPendingChatApproval);
 
+loadChatStarters({ render: true });
 loadChatThreads();
 fetchStatus().catch((error) => {
   setLog(`初始化失败：${error.message}`);

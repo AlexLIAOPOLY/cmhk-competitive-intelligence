@@ -478,17 +478,19 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
 
         self.assertIn("今天想从哪类竞争情报开始？", markup)
-        self.assertEqual(markup.count('class="chat-starter-card"'), 4)
-        for title in ("对比竞对经营表现", "查看香港产品资费", "追踪云厂商动态", "解读宏观政策影响"):
-            self.assertIn(title, markup)
-            self.assertIn(title, app)
+        self.assertEqual(markup.count('class="chat-starter-card"'), 0)
+        self.assertGreaterEqual(len(web_app.CHAT_STARTER_POOL), 8)
+        starters = web_app.sample_chat_starters()
+        self.assertEqual(len(starters), 4)
+        self.assertEqual(len({item["title"] for item in starters}), 4)
+        self.assertIn('fetch("/api/chat-starters", { cache: "no-store" })', app)
+        self.assertIn("loadChatStarters({ render: true })", app)
+        self.assertIn("await loadChatStarters()", app)
         self.assertIn('const emptyState = els.messages.querySelector(".chat-empty-state")', app)
         self.assertIn('event.target.closest(".chat-starter-card")', app)
         self.assertIn("els.messages.innerHTML = initialChatEmptyStateHtml()", app)
-        self.assertEqual(markup.count('class="chat-starter-icon '), 4)
         for tone in ("is-blue", "is-violet", "is-teal", "is-orange"):
-            self.assertIn(tone, markup)
-            self.assertIn(f'"{tone.removeprefix("is-")}"', app)
+            self.assertTrue(any(item["tone"] == tone.removeprefix("is-") for item in web_app.CHAT_STARTER_POOL))
         self.assertIn("grid-template-columns: repeat(4, minmax(0, 1fr))", styles)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", styles)
 
