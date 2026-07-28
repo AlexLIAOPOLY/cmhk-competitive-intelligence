@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import threading
 import time
+import uuid
 from datetime import datetime, time as clock_time, timedelta
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -852,6 +853,7 @@ def _send_scan_message(
     candidates: list[dict[str, Any]],
     spec: dict[str, Any],
     review_result: dict[str, Any] | None = None,
+    notification_key: str = "",
 ) -> tuple[str, str]:
     if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1":
         return "", "paused"
@@ -1002,18 +1004,135 @@ def _send_scan_message(
         },
         "elements": elements,
     }
-    payload = _lark_api(
-        "POST",
-        "/open-apis/im/v1/messages",
-        params={"receive_id_type": "chat_id"},
-        data={
-            "receive_id": TARGET_CHAT_ID,
-            "msg_type": "interactive",
-            "content": json.dumps(card, ensure_ascii=False),
-        },
+    idempotency_key = str(
+        uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            "cmhk-strategic-scan:" + (
+                notification_key
+                or f"{now:%Y-%m-%d}:{slot_label}"
+            ),
+        )
     )
+    payload: dict[str, Any] = {}
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            payload = _lark_api(
+                "POST",
+                "/open-apis/im/v1/messages",
+                params={"receive_id_type": "chat_id"},
+                data={
+                    "receive_id": TARGET_CHAT_ID,
+                    "msg_type": "interactive",
+                    "content": json.dumps(card, ensure_ascii=False),
+                    "uuid": idempotency_key,
+                },
+            )
+            break
+        except Exception as exc:
+            last_error = exc
+            if attempt >= 2:
+                raise
+            logging.warning(
+                "战略快讯群通知发送失败，第 %s/3 次：%s",
+                attempt + 1,
+                _clean_text(exc, 240),
+            )
+            time.sleep(2 ** attempt)
+    if not payload and last_error is not None:
+        raise last_error
     message_id = str(((payload.get("data") or {}).get("message_id") or ""))
     return message_id, str(payload.get("_identity") or "")
+
+
+def _pending_notification_payload(
+    *,
+    now: datetime,
+    slot_label: str,
+    spec: dict[str, Any],
+    review_result: dict[str, Any],
+) -> dict[str, Any]:
+    review_keys = {
+        "new_count",
+        "new_category_counts",
+        "new_region_counts",
+        "new_source_count",
+        "category_counts",
+        "region_counts",
+        "source_count",
+        "input_count",
+        "source_candidate_count",
+        "batch_count",
+        "filtered_reasons",
+        "sheet_url",
+    }
+    return {
+        "now": _now_iso(now),
+        "slot_label": slot_label,
+        "spec": {
+            "keyword_count": int(spec.get("keyword_count") or 0),
+            "module_count": int(spec.get("module_count") or 0),
+        },
+        "review_result": {
+            key: review_result.get(key)
+            for key in review_keys
+            if key in review_result
+        },
+    }
+
+
+def _flush_pending_scan_notifications(
+    now: datetime,
+    state: dict[str, Any],
+) -> list[dict[str, str]]:
+    if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1":
+        return []
+    pending = state.get("pending_scan_notifications")
+    if not isinstance(pending, dict) or not pending:
+        return []
+    sent: list[dict[str, str]] = []
+    for slot_key in sorted(list(pending)):
+        entry = pending.get(slot_key)
+        if not isinstance(entry, dict):
+            pending.pop(slot_key, None)
+            continue
+        try:
+            scheduled_at = datetime.fromisoformat(str(entry.get("now") or ""))
+        except ValueError:
+            scheduled_at = now
+        message_id, identity = _send_scan_message(
+            now=scheduled_at,
+            slot_label=_clean_text(entry.get("slot_label"), 80) or "定时扫描",
+            candidates=[],
+            spec=entry.get("spec") if isinstance(entry.get("spec"), dict) else {},
+            review_result=(
+                entry.get("review_result")
+                if isinstance(entry.get("review_result"), dict)
+                else {}
+            ),
+            notification_key=slot_key,
+        )
+        if not message_id:
+            continue
+        state["outbound_message_ids"] = (
+            list(state.get("outbound_message_ids") or []) + [message_id]
+        )[-300:]
+        slot_state = (state.get("scan_slots") or {}).get(slot_key)
+        if isinstance(slot_state, dict):
+            slot_state["message_id"] = message_id
+            slot_state["notification_replayed_at"] = _now_iso(now)
+        pending.pop(slot_key, None)
+        sent.append({"slot": slot_key, "message_id": message_id})
+        _append_event(
+            {
+                "type": "scan_notification_replayed",
+                "slot": slot_key,
+                "message_id": message_id,
+                "identity": identity,
+            }
+        )
+    state["pending_scan_notifications"] = pending
+    return sent
 
 
 def _require_scan_downstream_success(
@@ -1127,7 +1246,18 @@ def _run_scan(
         candidates=ranked,
         spec=spec,
         review_result=review_result,
+        notification_key=slot_key,
     )
+    pending_notifications = state.setdefault("pending_scan_notifications", {})
+    if identity == "paused":
+        pending_notifications[slot_key] = _pending_notification_payload(
+            now=now,
+            slot_label=slot_label,
+            spec=spec,
+            review_result=review_result,
+        )
+    else:
+        pending_notifications.pop(slot_key, None)
     _save_candidates(_load_candidates() + ranked)
     state["seen_urls"] = (
         list(state.get("seen_urls") or []) + [item["url"] for item in ranked]
@@ -2747,6 +2877,10 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 )
                 logging.exception("战略快讯 %s 失败", slot_key)
 
+        result["replayed_notifications"] = _flush_pending_scan_notifications(
+            now,
+            state,
+        )
         group_bucket = int(now.timestamp()) // GROUP_CHECK_SECONDS
         if int(state.get("last_group_bucket") or -1) != group_bucket:
             try:

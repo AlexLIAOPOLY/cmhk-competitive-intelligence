@@ -338,7 +338,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         sync = mock.Mock()
         with (
             mock.patch.object(review_sheet, "_read_json", return_value=state),
-            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(review_sheet, "_write_json") as write_json,
+            mock.patch.dict(
+                review_sheet.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "1"},
+            ),
             mock.patch.object(
                 review_sheet,
                 "_current_source_generated_at",
@@ -359,6 +363,9 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         apply_reviews.assert_called_once_with("sheet")
         self.assertTrue(result["source_unchanged"])
         self.assertEqual(result["sheet_candidate_count"], 277)
+        self.assertFalse(
+            write_json.call_args.args[1]["group_notifications_paused"]
+        )
 
     def test_legacy_notice_builder_does_not_sync_candidates_twice(self):
         with (

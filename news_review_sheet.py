@@ -2121,6 +2121,7 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
                 "last_poll_error": "",
                 "last_poll_status": "ok",
                 "last_source_summary": latest,
+                "group_notifications_paused": _group_notifications_paused(),
             }
         )
         _write_json(STATE_PATH, state)

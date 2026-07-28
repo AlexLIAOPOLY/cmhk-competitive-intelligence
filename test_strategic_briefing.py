@@ -19,6 +19,94 @@ class StrategicBriefingTests(unittest.TestCase):
             {"status": "ok", "new_count": 1},
         )
 
+    def test_scan_notification_retries_with_stable_idempotency_key(self):
+        response = {
+            "data": {"message_id": "om_notification"},
+            "_identity": "bot",
+        }
+        with (
+            mock.patch.dict(
+                briefing.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "1"},
+            ),
+            mock.patch.object(
+                briefing,
+                "_lark_api",
+                side_effect=[RuntimeError("temporary EOF"), response],
+            ) as lark_api,
+            mock.patch.object(briefing.time, "sleep") as sleep,
+        ):
+            message_id, identity = briefing._send_scan_message(
+                now=datetime(2026, 7, 28, 9, 0, tzinfo=briefing.HKT),
+                slot_label="晨间扫描",
+                candidates=[],
+                spec={"keyword_count": 136, "module_count": 6},
+                review_result={
+                    "new_count": 16,
+                    "new_category_counts": {"竞对动态": 16},
+                    "new_region_counts": {"香港本地": 3, "国际/行业": 13},
+                    "new_source_count": 14,
+                    "source_candidate_count": 26,
+                    "sheet_url": "https://example.com/sheet",
+                },
+                notification_key="2026-07-28@09:00",
+            )
+
+        self.assertEqual(message_id, "om_notification")
+        self.assertEqual(identity, "bot")
+        self.assertEqual(lark_api.call_count, 2)
+        first_uuid = lark_api.call_args_list[0].kwargs["data"]["uuid"]
+        second_uuid = lark_api.call_args_list[1].kwargs["data"]["uuid"]
+        self.assertEqual(first_uuid, second_uuid)
+        self.assertRegex(
+            first_uuid,
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        )
+        sleep.assert_called_once_with(1)
+
+    def test_pending_scan_notification_replays_once_after_resume(self):
+        slot_key = "2026-07-28@09:00"
+        state = {
+            "scan_slots": {slot_key: {"status": "completed", "message_id": ""}},
+            "pending_scan_notifications": {
+                slot_key: {
+                    "now": "2026-07-28T09:00:00+08:00",
+                    "slot_label": "晨间扫描",
+                    "spec": {"keyword_count": 136, "module_count": 6},
+                    "review_result": {"new_count": 16},
+                }
+            },
+        }
+        with (
+            mock.patch.dict(
+                briefing.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "1"},
+            ),
+            mock.patch.object(
+                briefing,
+                "_send_scan_message",
+                return_value=("om_replayed", "bot"),
+            ) as send,
+            mock.patch.object(briefing, "_append_event") as append_event,
+        ):
+            result = briefing._flush_pending_scan_notifications(
+                datetime(2026, 7, 28, 10, 0, tzinfo=briefing.HKT),
+                state,
+            )
+
+        self.assertEqual(
+            result,
+            [{"slot": slot_key, "message_id": "om_replayed"}],
+        )
+        self.assertEqual(state["pending_scan_notifications"], {})
+        self.assertEqual(
+            state["scan_slots"][slot_key]["message_id"],
+            "om_replayed",
+        )
+        self.assertEqual(state["outbound_message_ids"], ["om_replayed"])
+        send.assert_called_once()
+        append_event.assert_called_once()
+
     def test_empty_semantic_dedupe_reports_zero_history_shards(self):
         result = briefing.agent_semantic_deduplicate_candidates(
             [],
