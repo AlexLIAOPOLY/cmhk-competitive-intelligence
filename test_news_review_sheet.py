@@ -48,7 +48,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             }
         )
         self.assertTrue(keep)
-        self.assertEqual(reason, "香港直接竞对新闻")
+        self.assertEqual(reason, "待AI审核")
 
     def test_seven_day_agentic_window_is_rejected_before_review(self):
         keep, reason = review_sheet._review_news_candidate(
@@ -70,21 +70,23 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertFalse(keep)
         self.assertEqual(reason, "新闻搜索入库窗口异常")
 
-    def test_competitor_query_metadata_alone_is_not_entity_evidence(self):
-        relevant, reason = review_sheet._competitor_relevance(
+    def test_competitor_query_metadata_is_forwarded_to_ai(self):
+        keep, reason = review_sheet._review_news_candidate(
             {
                 "title": "Panthers player eager to return after injury",
                 "snippet": "The football player discussed the upcoming season.",
                 "source": "Sports News",
                 "url": "https://example.com/sports/player-return",
+                "published_at": "2026-07-26T08:00:00+08:00",
+                "search_date": "2026-07-26",
                 "keywords": ["HKT", "csl"],
                 "module": "竞争对手",
             }
         )
-        self.assertFalse(relevant)
-        self.assertEqual(reason, "未直接关联竞对或香港电信市场")
+        self.assertTrue(keep)
+        self.assertEqual(reason, "待AI审核")
 
-    def test_ambiguous_csl_sports_reference_is_not_competitor_news(self):
+    def test_ambiguous_csl_sports_reference_reaches_ai_review(self):
         keep, reason = review_sheet._review_news_candidate(
             {
                 "title": "Panthers player eager to return after injury",
@@ -97,8 +99,24 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 "module": "竞争对手",
             }
         )
-        self.assertFalse(keep)
-        self.assertEqual(reason, "生活、体育或误命中新闻")
+        self.assertTrue(keep)
+        self.assertEqual(reason, "待AI审核")
+
+    def test_manufacturing_innovation_agreement_reaches_ai_review(self):
+        keep, reason = review_sheet._review_news_candidate(
+            {
+                "title": "特区政府与国家工信部签署协议推进共建制造业创新中心",
+                "snippet": "双方共同支持在香港建设制造业创新中心。",
+                "source": "香港商报",
+                "url": "https://www.hkcd.com.hk/hkcdweb/content/2026/07/28/content_8767010.html",
+                "published_at": "2026-07-28T14:58:59+08:00",
+                "search_date": "2026-07-28",
+                "keywords": ["工信部"],
+                "module": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+            }
+        )
+        self.assertTrue(keep)
+        self.assertEqual(reason, "待AI审核")
 
     def _existing_row(self):
         return [

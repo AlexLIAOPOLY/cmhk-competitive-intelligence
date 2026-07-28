@@ -84,7 +84,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(trace["attempts"], 2)
         self.assertEqual(plans[0]["canonical_competitor"], "HGC")
 
-    def test_agentic_plan_keeps_monitoring_term_relevance_guard(self):
+    def test_agentic_plan_forwards_semantic_results_without_literal_guard(self):
         raw = b"""<?xml version="1.0" encoding="UTF-8"?>
         <rss><channel><item>
           <title>Carrier lifts annual cash generation outlook after strong quarter</title>
@@ -118,15 +118,15 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(items[0]["keywords"], ["T-Mobile"])
         self.assertEqual(items[0]["search_origin"], "agentic_expansion")
         unrelated = raw.replace(b"T-Mobile raised", b"The mobile group raised")
-        self.assertEqual(
-            digest._parse_news_feed(
-                unrelated,
-                **common,
-                semantic_relevance=True,
-                search_origin="agentic_expansion",
-            ),
-            [],
+        semantic_items = digest._parse_news_feed(
+            unrelated,
+            **common,
+            semantic_relevance=True,
+            search_origin="agentic_expansion",
         )
+        self.assertEqual(len(semantic_items), 1)
+        self.assertFalse(semantic_items[0]["literal_keyword_match"])
+        self.assertEqual(semantic_items[0]["keywords"], ["T-Mobile"])
 
     def test_agentic_plan_is_additive_and_deduplicates_existing_queries(self):
         existing = {'"hkt" earnings'}

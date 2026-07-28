@@ -260,7 +260,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["category"], "竞对动态")
         self.assertIn("竞争格局变化", result["inclusion_reason"])
 
-    def test_explicit_taiwan_evidence_overrides_ai_hong_kong_region(self):
+    def test_region_is_not_overridden_by_hard_coded_place_rules(self):
         result = briefing._validated_ai_copy(
             {
                 "title": "辉达代理AI RTX Spark携手联发科",
@@ -280,28 +280,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 "jurisdiction": "TW",
             },
         )
-        self.assertEqual(result["region"], "国际/行业")
-
-    def test_explicit_hong_kong_evidence_keeps_local_region(self):
-        self.assertEqual(
-            briefing._enforce_region_from_source_evidence(
-                "香港本地",
-                {"source_title": "台湾企业在香港推出新服务"},
-            ),
-            "香港本地",
-        )
-
-    def test_mainland_ministry_evidence_overrides_ai_hong_kong_region(self):
-        self.assertEqual(
-            briefing._enforce_region_from_source_evidence(
-                "香港本地",
-                {
-                    "source_title": "工业和信息化部发文提升中小企业数字化转型服务供给",
-                    "source_summary": "工信部发布政策，支持内地中小企业数字化转型。",
-                },
-            ),
-            "国际/行业",
-        )
+        self.assertEqual(result["region"], "香港本地")
 
     def test_competitor_route_requires_competitor_category(self):
         with self.assertRaisesRegex(RuntimeError, "竞对直通必须归为竞对动态"):
@@ -329,7 +308,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 },
             )
 
-    def test_candidate_editor_receives_module_and_rule_category(self):
+    def test_candidate_editor_receives_non_binding_search_hints(self):
         payload = briefing._candidate_editor_input(
             "1234567890abcdef",
             {
@@ -341,7 +320,9 @@ class StrategicBriefingTests(unittest.TestCase):
             },
         )
         self.assertEqual(payload["monitoring_module"], "竞争对手")
-        self.assertEqual(payload["rule_category"], "竞对动态")
+        self.assertEqual(payload["upstream_category_hint"], "竞对动态")
+        self.assertNotIn("competitor_candidate", payload)
+        self.assertNotIn("monitoring_scope_confirmed", payload)
         self.assertIn("T-Mobile", payload["matched_keywords"])
         self.assertIn("业绩或现金流指引", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("地域与分类是两个独立维度", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
@@ -354,6 +335,22 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn(
             "不得再要求关联某家竞对",
             briefing._STRATEGIC_INCLUSION_GUIDANCE,
+        )
+        self.assertIn(
+            "香港监管政策、牌照频谱及政府产业政策",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "香港本地运营商和本地竞对动态同等重要",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "其他国际/行业新闻应更精选",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "不是程序硬拦截",
+            briefing._SOFT_PRIORITY_GUIDANCE,
         )
 
     def test_non_competitor_strategic_keyword_signal_is_included(self):
@@ -397,6 +394,48 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_signal_type"], "监管政策")
         self.assertEqual(result[0]["ai_business_impact"], "合规与牌照")
 
+    def test_manufacturing_innovation_agreement_reaches_ai_and_can_be_included(self):
+        item = {
+            "module": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+            "title": "特区政府与国家工信部签署协议推进共建制造业创新中心",
+            "snippet": "双方深化内地和香港产业合作，共同支持在香港建设制造业创新中心。",
+            "keywords": ["工信部"],
+            "source": "香港商报",
+            "url": "https://www.hkcd.com.hk/hkcdweb/content/2026/07/28/content_8767010.html",
+        }
+        ai_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "title": "特区政府与工信部共建制造业创新中心",
+                    "summary": "双方签署合作协议，在香港建设制造业创新中心并深化产业合作。",
+                    "should_include": True,
+                    "region": "香港本地",
+                    "category": "宏观与政策",
+                    "keywords": "工信部",
+                    "inclusion_reason": "正式合作协议推动香港产业基础设施及关键技术发展。",
+                    "region_reason": "签约主体包括香港特区政府，项目明确在香港建设。",
+                    "decision_path": "战略信号",
+                    "signal_type": "监管政策",
+                    "business_impact": "资本配置",
+                    "exclusion_code": "无",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing, "_call_internal_ai", return_value=ai_result
+            ) as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_region"], "香港本地")
+        self.assertEqual(result[0]["ai_category"], "宏观与政策")
+        self.assertEqual(ai_call.call_count, 1)
+
     def test_strategic_signal_requires_concrete_business_impact(self):
         with self.assertRaisesRegex(RuntimeError, "缺少具体业务影响"):
             briefing._validated_ai_copy(
@@ -419,9 +458,8 @@ class StrategicBriefingTests(unittest.TestCase):
                 allowed_keywords="AI",
             )
 
-    def test_commentary_without_concrete_event_cannot_enter_strategic_route(self):
-        with self.assertRaisesRegex(RuntimeError, "观点或评论未包含"):
-            briefing._validated_ai_copy(
+    def test_commentary_decision_is_not_overridden_by_regex(self):
+        result = briefing._validated_ai_copy(
                 {
                     "title": "评论员分析地区战争对市场的影响",
                     "summary": "评论员讨论地区战争可能带来的长期市场风险。",
@@ -444,10 +482,10 @@ class StrategicBriefingTests(unittest.TestCase):
                     "source_summary": "节目嘉宾分析战争可能造成的政治和市场影响。",
                 },
             )
+        self.assertTrue(result["should_include"])
 
-    def test_generic_trend_without_new_event_cannot_enter_strategic_route(self):
-        with self.assertRaisesRegex(RuntimeError, "缺少可验证的新动作"):
-            briefing._validated_ai_copy(
+    def test_generic_trend_decision_is_not_overridden_by_regex(self):
+        result = briefing._validated_ai_copy(
                 {
                     "title": "中国AI四强追赶美国",
                     "summary": "文章比较中国与美国人工智能企业的整体发展趋势。",
@@ -470,10 +508,10 @@ class StrategicBriefingTests(unittest.TestCase):
                     "source_summary": "文章比较两国企业的整体发展趋势。",
                 },
             )
+        self.assertTrue(result["should_include"])
 
-    def test_stock_market_movement_cannot_enter_strategic_route(self):
-        with self.assertRaisesRegex(RuntimeError, "股价、行情或市场情绪"):
-            briefing._validated_ai_copy(
+    def test_stock_market_decision_is_not_overridden_by_regex(self):
+        result = briefing._validated_ai_copy(
                 {
                     "title": "韩股重挫AI晶片股暴跌",
                     "summary": "AI相关疑虑导致晶片股价大幅下跌。",
@@ -496,8 +534,9 @@ class StrategicBriefingTests(unittest.TestCase):
                     "source_summary": "韩国股市下跌，晶片股价格大幅波动。",
                 },
             )
+        self.assertTrue(result["should_include"])
 
-    def test_hard_policy_exclusion_is_resolved_not_deferred(self):
+    def test_business_candidate_always_reaches_ai_review(self):
         item = {
             "module": "基础设施/网络/技术类",
             "category": "行业动态",
@@ -542,15 +581,15 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.polish_candidates_before_review([item])
 
-        self.assertEqual(result, [])
-        self.assertEqual(call.call_count, 0)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(call.call_count, 1)
         audit = next(
             payload
             for path, payload in writes
             if path == briefing.AI_EDITOR_AUDIT_PATH
         )
         self.assertEqual(audit["resolved_count"], 1)
-        self.assertEqual(audit["excluded_count"], 1)
+        self.assertEqual(audit["excluded_count"], 0)
         self.assertEqual(audit["deferred_count"], 0)
 
     def test_review_copy_uses_source_title_and_summary_when_ai_omits_format_fields(self):
@@ -828,9 +867,8 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["business_impact"], "竞争格局")
         self.assertEqual(result["exclusion_code"], "无")
 
-    def test_competitor_candidate_cannot_be_rejected_for_lack_of_strategic_value(self):
-        with self.assertRaisesRegex(RuntimeError, "只能因主体误判或明确噪音"):
-            briefing._validated_ai_copy(
+    def test_ai_competitor_decision_is_not_overridden_by_code(self):
+        result = briefing._validated_ai_copy(
                 {
                     "title": "AT&T开展社区数字技能培训",
                     "summary": "AT&T在当地社区开设数字技能培训项目并向居民提供设备。",
@@ -855,6 +893,7 @@ class StrategicBriefingTests(unittest.TestCase):
                     "keywords": ["AT&T"],
                 },
             )
+        self.assertFalse(result["should_include"])
 
     def test_confirmed_competitor_event_is_included_even_when_routine(self):
         item = {
@@ -1033,7 +1072,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertTrue(audit["continued_with_partial_results"])
         self.assertFalse(audit["write_blocked"])
 
-    def test_editor_retries_ai_that_denies_configured_competitor_scope(self):
+    def test_cached_ai_business_decision_is_not_overridden_by_code(self):
         item = {
             "module": "竞争对手",
             "category": "竞对动态",
@@ -1058,16 +1097,6 @@ class StrategicBriefingTests(unittest.TestCase):
             "exclusion_code": "同名或主体误判",
             "editor_version": briefing.AI_EDITOR_VERSION,
         }
-        corrected = {
-            **wrong,
-            "should_include": True,
-            "category": "竞对动态",
-            "inclusion_reason": "KDDI是正式监控的国际对标运营商，合作事项属于竞对动态。",
-            "decision_path": "竞对直通",
-            "signal_type": "竞对经营动作",
-            "business_impact": "客户与渠道",
-            "exclusion_code": "无",
-        }
         with (
             mock.patch.object(
                 briefing,
@@ -1080,17 +1109,12 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_call_internal_ai",
-                return_value=corrected,
             ) as ai_call,
         ):
             result = briefing.polish_candidates_before_review([item])
 
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["ai_category"], "竞对动态")
-        self.assertTrue(ai_call.called)
-        self.assertTrue(
-            ai_call.call_args.args[1].find("monitoring_scope_confirmed") >= 0
-        )
+        self.assertEqual(result, [])
+        ai_call.assert_not_called()
 
     def test_semantic_agent_deduplicates_same_event_with_different_headline(self):
         item = {
@@ -1366,7 +1390,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["deferred"], [])
         ai_call.assert_not_called()
 
-    def test_candidate_editor_marks_verified_competitor_context(self):
+    def test_candidate_editor_passes_competitor_hint_without_prejudging(self):
         payload = briefing._candidate_editor_input(
             "1234567890abcdef",
             {
@@ -1374,52 +1398,11 @@ class StrategicBriefingTests(unittest.TestCase):
                 "title": "HKBN launches a broadband service update",
                 "snippet": "HKBN announced the service change in Hong Kong.",
                 "keywords": ["HKBN"],
+                "canonical_competitor": "HKBN",
             },
         )
-        self.assertTrue(payload["competitor_candidate"])
-
-    def test_ambiguous_competitor_alias_requires_telecom_context(self):
-        self.assertFalse(
-            briefing._is_competitor_candidate(
-                {
-                    "module": "竞争对手",
-                    "title": "Player returns after injury",
-                    "snippet": "CSL reporter interviews the football player.",
-                    "keywords": ["csl"],
-                }
-            )
-        )
-
-    def test_competitor_plan_label_does_not_turn_publisher_name_into_subject(self):
-        self.assertFalse(
-            briefing._is_competitor_candidate(
-                {
-                    "module": "竞争对手",
-                    "category": "行业动态",
-                    "canonical_competitor": "i-CABLE",
-                    "title": "日本推理小说作家离世",
-                    "snippet": "日本作家因病离世，报道来自i-cable.com。",
-                    "keywords": ["i-CABLE"],
-                    "source": "i-cable.com",
-                    "url": "https://news.google.com/example",
-                }
-            )
-        )
-
-    def test_upstream_competitor_category_does_not_override_subject_evidence(self):
-        self.assertFalse(
-            briefing._is_competitor_candidate(
-                {
-                    "module": "竞争对手",
-                    "category": "竞对动态",
-                    "title": "泽连斯基访美讨论俄乌战争",
-                    "snippet": "The leaders discussed the war and regional security.",
-                    "keywords": ["Globe"],
-                    "source": "The Boston Globe",
-                    "url": "https://example.com/world/zelensky",
-                }
-            )
-        )
+        self.assertEqual(payload["configured_competitor_hint"], "HKBN")
+        self.assertNotIn("competitor_candidate", payload)
 
     def test_editor_tells_agent_to_distinguish_hong_kong_csl_from_csl_limited(self):
         item = {

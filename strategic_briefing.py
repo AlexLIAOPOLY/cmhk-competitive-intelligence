@@ -40,7 +40,7 @@ NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 14
+AI_EDITOR_VERSION = 16
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 AI_EDITOR_SINGLE_RETRY_LIMIT = max(
     0,
@@ -55,7 +55,7 @@ SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE = max(
     min(300, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE", "180"))),
 )
 _CATEGORY_CLASSIFICATION_GUIDANCE = (
-    "分类必须结合monitoring_module、rule_category、新闻主体和事件实质综合判断。"
+    "分类必须结合monitoring_module、upstream_category_hint、新闻主体和事件实质综合判断。"
     "当主体是T-Mobile、中国电信、HKT、Vodafone等被监测运营商，且内容是财报、"
     "业绩或现金流指引、用户与收入变化、产品资费、网络建设、业务合作、并购投资、"
     "管理层或经营策略时，应归为‘竞对动态’。"
@@ -69,8 +69,7 @@ _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "AI、算力、CPU、基站、港澳等通用关键词不能证明标题中的公司就是被监测竞对，"
     "不得据此虚构‘被监测竞对’身份。"
     "不要因为地域是‘国际/行业’就把分类写成‘行业动态’；地域与分类是两个独立维度。"
-    "rule_category是规则层初判，除非正文证据明确表明其不适用，否则应优先沿用；"
-    "如需改写，必须依据事件实质选择更准确的业务分类。"
+    "upstream_category_hint只是搜索来源提示，不是规则结论；最终分类必须由你依据事件实质独立判断。"
 )
 _DECISION_PATHS = {"竞对直通", "战略信号", "排除"}
 _STRATEGIC_SIGNAL_TYPES = {
@@ -143,50 +142,6 @@ _COMPACT_EXCLUSION_CODES = {
     "8": "其他明确噪音",
     "0": "无",
 }
-_COMMENTARY_ONLY_RE = re.compile(
-    r"(?:评论员|評論員|评论|評論|观点|觀點|专栏|專欄|访谈|訪談|"
-    r"解读|解讀|需关注|需關注|是否|如果|如.{0,12}(?:会|會)|"
-    r"分析.{0,8}(?:影响|影響|前景|形势|形勢)|"
-    r"\bcommentary\b|\bopinion\b|\bcolumnist\b|\bpundit\b)",
-    re.I,
-)
-_MARKET_SENTIMENT_ONLY_RE = re.compile(
-    r"(?:股价|股價|股市|台股|臺股|韩股|韓股|抛售|拋售|大跌|暴跌|重挫|"
-    r"技术分析|技術分析|支撑压力|支撐壓力|目标价|目標價|买入评级|買入評級|"
-    r"\bstock(?:s)?\b|\bshare price\b|\bprice target\b|\btechnical analysis\b)",
-    re.I,
-)
-_STRATEGIC_IMPACT_EVIDENCE_RE = re.compile(
-    r"(?:电信|電信|电讯|電訊|通讯|通訊|运营商|運營商|网络|網絡|宽频|寬頻|"
-    r"5g|6g|频谱|頻譜|基站|卫星|衛星|海缆|海纜|云|雲|数据中心|數據中心|"
-    r"人工智能|\bai\b|算力|芯片|晶片|\bcpu\b|大模型|网络安全|網絡安全|"
-    r"监管|監管|合规|合規|牌照|政策|标准|標準|法案|"
-    r"收入|营收|營收|需求|成本|价格|價格|客户|客戶|用户|用戶|"
-    r"产品|產品|服务|服務|运营|運營|投资|投資|资本|資本|融资|融資|"
-    r"供应|供應|短缺|缺货|缺貨|产能|產能|出货|出貨|竞争|競爭|效率|性能|"
-    r"能源|石油|油价|油價|制裁|关税|關稅|禁运|禁運|封锁|封鎖|"
-    r"\b(?:telecom|carrier|network|broadband|spectrum|satellite|cloud|"
-    r"data cent(?:er|re)|chip|cybersecurity|regulation|compliance|license|"
-    r"revenue|demand|cost|price|customer|product|service|investment|capital|"
-    r"supply|shortage|capacity|competition|efficiency|performance|energy|"
-    r"oil|sanction|tariff|embargo|blockade)\b)",
-    re.I,
-)
-_CONCRETE_STRATEGIC_EVENT_RE = re.compile(
-    r"(?:发布|發布|公布|宣布|通过|通過|批准|生效|实施|實施|修订|修訂|"
-    r"上调|上調|下调|下調|转盈|轉盈|暴增|裁员|裁員|投资|投資|融资|融資|"
-    r"收购|收購|合并|合併|合作|签署|簽署|推出|上线|上線|部署|建设|建設|"
-    r"扩建|擴建|更新|升级|升級|出货|出貨|短缺|缺货|缺貨|转型|轉型|布局|"
-    r"成立|开设|開設|起诉|起訴|诉讼|訴訟|访问|訪問|会晤|會晤|"
-    r"中断|中斷|故障|攻击|攻擊|泄露|洩露|制裁|关税|關稅|"
-    r"停火|开战|開戰|撤军|撤軍|封锁|封鎖|禁运|禁運|"
-    r"报告.{0,20}(?:显示|顯示|指出|发现|發現|揭示|缩短|縮短|上升|下降)|"
-    r"\b(?:announc(?:e|ed|es)|launch(?:ed|es)?|deploy(?:ed|s)?|invest(?:ed|s)?|"
-    r"acquir(?:e|ed|es)|approv(?:e|ed|es)|enact(?:ed|s)?|effective|"
-    r"increas(?:e|ed|es)|decreas(?:e|ed|es)|outage|attack(?:ed|s)?|"
-    r"sanction(?:ed|s)?|tariff(?:s)?|ceasefire)\b)",
-    re.I,
-)
 _STRATEGIC_INCLUSION_GUIDANCE = (
     "必须按以下双通道标准判断，禁止使用‘有战略价值/无战略价值’作为没有事实依据的自由裁量。"
     "第一通道是‘竞对直通’：标题或摘要确认正式监控运营商是事件主体、事件对象或被实质讨论的企业，"
@@ -215,6 +170,13 @@ _STRATEGIC_INCLUSION_GUIDANCE = (
     "资本与并购、网络安全、宏观与地缘、无；business_impact只能取收入与需求、成本与效率、"
     "客户与渠道、产品与定价、网络与运营、合规与牌照、资本配置、供应韧性、竞争格局、无；"
     "入选时exclusion_code必须为‘无’，排除时signal_type和business_impact必须为‘无’。"
+)
+_SOFT_PRIORITY_GUIDANCE = (
+    "内容组合采用AI软优先级，不是程序硬拦截：香港监管政策、牌照频谱及政府产业政策，与香港本地"
+    "运营商和本地竞对动态同等重要、同列最高优先级，不得因为不是竞对新闻而降级。"
+    "经语义核实的正式监控竞对信息仍按竞对直通处理。其他国际/行业新闻应更精选：只有出现具体新"
+    "事件，并能明确说明对香港电信市场、CMHK业务决策或关键国际对标的影响时才纳入；只有宽泛的"
+    "海外行业趋势、一般性科技消息或与香港业务联系薄弱的国际新闻应排除。"
 )
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
@@ -1654,52 +1616,12 @@ _META_SUMMARY_PREFIX = re.compile(
     r"^(?:这条|该条|这则|该则|本条|本新闻|该新闻|本报道|该报道|本文|此文|"
     r"当前来源|这项内容|该内容|这项动态|该动态)"
 )
-_EXPLICIT_NON_HK_EVENT_RE = re.compile(
-    r"(?:台湾|台灣|台厂|台廠|台股|台积电|台積電|联发科|聯發科|"
-    r"鸿海|鴻海|台北|臺北|台中|臺中|高雄|新竹|"
-    r"中国大陆|中國大陸|中国内地|中國內地|大陆|大陸|"
-    r"工业和信息化部|工業和信息化部|工信部|商务部|商務部|国务院|國務院|"
-    r"北京|上海|深圳|广州|廣州|杭州|南京|成都|重庆|重慶|"
-    r"\bmainland china\b|\bbeijing\b|\bshanghai\b|\bshenzhen\b|"
-    r"\btaiwan\b|\btaipei\b|\bmedIATEK\b)",
-    re.I,
-)
-_EXPLICIT_HK_EVENT_RE = re.compile(
-    r"(?:hong kong|香港|ofca|通讯事务管理局|通訊事務管理局|"
-    r"数码港|數碼港|科学园|科學園|河套|北都|新界|九龙|九龍)",
-    re.I,
-)
 _SIMPLIFIED_CHINESE_CONVERTER = OpenCC("t2s")
 
 
 def _to_simplified_chinese(value: Any, limit: int) -> str:
     """Normalize model-authored Chinese copy before it reaches any consumer."""
     return _clean_text(_SIMPLIFIED_CHINESE_CONVERTER.convert(str(value or "")), limit)
-
-
-def _enforce_region_from_source_evidence(region: str, source_item: dict[str, Any] | None) -> str:
-    """Reject a Hong Kong label when the source explicitly describes a non-HK event."""
-    if region != "香港本地" or not isinstance(source_item, dict):
-        return region
-    evidence = " ".join(
-        _clean_text(source_item.get(key), limit)
-        for key, limit in (
-            ("source_title", 500),
-            ("title", 500),
-            ("source_summary", 1800),
-            ("snippet", 1800),
-            ("summary", 1800),
-        )
-    )
-    jurisdiction = _clean_text(source_item.get("jurisdiction"), 20).upper()
-    has_hk_evidence = bool(_EXPLICIT_HK_EVENT_RE.search(evidence))
-    has_non_hk_evidence = bool(_EXPLICIT_NON_HK_EVENT_RE.search(evidence))
-    if not has_hk_evidence and (
-        has_non_hk_evidence
-        or jurisdiction in {"CN", "CHN", "TW", "TWN"}
-    ):
-        return "国际/行业"
-    return region
 
 
 def _candidate_editor_key(item: dict[str, Any]) -> str:
@@ -1806,7 +1728,6 @@ def _validated_ai_copy(
         business_impact = business_impact or "无"
     if region not in {"香港本地", "国际/行业"}:
         raise RuntimeError("公司内部 AI 未返回有效地域")
-    region = _enforce_region_from_source_evidence(region, source_item)
     if not category:
         raise RuntimeError("公司内部 AI 未返回分类")
     if should_include and not keywords:
@@ -1831,8 +1752,6 @@ def _validated_ai_copy(
                 raise RuntimeError("竞对直通必须归为竞对动态")
             if business_impact == "无" or exclusion_code != "无":
                 raise RuntimeError("竞对直通缺少具体业务影响或错误填写排除原因")
-            if isinstance(source_item, dict) and not _is_competitor_candidate(source_item):
-                raise RuntimeError("竞对直通缺少正文中的正式监控竞对主体证据")
         elif decision_path == "战略信号":
             if not should_include:
                 raise RuntimeError("已确认战略信号不得被排除")
@@ -1840,30 +1759,6 @@ def _validated_ai_copy(
                 raise RuntimeError("战略信号必须使用具体的非竞对信号类型")
             if business_impact == "无" or exclusion_code != "无":
                 raise RuntimeError("战略信号缺少具体业务影响或错误填写排除原因")
-            if isinstance(source_item, dict):
-                raw_source_evidence = " ".join(
-                    _clean_text(source_item.get(field), 1800)
-                    for field in (
-                        "source_title",
-                        "title",
-                        "source_summary",
-                        "snippet",
-                        "summary",
-                        "description",
-                    )
-                )
-                source_evidence = f"{raw_source_evidence} {title} {summary}"
-                if (
-                    _COMMENTARY_ONLY_RE.search(source_evidence)
-                    and not _CONCRETE_STRATEGIC_EVENT_RE.search(raw_source_evidence)
-                ):
-                    raise RuntimeError("观点或评论未包含可验证的具体战略事件")
-                if _MARKET_SENTIMENT_ONLY_RE.search(raw_source_evidence):
-                    raise RuntimeError("股价、行情或市场情绪不是独立战略事件")
-                if not _CONCRETE_STRATEGIC_EVENT_RE.search(raw_source_evidence):
-                    raise RuntimeError("战略信号缺少可验证的新动作或数据变化")
-                if not _STRATEGIC_IMPACT_EVIDENCE_RE.search(raw_source_evidence):
-                    raise RuntimeError("战略信号缺少原文中的具体业务影响证据")
         else:
             if should_include:
                 raise RuntimeError("排除通道不得标记为纳入")
@@ -1871,29 +1766,6 @@ def _validated_ai_copy(
                 raise RuntimeError("排除通道不得声称存在已确认战略信号")
             if exclusion_code == "无":
                 raise RuntimeError("排除通道必须提供具体排除原因")
-            if (
-                isinstance(source_item, dict)
-                and _is_competitor_candidate(source_item)
-                and exclusion_code
-                not in {
-                    "同名或主体误判",
-                    "体育娱乐或生活噪音",
-                    "关键词偶然出现",
-                    "其他明确噪音",
-                }
-            ):
-                raise RuntimeError("疑似竞对事件只能因主体误判或明确噪音被排除")
-    if (
-        not should_include
-        and isinstance(source_item, dict)
-        and _is_competitor_candidate(source_item)
-        and re.search(
-            r"(?:不是|非|不属于|未列入|不在).{0,8}(?:目标|监控|被监测).{0,5}竞对|"
-            r"(?:目标|监控|被监测).{0,5}竞对.{0,8}(?:不是|非|不属于|未列入|不在)",
-            inclusion_reason,
-        )
-    ):
-        raise RuntimeError("公司内部 AI 错误否认正式监控配置中的竞对范围")
     return {
         **result,
         "should_include": should_include,
@@ -1968,17 +1840,6 @@ def _expanded_compact_decision(
         impact = "无"
         if exclusion == "无":
             raise RuntimeError("公司内部 AI 紧凑补审缺少排除原因")
-        if (
-            _is_competitor_candidate(source_item)
-            and exclusion
-            not in {
-                "同名或主体误判",
-                "体育娱乐或生活噪音",
-                "关键词偶然出现",
-                "其他明确噪音",
-            }
-        ):
-            exclusion = "其他明确噪音"
     title = _clean_text(
         source_item.get("source_title") or source_item.get("title"), 120
     )
@@ -2009,134 +1870,7 @@ def _expanded_compact_decision(
     }
 
 
-def _deterministic_policy_exclusion(
-    error: Exception, *, source_item: dict[str, Any],
-) -> dict[str, Any] | None:
-    message = str(error)
-    if "股价、行情或市场情绪" in message:
-        exclude_code = "6"
-    elif (
-        "观点或评论未包含" in message
-        or "战略信号缺少可验证的新动作" in message
-    ):
-        exclude_code = "5"
-    elif "战略信号缺少原文中的具体业务影响证据" in message:
-        exclude_code = "6"
-    else:
-        return None
-    region = _clean_text(source_item.get("region"), 20)
-    compact = _expanded_compact_decision(
-        {
-            "route": "X",
-            "signal": "0",
-            "impact": "0",
-            "exclude": exclude_code,
-            "region": "H" if region == "香港本地" else "I",
-        },
-        source_item=source_item,
-    )
-    return _validated_ai_decision(
-        compact,
-        allowed_keywords=source_item.get("keywords"),
-        source_item=source_item,
-    )
-
-
-def _deterministic_source_exclusion(
-    source_item: dict[str, Any],
-) -> dict[str, Any] | None:
-    if (
-        _clean_text(source_item.get("module"), 80) == "竞争对手"
-        or _is_competitor_candidate(source_item)
-    ):
-        return None
-    evidence = " ".join(
-        _clean_text(source_item.get(field), 1800)
-        for field in (
-            "source_title",
-            "title",
-            "source_summary",
-            "snippet",
-            "summary",
-            "description",
-        )
-    )
-    if _MARKET_SENTIMENT_ONLY_RE.search(evidence):
-        exclude_code = "6"
-    elif not _CONCRETE_STRATEGIC_EVENT_RE.search(evidence):
-        exclude_code = "5"
-    elif not _STRATEGIC_IMPACT_EVIDENCE_RE.search(evidence):
-        exclude_code = "6"
-    else:
-        return None
-    region = _clean_text(source_item.get("region"), 20)
-    compact = _expanded_compact_decision(
-        {
-            "route": "X",
-            "signal": "0",
-            "impact": "0",
-            "exclude": exclude_code,
-            "region": "H" if region == "香港本地" else "I",
-        },
-        source_item=source_item,
-    )
-    return _validated_ai_decision(
-        compact,
-        allowed_keywords=source_item.get("keywords"),
-        source_item=source_item,
-    )
-
-
-def _is_competitor_candidate(item: dict[str, Any]) -> bool:
-    if _clean_text(item.get("module"), 80) != "竞争对手":
-        return False
-    evidence = " ".join(
-        _clean_text(
-            item.get(field),
-            1800,
-        )
-        for field in (
-            "source_title",
-            "title",
-            "source_summary",
-            "snippet",
-            "summary",
-            "description",
-        )
-    )
-    for publisher in (
-        _clean_text(item.get("source"), 240),
-        urlparse(_clean_text(item.get("source_url") or item.get("url"), 1800)).netloc,
-    ):
-        publisher = publisher.removeprefix("www.")
-        if publisher:
-            evidence = re.sub(re.escape(publisher), " ", evidence, flags=re.I)
-    evidence = evidence.casefold()
-    telecom_context = bool(
-        re.search(
-            r"(?:hong kong|香港|telecom|telecommunications|mobile|carrier|"
-            r"network|broadband|5g|6g|tariff|price plan|电讯|電訊|电信|電信|"
-            r"通讯|通訊|运营商|運營商|网络|網絡|宽频|寬頻|套餐|资费|資費)",
-            evidence,
-            re.I,
-        )
-    )
-    ambiguous_keywords = {"csl", "1o1o", "1010", "now tv", "now e", "n mobile"}
-    keywords = item.get("keywords") or []
-    if isinstance(keywords, str):
-        keywords = re.split(r"[,，、;；|\n]+", keywords)
-    for keyword in (_clean_text(value, 100) for value in keywords):
-        normalized = keyword.casefold()
-        if len(normalized) < 2 or normalized not in evidence:
-            continue
-        if normalized in ambiguous_keywords and not telecom_context:
-            continue
-        return True
-    return False
-
-
 def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
-    competitor_candidate = _is_competitor_candidate(item)
     return {
         "id": key[:16],
         "title": _clean_text(item.get("source_title") or item.get("title"), 500),
@@ -2149,13 +1883,15 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
             1800,
         ),
         "monitoring_module": _clean_text(item.get("module"), 120),
-        "rule_category": _clean_text(item.get("category") or item.get("module"), 120),
+        "upstream_category_hint": _clean_text(
+            item.get("category") or item.get("module"), 120
+        ),
         "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
         "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
         "matched_keywords": _clean_text(item.get("keywords"), 800),
-        "rule_gate_reason": _clean_text(item.get("filter_reason"), 240),
-        "competitor_candidate": competitor_candidate,
-        "monitoring_scope_confirmed": competitor_candidate,
+        "configured_competitor_hint": _clean_text(
+            item.get("canonical_competitor"), 120
+        ),
     }
 
 
@@ -2173,16 +1909,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     deferred_reviews: list[dict[str, str]] = []
     for item in items:
         key = _candidate_editor_key(item)
-        source_exclusion = _deterministic_source_exclusion(item)
-        if source_exclusion is not None:
-            excluded_decisions[key] = source_exclusion
-            cache[key] = {
-                **source_exclusion,
-                "decision_only": True,
-                "editor_version": AI_EDITOR_VERSION,
-                "updated_at": _now_iso(),
-            }
-            continue
         existing = {
             "title": item.get("ai_title"),
             "summary": item.get("ai_summary"),
@@ -2236,7 +1962,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 pass
         pending.append((key, item))
 
-    pending.sort(key=lambda pair: not _is_competitor_candidate(pair[1]))
     single_retry_attempts = 0
     retry_budget_exhausted_count = 0
     compact_retry_batch_count = 0
@@ -2264,18 +1989,19 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "先判断should_include：只有新闻与输入matched_keywords中的至少一个监控词存在"
                     "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
                     "仅媒体提及、同名误命中、泛社会新闻或关键词没有正文证据时必须为false。"
-                    "competitor_candidate=true只表示上游发现了可能的竞对词命中，不能当作主体已经确认。"
-                    "competitor_candidate=false时更不能把通用关键词命中的任意公司臆断为被监测竞对。"
+                    "程序不会用关键词正则、地域词表或内容类型规则替你提前排除、纳入或改写结论；"
+                    "所有竞对身份、战略价值、地域和分类均由你结合标题、摘要、monitoring_module、"
+                    "matched_keywords和configured_competitor_hint逐条审核。"
                     "必须结合标题和摘要核实被监测竞对确实是事件主体、事件对象或被实质讨论的企业；"
                     "仅缩写重名、媒体名称、体育队名、人名、地名或正文中偶然出现监控词时必须为false。"
                     "特别注意同名实体：只有香港电讯品牌csl才是竞对，澳洲生物科技公司CSL Limited及其"
                     "股票、利润、评级不是竞对；1010若是数字或股价、CTG若指Chattogram地名、"
                     "HGC若指无关公司或职位缩写，也必须判false。必须按事件语境判断，不能只看命中词。"
-                    "matched_keywords来自正式监控配置；当competitor_candidate=true且标题或摘要能够确认"
-                    "命中的运营商确为事件主体、合作对象或被实质讨论的企业时，该运营商就是被监测竞对，"
+                    "matched_keywords来自正式监控配置；当标题或摘要能够确认命中的运营商确为"
+                    "事件主体、合作对象或被实质讨论的企业时，该运营商就是被监测竞对，"
                     "不得再以‘不是目标竞对、不是香港公司、缺乏香港影响’为由判false。"
-                    "monitoring_scope_confirmed=true是程序依据正式配置给出的权威范围标记，不得否认；"
-                    "它不代表事件一定相关，仍须排除媒体名、同名实体和偶然提词。"
+                    "configured_competitor_hint若非空，仅说明搜索计划来自该竞对配置，不代表事件"
+                    "一定相关；你仍须根据语义排除媒体名、同名实体和偶然提词。"
                     "国际对标运营商同样属于竞对监控范围，包括但不限于KDDI、AT&T、Verizon、T-Mobile、"
                     "Vodafone、Orange、Telstra、Singtel、NTT Docomo、SoftBank和Jio。"
                     "一旦核实确为竞对信息，无论事件规模大小，should_include都必须为true。"
@@ -2291,6 +2017,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "香港媒体报道中国内地或海外事件仍应判为国际/行业。"
                     f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                     f"{_STRATEGIC_INCLUSION_GUIDANCE}"
+                    f"{_SOFT_PRIORITY_GUIDANCE}"
                     "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
                     "inclusion_reason必须写明‘具体事件事实→具体业务影响’，不得只写有或无战略价值。"
@@ -2316,7 +2043,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         request_map = {str(entry["id"]): entry for entry in request_items}
         validated_verbose: dict[str, dict[str, Any]] = {}
         verbose_errors: dict[str, RuntimeError] = {}
-        policy_excluded_verbose: dict[str, dict[str, Any]] = {}
         for key, item in batch:
             item_id = key[:16]
             try:
@@ -2329,19 +2055,10 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 )
             except RuntimeError as exc:
                 verbose_errors[item_id] = exc
-                policy_exclusion = _deterministic_policy_exclusion(
-                    exc,
-                    source_item=item,
-                )
-                if policy_exclusion is not None:
-                    policy_excluded_verbose[item_id] = policy_exclusion
         compact_response_map: dict[str, dict[str, Any]] = {}
         missing_from_verbose = [
             entry for entry in request_items
-            if (
-                entry["id"] not in validated_verbose
-                and entry["id"] not in policy_excluded_verbose
-            )
+            if entry["id"] not in validated_verbose
         ]
         if batch_call_succeeded and missing_from_verbose:
             compact_retry_batch_count += 1
@@ -2371,6 +2088,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         "判断规则只有两条：确认是正式监控竞对的真实事件就选C，除同名、媒体名、"
                         "体育娱乐生活噪音或偶然提词外不得排除；其他内容只有同时命中matched_keywords、"
                         "存在可验证的新动作或变化、且能落到明确业务影响时选S。"
+                        f"{_SOFT_PRIORITY_GUIDANCE}"
                         "纯评论、观点、形势讨论和没有新变化的分析选X。"
                         "只依据输入事实，不要Markdown。"
                     ),
@@ -2395,16 +2113,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 )
         for key, _item in batch:
             item_id = key[:16]
-            if item_id in policy_excluded_verbose:
-                policy_decision = policy_excluded_verbose[item_id]
-                excluded_decisions[key] = policy_decision
-                cache[key] = {
-                    **policy_decision,
-                    "decision_only": True,
-                    "editor_version": AI_EDITOR_VERSION,
-                    "updated_at": _now_iso(),
-                }
-                continue
             compact_entry = compact_response_map.get(key[:16])
             compact_edited: dict[str, Any] | None = None
             if item_id not in validated_verbose and compact_entry:
@@ -2453,20 +2161,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         allowed_keywords=_item.get("keywords"),
                         source_item=_item,
                     )
-                except RuntimeError as exc:
-                    policy_decision = _deterministic_policy_exclusion(
-                        exc,
-                        source_item=_item,
-                    )
-                    if policy_decision is not None:
-                        excluded_decisions[key] = policy_decision
-                        cache[key] = {
-                            **policy_decision,
-                            "decision_only": True,
-                            "editor_version": AI_EDITOR_VERSION,
-                            "updated_at": _now_iso(),
-                        }
-                        continue
+                except RuntimeError:
+                    compact_edited = None
             edited = validated_verbose.get(item_id) or compact_edited
             if edited is None:
                 batch_validation_error = verbose_errors.get(
@@ -2501,16 +2197,15 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
                             "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
                             "should_include只有在新闻与matched_keywords存在正文证据和战略信息价值时才为true。"
-                            "competitor_candidate=true只表示上游发现疑似竞对词命中，不能替代语义核实。"
+                            "程序不会用关键词正则、地域词表或内容类型规则替你提前作出业务判断。"
                             "先根据标题和摘要确认被监测竞对确实是事件主体、对象或被实质讨论的企业；"
                             "缩写重名、媒体名、体育队名、人名、地名及偶然提词必须排除。"
                             "特别注意：只有香港电讯品牌csl才是竞对；澳洲生物科技公司CSL Limited的"
                             "股票、利润和评级不是竞对。1010数字/股价、CTG地名、HGC无关缩写也必须排除。"
-                            "matched_keywords来自正式监控配置；competitor_candidate=true且标题或摘要确认"
-                            "命中的运营商是事件主体、合作对象或被实质讨论时，该运营商就是被监测竞对，"
+                            "matched_keywords来自正式监控配置；标题或摘要确认命中的运营商是事件主体、"
+                            "合作对象或被实质讨论时，该运营商就是被监测竞对，"
                             "不得以‘不是目标竞对、不是香港公司、缺乏香港影响’为由淘汰。"
-                            "monitoring_scope_confirmed=true是正式配置的权威范围标记，不得否认，"
-                            "但仍需排除媒体名、同名实体和偶然提词。"
+                            "configured_competitor_hint若非空仅是搜索来源提示，仍需由你审核语义。"
                             "KDDI、AT&T、Verizon、T-Mobile、Vodafone、Orange、Telstra、Singtel、"
                             "NTT Docomo、SoftBank、Jio等国际对标运营商也在竞对监控范围内。"
                             "确认是真实竞对信息后，无论事件大小should_include都必须为true；"
@@ -2518,6 +2213,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "管理层及资本市场信息都不得因不够重大而淘汰。"
                             f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                             f"{_STRATEGIC_INCLUSION_GUIDANCE}"
+                            f"{_SOFT_PRIORITY_GUIDANCE}"
                             "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
                             "并用顿号分隔；inclusion_reason必须写明具体事件事实到具体业务影响；"
                             "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
@@ -2544,19 +2240,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         source_item=_item,
                     )
                 except Exception as exc:
-                    policy_decision = _deterministic_policy_exclusion(
-                        exc,
-                        source_item=_item,
-                    )
-                    if policy_decision is not None:
-                        excluded_decisions[key] = policy_decision
-                        cache[key] = {
-                            **policy_decision,
-                            "decision_only": True,
-                            "editor_version": AI_EDITOR_VERSION,
-                            "updated_at": _now_iso(),
-                        }
-                        continue
                     error = _clean_text(exc, 240)
                     logging.error(
                         "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
@@ -2658,8 +2341,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         "policy": {
             "mode": "verbose_batch_then_compact_missing_review_then_bounded_item_retry",
             "batch_blocking": False,
-            "competitor_priority": True,
+            "ai_soft_priority": "香港政策监管=香港本地运营商>一般国际行业",
             "missing_output_is_not_business_exclusion": True,
+            "business_content_hard_filters": False,
         },
         "deferred": deferred_reviews,
     }

@@ -121,11 +121,6 @@ def _term_matches(text: str, term: str) -> bool:
     return False
 
 
-def _relevant(text: str, keywords: list[str]) -> bool:
-    meaningful = [item for item in keywords if len(_clean_text(item)) >= 2]
-    return not meaningful or any(_term_matches(text, item) for item in meaningful)
-
-
 def _parse_news_feed(
     raw: bytes,
     *,
@@ -172,24 +167,18 @@ def _parse_news_feed(
         if not (start_at <= published_at <= end_at):
             continue
         relevance_text = f"{title} {snippet}"
-        # Agentic Search broadens and refines the query, but every returned
-        # article must still match at least one associated monitoring term.
-        # This prevents search-engine fuzziness from displacing fixed results.
-        if not _relevant(relevance_text, keywords):
-            continue
         searchable = f"{relevance_text} {source}"
         digest = hashlib.sha1(f"{title.lower()}|{source.lower()}".encode("utf-8")).hexdigest()[:10]
         lowered = searchable.lower()
-        matched_keywords = [
+        literal_keywords = [
             item for item in keywords if _term_matches(searchable, item)
         ][:5]
-        literal_keyword_match = bool(matched_keywords)
+        literal_keyword_match = bool(literal_keywords)
+        matched_keywords = literal_keywords or list(dict.fromkeys(keywords))[:5]
         if canonical_competitor:
             matched_keywords = list(
                 dict.fromkeys([canonical_competitor, *matched_keywords])
             )[:6]
-        if semantic_relevance and not matched_keywords:
-            matched_keywords = list(dict.fromkeys(keywords))[:5]
         candidate = {
             "news_id": f"NEWS-{published_at:%Y%m%d}-{digest}",
             "title": title,

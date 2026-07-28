@@ -96,17 +96,12 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
         )
         self.assertEqual(items[0]["keywords"][0], "HKT")
         self.assertTrue(items[0]["is_hong_kong"])
-        self.assertFalse(vote_digest._is_noise(items[0]))
         self.assertEqual(items[0]["search_date"], "2026-07-24")
         self.assertEqual(
             items[0]["search_window_start"],
             "2026-07-23T00:00:00+08:00",
         )
         self.assertTrue(review_sheet._review_news_candidate(items[0])[0])
-        self.assertEqual(
-            review_sheet._competitor_relevance(items[0]),
-            (True, "香港直接竞对新闻"),
-        )
 
     def test_ampersand_brand_name_matches_title(self):
         self.assertTrue(

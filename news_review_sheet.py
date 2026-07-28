@@ -19,9 +19,6 @@ from typing import Any
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
-from local_competitor_keywords import all_aliases
-
-
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = ROOT / "strategy_briefing"
 LATEST_PATH = DATA_DIR / "news_discovery_latest.json"
@@ -1363,71 +1360,6 @@ def _crawl_item_id(*parts: Any) -> str:
     return "CRAWL-" + hashlib.sha1(raw.encode("utf-8")).hexdigest()[:20]
 
 
-def _review_candidate_reason(
-    record: dict[str, Any], source: dict[str, Any]
-) -> tuple[bool, str]:
-    from urllib.parse import urlparse
-
-    url = _text(record.get("final_url") or record.get("url"), 1600)
-    lower_url = url.lower()
-    title = _text(record.get("title"), 500)
-    lower_title = title.lower()
-    path = urlparse(url).path.lower()
-    source_type = _text(record.get("source_type"), 120)
-    local_competitor = _text(source.get("block"), 120) == "香港本地竞对"
-
-    if source_type in {
-        "commercial_data", "public_api", "government_statistics",
-        "government_api_docs", "government_open_data",
-    }:
-        return False, "数据、行情或统计接口"
-    if any(domain in lower_url for domain in (
-        "stockanalysis.com", "aastocks.com", "financialfilings.com"
-    )):
-        return False, "股票或财报聚合页"
-    if any(marker in path for marker in (
-        "/plans/", "/mobile_and_price_plans/", "/handsets/offer/"
-    )):
-        return False, "套餐或产品广告页"
-    if lower_title == "pdf extracted by pdftotext":
-        return False, "缺少可读标题的PDF"
-    if any(marker in lower_url for marker in (
-        "2024", "2025", "?prid=%2fpress%2fp25", "20250626"
-    )):
-        return False, "明显过期内容"
-    if "consumer price indices" in lower_title:
-        return False, "非竞对宏观数据"
-    if path.endswith("/gia/general/today.htm"):
-        return False, "新闻栏目首页"
-    if "ezone.hk/article/20073735" in lower_url:
-        return False, "与竞对官网同一事件重复"
-    if not local_competitor and any(marker in lower_title for marker in (
-        "net profit", "financial results", "reports aed"
-    )):
-        return False, "非香港竞对财务行情"
-    if not local_competitor and "/quarterly-earnings/" in lower_url:
-        return False, "非香港竞对财务行情"
-
-    individual_markers = (
-        "/news-updates/", "/en-newsroom/", "/insight/", "/article/",
-        "press.php?prid=", "/news/detail/", "/media-centre/news-releases/",
-        "/corp/news/press/", "/about/news/", "/gia/general/",
-        "/wwwcms/upload/web/", "/info/media_center/pr/",
-        "/newsroom/technology/", "newsroom.kddi.com/", "newsroom.bt.com/",
-        "news.sktelecom.com/en/", "/communication-room/press-room/",
-        "/news/press/sbkk/", "prnewswire.com/news-releases/", "/news/",
-    )
-    listing_suffixes = (
-        "/press-releases", "/press-room", "/media-releases", "/news",
-        "/press-release", "/press-archive",
-    )
-    if path.rstrip("/").endswith(listing_suffixes):
-        return False, "新闻或公告栏目首页"
-    if not any(marker in lower_url for marker in individual_markers):
-        return False, "静态栏目或资料页"
-    return True, "独立新闻或公告"
-
-
 def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     roots = [
         Path(__file__).resolve().parent / "curation_data" / "backups",
@@ -1488,10 +1420,6 @@ def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
                 filtered_reasons["跨配置行重复链接"] += 1
                 continue
             seen_urls.add(canonical_url)
-            keep, reason = _review_candidate_reason(record, source)
-            if not keep:
-                filtered_reasons[reason] += 1
-                continue
             title = _text(record.get("title") or url, 500)
             item = {
                 "config_row": row_key,
@@ -1536,198 +1464,6 @@ def _latest_crawl_results() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         "filtered_reasons": {},
         "group_notifications_paused": _group_notifications_paused(),
     }
-
-_LOCAL_COMPETITOR_RE = re.compile(
-    r"(?:\bhkt\b|\bpccw\b|\bcsl\b|\b1o1o\b|\b1010\b|\bhkbn\b|"
-    r"\bsmartone\b|\bhgc\b|\b3hk\b|\bctexcel\b|\bcuniq\b|"
-    r"香港电讯|香港電訊|电讯盈科|電訊盈科|香港宽频|香港寬頻|数码通|數碼通|"
-    r"和记电讯|和記電訊|3香港|有线宽频|有線寬頻|环球全域电讯|環球全域電訊|"
-    r"中国移动香港|中國移動香港|中国电信香港|中國電信香港)",
-    re.I,
-)
-_DIRECT_COMPETITOR_RE = re.compile(
-    r"(?:\bhkt\b|\bpccw\b|\bcsl\b|\b1o1o\b|\b1010\b|\bhkbn\b|"
-    r"\bsmartone\b|\bhgc\b|\b3\s*(?:hong kong|hk)\b|\bi[- ]?cable\b|"
-    r"\bctexcel\b|\bcuniq\b|hgc global communications|"
-    r"香港电讯|香港電訊|电讯盈科|電訊盈科|香港宽频|香港寬頻|数码通|數碼通|"
-    r"和记电讯|和記電訊|3香港|有线宽频|有線寬頻|环球全域电讯|環球全域電訊|"
-    r"中国电信香港|中國電信香港|中国联通香港|中國聯通香港)",
-    re.I,
-)
-_BENCHMARK_OPERATOR_RE = re.compile(
-    r"(?:china telecom|china unicom|ctexcel|cuniq|vodafone(?:three)?|bt group|"
-    r"deutsche telekom|telefonica|at&t|verizon|t-mobile|sk telecom|singtel|"
-    r"ntt docomo|\bdocomo\b|\bkddi\b|telstra|airtel|softbank|swisscom|"
-    r"\btelia\b|\btele2\b|\bkpn\b|proximus|ooredoo|\bzain\b|\bstc\b|"
-    r"etisalat|e&|orange group|ck hutchison|中国电信|中國電信|中国联通|中國聯通|"
-    r"英国电信|英國電信|德国电信|德國電信|西班牙电信|西班牙電信|"
-    r"沃达丰|沃達豐|新加坡电信|新加坡電信|软银|軟銀|韩国电信|韓國電信)",
-    re.I,
-)
-_OPERATOR_ACTION_RE = re.compile(
-    r"(?:launch|unveil|deploy|rollout|trial|pilot|partner|partnership|agreement|contract|"
-    r"acquir|merger|capex|network|spectrum|\b5g(?:-a)?\b|\b6g\b|"
-    r"open ran|\bran\b|broadband|fibre|fiber|tariff|pricing|price plan|enterprise|"
-    r"data cent(?:er|re)|cloud|edge|cyber|fraud|subscriber|customer|strategy|"
-    r"restructur|department|appoint|management|regulat|licen[cs]e|service outage|"
-    r"发布|發佈|推出|部署|试点|試點|"
-    r"合作|协议|協議|合同|收购|收購|并购|併購|投资|投資|资本开支|資本開支|"
-    r"网络|網絡|频谱|頻譜|基站|宽带|寬頻|资费|資費|套餐|企业业务|企業業務|"
-    r"数据中心|數據中心|云|雲|网络安全|網絡安全|诈骗|詐騙|用户|用戶|"
-    r"战略|戰略|重组|重組|部门|部門|任命|监管|監管|牌照)",
-    re.I,
-)
-_BENCHMARK_TOPIC_RE = re.compile(
-    r"(?:telecom|telecommunications|mobile operator|carrier|mobile network|spectrum|"
-    r"\b5g(?:-a)?\b|\b6g\b|open ran|\bran\b|broadband|fibre|fiber|roaming|esim|mvno|"
-    r"tariff|pricing|subscriber|enterprise connectivity|data cent(?:er|re)|cloud service|"
-    r"edge computing|cybersecurity|satellite|submarine cable|电讯|電訊|电信|電信|"
-    r"运营商|運營商|流动网络|流動網絡|移动网络|移動網絡|频谱|頻譜|基站|"
-    r"宽带|寬頻|漫游|漫遊|资费|資費|套餐|用户|用戶|企业连接|企業連接|"
-    r"数据中心|數據中心|云服务|雲服務|网络安全|網絡安全|卫星|衛星|海底电缆|海底電纜)",
-    re.I,
-)
-_CORPORATE_CHANGE_RE = re.compile(
-    r"(?:acquir|merger|joint venture|spin[- ]?off|stake sale|restructur|new department|"
-    r"appoint(?:s|ed|ment)?|chief executive|ceo succession|organization(?:al)? change|"
-    r"收购|收購|并购|併購|合资|合資|出售股权|出售股權|重组|重組|架构调整|架構調整|"
-    r"组织调整|組織調整|成立.{0,12}部门|成立.{0,12}部門|任命|换帅|換帥)",
-    re.I,
-)
-_NON_TELECOM_CORPORATE_RE = re.compile(
-    r"(?:automotive|automaker|motor group|boston dynamics|humanoid robot|robotics company|"
-    r"现代汽车|現代汽車|汽车集团|汽車集團|波士顿动力|波士頓動力|人形机器人|人形機器人)",
-    re.I,
-)
-_HK_TELECOM_MARKET_RE = re.compile(
-    r"(?:ofca|communications authority|telecom|telecommunications|mobile operator|carrier|"
-    r"mobile network|broadband|spectrum|\b5g(?:-a)?\b|\b6g\b|电讯|電訊|电信|電信|"
-    r"流动通讯|流動通訊|移动通讯|移動通訊|运营商|運營商|频谱|頻譜|宽频|寬頻|"
-    r"宽带|寬帶|网络服务|網絡服務|通讯事务管理局|通訊事務管理局)",
-    re.I,
-)
-_HONG_KONG_RE = re.compile(
-    r"(?:hong kong|\bhk\b|香港|ofca|itib|cyberport|science park|数码港|數碼港|科学园|科學園)",
-    re.I,
-)
-
-
-def _region_label(item: dict[str, Any]) -> str:
-    """Classify the event location without treating its publisher as evidence."""
-    title = _text(item.get("title"), 500)
-    snippet = _text(item.get("snippet"), 1800)
-    evidence = f"{title} {snippet}"
-    for publisher in (
-        _text(item.get("source"), 240),
-        _text(item.get("source_domain"), 240),
-    ):
-        if publisher:
-            evidence = re.sub(re.escape(publisher), " ", evidence, flags=re.I)
-    evidence = re.sub(r"\b(?:hk01|hong\s*kong\s*01)\b|香港\s*01", " ", evidence, flags=re.I)
-    evidence = _text(evidence, 2300)
-    if _LOCAL_COMPETITOR_RE.search(evidence) or _HONG_KONG_RE.search(evidence):
-        return "香港本地"
-    return "国际/行业"
-_STRATEGIC_RE = re.compile(
-    r"(?:telecom|telecommunications|mobile operator|carrier|\b5g(?:-a)?\b|\b6g\b|"
-    r"open ran|\bran\b|broadband|fibre|fiber|spectrum|mvno|esim|roaming|submarine cable|"
-    r"satellite|data cent(?:er|re)|cloud|edge computing|artificial intelligence|"
-    r"(?<![a-z])ai(?![a-z])|large language model|\bllm\b|ai agent|compute|semiconductor|"
-    r"chip|export control|entity list|cybersecurity|data privacy|cross-border data|"
-    r"digital infrastructure|smart city|sanction|strait of hormuz|iran|geopolit|"
-    r"电信|電信|运营商|運營商|网络|網絡|频谱|頻譜|基站|宽带|寬頻|数据中心|數據中心|"
-    r"云计算|雲計算|人工智能|大模型|算力|半导体|半導體|芯片|出口管制|实体清单|實體清單|"
-    r"网络安全|網絡安全|数据跨境|數據跨境|数字基建|數字基建|监管|監管|制裁|霍尔木兹)",
-    re.I,
-)
-_POLICY_RE = re.compile(
-    r"(?:government|policy|regulat|regulator|law|legislation|bill|licen[cs]e|competition authority|"
-    r"antitrust|data governance|privacy law|export control|entity list|sanction|subsidy|spectrum auction|"
-    r"ofca|communications authority|政府|政策|监管|監管|规管|規管|法规|法規|法案|立法|"
-    r"牌照|许可证|許可證|反垄断|反壟斷|竞争委员会|競爭事務委員會|数据治理|數據治理|"
-    r"隐私|私隱|出口管制|实体清单|實體清單|制裁|补贴|補貼|频谱拍卖|頻譜拍賣|"
-    r"national security|国家安全|國家安全|国安|國安)",
-    re.I,
-)
-_ECONOMY_RE = re.compile(
-    r"(?:\bgdp\b|\bcpi\b|\bppi\b|\bpmi\b|inflation|deflation|interest rate|rate cut|rate hike|"
-    r"economic growth|recession|unemployment|retail sales|consumer spending|foreign exchange|"
-    r"trade surplus|trade deficit|tariff|capital expenditure|capex|宏观经济|宏觀經濟|经济增长|"
-    r"經濟增長|通胀|通脹|通缩|通縮|利率|降息|减息|加息|失业率|失業率|零售销售|零售銷售|"
-    r"消费|消費|汇率|匯率|贸易顺差|貿易順差|贸易逆差|貿易逆差|关税|關稅|资本开支|資本開支)",
-    re.I,
-)
-_FINANCE_RE = re.compile(
-    r"(?:stock price|share price|target price|analyst rating|earnings forecast|financial results|"
-    r"net profit|eps\b|\bstock\b|\binvestor\b|should i buy|buy up|stock-picking|"
-    r"shares? (?:rise|fall)|\d+% rally|revenue growth|"
-    r"股价|股價|目标价|目標價|评级|評級|净利润|淨利潤|盈利预测|盈利預測|"
-    r"业绩预告|業績預告|中期业绩|中期業績|港股通|持股解析|融资融券|融資融券|基金|"
-    r"台股|受惠股|概念股|个股|個股|\d+档受惠|\d+檔受惠|chartwatch|asx扫描|asx掃描|券商预测|券商預測)",
-    re.I,
-)
-_PRODUCT_AD_RE = re.compile(
-    r"(?:iphone\s*18|huawei\s*pura|smartphone review|handset review|phone card|prepaid sim|"
-    r"mobile plan|price plan|buy now|\brealme\b|\bredmi\b|\bnarzo\b|geekbench|"
-    r"price,? specifications|battery launched|expected price|新品发布|新品發表|产品发布|產品發表|蓝图流出|藍圖流出|"
-    r"手机评测|手機評測|手机优惠|手機優惠|套餐优惠|套餐優惠|促销折扣|促銷折扣|"
-    r"联想问天|聯想問天|wa5685|破解推理成本困局|asus experthub|"
-    r"智能电磁炉|智能電磁爐|家电产品|家電產品|商场.*速度实测|商場.*速度實測|"
-    r"展会展示.*产品|展會展示.*產品|营销解决方案|營銷解決方案|"
-    r"让营销|讓行銷|成交率.*成|完整ai解方)",
-    re.I,
-)
-_NOISE_RE = re.compile(
-    r"(?:autism|spectrum disorder|自闭|自閉|driving licen[cs]e|restaurant licen[cs]e|"
-    r"state funeral|football|world cup|messi|pet dog|puppy|recipe|fashion|celebrity|"
-    r"weather|rainstorm|yellow rain|暴雨|天文台|三伏天|每日楼市|每日樓市|property market|"
-    r"range rover|astronaut|submarine implosion|prison sentence|clinical trial|cancer treatment|"
-    r"biotech|scooter|craft beer|horoscope|旅游攻略|旅遊攻略|体育赛事|體育賽事|"
-    r"羽球|羽毛球|公開賽|公开赛|ai搞錢|ai搞钱|智慧台中論壇|智慧台中论坛|"
-    r"高級文憑|高级文凭|物管專才|物管专才|ai眼鏡.*作弊|ai眼镜.*作弊|"
-    r"神級正妹|神级正妹|老人健保|廚餘|厨余|美食導入ai|美食导入ai|"
-    r"防災系統|防灾系统|如何讓20美元|如何让20美元|六配速法|限時優惠|限时优惠|"
-    r"photography contest|摄影展|攝影展|linkedin|履历|履歷|人才高峰会|人才高峰會|"
-    r"生活照|ai修图|ai修圖|女球友|smartphone|screen warranty|智慧车|智慧車|"
-    r"登錄興櫃|登录兴柜|ai写自介|ai寫自介|cryptocurrency|crypto token|"
-    r"\busdc\b|24小時成交量|24小时成交量|幣速報|币速报|\bnrl\b|broncos|"
-    r"trophy|semi-finals|semifinals|rugby|cricket|fighter jet|missile|航空母舰|航空母艦|"
-    r"航母|导弹|導彈|food safety|eateries|餐厅卫生|餐廳衛生|"
-    r"child|toddler|infant|missing person|homicide|murder|shooting|car crash|court case|"
-    r"baseball|basketball|soccer|sports team|player transfer|\bnba\b|\bnfl\b|\bmlb\b|"
-    r"男童|女童|幼儿|幼兒|婴儿|嬰兒|儿童|兒童|上吊|尸体|屍體|身亡|死亡|失踪|失蹤|"
-    r"谋杀|謀殺|凶杀|兇殺|枪击|槍擊|车祸|車禍|沉船|救援|警方|法院|判刑|"
-    r"球队|球隊|球员|球員|赛季|賽季|比赛|比賽|联赛|聯賽|国家队|國家隊|投手|"
-    r"av女優|av女优|成人影片|porn|entertainment|movie|film premiere|地震|明星八卦)",
-    re.I,
-)
-_STATIC_PATH_MARKERS = (
-    "/solutions/", "/products/", "/product/", "/postpaid/", "/prepaid/",
-    "/plans/", "/tariff", "/contact-us", "/1010home/", "/tc/home",
-    "/globalbusiness-", "/ctc_login", "/wiki/", "/blob/", "/resources/",
-    "/project-links", "/four-zones", "/committees-and-task-force", "/downloads/",
-    "/assets/files/", "/legislative_council_business/", "/ad/article/",
-    "/perspectives/advisories/", "/about-nm/", "/trending-in-nm",
-    "/publications/", ".pdf",
-)
-_STATIC_TITLE_RE = re.compile(
-    r"(?:主页|主頁|首页|首頁|项目链接|項目連結|四大区域|四大區域|"
-    r"网站简介|網站簡介|执行摘要|執行摘要|草案全文|政策文件全文|報告全文|报告全文)",
-    re.I,
-)
-_NEWS_PATH_MARKERS = (
-    "/news/", "/article/", "/articles/", "/press/", "/media/", "/story/",
-    "/stories/", "/newsroom/", "/news-release", "/press-release", "/2026/",
-)
-_MEDIA_RE = re.compile(
-    r"(?:reuters|bloomberg|bbc|cnbc|scmp|rthk|hket|tvb|now\s*财经|now\s*財經|"
-    r"singtao|bastillepost|light reading|lightreading|total telecom|totaltele|"
-    r"mobile world live|mobileworldlive|capacity media|telecompaper|datacenterdynamics|"
-    r"the register|pr newswire|prnewswire|yahoo|caixin|wenweipo|香港文匯|香港文汇|"
-    r"mydrivers|快科技|yicai|第一财经|第一財經|shangbao|商报|商報|info\.gov\.hk|gov\.hk)",
-    re.I,
-)
-
 
 def _canonical_news_url(value: Any) -> str:
     text = _text(value, 1800)
@@ -1813,75 +1549,8 @@ def _event_titles_duplicate(left: Any, right: Any) -> bool:
     return len(left_pairs & right_pairs) / max(1, min(len(left_pairs), len(right_pairs))) >= 0.62
 
 
-def _news_like(item: dict[str, Any], lower_url: str, text: str) -> bool:
-    source = " ".join((_text(item.get("source"), 200), _text(item.get("source_domain"), 200)))
-    if _MEDIA_RE.search(source):
-        return True
-    path = urlparse(lower_url).path.lower()
-    if any(marker in path for marker in _NEWS_PATH_MARKERS):
-        return True
-    if re.search(r"/20\d{2}[/-]\d{1,2}(?:[/-]\d{1,2})?", path):
-        return True
-    return bool(_LOCAL_COMPETITOR_RE.search(text) and ("press" in path or "news" in path))
-
-
-def _competitor_relevance(item: dict[str, Any]) -> tuple[bool, str]:
-    text = " ".join(
-        (
-            _text(item.get("title"), 500),
-            _text(item.get("snippet"), 1800),
-        )
-    )
-    for publisher in (
-        _text(item.get("source"), 240),
-        urlparse(_text(item.get("url"), 1800)).netloc,
-    ):
-        publisher = publisher.removeprefix("www.")
-        if publisher:
-            text = re.sub(re.escape(publisher), " ", text, flags=re.I)
-    lowered = text.casefold()
-    ambiguous_aliases = {"csl", "1o1o", "1010", "now tv", "now e", "n mobile"}
-    for alias in all_aliases():
-        term = _text(alias, 120).casefold()
-        if not term:
-            continue
-        if re.fullmatch(r"[a-z0-9.+& -]+", term):
-            if re.search(
-                rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])",
-                lowered,
-            ):
-                if (
-                    term in ambiguous_aliases
-                    and not _HK_TELECOM_MARKET_RE.search(text)
-                ):
-                    continue
-                return True, "香港直接竞对新闻"
-        elif term in lowered:
-            return True, "香港直接竞对新闻"
-    direct_match = _DIRECT_COMPETITOR_RE.search(text)
-    if direct_match:
-        if (
-            direct_match.group(0).casefold() != "csl"
-            or _HK_TELECOM_MARKET_RE.search(text)
-        ):
-            return True, "香港直接竞对新闻"
-    if _BENCHMARK_OPERATOR_RE.search(text):
-        if (
-            _CORPORATE_CHANGE_RE.search(text)
-            and _BENCHMARK_TOPIC_RE.search(text)
-            and not _NON_TELECOM_CORPORATE_RE.search(text)
-        ):
-            return True, "国际运营商组织或资本动作"
-        if _OPERATOR_ACTION_RE.search(text) and _BENCHMARK_TOPIC_RE.search(text):
-            return True, "国际运营商业务对标新闻"
-    if _HONG_KONG_RE.search(text) and _HK_TELECOM_MARKET_RE.search(text):
-        return True, "香港电信市场或监管新闻"
-    return False, "未直接关联竞对或香港电信市场"
-
-
 def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
     title = _text(item.get("title"), 500)
-    snippet = _text(item.get("snippet"), 1800)
     url = _text(item.get("url"), 1800)
     if not title or not url:
         return False, "缺少标题或原文"
@@ -1934,66 +1603,7 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
         return False, "原文路径日期与发布时间不符"
     item["source_date"] = source_date
     item["search_date"] = search_date
-    lower_url = url.lower()
-    text = f"{title} {snippet}"
-    lower_text = text.lower()
-    path = urlparse(lower_url).path.lower()
-    if "bing.com/aclick" in lower_url or "googleadservices" in lower_url:
-        return False, "广告跳转"
-    source_text = f"{_text(item.get('source'), 200)} {lower_url}".lower()
-    competitor_relevant, relevance_reason = _competitor_relevance(item)
-    direct_competitor = bool(_DIRECT_COMPETITOR_RE.search(text))
-    if "fund.eastmoney.com" in source_text or "天天基金" in source_text:
-        return False, "基金或行情页面"
-    if any(marker in path for marker in _STATIC_PATH_MARKERS):
-        return False, "官网产品或资料页"
-    if "nm.gov.hk" in source_text and not url_date_hint:
-        return False, "北部都会区静态页面"
-    if "chinaelections.org" in source_text or _STATIC_TITLE_RE.search(title):
-        return False, "静态文件或资料页"
-    if _NOISE_RE.search(f"{lower_text} {source_text}") and not competitor_relevant:
-        return False, "生活、体育或误命中新闻"
-    if (
-        re.search(
-            r"(?:codex\s*micro|实体键盘|實體鍵盤|限量版键盘|限量版鍵盤)",
-            lower_text,
-            re.I,
-        )
-        and not competitor_relevant
-    ):
-        return False, "消费型AI硬件新品"
-    if _PRODUCT_AD_RE.search(lower_text) and not competitor_relevant:
-        return False, "消费产品或套餐广告"
-    if (
-        _BENCHMARK_OPERATOR_RE.search(text)
-        and _CORPORATE_CHANGE_RE.search(text)
-        and _NON_TELECOM_CORPORATE_RE.search(text)
-    ):
-        return False, "非电信资产或业务事件"
-    if _FINANCE_RE.search(lower_text) and not direct_competitor:
-        relevance_reason = "待AI审核的资本市场新闻"
-    if not competitor_relevant:
-        if _POLICY_RE.search(text) and (
-            _STRATEGIC_RE.search(text)
-            or _ECONOMY_RE.search(text)
-            or re.search(r"national security|国家安全|國家安全|国安|國安", text, re.I)
-        ):
-            relevance_reason = "政策监管"
-        elif _ECONOMY_RE.search(text):
-            relevance_reason = "宏观经济"
-        elif _STRATEGIC_RE.search(text):
-            relevance_reason = "战略产业新闻"
-        else:
-            relevance_reason = "待AI战略审核"
-    generic_titles = {
-        "hkt", "pccw", "ctexcel", "documentctexcel", "1010home", "wwwbisgov",
-        "香港電訊商及流動數據服務csl", "香港电讯商及流动数据服务csl",
-    }
-    if _normalized_news_title(title) in generic_titles:
-        return False, "官网首页或栏目页"
-    if not _news_like(item, lower_url, text):
-        return False, "不像独立新闻文章"
-    return True, relevance_reason
+    return True, "待AI审核"
 
 
 def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], Counter[str]]:
@@ -2012,30 +1622,23 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
         if not url_key or not title_key or url_key in kept:
             reasons["重复新闻"] += 1
             continue
-        item["region"] = (
-            _text(item.get("ai_region"), 20)
-            if _text(item.get("ai_region"), 20) in {"香港本地", "国际/行业"}
-            else _region_label(item)
-        )
-        if "竞对" in reason or "运营商" in reason:
-            item["category"] = "竞对动态"
-        elif reason == "政策监管":
-            item["category"] = "政策监管"
-        elif reason == "宏观经济":
-            item["category"] = "宏观经济"
-        elif reason == "其他待筛":
-            item["category"] = "其他待筛"
+        if _text(item.get("ai_region"), 20) in {"香港本地", "国际/行业"}:
+            item["region"] = _text(item.get("ai_region"), 20)
         else:
-            item["category"] = _category_label(item)
+            item.pop("region", None)
+        item["category"] = _text(
+            item.get("ai_category")
+            or item.get("category")
+            or item.get("module")
+            or "待AI审核",
+            80,
+        )
         item["filter_reason"] = reason
         item["news_id"] = _news_item_id(item.get("url"), item.get("title"))
         kept[url_key] = item
     result = list(kept.values())
-    category_priority = {"竞对动态": 0, "政策监管": 1, "宏观经济": 2, "其他待筛": 9}
     result.sort(
         key=lambda item: (
-            category_priority.get(str(item.get("category") or ""), 3),
-            item.get("region") != "香港本地",
             -int(item.get("score") or 0),
             str(item.get("source_date") or ""),
             str(item.get("title") or ""),
