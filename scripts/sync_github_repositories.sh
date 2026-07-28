@@ -147,7 +147,12 @@ if [[ -f "$CHECKPOINT_SOURCE" ]]; then
   CHECKPOINT_BYTES="$(wc -c < "$TMP_DIR/curation_data/checkpoints.sqlite" | tr -d ' ')"
   if (( CHECKPOINT_BYTES > 95000000 )); then
     echo "Compressing large SQLite snapshot (${CHECKPOINT_BYTES} bytes) for GitHub..."
-    gzip -1 -f "$TMP_DIR/curation_data/checkpoints.sqlite"
+    gzip -9 -f "$TMP_DIR/curation_data/checkpoints.sqlite"
+    COMPRESSED_CHECKPOINT_BYTES="$(wc -c < "$TMP_DIR/curation_data/checkpoints.sqlite.gz" | tr -d ' ')"
+    if (( COMPRESSED_CHECKPOINT_BYTES > 95000000 )); then
+      echo "Refusing to push: compressed checkpoint is still too large (${COMPRESSED_CHECKPOINT_BYTES} bytes)." >&2
+      exit 1
+    fi
   fi
 fi
 
