@@ -3214,21 +3214,23 @@ select {
 .chat-model-button #chatModelButtonLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-model-button svg { width: 15px; height: 15px; margin-left: auto; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform 160ms ease; }
 .chat-model-button[aria-expanded="true"] svg { transform: rotate(180deg); }
-.chat-model-menu { position: absolute; right: -72px; bottom: 42px; z-index: 36; width: min(300px, calc(100vw - 48px)); padding: 8px; overflow: hidden; border: 1px solid #d5e2ed; border-radius: 15px; background: rgba(255,255,255,.99); box-shadow: 0 20px 48px rgba(18,55,88,.2); }
-.chat-model-options { max-height: min(310px, calc(100dvh - 180px)); padding: 2px 8px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
-.chat-model-option { width: 100%; height: 42px; display: flex; align-items: center; gap: 10px; margin: 0; padding: 0 11px; border: 0; border-bottom: 1px solid #e5edf4; border-radius: 0; background: transparent; color: #24445f; text-align: left; cursor: pointer; }
-.chat-model-option:last-child { border-bottom-color: transparent; }
-.chat-model-option:hover { background: #f3f8fc; }
-.chat-model-option.active { border-radius: 7px; background: #e5f3ff; color: var(--blue-dark); }
-.chat-model-option strong { flex: 1; min-width: 0; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-.chat-model-tags { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; flex: 0 0 auto; }
+.chat-model-menu { position: absolute; right: -72px; bottom: 42px; z-index: 36; width: min(320px, calc(100vw - 32px)); padding: 9px 7px 9px 12px; overflow: hidden; border: 1px solid #d4e0eb; border-radius: 18px; background: #fff; box-shadow: 0 12px 32px rgba(34,67,95,.1); }
+.chat-model-options { max-height: min(360px, calc(100dvh - 170px)); padding: 0 4px 0 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #c7d4e1 transparent; scrollbar-width: auto; }
+.chat-model-options::-webkit-scrollbar { width: 10px; }
+.chat-model-options::-webkit-scrollbar-track { background: transparent; }
+.chat-model-options::-webkit-scrollbar-thumb { border: 3px solid #fff; border-radius: 999px; background: #c7d4e1; }
+.chat-model-option { width: 100%; min-height: 46px; display: flex; align-items: center; margin: 0; padding: 0 10px; border: 0; border-radius: 10px; background: transparent; color: #36536f; text-align: left; cursor: pointer; }
+.chat-model-option:hover { background: #f3f7fb; }
+.chat-model-option.active { background: #eaf3fa; color: #234966; }
+.chat-model-option strong { flex: 1; min-width: 0; overflow: hidden; font-size: 14px; font-weight: 700; line-height: 1.25; letter-spacing: .01em; text-overflow: ellipsis; white-space: nowrap; }
+.chat-model-tags { display: none; }
 .chat-model-tag { padding: 2px 7px; border-radius: 999px; background: #edf3f7; color: #5d7488; font-size: 10px; font-weight: 700; line-height: 1.5; }
 .chat-model-tag[data-tag="多模态"] { background: #def5f2; color: #087b70; }
 .chat-model-tag[data-tag="推理"] { background: #fff0d8; color: #a65b00; }
 .chat-model-tag[data-tag="混合"] { background: #e7efff; color: #365fa8; }
 .chat-model-tag[data-tag="编码"] { background: #eee8ff; color: #6847bd; }
 .chat-model-tag[data-tag="文本"] { background: #eaf2f8; color: #4d6b83; }
-.chat-model-check { width: 14px; color: var(--blue); font-weight: 900; }
+.chat-model-check { display: none; }
 .chat-model-empty { padding: 26px 12px; color: #8296a8; text-align: center; font-size: 12px; }
 
 .model-reasoning {
@@ -4954,7 +4956,10 @@ pre {
   .composer-plus-menu .skill-menu,
   .composer-plus-menu .database-menu { left: 0; bottom: 42px; width: min(340px, calc(100vw - 48px)); }
   .chat-model-button { max-width: min(180px, calc(100vw - 220px)); }
-  .chat-model-menu { right: -72px; }
+  .chat-model-menu { right: -72px; width: min(300px, calc(100vw - 24px)); padding: 8px 6px 8px 10px; }
+  .chat-model-options { max-height: min(330px, calc(100dvh - 170px)); }
+  .chat-model-option { min-height: 44px; padding: 0 9px; }
+  .chat-model-option strong { font-size: 13px; }
   .voice-input-status { display: none; }
 }
 
