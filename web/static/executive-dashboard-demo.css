@@ -516,7 +516,7 @@ h1 {
 .business-content {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   align-content: end;
   padding: 12px 12px 14px;
 }
@@ -529,17 +529,37 @@ h1 {
 }
 
 .business-line {
+  --accent-rgb: 53, 217, 255;
+  position: relative;
   min-width: 0;
-  padding: 13px 12px;
-  border-top: 2px solid var(--accent);
-  background: linear-gradient(180deg, rgba(5, 23, 40, .6), rgba(3, 15, 28, .9));
+  padding: 15px 15px 14px;
+  border: 1px solid transparent;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  background:
+    radial-gradient(circle at 16% 48%, rgba(var(--accent-rgb), .1), transparent 46%) padding-box,
+    linear-gradient(145deg, rgba(6, 29, 48, .88), rgba(2, 14, 27, .94)) padding-box,
+    linear-gradient(135deg, rgba(var(--accent-rgb), .62), rgba(108, 176, 204, .1) 44%, rgba(var(--accent-rgb), .28)) border-box;
   backdrop-filter: blur(7px);
-  transition: transform .28s ease, border-color .28s ease, background-color .28s ease;
+  transition: transform .24s ease, filter .24s ease;
 }
-.business-line:hover { transform: translateY(-3px); background-color: rgba(9, 38, 61, .72); }
-.business-line.toc { --accent: var(--cyan); }
-.business-line.toh { --accent: var(--mint); }
-.business-line.tob { --accent: var(--amber); }
+.business-line::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: rgba(var(--accent-rgb), .72);
+  box-shadow: 0 0 9px rgba(var(--accent-rgb), .54);
+}
+.business-line:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+.business-line.toc { --accent: var(--cyan); --accent-rgb: 53, 217, 255; }
+.business-line.toh { --accent: var(--mint); --accent-rgb: 86, 227, 178; }
+.business-line.tob { --accent: var(--amber); --accent-rgb: 241, 185, 95; }
 .business-line > b { color: var(--accent); font-size: 16px; }
 .business-line > span { margin-left: 5px; color: #91b5c8; font-size: 11px; }
 .business-line > strong { display: block; margin-top: 12px; color: white; line-height: 1; }
