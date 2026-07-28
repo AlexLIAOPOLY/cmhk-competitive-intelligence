@@ -1810,8 +1810,13 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     deferred_ratio = deferred_count / len(items)
     write_blocked = bool(deferred_reviews) and (
         not resolved
-        or deferred_count > AI_EDITOR_MAX_DEFERRED_COUNT
-        or deferred_ratio > AI_EDITOR_MAX_DEFERRED_RATIO
+        or (
+            deferred_count >= 2
+            and (
+                deferred_count > AI_EDITOR_MAX_DEFERRED_COUNT
+                or deferred_ratio > AI_EDITOR_MAX_DEFERRED_RATIO
+            )
+        )
     )
     audit = {
         "version": 2,

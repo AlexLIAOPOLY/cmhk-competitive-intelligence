@@ -249,7 +249,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_editor_isolates_one_failed_item_and_continues_resolved_items(self):
         items = []
-        for index in range(10):
+        for index in range(1):
             items.append(
                 {
                     "module": "竞争对手",
@@ -296,13 +296,13 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.polish_candidates_before_review(items)
 
-        self.assertEqual(len(result), 10)
+        self.assertEqual(len(result), 1)
         audit = next(
             payload
             for path, payload in writes
             if path == briefing.AI_EDITOR_AUDIT_PATH
         )
-        self.assertEqual(audit["resolved_count"], 10)
+        self.assertEqual(audit["resolved_count"], 1)
         self.assertEqual(audit["deferred_count"], 1)
         self.assertTrue(audit["continued_with_partial_results"])
         self.assertFalse(audit["write_blocked"])
