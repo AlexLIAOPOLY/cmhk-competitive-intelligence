@@ -1,8 +1,8 @@
 const panels = [...document.querySelectorAll(".panel")];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-const brandTrack = document.querySelector(".brand-track");
-const brandSourceSet = brandTrack?.querySelector(".brand-set");
-let brandResizeFrame = 0;
+const newsTrack = document.querySelector(".news-track");
+const newsSourceSet = newsTrack?.querySelector(".news-set");
+let newsResizeFrame = 0;
 const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
@@ -98,31 +98,30 @@ networkTabs.forEach((tab) => {
   });
 });
 
-function rebuildBrandRail() {
-  if (!brandTrack || !brandSourceSet) return;
+function rebuildNewsRail() {
+  if (!newsTrack || !newsSourceSet) return;
 
-  brandTrack.querySelectorAll("[data-brand-clone]").forEach((clone) => clone.remove());
-  const brandSetWidth = brandSourceSet.getBoundingClientRect().width;
-  if (!brandSetWidth) return;
+  newsTrack.querySelectorAll("[data-news-clone]").forEach((clone) => clone.remove());
+  const newsSetWidth = newsSourceSet.getBoundingClientRect().width;
+  if (!newsSetWidth) return;
 
-  const requiredSets = Math.ceil(window.innerWidth / brandSetWidth) + 2;
+  const requiredSets = Math.ceil(window.innerWidth / newsSetWidth) + 2;
   for (let index = 1; index < requiredSets; index += 1) {
-    const clone = brandSourceSet.cloneNode(true);
-    clone.dataset.brandClone = "";
+    const clone = newsSourceSet.cloneNode(true);
+    clone.dataset.newsClone = "";
     clone.setAttribute("aria-hidden", "true");
-    clone.querySelectorAll("img").forEach((image) => image.setAttribute("alt", ""));
-    brandTrack.append(clone);
+    newsTrack.append(clone);
   }
 
-  brandTrack.style.setProperty("--brand-loop-width", `${brandSetWidth}px`);
-  brandTrack.style.setProperty("--brand-duration", `${brandSetWidth / 34}s`);
+  newsTrack.style.setProperty("--news-loop-width", `${newsSetWidth}px`);
+  newsTrack.style.setProperty("--news-duration", `${newsSetWidth / 25}s`);
 }
 
-rebuildBrandRail();
+rebuildNewsRail();
 
 window.addEventListener("resize", () => {
-  cancelAnimationFrame(brandResizeFrame);
-  brandResizeFrame = requestAnimationFrame(rebuildBrandRail);
+  cancelAnimationFrame(newsResizeFrame);
+  newsResizeFrame = requestAnimationFrame(rebuildNewsRail);
 });
 
 if (!reducedMotion.matches) {
