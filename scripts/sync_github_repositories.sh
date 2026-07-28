@@ -150,8 +150,29 @@ if [[ -f "$CHECKPOINT_SOURCE" ]]; then
     gzip -9 -f "$TMP_DIR/curation_data/checkpoints.sqlite"
     COMPRESSED_CHECKPOINT_BYTES="$(wc -c < "$TMP_DIR/curation_data/checkpoints.sqlite.gz" | tr -d ' ')"
     if (( COMPRESSED_CHECKPOINT_BYTES > 95000000 )); then
-      echo "Refusing to push: compressed checkpoint is still too large (${COMPRESSED_CHECKPOINT_BYTES} bytes)." >&2
-      exit 1
+      echo "Compressed checkpoint is still large (${COMPRESSED_CHECKPOINT_BYTES} bytes); splitting it into GitHub-safe parts..."
+      split -b 85000000 -d -a 3 \
+        "$TMP_DIR/curation_data/checkpoints.sqlite.gz" \
+        "$TMP_DIR/curation_data/checkpoints.sqlite.gz.part-"
+      rm "$TMP_DIR/curation_data/checkpoints.sqlite.gz"
+      cat > "$TMP_DIR/curation_data/checkpoints.sqlite.RESTORE.md" <<'EOF'
+# Restore the split curation checkpoint
+
+The private snapshot split the compressed SQLite checkpoint only to stay below
+GitHub's per-file size limit. Reassemble it without modifying the part files:
+
+```bash
+cat checkpoints.sqlite.gz.part-* > checkpoints.sqlite.gz
+gzip -dk checkpoints.sqlite.gz
+```
+EOF
+      while IFS= read -r -d '' checkpoint_part; do
+        PART_BYTES="$(wc -c < "$checkpoint_part" | tr -d ' ')"
+        if (( PART_BYTES > 95000000 )); then
+          echo "Refusing to push: checkpoint part is still too large (${PART_BYTES} bytes)." >&2
+          exit 1
+        fi
+      done < <(find "$TMP_DIR/curation_data" -maxdepth 1 -type f -name 'checkpoints.sqlite.gz.part-*' -print0)
     fi
   fi
 fi
