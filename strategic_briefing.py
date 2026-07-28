@@ -39,6 +39,17 @@ AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 AI_EDITOR_VERSION = 13
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
+AI_EDITOR_MAX_DEFERRED_COUNT = max(
+    1,
+    int(os.environ.get("CMHK_STRATEGY_AI_MAX_DEFERRED_COUNT", "3")),
+)
+AI_EDITOR_MAX_DEFERRED_RATIO = max(
+    0.0,
+    min(
+        1.0,
+        float(os.environ.get("CMHK_STRATEGY_AI_MAX_DEFERRED_RATIO", "0.10")),
+    ),
+)
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
     min(8, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_BATCH_SIZE", "4"))),
@@ -1795,26 +1806,46 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item["ai_polished_at"] = _now_iso()
         item["ai_editor_version"] = AI_EDITOR_VERSION
         polished_items.append(item)
-    _atomic_write_json(
-        AI_EDITOR_AUDIT_PATH,
-        {
-            "version": 1,
-            "generated_at": _now_iso(),
-            "input_count": len(items),
-            "resolved_count": len(resolved),
-            "included_count": len(polished_items),
-            "excluded_count": len(resolved) - len(polished_items),
-            "deferred_count": len(deferred_reviews),
-            "deferred": deferred_reviews,
-        },
+    deferred_count = len(deferred_reviews)
+    deferred_ratio = deferred_count / len(items)
+    write_blocked = bool(deferred_reviews) and (
+        not resolved
+        or deferred_count > AI_EDITOR_MAX_DEFERRED_COUNT
+        or deferred_ratio > AI_EDITOR_MAX_DEFERRED_RATIO
     )
-    if deferred_reviews:
+    audit = {
+        "version": 2,
+        "generated_at": _now_iso(),
+        "input_count": len(items),
+        "resolved_count": len(resolved),
+        "included_count": len(polished_items),
+        "excluded_count": len(resolved) - len(polished_items),
+        "deferred_count": deferred_count,
+        "deferred_ratio": round(deferred_ratio, 6),
+        "continued_with_partial_results": bool(deferred_reviews)
+        and not write_blocked,
+        "write_blocked": write_blocked,
+        "policy": {
+            "max_deferred_count": AI_EDITOR_MAX_DEFERRED_COUNT,
+            "max_deferred_ratio": AI_EDITOR_MAX_DEFERRED_RATIO,
+        },
+        "deferred": deferred_reviews,
+    }
+    _atomic_write_json(AI_EDITOR_AUDIT_PATH, audit)
+    if write_blocked:
         sample = "；".join(
             f"{entry['id']} {entry['error']}" for entry in deferred_reviews[:3]
         )
         raise RuntimeError(
             "公司内部 AI 候选审核未完整完成，"
             f"{len(deferred_reviews)}/{len(items)} 条已延期且本轮禁止写表；{sample}"
+        )
+    if deferred_reviews:
+        logging.warning(
+            "公司内部 AI 候选审核有 %s/%s 条延期；仅隔离失败条目，其余 %s 条继续后续去重和写表",
+            deferred_count,
+            len(items),
+            len(resolved),
         )
     return polished_items
 

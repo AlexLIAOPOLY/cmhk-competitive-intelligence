@@ -245,6 +245,67 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(audit["input_count"], 1)
         self.assertEqual(audit["resolved_count"], 0)
         self.assertEqual(audit["deferred_count"], 1)
+        self.assertTrue(audit["write_blocked"])
+
+    def test_editor_isolates_one_failed_item_and_continues_resolved_items(self):
+        items = []
+        for index in range(10):
+            items.append(
+                {
+                    "module": "竞争对手",
+                    "category": "竞对动态",
+                    "title": f"Verizon发布第{index + 1}项网络更新",
+                    "snippet": "Verizon announced a network service update.",
+                    "keywords": ["Verizon"],
+                    "source": "Example News",
+                    "url": f"https://example.com/news/verizon-{index + 1}",
+                    "ai_title": f"Verizon发布第{index + 1}项网络更新",
+                    "ai_summary": "Verizon公布网络服务更新及相关客户安排。",
+                    "ai_should_include": True,
+                    "ai_region": "国际/行业",
+                    "ai_category": "竞对动态",
+                    "ai_keywords": "Verizon",
+                    "ai_inclusion_reason": "直接反映被监测竞对的网络服务变化。",
+                    "ai_region_reason": "事件主体为国际对标运营商Verizon。",
+                }
+            )
+        items.append(
+            {
+                "module": "竞争对手",
+                "category": "竞对动态",
+                "title": "KDDI发布门店更新",
+                "snippet": "KDDI announced a retail store update.",
+                "keywords": ["KDDI"],
+                "source": "Example News",
+                "url": "https://example.com/news/kddi-store",
+            }
+        )
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=RuntimeError("rate limited"),
+            ),
+        ):
+            result = briefing.polish_candidates_before_review(items)
+
+        self.assertEqual(len(result), 10)
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(audit["resolved_count"], 10)
+        self.assertEqual(audit["deferred_count"], 1)
+        self.assertTrue(audit["continued_with_partial_results"])
+        self.assertFalse(audit["write_blocked"])
 
     def test_editor_retries_ai_that_denies_configured_competitor_scope(self):
         item = {
