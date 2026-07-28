@@ -1,5 +1,35 @@
 const panels = [...document.querySelectorAll(".panel")];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const brandTrack = document.querySelector(".brand-track");
+const brandSourceSet = brandTrack?.querySelector(".brand-set");
+let brandResizeFrame = 0;
+
+function rebuildBrandRail() {
+  if (!brandTrack || !brandSourceSet) return;
+
+  brandTrack.querySelectorAll("[data-brand-clone]").forEach((clone) => clone.remove());
+  const brandSetWidth = brandSourceSet.getBoundingClientRect().width;
+  if (!brandSetWidth) return;
+
+  const requiredSets = Math.ceil(window.innerWidth / brandSetWidth) + 2;
+  for (let index = 1; index < requiredSets; index += 1) {
+    const clone = brandSourceSet.cloneNode(true);
+    clone.dataset.brandClone = "";
+    clone.setAttribute("aria-hidden", "true");
+    clone.querySelectorAll("img").forEach((image) => image.setAttribute("alt", ""));
+    brandTrack.append(clone);
+  }
+
+  brandTrack.style.setProperty("--brand-loop-width", `${brandSetWidth}px`);
+  brandTrack.style.setProperty("--brand-duration", `${brandSetWidth / 34}s`);
+}
+
+rebuildBrandRail();
+
+window.addEventListener("resize", () => {
+  cancelAnimationFrame(brandResizeFrame);
+  brandResizeFrame = requestAnimationFrame(rebuildBrandRail);
+});
 
 if (!reducedMotion.matches) {
   document.documentElement.classList.add("motion-enabled");

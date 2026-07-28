@@ -53,9 +53,9 @@ button { font: inherit; }
 
 .topbar {
   position: relative;
-  display: grid;
-  grid-template-columns: 210px 1fr 210px;
+  display: flex;
   align-items: center;
+  justify-content: center;
   border-bottom: 1px solid var(--line);
 }
 
@@ -70,20 +70,6 @@ button { font: inherit; }
   background: linear-gradient(90deg, transparent, var(--cyan), transparent);
   box-shadow: 0 0 13px rgba(53, 217, 255, .7);
   animation: title-line-breathe 3.8s ease-in-out infinite;
-}
-
-.cmhk-brand {
-  height: 56px;
-  display: flex;
-  align-items: center;
-}
-
-.cmhk-brand img {
-  width: 124px;
-  height: 54px;
-  object-fit: contain;
-  filter: brightness(1.65) saturate(.8);
-  animation: brand-breathe 5.4s ease-in-out infinite;
 }
 
 h1 {
@@ -121,7 +107,8 @@ h1 {
   height: 100%;
   display: flex;
   align-items: center;
-  animation: brand-marquee 24s linear infinite;
+  will-change: transform;
+  animation: brand-marquee var(--brand-duration, 31s) linear infinite;
 }
 
 .brand-set {
@@ -617,10 +604,11 @@ h1 {
 .motion-enabled .panel.is-visible .profit-line .line-secondary { animation-delay: .36s; }
 .motion-enabled .panel.is-visible .profit-line .area { animation: area-reveal 1s ease .5s both; }
 
-@keyframes brand-marquee { to { transform: translateX(-50%); } }
+@keyframes brand-marquee {
+  to { transform: translate3d(calc(-1 * var(--brand-loop-width, 1056px)), 0, 0); }
+}
 @keyframes scene-drift { from { transform: scale(1.015) translate3d(-.3%, 0, 0); } to { transform: scale(1.06) translate3d(.5%, -.4%, 0); } }
 @keyframes title-line-breathe { 50% { width: 300px; opacity: .62; } }
-@keyframes brand-breathe { 50% { filter: brightness(1.9) saturate(.95) drop-shadow(0 0 5px rgba(53, 217, 255, .22)); } }
 @keyframes corner-breathe { 50% { opacity: .46; } }
 @keyframes panel-scan { to { transform: translateY(575%); } }
 @keyframes ring-breathe { 50% { box-shadow: 0 0 30px rgba(53, 217, 255, .27); } }
@@ -631,8 +619,6 @@ h1 {
 @keyframes area-reveal { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 1180px) {
-  .topbar { grid-template-columns: 160px 1fr 160px; }
-  .cmhk-brand img { width: 106px; }
   .reach-content { grid-template-columns: 120px 1fr; gap: 14px; }
   .score-ring { width: 94px; }
 }
@@ -640,9 +626,8 @@ h1 {
 @media (max-width: 900px) {
   body { overflow: auto; }
   .cockpit { width: 100%; height: auto; min-height: 100vh; display: block; padding: 0 12px 12px; overflow: visible; }
-  .topbar { min-height: 118px; grid-template-columns: 1fr; grid-template-rows: 64px 54px; }
-  .cmhk-brand { grid-column: 1; grid-row: 1; }
-  h1 { grid-column: 1; grid-row: 2; font-size: 24px; }
+  .topbar { min-height: 72px; }
+  h1 { font-size: 24px; }
   .brand-rail { height: 42px; }
   .dashboard-grid { display: block; }
   .panel { min-height: 410px; margin-top: 10px; }
@@ -661,7 +646,6 @@ h1 {
 }
 
 @media (max-width: 520px) {
-  .cmhk-brand img { width: 96px; }
   .panel { min-height: 430px; }
   .network-content,
   .business-content,
