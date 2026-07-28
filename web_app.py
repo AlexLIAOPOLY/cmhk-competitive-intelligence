@@ -2799,6 +2799,9 @@ class AppHandler(BaseHTTPRequestHandler):
         if path in {"/company-data", "/company-data.html"}:
             self.serve_file(STATIC_DIR / "company-data.html")
             return
+        if path in {"/executive-dashboard-demo", "/executive-dashboard-demo.html"}:
+            self.serve_file(STATIC_DIR / "executive-dashboard-demo.html")
+            return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
             return
