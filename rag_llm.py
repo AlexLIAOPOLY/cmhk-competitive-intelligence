@@ -1032,24 +1032,11 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
     if metric_keys and not matched_subjects and not periods and not disclosure_gap_intent:
         return []
 
-    filtered: list[dict[str, str]] = []
-    for row in rows:
-        subject = (row.get("subject") or "").strip()
-        period = re.sub(r"\s+", " ", (row.get("period") or "").strip().upper())
-        metric_key = (row.get("metric_key") or "").strip()
-        if matched_subjects and subject not in matched_subjects:
-            continue
-        if periods and period not in periods:
-            continue
-        if metric_keys and metric_key not in metric_keys:
-            continue
-        filtered.append(row)
-
     latest_intent = any(
         key in lowered_question
         for key in ["最新", "最近", "latest", "recent", "current", "last quarter", "latest quarter"]
     )
-    series_intent = not periods and any(
+    series_intent = any(
         key in lowered_question
         for key in [
             "趋势",
@@ -1062,11 +1049,30 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
             "多年",
             "过去",
             "变化",
+            "季度",
+            "quarterly",
             "trend",
             "time series",
             "historical",
         ]
-    )
+    ) or len(set(re.findall(r"\b20\d{2}\b", lowered_question))) >= 2
+
+    filtered: list[dict[str, str]] = []
+    for row in rows:
+        subject = (row.get("subject") or "").strip()
+        period = re.sub(r"\s+", " ", (row.get("period") or "").strip().upper())
+        metric_key = (row.get("metric_key") or "").strip()
+        if matched_subjects and subject not in matched_subjects:
+            continue
+        # A trend/range question needs the complete available series. Periods
+        # named in the query are anchors or boundaries, not permission to hide
+        # every other observation.
+        if periods and not series_intent and period not in periods:
+            continue
+        if metric_keys and metric_key not in metric_keys:
+            continue
+        filtered.append(row)
+
     if latest_intent:
         filtered.sort(
             key=lambda row: _latest_period_score(f"{row.get('period', '')} {row.get('period_end', '')}"),
@@ -1110,6 +1116,8 @@ def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None =
                 f"coverage={ordered[0].get('period')} 至 {ordered[-1].get('period')}; "
                 f"points={len(points)}; unit={unit}; period_values={'; '.join(points)}. "
                 "各期优先使用 official_value，缺失时使用 standardized_value。"
+                f"如需画图，直接调用 render_quarterly_metric_chart(subject={subject!r}, "
+                f"metric_key={metric_key!r})，无需手工重组数据。"
             )
             if conflicts:
                 text += f" official_conflict_periods={', '.join(conflicts)}，这些期间应说明口径冲突。"

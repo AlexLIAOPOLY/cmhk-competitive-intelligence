@@ -1190,7 +1190,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         request_token = agent.CURRENT_USER_REQUEST.set("梳理香港5G频谱政策时间线和影响")
         try:
             with (
-                mock.patch("agent.retrieve_context", return_value=chunks),
+                mock.patch("agent.retrieve_context", return_value=chunks) as retrieve,
                 mock.patch(
                     "agent.build_context_package",
                     return_value={"chunks": chunks, "audit": {"retained_chunks": 2}},
@@ -1203,6 +1203,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             agent.CURRENT_USER_REQUEST.reset(request_token)
 
         self.assertIn("macro_policy_metrics.csv", result)
+        retrieval_query = retrieve.call_args.args[0]
+        self.assertIn("香港5G频谱政策", retrieval_query)
+        self.assertIn("梳理香港5G频谱政策时间线和影响", retrieval_query)
         read_reference.assert_not_called()
 
     def test_generic_web_search_returns_no_sources_when_every_result_is_irrelevant(self) -> None:
@@ -1600,6 +1603,19 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIs(result, fallback_result)
         self.assertEqual(generate.call_count, 2)
         self.assertIn("已自动切换至 deepseek-v4", fallback_message.additional_kwargs["reasoning_content"])
+
+    def test_model_transport_fallbacks_only_use_team_allowed_models(self) -> None:
+        fallbacks = agent.StableAgentChatDeepSeek.model_fields[
+            "transport_fallback_models"
+        ].default
+        self.assertEqual(
+            fallbacks,
+            ("deepseek-v4", "DeepSeek-V4-Pro", "GLM"),
+        )
+        self.assertNotIn(
+            "deepseek-r1-0528",
+            fallbacks,
+        )
 
     def test_model_retries_when_suggestion_footer_is_cut_off(self) -> None:
         incomplete_message = agent.AIMessage(
@@ -2071,14 +2087,80 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertTrue(all(result == "没有找到相关的本地报告信息。" for result in results))
         self.assertTrue(all("达到本轮调用上限" not in result for result in results))
 
-    def test_web_search_keeps_its_bounded_call_limit(self) -> None:
-        token = agent.TOOL_RUN_STATE.set({"counts": {"web_search": 3}})
+    def test_web_search_allows_repeated_calls_and_preserves_requested_result_count(self) -> None:
+        token = agent.TOOL_RUN_STATE.set({"counts": {"web_search": 99}})
         try:
-            web_limited = agent.web_search.invoke({"query": "云厂商现金流"})
+            with (
+                mock.patch("agent._search_with_searxng", return_value=[]) as searxng,
+                mock.patch(
+                    "agent._search_with_duckduckgo",
+                    return_value=[
+                        {
+                            "title": "AWS Investor Relations",
+                            "url": f"https://ir.aboutamazon.com/{index}",
+                            "snippet": "AWS quarterly revenue and capital expenditure",
+                        }
+                        for index in range(8)
+                    ],
+                ) as ddgs,
+                mock.patch(
+                    "agent._filter_relevant_search_results",
+                    side_effect=lambda results, query, limit, **kwargs: (results[:limit], 0),
+                ),
+            ):
+                results = [
+                    agent.web_search.invoke({"query": f"AWS quarterly revenue {year}", "max_results": 8})
+                    for year in range(2019, 2025)
+                ]
         finally:
             agent.TOOL_RUN_STATE.reset(token)
 
-        self.assertIn("web_search 已达到本轮调用上限（3 次）", web_limited)
+        self.assertEqual(searxng.call_count, 6)
+        self.assertEqual(ddgs.call_count, 6)
+        self.assertTrue(all("达到本轮调用上限" not in result for result in results))
+        self.assertTrue(all(result.count("[来源 ") == 8 for result in results))
+
+    def test_aws_multi_year_quarterly_query_returns_complete_series(self) -> None:
+        chunks = rag_llm._quarterly_exact_metric_chunks(
+            "AWS Microsoft Azure Google Cloud 2016 2026 quarterly revenue trend"
+        )
+        aws_revenue = next(
+            chunk["text"]
+            for chunk in chunks
+            if "subject=AWS;" in chunk["text"] and "metric_key=revenue;" in chunk["text"]
+        )
+
+        self.assertIn("coverage=Q1 2016 至 Q4 2025", aws_revenue)
+        self.assertIn("points=40", aws_revenue)
+        self.assertIn("Q1 2016=2566", aws_revenue)
+        self.assertIn("Q4 2025=35579", aws_revenue)
+
+    def test_aws_quarterly_chart_uses_all_40_points(self) -> None:
+        token = agent.SELECTED_DATASET_IDS.set(
+            {"quarterly_competitor_metrics_2026-06-18"}
+        )
+        try:
+            with mock.patch(
+                "agent.render_chart",
+                return_value={
+                    "url": "/charts/aws.png",
+                    "path": "/tmp/aws.png",
+                    "font": "Noto Sans CJK",
+                },
+            ) as render:
+                result = agent.render_quarterly_metric_chart.invoke(
+                    {"subject": "AWS", "metric_key": "revenue"}
+                )
+        finally:
+            agent.SELECTED_DATASET_IDS.reset(token)
+
+        spec = render.call_args.args[0]
+        self.assertEqual(len(spec["x"]), 40)
+        self.assertEqual(len(spec["series"][0]["data"]), 40)
+        self.assertEqual(spec["x"][0], "Q1 2016")
+        self.assertEqual(spec["x"][-1], "Q4 2025")
+        self.assertIn("40 个数据点", result)
+        self.assertIn("![AWS", result)
 
     def test_local_reference_allows_multiple_distinct_sources(self) -> None:
         sources = [
@@ -2217,9 +2299,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         list(agent._stream_agent_events(FakeAgent(), {"messages": []}))
 
-        self.assertEqual(captured["config"], {"recursion_limit": 20})
+        self.assertEqual(captured["config"], {"recursion_limit": 100})
 
-    def test_tool_limit_finishes_once_instead_of_looping_until_empty_done(self) -> None:
+    def test_legacy_tool_limit_text_does_not_stop_the_agent_stream(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None, config=None):
                 yield agent.ToolMessage(
@@ -2229,28 +2311,21 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                     ),
                     tool_call_id="call_limit",
                 ), {}
-                raise AssertionError("工具达到上限后不应继续消费 Agent 循环")
+                yield agent.AIMessage(content="Agent 已继续完成回答。"), {}
 
-        final = (
-            '现有资料不足以完成两周对比，请指定主体和日期。\n'
-            '<suggestions>["指定竞对主体", "指定起止日期", "查看可用数据集"]</suggestions>'
-        )
         with (
             mock.patch("agent.get_agent", return_value=FakeAgent()),
-            mock.patch(
-                "agent._finalize_after_tool_limit",
-                return_value=(final, {"inputTokens": 10, "outputTokens": 20, "totalTokens": 30}),
-            ) as finalize,
+            mock.patch("agent._finalize_after_tool_limit") as finalize,
         ):
             events = list(agent.stream_agent("对比最近两周的竞对动态变化", thinking_enabled=False))
 
         answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
-        self.assertEqual(answer, final)
-        self.assertEqual(finalize.call_count, 1)
+        self.assertEqual(answer, "Agent 已继续完成回答。")
+        self.assertEqual(finalize.call_count, 0)
         self.assertFalse(any(event.get("type") == "error" for event in events))
         self.assertEqual(events[-1].get("type"), "done")
 
-    def test_tool_limit_emits_terminal_results_for_parallel_calls_left_pending(self) -> None:
+    def test_parallel_calls_are_all_allowed_to_finish_after_legacy_limit_text(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None, config=None):
                 yield agent.AIMessage(
@@ -2283,16 +2358,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                     ),
                     tool_call_id="call-limit",
                 ), {}
-                raise AssertionError("达到上限后不应继续消费 Agent 循环")
+                yield agent.ToolMessage(content="联网结果", tool_call_id="call-web"), {}
+                yield agent.ToolMessage(content="网页原文", tool_call_id="call-page"), {}
+                yield agent.AIMessage(content="已完成三项工具核验。"), {}
 
-        final = '已基于现有结果完成回答。<suggestions>["一", "二", "三"]</suggestions>'
-        with (
-            mock.patch("agent.get_agent", return_value=FakeAgent()),
-            mock.patch(
-                "agent._finalize_after_tool_limit",
-                return_value=(final, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
-            ),
-        ):
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
             events = list(agent.stream_agent("分析云厂商", thinking_enabled=False))
 
         results = {
@@ -2302,11 +2372,13 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         }
         self.assertEqual(set(results), {"call-limit", "call-web", "call-page"})
         self.assertIn("达到本轮调用上限", results["call-limit"]["content"])
-        self.assertIn("系统不再等待", results["call-web"]["content"])
-        self.assertIn("系统不再等待", results["call-page"]["content"])
+        self.assertEqual(results["call-web"]["content"], "联网结果")
+        self.assertIn("网页原文", results["call-page"]["content"])
+        answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
+        self.assertEqual(answer, "已完成三项工具核验。")
         self.assertEqual(events[-1].get("type"), "done")
 
-    def test_three_identical_tool_calls_are_finalized_without_consuming_a_fourth(self) -> None:
+    def test_repeated_tool_calls_are_not_stopped_by_the_stream_layer(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None, config=None):
                 for index in range(4):
@@ -2321,21 +2393,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                         }],
                     ), {}
                     yield agent.ToolMessage(content="相同检索结果", tool_call_id=call_id), {}
-                raise AssertionError("第三次相同调用后应停止 Agent 循环")
 
-        final = '已根据现有结果完成回答。\n<suggestions>["追问一", "追问二", "追问三"]</suggestions>'
-        with (
-            mock.patch("agent.get_agent", return_value=FakeAgent()),
-            mock.patch(
-                "agent._finalize_after_tool_limit",
-                return_value=(final, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
-            ) as finalize,
-        ):
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
             events = list(agent.stream_agent("测试重复调用保护", thinking_enabled=False))
 
         starts = [event for event in events if event.get("type") == "tool_call_start"]
-        self.assertEqual(len(starts), 3)
-        self.assertEqual(finalize.call_count, 1)
+        self.assertEqual(len(starts), 4)
         self.assertEqual(events[-1].get("type"), "done")
 
     def test_markdown_limiter_streams_plain_text_but_buffers_table_rows(self) -> None:

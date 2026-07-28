@@ -469,7 +469,9 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
     """Retry malformed non-streaming Agent generations before they reach the UI."""
 
     stable_attempts: int = 2
-    transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "deepseek-r1-0528", "GLM")
+    # Keep fallbacks inside the models exposed by the current team. A stale
+    # hard-coded model name turns a recoverable transport retry into a 401.
+    transport_fallback_models: tuple[str, ...] = ("deepseek-v4", "DeepSeek-V4-Pro", "GLM")
 
     @staticmethod
     def _stable_messages(messages: Any) -> list[Any]:
@@ -693,7 +695,6 @@ WEB_SEARCH_NEXT_INDEX = 6
 SELECTED_DATASET_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_DATASET_IDS", default=None)
 SELECTED_SKILL_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_SKILL_IDS", default=None)
 APPROVED_ACTION_IDS: ContextVar[set[str]] = ContextVar("APPROVED_ACTION_IDS", default=set())
-CHART_RUN_STATE: ContextVar[dict[str, Any] | None] = ContextVar("CHART_RUN_STATE", default=None)
 TOOL_RUN_STATE: ContextVar[dict[str, Any] | None] = ContextVar("TOOL_RUN_STATE", default=None)
 ACTIVE_CHAT_THREAD_ID: ContextVar[str] = ContextVar("ACTIVE_CHAT_THREAD_ID", default="")
 CURRENT_USER_REQUEST: ContextVar[str] = ContextVar("CURRENT_USER_REQUEST", default="")
@@ -717,35 +718,6 @@ def _allocate_web_search_indexes(count: int) -> int:
 def _clean_search_text(value: Any, limit: int = 500) -> str:
     text = " ".join(str(value or "").split())
     return text[:limit]
-
-
-def _register_tool_invocation(tool_name: str, limit: int) -> str | None:
-    state = TOOL_RUN_STATE.get()
-    if state is None:
-        return None
-    counts = state.setdefault("counts", {})
-    count = int(counts.get(tool_name) or 0) + 1
-    counts[tool_name] = count
-    if count > limit:
-        return (
-            f"{tool_name} 已达到本轮调用上限（{limit} 次），请停止继续调用该工具，"
-            "直接基于已经返回的资料给出结论、表格或图表。"
-        )
-    return None
-
-
-def _register_heavy_search_invocation(tool_name: str) -> str | None:
-    """Run an expensive retrieval once; keep accidental repeats cheap and bounded."""
-    state = TOOL_RUN_STATE.get()
-    counts = state.setdefault("counts", {}) if state is not None else {}
-    previous = int(counts.get(tool_name) or 0)
-    if previous in {1, 2}:
-        counts[tool_name] = previous + 1
-        return (
-            f"{tool_name} 本轮已经完成，且首次结果已附带最相关原文。"
-            "不要重复检索；请直接交叉核验已有本地与联网证据并完成当前用户请求。"
-        )
-    return _register_tool_invocation(tool_name, 3)
 
 
 class MarkdownTableLimiter:
@@ -1385,7 +1357,18 @@ def search_local_reports(query: str) -> str:
     趋势查询会把同一主体和指标的完整可见时间序列压缩在一个结果片段中。
     此工具不限制同一轮调用次数，模型可以按分析需要反复检索。
     """
-    chunks = retrieve_context(query, limit=6, dataset_ids=_effective_selected_dataset_ids())
+    # Keep the user's original periods and metric wording even when the model
+    # shortens its tool query. This improves retrieval recall without deciding
+    # whether or how often the Agent should call the tool.
+    original_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
+    retrieval_query = query
+    if original_request and original_request not in query:
+        retrieval_query = f"{query}\n用户原始问题：{original_request}"
+    chunks = retrieve_context(
+        retrieval_query,
+        limit=6,
+        dataset_ids=_effective_selected_dataset_ids(),
+    )
     if not chunks:
         return "没有找到相关的本地报告信息。"
     # Keep each individual search result within the model context budget. This
@@ -1476,14 +1459,13 @@ def web_search(query: str, max_results: int = 5) -> str:
     """联网搜索公开网页信息。
     当用户要求“上网搜一下”“联网搜索”“查最新消息”“找公开来源”或本地 RAG 没有足够信息时使用。
     优先使用自托管 SearXNG（环境变量 SEARXNG_URL/CMHK_SEARXNG_URL），否则使用开源 DDGS/DuckDuckGo 搜索库。
+    此工具不限制同一轮调用次数；可按研究需要使用不同关键词反复检索。
+    max_results 会原样传给搜索提供方，不会被后端静默缩减。
     """
-    limit_message = _register_heavy_search_invocation("web_search")
-    if limit_message:
-        return limit_message
     query = _search_query_from_instruction(query)
     if not query:
         return "搜索关键词为空。"
-    limit = max(1, min(int(max_results or 5), 5))
+    limit = max(1, int(max_results or 5))
     provider = "searxng"
     failures: list[str] = []
     try:
@@ -1859,66 +1841,116 @@ def _normalize_chart_spec_payload(spec: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
-def _chart_failure_signature(spec_or_raw: Any) -> str:
-    try:
-        normalized = _normalize_chart_spec_payload(spec_or_raw) if isinstance(spec_or_raw, dict) else spec_or_raw
-        payload = json.dumps(normalized, ensure_ascii=False, sort_keys=True, default=str)
-    except Exception:
-        payload = str(spec_or_raw)
-    return hashlib.sha256(payload.encode("utf-8", errors="ignore")).hexdigest()[:16]
-
-
 @tool
 def render_python_chart(chart_spec: str) -> str:
     """用 Python/Matplotlib 生成中文可正常渲染的 PNG 图表。
     当用户要求画图或数据适合可视化时，在完成数据检索和核验后调用；可按分析目的调用多次生成互补图表。
     参数必须是 JSON 字符串，包含 type、title、unit、x、series；series 每项使用 data 数组（values 也兼容），气泡图可额外提供 sizes。type 支持 line、bar、grouped_bar、horizontal_bar、stacked_bar、area、stacked_area、pie、donut、scatter、bubble、radar、heatmap、histogram、box、combo。请勿提供 notes 或图表底部的解释性文字。
     """
-    state = CHART_RUN_STATE.get()
-    if state is not None:
-        state["calls"] = int(state.get("calls") or 0) + 1
-        if state["calls"] > 4:
-            return (
-                "Python 图表生成停止：本轮图表工具调用次数已达 4 次。"
-                "请停止继续调用图表工具，直接基于已检索数据用文字、表格或已有图表回答。"
-            )
     try:
         spec = _decode_chart_spec_payload(chart_spec)
     except Exception as exc:
-        if state is not None:
-            state["failures"] = int(state.get("failures") or 0) + 1
         return (
             f"Python 图表生成失败：chart_spec 不是可用 JSON，原因：{_clean_search_text(exc, 160)}。"
-            "不要用相同参数反复调用；如无法修正，请改用文字表格回答。"
+            "请修正参数后重新调用。"
         )
-    signature = _chart_failure_signature(spec)
-    if state is not None:
-        failed_signatures = state.setdefault("failed_signatures", {})
-        if failed_signatures.get(signature):
-            return (
-                "Python 图表生成停止：相同图表参数已经失败过。"
-                "请不要重复调用，改为给出文字结论或重新检索数据后再生成一张不同口径的图。"
-            )
     try:
         result = render_chart(spec)
     except Exception as exc:
-        if state is not None:
-            state["failures"] = int(state.get("failures") or 0) + 1
-            state.setdefault("failed_signatures", {})[signature] = True
-            if state["failures"] >= 2:
-                return (
-                    f"Python 图表生成失败并已停止重试：{_clean_search_text(exc, 200)}。"
-                    "本轮不要再调用 `render_python_chart`，请直接用文字、简表或已有数据回答。"
-                )
         return (
             f"Python 图表生成失败：{_clean_search_text(exc, 200)}。"
-            "请修正为包含 x 和 series.data 的 JSON 后最多再试一次，不要重复同一参数。"
+            "请修正为包含 x 和 series.data 的 JSON 后重新调用。"
         )
     title = _clean_search_text(spec.get("title") or "Python 图表", 120)
     return (
         f"Python 图表已生成：\n\n![{title}]({result['url']})\n\n"
         f"图表文件：{result['path']}\n"
         f"中文字体：{result['font']}"
+    )
+
+
+@tool
+def render_quarterly_metric_chart(
+    subject: str,
+    metric_key: str = "revenue",
+    category: str = "",
+    chart_type: str = "line",
+) -> str:
+    """从已选择季度指标库读取某主体某指标的完整可用时间序列并直接生成 PNG 图表。
+    用户要求季度/半年度趋势图时直接调用本工具；它会返回真实 PNG，不要误称无法生成图片。
+    不需要先手工拼 chart_spec。
+    subject 例如 AWS、中国移动、Google Cloud；metric_key 例如 revenue、cloud_revenue、capital_expenditures。
+    """
+    subject = _clean_search_text(subject, 100)
+    metric_key = _clean_search_text(metric_key or "revenue", 100)
+    category = _clean_search_text(category, 100)
+    chart_type = _clean_search_text(chart_type or "line", 30)
+    if chart_type not in {"line", "bar", "area"}:
+        chart_type = "line"
+    csv_path = _selected_quarterly_metrics_path()
+    if csv_path is None:
+        return "季度指标图生成失败：当前未选择可用的季度/半年度指标数据库。"
+
+    rows: list[dict[str, Any]] = []
+    with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+        for row in csv.DictReader(handle):
+            if (row.get("subject") or "").strip() != subject:
+                continue
+            if (row.get("metric_key") or "").strip() != metric_key:
+                continue
+            if category and (row.get("category") or "").strip() not in {"", category}:
+                continue
+            value = _parse_metric_number(row.get("official_value") or row.get("value"))
+            if value is None or row.get("verification_status") == "source_gap_confirmed":
+                continue
+            rows.append({**row, "_numeric_value": value})
+    rows.sort(key=lambda row: _period_sort_key_for_forecast(row.get("period") or ""))
+    if not rows:
+        return f"季度指标图生成失败：数据库中没有 {subject} / {metric_key} 的可用数值序列。"
+
+    unit = (rows[-1].get("official_unit") or rows[-1].get("unit") or "").strip()
+    metric_zh = (rows[-1].get("metric_zh") or metric_key).strip()
+    periods = [(row.get("period") or "").strip() for row in rows]
+    values = [float(row["_numeric_value"]) for row in rows]
+    title = f"{subject} {metric_zh}趋势（{periods[0]}–{periods[-1]}）"
+    result = render_chart(
+        {
+            "type": chart_type,
+            "title": title,
+            "unit": unit,
+            "x": periods,
+            "series": [{"name": metric_zh, "data": values}],
+        }
+    )
+    source = csv_path.relative_to(ROOT).as_posix()
+    conflicts = [
+        (row.get("period") or "").strip()
+        for row in rows
+        if row.get("verification_status") == "official_conflict"
+    ]
+    metadata = {
+        "type": "meta",
+        "sources": [source],
+        "links": [{"label": source, "url": f"/references/{source}"}],
+        "references": [
+            {
+                "index": 1,
+                "source": source,
+                "links": [{"label": source, "url": f"/references/{source}"}],
+            }
+        ],
+    }
+    conflict_note = (
+        f"\n官方口径冲突期间：{', '.join(conflicts)}；图中采用 official_value。"
+        if conflicts
+        else ""
+    )
+    return (
+        f"完整时间序列图已生成：{subject} / {metric_key}，"
+        f"{len(rows)} 个数据点，{periods[0]} 至 {periods[-1]}，单位 {unit}。"
+        f"{conflict_note}\n\n![{title}]({result['url']})\n\n"
+        f"图表文件：{result['path']}\n"
+        f"<metadata>{json.dumps(metadata, ensure_ascii=False)}</metadata>"
     )
 
 
@@ -2428,9 +2460,6 @@ def search_chat_history(
     thread_id 可限定单个会话；context_window 控制命中前后消息数量。不要为普通当前事实查询无故调用。
     该工具只读，不等同于长期记忆；回答时要说明命中的线程、角色、消息序号和时间精度。
     """
-    limit_message = _register_tool_invocation("search_chat_history", 4)
-    if limit_message:
-        return limit_message
     rows = _chat_history_rows(
         query=query,
         limit=limit,
@@ -2582,6 +2611,7 @@ def _agent_tools(allow_web_search: bool = True, user_message: str | None = None)
         list_report_outputs,
         get_crawl_settings_summary,
         render_python_chart,
+        render_quarterly_metric_chart,
         forecast_quarterly_metric,
         get_system_status,
         search_agent_memory,
@@ -2641,7 +2671,7 @@ def _agent_tools(allow_web_search: bool = True, user_message: str | None = None)
         text,
         re.IGNORECASE,
     ):
-        add(render_python_chart)
+        add(render_quarterly_metric_chart, render_python_chart)
     if re.search(r"预测|未来.*季度|forecast|Holt|Winters|回测", text, re.IGNORECASE):
         add(forecast_quarterly_metric)
     if re.search(r"记住|长期记忆|偏好|以后都|默认规则|你了解我|我是谁|感兴趣", text, re.IGNORECASE):
@@ -2711,6 +2741,7 @@ def get_agent(
         "前端选择的数据库是实际访问边界，只使用本轮"
         "可见的数据和真实工具结果，不臆造未读取内容。\n"
         "用户明确要求某个当前可用工具能够生成的产物时，直接调用该工具，不要误称环境不支持。\n"
+        "季度或半年度指标趋势图直接调用 render_quarterly_metric_chart；工具返回的图片才算完成画图。\n"
         "使用数据时保留指标名称、期间、单位和工具提供的数字来源编号。若证据本身存在明确"
         "冲突、不可比或不足，如实说明，不替证据补造确定结论。\n"
         "历史聊天和长期记忆只作为辅助上下文；本轮用户指令优先。生成报告、启动爬虫等有副作用"
@@ -2770,7 +2801,8 @@ def _context_tool_content(title: str, rows: list[dict[str, str]], id_key: str = 
 
 def _stream_agent_events(agent: Any, inputs: dict[str, Any]):
     try:
-        return agent.stream(inputs, stream_mode="messages", config={"recursion_limit": 20})
+        recursion_limit = max(100, int(os.environ.get("CMHK_AGENT_RECURSION_LIMIT", "100")))
+        return agent.stream(inputs, stream_mode="messages", config={"recursion_limit": recursion_limit})
     except TypeError:
         return agent.stream(inputs, stream_mode="messages")
 
@@ -2820,6 +2852,7 @@ def _tool_process_text(tool_name: str) -> str:
         "web_search": "我联网检索公开来源。",
         "read_webpage": "我读取网页原文核验细节。",
         "render_python_chart": "我基于已核验数据生成图表。",
+        "render_quarterly_metric_chart": "我读取完整季度序列并直接生成趋势图。",
         "forecast_quarterly_metric": "我调用趋势预测工具，使用历史数据生成预测。",
         "get_system_status": "我读取系统当前状态。",
         "search_chat_history": "我搜索已保存的历史聊天记录。",
@@ -3065,7 +3098,6 @@ def stream_agent(
     dataset_token = SELECTED_DATASET_IDS.set(selected_dataset_set)
     skill_token = SELECTED_SKILL_IDS.set(selected_skill_set)
     approved_token = APPROVED_ACTION_IDS.set({str(item) for item in (approved_action_ids or []) if str(item).strip()})
-    chart_token = CHART_RUN_STATE.set({"calls": 0, "failures": 0, "failed_signatures": {}})
     tool_token = TOOL_RUN_STATE.set({"counts": {}})
     thread_token = ACTIVE_CHAT_THREAD_ID.set(
         re.sub(r"[^A-Za-z0-9_.:-]", "", str(active_thread_id or ""))[:160]
@@ -3170,8 +3202,6 @@ def stream_agent(
     table_limiter = MarkdownTableLimiter()
     token_usage = {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
     tool_evidence: list[str] = []
-    tool_limit_reached = False
-    tool_signature_counts: dict[tuple[str, str], int] = {}
 
     def finalize_pending_tool_calls(reason: str) -> Generator[dict[str, Any], None, None]:
         """Close every visible tool card even when the Agent loop stops early."""
@@ -3423,8 +3453,7 @@ def stream_agent(
                 
                 content = chunk.content
                 raw_tool_content = str(content or "")
-                reached_tool_limit = "达到本轮调用上限" in raw_tool_content
-                if raw_tool_content and not reached_tool_limit:
+                if raw_tool_content:
                     tool_evidence.append(raw_tool_content[:6000])
                 
                 # Parse metadata if present
@@ -3459,11 +3488,6 @@ def stream_agent(
                     yield meta_event
                     
                 tool_name = str((tc_data or {}).get("name") or "工具")
-                repeated_tool_call = False
-                if args_str:
-                    signature = (tool_name, re.sub(r"\s+", "", args_str))
-                    tool_signature_counts[signature] = tool_signature_counts.get(signature, 0) + 1
-                    repeated_tool_call = tool_signature_counts[signature] >= 3
                 display_content = _display_tool_result(tool_name, content.strip(), meta_event)
                 if thinking_enabled:
                     yield thinking_event(f"工具返回结果：{tool_name} 已完成，开始把结果纳入来源核验和回答组织。")
@@ -3476,36 +3500,10 @@ def stream_agent(
                 }
                 recorder.observe(event)
                 yield event
-                if reached_tool_limit or repeated_tool_call:
-                    tool_limit_reached = True
-                    stop_reason = (
-                        "本轮已达到工具调用上限，系统不再等待此调用返回。"
-                        if reached_tool_limit
-                        else "检测到重复工具调用，系统已停止继续等待。"
-                    )
-                    yield from finalize_pending_tool_calls(stop_reason)
-                    close_events = getattr(events, "close", None)
-                    if callable(close_events):
-                        close_events()
-                    break
         if pending_tool_calls:
             yield from finalize_pending_tool_calls(
                 "Agent 事件流已经结束，但没有收到此工具的返回结果。"
             )
-        if tool_limit_reached:
-            final_text, final_usage = _finalize_after_tool_limit(
-                original_user_message,
-                tool_evidence,
-                thinking_enabled=thinking_enabled,
-            )
-            for key in token_usage:
-                token_usage[key] += final_usage[key]
-            for content_part in replay_validated_text(final_text, delay_seconds=0.018):
-                limited_text = table_limiter.feed(content_part)
-                if limited_text:
-                    event = {"type": "delta", "text": limited_text}
-                    recorder.observe(event)
-                    yield event
         if checking_disabled_web_notice and disabled_web_notice_buffer:
             leading = disabled_web_notice_buffer.lstrip()
             if not any(leading.startswith(prefix) for prefix in disabled_web_notice_prefixes):
@@ -3602,7 +3600,6 @@ def stream_agent(
         SELECTED_DATASET_IDS.reset(dataset_token)
         SELECTED_SKILL_IDS.reset(skill_token)
         APPROVED_ACTION_IDS.reset(approved_token)
-        CHART_RUN_STATE.reset(chart_token)
         TOOL_RUN_STATE.reset(tool_token)
         ACTIVE_CHAT_THREAD_ID.reset(thread_token)
         CURRENT_USER_REQUEST.reset(request_token)
