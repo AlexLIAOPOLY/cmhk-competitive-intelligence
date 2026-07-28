@@ -1041,15 +1041,44 @@ def sync_candidates(
                 f"A{clear_start}:N{clear_start + clear_count - 1}",
                 [[""] * len(HEADERS) for _ in range(clear_count)],
             )
-        written_rows = _read_rows(sheet_id)
         expected_rows = [_comparable_sheet_row(row) for row in ordered_values]
-        actual_rows = [
-            _comparable_sheet_row(row)
-            for row in written_rows[: len(ordered_values)]
-        ]
+        actual_rows: list[list[str]] = []
+        # Feishu Sheets can acknowledge a batch write before every chunk is
+        # visible to the following read. Keep the strict cell-by-cell check,
+        # but allow a short eventual-consistency window before declaring a
+        # real mismatch.
+        for readback_attempt in range(1, 5):
+            written_rows = _read_rows(sheet_id)
+            actual_rows = [
+                _comparable_sheet_row(row)
+                for row in written_rows[: len(ordered_values)]
+            ]
+            if actual_rows == expected_rows:
+                break
+            if readback_attempt < 4:
+                time.sleep(readback_attempt)
         if actual_rows != expected_rows:
+            first_difference = "行数不一致"
+            for row_index, (expected, actual) in enumerate(
+                zip(expected_rows, actual_rows),
+                start=2,
+            ):
+                if expected == actual:
+                    continue
+                for column_index, (expected_cell, actual_cell) in enumerate(
+                    zip(expected, actual)
+                ):
+                    if expected_cell != actual_cell:
+                        first_difference = (
+                            f"第{row_index}行第{column_index + 1}列，"
+                            f"期望“{_text(expected_cell, 80)}”，"
+                            f"实际“{_text(actual_cell, 80)}”"
+                        )
+                        break
+                break
             raise RuntimeError(
-                "飞书审核表写入后逐格回读不一致，已停止后续处理并保留错误现场"
+                "飞书审核表写入后逐格回读不一致，已停止后续处理并保留错误现场："
+                + first_difference
             )
         state.update(
             {

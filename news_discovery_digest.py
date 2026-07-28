@@ -374,6 +374,84 @@ def _mandatory_competitor_plans() -> list[dict[str, Any]]:
     return plans
 
 
+def _scheduled_crawl_plans(
+    end_at: datetime,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Turn fixed-page discoveries into date-aware news-index searches."""
+    try:
+        from scheduled_crawl_news_bridge import load_pending_signals
+
+        batch = load_pending_signals(
+            strategic_briefing._load_state(),
+            end_at,
+        )
+    except Exception as exc:
+        return [], {
+            "pending_signal_count": 0,
+            "query_count": 0,
+            "error": f"{type(exc).__name__}: {_clean_text(exc, 200)}",
+        }
+    signals = [
+        signal
+        for signal in (batch.get("signals") or [])
+        if isinstance(signal, dict)
+    ][: strategic_briefing.MAX_SCHEDULED_CRAWL_SIGNALS]
+    plans: list[dict[str, Any]] = []
+    for signal in signals:
+        # The fixed-page row label is provenance, not evidence that every child
+        # link belongs to that operator. Search the discovered headline itself
+        # so a broad aggregator cannot prefix unrelated news with the row label
+        # and create false competitor matches.
+        headline = _clean_text(signal.get("title"), 240)
+        query = headline or _clean_text(signal.get("query"), 300)
+        signal_id = _clean_text(signal.get("signal_id"), 80)
+        if not query or not signal_id:
+            continue
+        keywords = [
+            _clean_text(keyword, 100)
+            for keyword in (signal.get("keywords") or [])
+            if _clean_text(keyword, 100)
+        ]
+        monitor_object = _clean_text(signal.get("monitor_object"), 200)
+        canonical = strategic_briefing._scheduled_signal_canonical_competitor(
+            monitor_object
+        )
+        plan = {
+            "module": _clean_text(signal.get("monitor_category"), 100)
+            or "定时页面监控",
+            "query": query,
+            "fallback_query": query,
+            "keywords": keywords or [monitor_object],
+            "lookback_days": 3,
+            "search_origin": "scheduled_crawl_reference",
+            "semantic_relevance": True,
+            "agentic_intent": "核验定时页面爬虫发现的新文章线索",
+            "agentic_reason": "固定来源页面出现新链接，使用带发布日期的新闻索引确认事件",
+            "scheduled_crawl_signal_id": signal_id,
+            "scheduled_crawl_run_id": _clean_text(
+                signal.get("crawl_run_id"), 100
+            ),
+            "scheduled_crawl_config_row": _clean_text(
+                signal.get("config_row"), 20
+            ),
+            "scheduled_crawl_parent_url": _clean_text(
+                signal.get("parent_url"), 1600
+            ),
+            "scheduled_crawl_target_url": _clean_text(
+                signal.get("target_url"), 1600
+            ),
+        }
+        if canonical:
+            plan["canonical_competitor"] = canonical
+        plans.append(plan)
+    return plans, {
+        "pending_signal_count": len(signals),
+        "query_count": len(plans),
+        "expired_signal_count": len(batch.get("expired_signal_ids") or []),
+        "error": "",
+    }
+
+
 def _normalized_query(value: Any) -> str:
     return re.sub(r"\s+", " ", _clean_text(value, 1400)).strip().casefold()
 
@@ -587,18 +665,23 @@ def _call_agentic_search_agent(
         "\"reason\":\"为什么现有搜索可能漏掉\",\"lookback_days\":0到7}]}。"
         "固定监控、飞书关键词搜索和03:00爬虫信号已经由系统执行，你只能补充查询，不得删除、替代或缩减它们。"
         "根据已检索结果识别未覆盖公司、品牌别名、同义表达、事件类型和主题缺口，再提出少量高价值补搜。"
-        "竞对信息是最高优先级：优先补齐所有被监控运营商及其品牌的结果缺口，"
+        "香港本地竞对、香港运营商动态、香港监管政策和本地数字产业政策同列最高优先级。"
+        "既要补齐所有被监控运营商及其品牌的结果缺口，也要检查OFCA、创新科技及工业局、"
+        "数字政策办公室、香港特区政府与内地部委合作等政策和本地产业事件是否缺失。"
         "不要只寻找重大事件；产品资费、促销、客户服务、经营数据、网络技术、合作、投资、"
         "管理层、监管和资本市场等任何有明确时效的竞对动态都值得检索。"
         "查询应组合主体/别名与事件意图，例如业绩指引、网络建设、资费调整、合作并购、监管影响、"
         "AI/云/数据中心投资、管理层变化；可使用中英文同义词，但不要只是原关键词逐字重排。"
-        "每条查询必须同时包含主体和至少一个事件意图词；禁止仅罗列公司或品牌别名做综合监测，"
+        "竞对查询必须同时包含主体和至少一个事件意图词；政策或香港本地查询必须包含香港机构、"
+        "政策领域或本地市场对象，并组合发布、签署、实施、咨询、牌照、频谱、投资等事件意图。"
+        "禁止仅罗列公司或品牌别名做综合监测，"
         "因为固定搜索已经覆盖这些名称。missing_fixed_competitors表示结果缺口，不表示名称查询未执行。"
-        "每条查询只针对一个canonical竞对，最多包含3个该竞对别名和2组事件意图词；"
+        "竞对查询只针对一个canonical竞对，最多包含3个该竞对别名和2组事件意图词；"
         "query最多180个字符。禁止把所有运营商拼进同一查询，禁止重复同一个词，"
         "禁止为了填满长度反复输出同义词。queries数量不得超过query_limit。"
         "为确保JSON稳定，query字段内禁止使用英文双引号字符，主体名称直接写即可；所有字符串必须正确转义。"
         "不要生成网址、site:或-site:搜索运算符、新闻事实或不在监控范围内的新主体。避免重复现有查询。"
+        "一般国际AI、芯片或宏观新闻不是补搜重点，除非查询本身能说明其与香港电信市场的直接关系。"
         "若覆盖充分可返回 sufficient=true 和空 queries。"
     )
     if target_competitor:
@@ -821,7 +904,16 @@ def _execute_search_plans(
                 if int(plan.get("lookback_days") or 0) > 0
                 else start_at,
                 end_at,
-                admission_start_at=start_at,
+                # A fixed-page signal can arrive after the article was indexed.
+                # Retrieve its lookback here; the shared admission gate below
+                # still limits final rows to this scan's publication window.
+                admission_start_at=(
+                    end_at
+                    - timedelta(days=int(plan.get("lookback_days") or 0))
+                    if plan.get("search_origin") == "scheduled_crawl_reference"
+                    and int(plan.get("lookback_days") or 0) > 0
+                    else start_at
+                ),
                 admission_end_at=end_at,
             ): plan
             for plan in plans
@@ -830,6 +922,17 @@ def _execute_search_plans(
             plan = future_map[future]
             try:
                 found = future.result()
+                provenance_fields = (
+                    "scheduled_crawl_signal_id",
+                    "scheduled_crawl_run_id",
+                    "scheduled_crawl_config_row",
+                    "scheduled_crawl_parent_url",
+                    "scheduled_crawl_target_url",
+                )
+                for item in found:
+                    for field in provenance_fields:
+                        if plan.get(field):
+                            item[field] = plan[field]
                 items.extend(found)
                 if not found:
                     zero_result_queries.append(
@@ -900,11 +1003,28 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
                 "search_origin": "background_fixed_keywords",
             }
         )
-    plans = competitor_plans + priority_plans + base_plans
+    scheduled_plans, scheduled_trace = _scheduled_crawl_plans(end_at)
+    if scheduled_trace.get("error"):
+        errors.append(
+            "定时页面爬虫线索读取失败: "
+            + _clean_text(scheduled_trace.get("error"), 240)
+        )
+    plans = competitor_plans + priority_plans + scheduled_plans + base_plans
     all_items, search_errors, legacy_stats = _execute_search_plans(
         plans,
         start_at=start_at,
         end_at=end_at,
+    )
+    scheduled_trace["retrieval_result_count"] = sum(
+        item.get("search_origin") == "scheduled_crawl_reference"
+        for item in all_items
+    )
+    scheduled_trace["attempted_signal_ids"] = list(
+        dict.fromkeys(
+            _clean_text(plan.get("scheduled_crawl_signal_id"), 80)
+            for plan in scheduled_plans
+            if _clean_text(plan.get("scheduled_crawl_signal_id"), 80)
+        )
     )
     errors.extend(search_errors)
     agentic_trace: dict[str, Any] = {
@@ -913,6 +1033,7 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         "fixed_query_count": len(plans),
         "fixed_result_count": len(all_items),
         "fixed_search": legacy_stats,
+        "scheduled_crawl_search": scheduled_trace,
         "rounds": [],
     }
     if AGENTIC_SEARCH_ENABLED:
@@ -1019,6 +1140,19 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         else:
             admission_rejected += 1
     all_items = admission_items
+    scheduled_trace["admitted_result_count"] = sum(
+        item.get("search_origin") == "scheduled_crawl_reference"
+        for item in all_items
+    )
+    scheduled_trace["admitted_signal_ids"] = list(
+        dict.fromkeys(
+            _clean_text(item.get("scheduled_crawl_signal_id"), 80)
+            for item in all_items
+            if item.get("search_origin") == "scheduled_crawl_reference"
+            and _clean_text(item.get("scheduled_crawl_signal_id"), 80)
+        )
+    )
+    scheduled_trace["result_count"] = scheduled_trace["admitted_result_count"]
     agentic_trace["admission_gate"] = {
         "window_start": start_at.astimezone(HKT).isoformat(timespec="seconds"),
         "window_end": end_at.astimezone(HKT).isoformat(timespec="seconds"),

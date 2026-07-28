@@ -42,6 +42,82 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(digest.AGENTIC_AI_ATTEMPTS, 3)
         self.assertGreaterEqual(call.call_args.kwargs["max_tokens"], 2600)
         self.assertIn("query最多180个字符", call.call_args.args[0])
+        self.assertIn("香港监管政策和本地数字产业政策同列最高优先级", call.call_args.args[0])
+
+    def test_scheduled_crawl_signal_becomes_date_aware_search_plan(self):
+        signal = {
+            "signal_id": "SCN-HKT-AI",
+            "crawl_run_id": "crawl-1",
+            "config_row": "18",
+            "monitor_object": "HKT / csl / 1O1O",
+            "monitor_category": "重大动态/技术",
+            "parent_url": "https://www.hkt.com/news/",
+            "target_url": "https://www.hkt.com/news/2026/hkt-ai",
+            "query": "HKT broad row label AI platform launch",
+            "title": "HKT AI platform launch",
+            "keywords": ["HKT", "AI"],
+        }
+        with (
+            mock.patch.object(
+                strategic_briefing,
+                "_load_state",
+                return_value={"scheduled_crawl_consumed_signal_ids": []},
+            ),
+            mock.patch(
+                "scheduled_crawl_news_bridge.load_pending_signals",
+                return_value={
+                    "signals": [signal],
+                    "expired_signal_ids": [],
+                },
+            ),
+        ):
+            plans, trace = digest._scheduled_crawl_plans(
+                datetime(2026, 7, 28, 15, 0, tzinfo=HKT)
+            )
+
+        self.assertEqual(trace["pending_signal_count"], 1)
+        self.assertEqual(trace["query_count"], 1)
+        self.assertEqual(plans[0]["search_origin"], "scheduled_crawl_reference")
+        self.assertEqual(plans[0]["canonical_competitor"], "HKT")
+        self.assertEqual(plans[0]["query"], "HKT AI platform launch")
+        self.assertEqual(plans[0]["fallback_query"], "HKT AI platform launch")
+        self.assertEqual(plans[0]["lookback_days"], 3)
+        self.assertEqual(plans[0]["scheduled_crawl_signal_id"], "SCN-HKT-AI")
+
+    def test_search_executor_preserves_scheduled_crawl_provenance(self):
+        plan = {
+            "module": "重大动态/技术",
+            "query": "HKT AI platform launch",
+            "fallback_query": "HKT AI platform launch",
+            "keywords": ["HKT", "AI"],
+            "lookback_days": 3,
+            "search_origin": "scheduled_crawl_reference",
+            "scheduled_crawl_signal_id": "SCN-HKT-AI",
+            "scheduled_crawl_config_row": "18",
+        }
+        found = {
+            "title": "HKT推出AI平台",
+            "url": "https://example.com/hkt-ai",
+            "published_at": "2026-07-28T10:00:00+08:00",
+        }
+        with mock.patch.object(
+            digest,
+            "_google_news_search",
+            return_value=[found],
+        ) as search:
+            items, errors, _ = digest._execute_search_plans(
+                [plan],
+                start_at=datetime(2026, 7, 28, 8, 0, tzinfo=HKT),
+                end_at=datetime(2026, 7, 28, 15, 0, tzinfo=HKT),
+            )
+
+        self.assertEqual(errors, [])
+        self.assertEqual(items[0]["scheduled_crawl_signal_id"], "SCN-HKT-AI")
+        self.assertEqual(items[0]["scheduled_crawl_config_row"], "18")
+        self.assertEqual(
+            search.call_args.kwargs["admission_start_at"],
+            datetime(2026, 7, 25, 15, 0, tzinfo=HKT),
+        )
 
     def test_target_planner_retries_gap_without_valid_query_and_sets_canonical(self):
         responses = [
@@ -301,6 +377,11 @@ class AgenticNewsSearchTests(unittest.TestCase):
             }]),
             mock.patch.object(digest, "BENCHMARK_OPERATOR_QUERIES", ()),
             mock.patch.object(digest, "PRIORITY_NEWS_QUERIES", ()),
+            mock.patch.object(
+                digest,
+                "_scheduled_crawl_plans",
+                return_value=([], {"pending_signal_count": 0, "query_count": 0, "error": ""}),
+            ),
             mock.patch.object(
                 digest,
                 "_execute_search_plans",

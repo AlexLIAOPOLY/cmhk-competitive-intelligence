@@ -40,7 +40,13 @@ NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 16
+AI_EDITOR_VERSION = 18
+AI_EDITOR_CRITIC_ENABLED = (
+    os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "1") == "1"
+)
+LEGACY_DDGS_SEARCH_ENABLED = (
+    os.environ.get("CMHK_LEGACY_STRATEGIC_DDGS_SEARCH", "0") == "1"
+)
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 AI_EDITOR_SINGLE_RETRY_LIMIT = max(
     0,
@@ -68,6 +74,8 @@ _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "才可归为‘竞对动态’；泛香港5G基站、频谱、网络质量或市场趋势必须归为‘行业动态’。"
     "AI、算力、CPU、基站、港澳等通用关键词不能证明标题中的公司就是被监测竞对，"
     "不得据此虚构‘被监测竞对’身份。"
+    "中国移动香港（CMHK）是本公司而不是竞对；其自身产品、品牌、网络和经营动作不得归为"
+    "‘竞对动态’，应按事件实质归为‘公司动态’或相应战略类别。"
     "不要因为地域是‘国际/行业’就把分类写成‘行业动态’；地域与分类是两个独立维度。"
     "upstream_category_hint只是搜索来源提示，不是规则结论；最终分类必须由你依据事件实质独立判断。"
 )
@@ -175,8 +183,24 @@ _SOFT_PRIORITY_GUIDANCE = (
     "内容组合采用AI软优先级，不是程序硬拦截：香港监管政策、牌照频谱及政府产业政策，与香港本地"
     "运营商和本地竞对动态同等重要、同列最高优先级，不得因为不是竞对新闻而降级。"
     "经语义核实的正式监控竞对信息仍按竞对直通处理。其他国际/行业新闻应更精选：只有出现具体新"
-    "事件，并能明确说明对香港电信市场、CMHK业务决策或关键国际对标的影响时才纳入；只有宽泛的"
-    "海外行业趋势、一般性科技消息或与香港业务联系薄弱的国际新闻应排除。"
+    "事件，而且输入标题或摘要本身明确显示其对香港电信市场、CMHK业务决策或关键国际对标的直接"
+    "影响时才纳入；不得自行补写一条泛化的电信影响来放行普通海外科技新闻。只有宽泛的海外行业"
+    "趋势、一般性AI/芯片/网络安全消息或与香港业务联系薄弱的国际新闻应排除。"
+    "香港本地的数字经济、AI产业、数据中心、贸易需求及产业政策出现具体新变化，并能影响本地企业"
+    "客户需求、网络基础设施、合规或投资时，应优先纳入。地域必须严格按事件适用范围判断："
+    "中国内地部委单独发布的全国政策属于国际/行业；只有香港特区政府参与、政策明确适用于香港，"
+    "或事件和受影响市场明确在香港时，才可判为香港本地。"
+    "作出最终决定前逐项复核三件事：一、同名缩写是否真是监控竞对；二、香港地域是否有事件主体、"
+    "发生地或受影响市场的明确证据，‘环保署’等未注明司法管辖区的机构名不得猜成香港；三、非竞对"
+    "国际新闻是否在输入事实中有直接香港或CMHK影响。长三角存贷款、一般内地峰会、普通海外AI"
+    "与芯片消息若没有这种直接证据，应排除。CMHK及其品牌是本公司，必须走战略信号通道，"
+    "不得走竞对直通、不得归为竞对动态。"
+    "i-CABLE、HOY等名称若只出现在来源媒体或网址，而标题摘要中的事件主体是房协、数码港、政府、"
+    "其他企业或一般社会事件，绝不是竞对事件；只有新闻本身描述有线宽频、HOY或其集团的经营动作"
+    "才是竞对直通。台湾的数位发展部（数发部）与台湾环保署事件属于国际/行业，不是香港本地。"
+    "Kimi等海外或内地通用AI模型新闻若没有输入所载的香港或CMHK直接影响，应排除。"
+    "category只能从公司动态、竞对动态、政策监管、行业动态、市场/产品类、基础设施/网络/技术类、"
+    "宏观经济&国际形势&地缘政治&其他国际性质关注词汇中选择，不得照抄‘竞争对手’等上游模块名。"
 )
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
@@ -1291,7 +1315,11 @@ def _run_scan(
     state: dict[str, Any],
 ) -> dict[str, Any]:
     spec = read_monitoring_spec()
-    plans = _query_plans(spec, state)
+    # The comprehensive date-aware discovery layer below already executes all
+    # fixed monitoring keywords, fixed-page leads, and Agentic gap searches.
+    # Keep the old sequential DDGS branch opt-in only: in production it yielded
+    # no date-valid candidates while adding minutes of proxy/TLS failures.
+    plans = _query_plans(spec, state) if LEGACY_DDGS_SEARCH_ENABLED else []
     gathered: dict[str, dict[str, Any]] = {}
     searched_count = 0
     for plan in plans:
@@ -1308,10 +1336,19 @@ def _run_scan(
             if previous is None or int(candidate["score"]) > int(previous["score"]):
                 gathered[url] = candidate
     bridge_batch = load_pending_signals(state, now)
-    bridge_stats = _merge_scheduled_crawl_signals(
-        gathered,
-        bridge_batch.get("signals") or [],
-        now,
+    bridge_stats = (
+        _merge_scheduled_crawl_signals(
+            gathered,
+            bridge_batch.get("signals") or [],
+            now,
+        )
+        if LEGACY_DDGS_SEARCH_ENABLED
+        else {
+            "signal_count": len(bridge_batch.get("signals") or []),
+            "attempted_signal_ids": [],
+            "query_count": 0,
+            "search_result_count": 0,
+        }
     )
     searched_count += int(bridge_stats.get("search_result_count") or 0)
     full_items = sorted(
@@ -1367,6 +1404,25 @@ def _run_scan(
     except Exception as exc:
         discovery_result = {"error": _clean_text(exc, 300)}
         logging.exception("战略快讯新闻发现失败")
+    scheduled_search = (
+        (discovery_result.get("agentic_search") or {}).get(
+            "scheduled_crawl_search"
+        )
+        or {}
+    )
+    if not LEGACY_DDGS_SEARCH_ENABLED:
+        bridge_stats["query_count"] = int(
+            scheduled_search.get("query_count") or 0
+        )
+        bridge_stats["search_result_count"] = int(
+            scheduled_search.get("retrieval_result_count") or 0
+        )
+        bridge_stats["attempted_signal_ids"] = list(
+            scheduled_search.get("attempted_signal_ids") or []
+        )
+        passed_bridge_signal_ids = list(
+            scheduled_search.get("admitted_signal_ids") or []
+        )
     review_result: dict[str, Any] = {}
     try:
         review_result = news_review_sheet.run_cycle(force=True)
@@ -1525,16 +1581,18 @@ def _call_internal_ai(
     user_prompt: str,
     *,
     max_tokens: int = 900,
+    model_override: str = "",
 ) -> dict[str, Any]:
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
     api_key = str(config.get("api_key") or "")
     configured_model = str(config.get("model") or "")
+    # Keep the structured pipeline on the JSON-stable instruction model while
+    # allowing selected stages (notably the independent critic) to override it.
     model = (
-        os.environ.get(
-            "CMHK_STRATEGY_AI_MODEL",
-            "Qwen3-30B-A3B-Instruct-2507",
-        ).strip()
+        _clean_text(model_override, 120)
+        or os.environ.get("CMHK_STRATEGY_AI_MODEL", "").strip()
+        or "Qwen3-30B-A3B-Instruct-2507"
         or configured_model
     )
     if not base_url or not model:
@@ -1848,7 +1906,11 @@ def _expanded_compact_decision(
         category = "竞对动态"
     elif route == "战略信号":
         reason = f"{title}属于可验证的{signal}事件，影响{impact}。"
-        category = _clean_text(source_item.get("category"), 40) or "行业动态"
+        category = (
+            "政策监管"
+            if signal == "监管政策"
+            else _clean_text(source_item.get("category"), 40) or "行业动态"
+        )
     else:
         reason = f"{title}不满足纳入条件：{exclusion}。"
         category = _clean_text(source_item.get("category"), 40) or "行业动态"
@@ -1892,6 +1954,129 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
         "configured_competitor_hint": _clean_text(
             item.get("canonical_competitor"), 120
         ),
+    }
+
+
+def _critic_review_included(
+    items: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Ask a short independent AI pass to challenge only included decisions."""
+    if not AI_EDITOR_CRITIC_ENABLED or not items:
+        return items, {
+            "enabled": AI_EDITOR_CRITIC_ENABLED,
+            "input_count": len(items),
+            "resolved_count": 0,
+            "removed_count": 0,
+            "corrected_count": 0,
+            "error_count": 0,
+        }
+    allowed_categories = {
+        "公司动态",
+        "竞对动态",
+        "政策监管",
+        "行业动态",
+        "市场/产品类",
+        "基础设施/网络/技术类",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+    }
+    kept: list[dict[str, Any]] = []
+    resolved_count = 0
+    removed_count = 0
+    corrected_count = 0
+    error_count = 0
+    for offset in range(0, len(items), 4):
+        batch = items[offset : offset + 4]
+        request_items = []
+        item_by_id: dict[str, dict[str, Any]] = {}
+        for item in batch:
+            item_id = _candidate_editor_key(item)[:16]
+            item_by_id[item_id] = item
+            request_items.append(
+                _candidate_editor_input(item_id, item)
+            )
+        try:
+            response = _call_internal_ai(
+                (
+                    "你是战略新闻终审员，独立反向检查已经入选的候选。只输出JSON："
+                    "{\"items\":[{\"id\":\"原id\",\"keep\":true或false,"
+                    "\"region\":\"香港本地或国际/行业\",\"category\":\"分类\","
+                    "\"reason\":\"具体终审理由\"}]}。每个输入id都必须返回。"
+                    "任何正式监控竞对的真实信息都keep=true，但竞对名只出现在来源媒体、网址、"
+                    "搜索提示、同名缩写或偶然提词时不是竞对。i-CABLE媒体报道房协、政府或第三方"
+                    "事件不等于有线宽频经营动作。HKT、PCCW、香港电讯、csl明确属于被监控竞对；"
+                    "只有CMHK、中国移动香港及其品牌属于本公司，二者绝不能混淆。"
+                    "香港地域必须由事件主体、发生地或受影响市场明确证明，不能由香港媒体、语言、"
+                    "关键词或搜索来源推断；标题摘要未明确写出香港机构、香港市场或香港运营商时，"
+                    "不得把含糊的环保署、数发部等机构猜成香港。台湾数发部、台湾环保署属于国际/行业。"
+                    "非竞对国际新闻只有输入事实明确显示对香港电信市场、CMHK决策或关键运营商"
+                    "对标有直接影响才保留；一般AI模型、峰会、股市和宽泛宏观消息应删除。"
+                    "香港政策、香港数字产业和本地运营商动作与竞对同等优先。"
+                    "category只能是公司动态、竞对动态、政策监管、行业动态、市场/产品类、"
+                    "基础设施/网络/技术类、宏观经济&国际形势&地缘政治&其他国际性质关注词汇。"
+                    "只依据输入标题摘要，不补造事实，不要解释JSON之外的内容。"
+                ),
+                json.dumps({"items": request_items}, ensure_ascii=False),
+                max_tokens=max(1200, len(batch) * 300),
+                model_override=(
+                    os.environ.get(
+                        "CMHK_STRATEGY_AI_CRITIC_MODEL",
+                        "DeepSeek-V4-Pro",
+                    ).strip()
+                    or configured_model
+                ),
+            )
+            response_items = (
+                response.get("items") if isinstance(response, dict) else []
+            )
+            response_map = {
+                _clean_text(entry.get("id"), 40): entry
+                for entry in response_items or []
+                if isinstance(entry, dict)
+            }
+        except Exception as exc:
+            logging.error(
+                "公司内部 AI 入选终审失败，本批保留原判断：%s",
+                _clean_text(exc, 240),
+            )
+            response_map = {}
+            error_count += len(batch)
+        for item_id, item in item_by_id.items():
+            verdict = response_map.get(item_id)
+            if not isinstance(verdict, dict) or not isinstance(
+                verdict.get("keep"), bool
+            ):
+                kept.append(item)
+                if response_map:
+                    error_count += 1
+                continue
+            resolved_count += 1
+            if not verdict["keep"]:
+                removed_count += 1
+                continue
+            updated = dict(item)
+            region = _clean_text(verdict.get("region"), 20)
+            category = _clean_text(verdict.get("category"), 100)
+            if region in {"香港本地", "国际/行业"}:
+                if region != updated.get("region"):
+                    corrected_count += 1
+                updated["region"] = region
+                updated["ai_region"] = region
+            if category in allowed_categories:
+                if category != updated.get("category"):
+                    corrected_count += 1
+                updated["category"] = category
+                updated["ai_category"] = category
+            reason = _to_simplified_chinese(verdict.get("reason"), 120)
+            if reason:
+                updated["ai_inclusion_reason"] = reason
+            kept.append(updated)
+    return kept, {
+        "enabled": True,
+        "input_count": len(items),
+        "resolved_count": resolved_count,
+        "removed_count": removed_count,
+        "corrected_count": corrected_count,
+        "error_count": error_count,
     }
 
 
@@ -1972,7 +2157,6 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         request_items = []
         for key, item in batch:
             request_items.append(_candidate_editor_input(key, item))
-        batch_call_succeeded = False
         try:
             response = _call_internal_ai(
                 (
@@ -2024,12 +2208,11 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "region_reason简述事件地域证据。只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
                 ),
                 json.dumps({"items": request_items}, ensure_ascii=False),
-                max_tokens=max(1200, len(batch) * 380),
+                max_tokens=max(2600, len(batch) * 700),
             )
-            batch_call_succeeded = True
         except Exception as exc:
             logging.error(
-                "公司内部 AI 批量编辑失败，本批 %s 条立即降级为逐条重试：%s",
+                "公司内部 AI 批量编辑失败，本批 %s 条先进入紧凑补审：%s",
                 len(batch),
                 _clean_text(exc, 240),
             )
@@ -2060,7 +2243,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             entry for entry in request_items
             if entry["id"] not in validated_verbose
         ]
-        if batch_call_succeeded and missing_from_verbose:
+        if missing_from_verbose:
             compact_retry_batch_count += 1
             compact_retry_item_count += len(missing_from_verbose)
             try:
@@ -2307,6 +2490,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item["ai_polished_at"] = _now_iso()
         item["ai_editor_version"] = AI_EDITOR_VERSION
         polished_items.append(item)
+    polished_items, critic_audit = _critic_review_included(polished_items)
     deferred_count = len(deferred_reviews)
     deferred_ratio = deferred_count / len(items)
     decision_path_counts = Counter(
@@ -2338,6 +2522,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         "compact_retry_batch_count": compact_retry_batch_count,
         "compact_retry_item_count": compact_retry_item_count,
         "compact_retry_resolved_count": compact_retry_resolved_count,
+        "critic": critic_audit,
         "policy": {
             "mode": "verbose_batch_then_compact_missing_review_then_bounded_item_retry",
             "batch_blocking": False,

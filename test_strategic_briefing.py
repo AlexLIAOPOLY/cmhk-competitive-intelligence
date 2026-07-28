@@ -7,6 +7,13 @@ import strategic_briefing as briefing
 
 
 class StrategicBriefingTests(unittest.TestCase):
+    def setUp(self):
+        critic = mock.patch.object(
+            briefing, "AI_EDITOR_CRITIC_ENABLED", False
+        )
+        critic.start()
+        self.addCleanup(critic.stop)
+
     def test_public_snapshot_exposes_dated_candidate_activity_for_empty_state_charts(self):
         with (
             mock.patch.object(briefing, "_load_state", return_value={}),
@@ -352,6 +359,42 @@ class StrategicBriefingTests(unittest.TestCase):
             "不是程序硬拦截",
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
+        self.assertIn(
+            "不得自行补写一条泛化的电信影响",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "中国内地部委单独发布的全国政策属于国际/行业",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "未注明司法管辖区的机构名不得猜成香港",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "长三角存贷款、一般内地峰会",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "必须走战略信号通道",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "只出现在来源媒体或网址",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "台湾的数位发展部",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "不得照抄‘竞争对手’等上游模块名",
+            briefing._SOFT_PRIORITY_GUIDANCE,
+        )
+        self.assertIn(
+            "CMHK）是本公司而不是竞对",
+            briefing._CATEGORY_CLASSIFICATION_GUIDANCE,
+        )
 
     def test_non_competitor_strategic_keyword_signal_is_included(self):
         item = {
@@ -393,6 +436,58 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_decision_path"], "战略信号")
         self.assertEqual(result[0]["ai_signal_type"], "监管政策")
         self.assertEqual(result[0]["ai_business_impact"], "合规与牌照")
+
+    def test_ai_critic_removes_media_name_false_competitor_and_corrects_region(self):
+        media_item = {
+            "title": "房协与数码港推房地产科技计划",
+            "snippet": "房协与数码港支持初创分析停车场车辆。",
+            "keywords": ["i-CABLE"],
+            "source": "i-cable.com",
+            "url": "https://example.com/housing",
+            "region": "香港本地",
+            "category": "竞对动态",
+        }
+        taiwan_item = {
+            "title": "数发部建立量化AI人才标准",
+            "snippet": "台湾数位发展部发布AI人才指引。",
+            "keywords": ["AI"],
+            "source": "rti.org.tw",
+            "url": "https://example.com/taiwan-ai",
+            "region": "香港本地",
+            "category": "基础设施/网络/技术类",
+        }
+        response = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(media_item)[:16],
+                    "keep": False,
+                    "region": "香港本地",
+                    "category": "行业动态",
+                    "reason": "竞对名只出现在来源媒体，事件主体并非有线宽频。",
+                },
+                {
+                    "id": briefing._candidate_editor_key(taiwan_item)[:16],
+                    "keep": True,
+                    "region": "国际/行业",
+                    "category": "基础设施/网络/技术类",
+                    "reason": "事件主体是台湾数位发展部，地域应为国际行业。",
+                },
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "AI_EDITOR_CRITIC_ENABLED", True),
+            mock.patch.object(
+                briefing, "_call_internal_ai", return_value=response
+            ),
+        ):
+            kept, audit = briefing._critic_review_included(
+                [media_item, taiwan_item]
+            )
+
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["region"], "国际/行业")
+        self.assertEqual(audit["removed_count"], 1)
+        self.assertEqual(audit["corrected_count"], 1)
 
     def test_manufacturing_innovation_agreement_reaches_ai_and_can_be_included(self):
         item = {
@@ -795,6 +890,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["ai_business_impact"], "合规与牌照")
         self.assertEqual(result[0]["ai_decision_path"], "战略信号")
+        self.assertEqual(result[0]["ai_category"], "政策监管")
         self.assertEqual(call.call_count, 2)
 
     def test_single_item_retry_budget_defers_without_unbounded_calls(self):
@@ -929,7 +1025,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         ai_call.assert_not_called()
 
-    def test_batch_editor_failure_immediately_retries_each_item(self):
+    def test_batch_editor_failure_uses_compact_review_before_single_item_copy(self):
         item = {
             "module": "竞争对手",
             "category": "竞对动态",
@@ -953,20 +1049,85 @@ class StrategicBriefingTests(unittest.TestCase):
             "business_impact": "产品与定价",
             "exclusion_code": "无",
         }
+        compact_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "route": "C",
+                    "signal": "C",
+                    "impact": "P",
+                    "exclude": "0",
+                    "region": "H",
+                }
+            ]
+        }
         with (
             mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
             mock.patch.object(briefing, "_atomic_write_json"),
             mock.patch.object(
                 briefing,
                 "_call_internal_ai",
-                side_effect=[ValueError("unterminated JSON"), single_result],
+                side_effect=[
+                    ValueError("unterminated JSON"),
+                    compact_result,
+                    single_result,
+                ],
             ) as ai_call,
         ):
             result = briefing.polish_candidates_before_review([item])
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["ai_title"], single_result["title"])
+        self.assertEqual(ai_call.call_count, 3)
+
+    def test_batch_parse_failure_compactly_excludes_noise_without_single_retry(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "BMW M4 CSL发布轻量化跑车",
+            "snippet": "BMW introduced a lightweight sports car.",
+            "keywords": ["csl"],
+            "source": "Example News",
+            "url": "https://example.com/news/bmw-m4-csl",
+        }
+        compact_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "route": "X",
+                    "signal": "0",
+                    "impact": "0",
+                    "exclude": "1",
+                    "region": "I",
+                }
+            ]
+        }
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=[ValueError("unterminated JSON"), compact_result],
+            ) as ai_call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(result, [])
         self.assertEqual(ai_call.call_count, 2)
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(audit["deferred_count"], 0)
+        self.assertEqual(audit["compact_retry_resolved_count"], 1)
+        self.assertEqual(audit["single_retry_attempt_count"], 0)
 
     def test_editor_defers_fully_failed_ai_batch_without_blocking(self):
         item = {

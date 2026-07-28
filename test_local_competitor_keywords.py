@@ -134,6 +134,11 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
                 side_effect=RuntimeError("sheet unavailable"),
             ),
             mock.patch.object(digest, "_google_news_search", return_value=[]),
+            mock.patch.object(
+                digest,
+                "_scheduled_crawl_plans",
+                return_value=([], {"pending_signal_count": 0, "query_count": 0, "error": ""}),
+            ),
         ):
             items, errors, spec = digest.collect_news(
                 datetime(2026, 7, 24, 0, 0, tzinfo=HKT),
@@ -196,6 +201,11 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
                 return_value={"revision": "test", "modules": []},
             ),
             mock.patch.object(strategic_briefing, "_query_plans", return_value=[]),
+            mock.patch.object(
+                digest,
+                "_scheduled_crawl_plans",
+                return_value=([], {"pending_signal_count": 0, "query_count": 0, "error": ""}),
+            ),
             mock.patch.object(
                 digest,
                 "_execute_search_plans",
