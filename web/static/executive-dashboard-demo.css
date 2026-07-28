@@ -126,6 +126,11 @@ h1 {
   justify-content: center;
 }
 
+.operator.cmhk {
+  position: relative;
+  overflow: hidden;
+}
+
 .operator img {
   display: block;
   max-width: 150px;
@@ -134,9 +139,15 @@ h1 {
 }
 
 .operator.cmhk img {
-  width: 114px;
-  height: 34px;
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 82px;
+  height: 85px;
+  max-width: none;
+  max-height: none;
   filter: brightness(1.55) saturate(.8);
+  transform: translateX(-50%);
 }
 
 .operator.hkt img { width: 108px; height: 30px; }
