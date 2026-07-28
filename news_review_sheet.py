@@ -697,41 +697,12 @@ def ensure_sheet() -> str:
                 str(MAX_SHEET_ROWS - row_count),
             )
         previous_version = int(state.get("format_version") or 0)
-        if not created and previous_version in {5, 6, 7, 8}:
-            legacy_rows = _read_rows(sheet_id, format_version=previous_version)
-            if previous_version <= 7:
-                if previous_version == 5:
-                    version_six_rows = []
-                    for row in legacy_rows:
-                        legacy = (list(row[:10]) + [""] * 10)[:10]
-                        version_six_rows.append(legacy[:5] + [""] + legacy[5:])
-                else:
-                    version_six_rows = legacy_rows
-                if previous_version <= 6:
-                    legacy_search_date = _search_date(
-                        state.get("last_source_generated_at")
-                    )
-                    version_seven_rows = [
-                        list(row[:2]) + [legacy_search_date] + list(row[2:11])
-                        for row in version_six_rows
-                    ]
-                else:
-                    version_seven_rows = version_six_rows
-                version_eight_rows = [
-                    [row[0], "待审核", *list(row[1:12])]
-                    for row in version_seven_rows
-                ]
-            else:
-                version_eight_rows = legacy_rows
-            migrated_rows = [
-                [*list(row[:13]), _historical_information_flow(row[11])]
-                for row in version_eight_rows
-            ]
-            for offset in range(0, len(migrated_rows), 40):
-                chunk = migrated_rows[offset : offset + 40]
-                start_row = 2 + offset
-                end_row = start_row + len(chunk) - 1
-                _write(sheet_id, f"A{start_row}:N{end_row}", chunk)
+        if not created and previous_version not in {0, FORMAT_VERSION}:
+            raise RuntimeError(
+                "检测到飞书审核表格式版本变化，自动整表迁移已禁用以保护人工审核结果："
+                f"当前版本 {previous_version}，目标版本 {FORMAT_VERSION}。"
+                "请先使用独立迁移脚本备份、预检并回读验证。"
+            )
         _write(sheet_id, "A1:N1", [HEADERS])
         _write(sheet_id, "O1:P1", [[""] * 2])
         if (
@@ -1333,22 +1304,23 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             _write_json(PUBLISHED_PATH, new_payload)
 
         changed_rows = 0
+        blocked_reviews: list[dict[str, Any]] = []
         for row in rows:
             blocked_reason = blocked_rows.get(row["row_number"])
             if blocked_reason:
-                if row["status"] != "不接受" or row["sync_status"] != "已移除":
+                blocked_reviews.append(
+                    {
+                        "row_number": row["row_number"],
+                        "news_id": row["news_id"],
+                        "title": row["title"],
+                        "reason": blocked_reason,
+                    }
+                )
+                if row["sync_status"] != "同步失败":
                     _write(
                         sheet_id,
-                        f"A{row['row_number']}:C{row['row_number']}",
-                        [["不接受", row["weekly_status"], "已移除"]],
-                    )
-                    changed_rows += 1
-                gate_note = f"门控拒绝：{blocked_reason}"
-                if row["note"] != gate_note:
-                    _write(
-                        sheet_id,
-                        f"M{row['row_number']}:M{row['row_number']}",
-                        [[gate_note]],
+                        f"C{row['row_number']}:C{row['row_number']}",
+                        [["同步失败"]],
                     )
                     changed_rows += 1
                 continue
@@ -1370,6 +1342,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             "accepted_count": len(accepted_items),
             "requested_accept_count": len(accepted_rows),
             "blocked_accept_count": len(blocked_rows),
+            "blocked_reviews": blocked_reviews,
             "pending_count": sum(row["status"] == "待审核" for row in rows),
             "deferred_count": sum(row["status"] == "暂缓" for row in rows),
             "rejected_count": sum(row["status"] == "不接受" for row in rows),

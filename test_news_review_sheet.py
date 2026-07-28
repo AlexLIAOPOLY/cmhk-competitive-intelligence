@@ -594,6 +594,69 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             context="测试表",
         )
 
+    def test_apply_reviews_never_overwrites_human_decision_when_gate_blocks(self):
+        accepted = self._existing_row()
+        accepted[0] = "接受"
+        accepted[2] = "已纳入"
+        writes = []
+        with (
+            mock.patch.object(review_sheet, "_read_rows", return_value=[accepted]),
+            mock.patch.object(
+                review_sheet,
+                "_read_json",
+                return_value={"items": []},
+            ),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "_review_news_candidate",
+                return_value=(False, "缺少可验证发布日期"),
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda sheet, cell_range, values: writes.append(
+                    (sheet, cell_range, values)
+                ),
+            ),
+        ):
+            result = review_sheet.apply_reviews("sheet")
+
+        self.assertEqual(writes, [("sheet", "C2:C2", [["同步失败"]])])
+        self.assertEqual(result["requested_accept_count"], 1)
+        self.assertEqual(result["blocked_accept_count"], 1)
+        self.assertEqual(result["rejected_count"], 0)
+        self.assertEqual(
+            result["blocked_reviews"][0]["reason"],
+            "缺少可验证发布日期",
+        )
+
+    def test_ensure_sheet_refuses_automatic_schema_migration_before_writing(self):
+        writes = []
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_json",
+                return_value={"format_version": 8},
+            ),
+            mock.patch.object(review_sheet, "_spreadsheet_info", return_value={}),
+            mock.patch.object(review_sheet, "_find_sheet_id", return_value="sheet"),
+            mock.patch.object(
+                review_sheet,
+                "_sheet_row_count",
+                return_value=review_sheet.MAX_SHEET_ROWS,
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda *args: writes.append(args),
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "自动整表迁移已禁用"):
+                review_sheet.ensure_sheet()
+
+        self.assertEqual(writes, [])
+
 
 if __name__ == "__main__":
     unittest.main()

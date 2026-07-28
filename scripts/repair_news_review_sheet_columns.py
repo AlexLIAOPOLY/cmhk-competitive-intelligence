@@ -271,7 +271,6 @@ def build_repaired_rows(current: list[list[Any]]) -> tuple[list[list[Any]], dict
         shifted_title = str(row[9]).strip()
         if shifted_title in backup_by_title:
             restored = list(backup_by_title[shifted_title])
-            restored[:3] = row[:3]
             repaired.append(restored)
             audit["restored_from_backup"] += 1
             continue
