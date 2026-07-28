@@ -1,258 +1,178 @@
 <!doctype html>
-<html lang="zh-Hans">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="dark" />
-    <title>战略经营驾驶舱 · Demo</title>
-    <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=1" />
-  </head>
-  <body>
-    <main class="cockpit">
-      <header class="topbar">
-        <div class="brand">
-          <span class="brand-signal" aria-hidden="true"><i></i><i></i><i></i></span>
-          <div>
-            <strong>中国移动香港</strong>
-            <span>CHINA MOBILE HONG KONG</span>
-          </div>
-        </div>
-        <div class="title-block">
-          <h1>战略经营驾驶舱</h1>
-          <p>资源 · 客户 · 触达 · 价值</p>
-        </div>
-        <div class="topbar-tools">
-          <div class="period-switch" aria-label="选择数据周期">
-            <button type="button" data-period="2024">2024</button>
-            <button type="button" data-period="2025">2025</button>
-            <button class="is-active" type="button" data-period="2026">2026 H1</button>
-          </div>
-          <div class="live-state"><span></span>演示数据</div>
-          <time id="dashboardClock">--:--:--</time>
-        </div>
-      </header>
-
-      <div class="dashboard-grid">
-        <section class="panel panel-resource" aria-labelledby="resourceTitle">
-          <header class="panel-heading">
-            <div class="section-index">01</div>
-            <div>
-              <h2 id="resourceTitle">资源与基础设施</h2>
-              <p>网络资源与智算底座</p>
-            </div>
-            <nav class="panel-tabs" aria-label="资源类型">
-              <button type="button">固定网络</button>
-              <button class="is-active" type="button">移动网络</button>
-              <button type="button">数据中心</button>
-              <button type="button">研发能力</button>
-            </nav>
-          </header>
-          <div class="resource-body">
-            <article class="metric-area station-area">
-              <div class="metric-title">
-                <div><span>基站规模</span><small>单位：个</small></div>
-                <div class="legend"><i class="legend-4g"></i>4G <i class="legend-5g"></i>5G</div>
-              </div>
-              <div class="bar-chart grouped-bars" role="img" aria-label="四家运营商4G和5G基站数量对比">
-                <div class="gridlines" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-                <div class="bar-group">
-                  <div class="bars"><i class="bar bar-4g" style="--h: 78%"><b data-key="cmhk4g">2,080</b></i><i class="bar bar-5g" style="--h: 62%"><b data-key="cmhk5g">1,620</b></i></div>
-                  <span>CMHK</span>
-                </div>
-                <div class="bar-group">
-                  <div class="bars"><i class="bar bar-4g" style="--h: 91%"><b data-key="hkt4g">2,420</b></i><i class="bar bar-5g" style="--h: 69%"><b data-key="hkt5g">1,810</b></i></div>
-                  <span>HKT</span>
-                </div>
-                <div class="bar-group">
-                  <div class="bars"><i class="bar bar-4g" style="--h: 70%"><b data-key="three4g">1,850</b></i><i class="bar bar-5g" style="--h: 53%"><b data-key="three5g">1,390</b></i></div>
-                  <span>3HK</span>
-                </div>
-                <div class="bar-group">
-                  <div class="bars"><i class="bar bar-4g" style="--h: 65%"><b data-key="smt4g">1,720</b></i><i class="bar bar-5g" style="--h: 48%"><b data-key="smt5g">1,260</b></i></div>
-                  <span>SmarTone</span>
-                </div>
-              </div>
-            </article>
-            <article class="metric-area compute-area">
-              <div class="metric-title">
-                <div><span>智算能力</span><small>调度算力 · PFLOPS</small></div>
-                <em>同比 +18.6%</em>
-              </div>
-              <div class="compute-rings">
-                <div class="compute-ring is-primary" style="--value: 84"><strong data-key="cmhkCompute">1,680</strong><span>CMHK</span></div>
-                <div class="compute-ring" style="--value: 72"><strong data-key="hktCompute">1,420</strong><span>HKT</span></div>
-                <div class="compute-ring" style="--value: 55"><strong data-key="threeCompute">1,080</strong><span>3HK</span></div>
-                <div class="compute-ring" style="--value: 46"><strong data-key="smtCompute">920</strong><span>SmarTone</span></div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel panel-customer" aria-labelledby="customerTitle">
-          <header class="panel-heading">
-            <div class="section-index">02</div>
-            <div>
-              <h2 id="customerTitle">客户与业务对标</h2>
-              <p>CHB 市场规模与价值</p>
-            </div>
-            <div class="panel-note">单位口径已统一</div>
-          </header>
-          <div class="business-columns">
-            <article class="business-card c-card">
-              <div class="business-label"><strong>TO C</strong><span>个人市场</span><i>+5.8%</i></div>
-              <div class="business-kpi">
-                <span>移动用户数</span>
-                <strong data-key="mobileUsers">342.8</strong>
-                <small>万户</small>
-              </div>
-              <div class="spark-bars" aria-label="移动用户规模趋势">
-                <i style="--h:48%"></i><i style="--h:56%"></i><i style="--h:67%"></i><i style="--h:76%"></i><i style="--h:88%"></i>
-              </div>
-              <div class="sub-kpi"><span>移动综合 ARPU</span><strong><small>HK$</small><b data-key="mobileArpu">138.6</b></strong></div>
-            </article>
-            <article class="business-card h-card">
-              <div class="business-label"><strong>TO H</strong><span>家庭市场</span><i>+8.2%</i></div>
-              <div class="business-kpi">
-                <span>家宽用户数</span>
-                <strong data-key="homeUsers">86.4</strong>
-                <small>万户</small>
-              </div>
-              <svg class="mini-line" viewBox="0 0 260 72" role="img" aria-label="家宽用户增长趋势">
-                <defs><linearGradient id="lineFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4fe2bb" stop-opacity=".36"/><stop offset="1" stop-color="#4fe2bb" stop-opacity="0"/></linearGradient></defs>
-                <path d="M4 62 L52 55 L104 43 L156 46 L208 26 L256 14 L256 70 L4 70 Z" fill="url(#lineFill)"/>
-                <polyline points="4,62 52,55 104,43 156,46 208,26 256,14" fill="none" stroke="#4fe2bb" stroke-width="3"/>
-                <g fill="#071a2e" stroke="#8bffe0" stroke-width="2"><circle cx="4" cy="62" r="4"/><circle cx="52" cy="55" r="4"/><circle cx="104" cy="43" r="4"/><circle cx="156" cy="46" r="4"/><circle cx="208" cy="26" r="4"/><circle cx="256" cy="14" r="4"/></g>
-              </svg>
-              <div class="sub-kpi"><span>家宽综合 ARPU</span><strong><small>HK$</small><b data-key="homeArpu">198.2</b></strong></div>
-            </article>
-            <article class="business-card b-card">
-              <div class="business-label"><strong>TO B</strong><span>政企市场</span><i>+12.4%</i></div>
-              <div class="business-kpi">
-                <span>项目签约额</span>
-                <strong data-key="contractValue">18.6</strong>
-                <small>亿港元</small>
-              </div>
-              <div class="contract-meter">
-                <div><span>年度目标达成</span><strong>82%</strong></div>
-                <i><b></b></i>
-              </div>
-              <div class="sub-kpi"><span>政企客户数</span><strong><b data-key="businessUsers">38.2</b><small>千户</small></strong></div>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel panel-reach" aria-labelledby="reachTitle">
-          <header class="panel-heading">
-            <div class="section-index">03</div>
-            <div>
-              <h2 id="reachTitle">渠道与品牌触达</h2>
-              <p>品牌势能与全渠道覆盖</p>
-            </div>
-            <nav class="panel-tabs compact-tabs" aria-label="触达视角">
-              <button class="is-active" type="button">品牌触达</button>
-              <button type="button">渠道触达</button>
-            </nav>
-          </header>
-          <div class="reach-body">
-            <article class="metric-area brand-area">
-              <div class="metric-title">
-                <div><span>品牌覆盖率</span><small>目标人群认知覆盖</small></div>
-                <em>领先 4.7pp</em>
-              </div>
-              <div class="reach-list">
-                <div><span><b>CMHK</b><small>92.5%</small></span><i><b style="--w:92.5%"></b></i></div>
-                <div><span><b>HKT</b><small>87.8%</small></span><i><b style="--w:87.8%"></b></i></div>
-                <div><span><b>3HK</b><small>83.6%</small></span><i><b style="--w:83.6%"></b></i></div>
-                <div><span><b>SmarTone</b><small>79.4%</small></span><i><b style="--w:79.4%"></b></i></div>
-              </div>
-            </article>
-            <article class="metric-area channel-area">
-              <div class="metric-title">
-                <div><span>渠道触点</span><small>实体 + 数字渠道</small></div>
-              </div>
-              <div class="channel-kpis">
-                <div><span>全渠道门店</span><strong data-key="stores">138</strong><small>个</small><i>目标 120</i></div>
-                <div><span>MyLink 月活</span><strong data-key="appMau">218</strong><small>万</small><i>同比 +16.8%</i></div>
-              </div>
-              <div class="channel-trend">
-                <span>数字渠道转化率</span>
-                <svg viewBox="0 0 260 54" role="img" aria-label="数字渠道转化率趋势">
-                  <polyline points="4,43 45,39 88,41 130,29 173,31 215,18 256,11" fill="none" stroke="#43c8ff" stroke-width="3"/>
-                  <polyline points="4,48 45,46 88,42 130,43 173,34 215,36 256,28" fill="none" stroke="#f4b85d" stroke-width="2" stroke-dasharray="5 5"/>
-                </svg>
-                <strong>31.6%</strong>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel panel-finance" aria-labelledby="financeTitle">
-          <header class="panel-heading">
-            <div class="section-index">04</div>
-            <div>
-              <h2 id="financeTitle">财务成果</h2>
-              <p>增长质量与经营回报</p>
-            </div>
-            <nav class="panel-tabs" aria-label="财务视角">
-              <button class="is-active" type="button">收入规模</button>
-              <button type="button">盈利能力</button>
-              <button type="button">成本效率</button>
-              <button type="button">资本开支</button>
-            </nav>
-          </header>
-          <div class="finance-body">
-            <article class="metric-area revenue-area">
-              <div class="metric-title">
-                <div><span>收入规模与结构</span><small>单位：亿港元</small></div>
-                <em>同比 +7.3%</em>
-              </div>
-              <div class="revenue-visual">
-                <div class="revenue-bars">
-                  <div><span>CMHK</span><i style="--w:94%"><b data-key="cmhkRevenue">96.8</b></i></div>
-                  <div><span>HKT</span><i style="--w:82%"><b data-key="hktRevenue">84.2</b></i></div>
-                  <div><span>3HK</span><i style="--w:56%"><b data-key="threeRevenue">57.4</b></i></div>
-                  <div><span>SmarTone</span><i style="--w:51%"><b data-key="smtRevenue">52.6</b></i></div>
-                </div>
-                <div class="mix-donut" aria-label="CMHK收入结构">
-                  <div><strong>96.8</strong><span>总收入</span></div>
-                </div>
-                <ul class="mix-legend">
-                  <li><i></i>个人 48%</li>
-                  <li><i></i>家庭 21%</li>
-                  <li><i></i>政企 25%</li>
-                  <li><i></i>其他 6%</li>
-                </ul>
-              </div>
-            </article>
-            <article class="metric-area profit-area">
-              <div class="metric-title">
-                <div><span>盈利能力</span><small>EBITDA 与利润率</small></div>
-              </div>
-              <div class="profit-kpis">
-                <div><span>EBITDA</span><strong><b data-key="ebitda">34.8</b><small>亿港元</small></strong><i>+9.1%</i></div>
-                <div><span>EBITDA 率</span><strong><b data-key="ebitdaMargin">35.9</b><small>%</small></strong><i>+0.6pp</i></div>
-                <div><span>净利润</span><strong><b data-key="netProfit">12.4</b><small>亿港元</small></strong><i>+11.5%</i></div>
-              </div>
-              <svg class="profit-line" viewBox="0 0 360 82" role="img" aria-label="EBITDA及净利润趋势">
-                <path d="M4 65 C40 61 66 52 98 55 S154 42 184 44 S239 28 268 32 S324 19 356 12" fill="none" stroke="#50d7ff" stroke-width="3"/>
-                <path d="M4 72 C43 70 68 67 98 66 S153 61 184 62 S238 53 268 55 S325 47 356 43" fill="none" stroke="#f2b557" stroke-width="2" stroke-dasharray="6 5"/>
-              </svg>
-              <div class="line-legend"><span><i></i>EBITDA</span><span><i></i>净利润</span></div>
-            </article>
-          </div>
-        </section>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>中國移動香港｜策略經營駕駛艙</title>
+  <link rel="stylesheet" href="/static/executive-dashboard-demo.css">
+</head>
+<body>
+  <main class="cockpit">
+    <header class="topbar">
+      <div class="cmhk-brand">
+        <img src="/static/assets/executive-dashboard/china-mobile-logo-transparent.png" alt="中國移動">
+        <span>香港</span>
       </div>
 
-      <footer class="statusbar">
-        <span><i></i>数据状态：模拟数据</span>
-        <span>口径：香港地区 · 运营商可比口径</span>
-        <span id="lastRefresh">最近刷新：刚刚</span>
-        <button id="refreshDemo" type="button" aria-label="刷新演示数据">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.35 5.65M20 5v6h-6"/></svg>
-          刷新演示
-        </button>
-      </footer>
-    </main>
-    <script src="/static/executive-dashboard-demo.js?v=1"></script>
-  </body>
+      <h1>策略經營駕駛艙</h1>
+
+      <nav class="period-switch" aria-label="選擇數據期間">
+        <button type="button" data-period="2024">2024</button>
+        <button type="button" data-period="2025">2025</button>
+        <button type="button" data-period="2026" class="is-active">2026 上半年</button>
+      </nav>
+    </header>
+
+    <section class="brand-rail" aria-label="香港電訊市場對標">
+      <div class="brand-track">
+        <div class="brand-set">
+          <span class="operator cmhk"><i></i><b>中國移動香港</b></span>
+          <span class="operator hkt"><i>HKT</i><b>香港電訊</b></span>
+          <span class="operator three"><i>3</i><b>3香港</b></span>
+          <span class="operator smartone"><i>S</i><b>SmarTone</b></span>
+        </div>
+        <div class="brand-set" aria-hidden="true">
+          <span class="operator cmhk"><i></i><b>中國移動香港</b></span>
+          <span class="operator hkt"><i>HKT</i><b>香港電訊</b></span>
+          <span class="operator three"><i>3</i><b>3香港</b></span>
+          <span class="operator smartone"><i>S</i><b>SmarTone</b></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel panel-network">
+        <img class="scene scene-network" src="/static/assets/executive-dashboard/network-hong-kong.webp" alt="" aria-hidden="true">
+        <div class="panel-glass"></div>
+        <header class="panel-heading">
+          <span>01</span>
+          <h2>資源與基礎設施</h2>
+        </header>
+
+        <div class="network-content">
+          <div class="hero-metric">
+            <span>5G 基站</span>
+            <strong data-key="siteTotal">3,700</strong>
+            <em data-key="siteGrowth">+8.4%</em>
+          </div>
+
+          <div class="network-bars" aria-label="各營運商5G基站比較">
+            <div><span>CMHK</span><i style="--value: 90%"><b data-key="cmhk5g">1,620</b></i></div>
+            <div><span>HKT</span><i style="--value: 100%"><b data-key="hkt5g">1,810</b></i></div>
+            <div><span>3香港</span><i style="--value: 77%"><b data-key="three5g">1,390</b></i></div>
+            <div><span>SmarTone</span><i style="--value: 70%"><b data-key="smt5g">1,260</b></i></div>
+          </div>
+
+          <div class="metric-pair">
+            <div><span>人口覆蓋</span><strong>99.9<small>%</small></strong></div>
+            <div><span>智能算力</span><strong data-key="cmhkCompute">1,680</strong><small>PFLOPS</small></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel-business">
+        <img class="scene scene-business" src="/static/assets/executive-dashboard/enterprise-cloud.webp" alt="" aria-hidden="true">
+        <div class="panel-glass"></div>
+        <header class="panel-heading">
+          <span>02</span>
+          <h2>客戶與業務對標</h2>
+        </header>
+
+        <div class="business-content">
+          <section class="business-line toc">
+            <b>TOC</b>
+            <span>流動客戶</span>
+            <strong><i data-key="mobileUsers">342.8</i><small>萬</small></strong>
+            <em>ARPU　$<i data-key="mobileArpu">138.6</i></em>
+          </section>
+          <section class="business-line toh">
+            <b>TOH</b>
+            <span>家寬客戶</span>
+            <strong><i data-key="homeUsers">86.4</i><small>萬</small></strong>
+            <em>ARPU　$<i data-key="homeArpu">198.2</i></em>
+          </section>
+          <section class="business-line tob">
+            <b>TOB</b>
+            <span>項目簽約額</span>
+            <strong><i data-key="contractValue">18.6</i><small>億</small></strong>
+            <em>政企客戶　<i data-key="businessUsers">38.2</i>萬</em>
+          </section>
+        </div>
+      </article>
+
+      <article class="panel panel-reach">
+        <img class="scene scene-reach" src="/static/assets/executive-dashboard/omnichannel-city.webp" alt="" aria-hidden="true">
+        <div class="panel-glass"></div>
+        <header class="panel-heading">
+          <span>03</span>
+          <h2>渠道與品牌觸達</h2>
+        </header>
+
+        <div class="reach-content">
+          <div class="brand-score">
+            <div class="score-ring" style="--score: 91.6">
+              <strong>91.6<small>%</small></strong>
+            </div>
+            <span>品牌覆蓋率</span>
+          </div>
+
+          <div class="reach-ranking">
+            <div><span>CMHK</span><i><b style="--value: 92%"></b></i><strong>91.6%</strong></div>
+            <div><span>HKT</span><i><b style="--value: 88%"></b></i><strong>88.1%</strong></div>
+            <div><span>3香港</span><i><b style="--value: 84%"></b></i><strong>84.3%</strong></div>
+            <div><span>SmarTone</span><i><b style="--value: 80%"></b></i><strong>80.2%</strong></div>
+          </div>
+
+          <div class="metric-pair reach-pair">
+            <div><span>門店數</span><strong data-key="stores">138</strong></div>
+            <div><span>MyLink 月活</span><strong data-key="appMau">218</strong><small>萬</small></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel panel-finance">
+        <img class="scene scene-finance" src="/static/assets/executive-dashboard/financial-growth.webp" alt="" aria-hidden="true">
+        <div class="panel-glass"></div>
+        <header class="panel-heading">
+          <span>04</span>
+          <h2>財務成果</h2>
+        </header>
+
+        <div class="finance-content">
+          <div class="revenue-block">
+            <span>營業收入</span>
+            <strong><i data-key="cmhkRevenue">96.8</i><small>億港元</small></strong>
+            <div class="revenue-compare" aria-label="各營運商營業收入比較">
+              <i style="--value: 100%"><b>CMHK</b></i>
+              <i style="--value: 87%"><b>HKT</b></i>
+              <i style="--value: 59%"><b>3香港</b></i>
+              <i style="--value: 54%"><b>SmarTone</b></i>
+            </div>
+          </div>
+
+          <div class="profit-kpis">
+            <div><span>EBITDA</span><strong data-key="ebitda">34.8</strong><small>億</small></div>
+            <div><span>EBITDA 利潤率</span><strong data-key="ebitdaMargin">35.9</strong><small>%</small></div>
+            <div><span>淨利潤</span><strong data-key="netProfit">12.4</strong><small>億</small></div>
+          </div>
+
+          <svg class="profit-line" viewBox="0 0 420 92" role="img" aria-label="營業收入與EBITDA上升趨勢">
+            <defs>
+              <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#35d9ff" stop-opacity=".34"/>
+                <stop offset="1" stop-color="#35d9ff" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path class="area" d="M4 76 C70 67 94 65 142 52 S230 50 278 31 S355 27 416 8 L416 91 L4 91 Z"/>
+            <path class="line-primary" d="M4 76 C70 67 94 65 142 52 S230 50 278 31 S355 27 416 8"/>
+            <path class="line-secondary" d="M4 85 C64 81 104 76 148 71 S232 64 282 53 S356 49 416 36"/>
+          </svg>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="/static/executive-dashboard-demo.js"></script>
+</body>
 </html>
