@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import os
+import re
 import subprocess
 import json
 import tempfile
@@ -978,6 +979,75 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("points=41", revenue["text"])
         self.assertIn("Q1 2016=177504", revenue["text"])
         self.assertIn("Q1 2026=266478", revenue["text"])
+
+    def test_chinese_rag_tokens_match_meaningful_substrings(self) -> None:
+        self.assertIn("套餐", rag_llm._tokens("套餐名称"))
+        self.assertIn("月费", rag_llm._tokens("最新月费_HKD"))
+        self.assertTrue(rag_llm._tokens("香港宽频套餐") & rag_llm._tokens("宽频套餐名称"))
+
+    def test_broad_tariff_query_returns_compact_cross_brand_current_data(self) -> None:
+        chunks = rag_llm.retrieve_context(
+            "香港竞争对手移动宽频套餐资费月费合约",
+            limit=6,
+            dataset_ids={"competitor_product_tariffs"},
+        )
+        tariff_chunks = [
+            chunk for chunk in chunks
+            if chunk["source"].endswith("product_tariffs_formal_agent_records.csv")
+            and "产品资费结构化检索结果" in chunk["text"]
+        ]
+        text = "\n".join(chunk["text"] for chunk in tariff_chunks)
+
+        self.assertGreaterEqual(len(tariff_chunks), 3)
+        match = re.search(r"matched_records=(\d+)", text)
+        self.assertIsNotNone(match)
+        self.assertGreater(int(match.group(1)), 100)
+        brand_match = re.search(r"matched_brands=(\d+)", text)
+        self.assertIsNotNone(brand_match)
+        self.assertGreaterEqual(int(brand_match.group(1)), 8)
+        for brand in ["HKBN", "3HK / Hutchison", "SmarTone", "i-CABLE", "csl", "1O1O"]:
+            self.assertIn(f"brand={brand}", text)
+        self.assertNotIn("record_class=source_gap", text)
+        self.assertNotIn("single_source_needs_review", text)
+
+        package = rag_llm.build_context_package(tariff_chunks, token_budget=3200)
+        packaged_text = package["context"]
+        self.assertEqual(package["audit"]["skipped_chunks"], 0)
+        self.assertIn("brand=HKBN", packaged_text)
+        self.assertIn("brand=i-CABLE", packaged_text)
+
+    def test_specific_brand_tariff_query_keeps_multiple_formal_rows(self) -> None:
+        chunks = rag_llm._product_tariff_exact_chunks(
+            "请对比 i-CABLE 当前宽频套餐的月费、速度和合约",
+            dataset_ids={"competitor_product_tariffs"},
+        )
+        text = "\n".join(chunk["text"] for chunk in chunks)
+
+        self.assertEqual(len(chunks), 1)
+        self.assertIn("matched_brands=1", text)
+        self.assertIn("brand=i-CABLE", text)
+        self.assertGreaterEqual(text.count("正式套餐："), 3)
+        self.assertNotIn("brand=HKBN", text)
+
+    def test_historical_tariff_trend_exposes_full_visible_year_ranges(self) -> None:
+        chunks = rag_llm._product_tariff_exact_chunks(
+            "查看 HKBN 历史宽频套餐资费趋势",
+            dataset_ids={"competitor_product_tariffs"},
+        )
+        text = "\n".join(chunk["text"] for chunk in chunks)
+
+        self.assertIn("period_coverage=2016至current", text)
+        self.assertIn("annual_monthly_ranges=", text)
+        for year in ["2016", "2017", "2019", "2023", "2024", "2025", "2026"]:
+            self.assertRegex(text, rf"(?:annual_monthly_ranges=.*|; ){year}:HK\$")
+
+    def test_tariff_gap_question_stays_on_gap_retrieval_path(self) -> None:
+        chunks = rag_llm._product_tariff_exact_chunks(
+            "为什么没有 HKBN 某套餐？请检查来源缺口和待复核记录",
+            dataset_ids={"competitor_product_tariffs"},
+        )
+
+        self.assertEqual(chunks, [])
 
     def test_frontend_deduplicates_a_chart_repeated_in_the_final_answer(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

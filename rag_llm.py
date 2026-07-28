@@ -148,7 +148,17 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _tokens(text: str) -> set[str]:
-    return {item.lower() for item in re.findall(r"[A-Za-z0-9_\-\u4e00-\u9fff]{2,}", text or "")}
+    tokens = {
+        item.lower()
+        for item in re.findall(r"[A-Za-z0-9_-]{2,}", text or "")
+    }
+    for span in re.findall(r"[\u4e00-\u9fff]+", text or ""):
+        if len(span) == 1:
+            continue
+        tokens.add(span)
+        for width in range(2, min(4, len(span)) + 1):
+            tokens.update(span[index : index + width] for index in range(len(span) - width + 1))
+    return tokens
 
 
 def _latest_period_score(text: str) -> int:
@@ -475,6 +485,306 @@ def _selected_quarterly_metrics_csv(dataset_ids: set[str] | None = None) -> Path
     if not candidates:
         return None
     return sorted(candidates, key=lambda path: (path.parent.name, path.stat().st_mtime), reverse=True)[0]
+
+
+def _product_tariff_exact_chunks(
+    question: str,
+    dataset_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    relevant_dataset_ids = {
+        "competitor_product_tariffs",
+        "hkt_product_tariffs",
+        "hk_competitor_product_tariffs",
+    }
+    if dataset_ids is not None and not (set(dataset_ids) & relevant_dataset_ids):
+        return []
+
+    normalized = re.sub(r"\s+", " ", question or "").strip()
+    lowered = normalized.lower()
+    tariff_intent = any(
+        term in lowered
+        for term in [
+            "套餐",
+            "資費",
+            "资费",
+            "月费",
+            "月費",
+            "合约",
+            "合約",
+            "数据量",
+            "數據量",
+            "宽频",
+            "寬頻",
+            "broadband",
+            "tariff",
+            "service plan",
+            "monthly fee",
+        ]
+    )
+    gap_intent = any(
+        term in lowered
+        for term in [
+            "source gap",
+            "source-gap",
+            "来源缺口",
+            "來源缺口",
+            "数据缺口",
+            "資料缺口",
+            "单源",
+            "單源",
+            "待复核",
+            "待覆核",
+            "为什么没有",
+            "為什麼沒有",
+        ]
+    )
+    if not tariff_intent or gap_intent:
+        return []
+
+    csv_path = (
+        AGENT_KNOWLEDGE_ROOT
+        / "competitor_product_tariffs"
+        / "product_tariffs_formal_agent_records.csv"
+    )
+    if not csv_path.exists():
+        return []
+    try:
+        with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = [
+                row
+                for row in csv.DictReader(handle)
+                if (row.get("record_class") or "").strip() == "formal_product_tariff"
+            ]
+    except Exception:
+        return []
+
+    brand_aliases = {
+        "HKT Enterprise": ["hkt enterprise", "hkt 企业", "hkt企業"],
+        "HKT SME": ["hkt sme"],
+        "3HK / Hutchison": ["3hk", "hutchison", "和记", "和記"],
+        "SmarTone": ["smartone", "数码通", "數碼通"],
+        "NETVIGATOR": ["netvigator", "网上行", "網上行"],
+        "i-CABLE": ["i-cable", "icable", "有线宽频", "有線寬頻"],
+        "HKBN": ["hkbn", "香港宽频", "香港寬頻"],
+        "HGC": ["hgc", "环球全域", "環球全域"],
+        "1O1O": ["1o1o", "1010"],
+        "csl": ["csl"],
+        "HKT": ["hkt"],
+    }
+    matched_brands: list[str] = []
+    remaining_for_hkt = lowered
+    for brand, aliases in brand_aliases.items():
+        if any(alias in lowered for alias in aliases):
+            matched_brands.append(brand)
+            if brand != "HKT":
+                for alias in aliases:
+                    remaining_for_hkt = remaining_for_hkt.replace(alias, "")
+    if "HKT" in matched_brands and "hkt" not in remaining_for_hkt:
+        matched_brands.remove("HKT")
+    if matched_brands:
+        rows = [row for row in rows if (row.get("品牌") or "").strip() in matched_brands]
+
+    years = set(re.findall(r"\b(?:19|20)\d{2}\b", normalized))
+    history_intent = bool(
+        years
+        or any(
+            term in lowered
+            for term in ["历史", "歷史", "历年", "歷年", "过去", "過去", "往年", "趋势", "趨勢", "变化", "變化", "historical", "history", "trend"]
+        )
+    )
+    if years:
+        rows = [
+            row
+            for row in rows
+            if any(
+                year in " ".join(
+                    [
+                        row.get("期间") or "",
+                        row.get("抓取/生效时间") or "",
+                        row.get("快照ID") or "",
+                    ]
+                )
+                for year in years
+            )
+        ]
+    elif not history_intent:
+        rows = [row for row in rows if (row.get("时间类型") or "").strip() == "当前"]
+
+    wants_broadband = any(
+        term in lowered
+        for term in ["宽频", "寬頻", "宽带", "寬帶", "broadband", "光纤", "光纖", "家居网络", "家居網絡"]
+    )
+    wants_mobile = any(
+        term in lowered
+        for term in ["移动", "移動", "流动", "流動", "手机", "手機", "mobile", "5g", "4g", "sim"]
+    )
+
+    def product_kind(row: dict[str, str]) -> str:
+        category = (row.get("产品类别") or "").lower()
+        if (row.get("宽频速度_Mbps") or "").strip():
+            return "宽频"
+        if any(term in category for term in ["mobile", "5g", "4g", "3g", "sim", "roaming", "流动", "流動"]):
+            return "移动"
+        if any(term in category for term in ["broadband", "宽频", "寬頻", "宽带", "寬帶", "fibre", "fiber"]):
+            return "宽频"
+        if any(term in (row.get("网络代际") or "").lower() for term in ["5g", "4g", "3g", "mobile"]):
+            return "移动"
+        text = " ".join(
+            [
+                row.get("产品系列") or "",
+                row.get("套餐名称") or "",
+            ]
+        ).lower()
+        if any(term in text for term in ["mobile", "5g", "4g", "3g", "sim", "roaming", "流动", "流動"]):
+            return "移动"
+        if any(term in text for term in ["broadband", "宽频", "寬頻", "宽带", "寬帶", "fibre", "fiber"]):
+            return "宽频"
+        return "其他"
+
+    wanted_kinds = {
+        kind
+        for kind, wanted in [("宽频", wants_broadband), ("移动", wants_mobile)]
+        if wanted
+    }
+    if wanted_kinds:
+        rows = [row for row in rows if product_kind(row) in wanted_kinds]
+    if not rows:
+        return []
+
+    def row_recency(row: dict[str, str]) -> tuple[str, str, str]:
+        return (
+            row.get("抓取/生效时间") or "",
+            row.get("期间") or "",
+            row.get("记录键") or "",
+        )
+
+    rows.sort(key=row_recency, reverse=True)
+    by_brand: dict[str, list[dict[str, str]]] = {}
+    for row in rows:
+        brand = (row.get("品牌") or "未标注品牌").strip()
+        by_brand.setdefault(brand, []).append(row)
+
+    source = csv_path.relative_to(ROOT).as_posix()
+    local_link = [{"label": source, "url": _local_ref(source)}]
+    brand_order = {brand: index for index, brand in enumerate(brand_aliases)}
+    brand_names = sorted(by_brand, key=lambda brand: (brand_order.get(brand, 999), brand.lower()))
+
+    def compact_value(row: dict[str, str], *fields: str) -> str:
+        for field in fields:
+            value = re.sub(r"\s+", " ", (row.get(field) or "").strip())
+            if value:
+                return value
+        return "-"
+
+    def numeric_values(brand_rows: list[dict[str, str]], *fields: str) -> list[float]:
+        values: list[float] = []
+        for row in brand_rows:
+            raw = compact_value(row, *fields)
+            try:
+                values.append(float(raw.replace(",", "")))
+            except (TypeError, ValueError):
+                continue
+        return values
+
+    def summary_line(brand: str, brand_rows: list[dict[str, str]]) -> str:
+        periods = sorted({compact_value(row, "期间") for row in brand_rows if compact_value(row, "期间") != "-"})
+        monthly_values = numeric_values(brand_rows, "月费_HKD", "平均月费_HKD")
+        categories = sorted({product_kind(row) for row in brand_rows})
+        coverage = f"{periods[0]}至{periods[-1]}" if len(periods) > 1 else (periods[0] if periods else "未标注")
+        price_range = (
+            f"HK${min(monthly_values):g}-HK${max(monthly_values):g}"
+            if monthly_values
+            else "无统一月费"
+        )
+        summary = (
+            f"品牌汇总：brand={brand}; matched_records={len(brand_rows)}; "
+            f"kinds={','.join(categories)}; period_coverage={coverage}; monthly_fee_range={price_range}."
+        )
+        if history_intent and matched_brands:
+            annual_values: dict[str, list[float]] = {}
+            for row in brand_rows:
+                period_text = " ".join(
+                    [
+                        row.get("期间") or "",
+                        row.get("抓取/生效时间") or "",
+                        row.get("快照ID") or "",
+                    ]
+                )
+                year_match = re.search(r"\b(?:19|20)\d{2}\b", period_text)
+                if not year_match:
+                    continue
+                values = numeric_values([row], "月费_HKD", "平均月费_HKD")
+                if values:
+                    annual_values.setdefault(year_match.group(0), []).extend(values)
+            if annual_values:
+                ranges = [
+                    f"{year}:HK${min(values):g}-HK${max(values):g}"
+                    for year, values in sorted(annual_values.items())
+                ]
+                summary += f" annual_monthly_ranges={'; '.join(ranges)}."
+        return summary
+
+    def row_line(row: dict[str, str]) -> str:
+        price = compact_value(row, "月费_HKD", "平均月费_HKD", "公开价格_HKD")
+        return (
+            f"正式套餐：brand={compact_value(row, '品牌')}; time={compact_value(row, '时间类型')}; "
+            f"period={compact_value(row, '期间')}; kind={product_kind(row)}; "
+            f"category={compact_value(row, '产品类别')}; plan={compact_value(row, '套餐名称')}; "
+            f"monthly_fee_HKD={price}; local_data_GB={compact_value(row, '本地数据_GB')}; "
+            f"broadband_speed_Mbps={compact_value(row, '宽频速度_Mbps')}; "
+            f"contract_months={compact_value(row, '合约月数')}; "
+            f"verification={compact_value(row, '核验状态')}; source_id={compact_value(row, '来源ID')}."
+        )
+
+    chunks: list[dict[str, Any]] = []
+    brands_per_chunk = 1 if matched_brands else 3
+    sample_per_brand = 10 if matched_brands else 2
+    for start in range(0, len(brand_names), brands_per_chunk):
+        group = brand_names[start : start + brands_per_chunk]
+        lines = [
+            (
+                "产品资费结构化检索结果：仅使用 record_class=formal_product_tariff；"
+                f"matched_records={len(rows)}; matched_brands={len(by_brand)}; "
+                f"scope={'历史/指定年份' if history_intent else '当前'}。"
+                "以下汇总由全部命中记录计算，明细为跨品牌紧凑代表行，不含 source_gap 或待复核候选。"
+            )
+        ]
+        for brand in group:
+            brand_rows = by_brand[brand]
+            lines.append(summary_line(brand, brand_rows))
+            seen_signatures: set[tuple[str, ...]] = set()
+            seen_years: set[str] = set()
+            emitted = 0
+            for row in brand_rows:
+                if history_intent:
+                    period_text = " ".join(
+                        [
+                            row.get("期间") or "",
+                            row.get("抓取/生效时间") or "",
+                            row.get("快照ID") or "",
+                        ]
+                    )
+                    year_match = re.search(r"\b(?:19|20)\d{2}\b", period_text)
+                    year = year_match.group(0) if year_match else compact_value(row, "期间")
+                    if year in seen_years:
+                        continue
+                    seen_years.add(year)
+                signature = (
+                    product_kind(row),
+                    compact_value(row, "产品类别"),
+                    compact_value(row, "月费_HKD", "平均月费_HKD", "公开价格_HKD"),
+                    compact_value(row, "本地数据_GB"),
+                    compact_value(row, "宽频速度_Mbps"),
+                )
+                if signature in seen_signatures:
+                    continue
+                seen_signatures.add(signature)
+                lines.append(row_line(row))
+                emitted += 1
+                if emitted >= sample_per_brand:
+                    break
+        chunks.append({"source": source, "text": "\n".join(lines), "links": local_link})
+    return chunks
 
 
 def _quarterly_exact_metric_chunks(question: str, dataset_ids: set[str] | None = None) -> list[dict[str, Any]]:
@@ -900,7 +1210,8 @@ def retrieve_context(question: str, limit: int = 8, dataset_ids: set[str] | None
         key.lower() in question.lower()
         for key in ["OFCA", "宏观", "政策", "渗透率", "频谱", "移动用户", "宽带", "Key Communications Statistics"]
     )
-    exact_chunks = _quarterly_exact_metric_chunks(question, dataset_ids=dataset_ids)
+    exact_chunks = _product_tariff_exact_chunks(question, dataset_ids=dataset_ids)
+    exact_chunks.extend(_quarterly_exact_metric_chunks(question, dataset_ids=dataset_ids))
     if latest_period_intent:
         exact_chunks.sort(
             key=lambda chunk: _latest_period_score(chunk.get("text", "") + " " + chunk.get("source", "")),
