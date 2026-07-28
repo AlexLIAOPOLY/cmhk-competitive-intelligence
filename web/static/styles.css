@@ -10483,3 +10483,179 @@ button.command-btn:disabled {
     max-height: 34px;
   }
 }
+
+/* Responsive hardening: preserve readable geometry on narrow tablets and phones. */
+@media (max-width: 900px) {
+  .signal-analysis-grid {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    min-height: 0;
+  }
+
+  .signal-chart-card,
+  .signal-topic-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .signal-chart-card {
+    min-height: 230px;
+  }
+
+  .signal-topic-card {
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 600px) {
+  .brand-bar {
+    height: auto;
+    min-height: 104px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .brand-mark {
+    flex: 0 0 auto;
+  }
+
+  .header-tools {
+    width: 100%;
+    flex: 0 0 100%;
+    justify-content: flex-end;
+  }
+
+  .topbar-command {
+    width: auto;
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  .signal-overview,
+  .collection-overview {
+    padding: 14px 12px 12px;
+  }
+
+  .collection-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+
+  .collection-kpi-grid > div {
+    padding-right: 7px;
+    padding-left: 7px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-bar {
+    gap: 6px;
+  }
+
+  .header-tools {
+    gap: 4px;
+  }
+
+  .topbar-command {
+    padding-inline: 7px;
+    font-size: 10px;
+  }
+
+  .header-tools .icon-button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .signal-overview-header h2,
+  .collection-overview-header h2 {
+    font-size: 19px;
+  }
+
+  .signal-kpi,
+  .collection-kpi-grid > div {
+    padding-right: 6px;
+    padding-left: 6px;
+  }
+}
+
+@media (max-width: 430px) {
+  .chat-model-picker,
+  .chat-model-button {
+    width: 32px;
+    min-width: 32px;
+    max-width: 32px;
+  }
+
+  .chat-model-button {
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+
+  .chat-model-button #chatModelButtonLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .chat-model-button svg {
+    margin-left: 0;
+  }
+
+  .voice-input-control {
+    min-width: 46px;
+    flex: 0 0 46px;
+  }
+}
+
+@media (max-width: 360px) {
+  .chat-form {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .chat-composer {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .chat-composer-toolbar {
+    gap: 3px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .company-matrix-mode .company-data-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .company-matrix-mode .company-data-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .company-table-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  .company-table-toolbar > div {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  #transposeButton {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
