@@ -178,6 +178,57 @@ class AgenticNewsSearchTests(unittest.TestCase):
 
         self.assertEqual(plans, [])
 
+    def test_agentic_plan_removes_malformed_site_exclusion(self):
+        plans = digest._normalize_agentic_plans(
+            {
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": (
+                            "SmarTone OR 数码通 -site:smar tone.com.hk "
+                            "(5G OR 网络建设)"
+                        ),
+                        "keywords": ["SmarTone", "数码通"],
+                        "intent": "网络建设",
+                    }
+                ]
+            },
+            phase="followup",
+            existing_queries=set(),
+            limit=1,
+        )
+
+        self.assertEqual(len(plans), 1)
+        self.assertNotIn("site:", plans[0]["query"])
+        self.assertNotIn("tone.com.hk", plans[0]["query"])
+        self.assertIn("网络建设", plans[0]["query"])
+
+    def test_target_planner_uses_deterministic_fallback_after_all_failures(self):
+        with mock.patch.object(
+            strategic_briefing,
+            "_call_internal_ai",
+            return_value={
+                "sufficient": False,
+                "assessment": "仍有缺口",
+                "queries": [],
+            },
+        ) as call:
+            plans, trace = digest._call_agentic_search_agent(
+                phase="followup",
+                spec={"modules": []},
+                coverage={"missing_fixed_competitors": ["HGC"]},
+                existing_plans=[],
+                start_at=datetime(2026, 7, 25, 8, 0, tzinfo=HKT),
+                end_at=datetime(2026, 7, 25, 15, 0, tzinfo=HKT),
+                limit=1,
+                target_competitor="HGC",
+            )
+
+        self.assertEqual(call.call_count, digest.AGENTIC_AI_ATTEMPTS)
+        self.assertEqual(trace["status"], "fallback")
+        self.assertEqual(plans[0]["canonical_competitor"], "HGC")
+        self.assertIn("网络建设", plans[0]["query"])
+
     def test_followup_planning_isolated_by_missing_competitor(self):
         def fake_planner(**kwargs):
             target = kwargs["target_competitor"]

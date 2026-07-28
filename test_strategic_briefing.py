@@ -7,6 +7,58 @@ import strategic_briefing as briefing
 
 
 class StrategicBriefingTests(unittest.TestCase):
+    def test_comprehensive_query_plans_cover_every_configured_keyword(self):
+        spec = {
+            "modules": [
+                {
+                    "name": "模块甲",
+                    "keywords": [f"关键词{index}" for index in range(27)],
+                    "source_urls": [],
+                },
+                {
+                    "name": "模块乙",
+                    "keywords": [f"战略词{index}" for index in range(18)],
+                    "source_urls": [],
+                },
+            ]
+        }
+        state = {"query_cursor": 9}
+
+        plans = briefing._query_plans(spec, state, max_queries=None)
+
+        covered = {
+            keyword
+            for plan in plans
+            for keyword in plan["keywords"]
+        }
+        self.assertEqual(
+            covered,
+            {
+                keyword
+                for module in spec["modules"]
+                for keyword in module["keywords"]
+            },
+        )
+        self.assertEqual(len(plans), 10)
+        self.assertEqual(state["query_cursor"], 0)
+
+    def test_lightweight_query_plans_keep_rotating_limit(self):
+        spec = {
+            "modules": [
+                {
+                    "name": "模块",
+                    "keywords": [f"关键词{index}" for index in range(30)],
+                    "source_urls": [],
+                }
+            ]
+        }
+        state = {"query_cursor": 0}
+
+        plans = briefing._query_plans(spec, state, max_queries=4)
+
+        self.assertEqual(len(plans), 4)
+        self.assertEqual(state["query_cursor"], 4)
+
     def test_split_keywords_preserves_commas_inside_parentheses(self):
         self.assertEqual(
             briefing._split_keywords(
@@ -202,6 +254,18 @@ class StrategicBriefingTests(unittest.TestCase):
             "香港本地",
         )
 
+    def test_mainland_ministry_evidence_overrides_ai_hong_kong_region(self):
+        self.assertEqual(
+            briefing._enforce_region_from_source_evidence(
+                "香港本地",
+                {
+                    "source_title": "工业和信息化部发文提升中小企业数字化转型服务供给",
+                    "source_summary": "工信部发布政策，支持内地中小企业数字化转型。",
+                },
+            ),
+            "国际/行业",
+        )
+
     def test_competitor_route_requires_competitor_category(self):
         with self.assertRaisesRegex(RuntimeError, "竞对直通必须归为竞对动态"):
             briefing._validated_ai_copy(
@@ -317,6 +381,384 @@ class StrategicBriefingTests(unittest.TestCase):
                 require_decision_fields=True,
                 allowed_keywords="AI",
             )
+
+    def test_commentary_without_concrete_event_cannot_enter_strategic_route(self):
+        with self.assertRaisesRegex(RuntimeError, "观点或评论未包含"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "评论员分析地区战争对市场的影响",
+                    "summary": "评论员讨论地区战争可能带来的长期市场风险。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "宏观经济",
+                    "keywords": "War",
+                    "inclusion_reason": "评论涉及战争，因此可能影响运营和供应。",
+                    "region_reason": "评论讨论国际地区局势。",
+                    "decision_path": "战略信号",
+                    "signal_type": "宏观与地缘",
+                    "business_impact": "供应韧性",
+                    "exclusion_code": "无",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords="War",
+                source_item={
+                    "source_title": "MSNBC评论员分析特朗普对伊战争150天影响",
+                    "source_summary": "节目嘉宾分析战争可能造成的政治和市场影响。",
+                },
+            )
+
+    def test_generic_trend_without_new_event_cannot_enter_strategic_route(self):
+        with self.assertRaisesRegex(RuntimeError, "缺少可验证的新动作"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "中国AI四强追赶美国",
+                    "summary": "文章比较中国与美国人工智能企业的整体发展趋势。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AI",
+                    "inclusion_reason": "行业竞争趋势可能影响市场格局。",
+                    "region_reason": "内容讨论国际行业竞争。",
+                    "decision_path": "战略信号",
+                    "signal_type": "关键技术",
+                    "business_impact": "竞争格局",
+                    "exclusion_code": "无",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords="AI",
+                source_item={
+                    "source_title": "中国AI四强追赶美国",
+                    "source_summary": "文章比较两国企业的整体发展趋势。",
+                },
+            )
+
+    def test_stock_market_movement_cannot_enter_strategic_route(self):
+        with self.assertRaisesRegex(RuntimeError, "股价、行情或市场情绪"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "韩股重挫AI晶片股暴跌",
+                    "summary": "AI相关疑虑导致晶片股价大幅下跌。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AI",
+                    "inclusion_reason": "股市下跌可能影响行业融资。",
+                    "region_reason": "事件发生在韩国市场。",
+                    "decision_path": "战略信号",
+                    "signal_type": "市场需求",
+                    "business_impact": "资本配置",
+                    "exclusion_code": "无",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords="AI",
+                source_item={
+                    "source_title": "韩股一度重挫逾7% AI相关疑虑造成晶片股价暴跌",
+                    "source_summary": "韩国股市下跌，晶片股价格大幅波动。",
+                },
+            )
+
+    def test_hard_policy_exclusion_is_resolved_not_deferred(self):
+        item = {
+            "module": "基础设施/网络/技术类",
+            "category": "行业动态",
+            "title": "中国AI四强追赶美国",
+            "snippet": "文章比较中美人工智能企业的整体发展趋势。",
+            "keywords": ["AI"],
+            "source": "Example",
+            "url": "https://example.com/ai-trend",
+        }
+        ai_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "title": "中国AI四强追赶美国",
+                    "summary": "文章比较中美人工智能企业的整体发展趋势。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AI",
+                    "inclusion_reason": "行业竞争趋势可能影响市场格局。",
+                    "region_reason": "内容讨论国际行业竞争。",
+                    "decision_path": "战略信号",
+                    "signal_type": "关键技术",
+                    "business_impact": "竞争格局",
+                    "exclusion_code": "无",
+                }
+            ]
+        }
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                return_value=ai_result,
+            ) as call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(result, [])
+        self.assertEqual(call.call_count, 0)
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(audit["resolved_count"], 1)
+        self.assertEqual(audit["excluded_count"], 1)
+        self.assertEqual(audit["deferred_count"], 0)
+
+    def test_review_copy_uses_source_title_and_summary_when_ai_omits_format_fields(self):
+        result = briefing._validated_ai_copy(
+            {
+                "should_include": False,
+                "region": "国际/行业",
+                "category": "行业动态",
+                "keywords": "AI",
+                "inclusion_reason": "文章仅偶然提及AI，没有具体技术、市场或业务事件。",
+                "region_reason": "事件发生在海外市场。",
+                "decision_path": "排除",
+                "signal_type": "无",
+                "business_impact": "无",
+                "exclusion_code": "关键词偶然出现",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords="AI",
+            source_item={
+                "source_title": "海外企业发布季度社会活动简报",
+                "source_summary": "该企业介绍社区活动，并在背景材料中偶然提到人工智能。",
+            },
+        )
+
+        self.assertEqual(result["title"], "海外企业发布季度社会活动简报")
+        self.assertIn("社区活动", result["summary"])
+        self.assertFalse(result["should_include"])
+
+    def test_single_item_retry_accepts_batch_wrapper(self):
+        item = {
+            "module": "政策/法规类",
+            "category": "政策监管",
+            "title": "海外社区活动简报",
+            "snippet": "该企业介绍社区活动，并在背景材料中偶然提到人工智能。",
+            "keywords": ["AI"],
+            "source": "Example",
+            "url": "https://example.com/community",
+        }
+        wrapped_retry = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "should_include": False,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AI",
+                    "inclusion_reason": "文章仅偶然提及AI，没有具体技术、市场或业务事件。",
+                    "region_reason": "事件发生在海外市场。",
+                    "decision_path": "排除",
+                    "signal_type": "无",
+                    "business_impact": "无",
+                    "exclusion_code": "关键词偶然出现",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=[{}, wrapped_retry],
+            ),
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(result, [])
+
+    def test_verbose_batch_omission_gets_compact_decision_instead_of_defer(self):
+        included = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "HKT推出企业AI平台",
+            "snippet": "HKT announced an AI platform for enterprise customers.",
+            "keywords": ["HKT", "AI"],
+            "source": "Example",
+            "url": "https://example.com/hkt-ai",
+        }
+        excluded = {
+            "module": "基础设施/网络/技术类",
+            "category": "行业动态",
+            "title": "评论员讨论人工智能未来",
+            "snippet": "评论员表达对人工智能未来的个人观点，没有宣布具体变化。",
+            "keywords": ["AI"],
+            "source": "Example",
+            "url": "https://example.com/ai-opinion",
+        }
+        verbose = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(included)[:16],
+                    "title": "HKT推出企业AI平台",
+                    "summary": "HKT面向企业客户推出AI平台，扩展企业数字服务能力。",
+                    "should_include": True,
+                    "region": "香港本地",
+                    "category": "竞对动态",
+                    "keywords": "HKT、AI",
+                    "inclusion_reason": "HKT推出企业AI平台，直接影响企业产品与竞争格局。",
+                    "region_reason": "事件主体及目标市场均在香港。",
+                    "decision_path": "竞对直通",
+                    "signal_type": "竞对经营动作",
+                    "business_impact": "竞争格局",
+                    "exclusion_code": "无",
+                }
+            ]
+        }
+        compact = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(excluded)[:16],
+                    "route": "X",
+                    "signal": "0",
+                    "impact": "0",
+                    "exclude": "5",
+                    "region": "I",
+                }
+            ]
+        }
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=[verbose, compact],
+            ) as call,
+        ):
+            result = briefing.polish_candidates_before_review([included, excluded])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_decision_path"], "竞对直通")
+        self.assertEqual(call.call_count, 2)
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(audit["resolved_count"], 2)
+        self.assertEqual(audit["excluded_count"], 1)
+        self.assertEqual(audit["deferred_count"], 0)
+        self.assertEqual(audit["compact_retry_item_count"], 1)
+        self.assertEqual(audit["compact_retry_resolved_count"], 1)
+
+    def test_compact_codes_repair_invalid_verbose_decision_without_third_call(self):
+        item = {
+            "module": "基础设施/网络/技术类",
+            "category": "行业动态",
+            "title": "香港公布数据中心能源使用新规",
+            "snippet": "新规提高数据中心能源披露要求并影响运营成本。",
+            "keywords": ["Data center"],
+            "source": "Example",
+            "url": "https://example.com/data-centre-rule",
+        }
+        item_id = briefing._candidate_editor_key(item)[:16]
+        verbose = {
+            "items": [
+                {
+                    "id": item_id,
+                    "title": "香港公布数据中心能源使用新规",
+                    "summary": "香港提高数据中心能源披露要求，相关运营方将面对新的合规与成本安排。",
+                    "should_include": True,
+                    "region": "香港本地",
+                    "category": "行业动态",
+                    "keywords": "Data center",
+                    "inclusion_reason": "数据中心新规将改变基础设施运营要求。",
+                    "region_reason": "政策在香港发布。",
+                    "decision_path": "战略信号",
+                    "signal_type": "监管政策",
+                    "business_impact": "一整段不合法的自由文本",
+                    "exclusion_code": "无",
+                }
+            ]
+        }
+        compact = {
+            "items": [
+                {
+                    "id": item_id,
+                    "route": "S",
+                    "signal": "R",
+                    "impact": "L",
+                    "exclude": "0",
+                    "region": "H",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(
+                briefing,
+                "_call_internal_ai",
+                side_effect=[verbose, compact],
+            ) as call,
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_business_impact"], "合规与牌照")
+        self.assertEqual(result[0]["ai_decision_path"], "战略信号")
+        self.assertEqual(call.call_count, 2)
+
+    def test_single_item_retry_budget_defers_without_unbounded_calls(self):
+        items = [
+            {
+                "module": "基础设施/网络/技术类",
+                "category": "行业动态",
+                "title": f"海外企业发布技术活动简报{i}",
+                "snippet": "该企业介绍社区活动，并在背景材料中偶然提到人工智能。",
+                "keywords": ["AI"],
+                "source": "Example",
+                "url": f"https://example.com/community/{i}",
+            }
+            for i in range(2)
+        ]
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(briefing, "_call_internal_ai", return_value={}) as call,
+            mock.patch.object(briefing, "AI_EDITOR_SINGLE_RETRY_LIMIT", 0),
+        ):
+            result = briefing.polish_candidates_before_review(items)
+
+        self.assertEqual(result, [])
+        self.assertEqual(call.call_count, 2)
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(audit["single_retry_attempt_count"], 0)
+        self.assertEqual(audit["retry_budget_exhausted_count"], 2)
+        self.assertEqual(audit["compact_retry_item_count"], 2)
+        self.assertEqual(audit["compact_retry_resolved_count"], 0)
+        self.assertFalse(audit["write_blocked"])
 
     def test_competitor_route_fills_format_only_impact_without_blocking(self):
         result = briefing._validated_ai_copy(
@@ -923,6 +1365,21 @@ class StrategicBriefingTests(unittest.TestCase):
                     "keywords": ["i-CABLE"],
                     "source": "i-cable.com",
                     "url": "https://news.google.com/example",
+                }
+            )
+        )
+
+    def test_upstream_competitor_category_does_not_override_subject_evidence(self):
+        self.assertFalse(
+            briefing._is_competitor_candidate(
+                {
+                    "module": "竞争对手",
+                    "category": "竞对动态",
+                    "title": "泽连斯基访美讨论俄乌战争",
+                    "snippet": "The leaders discussed the war and regional security.",
+                    "keywords": ["Globe"],
+                    "source": "The Boston Globe",
+                    "url": "https://example.com/world/zelensky",
                 }
             )
         )

@@ -6,6 +6,20 @@ import strategic_briefing
 
 
 class NewsReviewSheetSyncTests(unittest.TestCase):
+    def test_non_forced_cycle_skips_when_another_process_holds_lock(self):
+        with mock.patch.object(
+            review_sheet,
+            "_review_process_lock",
+        ) as process_lock:
+            process_lock.return_value.__enter__.return_value = False
+            result = review_sheet.run_cycle(force=False)
+
+        self.assertEqual(result["status"], "busy")
+        self.assertEqual(
+            result["reason"],
+            "another_review_process_is_running",
+        )
+
     def test_information_flow_labels_agentic_search_round(self):
         flow = review_sheet._information_flow(
             {
@@ -133,12 +147,18 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_sync_places_new_rows_above_history_and_preserves_history(self):
         writes = []
+        read_count = [0]
+
+        def read_rows(_sheet_id):
+            read_count[0] += 1
+            return [self._existing_row()] if read_count[0] == 1 else writes[0][1]
+
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
             mock.patch.object(
                 review_sheet,
                 "_read_rows",
-                return_value=[self._existing_row()],
+                side_effect=read_rows,
             ),
             mock.patch.object(
                 review_sheet,
@@ -176,9 +196,15 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         writes = []
         existing = self._existing_row()
         existing[3] = "2026-07-22"
+        read_count = [0]
+
+        def read_rows(_sheet_id):
+            read_count[0] += 1
+            return [existing] if read_count[0] == 1 else writes[0][1]
+
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
-            mock.patch.object(review_sheet, "_read_rows", return_value=[existing]),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=read_rows),
             mock.patch.object(
                 review_sheet,
                 "_write",
@@ -223,12 +249,18 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         rejected[0] = "不接受"
         rejected[6] = "同一事件的人工拒绝记录"
         writes = []
+        read_count = [0]
+
+        def read_rows(_sheet_id):
+            read_count[0] += 1
+            return [pending, rejected] if read_count[0] == 1 else writes[0][1]
+
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
             mock.patch.object(
                 review_sheet,
                 "_read_rows",
-                return_value=[pending, rejected],
+                side_effect=read_rows,
             ),
             mock.patch.object(
                 review_sheet,
@@ -525,6 +557,42 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(parsed["weekly_status"], "待审核")
         self.assertEqual(parsed["title"], "旧标题")
         self.assertEqual(parsed["source_url"], "https://example.com/legacy")
+
+    def test_current_format_never_auto_shifts_misaligned_row(self):
+        shifted = [
+            "待审核",
+            "待审核",
+            "未同步",
+            "",
+            "",
+            "2026-07-28",
+            "香港本地",
+            "",
+            "竞对动态",
+            "错位标题",
+            "错位摘要",
+            "https://example.com/wrong-column",
+            "2026-07-28",
+            "旧流程",
+        ]
+
+        normalized = review_sheet._normalized_sheet_row(
+            shifted,
+            review_sheet.FORMAT_VERSION,
+        )
+
+        self.assertEqual(normalized, shifted)
+        with self.assertRaisesRegex(RuntimeError, "原文链接不在K列"):
+            review_sheet._validate_sheet_rows(
+                [normalized],
+                context="测试表",
+            )
+
+    def test_sheet_schema_accepts_complete_current_row(self):
+        review_sheet._validate_sheet_rows(
+            [self._existing_row()],
+            context="测试表",
+        )
 
 
 if __name__ == "__main__":

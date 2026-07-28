@@ -10,6 +10,7 @@ import subprocess
 import threading
 import time
 from collections import Counter
+from contextlib import contextmanager
 from datetime import datetime
 from difflib import SequenceMatcher
 from email.utils import parsedate_to_datetime
@@ -58,6 +59,42 @@ HEADERS = [
 ]
 
 _LOCK = threading.RLock()
+PROCESS_LOCK_PATH = DATA_DIR / "news_review_sheet.lock"
+
+
+@contextmanager
+def _review_process_lock(*, wait: bool):
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    lock_handle = None
+    try:
+        try:
+            import fcntl
+
+            lock_handle = PROCESS_LOCK_PATH.open("a+")
+            operation = fcntl.LOCK_EX
+            if not wait:
+                operation |= fcntl.LOCK_NB
+            fcntl.flock(lock_handle.fileno(), operation)
+        except BlockingIOError:
+            if lock_handle is not None:
+                lock_handle.close()
+                lock_handle = None
+            yield False
+            return
+        except (ImportError, OSError):
+            if lock_handle is not None:
+                lock_handle.close()
+                lock_handle = None
+        yield True
+    finally:
+        if lock_handle is not None:
+            try:
+                import fcntl
+
+                fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
+            except (ImportError, OSError):
+                pass
+            lock_handle.close()
 
 
 def _now_iso() -> str:
@@ -525,7 +562,7 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
             padded[11],
             "历史候选",
         ]
-    if format_version >= 8 and not url_at_expected_column and url_shifted_one_column:
+    if format_version == 8 and not url_at_expected_column and url_shifted_one_column:
         corrected = [
             *padded[:8],
             padded[9],
@@ -534,8 +571,6 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
             padded[12],
             "历史候选",
         ]
-        if format_version >= 9:
-            corrected.append("新闻搜索爬虫（历史候选）")
         return corrected
     return padded
 
@@ -578,6 +613,50 @@ def _read_rows(
     while rows and not any(cell not in (None, "") for cell in rows[-1]):
         rows.pop()
     return rows
+
+
+def _validate_sheet_rows(
+    rows: list[list[Any]],
+    *,
+    context: str,
+) -> None:
+    errors: list[str] = []
+    for index, row in enumerate(rows, start=2):
+        if not row or not any(_text(value, 80) for value in row):
+            continue
+        if len(row) != len(HEADERS):
+            errors.append(f"第{index}行列数为{len(row)}，应为{len(HEADERS)}")
+            continue
+        search_date = _publication_date(row[3])
+        source_date = _publication_date(row[9])
+        source_url = _cell_link(row[10], 1600)
+        title = _text(row[6], 500)
+        category = _text(row[5], 120)
+        if not search_date:
+            errors.append(f"第{index}行检索日期不在D列")
+        if not source_date and _normalized_status(row[0]) != "不接受":
+            errors.append(f"第{index}行发布时间不在J列")
+        if not title:
+            errors.append(f"第{index}行新闻标题不在G列")
+        if not category:
+            errors.append(f"第{index}行分类不在F列")
+        if not source_url.lower().startswith(("http://", "https://")):
+            errors.append(f"第{index}行原文链接不在K列")
+        if len(errors) >= 12:
+            break
+    if errors:
+        raise RuntimeError(
+            f"{context}结构校验失败，已停止写入以保护飞书审核表："
+            + "；".join(errors)
+        )
+
+
+def _comparable_sheet_row(row: list[Any]) -> list[str]:
+    padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+    return [
+        _cell_link(cell, 5000) if index == 10 else _text(cell, 5000)
+        for index, cell in enumerate(padded)
+    ]
 
 
 def ensure_sheet() -> str:
@@ -904,6 +983,7 @@ def sync_candidates(
     with _LOCK:
         sheet_id = ensure_sheet()
         rows = _read_rows(sheet_id)
+        _validate_sheet_rows(rows, context="现有飞书审核表")
         existing_status: dict[str, tuple[str, str]] = {}
         existing_rows_by_id: dict[str, list[Any]] = {}
         existing_history_items: list[dict[str, Any]] = []
@@ -979,6 +1059,7 @@ def sync_candidates(
         ordered_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
         if len(ordered_values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 行数据上限")
+        _validate_sheet_rows(ordered_values, context="待写入飞书审核表")
         for offset in range(0, len(ordered_values), 40):
             chunk = ordered_values[offset : offset + 40]
             start_row = 2 + offset
@@ -991,6 +1072,16 @@ def sync_candidates(
                 sheet_id,
                 f"A{clear_start}:N{clear_start + clear_count - 1}",
                 [[""] * len(HEADERS) for _ in range(clear_count)],
+            )
+        written_rows = _read_rows(sheet_id)
+        expected_rows = [_comparable_sheet_row(row) for row in ordered_values]
+        actual_rows = [
+            _comparable_sheet_row(row)
+            for row in written_rows[: len(ordered_values)]
+        ]
+        if actual_rows != expected_rows:
+            raise RuntimeError(
+                "飞书审核表写入后逐格回读不一致，已停止后续处理并保留错误现场"
             )
         state.update(
             {
@@ -2070,7 +2161,12 @@ def _current_source_generated_at() -> str:
     return ""
 
 def run_cycle(*, force: bool = False) -> dict[str, Any]:
-    with _LOCK:
+    with _LOCK, _review_process_lock(wait=force) as process_lock_acquired:
+        if not process_lock_acquired:
+            return {
+                "status": "busy",
+                "reason": "another_review_process_is_running",
+            }
         state = _read_json(STATE_PATH, {})
         now_epoch = time.time()
         if not force and now_epoch - float(state.get("last_poll_epoch") or 0) < POLL_SECONDS:

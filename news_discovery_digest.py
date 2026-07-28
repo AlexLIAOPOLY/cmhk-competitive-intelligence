@@ -389,6 +389,21 @@ def _normalized_query(value: Any) -> str:
     return re.sub(r"\s+", " ", _clean_text(value, 1400)).strip().casefold()
 
 
+def _sanitize_agentic_query(value: Any) -> str:
+    query = " ".join(str(value or "").split())
+    # Agentic plans complement fixed-source monitoring and should search the
+    # open news index. Models sometimes emit malformed exclusions such as
+    # ``-site:smar tone.com.hk``; remove the whole operator (including a split
+    # domain tail) instead of sending a broken query to every provider.
+    query = re.sub(
+        r"(?i)(?<!\S)-?site\s*:\s*\S+"
+        r"(?:\s+[a-z0-9][a-z0-9.-]*\.[a-z]{2,})?",
+        " ",
+        query,
+    )
+    return re.sub(r"\s+", " ", query).strip()
+
+
 def _coverage_digest(
     items: list[dict[str, Any]],
     *,
@@ -487,7 +502,7 @@ def _normalize_agentic_plans(
     for raw in raw_queries:
         if not isinstance(raw, dict):
             continue
-        raw_query = " ".join(str(raw.get("query") or "").split())
+        raw_query = _sanitize_agentic_query(raw.get("query"))
         # A useful Agentic query is intentionally narrow. Reject runaway
         # all-operator queries instead of silently truncating them into an
         # invalid or misleading search expression.
@@ -594,7 +609,7 @@ def _call_agentic_search_agent(
         "query最多180个字符。禁止把所有运营商拼进同一查询，禁止重复同一个词，"
         "禁止为了填满长度反复输出同义词。queries数量不得超过query_limit。"
         "为确保JSON稳定，query字段内禁止使用英文双引号字符，主体名称直接写即可；所有字符串必须正确转义。"
-        "不要生成网址、新闻事实或不在监控范围内的新主体。避免重复现有查询。"
+        "不要生成网址、site:或-site:搜索运算符、新闻事实或不在监控范围内的新主体。避免重复现有查询。"
         "若覆盖充分可返回 sufficient=true 和空 queries。"
     )
     if target_competitor:
@@ -684,6 +699,38 @@ def _call_agentic_search_agent(
                 AGENTIC_AI_ATTEMPTS,
                 last_error,
             )
+    if target_competitor and target_aliases:
+        fallback_aliases = list(dict.fromkeys(target_aliases))[:3]
+        fallback_query = (
+            " OR ".join(fallback_aliases)
+            + " (资费 OR 促销 OR 5G OR 网络建设 OR 合作 OR 业绩)"
+        )
+        fallback_plans = _normalize_agentic_plans(
+            {
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": fallback_query,
+                        "keywords": fallback_aliases,
+                        "intent": "竞对经营动态兜底补搜",
+                        "reason": "Agent补搜计划连续失败，使用正式竞对别名执行确定性补搜",
+                    }
+                ]
+            },
+            phase=phase,
+            existing_queries=existing_queries,
+            limit=1,
+        )
+        if fallback_plans:
+            fallback_plans[0]["canonical_competitor"] = target_competitor
+            return fallback_plans, {
+                "status": "fallback",
+                "attempts": AGENTIC_AI_ATTEMPTS,
+                "sufficient": False,
+                "assessment": "Agent补搜计划连续失败，已执行确定性竞对补搜",
+                "query_count": 1,
+                "error": last_error,
+            }
     return [], {
         "status": "failed",
         "attempts": AGENTIC_AI_ATTEMPTS,
@@ -819,6 +866,10 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         base_plans = strategic_briefing._query_plans(
             spec,
             strategic_briefing._load_state(),
+            # The 09:00/15:00 discovery crawl is the comprehensive layer:
+            # every configured monitoring keyword is searched on every run.
+            # The lightweight strategic monitor keeps its rotating limit.
+            max_queries=None,
         )
     except Exception as exc:
         # The fixed competitor floor must continue even if the editable Feishu

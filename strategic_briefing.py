@@ -41,6 +41,10 @@ AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 AI_EDITOR_VERSION = 14
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
+AI_EDITOR_SINGLE_RETRY_LIMIT = max(
+    0,
+    int(os.environ.get("CMHK_STRATEGY_AI_SINGLE_RETRY_LIMIT", "12")),
+)
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
     min(8, int(os.environ.get("CMHK_SEMANTIC_DEDUPE_BATCH_SIZE", "4"))),
@@ -103,6 +107,85 @@ _EXCLUSION_CODES = {
     "其他明确噪音",
     "无",
 }
+_COMPACT_SIGNAL_CODES = {
+    "C": "竞对经营动作",
+    "R": "监管政策",
+    "D": "市场需求",
+    "T": "关键技术",
+    "I": "基础设施",
+    "S": "供应链",
+    "M": "资本与并购",
+    "N": "网络安全",
+    "G": "宏观与地缘",
+    "0": "无",
+}
+_COMPACT_IMPACT_CODES = {
+    "R": "收入与需求",
+    "C": "成本与效率",
+    "U": "客户与渠道",
+    "P": "产品与定价",
+    "N": "网络与运营",
+    "L": "合规与牌照",
+    "A": "资本配置",
+    "S": "供应韧性",
+    "G": "竞争格局",
+    "0": "无",
+}
+_COMPACT_EXCLUSION_CODES = {
+    "1": "同名或主体误判",
+    "2": "体育娱乐或生活噪音",
+    "3": "关键词偶然出现",
+    "4": "非独立新闻或广告资料页",
+    "5": "缺少具体事件",
+    "6": "无电信战略影响",
+    "7": "重复或过期",
+    "8": "其他明确噪音",
+    "0": "无",
+}
+_COMMENTARY_ONLY_RE = re.compile(
+    r"(?:评论员|評論員|评论|評論|观点|觀點|专栏|專欄|访谈|訪談|"
+    r"解读|解讀|需关注|需關注|是否|如果|如.{0,12}(?:会|會)|"
+    r"分析.{0,8}(?:影响|影響|前景|形势|形勢)|"
+    r"\bcommentary\b|\bopinion\b|\bcolumnist\b|\bpundit\b)",
+    re.I,
+)
+_MARKET_SENTIMENT_ONLY_RE = re.compile(
+    r"(?:股价|股價|股市|台股|臺股|韩股|韓股|抛售|拋售|大跌|暴跌|重挫|"
+    r"技术分析|技術分析|支撑压力|支撐壓力|目标价|目標價|买入评级|買入評級|"
+    r"\bstock(?:s)?\b|\bshare price\b|\bprice target\b|\btechnical analysis\b)",
+    re.I,
+)
+_STRATEGIC_IMPACT_EVIDENCE_RE = re.compile(
+    r"(?:电信|電信|电讯|電訊|通讯|通訊|运营商|運營商|网络|網絡|宽频|寬頻|"
+    r"5g|6g|频谱|頻譜|基站|卫星|衛星|海缆|海纜|云|雲|数据中心|數據中心|"
+    r"人工智能|\bai\b|算力|芯片|晶片|\bcpu\b|大模型|网络安全|網絡安全|"
+    r"监管|監管|合规|合規|牌照|政策|标准|標準|法案|"
+    r"收入|营收|營收|需求|成本|价格|價格|客户|客戶|用户|用戶|"
+    r"产品|產品|服务|服務|运营|運營|投资|投資|资本|資本|融资|融資|"
+    r"供应|供應|短缺|缺货|缺貨|产能|產能|出货|出貨|竞争|競爭|效率|性能|"
+    r"能源|石油|油价|油價|制裁|关税|關稅|禁运|禁運|封锁|封鎖|"
+    r"\b(?:telecom|carrier|network|broadband|spectrum|satellite|cloud|"
+    r"data cent(?:er|re)|chip|cybersecurity|regulation|compliance|license|"
+    r"revenue|demand|cost|price|customer|product|service|investment|capital|"
+    r"supply|shortage|capacity|competition|efficiency|performance|energy|"
+    r"oil|sanction|tariff|embargo|blockade)\b)",
+    re.I,
+)
+_CONCRETE_STRATEGIC_EVENT_RE = re.compile(
+    r"(?:发布|發布|公布|宣布|通过|通過|批准|生效|实施|實施|修订|修訂|"
+    r"上调|上調|下调|下調|转盈|轉盈|暴增|裁员|裁員|投资|投資|融资|融資|"
+    r"收购|收購|合并|合併|合作|签署|簽署|推出|上线|上線|部署|建设|建設|"
+    r"扩建|擴建|更新|升级|升級|出货|出貨|短缺|缺货|缺貨|转型|轉型|布局|"
+    r"成立|开设|開設|起诉|起訴|诉讼|訴訟|访问|訪問|会晤|會晤|"
+    r"中断|中斷|故障|攻击|攻擊|泄露|洩露|制裁|关税|關稅|"
+    r"停火|开战|開戰|撤军|撤軍|封锁|封鎖|禁运|禁運|"
+    r"报告.{0,20}(?:显示|顯示|指出|发现|發現|揭示|缩短|縮短|上升|下降)|"
+    r"\b(?:announc(?:e|ed|es)|launch(?:ed|es)?|deploy(?:ed|s)?|invest(?:ed|s)?|"
+    r"acquir(?:e|ed|es)|approv(?:e|ed|es)|enact(?:ed|s)?|effective|"
+    r"increas(?:e|ed|es)|decreas(?:e|ed|es)|outage|attack(?:ed|s)?|"
+    r"sanction(?:ed|s)?|tariff(?:s)?|ceasefire)\b)",
+    re.I,
+)
 _STRATEGIC_INCLUSION_GUIDANCE = (
     "必须按以下双通道标准判断，禁止使用‘有战略价值/无战略价值’作为没有事实依据的自由裁量。"
     "第一通道是‘竞对直通’：标题或摘要确认正式监控运营商是事件主体、事件对象或被实质讨论的企业，"
@@ -466,7 +549,12 @@ def _normalize_url(url: str) -> str:
     )
 
 
-def _query_plans(spec: dict[str, Any], state: dict[str, Any]) -> list[dict[str, Any]]:
+def _query_plans(
+    spec: dict[str, Any],
+    state: dict[str, Any],
+    *,
+    max_queries: int | None = MAX_QUERIES_PER_SCAN,
+) -> list[dict[str, Any]]:
     queues: list[list[dict[str, Any]]] = []
     for module in spec.get("modules") or []:
         keywords = list(dict.fromkeys(module.get("keywords") or []))
@@ -503,15 +591,15 @@ def _query_plans(spec: dict[str, Any], state: dict[str, Any]) -> list[dict[str, 
         for queue in queues:
             if queue:
                 interleaved.append(queue.pop(0))
-    if len(interleaved) <= MAX_QUERIES_PER_SCAN:
+    if max_queries is None or max_queries <= 0 or len(interleaved) <= max_queries:
         state["query_cursor"] = 0
         return interleaved
     cursor = int(state.get("query_cursor") or 0) % len(interleaved)
     selected = [
         interleaved[(cursor + index) % len(interleaved)]
-        for index in range(MAX_QUERIES_PER_SCAN)
+        for index in range(max_queries)
     ]
-    state["query_cursor"] = (cursor + MAX_QUERIES_PER_SCAN) % len(interleaved)
+    state["query_cursor"] = (cursor + max_queries) % len(interleaved)
     return selected
 
 
@@ -1568,6 +1656,10 @@ _META_SUMMARY_PREFIX = re.compile(
 _EXPLICIT_NON_HK_EVENT_RE = re.compile(
     r"(?:台湾|台灣|台厂|台廠|台股|台积电|台積電|联发科|聯發科|"
     r"鸿海|鴻海|台北|臺北|台中|臺中|高雄|新竹|"
+    r"中国大陆|中國大陸|中国内地|中國內地|大陆|大陸|"
+    r"工业和信息化部|工業和信息化部|工信部|商务部|商務部|国务院|國務院|"
+    r"北京|上海|深圳|广州|廣州|杭州|南京|成都|重庆|重慶|"
+    r"\bmainland china\b|\bbeijing\b|\bshanghai\b|\bshenzhen\b|"
     r"\btaiwan\b|\btaipei\b|\bmedIATEK\b)",
     re.I,
 )
@@ -1601,7 +1693,10 @@ def _enforce_region_from_source_evidence(region: str, source_item: dict[str, Any
     jurisdiction = _clean_text(source_item.get("jurisdiction"), 20).upper()
     has_hk_evidence = bool(_EXPLICIT_HK_EVENT_RE.search(evidence))
     has_non_hk_evidence = bool(_EXPLICIT_NON_HK_EVENT_RE.search(evidence))
-    if not has_hk_evidence and (has_non_hk_evidence or jurisdiction in {"TW", "TWN"}):
+    if not has_hk_evidence and (
+        has_non_hk_evidence
+        or jurisdiction in {"CN", "CHN", "TW", "TWN"}
+    ):
         return "国际/行业"
     return region
 
@@ -1633,8 +1728,24 @@ def _validated_ai_copy(
     require_decision_fields: bool = False, allowed_keywords: Any = None,
     source_item: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    title = _to_simplified_chinese(value.get("title") or value.get("ai_title"), 48)
-    summary = _to_simplified_chinese(value.get("summary") or value.get("ai_summary"), 96)
+    title_value = value.get("title") or value.get("ai_title")
+    summary_value = value.get("summary") or value.get("ai_summary")
+    if require_review_fields and isinstance(source_item, dict):
+        title_value = (
+            title_value
+            or source_item.get("source_title")
+            or source_item.get("title")
+        )
+        summary_value = (
+            summary_value
+            or source_item.get("source_summary")
+            or source_item.get("snippet")
+            or source_item.get("summary")
+            or source_item.get("description")
+            or source_item.get("why")
+        )
+    title = _to_simplified_chinese(title_value, 48)
+    summary = _to_simplified_chinese(summary_value, 96)
     if not title or not re.search(r"[\u4e00-\u9fff]", title):
         raise RuntimeError("公司内部 AI 未返回中文快讯标题")
     if len(summary) < 16 or not re.search(r"[\u4e00-\u9fff]", summary):
@@ -1719,6 +1830,8 @@ def _validated_ai_copy(
                 raise RuntimeError("竞对直通必须归为竞对动态")
             if business_impact == "无" or exclusion_code != "无":
                 raise RuntimeError("竞对直通缺少具体业务影响或错误填写排除原因")
+            if isinstance(source_item, dict) and not _is_competitor_candidate(source_item):
+                raise RuntimeError("竞对直通缺少正文中的正式监控竞对主体证据")
         elif decision_path == "战略信号":
             if not should_include:
                 raise RuntimeError("已确认战略信号不得被排除")
@@ -1726,6 +1839,30 @@ def _validated_ai_copy(
                 raise RuntimeError("战略信号必须使用具体的非竞对信号类型")
             if business_impact == "无" or exclusion_code != "无":
                 raise RuntimeError("战略信号缺少具体业务影响或错误填写排除原因")
+            if isinstance(source_item, dict):
+                raw_source_evidence = " ".join(
+                    _clean_text(source_item.get(field), 1800)
+                    for field in (
+                        "source_title",
+                        "title",
+                        "source_summary",
+                        "snippet",
+                        "summary",
+                        "description",
+                    )
+                )
+                source_evidence = f"{raw_source_evidence} {title} {summary}"
+                if (
+                    _COMMENTARY_ONLY_RE.search(source_evidence)
+                    and not _CONCRETE_STRATEGIC_EVENT_RE.search(raw_source_evidence)
+                ):
+                    raise RuntimeError("观点或评论未包含可验证的具体战略事件")
+                if _MARKET_SENTIMENT_ONLY_RE.search(raw_source_evidence):
+                    raise RuntimeError("股价、行情或市场情绪不是独立战略事件")
+                if not _CONCRETE_STRATEGIC_EVENT_RE.search(raw_source_evidence):
+                    raise RuntimeError("战略信号缺少可验证的新动作或数据变化")
+                if not _STRATEGIC_IMPACT_EVIDENCE_RE.search(raw_source_evidence):
+                    raise RuntimeError("战略信号缺少原文中的具体业务影响证据")
         else:
             if should_include:
                 raise RuntimeError("排除通道不得标记为纳入")
@@ -1771,9 +1908,185 @@ def _validated_ai_copy(
     }
 
 
+def _validated_ai_decision(
+    value: dict[str, Any], *, allowed_keywords: Any,
+    source_item: dict[str, Any],
+) -> dict[str, Any]:
+    """Validate a compact decision without requiring publishable copy.
+
+    This is used only to resolve entries omitted from a verbose batch response.
+    Included entries still go through the full copy validator before writeback.
+    """
+    return _validated_ai_copy(
+        {
+            "title": "候选新闻审核结果",
+            "summary": "该结果仅用于判断候选是否符合既定监控和战略筛选规则。",
+            **value,
+        },
+        require_review_fields=True,
+        require_decision_fields=True,
+        allowed_keywords=allowed_keywords,
+        source_item=source_item,
+    )
+
+
+def _expanded_compact_decision(
+    value: dict[str, Any], *, source_item: dict[str, Any],
+) -> dict[str, Any]:
+    route_code = _clean_text(
+        value.get("route") or value.get("decision_path"), 8
+    ).upper()
+    route = {"C": "竞对直通", "S": "战略信号", "X": "排除"}.get(route_code)
+    if route is None:
+        raise RuntimeError("公司内部 AI 紧凑补审未返回有效通道代码")
+    region_code = _clean_text(value.get("region"), 8).upper()
+    region = {"H": "香港本地", "I": "国际/行业"}.get(region_code)
+    if region is None:
+        raise RuntimeError("公司内部 AI 紧凑补审未返回有效地域代码")
+    signal = _COMPACT_SIGNAL_CODES.get(
+        _clean_text(value.get("signal"), 8).upper()
+    )
+    impact = _COMPACT_IMPACT_CODES.get(
+        _clean_text(value.get("impact"), 8).upper()
+    )
+    exclusion = _COMPACT_EXCLUSION_CODES.get(
+        _clean_text(value.get("exclude"), 8).upper()
+    )
+    if signal is None or impact is None or exclusion is None:
+        raise RuntimeError("公司内部 AI 紧凑补审返回了未知枚举代码")
+    if route == "竞对直通":
+        signal = "竞对经营动作"
+        impact = impact if impact != "无" else "竞争格局"
+        exclusion = "无"
+    elif route == "战略信号":
+        if signal in {"无", "竞对经营动作"} or impact == "无":
+            raise RuntimeError("公司内部 AI 紧凑补审缺少具体战略信号或业务影响")
+        exclusion = "无"
+    else:
+        signal = "无"
+        impact = "无"
+        if exclusion == "无":
+            raise RuntimeError("公司内部 AI 紧凑补审缺少排除原因")
+        if (
+            _is_competitor_candidate(source_item)
+            and exclusion
+            not in {
+                "同名或主体误判",
+                "体育娱乐或生活噪音",
+                "关键词偶然出现",
+                "其他明确噪音",
+            }
+        ):
+            exclusion = "其他明确噪音"
+    title = _clean_text(
+        source_item.get("source_title") or source_item.get("title"), 120
+    )
+    if route == "竞对直通":
+        reason = f"{title}显示正式监控竞对发生具体经营事件，影响{impact}。"
+        category = "竞对动态"
+    elif route == "战略信号":
+        reason = f"{title}属于可验证的{signal}事件，影响{impact}。"
+        category = _clean_text(source_item.get("category"), 40) or "行业动态"
+    else:
+        reason = f"{title}不满足纳入条件：{exclusion}。"
+        category = _clean_text(source_item.get("category"), 40) or "行业动态"
+    return {
+        "should_include": route != "排除",
+        "region": region,
+        "category": category,
+        "keywords": _clean_text(source_item.get("keywords"), 800),
+        "inclusion_reason": _clean_text(reason, 120),
+        "region_reason": (
+            "事件主体、发生地或受影响市场位于香港。"
+            if region == "香港本地"
+            else "事件主体、发生地或受影响市场位于香港以外。"
+        ),
+        "decision_path": route,
+        "signal_type": signal,
+        "business_impact": impact,
+        "exclusion_code": exclusion,
+    }
+
+
+def _deterministic_policy_exclusion(
+    error: Exception, *, source_item: dict[str, Any],
+) -> dict[str, Any] | None:
+    message = str(error)
+    if "股价、行情或市场情绪" in message:
+        exclude_code = "6"
+    elif (
+        "观点或评论未包含" in message
+        or "战略信号缺少可验证的新动作" in message
+    ):
+        exclude_code = "5"
+    elif "战略信号缺少原文中的具体业务影响证据" in message:
+        exclude_code = "6"
+    else:
+        return None
+    region = _clean_text(source_item.get("region"), 20)
+    compact = _expanded_compact_decision(
+        {
+            "route": "X",
+            "signal": "0",
+            "impact": "0",
+            "exclude": exclude_code,
+            "region": "H" if region == "香港本地" else "I",
+        },
+        source_item=source_item,
+    )
+    return _validated_ai_decision(
+        compact,
+        allowed_keywords=source_item.get("keywords"),
+        source_item=source_item,
+    )
+
+
+def _deterministic_source_exclusion(
+    source_item: dict[str, Any],
+) -> dict[str, Any] | None:
+    if (
+        _clean_text(source_item.get("module"), 80) == "竞争对手"
+        or _is_competitor_candidate(source_item)
+    ):
+        return None
+    evidence = " ".join(
+        _clean_text(source_item.get(field), 1800)
+        for field in (
+            "source_title",
+            "title",
+            "source_summary",
+            "snippet",
+            "summary",
+            "description",
+        )
+    )
+    if _MARKET_SENTIMENT_ONLY_RE.search(evidence):
+        exclude_code = "6"
+    elif not _CONCRETE_STRATEGIC_EVENT_RE.search(evidence):
+        exclude_code = "5"
+    elif not _STRATEGIC_IMPACT_EVIDENCE_RE.search(evidence):
+        exclude_code = "6"
+    else:
+        return None
+    region = _clean_text(source_item.get("region"), 20)
+    compact = _expanded_compact_decision(
+        {
+            "route": "X",
+            "signal": "0",
+            "impact": "0",
+            "exclude": exclude_code,
+            "region": "H" if region == "香港本地" else "I",
+        },
+        source_item=source_item,
+    )
+    return _validated_ai_decision(
+        compact,
+        allowed_keywords=source_item.get("keywords"),
+        source_item=source_item,
+    )
+
+
 def _is_competitor_candidate(item: dict[str, Any]) -> bool:
-    if _clean_text(item.get("category"), 80) == "竞对动态":
-        return True
     if _clean_text(item.get("module"), 80) != "竞争对手":
         return False
     evidence = " ".join(
@@ -1854,10 +2167,21 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     if not isinstance(cache, dict):
         cache = {}
     resolved: dict[str, dict[str, Any]] = {}
+    excluded_decisions: dict[str, dict[str, Any]] = {}
     pending: list[tuple[str, dict[str, Any]]] = []
     deferred_reviews: list[dict[str, str]] = []
     for item in items:
         key = _candidate_editor_key(item)
+        source_exclusion = _deterministic_source_exclusion(item)
+        if source_exclusion is not None:
+            excluded_decisions[key] = source_exclusion
+            cache[key] = {
+                **source_exclusion,
+                "decision_only": True,
+                "editor_version": AI_EDITOR_VERSION,
+                "updated_at": _now_iso(),
+            }
+            continue
         existing = {
             "title": item.get("ai_title"),
             "summary": item.get("ai_summary"),
@@ -1886,6 +2210,18 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 pass
         cached = cache.get(key) or {}
         if str(cached.get("editor_version") or "") == str(AI_EDITOR_VERSION):
+            if cached.get("decision_only") is True:
+                try:
+                    decision = _validated_ai_decision(
+                        cached,
+                        allowed_keywords=item.get("keywords"),
+                        source_item=item,
+                    )
+                    if not decision["should_include"]:
+                        excluded_decisions[key] = decision
+                        continue
+                except RuntimeError:
+                    pass
             try:
                 resolved[key] = _validated_ai_copy(
                     cached,
@@ -1899,11 +2235,18 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 pass
         pending.append((key, item))
 
+    pending.sort(key=lambda pair: not _is_competitor_candidate(pair[1]))
+    single_retry_attempts = 0
+    retry_budget_exhausted_count = 0
+    compact_retry_batch_count = 0
+    compact_retry_item_count = 0
+    compact_retry_resolved_count = 0
     for offset in range(0, len(pending), AI_EDITOR_BATCH_SIZE):
         batch = pending[offset : offset + AI_EDITOR_BATCH_SIZE]
         request_items = []
         for key, item in batch:
             request_items.append(_candidate_editor_input(key, item))
+        batch_call_succeeded = False
         try:
             response = _call_internal_ai(
                 (
@@ -1955,6 +2298,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 json.dumps({"items": request_items}, ensure_ascii=False),
                 max_tokens=max(1200, len(batch) * 380),
             )
+            batch_call_succeeded = True
         except Exception as exc:
             logging.error(
                 "公司内部 AI 批量编辑失败，本批 %s 条立即降级为逐条重试：%s",
@@ -1969,17 +2313,181 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             if isinstance(entry, dict)
         }
         request_map = {str(entry["id"]): entry for entry in request_items}
-        for key, _item in batch:
+        validated_verbose: dict[str, dict[str, Any]] = {}
+        verbose_errors: dict[str, RuntimeError] = {}
+        policy_excluded_verbose: dict[str, dict[str, Any]] = {}
+        for key, item in batch:
+            item_id = key[:16]
             try:
-                edited = _validated_ai_copy(
-                    response_map.get(key[:16]) or {},
+                validated_verbose[item_id] = _validated_ai_copy(
+                    response_map.get(item_id) or {},
                     require_review_fields=True,
                     require_decision_fields=True,
-                    allowed_keywords=_item.get("keywords"),
-                    source_item=_item,
+                    allowed_keywords=item.get("keywords"),
+                    source_item=item,
                 )
-            except RuntimeError:
+            except RuntimeError as exc:
+                verbose_errors[item_id] = exc
+                policy_exclusion = _deterministic_policy_exclusion(
+                    exc,
+                    source_item=item,
+                )
+                if policy_exclusion is not None:
+                    policy_excluded_verbose[item_id] = policy_exclusion
+        compact_response_map: dict[str, dict[str, Any]] = {}
+        missing_from_verbose = [
+            entry for entry in request_items
+            if (
+                entry["id"] not in validated_verbose
+                and entry["id"] not in policy_excluded_verbose
+            )
+        ]
+        if batch_call_succeeded and missing_from_verbose:
+            compact_retry_batch_count += 1
+            compact_retry_item_count += len(missing_from_verbose)
+            try:
+                compact_response = _call_internal_ai(
+                    (
+                        "你是公司内部战略新闻审核员。上一轮长格式输出漏掉了部分输入。"
+                        "只输出合法JSON对象，结构为"
+                        "{\"items\":[{\"id\":\"输入id\",\"route\":\"C或S或X\","
+                        "\"signal\":\"代码\",\"impact\":\"代码\",\"exclude\":\"代码\","
+                        "\"region\":\"H或I\"}]}。"
+                        "输入有几条就必须返回几条，id必须逐一原样保留；被排除的条目也必须返回，"
+                        "绝对不能只返回入选项。不要输出任何额外字段或解释。"
+                        "route代码：C=确认是正式监控竞对的真实事件；S=非竞对但命中正式关键词且"
+                        "同时存在具体战略事件和明确业务影响；X=排除。"
+                        "signal代码：C=竞对经营动作，R=监管政策，D=市场需求，T=关键技术，"
+                        "I=基础设施，S=供应链，M=资本与并购，N=网络安全，G=宏观与地缘，0=无。"
+                        "impact代码：R=收入与需求，C=成本与效率，U=客户与渠道，P=产品与定价，"
+                        "N=网络与运营，L=合规与牌照，A=资本配置，S=供应韧性，G=竞争格局，0=无。"
+                        "exclude代码：1=同名或主体误判，2=体育娱乐或生活噪音，3=关键词偶然出现，"
+                        "4=非独立新闻或广告资料页，5=缺少具体事件，6=无电信战略影响，"
+                        "7=重复或过期，8=其他明确噪音，0=无。region代码：H=香港本地，I=国际/行业。"
+                        "route=C时signal必须C、impact不能0、exclude必须0；route=S时signal必须是"
+                        "R/D/T/I/S/M/N/G之一、impact不能0、exclude必须0；route=X时signal和impact"
+                        "必须0、exclude必须1至8之一。"
+                        "判断规则只有两条：确认是正式监控竞对的真实事件就选C，除同名、媒体名、"
+                        "体育娱乐生活噪音或偶然提词外不得排除；其他内容只有同时命中matched_keywords、"
+                        "存在可验证的新动作或变化、且能落到明确业务影响时选S。"
+                        "纯评论、观点、形势讨论和没有新变化的分析选X。"
+                        "只依据输入事实，不要Markdown。"
+                    ),
+                    json.dumps({"items": missing_from_verbose}, ensure_ascii=False),
+                    max_tokens=max(1600, len(missing_from_verbose) * 500),
+                )
+                compact_items = (
+                    compact_response.get("items")
+                    if isinstance(compact_response, dict)
+                    else []
+                )
+                compact_response_map = {
+                    str(entry.get("id") or ""): entry
+                    for entry in compact_items or []
+                    if isinstance(entry, dict)
+                }
+            except Exception as exc:
+                logging.error(
+                    "公司内部 AI 紧凑补审失败，本批 %s 条继续进入逐条补审：%s",
+                    len(missing_from_verbose),
+                    _clean_text(exc, 240),
+                )
+        for key, _item in batch:
+            item_id = key[:16]
+            if item_id in policy_excluded_verbose:
+                policy_decision = policy_excluded_verbose[item_id]
+                excluded_decisions[key] = policy_decision
+                cache[key] = {
+                    **policy_decision,
+                    "decision_only": True,
+                    "editor_version": AI_EDITOR_VERSION,
+                    "updated_at": _now_iso(),
+                }
+                continue
+            compact_entry = compact_response_map.get(key[:16])
+            compact_edited: dict[str, Any] | None = None
+            if item_id not in validated_verbose and compact_entry:
+                try:
+                    compact_entry = _expanded_compact_decision(
+                        compact_entry,
+                        source_item=_item,
+                    )
+                    compact_decision = _validated_ai_decision(
+                        compact_entry,
+                        allowed_keywords=_item.get("keywords"),
+                        source_item=_item,
+                    )
+                    compact_retry_resolved_count += 1
+                    if not compact_decision["should_include"]:
+                        excluded_decisions[key] = compact_decision
+                        cache[key] = {
+                            **compact_decision,
+                            "decision_only": True,
+                            "editor_version": AI_EDITOR_VERSION,
+                            "updated_at": _now_iso(),
+                        }
+                        continue
+                    decision_fields = {
+                        field: compact_decision[field]
+                        for field in (
+                            "should_include",
+                            "region",
+                            "category",
+                            "keywords",
+                            "inclusion_reason",
+                            "region_reason",
+                            "decision_path",
+                            "signal_type",
+                            "business_impact",
+                            "exclusion_code",
+                        )
+                    }
+                    compact_edited = _validated_ai_copy(
+                        {
+                            **(response_map.get(item_id) or {}),
+                            **decision_fields,
+                        },
+                        require_review_fields=True,
+                        require_decision_fields=True,
+                        allowed_keywords=_item.get("keywords"),
+                        source_item=_item,
+                    )
+                except RuntimeError as exc:
+                    policy_decision = _deterministic_policy_exclusion(
+                        exc,
+                        source_item=_item,
+                    )
+                    if policy_decision is not None:
+                        excluded_decisions[key] = policy_decision
+                        cache[key] = {
+                            **policy_decision,
+                            "decision_only": True,
+                            "editor_version": AI_EDITOR_VERSION,
+                            "updated_at": _now_iso(),
+                        }
+                        continue
+            edited = validated_verbose.get(item_id) or compact_edited
+            if edited is None:
+                batch_validation_error = verbose_errors.get(
+                    item_id,
+                    RuntimeError("公司内部 AI 批量结果缺少候选"),
+                )
                 source = request_map[key[:16]]
+                if single_retry_attempts >= AI_EDITOR_SINGLE_RETRY_LIMIT:
+                    retry_budget_exhausted_count += 1
+                    error = _clean_text(batch_validation_error, 240)
+                    deferred_reviews.append(
+                        {
+                            "id": source["id"],
+                            "title": source["title"],
+                            "error": (
+                                "批量结果不合格，单轮逐条重试预算已用尽："
+                                + error
+                            ),
+                        }
+                    )
+                    continue
+                single_retry_attempts += 1
                 try:
                     retry = _call_internal_ai(
                         (
@@ -2016,6 +2524,17 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         json.dumps(source, ensure_ascii=False),
                         max_tokens=1200,
                     )
+                    retry_items = (
+                        retry.get("items")
+                        if isinstance(retry, dict)
+                        else None
+                    )
+                    if (
+                        isinstance(retry_items, list)
+                        and len(retry_items) == 1
+                        and isinstance(retry_items[0], dict)
+                    ):
+                        retry = retry_items[0]
                     edited = _validated_ai_copy(
                         retry,
                         require_review_fields=True,
@@ -2024,6 +2543,19 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         source_item=_item,
                     )
                 except Exception as exc:
+                    policy_decision = _deterministic_policy_exclusion(
+                        exc,
+                        source_item=_item,
+                    )
+                    if policy_decision is not None:
+                        excluded_decisions[key] = policy_decision
+                        cache[key] = {
+                            **policy_decision,
+                            "decision_only": True,
+                            "editor_version": AI_EDITOR_VERSION,
+                            "updated_at": _now_iso(),
+                        }
+                        continue
                     error = _clean_text(exc, 240)
                     logging.error(
                         "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
@@ -2056,7 +2588,10 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     polished_items: list[dict[str, Any]] = []
     for source_item in items:
         item = dict(source_item)
-        edited = resolved.get(_candidate_editor_key(item))
+        item_key = _candidate_editor_key(item)
+        if item_key in excluded_decisions:
+            continue
+        edited = resolved.get(item_key)
         if not edited:
             continue
         item.setdefault("source_title", _clean_text(item.get("title"), 500))
@@ -2102,18 +2637,28 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         "version": 2,
         "generated_at": _now_iso(),
         "input_count": len(items),
-        "resolved_count": len(resolved),
+        "resolved_count": len(resolved) + len(excluded_decisions),
         "included_count": len(polished_items),
         "included_decision_path_counts": dict(decision_path_counts),
         "included_signal_type_counts": dict(signal_type_counts),
-        "excluded_count": len(resolved) - len(polished_items),
+        "excluded_count": (
+            len(resolved) + len(excluded_decisions) - len(polished_items)
+        ),
         "deferred_count": deferred_count,
         "deferred_ratio": round(deferred_ratio, 6),
         "continued_with_partial_results": bool(deferred_reviews),
         "write_blocked": False,
+        "single_retry_limit": AI_EDITOR_SINGLE_RETRY_LIMIT,
+        "single_retry_attempt_count": single_retry_attempts,
+        "retry_budget_exhausted_count": retry_budget_exhausted_count,
+        "compact_retry_batch_count": compact_retry_batch_count,
+        "compact_retry_item_count": compact_retry_item_count,
+        "compact_retry_resolved_count": compact_retry_resolved_count,
         "policy": {
-            "mode": "item_level_defer",
+            "mode": "verbose_batch_then_compact_missing_review_then_bounded_item_retry",
             "batch_blocking": False,
+            "competitor_priority": True,
+            "missing_output_is_not_business_exclusion": True,
         },
         "deferred": deferred_reviews,
     }
