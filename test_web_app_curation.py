@@ -2056,23 +2056,20 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("tools", generate.call_args_list[1].kwargs)
         self.assertIn("1200 个中文字符", retry_text)
 
-    def test_search_local_reports_repeats_are_cheap_then_stop(self) -> None:
+    def test_search_local_reports_does_not_limit_repeated_searches(self) -> None:
         token = agent.TOOL_RUN_STATE.set({"counts": {}})
         try:
-            with mock.patch("agent.retrieve_context", return_value=[]):
-                self.assertEqual(
-                    agent.search_local_reports.invoke({"query": "现金流"}),
-                    "没有找到相关的本地报告信息。",
-                )
-                duplicate_1 = agent.search_local_reports.invoke({"query": "现金流"})
-                duplicate_2 = agent.search_local_reports.invoke({"query": "现金流"})
-                limited = agent.search_local_reports.invoke({"query": "现金流"})
+            with mock.patch("agent.retrieve_context", return_value=[]) as retrieve:
+                results = [
+                    agent.search_local_reports.invoke({"query": "现金流"})
+                    for _ in range(6)
+                ]
         finally:
             agent.TOOL_RUN_STATE.reset(token)
 
-        self.assertIn("已经完成", duplicate_1)
-        self.assertIn("已经完成", duplicate_2)
-        self.assertIn("达到本轮调用上限（3 次）", limited)
+        self.assertEqual(retrieve.call_count, 6)
+        self.assertTrue(all(result == "没有找到相关的本地报告信息。" for result in results))
+        self.assertTrue(all("达到本轮调用上限" not in result for result in results))
 
     def test_web_search_keeps_its_bounded_call_limit(self) -> None:
         token = agent.TOOL_RUN_STATE.set({"counts": {"web_search": 3}})
@@ -2107,7 +2104,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertTrue(all("达到本轮调用上限" not in result for result in results))
         self.assertTrue(all("工具调用已停止" not in result for result in results))
 
-    def test_local_reference_reuses_an_exact_duplicate_without_rereading(self) -> None:
+    def test_local_reference_does_not_limit_repeated_reads(self) -> None:
         source = "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_summary.md"
         token = agent.TOOL_RUN_STATE.set({"counts": {}})
         try:
@@ -2123,8 +2120,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             agent.TOOL_RUN_STATE.reset(token)
 
         self.assertIn("[本地引用:", first)
-        self.assertIn("本轮已经读取过", duplicate)
-        self.assertEqual(read_reference.call_count, 1)
+        self.assertIn("[本地引用:", duplicate)
+        self.assertNotIn("达到本轮调用上限", duplicate)
+        self.assertNotIn("本轮已经读取过", duplicate)
+        self.assertEqual(read_reference.call_count, 2)
 
     def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
         pseudo_message = agent.AIMessage(

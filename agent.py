@@ -748,24 +748,6 @@ def _register_heavy_search_invocation(tool_name: str) -> str | None:
     return _register_tool_invocation(tool_name, 3)
 
 
-def _register_local_reference_source(source: str) -> str | None:
-    """Allow distinct source reads while making exact repeats cheap."""
-    state = TOOL_RUN_STATE.get()
-    if state is None:
-        return None
-    clean = str(source or "").strip().removeprefix("/references/")
-    sources = state.setdefault("local_reference_sources", [])
-    if clean in sources:
-        return (
-            f"本轮已经读取过 {clean}，请直接使用先前返回的原文；"
-            "如需补充证据，请读取其他命中来源。"
-        )
-    sources.append(clean)
-    counts = state.setdefault("counts", {})
-    counts["read_local_reference"] = len(sources)
-    return None
-
-
 class MarkdownTableLimiter:
     """Limit streamed Markdown tables before they reach the browser."""
 
@@ -1401,18 +1383,13 @@ def search_local_reports(query: str) -> str:
     当你需要了解公司的最新动态、特定主体的近期情况，或是爬虫的执行历史时，请使用此工具。
     query 应保留用户原始指标语义，例如区分收入同比与收入。
     趋势查询会把同一主体和指标的完整可见时间序列压缩在一个结果片段中。
+    此工具不限制同一轮调用次数，模型可以按分析需要反复检索。
     """
-    limit_message = _register_heavy_search_invocation("search_local_reports")
-    if limit_message:
-        return limit_message
     chunks = retrieve_context(query, limit=6, dataset_ids=_effective_selected_dataset_ids())
     if not chunks:
         return "没有找到相关的本地报告信息。"
-    # Multiple search calls remain in the ReAct transcript and are resent on
-    # later model turns. A 6.5k budget per call allowed one detailed question
-    # to balloon past 120k cumulative input tokens. Three focused calls at
-    # 3.2k each still leave enough evidence for `read_local_reference`, while
-    # bounding the transcript before the tool-free finalizer takes over.
+    # Keep each individual search result within the model context budget. This
+    # is a per-result payload size boundary, not a tool invocation limit.
     context_package = build_context_package(chunks, token_budget=3200, model=_agent_model_name())
     chunks = context_package["chunks"]
     audit = context_package["audit"]
@@ -1477,8 +1454,8 @@ def _read_local_reference_text(source: str) -> str:
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     if not text:
         return f"本地引用读取失败：{clean} 内容为空。"
-    # Keep each file bounded because tool results remain in the ReAct
-    # transcript, while allowing the Agent to inspect multiple distinct files.
+    # Keep each individual result within the model context budget. This is a
+    # per-result payload size boundary, not a tool invocation limit.
     limit = 18000 if clean.startswith("agent_knowledge/") else 12000
     return f"[本地引用: {clean}]\n{text[:limit]}"
 
@@ -1489,11 +1466,8 @@ def read_local_reference(source: str) -> str:
     当 `search_local_reports` 返回 `weekly_report.md`、`final_audit.md`、`coverage_report.tsv`、`run_log.tsv` 或 `row_*.json`
     等本地来源，而你需要查看更完整上下文、核对本地口径或追溯原始抓取结果时，优先使用此工具。
     参数可以是文件名，也可以是 `/references/...` 链接。
-    同一轮可以读取多个不同来源；已经读取过的同一来源会直接复用，避免重复注入原文。
+    此工具不限制同一轮调用次数；模型可以按分析需要读取任意来源，也可以重复读取同一来源。
     """
-    duplicate_message = _register_local_reference_source(source)
-    if duplicate_message:
-        return duplicate_message
     return _read_local_reference_text(source)
 
 
