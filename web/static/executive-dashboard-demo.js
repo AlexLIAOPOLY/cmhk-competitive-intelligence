@@ -1,40 +1,42 @@
 const panels = [...document.querySelectorAll(".panel")];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const newsRail = document.querySelector(".news-rail");
 const newsTrack = document.querySelector(".news-track");
 const newsSourceSet = newsTrack?.querySelector(".news-set");
 let newsResizeFrame = 0;
+let newsResumeTimer = 0;
 const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
 
 const networkViews = {
   fixed: {
-    hero: ["光纖接入端口", "228萬", "+6.7%"],
-    chartLabel: "核心固定網絡資源",
-    bars: [["骨幹光纖", "18,600 km", "100%"], ["接入機樓", "312 個", "82%"], ["10G PON", "76 萬", "74%"], ["國際出口", "9.8 Tbps", "66%"]],
-    extras: [["家居覆蓋", "245", "萬戶"], ["專線節點", "168", "個"], ["可用率", "99.999", "%"]],
-    pair: [["光纖到樓", "98.6", "%"], ["平均時延", "1.8", "ms"]]
+    hero: ["光纤接入端口", "228万", "+6.7%"],
+    chartLabel: "核心固定网络资源",
+    bars: [["骨干光纤", "18,600 km", "100%"], ["接入机楼", "312 个", "82%"], ["10G PON", "76 万", "74%"], ["国际出口", "9.8 Tbps", "66%"]],
+    extras: [["家居覆盖", "245", "万户"], ["专线节点", "168", "个"], ["可用率", "99.999", "%"]],
+    pair: [["光纤到楼", "98.6", "%"], ["平均时延", "1.8", "ms"]]
   },
   mobile: {
     hero: ["5G 基站", "3,700", "+8.4%"],
-    chartLabel: "各營運商5G基站比較",
+    chartLabel: "各运营商5G基站比较",
     bars: [["CMHK", "1,620", "90%"], ["HKT", "1,810", "100%"], ["3香港", "1,390", "77%"], ["SmarTone", "1,260", "70%"]],
-    extras: [["5G 頻譜", "140", "MHz"], ["邊緣節點", "26", "個"], ["網絡可用率", "99.99", "%"]],
-    pair: [["人口覆蓋", "99.9", "%"], ["智能算力", "1,680", "PFLOPS"]]
+    extras: [["5G 频谱", "140", "MHz"], ["边缘节点", "26", "个"], ["网络可用率", "99.99", "%"]],
+    pair: [["人口覆盖", "99.9", "%"], ["智能算力", "1,680", "PFLOPS"]]
   },
   cloud: {
-    hero: ["智算資源池", "4,860P", "+21.6%"],
-    chartLabel: "數據中心核心能力",
-    bars: [["將軍澳 DC", "1,680P", "100%"], ["葵涌 DC", "1,320P", "79%"], ["火炭 DC", "1,080P", "64%"], ["邊緣節點", "780P", "46%"]],
-    extras: [["機架規模", "8,600", "架"], ["綠電使用", "72", "%"], ["PUE", "1.28", ""]],
-    pair: [["雲節點", "42", "個"], ["儲存容量", "26.8", "EB"]]
+    hero: ["智算资源池", "4,860P", "+21.6%"],
+    chartLabel: "数据中心核心能力",
+    bars: [["将军澳 DC", "1,680P", "100%"], ["葵涌 DC", "1,320P", "79%"], ["火炭 DC", "1,080P", "64%"], ["边缘节点", "780P", "46%"]],
+    extras: [["机架规模", "8,600", "架"], ["绿电使用", "72", "%"], ["PUE", "1.28", ""]],
+    pair: [["云节点", "42", "个"], ["存储容量", "26.8", "EB"]]
   },
   research: {
-    hero: ["年度研發投入", "18.6億", "+15.2%"],
-    chartLabel: "重點研發方向投入",
-    bars: [["AI 與大模型", "6.8億", "100%"], ["6G 預研", "4.9億", "72%"], ["雲網融合", "4.2億", "62%"], ["安全技術", "2.7億", "40%"]],
-    extras: [["研發人員", "1,260", "人"], ["有效專利", "486", "項"], ["聯合實驗室", "12", "個"]],
-    pair: [["成果轉化", "68", "%"], ["年度新增專利", "92", "項"]]
+    hero: ["年度研发投入", "18.6亿", "+15.2%"],
+    chartLabel: "重点研发方向投入",
+    bars: [["AI 与大模型", "6.8亿", "100%"], ["6G 预研", "4.9亿", "72%"], ["云网融合", "4.2亿", "62%"], ["安全技术", "2.7亿", "40%"]],
+    extras: [["研发人员", "1,260", "人"], ["有效专利", "486", "项"], ["联合实验室", "12", "个"]],
+    pair: [["成果转化", "68", "%"], ["年度新增专利", "92", "项"]]
   }
 };
 
@@ -110,14 +112,86 @@ function rebuildNewsRail() {
     const clone = newsSourceSet.cloneNode(true);
     clone.dataset.newsClone = "";
     clone.setAttribute("aria-hidden", "true");
+    clone.querySelectorAll("a").forEach((link) => {
+      link.tabIndex = -1;
+    });
     newsTrack.append(clone);
   }
 
   newsTrack.style.setProperty("--news-loop-width", `${newsSetWidth}px`);
-  newsTrack.style.setProperty("--news-duration", `${newsSetWidth / 25}s`);
+  newsTrack.style.setProperty("--news-duration", `${newsSetWidth / 42}s`);
 }
 
 rebuildNewsRail();
+
+function formatNewsDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value || "";
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "numeric",
+    day: "numeric",
+    timeZone: "Asia/Hong_Kong"
+  }).format(date);
+}
+
+function renderNewsRail(items) {
+  if (!newsSourceSet || !Array.isArray(items)) return;
+  const usableItems = items.filter((item) => item?.title && item?.source_url).slice(0, 8);
+  if (!usableItems.length) return;
+
+  const fragment = document.createDocumentFragment();
+  usableItems.forEach((item) => {
+    const link = document.createElement("a");
+    link.className = "news-item";
+    link.href = item.source_url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.setAttribute("aria-label", `${item.title}，打开新闻来源`);
+
+    const meta = document.createElement("div");
+    const time = document.createElement("time");
+    time.dateTime = item.published_at || "";
+    time.textContent = formatNewsDate(item.published_at);
+    const category = document.createElement("span");
+    category.textContent = item.category || "行业动态";
+    meta.append(time, category);
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+    const summary = document.createElement("p");
+    summary.textContent = item.summary || "";
+    link.append(meta, title, summary);
+    fragment.append(link);
+  });
+
+  newsSourceSet.replaceChildren(fragment);
+  rebuildNewsRail();
+}
+
+fetch("/api/strategic-briefs", { cache: "no-store" })
+  .then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
+  .then((payload) => renderNewsRail(payload.items))
+  .catch(() => {});
+
+function pauseNewsRail() {
+  window.clearTimeout(newsResumeTimer);
+  if (newsTrack) newsTrack.style.animationPlayState = "paused";
+}
+
+function resumeNewsRail(delay = 0) {
+  window.clearTimeout(newsResumeTimer);
+  newsResumeTimer = window.setTimeout(() => {
+    if (newsTrack) newsTrack.style.animationPlayState = "running";
+  }, delay);
+}
+
+newsRail?.addEventListener("pointerenter", pauseNewsRail);
+newsRail?.addEventListener("pointerleave", () => resumeNewsRail(300));
+newsRail?.addEventListener("focusin", pauseNewsRail);
+newsRail?.addEventListener("focusout", () => resumeNewsRail(300));
 
 window.addEventListener("resize", () => {
   cancelAnimationFrame(newsResizeFrame);

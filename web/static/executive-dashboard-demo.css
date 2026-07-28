@@ -113,6 +113,9 @@ h1 {
   animation: news-marquee var(--news-duration, 64s) linear infinite;
 }
 
+.news-rail:hover .news-track,
+.news-rail:focus-within .news-track { animation-play-state: paused; }
+
 .news-set {
   display: flex;
   height: 100%;
@@ -126,7 +129,11 @@ h1 {
   padding: 5px 24px;
   border-right: 1px solid rgba(91, 190, 234, .2);
   overflow: hidden;
+  color: inherit;
   background: linear-gradient(90deg, rgba(5, 28, 47, .18), rgba(9, 43, 66, .26), rgba(5, 28, 47, .08));
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s ease, box-shadow .2s ease;
 }
 
 .news-item::before {
@@ -171,6 +178,17 @@ h1 {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.news-item:hover,
+.news-item:focus-visible {
+  outline: none;
+  background: linear-gradient(90deg, rgba(10, 52, 80, .54), rgba(9, 61, 90, .42), rgba(6, 36, 58, .28));
+  box-shadow: inset 0 0 18px rgba(53, 217, 255, .08);
+}
+
+.news-item:focus-visible { box-shadow: inset 0 0 0 1px rgba(82, 211, 249, .65), inset 0 0 18px rgba(53, 217, 255, .1); }
+.news-item:hover h3,
+.news-item:focus-visible h3 { color: #fff; }
 
 .dashboard-grid {
   min-height: 0;
