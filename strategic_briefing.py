@@ -288,8 +288,25 @@ def _extract_urls(value: str) -> list[str]:
 
 
 def _split_keywords(value: str) -> list[str]:
+    parts: list[str] = []
+    buffer: list[str] = []
+    bracket_depth = 0
+    opening = {"(": ")", "（": "）", "[": "]", "【": "】"}
+    closing = set(opening.values())
+    for character in str(value or ""):
+        if character in opening:
+            bracket_depth += 1
+        elif character in closing and bracket_depth:
+            bracket_depth -= 1
+        if character in "\n,，、;；/|" and bracket_depth == 0:
+            parts.append("".join(buffer))
+            buffer = []
+            continue
+        buffer.append(character)
+    parts.append("".join(buffer))
+
     terms: list[str] = []
-    for part in re.split(r"[\n,，、;；/|]+", str(value or "")):
+    for part in parts:
         term = _clean_text(part, 80).strip(" -:：")
         if not term or term.lower() in {"keyword", "keywords", "关键词", "序号"}:
             continue

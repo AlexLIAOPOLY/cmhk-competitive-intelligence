@@ -7,6 +7,14 @@ import strategic_briefing as briefing
 
 
 class StrategicBriefingTests(unittest.TestCase):
+    def test_split_keywords_preserves_commas_inside_parentheses(self):
+        self.assertEqual(
+            briefing._split_keywords(
+                "港元利率（HIBOR 1M/3M），人民币、美元汇率"
+            ),
+            ["港元利率（HIBOR 1M/3M）", "人民币", "美元汇率"],
+        )
+
     def test_scan_downstream_error_cannot_be_recorded_as_completed(self):
         with self.assertRaisesRegex(RuntimeError, "飞书审核表"):
             briefing._require_scan_downstream_success(
