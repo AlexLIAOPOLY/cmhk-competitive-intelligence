@@ -2066,20 +2066,57 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("已经完成", duplicate_2)
         self.assertIn("达到本轮调用上限（3 次）", limited)
 
-    def test_large_retrieval_tools_have_bounded_call_limits(self) -> None:
-        token = agent.TOOL_RUN_STATE.set({
-            "counts": {"web_search": 3, "read_local_reference": 2}
-        })
+    def test_web_search_keeps_its_bounded_call_limit(self) -> None:
+        token = agent.TOOL_RUN_STATE.set({"counts": {"web_search": 3}})
         try:
             web_limited = agent.web_search.invoke({"query": "云厂商现金流"})
-            reference_limited = agent.read_local_reference.invoke({
-                "source": "agent_knowledge/cloud_vendor_database/README.md"
-            })
         finally:
             agent.TOOL_RUN_STATE.reset(token)
 
         self.assertIn("web_search 已达到本轮调用上限（3 次）", web_limited)
-        self.assertIn("read_local_reference 已达到本轮调用上限（2 次）", reference_limited)
+
+    def test_local_reference_allows_multiple_distinct_sources(self) -> None:
+        sources = [
+            "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_summary.md",
+            "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.csv",
+            "agent_knowledge/cmhk_macro_policy_2026-06-19/online_verification_2026-06-19.md",
+            "agent_knowledge/cmhk_macro_policy_2026-06-19/manifest.json",
+        ]
+        token = agent.TOOL_RUN_STATE.set({"counts": {}})
+        try:
+            with mock.patch(
+                "agent._read_local_reference_text",
+                side_effect=lambda source: f"[本地引用: {source}]",
+            ) as read_reference:
+                results = [
+                    agent.read_local_reference.invoke({"source": source})
+                    for source in sources
+                ]
+        finally:
+            agent.TOOL_RUN_STATE.reset(token)
+
+        self.assertEqual(read_reference.call_count, 4)
+        self.assertTrue(all("达到本轮调用上限" not in result for result in results))
+        self.assertTrue(all("工具调用已停止" not in result for result in results))
+
+    def test_local_reference_reuses_an_exact_duplicate_without_rereading(self) -> None:
+        source = "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_summary.md"
+        token = agent.TOOL_RUN_STATE.set({"counts": {}})
+        try:
+            with mock.patch(
+                "agent._read_local_reference_text",
+                return_value=f"[本地引用: {source}]",
+            ) as read_reference:
+                first = agent.read_local_reference.invoke({"source": source})
+                duplicate = agent.read_local_reference.invoke({
+                    "source": f"/references/{source}",
+                })
+        finally:
+            agent.TOOL_RUN_STATE.reset(token)
+
+        self.assertIn("[本地引用:", first)
+        self.assertIn("本轮已经读取过", duplicate)
+        self.assertEqual(read_reference.call_count, 1)
 
     def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
         pseudo_message = agent.AIMessage(

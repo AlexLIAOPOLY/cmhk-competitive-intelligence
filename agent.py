@@ -748,6 +748,24 @@ def _register_heavy_search_invocation(tool_name: str) -> str | None:
     return _register_tool_invocation(tool_name, 3)
 
 
+def _register_local_reference_source(source: str) -> str | None:
+    """Allow distinct source reads while making exact repeats cheap."""
+    state = TOOL_RUN_STATE.get()
+    if state is None:
+        return None
+    clean = str(source or "").strip().removeprefix("/references/")
+    sources = state.setdefault("local_reference_sources", [])
+    if clean in sources:
+        return (
+            f"本轮已经读取过 {clean}，请直接使用先前返回的原文；"
+            "如需补充证据，请读取其他命中来源。"
+        )
+    sources.append(clean)
+    counts = state.setdefault("counts", {})
+    counts["read_local_reference"] = len(sources)
+    return None
+
+
 class MarkdownTableLimiter:
     """Limit streamed Markdown tables before they reach the browser."""
 
@@ -1459,9 +1477,8 @@ def _read_local_reference_text(source: str) -> str:
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     if not text:
         return f"本地引用读取失败：{clean} 内容为空。"
-    # Full 60k-character files were retained in the ReAct transcript and then
-    # resent on every later model turn. Two focused reads are enough for source
-    # verification; larger follow-ups should narrow the requested source.
+    # Keep each file bounded because tool results remain in the ReAct
+    # transcript, while allowing the Agent to inspect multiple distinct files.
     limit = 18000 if clean.startswith("agent_knowledge/") else 12000
     return f"[本地引用: {clean}]\n{text[:limit]}"
 
@@ -1472,10 +1489,11 @@ def read_local_reference(source: str) -> str:
     当 `search_local_reports` 返回 `weekly_report.md`、`final_audit.md`、`coverage_report.tsv`、`run_log.tsv` 或 `row_*.json`
     等本地来源，而你需要查看更完整上下文、核对本地口径或追溯原始抓取结果时，优先使用此工具。
     参数可以是文件名，也可以是 `/references/...` 链接。
+    同一轮可以读取多个不同来源；已经读取过的同一来源会直接复用，避免重复注入原文。
     """
-    limit_message = _register_tool_invocation("read_local_reference", 2)
-    if limit_message:
-        return limit_message
+    duplicate_message = _register_local_reference_source(source)
+    if duplicate_message:
+        return duplicate_message
     return _read_local_reference_text(source)
 
 
