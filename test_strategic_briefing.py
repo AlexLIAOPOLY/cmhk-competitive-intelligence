@@ -210,7 +210,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_title"], single_result["title"])
         self.assertEqual(ai_call.call_count, 2)
 
-    def test_editor_defers_incomplete_ai_batch_instead_of_returning_empty_success(self):
+    def test_editor_defers_fully_failed_ai_batch_without_blocking(self):
         item = {
             "module": "竞争对手",
             "category": "竞对动态",
@@ -234,9 +234,9 @@ class StrategicBriefingTests(unittest.TestCase):
                 side_effect=RuntimeError("rate limited"),
             ),
         ):
-            with self.assertRaisesRegex(RuntimeError, "本轮禁止写表"):
-                briefing.polish_candidates_before_review([item])
+            result = briefing.polish_candidates_before_review([item])
 
+        self.assertEqual(result, [])
         audit = next(
             payload
             for path, payload in writes
@@ -245,7 +245,9 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(audit["input_count"], 1)
         self.assertEqual(audit["resolved_count"], 0)
         self.assertEqual(audit["deferred_count"], 1)
-        self.assertTrue(audit["write_blocked"])
+        self.assertTrue(audit["continued_with_partial_results"])
+        self.assertFalse(audit["write_blocked"])
+        self.assertFalse(audit["policy"]["batch_blocking"])
 
     def test_editor_isolates_one_failed_item_and_continues_resolved_items(self):
         items = []
