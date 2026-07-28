@@ -478,10 +478,28 @@ h1 {
   left: 15px;
   bottom: 14px;
   display: flex;
-  gap: 38px;
+  gap: 16px;
 }
 
-.metric-pair > div { min-width: 94px; }
+.metric-pair > div {
+  --mini-rgb: 53, 217, 255;
+  position: relative;
+  min-width: 112px;
+  padding: 8px 12px 9px;
+  background: radial-gradient(circle at 18% 55%, rgba(var(--mini-rgb), .09), transparent 65%);
+}
+.metric-pair > div:nth-child(2) { --mini-rgb: 86, 227, 178; }
+.metric-pair > div::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--mini-rgb), .72), transparent) left top / 20px 1px no-repeat,
+    linear-gradient(180deg, rgba(var(--mini-rgb), .72), transparent) left top / 1px 14px no-repeat,
+    linear-gradient(270deg, rgba(var(--mini-rgb), .4), transparent) right bottom / 20px 1px no-repeat,
+    linear-gradient(0deg, rgba(var(--mini-rgb), .4), transparent) right bottom / 1px 14px no-repeat;
+}
 .metric-pair span { display: block; color: #91b5c8; font-size: 11px; }
 .metric-pair strong { display: inline-block; margin-top: 4px; font-size: 25px; font-weight: 570; }
 .metric-pair small { margin-left: 3px; color: #9ab9c9; font-size: 10px; }
@@ -688,6 +706,7 @@ h1 {
 .profit-kpis > div {
   --kpi-rgb: 53, 217, 255;
   min-width: 128px;
+  position: relative;
   padding: 8px 10px;
   border: 1px solid rgba(119, 184, 211, .14);
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
@@ -696,6 +715,17 @@ h1 {
     rgba(3, 15, 28, .58);
   box-shadow: inset 0 0 14px rgba(var(--kpi-rgb), .035);
   backdrop-filter: blur(5px);
+}
+.profit-kpis > div::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 4px;
+  height: 4px;
+  transform: rotate(45deg);
+  background: rgba(var(--kpi-rgb), .58);
+  box-shadow: 0 0 7px rgba(var(--kpi-rgb), .4);
 }
 .profit-kpis > div:nth-child(2) { --kpi-rgb: 86, 227, 178; }
 .profit-kpis > div:nth-child(3) { --kpi-rgb: 241, 185, 95; }
