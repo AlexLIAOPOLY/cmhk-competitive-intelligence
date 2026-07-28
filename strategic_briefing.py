@@ -36,6 +36,7 @@ RUNS_DIR = DATA_DIR / "runs"
 STATE_PATH = DATA_DIR / "state.json"
 CANDIDATES_PATH = DATA_DIR / "candidates.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
+NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
@@ -3644,6 +3645,49 @@ def _public_summary(item: dict[str, Any]) -> str:
     )
 
 
+def _public_candidate_category(value: Any) -> str:
+    text = _clean_text(value, 120)
+    if "竞争对手" in text:
+        return "竞对动态"
+    if any(token in text for token in ("基础设施", "网络", "技术")):
+        return "网络与技术"
+    if any(token in text for token in ("宏观", "国际", "地缘")):
+        return "宏观与国际"
+    if any(token in text for token in ("政策", "法规", "监管")):
+        return "政策监管"
+    if any(token in text for token in ("市场", "产品")):
+        return "市场产品"
+    if "香港" in text:
+        return "香港动态"
+    return text or "其他候选"
+
+
+def _public_candidate_items() -> list[dict[str, Any]]:
+    payload = _read_json(NEWS_DISCOVERY_FULL_PATH, {"items": []})
+    raw_items = payload.get("items") if isinstance(payload, dict) else payload
+    items: list[dict[str, Any]] = []
+    for item in raw_items or []:
+        if not isinstance(item, dict):
+            continue
+        published_at = _clean_text(
+            item.get("source_date") or item.get("published_at"),
+            40,
+        )
+        if not re.match(r"^\d{4}-\d{2}-\d{2}", published_at):
+            continue
+        items.append(
+            {
+                "title": _clean_text(item.get("title"), 180),
+                "category": _public_candidate_category(
+                    item.get("module") or item.get("category")
+                ),
+                "published_at": published_at,
+            }
+        )
+    items.sort(key=lambda item: str(item.get("published_at") or ""), reverse=True)
+    return items[:200]
+
+
 def public_snapshot() -> dict[str, Any]:
     now = datetime.now(HKT)
     state = _load_state()
@@ -3666,6 +3710,7 @@ def public_snapshot() -> dict[str, Any]:
     )
     return {
         "items": items,
+        "candidate_items": _public_candidate_items(),
         "monitor": {
             "enabled": MONITOR_ENABLED,
             "status": "degraded" if last_error else "active",

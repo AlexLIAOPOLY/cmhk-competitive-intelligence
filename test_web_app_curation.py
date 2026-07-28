@@ -17,6 +17,14 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_homepage_uses_candidate_activity_when_no_confirmed_signals_exist(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn("showCandidateFallback", app)
+        self.assertIn('showCandidateFallback ? "每日候选趋势" : "每日信号趋势"', app)
+        self.assertIn('showCandidateFallback ? "采集候选构成" : "确认信号构成"', app)
+        self.assertIn("renderStrategicOverview(items, payload.candidate_items)", app)
+
     def test_report_file_pattern_accepts_new_and_legacy_as_of_names(self) -> None:
         self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报（截至7月22日）.docx"))
         self.assertIsNotNone(web_app.REPORT_FILE_RE.fullmatch("7月31日周报（草稿，截至7月22日）.docx"))

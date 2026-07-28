@@ -1106,25 +1106,36 @@ function formatShortDate(dateKey) {
   return `${Number(parts[1])}/${Number(parts[2])}`;
 }
 
-function renderStrategicOverview(rawItems) {
+function renderStrategicOverview(rawItems, rawCandidateItems = []) {
   const dateKeys = recentDateKeys(14);
   const allowedDates = new Set(dateKeys);
-  const items = (Array.isArray(rawItems) ? rawItems : []).filter((item) => {
+  const filterRecentItems = (rawValues) => (Array.isArray(rawValues) ? rawValues : []).filter((item) => {
     const previewText = [item && item.title, item && item.summary, item && item.category]
       .filter(Boolean)
       .join(" ");
     return !/排版预览|版式预览/.test(previewText) &&
       allowedDates.has(strategicDateKey(item && item.published_at));
   });
+  const items = filterRecentItems(rawItems);
+  const candidateItems = filterRecentItems(rawCandidateItems);
+  const showCandidateFallback = items.length === 0 && candidateItems.length > 0;
+  const chartItems = showCandidateFallback ? candidateItems : items;
   const byCategory = new Map();
   const byDate = new Map(dateKeys.map((key) => [key, 0]));
   items.forEach((item) => {
     const category = String(item.category || "其他动态");
-    const dateKey = strategicDateKey(item.published_at);
     byCategory.set(category, (byCategory.get(category) || 0) + 1);
+  });
+  const chartByCategory = new Map();
+  chartItems.forEach((item) => {
+    const category = String(item.category || (showCandidateFallback ? "其他候选" : "其他动态"));
+    const dateKey = strategicDateKey(item.published_at);
+    chartByCategory.set(category, (chartByCategory.get(category) || 0) + 1);
     byDate.set(dateKey, (byDate.get(dateKey) || 0) + 1);
   });
   const categories = Array.from(byCategory.entries())
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh-CN"));
+  const chartCategories = Array.from(chartByCategory.entries())
     .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], "zh-CN"));
   const competitorCount = byCategory.get("竞对动态") || 0;
   const latestDate = items.reduce((latest, item) => {
@@ -1139,15 +1150,19 @@ function renderStrategicOverview(rawItems) {
   setText("competitorSignalCount", String(competitorCount));
   setText("activeTopicCount", String(categories.length));
   setText("latestSignalDate", latestDate ? formatShortDate(latestDate) : "--");
-  setText("signalTrendTotal", `${items.length} 条`);
+  setText("signalTrendTitle", showCandidateFallback ? "每日候选趋势" : "每日信号趋势");
+  setText("signalTrendSubtitle", showCandidateFallback ? "采集候选 · 非确认信号" : "按主题堆叠");
+  setText("signalTrendTotal", showCandidateFallback ? `${chartItems.length} 条候选` : `${items.length} 条`);
+  setText("signalTopicTitle", showCandidateFallback ? "候选主题" : "主题热度");
+  setText("signalTopicSubtitle", showCandidateFallback ? "采集候选构成" : "确认信号构成");
 
   const topicList = document.getElementById("signalTopicList");
   if (topicList) {
-    const peak = Math.max(1, ...categories.map((entry) => entry[1]));
-    topicList.innerHTML = categories.length
-      ? categories.slice(0, 5).map(([category, count], index) => {
+    const peak = Math.max(1, ...chartCategories.map((entry) => entry[1]));
+    topicList.innerHTML = chartCategories.length
+      ? chartCategories.slice(0, 5).map(([category, count], index) => {
           const color = strategicCategoryColor(category, index);
-          const share = items.length ? Math.round((count / items.length) * 100) : 0;
+          const share = chartItems.length ? Math.round((count / chartItems.length) * 100) : 0;
           return `
             <div class="signal-topic-row">
               <div><i style="background:${color}"></i><span>${escapeHtml(category)}</span><b>${count}</b></div>
@@ -1160,14 +1175,14 @@ function renderStrategicOverview(rawItems) {
       : '<div class="signal-topic-empty">近14日暂无已确认信号</div>';
   }
 
-  const categoryOrder = categories.map((entry) => entry[0]);
+  const categoryOrder = chartCategories.map((entry) => entry[0]);
   initOrUpdateChart("signalTrendCanvas", {
     type: "bar",
     data: {
       labels: dateKeys.map(formatShortDate),
       datasets: categoryOrder.map((category, index) => ({
         label: category,
-        data: dateKeys.map((dateKey) => items.filter(
+        data: dateKeys.map((dateKey) => chartItems.filter(
           (item) => strategicDateKey(item.published_at) === dateKey &&
             String(item.category || "其他动态") === category
         ).length),
@@ -1191,7 +1206,9 @@ function renderStrategicOverview(rawItems) {
           cornerRadius: 6,
           filter: (item) => Number(item.raw || 0) > 0,
           callbacks: {
-            title: (entries) => entries.length ? `${entries[0].label} 已确认信号` : "",
+            title: (entries) => entries.length
+              ? `${entries[0].label} ${showCandidateFallback ? "采集候选" : "已确认信号"}`
+              : "",
             label: (item) => `${item.dataset.label}：${item.formattedValue} 条`,
           },
         },
@@ -7383,7 +7400,7 @@ document.addEventListener("keydown", (event) => {
       return !/排版预览|版式预览/.test(previewText);
     });
     const monitor = payload.monitor || {};
-    renderStrategicOverview(items);
+    renderStrategicOverview(items, payload.candidate_items);
     const degraded = monitor.status === "degraded";
     syncStatus.classList.toggle("is-degraded", degraded);
     syncStatus.title = monitor.last_error || "";

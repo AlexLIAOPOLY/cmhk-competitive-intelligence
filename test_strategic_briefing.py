@@ -7,6 +7,43 @@ import strategic_briefing as briefing
 
 
 class StrategicBriefingTests(unittest.TestCase):
+    def test_public_snapshot_exposes_dated_candidate_activity_for_empty_state_charts(self):
+        with (
+            mock.patch.object(briefing, "_load_state", return_value={}),
+            mock.patch.object(briefing, "_load_published", return_value=[]),
+            mock.patch.object(
+                briefing,
+                "_read_json",
+                return_value={
+                    "items": [
+                        {
+                            "title": "运营商发布网络建设计划",
+                            "module": "基础设施/网络/技术类",
+                            "source_date": "2026-07-28T08:00:00+08:00",
+                        },
+                        {
+                            "title": "没有明确发布日期",
+                            "module": "竞争对手",
+                            "source_date": "",
+                        },
+                    ]
+                },
+            ),
+        ):
+            snapshot = briefing.public_snapshot()
+
+        self.assertEqual(snapshot["items"], [])
+        self.assertEqual(
+            snapshot["candidate_items"],
+            [
+                {
+                    "title": "运营商发布网络建设计划",
+                    "category": "网络与技术",
+                    "published_at": "2026-07-28T08:00:00+08:00",
+                }
+            ],
+        )
+
     def test_comprehensive_query_plans_cover_every_configured_keyword(self):
         spec = {
             "modules": [
