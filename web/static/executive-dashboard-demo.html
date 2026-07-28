@@ -31,31 +31,45 @@
         <header class="panel-heading">
           <span>01</span>
           <h2>資源與基礎設施</h2>
+          <nav class="network-tabs" aria-label="資源與基礎設施專題" role="tablist">
+            <button type="button" role="tab" aria-selected="false" data-network-view="fixed">
+              <i aria-hidden="true">⌁</i><b>固定網絡<br>基礎設施</b>
+            </button>
+            <button class="is-active" type="button" role="tab" aria-selected="true" data-network-view="mobile">
+              <i aria-hidden="true">⌁</i><b>移動網絡<br>基礎設施</b>
+            </button>
+            <button type="button" role="tab" aria-selected="false" data-network-view="cloud">
+              <i aria-hidden="true">⬡</i><b>數據中心與<br>雲基礎設施</b>
+            </button>
+            <button type="button" role="tab" aria-selected="false" data-network-view="research">
+              <i aria-hidden="true">✣</i><b>研發能力</b>
+            </button>
+          </nav>
         </header>
 
-        <div class="network-content">
+        <div class="network-content" id="network-detail" role="tabpanel" aria-live="polite">
           <div class="hero-metric">
-            <span>5G 基站</span>
+            <span data-network-label="hero">5G 基站</span>
             <strong data-key="siteTotal">3,700</strong>
             <em data-key="siteGrowth">+8.4%</em>
           </div>
 
-          <div class="network-bars" aria-label="各營運商5G基站比較">
-            <div><span>CMHK</span><i style="--value: 90%"><b data-key="cmhk5g">1,620</b></i></div>
-            <div><span>HKT</span><i style="--value: 100%"><b data-key="hkt5g">1,810</b></i></div>
-            <div><span>3香港</span><i style="--value: 77%"><b data-key="three5g">1,390</b></i></div>
-            <div><span>SmarTone</span><i style="--value: 70%"><b data-key="smt5g">1,260</b></i></div>
+          <div class="network-bars" aria-label="各營運商5G基站比較" data-network-label="chart">
+            <div><span data-network-bar-label>CMHK</span><i style="--value: 90%"><b data-key="cmhk5g">1,620</b></i></div>
+            <div><span data-network-bar-label>HKT</span><i style="--value: 100%"><b data-key="hkt5g">1,810</b></i></div>
+            <div><span data-network-bar-label>3香港</span><i style="--value: 77%"><b data-key="three5g">1,390</b></i></div>
+            <div><span data-network-bar-label>SmarTone</span><i style="--value: 70%"><b data-key="smt5g">1,260</b></i></div>
           </div>
 
           <div class="supplement-metrics network-extra">
-            <div><span>5G 頻譜</span><strong>140<small>MHz</small></strong></div>
-            <div><span>邊緣節點</span><strong>26<small>個</small></strong></div>
-            <div><span>網絡可用率</span><strong>99.99<small>%</small></strong></div>
+            <div><span data-network-extra-label>5G 頻譜</span><strong><i data-network-extra-value>140</i><small data-network-extra-unit>MHz</small></strong></div>
+            <div><span data-network-extra-label>邊緣節點</span><strong><i data-network-extra-value>26</i><small data-network-extra-unit>個</small></strong></div>
+            <div><span data-network-extra-label>網絡可用率</span><strong><i data-network-extra-value>99.99</i><small data-network-extra-unit>%</small></strong></div>
           </div>
 
           <div class="metric-pair">
-            <div><span>人口覆蓋</span><strong>99.9<small>%</small></strong></div>
-            <div><span>智能算力</span><strong data-key="cmhkCompute">1,680</strong><small>PFLOPS</small></div>
+            <div><span data-network-pair-label>人口覆蓋</span><strong data-network-pair-value>99.9</strong><small data-network-pair-unit>%</small></div>
+            <div><span data-network-pair-label>智能算力</span><strong data-network-pair-value>1,680</strong><small data-network-pair-unit>PFLOPS</small></div>
           </div>
         </div>
       </article>
