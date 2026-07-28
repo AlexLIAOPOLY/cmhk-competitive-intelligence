@@ -23,6 +23,17 @@ class ReportFileNameTests(unittest.TestCase):
 
 
 class ChatThreadPersistenceTests(unittest.TestCase):
+    def test_chat_thread_requests_bypass_stale_browser_cache(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn('fetch("/api/chat-threads", { cache: "no-store" })', app)
+        self.assertIn(
+            'fetch(`/api/chat-threads?id=${encodeURIComponent(threadId)}`, { cache: "no-store" })',
+            app,
+        )
+        self.assertIn('if (response.status === 404)', app)
+        self.assertIn('await loadChatThreads();', app)
+
     def test_assistant_message_preserves_exactly_three_generated_suggestions(self) -> None:
         clean = web_app._clean_chat_message({
             "role": "assistant",

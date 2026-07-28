@@ -4862,7 +4862,7 @@ function renderChatThreadList() {
 async function loadChatThreads() {
   if (!els.chatThreadList) return;
   try {
-    const response = await fetch("/api/chat-threads");
+    const response = await fetch("/api/chat-threads", { cache: "no-store" });
     const payload = await response.json();
     if (!payload.ok) throw new Error(payload.error || "历史对话加载失败");
     state.chatThreads = Array.isArray(payload.threads) ? payload.threads : [];
@@ -4917,9 +4917,15 @@ function startNewChatThread() {
 async function openChatThread(threadId) {
   if (!threadId) return;
   try {
-    const response = await fetch(`/api/chat-threads?id=${encodeURIComponent(threadId)}`);
+    const response = await fetch(`/api/chat-threads?id=${encodeURIComponent(threadId)}`, { cache: "no-store" });
     const payload = await response.json();
-    if (!payload.ok || !payload.thread) throw new Error(payload.error || "对话不存在");
+    if (!payload.ok || !payload.thread) {
+      if (response.status === 404) {
+        await loadChatThreads();
+        throw new Error("历史列表已刷新，请重新选择对话");
+      }
+      throw new Error(payload.error || "对话不存在");
+    }
     const thread = payload.thread;
     state.activeThreadId = thread.id;
     state.chatHistory = Array.isArray(thread.messages) ? thread.messages : [];

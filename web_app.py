@@ -711,6 +711,7 @@ def json_response(handler: BaseHTTPRequestHandler, payload: dict, status: int = 
     handler.send_response(status)
     handler.send_header("Content-Type", "application/json; charset=utf-8")
     handler.send_header("Content-Length", str(len(body)))
+    handler.send_header("Cache-Control", "no-store")
     handler.end_headers()
     handler.wfile.write(body)
 
