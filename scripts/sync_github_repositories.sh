@@ -213,17 +213,43 @@ fi
 
 git -C "$TMP_DIR" add -f -A
 TREE="$(git -C "$TMP_DIR" write-tree)"
-NEW_COMMIT="$(printf 'Sync complete local project snapshot\n' | git -C "$TMP_DIR" commit-tree "$TREE" -p "$OLD_MAIN")"
+NEW_COMMIT=""
+FINAL_BACKUP_BRANCH="$BACKUP_BRANCH"
+for attempt in 1 2 3 4 5; do
+  git_net -C "$TMP_DIR" fetch --depth=1 --filter=blob:none origin "$PRIVATE_MAIN"
+  CURRENT_MAIN="$(git -C "$TMP_DIR" rev-parse FETCH_HEAD)"
+  if [[ "$CURRENT_MAIN" != "$OLD_MAIN" ]]; then
+    FINAL_BACKUP_BRANCH="backup/main-before-sync-$STAMP-retry-$attempt"
+    git_net -C "$TMP_DIR" push \
+      origin "$CURRENT_MAIN:refs/heads/$FINAL_BACKUP_BRANCH"
+  fi
+  CANDIDATE_COMMIT="$(
+    printf 'Sync complete local project snapshot\n' \
+      | git -C "$TMP_DIR" commit-tree "$TREE" -p "$CURRENT_MAIN"
+  )"
+  REMOTE_MAIN="$(
+    git_net ls-remote "$PRIVATE_URL" "refs/heads/$PRIVATE_MAIN" \
+      | awk '{print $1}'
+  )"
+  if [[ "$REMOTE_MAIN" != "$CURRENT_MAIN" ]]; then
+    echo "Private main changed before push; retrying with its latest parent ($attempt/5)." >&2
+    continue
+  fi
+  if git_net -C "$TMP_DIR" push \
+    origin "$CANDIDATE_COMMIT:refs/heads/$PRIVATE_MAIN"
+  then
+    NEW_COMMIT="$CANDIDATE_COMMIT"
+    break
+  fi
+  echo "Private main changed during push; retrying without rebuilding the snapshot ($attempt/5)." >&2
+done
 
-REMOTE_MAIN="$(git_net ls-remote "$PRIVATE_URL" "refs/heads/$PRIVATE_MAIN" | awk '{print $1}')"
-if [[ "$REMOTE_MAIN" != "$OLD_MAIN" ]]; then
-  echo "Private main changed during synchronization; refusing to overwrite it." >&2
+if [[ -z "$NEW_COMMIT" ]]; then
+  echo "Private main kept changing; refusing to overwrite it after 5 safe retries." >&2
   exit 1
 fi
-
-git_net -C "$TMP_DIR" push origin "$NEW_COMMIT:refs/heads/$PRIVATE_MAIN"
 
 echo "Synchronization complete."
 echo "Public/private code branch: $BRANCH"
 echo "Private main snapshot: $NEW_COMMIT"
-echo "Rollback branch: $BACKUP_BRANCH"
+echo "Rollback branch: $FINAL_BACKUP_BRANCH"
