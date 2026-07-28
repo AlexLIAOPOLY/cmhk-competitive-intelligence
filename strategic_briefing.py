@@ -10,6 +10,7 @@ import subprocess
 import threading
 import time
 import uuid
+from collections import Counter
 from datetime import datetime, time as clock_time, timedelta
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -38,7 +39,7 @@ PUBLISHED_PATH = DATA_DIR / "published.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 13
+AI_EDITOR_VERSION = 14
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
@@ -65,6 +66,71 @@ _CATEGORY_CLASSIFICATION_GUIDANCE = (
     "不要因为地域是‘国际/行业’就把分类写成‘行业动态’；地域与分类是两个独立维度。"
     "rule_category是规则层初判，除非正文证据明确表明其不适用，否则应优先沿用；"
     "如需改写，必须依据事件实质选择更准确的业务分类。"
+)
+_DECISION_PATHS = {"竞对直通", "战略信号", "排除"}
+_STRATEGIC_SIGNAL_TYPES = {
+    "竞对经营动作",
+    "监管政策",
+    "市场需求",
+    "关键技术",
+    "基础设施",
+    "供应链",
+    "资本与并购",
+    "网络安全",
+    "宏观与地缘",
+    "无",
+}
+_BUSINESS_IMPACT_TYPES = {
+    "收入与需求",
+    "成本与效率",
+    "客户与渠道",
+    "产品与定价",
+    "网络与运营",
+    "合规与牌照",
+    "资本配置",
+    "供应韧性",
+    "竞争格局",
+    "无",
+}
+_EXCLUSION_CODES = {
+    "同名或主体误判",
+    "体育娱乐或生活噪音",
+    "关键词偶然出现",
+    "非独立新闻或广告资料页",
+    "缺少具体事件",
+    "无电信战略影响",
+    "重复或过期",
+    "其他明确噪音",
+    "无",
+}
+_STRATEGIC_INCLUSION_GUIDANCE = (
+    "必须按以下双通道标准判断，禁止使用‘有战略价值/无战略价值’作为没有事实依据的自由裁量。"
+    "第一通道是‘竞对直通’：标题或摘要确认正式监控运营商是事件主体、事件对象或被实质讨论的企业，"
+    "并且不是同名实体、媒体名、体育队名、娱乐生活内容或关键词偶然出现时，decision_path必须为"
+    "‘竞对直通’，should_include必须为true，signal_type必须为‘竞对经营动作’，category必须为"
+    "‘竞对动态’。产品资费、促销、门店、客户服务、CSR、故障、经营数据、网络技术、合作、投资并购、"
+    "管理层、监管和资本市场等大小事件全部纳入，不得再按重大程度筛选。"
+    "第二通道是‘战略信号’：新闻不是竞对事件时，只有同时满足两个条件才纳入："
+    "输入matched_keywords全部来自正式监控配置，不分来源、不分模块均有效；只要关键词与新闻事件"
+    "存在实质语义关联，并满足下述信号类型和业务影响条件，就必须纳入，不得再要求关联某家竞对，"
+    "不得因事件规模较小或来源于非竞对关键词而排除。"
+    "一是signal_type明确属于监管政策、市场需求、关键技术、基础设施、供应链、资本与并购、"
+    "网络安全、宏观与地缘之一；二是business_impact能根据标题或摘要明确落到收入与需求、"
+    "成本与效率、客户与渠道、产品与定价、网络与运营、合规与牌照、资本配置、供应韧性、"
+    "竞争格局之一。满足时decision_path必须为‘战略信号’且should_include必须为true；"
+    "不能因为没有出现被监测竞对就拒绝。"
+    "战略信号的具体例子包括：影响电信或数字业务的法律监管与牌照频谱变化；香港或目标市场的"
+    "需求、客户和宏观指标变化；5G/6G、AI、云、算力、数据中心、海缆、卫星、芯片等出现可验证的"
+    "部署、突破、投资、供给或成本变化；网络安全事件与数据合规变化；会改变市场准入、供应、成本、"
+    "投资或运营连续性的制裁、关税和地缘事件。仅泛泛评论、股市情绪、生活应用、产品评测、"
+    "没有具体变化的观点文章，不能只凭监控词纳入。"
+    "只有两条通道均不满足时才可decision_path=‘排除’且should_include=false，并从exclusion_code"
+    "中选择具体原因：同名或主体误判、体育娱乐或生活噪音、关键词偶然出现、非独立新闻或广告资料页、"
+    "缺少具体事件、无电信战略影响、重复或过期、其他明确噪音。"
+    "输出时signal_type只能取竞对经营动作、监管政策、市场需求、关键技术、基础设施、供应链、"
+    "资本与并购、网络安全、宏观与地缘、无；business_impact只能取收入与需求、成本与效率、"
+    "客户与渠道、产品与定价、网络与运营、合规与牌照、资本配置、供应韧性、竞争格局、无；"
+    "入选时exclusion_code必须为‘无’，排除时signal_type和business_impact必须为‘无’。"
 )
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
@@ -1547,8 +1613,9 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
 
 def _validated_ai_copy(
     value: dict[str, Any], *, require_review_fields: bool = False,
-    allowed_keywords: Any = None, source_item: dict[str, Any] | None = None,
-) -> dict[str, str]:
+    require_decision_fields: bool = False, allowed_keywords: Any = None,
+    source_item: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     title = _to_simplified_chinese(value.get("title") or value.get("ai_title"), 48)
     summary = _to_simplified_chinese(value.get("summary") or value.get("ai_summary"), 96)
     if not title or not re.search(r"[\u4e00-\u9fff]", title):
@@ -1595,6 +1662,19 @@ def _validated_ai_copy(
     keywords = "、".join(dict.fromkeys(approved_keywords or configured_keywords))
     inclusion_reason = _to_simplified_chinese(value.get("inclusion_reason"), 120)
     region_reason = _to_simplified_chinese(value.get("region_reason"), 120)
+    decision_path = _to_simplified_chinese(value.get("decision_path"), 20)
+    signal_type = _to_simplified_chinese(value.get("signal_type"), 20)
+    business_impact = _to_simplified_chinese(value.get("business_impact"), 20)
+    exclusion_code = _to_simplified_chinese(value.get("exclusion_code"), 30)
+    if decision_path == "竞对直通":
+        signal_type = "竞对经营动作"
+        if not business_impact or business_impact == "无":
+            business_impact = "竞争格局"
+    if should_include and not exclusion_code:
+        exclusion_code = "无"
+    if decision_path == "排除":
+        signal_type = signal_type or "无"
+        business_impact = business_impact or "无"
     if region not in {"香港本地", "国际/行业"}:
         raise RuntimeError("公司内部 AI 未返回有效地域")
     region = _enforce_region_from_source_evidence(region, source_item)
@@ -1606,6 +1686,48 @@ def _validated_ai_copy(
         raise RuntimeError("公司内部 AI 未返回有效入池理由")
     if len(region_reason) < 4:
         raise RuntimeError("公司内部 AI 未返回有效地域依据")
+    if require_decision_fields:
+        if decision_path not in _DECISION_PATHS:
+            raise RuntimeError("公司内部 AI 未返回有效判断通道")
+        if signal_type not in _STRATEGIC_SIGNAL_TYPES:
+            raise RuntimeError("公司内部 AI 未返回有效战略信号类型")
+        if business_impact not in _BUSINESS_IMPACT_TYPES:
+            raise RuntimeError("公司内部 AI 未返回有效业务影响类型")
+        if exclusion_code not in _EXCLUSION_CODES:
+            raise RuntimeError("公司内部 AI 未返回有效排除原因代码")
+        if decision_path == "竞对直通":
+            if not should_include:
+                raise RuntimeError("已确认竞对事件不得因重要性判断被排除")
+            if category != "竞对动态" or signal_type != "竞对经营动作":
+                raise RuntimeError("竞对直通必须归为竞对动态")
+            if business_impact == "无" or exclusion_code != "无":
+                raise RuntimeError("竞对直通缺少具体业务影响或错误填写排除原因")
+        elif decision_path == "战略信号":
+            if not should_include:
+                raise RuntimeError("已确认战略信号不得被排除")
+            if signal_type in {"无", "竞对经营动作"}:
+                raise RuntimeError("战略信号必须使用具体的非竞对信号类型")
+            if business_impact == "无" or exclusion_code != "无":
+                raise RuntimeError("战略信号缺少具体业务影响或错误填写排除原因")
+        else:
+            if should_include:
+                raise RuntimeError("排除通道不得标记为纳入")
+            if signal_type != "无" or business_impact != "无":
+                raise RuntimeError("排除通道不得声称存在已确认战略信号")
+            if exclusion_code == "无":
+                raise RuntimeError("排除通道必须提供具体排除原因")
+            if (
+                isinstance(source_item, dict)
+                and _is_competitor_candidate(source_item)
+                and exclusion_code
+                not in {
+                    "同名或主体误判",
+                    "体育娱乐或生活噪音",
+                    "关键词偶然出现",
+                    "其他明确噪音",
+                }
+            ):
+                raise RuntimeError("疑似竞对事件只能因主体误判或明确噪音被排除")
     if (
         not should_include
         and isinstance(source_item, dict)
@@ -1625,12 +1747,14 @@ def _validated_ai_copy(
         "keywords": keywords,
         "inclusion_reason": inclusion_reason,
         "region_reason": region_reason,
+        "decision_path": decision_path,
+        "signal_type": signal_type,
+        "business_impact": business_impact,
+        "exclusion_code": exclusion_code,
     }
 
 
 def _is_competitor_candidate(item: dict[str, Any]) -> bool:
-    if _clean_text(item.get("canonical_competitor"), 120):
-        return True
     if _clean_text(item.get("category"), 80) == "竞对动态":
         return True
     if _clean_text(item.get("module"), 80) != "竞争对手":
@@ -1712,7 +1836,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     cache = cache_payload.get("items") if isinstance(cache_payload, dict) else {}
     if not isinstance(cache, dict):
         cache = {}
-    resolved: dict[str, dict[str, str]] = {}
+    resolved: dict[str, dict[str, Any]] = {}
     pending: list[tuple[str, dict[str, Any]]] = []
     deferred_reviews: list[dict[str, str]] = []
     for item in items:
@@ -1726,27 +1850,37 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             "keywords": item.get("ai_keywords"),
             "inclusion_reason": item.get("ai_inclusion_reason"),
             "region_reason": item.get("ai_region_reason"),
+            "decision_path": item.get("ai_decision_path"),
+            "signal_type": item.get("ai_signal_type"),
+            "business_impact": item.get("ai_business_impact"),
+            "exclusion_code": item.get("ai_exclusion_code"),
         }
-        try:
-            resolved[key] = _validated_ai_copy(
-                existing,
-                require_review_fields=True,
-                allowed_keywords=item.get("keywords"),
-                source_item=item,
-            )
-            continue
-        except RuntimeError:
-            pass
-        try:
-            resolved[key] = _validated_ai_copy(
-                cache.get(key) or {},
-                require_review_fields=True,
-                allowed_keywords=item.get("keywords"),
-                source_item=item,
-            )
-            continue
-        except RuntimeError:
-            pending.append((key, item))
+        if str(item.get("ai_editor_version") or "") == str(AI_EDITOR_VERSION):
+            try:
+                resolved[key] = _validated_ai_copy(
+                    existing,
+                    require_review_fields=True,
+                    require_decision_fields=True,
+                    allowed_keywords=item.get("keywords"),
+                    source_item=item,
+                )
+                continue
+            except RuntimeError:
+                pass
+        cached = cache.get(key) or {}
+        if str(cached.get("editor_version") or "") == str(AI_EDITOR_VERSION):
+            try:
+                resolved[key] = _validated_ai_copy(
+                    cached,
+                    require_review_fields=True,
+                    require_decision_fields=True,
+                    allowed_keywords=item.get("keywords"),
+                    source_item=item,
+                )
+                continue
+            except RuntimeError:
+                pass
+        pending.append((key, item))
 
     for offset in range(0, len(pending), AI_EDITOR_BATCH_SIZE):
         batch = pending[offset : offset + AI_EDITOR_BATCH_SIZE]
@@ -1761,7 +1895,10 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "\"summary\":\"内容简介\",\"should_include\":true或false,"
                     "\"region\":\"香港本地或国际/行业\","
                     "\"category\":\"分类\",\"keywords\":\"命中关键词\","
-                    "\"inclusion_reason\":\"入池理由\",\"region_reason\":\"地域依据\"}]}。"
+                    "\"inclusion_reason\":\"入池理由\",\"region_reason\":\"地域依据\","
+                    "\"decision_path\":\"竞对直通或战略信号或排除\","
+                    "\"signal_type\":\"战略信号类型\",\"business_impact\":\"业务影响类型\","
+                    "\"exclusion_code\":\"排除原因代码\"}]}。"
                     "每条都必须返回且id原样保留。"
                     "先判断should_include：只有新闻与输入matched_keywords中的至少一个监控词存在"
                     "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
@@ -1792,13 +1929,14 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "来源媒体、媒体域名、报道语言及媒体所在地绝不能作为地域证据；"
                     "香港媒体报道中国内地或海外事件仍应判为国际/行业。"
                     f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
+                    f"{_STRATEGIC_INCLUSION_GUIDANCE}"
                     "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
-                    "inclusion_reason直接说明其战略价值，不复述规则。"
+                    "inclusion_reason必须写明‘具体事件事实→具体业务影响’，不得只写有或无战略价值。"
                     "region_reason简述事件地域证据。只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
                 ),
                 json.dumps({"items": request_items}, ensure_ascii=False),
-                max_tokens=max(1200, len(batch) * 300),
+                max_tokens=max(1200, len(batch) * 380),
             )
         except Exception as exc:
             logging.error(
@@ -1819,6 +1957,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 edited = _validated_ai_copy(
                     response_map.get(key[:16]) or {},
                     require_review_fields=True,
+                    require_decision_fields=True,
                     allowed_keywords=_item.get("keywords"),
                     source_item=_item,
                 )
@@ -1828,7 +1967,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     retry = _call_internal_ai(
                         (
                             "你是公司内部战略新闻审核员。只输出合法JSON对象，字段为title、summary、should_include、"
-                            "region、category、keywords、inclusion_reason、region_reason。"
+                            "region、category、keywords、inclusion_reason、region_reason、decision_path、"
+                            "signal_type、business_impact、exclusion_code。"
                             "title必须是简洁准确的简体中文标题。summary必须用简体中文写一至两句、16至96个中文字符"
                             "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
                             "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
@@ -1851,8 +1991,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             "常规经营、产品资费、促销、客户服务、网络技术、合作投资、"
                             "管理层及资本市场信息都不得因不够重大而淘汰。"
                             f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
+                            f"{_STRATEGIC_INCLUSION_GUIDANCE}"
                             "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
-                            "并用顿号分隔；inclusion_reason说明战略价值；"
+                            "并用顿号分隔；inclusion_reason必须写明具体事件事实到具体业务影响；"
                             "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
                         ),
                         json.dumps(source, ensure_ascii=False),
@@ -1861,6 +2002,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     edited = _validated_ai_copy(
                         retry,
                         require_review_fields=True,
+                        require_decision_fields=True,
                         allowed_keywords=_item.get("keywords"),
                         source_item=_item,
                     )
@@ -1908,6 +2050,10 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         item["ai_category"] = edited["category"]
         item["ai_keywords"] = edited["keywords"]
         item["ai_inclusion_reason"] = edited["inclusion_reason"]
+        item["ai_decision_path"] = edited["decision_path"]
+        item["ai_signal_type"] = edited["signal_type"]
+        item["ai_business_impact"] = edited["business_impact"]
+        item["ai_exclusion_code"] = edited["exclusion_code"]
         if item.get("search_origin") == "scheduled_crawl_reference":
             row_label = _clean_text(
                 item.get("scheduled_crawl_config_row"), 20
@@ -1927,12 +2073,22 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         polished_items.append(item)
     deferred_count = len(deferred_reviews)
     deferred_ratio = deferred_count / len(items)
+    decision_path_counts = Counter(
+        str(item.get("ai_decision_path") or "未分类")
+        for item in polished_items
+    )
+    signal_type_counts = Counter(
+        str(item.get("ai_signal_type") or "未分类")
+        for item in polished_items
+    )
     audit = {
         "version": 2,
         "generated_at": _now_iso(),
         "input_count": len(items),
         "resolved_count": len(resolved),
         "included_count": len(polished_items),
+        "included_decision_path_counts": dict(decision_path_counts),
+        "included_signal_type_counts": dict(signal_type_counts),
         "excluded_count": len(resolved) - len(polished_items),
         "deferred_count": deferred_count,
         "deferred_ratio": round(deferred_ratio, 6),

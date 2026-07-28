@@ -194,26 +194,31 @@ class StrategicBriefingTests(unittest.TestCase):
             "香港本地",
         )
 
-    def test_competitor_category_is_decided_by_ai_without_hard_override(self):
-        result = briefing._validated_ai_copy(
-            {
-                "title": "T-Mobile上调2026年自由现金流预期",
-                "summary": "T-Mobile上调全年自由现金流指引，并维持服务收入展望。",
-                "should_include": True,
-                "region": "国际/行业",
-                "category": "行业动态",
-                "keywords": "T-Mobile",
-                "inclusion_reason": "运营商业绩指引直接反映竞对经营表现。",
-                "region_reason": "事件主体和受影响市场均位于美国。",
-            },
-            require_review_fields=True,
-            allowed_keywords="T-Mobile",
-            source_item={
-                "module": "竞争对手",
-                "source_title": "T-Mobile raises 2026 free cash flow outlook",
-            },
-        )
-        self.assertEqual(result["category"], "行业动态")
+    def test_competitor_route_requires_competitor_category(self):
+        with self.assertRaisesRegex(RuntimeError, "竞对直通必须归为竞对动态"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "T-Mobile上调2026年自由现金流预期",
+                    "summary": "T-Mobile上调全年自由现金流指引，并维持服务收入展望。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "T-Mobile",
+                    "inclusion_reason": "上调现金流指引将影响资本配置判断。",
+                    "region_reason": "事件主体和受影响市场均位于美国。",
+                    "decision_path": "竞对直通",
+                    "signal_type": "竞对经营动作",
+                    "business_impact": "资本配置",
+                    "exclusion_code": "无",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords="T-Mobile",
+                source_item={
+                    "module": "竞争对手",
+                    "source_title": "T-Mobile raises 2026 free cash flow outlook",
+                },
+            )
 
     def test_candidate_editor_receives_module_and_rule_category(self):
         payload = briefing._candidate_editor_input(
@@ -233,8 +238,138 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("地域与分类是两个独立维度", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("技术监控词命中", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
         self.assertIn("泛香港5G基站", briefing._CATEGORY_CLASSIFICATION_GUIDANCE)
+        self.assertIn(
+            "matched_keywords全部来自正式监控配置",
+            briefing._STRATEGIC_INCLUSION_GUIDANCE,
+        )
+        self.assertIn(
+            "不得再要求关联某家竞对",
+            briefing._STRATEGIC_INCLUSION_GUIDANCE,
+        )
 
-    def test_competitor_candidate_uses_ai_semantic_decision_without_hard_override(self):
+    def test_non_competitor_strategic_keyword_signal_is_included(self):
+        item = {
+            "module": "政策/法规类",
+            "category": "政策监管",
+            "title": "香港公布数据中心能源使用新规",
+            "snippet": "新规将提高数据中心能源披露和合规要求，并影响运营成本。",
+            "keywords": ["Data center", "监管"],
+            "source": "Government News",
+            "url": "https://example.com/news/hk-data-centre-rule",
+        }
+        ai_result = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "title": "香港公布数据中心能源使用新规",
+                    "summary": "香港提高数据中心能源披露及合规要求，相关运营商将面对新的合规与成本安排。",
+                    "should_include": True,
+                    "region": "香港本地",
+                    "category": "政策监管",
+                    "keywords": "Data center、监管",
+                    "inclusion_reason": "数据中心能源新规将直接改变基础设施合规要求和运营成本。",
+                    "region_reason": "政策由香港发布并影响香港数据中心运营。",
+                    "decision_path": "战略信号",
+                    "signal_type": "监管政策",
+                    "business_impact": "合规与牌照",
+                    "exclusion_code": "无",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(briefing, "_atomic_write_json"),
+            mock.patch.object(briefing, "_call_internal_ai", return_value=ai_result),
+        ):
+            result = briefing.polish_candidates_before_review([item])
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["ai_decision_path"], "战略信号")
+        self.assertEqual(result[0]["ai_signal_type"], "监管政策")
+        self.assertEqual(result[0]["ai_business_impact"], "合规与牌照")
+
+    def test_strategic_signal_requires_concrete_business_impact(self):
+        with self.assertRaisesRegex(RuntimeError, "缺少具体业务影响"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "行业发布人工智能发展报告",
+                    "summary": "报告梳理人工智能产业趋势，但没有说明对电信业务的具体影响。",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AI",
+                    "inclusion_reason": "报告讨论人工智能发展，因此可能具有战略价值。",
+                    "region_reason": "报告讨论全球行业趋势。",
+                    "decision_path": "战略信号",
+                    "signal_type": "关键技术",
+                    "business_impact": "无",
+                    "exclusion_code": "无",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords="AI",
+            )
+
+    def test_competitor_route_fills_format_only_impact_without_blocking(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "SmarTone调整门店客户服务时间",
+                "summary": "SmarTone公布门店客户服务时间调整，直接影响现有客户服务安排。",
+                "should_include": True,
+                "region": "香港本地",
+                "category": "竞对动态",
+                "keywords": "SmarTone",
+                "inclusion_reason": "门店服务时间调整属于竞对客户服务信息。",
+                "region_reason": "事件主体及受影响门店均在香港。",
+                "decision_path": "竞对直通",
+                "signal_type": "",
+                "business_impact": "无",
+                "exclusion_code": "",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords="SmarTone",
+            source_item={
+                "module": "竞争对手",
+                "title": "SmarTone调整门店客户服务时间",
+                "keywords": ["SmarTone"],
+            },
+        )
+
+        self.assertTrue(result["should_include"])
+        self.assertEqual(result["signal_type"], "竞对经营动作")
+        self.assertEqual(result["business_impact"], "竞争格局")
+        self.assertEqual(result["exclusion_code"], "无")
+
+    def test_competitor_candidate_cannot_be_rejected_for_lack_of_strategic_value(self):
+        with self.assertRaisesRegex(RuntimeError, "只能因主体误判或明确噪音"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "AT&T开展社区数字技能培训",
+                    "summary": "AT&T在当地社区开设数字技能培训项目并向居民提供设备。",
+                    "should_include": False,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AT&T",
+                    "inclusion_reason": "活动规模较小，缺少战略价值。",
+                    "region_reason": "事件发生在美国。",
+                    "decision_path": "排除",
+                    "signal_type": "无",
+                    "business_impact": "无",
+                    "exclusion_code": "无电信战略影响",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords="AT&T",
+                source_item={
+                    "module": "竞争对手",
+                    "title": "AT&T开展社区数字技能培训",
+                    "snippet": "AT&T opened a digital skills training center.",
+                    "keywords": ["AT&T"],
+                },
+            )
+
+    def test_confirmed_competitor_event_is_included_even_when_routine(self):
         item = {
             "module": "竞争对手",
             "category": "行业动态",
@@ -245,12 +380,17 @@ class StrategicBriefingTests(unittest.TestCase):
             "url": "https://example.com/news/t-mobile-service",
             "ai_title": "T-Mobile更新客户服务安排",
             "ai_summary": "T-Mobile公布常规客户服务调整，涉及现有用户的服务安排。",
-            "ai_should_include": False,
+            "ai_should_include": True,
             "ai_region": "国际/行业",
-            "ai_category": "行业动态",
+            "ai_category": "竞对动态",
             "ai_keywords": "T-Mobile",
-            "ai_inclusion_reason": "模型认为事件规模较小，不建议纳入候选池。",
+            "ai_inclusion_reason": "客户服务调整直接影响用户体验与渠道运营。",
             "ai_region_reason": "事件主体和受影响市场均位于美国。",
+            "ai_decision_path": "竞对直通",
+            "ai_signal_type": "竞对经营动作",
+            "ai_business_impact": "客户与渠道",
+            "ai_exclusion_code": "无",
+            "ai_editor_version": briefing.AI_EDITOR_VERSION,
         }
 
         with (
@@ -260,7 +400,7 @@ class StrategicBriefingTests(unittest.TestCase):
         ):
             result = briefing.polish_candidates_before_review([item])
 
-        self.assertEqual(result, [])
+        self.assertEqual(len(result), 1)
         ai_call.assert_not_called()
 
     def test_batch_editor_failure_immediately_retries_each_item(self):
@@ -282,6 +422,10 @@ class StrategicBriefingTests(unittest.TestCase):
             "keywords": "HKBN",
             "inclusion_reason": "直接反映香港宽频的企业客户产品与服务变化。",
             "region_reason": "事件主体及受影响市场均在香港。",
+            "decision_path": "竞对直通",
+            "signal_type": "竞对经营动作",
+            "business_impact": "产品与定价",
+            "exclusion_code": "无",
         }
         with (
             mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
@@ -357,6 +501,11 @@ class StrategicBriefingTests(unittest.TestCase):
                     "ai_keywords": "Verizon",
                     "ai_inclusion_reason": "直接反映被监测竞对的网络服务变化。",
                     "ai_region_reason": "事件主体为国际对标运营商Verizon。",
+                    "ai_decision_path": "竞对直通",
+                    "ai_signal_type": "竞对经营动作",
+                    "ai_business_impact": "网络与运营",
+                    "ai_exclusion_code": "无",
+                    "ai_editor_version": briefing.AI_EDITOR_VERSION,
                 }
             )
         items.append(
@@ -416,12 +565,21 @@ class StrategicBriefingTests(unittest.TestCase):
             "keywords": "KDDI",
             "inclusion_reason": "KDDI不是目标竞对，因此不纳入监控。",
             "region_reason": "事件发生在菲律宾与日本市场。",
+            "decision_path": "排除",
+            "signal_type": "无",
+            "business_impact": "无",
+            "exclusion_code": "同名或主体误判",
+            "editor_version": briefing.AI_EDITOR_VERSION,
         }
         corrected = {
             **wrong,
             "should_include": True,
             "category": "竞对动态",
             "inclusion_reason": "KDDI是正式监控的国际对标运营商，合作事项属于竞对动态。",
+            "decision_path": "竞对直通",
+            "signal_type": "竞对经营动作",
+            "business_impact": "客户与渠道",
+            "exclusion_code": "无",
         }
         with (
             mock.patch.object(
@@ -745,6 +903,22 @@ class StrategicBriefingTests(unittest.TestCase):
             )
         )
 
+    def test_competitor_plan_label_does_not_turn_publisher_name_into_subject(self):
+        self.assertFalse(
+            briefing._is_competitor_candidate(
+                {
+                    "module": "竞争对手",
+                    "category": "行业动态",
+                    "canonical_competitor": "i-CABLE",
+                    "title": "日本推理小说作家离世",
+                    "snippet": "日本作家因病离世，报道来自i-cable.com。",
+                    "keywords": ["i-CABLE"],
+                    "source": "i-cable.com",
+                    "url": "https://news.google.com/example",
+                }
+            )
+        )
+
     def test_editor_tells_agent_to_distinguish_hong_kong_csl_from_csl_limited(self):
         item = {
             "module": "竞争对手",
@@ -767,6 +941,10 @@ class StrategicBriefingTests(unittest.TestCase):
                     "keywords": "csl",
                     "inclusion_reason": "主体是澳洲生物科技公司CSL Limited，并非香港csl电讯品牌。",
                     "region_reason": "事件主体为澳洲公司。",
+                    "decision_path": "排除",
+                    "signal_type": "无",
+                    "business_impact": "无",
+                    "exclusion_code": "同名或主体误判",
                 }
             ]
         }
@@ -806,6 +984,10 @@ class StrategicBriefingTests(unittest.TestCase):
                     "keywords": "KDDI",
                     "inclusion_reason": "反映被监测国际运营商KDDI的渠道合作动态。",
                     "region_reason": "事件主体为菲律宾与日本运营商。",
+                    "decision_path": "竞对直通",
+                    "signal_type": "竞对经营动作",
+                    "business_impact": "客户与渠道",
+                    "exclusion_code": "无",
                 }
             ]
         }
