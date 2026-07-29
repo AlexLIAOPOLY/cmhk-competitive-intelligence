@@ -8,6 +8,8 @@ let newsResumeTimer = 0;
 const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
+const NETWORK_ROTATE_DELAY = 9000;
+let networkRotationTimer = 0;
 
 const networkViews = {
   fixed: {
@@ -87,8 +89,39 @@ function showNetworkView(viewName) {
   networkContent.classList.add("is-switching");
 }
 
+function stopNetworkRotation() {
+  window.clearTimeout(networkRotationTimer);
+}
+
+function networkRotationIsPaused() {
+  return (
+    !networkPanel ||
+    networkTabs.length < 2 ||
+    reducedMotion.matches ||
+    document.hidden ||
+    networkPanel.matches(":hover") ||
+    networkPanel.contains(document.activeElement)
+  );
+}
+
+function scheduleNetworkRotation() {
+  stopNetworkRotation();
+  if (networkRotationIsPaused()) return;
+
+  networkRotationTimer = window.setTimeout(() => {
+    if (networkRotationIsPaused()) return;
+    const current = networkTabs.findIndex((tab) => tab.classList.contains("is-active"));
+    const next = networkTabs[(current + 1 + networkTabs.length) % networkTabs.length];
+    showNetworkView(next.dataset.networkView);
+    scheduleNetworkRotation();
+  }, NETWORK_ROTATE_DELAY);
+}
+
 networkTabs.forEach((tab) => {
-  tab.addEventListener("click", () => showNetworkView(tab.dataset.networkView));
+  tab.addEventListener("click", () => {
+    showNetworkView(tab.dataset.networkView);
+    scheduleNetworkRotation();
+  });
   tab.addEventListener("keydown", (event) => {
     if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
     event.preventDefault();
@@ -99,6 +132,19 @@ networkTabs.forEach((tab) => {
     showNetworkView(next.dataset.networkView);
   });
 });
+
+networkPanel?.addEventListener("pointerenter", stopNetworkRotation);
+networkPanel?.addEventListener("pointerleave", scheduleNetworkRotation);
+networkPanel?.addEventListener("focusin", stopNetworkRotation);
+networkPanel?.addEventListener("focusout", () => {
+  window.setTimeout(scheduleNetworkRotation, 0);
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopNetworkRotation();
+  else scheduleNetworkRotation();
+});
+reducedMotion.addEventListener("change", scheduleNetworkRotation);
+scheduleNetworkRotation();
 
 function rebuildNewsRail() {
   if (!newsTrack || !newsSourceSet) return;
