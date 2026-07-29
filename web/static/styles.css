@@ -10879,7 +10879,7 @@ button.command-btn:disabled {
 /* Daily intelligence comparison: 14-day context at left, morning and afternoon assets at right. */
 @media (min-width: 1051px) {
   .insight-board {
-    grid-template-columns: minmax(360px, 1.05fr) minmax(0, 1.45fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -10895,9 +10895,48 @@ button.command-btn:disabled {
   overflow: hidden;
 }
 
+.signal-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.signal-summary-grid > div {
+  min-width: 0;
+  padding: 0 18px;
+  border-right: 1px solid rgba(29, 100, 142, 0.14);
+}
+
+.signal-summary-grid > div:first-child {
+  padding-left: 0;
+}
+
+.signal-summary-grid > div:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.signal-summary-grid span,
+.signal-summary-grid strong {
+  display: block;
+}
+
+.signal-summary-grid span {
+  color: #718695;
+  font-size: 14px;
+}
+
+.signal-summary-grid strong {
+  margin-top: 5px;
+  color: #12668f;
+  font-size: 32px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
 .signal-overview > .signal-chart-card .signal-trend-chart {
   height: calc(100% - 42px);
-  min-height: 220px;
+  min-height: 190px;
 }
 
 .collection-overview {
