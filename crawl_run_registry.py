@@ -343,6 +343,51 @@ def heartbeat_crawl_run(
         return _save_run_record(record)
 
 
+def resume_crawl_run(
+    crawl_run_id: str,
+    phase: str,
+    detail: str,
+) -> dict[str, Any]:
+    """Reopen an interrupted scheduled run so its downstream stages can resume."""
+    with REGISTRY_LOCK:
+        record = _read_json(RUNS_DIR / f"{_safe_id(crawl_run_id)}.json", {})
+        if not isinstance(record, dict) or not record:
+            raise ValueError(f"crawl run not found: {crawl_run_id}")
+        relative = str((record.get("local_files") or {}).get("stream_log") or "")
+        stream_path = ROOT / relative if relative else RUNS_DIR / f"{crawl_run_id}.jsonl"
+        now = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
+        record.update(
+            {
+                "run_status": "running",
+                "backend_pid": os.getpid(),
+                "worker_pid": 0,
+                "phase": str(phase or "恢复任务"),
+                "progress_detail": str(detail or "正在恢复未完成的爬虫任务。"),
+                "status_detail": "",
+                "failure_stage": "",
+                "heartbeat_at_hkt": now,
+                "completed_at_hkt": "",
+                "crawl_return_code": None,
+                "interrupted": False,
+                "resumed_at_hkt": now,
+            }
+        )
+        append_crawl_run_event(
+            stream_path,
+            {
+                "type": "monitor",
+                "timestamp": now,
+                "phase": record["phase"],
+                "detail": record["progress_detail"],
+                "backendPid": record["backend_pid"],
+                "workerPid": 0,
+                "resumed": True,
+            },
+        )
+        record["stream_log"] = _stream_log_stats(stream_path)
+        return _save_run_record(record)
+
+
 def _last_stream_event_summary(path: Path) -> str:
     if not path.exists():
         return "尚未写入运行日志"

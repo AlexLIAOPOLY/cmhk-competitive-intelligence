@@ -88,6 +88,8 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             curation = {"agent_run_id": "agent-after-sync-failure", "tasks": 4}
             with (
                 mock.patch.object(scheduler, "save_state"),
+                mock.patch.object(scheduler, "_write_pending_run"),
+                mock.patch.object(scheduler, "_clear_pending_run"),
                 mock.patch.object(
                     scheduler,
                     "start_crawl_run",
@@ -138,6 +140,8 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             }
             with (
                 mock.patch.object(scheduler, "save_state"),
+                mock.patch.object(scheduler, "_write_pending_run"),
+                mock.patch.object(scheduler, "_clear_pending_run"),
                 mock.patch.object(
                     scheduler,
                     "start_crawl_run",
@@ -182,6 +186,172 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 for call in append.call_args_list
             )
         )
+
+    def test_interrupted_sync_completed_run_is_recovered_from_archived_log(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            relative = Path("agent_knowledge/crawl_run_logs/runs/recover.jsonl")
+            log_path = root / relative
+            log_path.parent.mkdir(parents=True)
+            log_path.write_text(
+                '{"log_sheet_id": "sheet-recover"}\n'
+                '{"type":"monitor","detail":"网页抓取和飞书同步已完成，正在执行完整 Agent 审核流程。"}\n',
+                encoding="utf-8",
+            )
+            record = {
+                "crawl_run_id": "crawl-recover",
+                "trigger": "定时爬虫",
+                "scope": "定时指定行（第3行、第4行）",
+                "run_status": "failed",
+                "phase": "已中断",
+                "interrupted": True,
+                "started_at_hkt": "2026-07-29T15:19:27+08:00",
+                "local_files": {"stream_log": str(relative)},
+            }
+            with (
+                mock.patch.object(scheduler, "ROOT", root),
+                mock.patch.object(
+                    scheduler,
+                    "PENDING_RUN_PATH",
+                    root / "scheduler_pending_run.json",
+                ),
+                mock.patch.object(
+                    scheduler,
+                    "load_crawl_run_index",
+                    return_value=[record],
+                ),
+            ):
+                recovered = scheduler._recover_interrupted_pending_run()
+
+        self.assertEqual(recovered["stage"], "sync_completed")
+        self.assertEqual(recovered["rows"], [3, 4])
+        self.assertEqual(recovered["log_sheet_id"], "sheet-recover")
+
+    def test_resume_from_sync_checkpoint_skips_web_crawl(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "resume.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            pending = {
+                "stage": "sync_completed",
+                "crawl_run_id": "crawl-resume",
+                "rows": [3, 4],
+                "scope": "定时指定行（第3行、第4行）",
+                "started_at_hkt": "2026-07-29T15:19:27+08:00",
+                "stream_log_path": str(log_path),
+                "log_sheet_id": "sheet-resume",
+                "sync_return_code": 0,
+            }
+            state = {
+                "attempts": {
+                    "3": "2026-07-29T15:19:27+08:00",
+                    "4": "2026-07-29T15:19:27+08:00",
+                }
+            }
+            with (
+                mock.patch.object(scheduler, "_write_pending_run"),
+                mock.patch.object(scheduler, "_clear_pending_run") as clear_pending,
+                mock.patch.object(scheduler, "resume_crawl_run"),
+                mock.patch.object(scheduler, "append_crawl_run_event"),
+                mock.patch.object(scheduler, "heartbeat_crawl_run"),
+                mock.patch.object(
+                    scheduler,
+                    "_run_scheduled_agent_audit",
+                    return_value=(
+                        True,
+                        0,
+                        {"agent_run_id": "agent-resume"},
+                        {"ok": True},
+                        "",
+                    ),
+                ) as audit,
+                mock.patch.object(
+                    scheduler,
+                    "capture_completed_crawl",
+                    return_value={"page_count": 10, "signal_count": 2},
+                ) as bridge,
+                mock.patch.object(
+                    scheduler,
+                    "read_live_schedule",
+                    return_value=[
+                        {"row": 3, "frequency": "每天 03:00"},
+                        {"row": 4, "frequency": "每天 03:00"},
+                    ],
+                ),
+                mock.patch.object(scheduler, "save_state"),
+                mock.patch.object(scheduler, "register_crawl_run") as register,
+                mock.patch.object(scheduler.subprocess, "run") as subprocess_run,
+            ):
+                ok = scheduler.resume_pending_run(pending, state)
+
+        self.assertTrue(ok)
+        audit.assert_called_once_with(
+            "crawl-resume",
+            log_path,
+            log_sheet_id="sheet-resume",
+        )
+        bridge.assert_called_once()
+        subprocess_run.assert_not_called()
+        self.assertEqual(state["attempts"], {})
+        self.assertEqual(register.call_args.kwargs["crawl_return_code"], 0)
+        clear_pending.assert_called_once()
+
+    def test_pending_attempt_does_not_advance_schedule_from_partial_row_output(self) -> None:
+        now = scheduler.datetime(2026, 7, 29, 16, 0, tzinfo=scheduler.HKT)
+        attempt = now - scheduler.timedelta(hours=1)
+        previous_success = scheduler.datetime(2026, 7, 28, 3, 0, tzinfo=scheduler.HKT)
+        with (
+            mock.patch.object(
+                scheduler,
+                "read_live_schedule",
+                return_value=[{"row": 3, "frequency": "每天 03:00"}],
+            ),
+            mock.patch.object(
+                scheduler,
+                "last_success",
+                return_value=previous_success,
+            ) as last_success,
+        ):
+            due, audit = scheduler.due_rows(
+                now,
+                {"attempts": {"3": attempt.isoformat(timespec="seconds")}},
+            )
+
+        self.assertEqual(due, [3])
+        self.assertEqual(audit[0]["status"], "due")
+        last_success.assert_called_once_with(3, before=attempt)
+
+    def test_interrupted_pending_resume_bypasses_retry_backoff(self) -> None:
+        pending = {
+            "stage": "sync_completed",
+            "crawl_run_id": "crawl-restart",
+            "last_attempt_at_hkt": scheduler.datetime.now(scheduler.HKT).isoformat(
+                timespec="seconds"
+            ),
+        }
+        with (
+            mock.patch.object(scheduler, "load_state", return_value={}),
+            mock.patch.object(scheduler, "_load_pending_run", return_value=pending),
+            mock.patch.object(
+                scheduler,
+                "_pending_run_was_interrupted",
+                return_value=True,
+            ),
+            mock.patch.object(scheduler, "crawl_process_running", return_value=False),
+            mock.patch.object(
+                scheduler,
+                "agent_audit_process_running",
+                return_value=False,
+            ),
+            mock.patch.object(
+                scheduler,
+                "resume_pending_run",
+                return_value=True,
+            ) as resume,
+        ):
+            result = scheduler.run_cycle()
+
+        self.assertTrue(result["resumed"])
+        resume.assert_called_once_with(pending, {})
 
 
 class TaskLogScrollTests(unittest.TestCase):

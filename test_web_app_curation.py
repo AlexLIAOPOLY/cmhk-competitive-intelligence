@@ -18,6 +18,24 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_frequency_scheduler_can_be_external_without_disabling_news_monitor(self) -> None:
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "CMHK_DISABLE_FREQUENCY_SCHEDULER": "1",
+                    "CMHK_DISABLE_EMBEDDED_SCHEDULER": "0",
+                    "CMHK_DISABLE_STRATEGIC_BRIEFING_MONITOR": "0",
+                },
+            ),
+            mock.patch("threading.Thread") as thread,
+        ):
+            web_app.start_scheduler_with_backend()
+
+        names = [call.kwargs.get("name") for call in thread.call_args_list]
+        self.assertNotIn("feishu-frequency-scheduler", names)
+        self.assertIn("strategic-briefing-monitor", names)
+
     def test_collection_overview_is_labeled_as_today_with_real_timestamp(self) -> None:
         html = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

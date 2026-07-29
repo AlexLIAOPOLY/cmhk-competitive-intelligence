@@ -1542,8 +1542,12 @@ def start_scheduler_with_backend() -> None:
     import threading as scheduler_threading
     import traceback as scheduler_traceback
 
-    if os.environ.get("CMHK_DISABLE_EMBEDDED_SCHEDULER", "").strip().lower() in {"1", "true", "yes"}:
-        return
+    disable_all = os.environ.get(
+        "CMHK_DISABLE_EMBEDDED_SCHEDULER", ""
+    ).strip().lower() in {"1", "true", "yes"}
+    disable_frequency = os.environ.get(
+        "CMHK_DISABLE_FREQUENCY_SCHEDULER", ""
+    ).strip().lower() in {"1", "true", "yes"}
 
     def scheduler_worker() -> None:
         import scheduler
@@ -1555,11 +1559,18 @@ def start_scheduler_with_backend() -> None:
                 scheduler_traceback.print_exc()
             time.sleep(10)
 
-    thread = scheduler_threading.Thread(target=scheduler_worker, name="feishu-frequency-scheduler", daemon=True)
-    thread.start()
-    print("Feishu frequency scheduler started with APP backend", flush=True)
+    if not disable_all and not disable_frequency:
+        thread = scheduler_threading.Thread(target=scheduler_worker, name="feishu-frequency-scheduler", daemon=True)
+        thread.start()
+        print("Feishu frequency scheduler started with APP backend", flush=True)
 
-    if os.environ.get("CMHK_DISABLE_STRATEGIC_BRIEFING_MONITOR", "").strip().lower() not in {"1", "true", "yes"}:
+    if (
+        not disable_all
+        and os.environ.get(
+            "CMHK_DISABLE_STRATEGIC_BRIEFING_MONITOR", ""
+        ).strip().lower()
+        not in {"1", "true", "yes"}
+    ):
         def strategic_briefing_worker() -> None:
             import strategic_briefing
 

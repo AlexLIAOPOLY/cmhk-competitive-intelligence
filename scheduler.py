@@ -17,7 +17,9 @@ from zoneinfo import ZoneInfo
 from crawl_run_registry import (
     append_crawl_run_event,
     heartbeat_crawl_run,
+    load_index as load_crawl_run_index,
     register_crawl_run,
+    resume_crawl_run,
     start_crawl_run,
 )
 from scheduled_crawl_news_bridge import capture_completed_crawl
@@ -26,6 +28,8 @@ from scheduled_crawl_news_bridge import capture_completed_crawl
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
 STATE_PATH = ROOT / "scheduler_state.json"
+PENDING_RUN_PATH = ROOT / "scheduler_pending_run.json"
+RUN_LOG_PATH = ROOT / "run_log.json"
 SPREADSHEET_TOKEN = "ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA"
 MAIN_SHEET_ID = "9c638d"
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -126,15 +130,38 @@ def parse_datetime(value: object) -> datetime | None:
     return parsed.astimezone(HKT)
 
 
-def last_success(row_no: int) -> datetime | None:
+def elapsed_ms(started_at: object) -> int:
+    started = parse_datetime(started_at)
+    if not started:
+        return 0
+    return max(0, round((datetime.now(HKT) - started).total_seconds() * 1000))
+
+
+def last_success(row_no: int, *, before: datetime | None = None) -> datetime | None:
     path = RESULTS_DIR / f"row_{row_no}.json"
-    if not path.exists():
-        return None
+    latest: datetime | None = None
+    if path.exists():
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            payload = {}
+        latest = parse_datetime(payload.get("fetched_at_hkt") or payload.get("fetched_at"))
+        if latest and (before is None or latest < before):
+            return latest
+    if before is None or not RUN_LOG_PATH.exists():
+        return None if before and latest and latest >= before else latest
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        entries = json.loads(RUN_LOG_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
-    return parse_datetime(payload.get("fetched_at_hkt") or payload.get("fetched_at"))
+    candidates: list[datetime] = []
+    for entry in entries if isinstance(entries, list) else []:
+        if not isinstance(entry, dict) or int(entry.get("row") or 0) != row_no:
+            continue
+        timestamp = parse_datetime(entry.get("run_time_hkt") or entry.get("run_time"))
+        if timestamp and timestamp < before:
+            candidates.append(timestamp)
+    return max(candidates, default=None)
 
 
 def canonical_schedule(frequency: str) -> tuple[str, object] | None:
@@ -232,9 +259,126 @@ def save_state(state: dict[str, object]) -> None:
     temporary.replace(STATE_PATH)
 
 
+def _write_pending_run(payload: dict[str, object]) -> None:
+    temporary = PENDING_RUN_PATH.with_suffix(".tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    temporary.replace(PENDING_RUN_PATH)
+
+
+def _load_pending_run() -> dict[str, object]:
+    if not PENDING_RUN_PATH.exists():
+        return {}
+    try:
+        payload = json.loads(PENDING_RUN_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _clear_pending_run() -> None:
+    PENDING_RUN_PATH.unlink(missing_ok=True)
+
+
+def _scope_rows(scope: str) -> list[int]:
+    return [
+        int(value)
+        for value in re.findall(r"第(\d+)行", str(scope or ""))
+    ]
+
+
+def _mark_rows_completed(state: dict[str, object], rows: list[int]) -> None:
+    attempts = state.get("attempts") if isinstance(state.get("attempts"), dict) else {}
+    completed_once = (
+        state.get("completed_once")
+        if isinstance(state.get("completed_once"), dict)
+        else {}
+    )
+    frequencies = {
+        int(item["row"]): str(item.get("frequency") or "")
+        for item in read_live_schedule()
+    }
+    for row in rows:
+        attempts.pop(str(row), None)
+        frequency = frequencies.get(row, "")
+        schedule = canonical_schedule(frequency)
+        if schedule and schedule[0] == "once":
+            completed_once[str(row)] = frequency
+    state["attempts"] = attempts
+    state["completed_once"] = completed_once
+    save_state(state)
+
+
+def _recover_interrupted_pending_run() -> dict[str, object]:
+    if PENDING_RUN_PATH.exists():
+        return _load_pending_run()
+    for record in load_crawl_run_index():
+        if not isinstance(record, dict):
+            continue
+        if record.get("trigger") != "定时爬虫":
+            continue
+        if not record.get("interrupted"):
+            return {}
+        if str(record.get("phase") or "") != "已中断":
+            continue
+        started_at = parse_datetime(record.get("started_at_hkt"))
+        if started_at and datetime.now(HKT) - started_at > timedelta(days=2):
+            return {}
+        rows = _scope_rows(str(record.get("scope") or ""))
+        relative = str((record.get("local_files") or {}).get("stream_log") or "")
+        stream_path = ROOT / relative if relative else Path()
+        if not rows or not relative or not stream_path.exists():
+            continue
+        raw = stream_path.read_text(encoding="utf-8", errors="replace")
+        if "网页抓取和飞书同步已完成" not in raw:
+            continue
+        sheet_matches = re.findall(r'"log_sheet_id"\s*:\s*"([^"]+)"', raw)
+        if not sheet_matches:
+            continue
+        payload: dict[str, object] = {
+            "version": 1,
+            "stage": "sync_completed",
+            "crawl_run_id": str(record.get("crawl_run_id") or ""),
+            "rows": rows,
+            "scope": str(record.get("scope") or ""),
+            "started_at_hkt": str(record.get("started_at_hkt") or ""),
+            "stream_log_path": str(stream_path),
+            "log_sheet_id": sheet_matches[-1],
+            "sync_return_code": 0,
+            "recovered_from_interrupted_log": True,
+            "last_attempt_at_hkt": "",
+        }
+        _write_pending_run(payload)
+        return payload
+    return {}
+
+
+def _pending_run_was_interrupted(pending: dict[str, object]) -> bool:
+    crawl_run_id = str(pending.get("crawl_run_id") or "")
+    if not crawl_run_id:
+        return False
+    return any(
+        str(record.get("crawl_run_id") or "") == crawl_run_id
+        and bool(record.get("interrupted"))
+        for record in load_crawl_run_index()
+        if isinstance(record, dict)
+    )
+
+
 def crawl_process_running() -> bool:
     proc = subprocess.run(
         ["pgrep", "-f", str(ROOT / "crawl.py")],
+        text=True,
+        capture_output=True,
+    )
+    return proc.returncode == 0 and bool(proc.stdout.strip())
+
+
+def agent_audit_process_running() -> bool:
+    proc = subprocess.run(
+        ["pgrep", "-f", str(ROOT / "run_data_curation.py")],
         text=True,
         capture_output=True,
     )
@@ -250,13 +394,13 @@ def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[d
         row_no = int(item["row"])
         frequency = str(item.get("frequency") or "")
         schedule = canonical_schedule(frequency)
-        last_run = last_success(row_no)
+        last_attempt = parse_datetime(attempts.get(str(row_no)))
+        last_run = last_success(row_no, before=last_attempt) if last_attempt else last_success(row_no)
         next_run = next_run_time(frequency, last_run, now)
         status = "disabled" if schedule is None else "waiting"
         if schedule and schedule[0] == "once" and completed_once.get(str(row_no)) == frequency:
             status = "completed_once"
         elif next_run is not None and now >= next_run:
-            last_attempt = parse_datetime(attempts.get(str(row_no)))
             if last_attempt and (now - last_attempt).total_seconds() < RETRY_SECONDS:
                 status = "retry_backoff"
             else:
@@ -515,6 +659,17 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
     started_record = start_crawl_run(trigger="定时爬虫", scope=env["CMHK_CRAWL_SCOPE"])
     crawl_run_id = str(started_record["crawl_run_id"])
     stream_log_path = Path(started_record["stream_log_path"])
+    pending_run: dict[str, object] = {
+        "version": 1,
+        "stage": "crawl_running",
+        "crawl_run_id": crawl_run_id,
+        "rows": list(rows),
+        "scope": env["CMHK_CRAWL_SCOPE"],
+        "started_at_hkt": now.isoformat(timespec="seconds"),
+        "stream_log_path": str(stream_log_path),
+        "last_attempt_at_hkt": now.isoformat(timespec="seconds"),
+    }
+    _write_pending_run(pending_run)
     append_crawl_run_event(
         stream_log_path,
         {
@@ -552,7 +707,10 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
             failure_stage="crawl",
             progress_detail=f"网页抓取失败，返回码 {crawl.returncode}；Agent 审核未启动。",
         )
+        _clear_pending_run()
         return False
+    pending_run["stage"] = "crawl_completed"
+    _write_pending_run(pending_run)
     sync = subprocess.run(
         [PYTHON, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"],
         cwd=ROOT,
@@ -566,6 +724,14 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         fh.write(sync.stderr or "")
     sync_result = _json_object_from_output(sync.stdout or "") if sync.returncode == 0 else {}
     log_sheet_id = str(sync_result.get("log_sheet_id") or "").strip()
+    pending_run.update(
+        {
+            "stage": "sync_completed",
+            "log_sheet_id": log_sheet_id,
+            "sync_return_code": sync.returncode,
+        }
+    )
+    _write_pending_run(pending_run)
     if sync.returncode:
         logging.error("到期行飞书同步失败，退出码 %s；继续执行 Agent 审核", sync.returncode)
         heartbeat_crawl_run(
@@ -581,6 +747,10 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         log_sheet_id=log_sheet_id,
     )
     if not audit_ok:
+        pending_run["last_attempt_at_hkt"] = datetime.now(HKT).isoformat(
+            timespec="seconds"
+        )
+        _write_pending_run(pending_run)
         logging.error("定时爬虫 Agent 审核失败：%s", audit_error)
         append_crawl_run_event(
             stream_log_path,
@@ -602,6 +772,14 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
             ) + f"本轮 Agent 审核未通过完整性校验：{audit_error}",
         )
         return False
+    pending_run.update(
+        {
+            "stage": "audit_completed",
+            "curation": curation,
+            "trace_sync": trace_sync,
+        }
+    )
+    _write_pending_run(pending_run)
 
     if sync.returncode:
         append_crawl_run_event(
@@ -631,6 +809,13 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
                 f"但飞书同步失败，返回码 {sync.returncode}；任务将按退避策略重试。"
             ),
         )
+        pending_run["stage"] = "crawl_completed"
+        pending_run["last_attempt_at_hkt"] = datetime.now(HKT).isoformat(
+            timespec="seconds"
+        )
+        pending_run.pop("curation", None)
+        pending_run.pop("trace_sync", None)
+        _write_pending_run(pending_run)
         return False
 
     try:
@@ -681,17 +866,7 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         },
     )
 
-    completed_once = state.setdefault("completed_once", {})
-    if not isinstance(completed_once, dict):
-        completed_once = {}
-        state["completed_once"] = completed_once
-    frequencies = {int(item["row"]): str(item.get("frequency") or "") for item in read_live_schedule()}
-    for row in rows:
-        attempts.pop(str(row), None)
-        schedule = canonical_schedule(frequencies.get(row, ""))
-        if schedule and schedule[0] == "once":
-            completed_once[str(row)] = frequencies[row]
-    save_state(state)
+    _mark_rows_completed(state, rows)
     append_crawl_run_event(stream_log_path, {"type": "done", "ok": True, "returnCode": 0})
     register_crawl_run(
         crawl_return_code=0,
@@ -704,13 +879,228 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         curation_summary=curation,
         trace_sync=trace_sync,
     )
+    _clear_pending_run()
     logging.info("到期行爬取、Agent 审核与飞书归档完成：%s", rows)
+    return True
+
+
+def resume_pending_run(
+    pending: dict[str, object],
+    state: dict[str, object],
+) -> bool:
+    rows = [
+        int(value)
+        for value in pending.get("rows", [])
+        if str(value).isdigit()
+    ]
+    crawl_run_id = str(pending.get("crawl_run_id") or "")
+    stream_log_path = Path(str(pending.get("stream_log_path") or ""))
+    scope = str(pending.get("scope") or "")
+    started_at_hkt = str(pending.get("started_at_hkt") or "")
+    if not rows or not crawl_run_id or not stream_log_path.exists():
+        _clear_pending_run()
+        return False
+
+    resumed_at = datetime.now(HKT)
+    pending["last_attempt_at_hkt"] = resumed_at.isoformat(timespec="seconds")
+    _write_pending_run(pending)
+    resume_crawl_run(
+        crawl_run_id,
+        "恢复未完成任务",
+        "检测到服务重启前的已完成抓取结果，正在从下游阶段继续，不重复抓取网页。",
+    )
+    append_crawl_run_event(
+        stream_log_path,
+        {
+            "type": "log",
+            "text": "[任务续跑] 已复用本轮网页抓取结果，从飞书同步/Agent 审核阶段继续。",
+        },
+    )
+
+    stage = str(pending.get("stage") or "")
+    sync_return_code = int(pending.get("sync_return_code") or 0)
+    log_sheet_id = str(pending.get("log_sheet_id") or "")
+    if stage == "crawl_completed":
+        heartbeat_crawl_run(
+            crawl_run_id,
+            "恢复飞书同步",
+            "网页抓取已完成，正在重新执行飞书同步。",
+            append_log=True,
+        )
+        env = os.environ.copy()
+        env["CMHK_ROWS"] = ",".join(str(row) for row in rows)
+        sync = subprocess.run(
+            [PYTHON, str(ROOT / "daily_crawl_and_write.py"), "--sync-only"],
+            cwd=ROOT,
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=1800,
+        )
+        _append_process_output(stream_log_path, sync.stdout or "", sync.stderr or "")
+        sync_result = _json_object_from_output(sync.stdout or "") if sync.returncode == 0 else {}
+        sync_return_code = sync.returncode
+        log_sheet_id = str(sync_result.get("log_sheet_id") or "").strip()
+        if sync.returncode:
+            register_crawl_run(
+                crawl_return_code=sync.returncode,
+                duration_ms=elapsed_ms(started_at_hkt),
+                trigger="定时爬虫",
+                scope=scope,
+                crawl_run_id=crawl_run_id,
+                started_at_hkt=started_at_hkt,
+                stream_log_path=stream_log_path,
+                curation_summary={},
+                failure_stage="feishu_sync",
+                progress_detail=f"续跑飞书同步失败，返回码 {sync.returncode}；保留抓取结果等待重试。",
+            )
+            return False
+        pending.update(
+            {
+                "stage": "sync_completed",
+                "log_sheet_id": log_sheet_id,
+                "sync_return_code": 0,
+            }
+        )
+        _write_pending_run(pending)
+        stage = "sync_completed"
+
+    if stage == "sync_completed":
+        audit_ok, audit_code, curation, trace_sync, audit_error = _run_scheduled_agent_audit(
+            crawl_run_id,
+            stream_log_path,
+            log_sheet_id=log_sheet_id,
+        )
+        if not audit_ok:
+            register_crawl_run(
+                crawl_return_code=audit_code or 1,
+                duration_ms=elapsed_ms(started_at_hkt),
+                trace_sync=trace_sync,
+                trigger="定时爬虫",
+                scope=scope,
+                crawl_run_id=crawl_run_id,
+                started_at_hkt=started_at_hkt,
+                stream_log_path=stream_log_path,
+                curation_summary=curation,
+                failure_stage="agent_review",
+                progress_detail=f"续跑 Agent 审核未通过：{audit_error}",
+            )
+            return False
+        pending.update(
+            {
+                "stage": "audit_completed",
+                "curation": curation,
+                "trace_sync": trace_sync,
+            }
+        )
+        _write_pending_run(pending)
+    else:
+        curation = (
+            pending.get("curation")
+            if isinstance(pending.get("curation"), dict)
+            else {}
+        )
+        trace_sync = (
+            pending.get("trace_sync")
+            if isinstance(pending.get("trace_sync"), dict)
+            else {}
+        )
+
+    if sync_return_code:
+        pending["stage"] = "crawl_completed"
+        _write_pending_run(pending)
+        return False
+    try:
+        news_bridge = capture_completed_crawl(
+            crawl_run_id,
+            rows,
+            captured_at=datetime.now(HKT),
+        )
+    except Exception as exc:
+        register_crawl_run(
+            crawl_return_code=1,
+            duration_ms=elapsed_ms(started_at_hkt),
+            trace_sync=trace_sync,
+            trigger="定时爬虫",
+            scope=scope,
+            crawl_run_id=crawl_run_id,
+            started_at_hkt=started_at_hkt,
+            stream_log_path=stream_log_path,
+            curation_summary=curation,
+            failure_stage="news_bridge",
+            progress_detail=f"续跑 Agent 审核已完成，但新闻线索桥接失败：{exc}",
+        )
+        return False
+
+    curation = {**curation, "news_bridge": news_bridge}
+    append_crawl_run_event(
+        stream_log_path,
+        {
+            "type": "news_bridge",
+            "ok": True,
+            "bootstrap": bool(news_bridge.get("bootstrap")),
+            "pageCount": int(news_bridge.get("page_count") or 0),
+            "signalCount": int(news_bridge.get("signal_count") or 0),
+            "resumed": True,
+        },
+    )
+    _mark_rows_completed(state, rows)
+    append_crawl_run_event(
+        stream_log_path,
+        {"type": "done", "ok": True, "returnCode": 0, "resumed": True},
+    )
+    register_crawl_run(
+        crawl_return_code=0,
+        duration_ms=elapsed_ms(started_at_hkt),
+        trigger="定时爬虫",
+        scope=scope,
+        crawl_run_id=crawl_run_id,
+        started_at_hkt=started_at_hkt,
+        stream_log_path=stream_log_path,
+        curation_summary=curation,
+        trace_sync=trace_sync,
+        progress_detail="服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
+    )
+    _clear_pending_run()
     return True
 
 
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     now = datetime.now(HKT)
     state = load_state()
+    pending = _load_pending_run()
+    if not dry_run and not pending:
+        pending = _recover_interrupted_pending_run()
+    if pending:
+        result: dict[str, object] = {
+            "checked_at_hkt": now.isoformat(timespec="seconds"),
+            "timezone": "Asia/Hong_Kong",
+            "pending_run_id": pending.get("crawl_run_id"),
+            "pending_stage": pending.get("stage"),
+        }
+        if dry_run:
+            result["resume_due"] = True
+            return result
+        last_resume = parse_datetime(pending.get("last_attempt_at_hkt"))
+        interrupted_resume = _pending_run_was_interrupted(pending)
+        if (
+            last_resume
+            and not interrupted_resume
+            and (now - last_resume).total_seconds() < RETRY_SECONDS
+        ):
+            result["resume_skipped"] = "retry_backoff"
+            return result
+        if str(pending.get("stage") or "") == "crawl_running":
+            _clear_pending_run()
+        elif crawl_process_running():
+            result["resume_skipped"] = "crawl_already_running"
+            return result
+        elif agent_audit_process_running():
+            result["resume_skipped"] = "agent_audit_already_running"
+            return result
+        else:
+            result["resumed"] = resume_pending_run(pending, state)
+            return result
     due, audit = due_rows(now, state)
     result: dict[str, object] = {
         "checked_at_hkt": now.isoformat(timespec="seconds"),
