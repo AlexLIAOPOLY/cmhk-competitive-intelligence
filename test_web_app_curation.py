@@ -1177,21 +1177,14 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         prompt = str(captured["prompt"])
         self.assertIn("自主选择", prompt)
         self.assertIn("联网搜索已开启", prompt)
-        self.assertIn("涉及外部事实或数据时，应主动使用联网搜索", prompt)
-        self.assertIn("同时检索本地资料并交叉核验", prompt)
-        self.assertIn("只读工具没有本轮调用次数或重复调用限制", prompt)
-        self.assertIn("不得声称已达到固定次数上限", prompt)
-        self.assertIn("任一侧无结果或两侧不一致都要明确说明", prompt)
-        self.assertIn("必须实际调用 web_search", prompt)
-        self.assertIn("后续品牌、期间或指标子集不能覆盖或否定此前的全库覆盖证据", prompt)
-        self.assertIn("必须区分数据库整体覆盖与本次查询命中", prompt)
-        self.assertIn("不得因后续联网结果不足而删掉已经检索到的本地维度或品牌", prompt)
-        self.assertIn("是否调用工具以及如何组合", prompt)
-        self.assertIn("不要误称环境不支持", prompt)
-        self.assertNotIn("数据趋势与多组数据必须画图", prompt)
+        self.assertIn("search_local_reports 会同时返回本地和联网资料", prompt)
+        self.assertIn("由你判断查询方式与次数", prompt)
+        self.assertIn("指出冲突、未命中和时效差异", prompt)
+        self.assertIn("根据工具描述自主规划", prompt)
+        self.assertIn("不套用上一轮的结构", prompt)
         self.assertIn("本轮消息准确发送时间: 2026-07-27T18:23:45+08:00", prompt)
         self.assertIn("后端在每条消息到达时重新计算", prompt)
-        self.assertIn("web_search", captured["tools"])
+        self.assertNotIn("web_search", captured["tools"])
         self.assertIn("search_local_reports", captured["tools"])
 
     def test_web_search_filters_poisoned_results_and_supplies_official_entrypoints(self) -> None:
@@ -1260,8 +1253,36 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("macro_policy_metrics.csv", result)
         retrieval_query = retrieve.call_args.args[0]
         self.assertIn("香港5G频谱政策", retrieval_query)
-        self.assertIn("梳理香港5G频谱政策时间线和影响", retrieval_query)
+        self.assertNotIn("梳理香港5G频谱政策时间线和影响", retrieval_query)
         read_reference.assert_not_called()
+
+    def test_local_search_tool_returns_local_and_web_evidence_when_web_is_enabled(self) -> None:
+        local_result = (
+            "[来源 1: 本地套餐库]\n本地证据"
+            '\n<metadata>{"type":"meta","sources":["本地套餐库"],"links":[],"references":'
+            '[{"index":1,"source":"本地套餐库","links":[]}]}</metadata>'
+        )
+        web_result = (
+            "[来源 6: 官方网页]\n联网证据"
+            '\n<metadata>{"type":"meta","provider":"test","sources":["官方网页"],"links":[],"references":'
+            '[{"index":6,"source":"官方网页","links":[]}]}</metadata>'
+        )
+        web_token = agent.WEB_SEARCH_AVAILABLE.set(True)
+        try:
+            with (
+                mock.patch("agent._search_local_reports_only", return_value=local_result),
+                mock.patch("agent._web_search_only", return_value=web_result) as web_invoke,
+            ):
+                result = agent.search_local_reports.invoke({"query": "SmarTone HGC 稳定性"})
+        finally:
+            agent.WEB_SEARCH_AVAILABLE.reset(web_token)
+
+        self.assertIn("【本地资料】", result)
+        self.assertIn("【联网资料】", result)
+        self.assertIn("本地证据", result)
+        self.assertIn("联网证据", result)
+        self.assertEqual(result.count("<metadata>"), 1)
+        web_invoke.assert_called_once_with("SmarTone HGC 稳定性", 6)
 
     def test_generic_web_search_returns_no_sources_when_every_result_is_irrelevant(self) -> None:
         poisoned = [
@@ -1375,13 +1396,14 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertTrue(captured["llm_kwargs"]["disable_streaming"])
         self.assertEqual(captured["llm_kwargs"]["temperature"], 0.1)
         self.assertEqual(captured["llm_kwargs"]["max_tokens"], 4096)
-        self.assertEqual(
-            captured["tools"],
-            {"search_chat_history", "get_system_status", "list_crawl_runs", "get_crawl_settings_summary"},
-        )
+        self.assertIn("search_chat_history", captured["tools"])
+        self.assertIn("get_system_status", captured["tools"])
+        self.assertIn("search_local_reports", captured["tools"])
+        self.assertIn("render_python_chart", captured["tools"])
+        self.assertNotIn("web_search", captured["tools"])
         self.assertIn("理解用户意图，自主选择", captured["prompt"])
 
-    def test_dynamic_tool_routing_keeps_every_tool_available_by_intent(self) -> None:
+    def test_agent_tools_are_available_without_keyword_routing(self) -> None:
         default_names = {tool.name for tool in agent._agent_tools(allow_web_search=True)}
         targeted_names = {
             tool.name
@@ -1391,10 +1413,12 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             )
         }
 
-        self.assertIn("web_search", default_names)
+        self.assertIn("search_local_reports", default_names)
+        self.assertNotIn("web_search", default_names)
         self.assertIn("trigger_report_generation", targeted_names)
         self.assertIn("get_system_status", targeted_names)
         self.assertIn("list_crawl_runs", targeted_names)
+        self.assertIn("render_python_chart", targeted_names)
 
     def test_gateway_corruption_detector_catches_known_failure_shapes(self) -> None:
         samples = [
@@ -2266,57 +2290,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("brand=NETVIGATOR", result)
         self.assertNotIn("record_class,数据子库,时间类型", result)
 
-    def test_tariff_final_answer_cannot_discard_cross_brand_local_evidence(self) -> None:
-        overview = rag_llm._product_tariff_exact_chunks(
-            "请对比香港主要竞对最新移动与宽频套餐资费",
-            dataset_ids={"competitor_product_tariffs"},
-        )[0]["text"]
-        messages = [
-            agent.HumanMessage(content="请对比香港主要竞对最新移动与宽频套餐资费"),
-            agent.ToolMessage(
-                content=overview,
-                name="search_local_reports",
-                tool_call_id="tariff-overview",
-            ),
-        ]
-        bad = (
-            "当前可核验数据仅覆盖HKBN宽频，移动套餐完全缺失，"
-            "其他运营商的宽频数据也未获取。"
-        )
-        good = (
-            "移动套餐：3HK月费HK$188，SmarTone月费HK$399。"
-            "宽频套餐：NETVIGATOR月费HK$798，i-CABLE月费HK$88。"
-        )
-
-        self.assertIn("移动套餐未引用", agent._tariff_answer_evidence_mismatch(messages, bad))
-        self.assertIn("宽频套餐未引用", agent._tariff_answer_evidence_mismatch(messages, bad))
-        self.assertEqual(agent._tariff_answer_evidence_mismatch(messages, good), "")
-
-    def test_tariff_evidence_fallback_preserves_both_product_dimensions(self) -> None:
-        overview = rag_llm._product_tariff_exact_chunks(
-            "请对比香港主要竞对最新移动与宽频套餐资费",
-            dataset_ids={"competitor_product_tariffs"},
-        )[0]["text"]
-        messages = [
-            agent.HumanMessage(content="请对比香港主要竞对最新移动与宽频套餐资费"),
-            agent.ToolMessage(
-                content=overview,
-                name="search_local_reports",
-                tool_call_id="tariff-overview",
-            ),
-        ]
-
-        answer = agent._tariff_evidence_fallback_answer(messages)
-
-        self.assertIn("3HK / Hutchison", answer)
-        self.assertIn("HK$188/月", answer)
-        self.assertIn("SmarTone", answer)
-        self.assertIn("HK$399/月", answer)
-        self.assertIn("NETVIGATOR", answer)
-        self.assertIn("HK$798/月", answer)
-        self.assertIn("i-CABLE", answer)
-        self.assertIn("HK$88/月", answer)
-        self.assertNotIn("移动套餐完全缺失", answer)
+    def test_tariff_answers_are_not_rewritten_by_a_deterministic_postprocessor(self) -> None:
+        self.assertFalse(hasattr(agent, "_tariff_answer_evidence_mismatch"))
+        self.assertFalse(hasattr(agent, "_tariff_evidence_fallback_answer"))
 
     def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
         pseudo_message = agent.AIMessage(
