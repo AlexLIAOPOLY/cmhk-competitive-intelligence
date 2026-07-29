@@ -1153,27 +1153,6 @@ function renderStrategicOverview(rawItems, rawCandidateItems = []) {
   setText("latestSignalDate", latestDate ? formatShortDate(latestDate) : "--");
   setText("signalTrendTitle", showCandidateFallback ? "每日候选趋势" : "每日信号趋势");
   setText("signalTrendTotal", showCandidateFallback ? `${chartItems.length} 条候选` : `${items.length} 条`);
-  setText("signalTopicTitle", showCandidateFallback ? "候选主题" : "主题热度");
-  setText("signalTopicSubtitle", showCandidateFallback ? "采集候选构成" : "确认信号构成");
-
-  const topicList = document.getElementById("signalTopicList");
-  if (topicList) {
-    const peak = Math.max(1, ...chartCategories.map((entry) => entry[1]));
-    topicList.innerHTML = chartCategories.length
-      ? chartCategories.slice(0, 5).map(([category, count], index) => {
-          const color = strategicCategoryColor(category, index);
-          const share = chartItems.length ? Math.round((count / chartItems.length) * 100) : 0;
-          return `
-            <div class="signal-topic-row">
-              <div><i style="background:${color}"></i><span>${escapeHtml(category)}</span><b>${count}</b></div>
-              <div class="signal-topic-track" aria-label="${escapeHtml(category)} ${count} 条，占比 ${share}%">
-                <span style="width:${Math.max(8, (count / peak) * 100)}%;background:${color}"></span>
-              </div>
-            </div>
-          `;
-        }).join("")
-      : '<div class="signal-topic-empty">近14日暂无已确认信号</div>';
-  }
 
   const categoryOrder = chartCategories.map((entry) => entry[0]);
   initOrUpdateChart("signalTrendCanvas", {
@@ -1235,39 +1214,15 @@ function renderStrategicOverview(rawItems, rawCandidateItems = []) {
 
 function renderCollectionOverview(status) {
   const visuals = status.visuals || {};
-  const quality = visuals.quality || {};
-  const rejection = visuals.rejection || {};
-  const settings = status.settings || {};
-  const results = status.results || {};
-  const blocks = Array.isArray(visuals.blocks) ? visuals.blocks : [];
-  const entities = Array.isArray(visuals.entities) ? visuals.entities : [];
+  const todayNewsRounds = Array.isArray(visuals.todayNewsRounds) ? visuals.todayNewsRounds : [];
   const newsFunnel = visuals.newsFunnel || {};
-  const taskCount = Number(results.count || settings.totalRows || 0);
-  const acceptedFacts = Number(rejection.accepted || 0);
-  const rawSources = Number(quality.rawSources || 0);
-
-  const setText = (id, value) => {
-    const node = document.getElementById(id);
-    if (node) node.textContent = value;
-  };
-  setText("collectionTaskCount", String(taskCount || "--"));
-  setText("collectionFactCount", String(acceptedFacts || "--"));
-  setText("collectionSourceCount", String(rawSources || "--"));
-  const assetTimestamps = [status.latestOutputText, newsFunnel.completedAt]
-    .map((value) => {
-      const raw = String(value || "").trim();
-      if (!raw || raw === "未生成") return null;
-      const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)
-        ? `${raw.replace(" ", "T")}+08:00`
-        : raw;
-      const parsed = new Date(normalized);
-      return Number.isNaN(parsed.getTime()) ? null : parsed;
-    })
-    .filter(Boolean);
-  const latestAssetTime = assetTimestamps.length
-    ? new Date(Math.max(...assetTimestamps.map((value) => value.getTime())))
-    : null;
+  const rawCompletedAt = String(newsFunnel.completedAt || "").trim();
+  const normalizedCompletedAt = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(rawCompletedAt)
+    ? `${rawCompletedAt.replace(" ", "T")}+08:00`
+    : rawCompletedAt;
+  const latestAssetTime = normalizedCompletedAt ? new Date(normalizedCompletedAt) : null;
   const assetTimeText = latestAssetTime
+    && !Number.isNaN(latestAssetTime.getTime())
     ? new Intl.DateTimeFormat("zh-CN", {
         month: "long",
         day: "numeric",
@@ -1278,162 +1233,106 @@ function renderCollectionOverview(status) {
         timeZone: "Asia/Hong_Kong",
       }).format(latestAssetTime)
     : "--";
-  setText("collectionOverviewUpdated", `截至 ${assetTimeText}`);
+  const updatedNode = document.getElementById("collectionOverviewUpdated");
+  if (updatedNode) updatedNode.textContent = `截至 ${assetTimeText}`;
 
-  const compositionTotal = sumValues(blocks);
-  setText("collectionCompositionTotal", `${compositionTotal} 项`);
-  const compositionHost = document.getElementById("collectionCompositionList");
-  if (compositionHost) {
-    const compositionSignature = blocks
-      .slice(0, 4)
-      .map((item) => `${String(item.label || "其他信息")}:${Number(item.value || 0)}`)
-      .join("|");
-    if (compositionHost.dataset.signature !== compositionSignature) {
-      compositionHost.dataset.signature = compositionSignature;
-      const peak = Math.max(1, ...blocks.map((item) => Number(item.value || 0)));
-      const colors = ["#0077c8", "#13a27a", "#7656d6", "#e59a18"];
-      compositionHost.innerHTML = blocks.length
-        ? blocks.slice(0, 4).map((item, index) => {
-            const value = Number(item.value || 0);
-            const share = compositionTotal ? Math.round((value / compositionTotal) * 100) : 0;
-            return `
-              <div class="collection-bar-row">
-                <div><span>${escapeHtml(item.label || "其他信息")}</span><b>${value}</b></div>
-                <div class="collection-bar-track" aria-label="${escapeHtml(item.label || "其他信息")} ${value} 项，占比 ${share}%">
-                  <span style="--bar-width:${Math.max(6, (value / peak) * 100)}%;--bar-color:${colors[index % colors.length]}"></span>
-                </div>
-              </div>
-            `;
-          }).join("")
-        : '<div class="collection-empty">暂无采集内容构成</div>';
-    }
-  }
+  const assetHost = document.getElementById("dailyAssetGrid");
+  if (!assetHost) return;
+  const signature = todayNewsRounds
+    .map((round) => `${round.key}:${round.status}:${round.discovered}:${round.confirmed}:${round.historyDuplicates}:${round.newCount}`)
+    .join("|");
+  if (assetHost.dataset.signature === signature) return;
+  assetHost.dataset.signature = signature;
 
-  const funnelStages = Array.isArray(newsFunnel.stages) ? newsFunnel.stages : [];
-  const funnelHost = document.getElementById("collectionFunnel");
-  const funnelScope = String(newsFunnel.label || newsFunnel.scope || "").replace(/[（）]/g, "");
-  setText("collectionFunnelScope", funnelScope || "暂无完成记录");
-  if (funnelHost) {
-    const funnelSignature = funnelStages
-      .map((item) => [
-        String(item.key || ""),
-        Number(item.value || 0),
-        Number(item.removed || 0),
-        String(item.detail || ""),
-      ].join(":"))
-      .join("|") + `|duplicates:${Number(newsFunnel.historyDuplicates || 0)}`;
-    if (funnelHost.dataset.signature !== funnelSignature) {
-      funnelHost.dataset.signature = funnelSignature;
-      const visibleStages = funnelStages.slice(0, 4);
-      const funnelCenter = 180;
-      const funnelTop = 4;
-      const funnelStageHeight = 40;
-      const funnelWidths = [340, 282, 224, 170, 120];
-      funnelHost.innerHTML = visibleStages.length
-        ? `
-          <svg
-            class="collection-funnel-svg"
-            viewBox="0 0 360 ${funnelTop * 2 + visibleStages.length * funnelStageHeight}"
-            role="img"
-            aria-label="最近一次战略新闻筛选漏斗"
-          >
-            <defs>
-              <linearGradient id="collectionFunnelStage1" x1="0" x2="1">
-                <stop offset="0%" stop-color="#d9eff9"></stop>
-                <stop offset="100%" stop-color="#a9d9ef"></stop>
+  const funnelColors = [
+    ["#d9eff9", "#a9d9ef"],
+    ["#c9ebe1", "#9bd8c6"],
+    ["#ddd8f5", "#bfb4e8"],
+    ["#1595cf", "#0872b4"],
+  ];
+  const renderFunnel = (round, roundIndex) => {
+    const stages = Array.isArray(round.stages) ? round.stages.slice(0, 4) : [];
+    if (!stages.length) return '<div class="collection-empty">该轮扫描尚未完成</div>';
+    const center = 180;
+    const top = 4;
+    const stageHeight = 42;
+    const widths = [340, 282, 224, 170, 120];
+    return `
+      <div class="collection-funnel daily-round-funnel">
+        <svg class="collection-funnel-svg" viewBox="0 0 360 ${top * 2 + stages.length * stageHeight}" role="img" aria-label="${escapeHtml(round.label || "本轮")}筛选漏斗">
+          <defs>
+            ${funnelColors.map((colors, index) => `
+              <linearGradient id="dailyFunnel-${roundIndex}-${index}" x1="0" x2="1">
+                <stop offset="0%" stop-color="${colors[0]}"></stop>
+                <stop offset="100%" stop-color="${colors[1]}"></stop>
               </linearGradient>
-              <linearGradient id="collectionFunnelStage2" x1="0" x2="1">
-                <stop offset="0%" stop-color="#c9ebe1"></stop>
-                <stop offset="100%" stop-color="#9bd8c6"></stop>
-              </linearGradient>
-              <linearGradient id="collectionFunnelStage3" x1="0" x2="1">
-                <stop offset="0%" stop-color="#ddd8f5"></stop>
-                <stop offset="100%" stop-color="#bfb4e8"></stop>
-              </linearGradient>
-              <linearGradient id="collectionFunnelStage4" x1="0" x2="1">
-                <stop offset="0%" stop-color="#1595cf"></stop>
-                <stop offset="100%" stop-color="#0872b4"></stop>
-              </linearGradient>
-            </defs>
-            ${visibleStages.map((item, index) => {
+            `).join("")}
+          </defs>
+          ${stages.map((item, index) => {
             const value = Number(item.value || 0);
             const detail = String(item.detail || "");
-            const accessibleText = `${item.label || "筛选阶段"} ${value} 条。${detail}`;
-            const y1 = funnelTop + index * funnelStageHeight;
-            const y2 = y1 + funnelStageHeight;
-            const width1 = funnelWidths[index];
-            const width2 = funnelWidths[index + 1];
-            const left1 = funnelCenter - width1 / 2;
-            const right1 = funnelCenter + width1 / 2;
-            const left2 = funnelCenter - width2 / 2;
-            const right2 = funnelCenter + width2 / 2;
-            const labelY = y1 + funnelStageHeight / 2 + 4;
+            const y1 = top + index * stageHeight;
+            const y2 = y1 + stageHeight;
+            const left1 = center - widths[index] / 2;
+            const right1 = center + widths[index] / 2;
+            const left2 = center - widths[index + 1] / 2;
+            const right2 = center + widths[index + 1] / 2;
             return `
-              <g
-                class="collection-funnel-stage is-stage-${index + 1}"
-                tabindex="0"
-                role="button"
-                aria-label="${escapeHtml(accessibleText)}"
+              <g class="collection-funnel-stage is-stage-${index + 1}" tabindex="0" role="button"
+                aria-label="${escapeHtml(`${item.label || "筛选阶段"} ${value} 条。${detail}`)}"
                 data-funnel-title="${escapeHtml(item.label || "筛选阶段")} · ${value} 条"
-                data-funnel-detail="${escapeHtml(detail)}"
-              >
-                <polygon
-                  points="${left1},${y1} ${right1},${y1} ${right2},${y2} ${left2},${y2}"
-                  fill="url(#collectionFunnelStage${index + 1})"
-                ></polygon>
-                <text class="collection-funnel-stage-label" x="${funnelCenter}" y="${labelY}" text-anchor="middle">
-                  ${escapeHtml(item.label || "筛选阶段")}
-                  <tspan class="collection-funnel-stage-value" dx="8">${value}</tspan>
+                data-funnel-detail="${escapeHtml(detail)}">
+                <polygon points="${left1},${y1} ${right1},${y1} ${right2},${y2} ${left2},${y2}" fill="url(#dailyFunnel-${roundIndex}-${index})"></polygon>
+                <text class="collection-funnel-stage-label" x="${center}" y="${y1 + stageHeight / 2 + 4}" text-anchor="middle">
+                  ${escapeHtml(item.label || "筛选阶段")}<tspan class="collection-funnel-stage-value" dx="8">${value}</tspan>
                 </text>
               </g>
             `;
           }).join("")}
-          </svg>
-            <div class="collection-funnel-tooltip" role="tooltip" hidden>
-              <strong></strong>
-              <span></span>
-            </div>
-          `
-        : '<div class="collection-empty">暂无已完成的战略新闻筛选记录</div>';
-      const tooltip = funnelHost.querySelector(".collection-funnel-tooltip");
-      const hideTooltip = () => {
-        if (tooltip) tooltip.hidden = true;
-      };
-      funnelHost.querySelectorAll(".collection-funnel-stage").forEach((bar) => {
-        const showTooltip = () => {
-          if (!tooltip) return;
-          const title = tooltip.querySelector("strong");
-          const detail = tooltip.querySelector("span");
-          if (title) title.textContent = bar.dataset.funnelTitle || "";
-          if (detail) detail.textContent = bar.dataset.funnelDetail || "";
-          tooltip.hidden = false;
-        };
-        bar.addEventListener("mouseenter", showTooltip);
-        bar.addEventListener("focus", showTooltip);
-        bar.addEventListener("click", showTooltip);
-        bar.addEventListener("mouseleave", hideTooltip);
-        bar.addEventListener("blur", hideTooltip);
-      });
-    }
-  }
+        </svg>
+        <div class="collection-funnel-tooltip" role="tooltip" hidden><strong></strong><span></span></div>
+      </div>
+    `;
+  };
 
-  const entityHost = document.getElementById("collectionEntityList");
-  if (entityHost) {
-    const entitySignature = entities
-      .slice(0, 8)
-      .map((item) => `${String(item.label || "未标记主体")}:${Number(item.value || 0)}`)
-      .join("|");
-    if (entityHost.dataset.signature !== entitySignature) {
-      entityHost.dataset.signature = entitySignature;
-      entityHost.innerHTML = entities.length
-        ? entities.slice(0, 8).map((item) => `
-            <span>
-              ${escapeHtml(item.label || "未标记主体")}<b>${Number(item.value || 0)}</b>
-            </span>
-          `).join("")
-        : '<div class="collection-empty">暂无主体数据</div>';
-    }
-  }
+  assetHost.innerHTML = todayNewsRounds.length
+    ? todayNewsRounds.map((round, roundIndex) => `
+      <section class="daily-asset-round" aria-labelledby="dailyAssetRound-${roundIndex}">
+        <header class="daily-asset-round-header">
+          <div><h3 id="dailyAssetRound-${roundIndex}">${escapeHtml(round.label || "扫描")}扫描</h3><time>${escapeHtml(round.time || "")}</time></div>
+          <span class="${round.status === "已补录" ? "is-reconciled" : ""}">${escapeHtml(round.status || "已完成")}</span>
+        </header>
+        <div class="daily-asset-kpis">
+          <div><span>检索发现</span><strong>${Number(round.discovered || 0)}</strong></div>
+          <div><span>AI确认</span><strong>${Number(round.confirmed || 0)}</strong></div>
+          <div><span>新增入库</span><strong>${Number(round.newCount || 0)}</strong></div>
+        </div>
+        ${renderFunnel(round, roundIndex)}
+      </section>
+    `).join("")
+    : '<div class="collection-empty">今日上午及下午扫描尚未完成</div>';
+
+  assetHost.querySelectorAll(".collection-funnel").forEach((funnelHost) => {
+    const tooltip = funnelHost.querySelector(".collection-funnel-tooltip");
+    const hideTooltip = () => {
+      if (tooltip) tooltip.hidden = true;
+    };
+    funnelHost.querySelectorAll(".collection-funnel-stage").forEach((stage) => {
+      const showTooltip = () => {
+        if (!tooltip) return;
+        const title = tooltip.querySelector("strong");
+        const detail = tooltip.querySelector("span");
+        if (title) title.textContent = stage.dataset.funnelTitle || "";
+        if (detail) detail.textContent = stage.dataset.funnelDetail || "";
+        tooltip.hidden = false;
+      };
+      stage.addEventListener("mouseenter", showTooltip);
+      stage.addEventListener("focus", showTooltip);
+      stage.addEventListener("click", showTooltip);
+      stage.addEventListener("mouseleave", hideTooltip);
+      stage.addEventListener("blur", hideTooltip);
+    });
+  });
 }
 
 function renderInsights(status) {

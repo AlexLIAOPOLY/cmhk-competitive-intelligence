@@ -42,27 +42,53 @@ class ReportFileNameTests(unittest.TestCase):
 
         self.assertIn('id="collectionOverviewTitle">今日信息资产</h2>', html)
         self.assertIn('id="collectionOverviewUpdated">截至 --</small>', html)
-        self.assertIn('setText("collectionOverviewUpdated", `截至 ${assetTimeText}`)', app)
+        self.assertIn('id="dailyAssetGrid"', html)
+        self.assertNotIn('class="signal-kpi-grid"', html)
+        self.assertNotIn('id="signalTopicList"', html)
+        self.assertIn("Array.isArray(visuals.todayNewsRounds)", app)
+        self.assertIn("上午及下午扫描尚未完成", app)
+        self.assertIn("daily-asset-round", app)
 
     def test_latest_news_funnel_uses_completed_strategic_scan_summary(self) -> None:
-        with mock.patch.object(
-            web_app,
-            "load_crawl_run_index",
-            return_value=[
-                {
-                    "task_kind": "strategic-news",
-                    "run_status": "completed",
-                    "scope": "午后扫描（2026-07-29@15:00）",
-                    "completed_at_hkt": "2026-07-29T15:52:38+08:00",
-                    "operational_summary": {
-                        "slot": "2026-07-29@15:00-rerun-v2",
-                        "discovered": 47,
-                        "ai_retained": 19,
-                        "history_duplicates": 2,
-                        "new_count": 17,
+        with (
+            mock.patch.object(
+                web_app,
+                "load_crawl_run_index",
+                return_value=[
+                    {
+                        "task_kind": "strategic-news",
+                        "run_status": "completed",
+                        "scope": "午后扫描（2026-07-29@15:00）",
+                        "completed_at_hkt": "2026-07-29T15:52:38+08:00",
+                        "operational_summary": {
+                            "slot": "2026-07-29@15:00-rerun-v2",
+                            "discovered": 47,
+                            "ai_retained": 19,
+                            "history_duplicates": 2,
+                            "new_count": 17,
+                        },
                     },
-                }
-            ],
+                ],
+            ),
+            mock.patch.object(
+                web_app,
+                "load_strategic_news_run",
+                return_value={
+                    "review_sheet": {
+                        "new_category_counts": {
+                            "竞对动态": 2,
+                            "竞争对手": 1,
+                            "政策监管": 3,
+                        },
+                        "new_source_count": 16,
+                        "new_items": [
+                            {"business_impact": "收入与需求"},
+                            {"business_impact": "收入与需求"},
+                            {"business_impact": "网络与运营"},
+                        ],
+                    }
+                },
+            ),
         ):
             funnel = web_app.build_latest_news_funnel()
 
@@ -75,6 +101,66 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(funnel["stages"][1]["removed"], 28)
         self.assertEqual(funnel["stages"][1]["rate"], 40)
         self.assertIn("事件级语义去重", funnel["stages"][2]["detail"])
+        self.assertEqual(
+            funnel["summary"],
+            {"discovered": 47, "confirmed": 19, "newCount": 17, "sourceCount": 16},
+        )
+        self.assertEqual(
+            funnel["categories"],
+            [{"label": "竞对动态", "value": 3}, {"label": "政策监管", "value": 3}],
+        )
+        self.assertEqual(
+            funnel["impacts"],
+            [{"label": "收入与需求", "value": 2}, {"label": "网络与运营", "value": 1}],
+        )
+
+    def test_today_news_rounds_compare_morning_and_afternoon_archives(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            runs_dir = Path(tmp)
+            (runs_dir / "2026-07-29@09-00.json").write_text(
+                json.dumps(
+                    {
+                        "news_discovery": {"result_count": 120},
+                        "review_sheet": {"batch_count": 18, "new_count": 1},
+                        "dashboard_summary": {
+                            "discovered": 120,
+                            "confirmed": 20,
+                            "history_duplicates": 17,
+                            "new_count": 3,
+                            "status": "已补录",
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (runs_dir / "2026-07-29@15-00.json").write_text(
+                json.dumps(
+                    {
+                        "status": "completed",
+                        "news_discovery": {"result_count": 47},
+                        "review_sheet": {
+                            "batch_count": 19,
+                            "new_count": 17,
+                            "semantic_duplicate_count": 2,
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            with mock.patch.object(web_app, "STRATEGIC_BRIEFING_RUNS_DIR", runs_dir):
+                rounds = web_app.build_today_news_rounds("2026-07-29")
+
+        self.assertEqual(
+            [(item["label"], item["discovered"], item["confirmed"], item["newCount"]) for item in rounds],
+            [("上午", 120, 20, 3), ("下午", 47, 19, 17)],
+        )
+        self.assertEqual(rounds[0]["status"], "已补录")
+        self.assertEqual(
+            [[stage["value"] for stage in item["stages"]] for item in rounds],
+            [[120, 20, 3, 3], [47, 19, 17, 17]],
+        )
 
     def test_strategic_news_crawl_is_visible_as_news_crawler_task(self) -> None:
         task = web_app._normalize_crawl_task(
@@ -98,7 +184,8 @@ class ReportFileNameTests(unittest.TestCase):
 
         self.assertIn("showCandidateFallback", app)
         self.assertIn('showCandidateFallback ? "每日候选趋势" : "每日信号趋势"', app)
-        self.assertIn('showCandidateFallback ? "采集候选构成" : "确认信号构成"', app)
+        self.assertIn("Array.isArray(visuals.todayNewsRounds)", app)
+        self.assertNotIn('id="signalTopicTitle">主题热度</strong>', (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8"))
         self.assertIn("renderStrategicOverview(items, payload.candidate_items)", app)
 
     def test_report_file_pattern_accepts_new_and_legacy_as_of_names(self) -> None:
@@ -830,14 +917,13 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("els.composerUploadImageButton.disabled = state.chatImageAnalysisBusy;", app)
         self.assertNotIn("当前模型不支持图片，请先切换到视觉模型。", app)
 
-    def test_collection_composition_bars_do_not_replay_on_status_polling(self) -> None:
+    def test_daily_asset_funnels_do_not_replay_on_status_polling(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
 
-        self.assertIn("const compositionSignature = blocks", app)
-        self.assertIn("compositionHost.dataset.signature !== compositionSignature", app)
-        self.assertIn("const entitySignature = entities", app)
-        self.assertIn("entityHost.dataset.signature !== entitySignature", app)
+        self.assertIn("if (assetHost.dataset.signature === signature) return;", app)
+        self.assertIn("assetHost.dataset.signature = signature;", app)
+        self.assertIn('id="dailyAssetRound-${roundIndex}"', app)
         self.assertNotIn("animation: cockpit-bar-grow", styles)
         self.assertNotIn("animation: cockpit-rise 400ms", styles)
 

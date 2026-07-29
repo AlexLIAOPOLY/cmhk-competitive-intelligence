@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
-  <link rel="stylesheet" href="/static/styles.css?v=212" />
+  <link rel="stylesheet" href="/static/styles.css?v=213" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -38,50 +38,17 @@
                 </div>
               </header>
 
-              <div class="signal-kpi-grid" aria-label="关键情报指标">
-                <div class="signal-kpi is-primary">
-                  <span>确认信号</span>
-                  <strong id="signalCount">--</strong>
-                </div>
-                <div class="signal-kpi">
-                  <span>竞对动态</span>
-                  <strong id="competitorSignalCount">--</strong>
-                </div>
-                <div class="signal-kpi">
-                  <span>活跃主题</span>
-                  <strong id="activeTopicCount">--</strong>
-                </div>
-                <div class="signal-kpi">
-                  <span>最新信号</span>
-                  <strong id="latestSignalDate">--</strong>
-                </div>
-              </div>
-
-              <div class="signal-analysis-grid">
-                <section class="signal-chart-card" aria-labelledby="signalTrendTitle">
-                  <div class="signal-chart-heading">
-                    <div>
-                      <strong id="signalTrendTitle">每日信号趋势</strong>
-                    </div>
-                    <span id="signalTrendTotal">-- 条</span>
+              <section class="signal-chart-card" aria-labelledby="signalTrendTitle">
+                <div class="signal-chart-heading">
+                  <div>
+                    <strong id="signalTrendTitle">每日信号趋势</strong>
                   </div>
-                  <div class="signal-trend-chart">
-                    <canvas id="signalTrendCanvas"></canvas>
-                  </div>
-                </section>
-                <section class="signal-topic-card" aria-labelledby="signalTopicTitle">
-                  <div class="signal-chart-heading">
-                    <div>
-                      <strong id="signalTopicTitle">主题热度</strong>
-                      <span id="signalTopicSubtitle">确认信号构成</span>
-                    </div>
-                  </div>
-                  <div class="signal-topic-list" id="signalTopicList">
-                    <div class="signal-topic-empty">正在汇总主题</div>
-                  </div>
-                </section>
-              </div>
-
+                  <span id="signalTrendTotal">-- 条</span>
+                </div>
+                <div class="signal-trend-chart">
+                  <canvas id="signalTrendCanvas"></canvas>
+                </div>
+              </section>
             </article>
             <aside class="strategy-ticker" aria-label="滚动战略快讯">
               <header class="strategy-ticker-header">
@@ -111,51 +78,9 @@
                   <small class="collection-overview-updated" id="collectionOverviewUpdated">截至 --</small>
                 </div>
               </header>
-
-              <div class="collection-kpi-grid">
-                <div>
-                  <span>监测任务</span>
-                  <strong id="collectionTaskCount">--</strong>
-                </div>
-                <div>
-                  <span>有效事实</span>
-                  <strong id="collectionFactCount">--</strong>
-                </div>
-                <div>
-                  <span>来源证据</span>
-                  <strong id="collectionSourceCount">--</strong>
-                </div>
+              <div class="daily-asset-grid" id="dailyAssetGrid" aria-live="polite">
+                <div class="collection-empty">正在读取上午及下午信息资产</div>
               </div>
-
-              <section class="collection-section" aria-labelledby="collectionCompositionTitle">
-                <div class="collection-section-title">
-                  <strong id="collectionCompositionTitle">采集内容构成</strong>
-                  <span id="collectionCompositionTotal">-- 项</span>
-                </div>
-                <div class="collection-bar-list" id="collectionCompositionList">
-                  <div class="collection-empty">正在读取采集内容</div>
-                </div>
-              </section>
-
-              <section class="collection-section collection-funnel-section" aria-labelledby="collectionFunnelTitle">
-                <div class="collection-section-title">
-                  <strong id="collectionFunnelTitle">最近一轮筛选漏斗</strong>
-                  <span id="collectionFunnelScope">--</span>
-                </div>
-                <div class="collection-funnel" id="collectionFunnel" aria-live="polite">
-                  <div class="collection-empty">正在读取最近一轮筛选结果</div>
-                </div>
-              </section>
-
-              <section class="collection-section collection-entity-section" aria-labelledby="collectionEntityTitle">
-                <div class="collection-section-title">
-                  <strong id="collectionEntityTitle">重点关注主体</strong>
-                  <span>按采集记录</span>
-                </div>
-                <div class="collection-entity-list" id="collectionEntityList">
-                  <div class="collection-empty">正在汇总主体</div>
-                </div>
-              </section>
             </article>
           </section>
 
@@ -494,6 +419,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=234"></script>
+    <script src="/static/app.js?v=235"></script>
   </body>
 </html>

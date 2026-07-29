@@ -58,6 +58,7 @@ RESULTS_DIR = ROOT / "results"
 CURATION_LATEST_PATH = ROOT / "curation_data" / "latest.json"
 CURATION_CANDIDATE_FACTS_PATH = ROOT / "curation_data" / "candidate_facts.jsonl"
 CURATION_AGENT_TRACE_PATH = ROOT / "curation_data" / "agent_trace.jsonl"
+STRATEGIC_BRIEFING_RUNS_DIR = ROOT / "strategy_briefing" / "runs"
 LOCAL_TEMPLATE_PATH = Path("/Users/liaowang/Downloads/模板.docx")
 REPO_TEMPLATE_PATH = ROOT / "weekly_report_template.docx"
 TEMPLATE_PATH = LOCAL_TEMPLATE_PATH if LOCAL_TEMPLATE_PATH.exists() else REPO_TEMPLATE_PATH
@@ -1370,6 +1371,7 @@ def build_status() -> dict:
     latest_crawl_time = max((path.stat().st_mtime for path in result_files if path.exists()), default=None)
     settings = build_settings_payload()
     latest_news_funnel = build_latest_news_funnel()
+    today_news_rounds = build_today_news_rounds()
     
     # Sort outputs by mtime descending
     outputs.sort(key=lambda x: x["mtime"], reverse=True)
@@ -1419,6 +1421,7 @@ def build_status() -> dict:
             )[:6],
             "rejection": build_curation_rejection_visuals(),
             "newsFunnel": latest_news_funnel,
+            "todayNewsRounds": today_news_rounds,
             "entities": sorted(
                 [{"label": key, "value": value} for key, value in entity_counts.items()],
                 key=lambda item: item["value"],
@@ -1441,6 +1444,172 @@ def build_status() -> dict:
     }
 
 
+def load_strategic_news_run(slot: str) -> dict:
+    normalized_slot = str(slot or "").strip()
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}(?:[-A-Za-z0-9_.]+)?", normalized_slot):
+        return {}
+    path = STRATEGIC_BRIEFING_RUNS_DIR / f"{normalized_slot.replace(':', '-')}.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def build_today_news_rounds(today_key: str = "") -> list[dict]:
+    day = str(today_key or "").strip() or datetime.now().astimezone().strftime("%Y-%m-%d")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", day):
+        return []
+    rounds: list[dict] = []
+    for hour, label in (("09", "上午"), ("15", "下午")):
+        paths = sorted(
+            STRATEGIC_BRIEFING_RUNS_DIR.glob(f"{day}@{hour}-*.json"),
+            key=lambda path: path.stat().st_mtime,
+            reverse=True,
+        )
+        payload: dict = {}
+        for path in paths:
+            try:
+                candidate = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if isinstance(candidate, dict) and isinstance(candidate.get("review_sheet"), dict):
+                payload = candidate
+                break
+        if not payload:
+            continue
+        review_sheet = payload.get("review_sheet") or {}
+        dashboard_summary = payload.get("dashboard_summary") or {}
+        news_discovery = payload.get("news_discovery") or {}
+        discovered = max(
+            0,
+            int(
+                dashboard_summary.get("discovered")
+                or news_discovery.get("result_count")
+                or review_sheet.get("input_count")
+                or 0
+            ),
+        )
+        confirmed = max(
+            0,
+            int(
+                dashboard_summary.get("confirmed")
+                or review_sheet.get("batch_count")
+                or max(0, discovered - int(review_sheet.get("filtered_count") or 0))
+            ),
+        )
+        new_count = max(
+            0,
+            int(dashboard_summary.get("new_count") or review_sheet.get("new_count") or 0),
+        )
+        history_duplicates = max(
+            0,
+            min(
+                confirmed,
+                int(
+                    dashboard_summary.get("history_duplicates")
+                    or review_sheet.get("semantic_duplicate_count")
+                    or 0
+                ),
+            ),
+        )
+        deduplicated = max(0, confirmed - history_duplicates)
+        status = str(dashboard_summary.get("status") or "").strip()
+        if not status:
+            status = "已完成" if payload.get("status") == "completed" else "已归档"
+        stages = [
+            {
+                "key": "discovered",
+                "label": "检索发现",
+                "value": discovered,
+                "detail": "固定监控与 Agentic Search 汇总的候选新闻。",
+            },
+            {
+                "key": "confirmed",
+                "label": "AI确认",
+                "value": confirmed,
+                "detail": "AI 结合竞对、政策及战略相关性完成审核。",
+            },
+            {
+                "key": "deduplicated",
+                "label": "历史去重",
+                "value": deduplicated,
+                "detail": f"与历史记录比对，排除 {history_duplicates} 条重复事件。",
+            },
+            {
+                "key": "new",
+                "label": "新增入库",
+                "value": new_count,
+                "detail": "已写入飞书、纳入今日信息资产的新增记录。",
+            },
+        ]
+        rounds.append(
+            {
+                "key": f"{day}-{hour}",
+                "label": label,
+                "time": f"{hour}:00",
+                "status": status,
+                "discovered": discovered,
+                "confirmed": confirmed,
+                "historyDuplicates": history_duplicates,
+                "newCount": new_count,
+                "note": str(dashboard_summary.get("note") or "").strip(),
+                "stages": stages,
+            }
+        )
+    return rounds
+
+
+def _group_latest_news_categories(raw_counts: object) -> list[dict]:
+    if not isinstance(raw_counts, dict):
+        return []
+    label_map = {
+        "基础设施/网络/技术类": "网络与技术",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观与国际",
+        "市场/产品类": "市场与产品",
+        "竞争对手": "竞对动态",
+    }
+    grouped: dict[str, int] = {}
+    for raw_label, raw_value in raw_counts.items():
+        label = label_map.get(str(raw_label), str(raw_label).strip() or "其他")
+        try:
+            value = max(0, int(raw_value or 0))
+        except (TypeError, ValueError):
+            value = 0
+        if value:
+            grouped[label] = grouped.get(label, 0) + value
+    label_priority = {
+        "竞对动态": 0,
+        "政策监管": 1,
+        "网络与技术": 2,
+        "市场与产品": 3,
+        "宏观与国际": 4,
+    }
+    items = sorted(
+        [{"label": label, "value": value} for label, value in grouped.items()],
+        key=lambda item: (-item["value"], label_priority.get(item["label"], 99), item["label"]),
+    )
+    if len(items) <= 4:
+        return items
+    return items[:3] + [{"label": "其他", "value": sum(item["value"] for item in items[3:])}]
+
+
+def _group_latest_news_impacts(new_items: object) -> list[dict]:
+    if not isinstance(new_items, list):
+        return []
+    counts: dict[str, int] = {}
+    for item in new_items:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("business_impact") or "").strip()
+        if label:
+            counts[label] = counts.get(label, 0) + 1
+    return sorted(
+        [{"label": label, "value": value} for label, value in counts.items()],
+        key=lambda item: (-item["value"], item["label"]),
+    )
+
+
 def build_latest_news_funnel() -> dict:
     for run in load_crawl_run_index():
         if str(run.get("task_kind") or "") != "strategic-news":
@@ -1459,6 +1628,13 @@ def build_latest_news_funnel() -> dict:
         new_count = max(0, int(summary.get("new_count") or 0))
         deduplicated = max(0, ai_confirmed - history_duplicates)
         slot = str(summary.get("slot") or "")
+        run_payload = load_strategic_news_run(slot)
+        review_sheet = run_payload.get("review_sheet")
+        if not isinstance(review_sheet, dict):
+            review_sheet = {}
+        categories = _group_latest_news_categories(review_sheet.get("new_category_counts"))
+        impacts = _group_latest_news_impacts(review_sheet.get("new_items"))
+        source_count = max(0, int(review_sheet.get("new_source_count") or 0))
         slot_match = re.match(
             r"^(\d{4})-(\d{2})-(\d{2})@(\d{2}:\d{2})",
             slot,
@@ -1473,6 +1649,14 @@ def build_latest_news_funnel() -> dict:
             "label": slot_label,
             "completedAt": str(run.get("completed_at_hkt") or ""),
             "historyDuplicates": history_duplicates,
+            "summary": {
+                "discovered": discovered,
+                "confirmed": ai_confirmed,
+                "newCount": new_count,
+                "sourceCount": source_count,
+            },
+            "categories": categories,
+            "impacts": impacts,
             "stages": [
                 {
                     "key": "discovered",
@@ -1533,6 +1717,9 @@ def build_latest_news_funnel() -> dict:
         "label": "",
         "completedAt": "",
         "historyDuplicates": 0,
+        "summary": {},
+        "categories": [],
+        "impacts": [],
         "stages": [],
     }
 
