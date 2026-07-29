@@ -46,6 +46,9 @@ class ReportFileNameTests(unittest.TestCase):
         )
         self.assertEqual(funnel["historyDuplicates"], 2)
         self.assertEqual(funnel["label"], "7月29日 15:00")
+        self.assertEqual(funnel["stages"][1]["removed"], 28)
+        self.assertEqual(funnel["stages"][1]["rate"], 40)
+        self.assertIn("事件级语义去重", funnel["stages"][2]["detail"])
 
     def test_strategic_news_crawl_is_visible_as_news_crawler_task(self) -> None:
         task = web_app._normalize_crawl_task(

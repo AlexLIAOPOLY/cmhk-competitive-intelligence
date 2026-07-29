@@ -1474,10 +1474,58 @@ def build_latest_news_funnel() -> dict:
             "completedAt": str(run.get("completed_at_hkt") or ""),
             "historyDuplicates": history_duplicates,
             "stages": [
-                {"key": "discovered", "label": "检索发现", "value": discovered},
-                {"key": "confirmed", "label": "AI确认", "value": ai_confirmed},
-                {"key": "deduplicated", "label": "历史去重", "value": deduplicated},
-                {"key": "new", "label": "本轮新增", "value": new_count},
+                {
+                    "key": "discovered",
+                    "label": "检索发现",
+                    "value": discovered,
+                    "removed": 0,
+                    "rate": 100,
+                    "note": "候选池",
+                    "detail": (
+                        "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，"
+                        f"在本轮时间窗内共得到 {discovered} 条候选。"
+                    ),
+                },
+                {
+                    "key": "confirmed",
+                    "label": "AI确认",
+                    "value": ai_confirmed,
+                    "removed": max(0, discovered - ai_confirmed),
+                    "rate": round(ai_confirmed / discovered * 100) if discovered else 0,
+                    "note": (
+                        f"保留 {round(ai_confirmed / discovered * 100)}%"
+                        if discovered
+                        else "等待审核"
+                    ),
+                    "detail": (
+                        "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；"
+                        f"确认 {ai_confirmed} 条，未确认 {max(0, discovered - ai_confirmed)} 条。"
+                    ),
+                },
+                {
+                    "key": "deduplicated",
+                    "label": "历史去重",
+                    "value": deduplicated,
+                    "removed": history_duplicates,
+                    "rate": round(deduplicated / ai_confirmed * 100) if ai_confirmed else 0,
+                    "note": f"排除 {history_duplicates} 条",
+                    "detail": (
+                        "对全部飞书历史记录执行事件级语义去重；"
+                        f"识别并排除 {history_duplicates} 条重复事件，剩余 {deduplicated} 条。"
+                    ),
+                },
+                {
+                    "key": "new",
+                    "label": "本轮新增",
+                    "value": new_count,
+                    "removed": max(0, deduplicated - new_count),
+                    "rate": round(new_count / deduplicated * 100) if deduplicated else 0,
+                    "note": "已写入飞书",
+                    "detail": (
+                        f"最终 {new_count} 条完成飞书写入和逐格回读，"
+                        "全部归档成功后才发送群通知。"
+                    ),
+                },
             ],
         }
     return {

@@ -1290,7 +1290,12 @@ function renderCollectionOverview(status) {
   setText("collectionFunnelScope", funnelScope || "暂无完成记录");
   if (funnelHost) {
     const funnelSignature = funnelStages
-      .map((item) => `${String(item.key || "")}:${Number(item.value || 0)}`)
+      .map((item) => [
+        String(item.key || ""),
+        Number(item.value || 0),
+        Number(item.removed || 0),
+        String(item.detail || ""),
+      ].join(":"))
       .join("|") + `|duplicates:${Number(newsFunnel.historyDuplicates || 0)}`;
     if (funnelHost.dataset.signature !== funnelSignature) {
       funnelHost.dataset.signature = funnelSignature;
@@ -1299,21 +1304,52 @@ function renderCollectionOverview(status) {
       funnelHost.innerHTML = funnelStages.length
         ? funnelStages.map((item, index) => {
             const value = Number(item.value || 0);
-            const width = Math.max(30, (value / peak) * 100);
-            const duplicateNote = item.key === "deduplicated" && duplicateCount
-              ? `<small>排除 ${duplicateCount} 条重复</small>`
-              : "";
+            const width = Math.max(38, (value / peak) * 100);
+            const rate = Number(item.rate || 0);
+            const note = String(item.note || "");
+            const detail = String(item.detail || "");
+            const accessibleText = `${item.label || "筛选阶段"} ${value} 条。${detail}`;
             return `
               <div class="collection-funnel-row">
-                <div class="collection-funnel-bar is-stage-${index + 1}" style="--funnel-width:${width}%">
+                <div
+                  class="collection-funnel-bar is-stage-${index + 1}"
+                  style="--funnel-width:${width}%"
+                  tabindex="0"
+                  aria-label="${escapeHtml(accessibleText)}"
+                  data-funnel-title="${escapeHtml(item.label || "筛选阶段")} · ${value} 条"
+                  data-funnel-detail="${escapeHtml(detail)}"
+                >
                   <span>${escapeHtml(item.label || "筛选阶段")}</span>
                   <b>${value}</b>
                 </div>
-                ${duplicateNote}
+                <small>${escapeHtml(note || (rate ? `保留 ${rate}%` : ""))}</small>
               </div>
             `;
-          }).join("")
+          }).join("") + `
+            <div class="collection-funnel-tooltip" role="tooltip" hidden>
+              <strong></strong>
+              <span></span>
+            </div>
+          `
         : '<div class="collection-empty">暂无已完成的战略新闻筛选记录</div>';
+      const tooltip = funnelHost.querySelector(".collection-funnel-tooltip");
+      const hideTooltip = () => {
+        if (tooltip) tooltip.hidden = true;
+      };
+      funnelHost.querySelectorAll(".collection-funnel-bar").forEach((bar) => {
+        const showTooltip = () => {
+          if (!tooltip) return;
+          const title = tooltip.querySelector("strong");
+          const detail = tooltip.querySelector("span");
+          if (title) title.textContent = bar.dataset.funnelTitle || "";
+          if (detail) detail.textContent = bar.dataset.funnelDetail || "";
+          tooltip.hidden = false;
+        };
+        bar.addEventListener("mouseenter", showTooltip);
+        bar.addEventListener("focus", showTooltip);
+        bar.addEventListener("mouseleave", hideTooltip);
+        bar.addEventListener("blur", hideTooltip);
+      });
     }
   }
 

@@ -10166,44 +10166,62 @@ body.report-library-open::before {
 }
 
 .collection-funnel {
+  position: relative;
   display: grid;
-  gap: 4px;
+  gap: 3px;
+  padding: 3px 76px 4px 0;
 }
 
 .collection-funnel-row {
   position: relative;
   display: flex;
   justify-content: center;
-  min-height: 22px;
+  min-height: 31px;
 }
 
 .collection-funnel-bar {
   display: flex;
   width: var(--funnel-width);
-  min-width: 30%;
-  height: 22px;
+  min-width: 38%;
+  height: 31px;
   align-items: center;
   justify-content: space-between;
-  padding: 0 max(12px, 8%);
-  clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
-  color: #174763;
-  background: rgba(55, 164, 220, 0.18);
+  padding: 0 max(14px, 8%);
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%);
+  color: #155777;
+  background: linear-gradient(90deg, #d8eef9, #bfe3f4);
+  filter: drop-shadow(0 2px 2px rgba(31, 91, 124, 0.08));
   font-size: 11px;
   line-height: 1;
-  transition: width 220ms ease;
+  outline: none;
+  cursor: help;
+  transition:
+    width 220ms ease,
+    filter 160ms ease,
+    transform 160ms ease;
 }
 
 .collection-funnel-bar.is-stage-2 {
-  background: rgba(27, 157, 128, 0.2);
+  color: #16624f;
+  background: linear-gradient(90deg, #c7e9df, #a9dece);
 }
 
 .collection-funnel-bar.is-stage-3 {
-  background: rgba(118, 86, 214, 0.18);
+  color: #514188;
+  background: linear-gradient(90deg, #ddd7f5, #c8bdea);
 }
 
 .collection-funnel-bar.is-stage-4 {
   color: #fff;
-  background: #0878bd;
+  background: linear-gradient(90deg, #118bc8, #0872b4);
+  filter: drop-shadow(0 3px 4px rgba(0, 110, 177, 0.18));
+}
+
+.collection-funnel-bar:hover,
+.collection-funnel-bar:focus-visible {
+  z-index: 2;
+  filter: brightness(1.03) drop-shadow(0 5px 7px rgba(30, 81, 112, 0.18));
+  transform: scale(1.035);
 }
 
 .collection-funnel-bar span {
@@ -10221,11 +10239,51 @@ body.report-library-open::before {
 .collection-funnel-row small {
   position: absolute;
   top: 50%;
-  right: 2px;
-  color: #7c6a9f;
-  font-size: 9px;
+  right: -72px;
+  width: 68px;
+  overflow: hidden;
+  color: #718695;
+  font-size: 10px;
+  text-align: left;
+  text-overflow: ellipsis;
   transform: translateY(-50%);
   white-space: nowrap;
+}
+
+.collection-funnel-tooltip {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  bottom: calc(100% + 10px);
+  left: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(126, 180, 210, 0.22);
+  border-radius: 8px;
+  color: #eaf5fb;
+  background: rgba(18, 51, 72, 0.97);
+  box-shadow: 0 10px 24px rgba(19, 52, 72, 0.2);
+  pointer-events: none;
+}
+
+.collection-funnel-tooltip[hidden] {
+  display: none;
+}
+
+.collection-funnel-tooltip strong,
+.collection-funnel-tooltip span {
+  display: block;
+}
+
+.collection-funnel-tooltip strong {
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 12px;
+}
+
+.collection-funnel-tooltip span {
+  color: #d2e5ef;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
 .collection-entity-section {
@@ -10278,11 +10336,11 @@ body.report-library-open::before {
   }
 
   .collection-funnel-row {
-    min-height: 19px;
+    min-height: 27px;
   }
 
   .collection-funnel-bar {
-    height: 19px;
+    height: 27px;
     font-size: 10px;
   }
 }
