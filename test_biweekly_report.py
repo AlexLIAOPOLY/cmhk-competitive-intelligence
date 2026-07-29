@@ -326,7 +326,11 @@ class ManualWeeklySelectionTests(unittest.TestCase):
             "tag": "业务动态",
             "title": "人工选中的测试新闻",
             "detail": "测试摘要。",
-            "rawDetail": "测试主体公布业务进展，涉及网络建设和企业服务安排。",
+            "rawDetail": (
+                "测试主体公布业务进展，涉及网络建设、云计算和企业服务三类业务。"
+                "本轮项目明确了合作对象、资源投入和首阶段覆盖范围，并已完成核心技术验证。"
+                "相关部署现已进入落地阶段，将按照公开计划分批扩展至更多业务节点。"
+            ),
             "eventAt": "2026-07-15",
             "sourceIds": ["S1"],
             "sourceName": "测试来源",

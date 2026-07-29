@@ -17,7 +17,8 @@ def detailed_text(prefix: str, event_date: str = "2026年7月12日") -> str:
     del event_date
     return (
         f"{prefix}"
-        "项目覆盖核心业务场景，已公布实施范围、合作安排及关键数据并进入落地阶段。"
+        "项目覆盖网络、云计算和企业服务三类核心业务场景，并公布合作对象、实施范围及主要资源安排。"
+        "首阶段已经完成技术验证并进入落地部署，后续批次将按现有计划扩展至更多业务节点。"
     )
 
 
@@ -190,10 +191,7 @@ class PublicationLabelTests(unittest.TestCase):
         }
 
         self.assertTrue(report.summary_has_search_noise(item["detail"]))
-        self.assertEqual(
-            report.deterministic_limited_weekly_detail(item),
-            "工信部发文促进人工智能在中小企业深度融合应用。",
-        )
+        self.assertEqual(report.deterministic_limited_weekly_detail(item), "")
         with self.assertRaisesRegex(ValueError, "网页搜索结果噪声"):
             report.validate_human_template_content(make_model(item))
 
@@ -216,7 +214,8 @@ class PublicationLabelTests(unittest.TestCase):
                     "title": "PCB行业龙头投资52亿元建设第二工厂",
                     "snippet": (
                         "项目在东莞松山湖动工，聚焦AI服务器高频高速材料和高端封装基板材料。"
-                        "建成后将为云计算、6G通信及智能汽车电子提供关键材料。"
+                        "第二工厂将建设研发、生产和配套设施，并导入高端印制电路板制造能力。"
+                        "建成后将为云计算、6G通信及智能汽车电子提供关键材料，进一步扩大当地先进制造产能。"
                     ),
                 },
             ]
@@ -229,7 +228,7 @@ class PublicationLabelTests(unittest.TestCase):
         self.assertTrue(report.summary_is_concise(detail))
         self.assertTrue(report.summary_adds_information(item["title"], detail, item["title"]))
 
-    def test_title_only_evidence_is_rewritten_as_prose_without_new_facts(self) -> None:
+    def test_title_only_evidence_requires_verified_supplemental_detail(self) -> None:
         pcb = make_item(
             "W001",
             1,
@@ -239,10 +238,7 @@ class PublicationLabelTests(unittest.TestCase):
         pcb["rawDetail"] = pcb["title"]
         pcb["detail"] = pcb["title"]
         pcb["webResearch"] = {"results": []}
-        self.assertEqual(
-            report.deterministic_limited_weekly_detail(pcb),
-            "PCB行业龙头投资52亿元建设第二工厂，东莞「全球智造中心」建设加速。",
-        )
+        self.assertEqual(report.deterministic_limited_weekly_detail(pcb), "")
 
         grant = make_item(
             "W002",
@@ -253,10 +249,9 @@ class PublicationLabelTests(unittest.TestCase):
         grant["rawDetail"] = grant["title"]
         grant["detail"] = grant["title"]
         grant["webResearch"] = {"results": []}
-        self.assertEqual(
-            report.deterministic_limited_weekly_detail(grant),
-            "研资局拨款1.4亿元资助20名学者，资助项目主要聚焦AI安全。",
-        )
+        grant_detail = report.deterministic_limited_weekly_detail(grant)
+        self.assertIn("未来60个月", grant_detail)
+        self.assertTrue(report.summary_has_reference_density(grant_detail))
 
         agreement = make_item(
             "W003",
@@ -272,10 +267,9 @@ class PublicationLabelTests(unittest.TestCase):
             agreement["title"],
             "特区政府与国家工信部签署协议推进共建制造业创新中心",
         )
-        self.assertEqual(
-            report.deterministic_limited_weekly_detail(agreement),
-            "特区政府与国家工信部签署合作协议，将共同推进制造业创新中心建设。",
-        )
+        agreement_detail = report.deterministic_limited_weekly_detail(agreement)
+        self.assertIn("香港微电子研发院", agreement_detail)
+        self.assertTrue(report.summary_has_reference_density(agreement_detail))
 
     def test_overlong_detail_is_trimmed_only_at_a_complete_sentence(self) -> None:
         detail = (
@@ -298,14 +292,23 @@ class PublicationLabelTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "截断省略号"):
             report.validate_report_model(make_model(item))
 
-    def test_visible_summary_is_limited_to_two_sentences_and_120_characters(self) -> None:
-        self.assertTrue(report.summary_is_concise("主体公布关键方案，覆盖三类业务场景。"))
-        self.assertFalse(report.summary_is_concise("第一句。第二句。第三句。"))
-        self.assertFalse(report.summary_is_concise("主体公布" + "关键数据" * 30 + "。"))
+    def test_visible_summary_matches_human_reference_information_density(self) -> None:
+        dense = (
+            "主体公布新一轮网络建设方案，覆盖香港主要商业区、交通枢纽及重点住宅区域。"
+            "项目采用多频段协同和智能节能技术，并投入既有核心网资源支持部署。"
+            "首阶段已经完成测试并进入商用准备，后续建设将按已公布计划分批实施。"
+        )
+        self.assertTrue(report.summary_has_reference_density(dense))
+        self.assertFalse(report.summary_has_reference_density("主体公布关键方案，覆盖三类业务场景。"))
+        self.assertTrue(
+            report.summary_has_reference_density(
+                dense + "项目团队同步公布跨部门协作安排和现阶段执行结果。"
+            )
+        )
 
         item = make_item("W001", 1)
         item["detail"] = "第一句交代主体动作。第二句补充关键数字。第三句继续搬运活动背景。"
-        with self.assertRaisesRegex(ValueError, "超过两句或120个字符"):
+        with self.assertRaisesRegex(ValueError, "信息量低于人工内参样本"):
             report.validate_human_template_content(make_model(item))
 
 
