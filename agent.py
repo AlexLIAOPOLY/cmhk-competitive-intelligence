@@ -695,7 +695,6 @@ WEB_SEARCH_NEXT_INDEX = 6
 SELECTED_DATASET_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_DATASET_IDS", default=None)
 SELECTED_SKILL_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_SKILL_IDS", default=None)
 APPROVED_ACTION_IDS: ContextVar[set[str]] = ContextVar("APPROVED_ACTION_IDS", default=set())
-TOOL_RUN_STATE: ContextVar[dict[str, Any] | None] = ContextVar("TOOL_RUN_STATE", default=None)
 ACTIVE_CHAT_THREAD_ID: ContextVar[str] = ContextVar("ACTIVE_CHAT_THREAD_ID", default="")
 CURRENT_USER_REQUEST: ContextVar[str] = ContextVar("CURRENT_USER_REQUEST", default="")
 AMBIGUOUS_HISTORY_PROBE: ContextVar[bool] = ContextVar("AMBIGUOUS_HISTORY_PROBE", default=False)
@@ -2724,7 +2723,9 @@ def get_agent(
     runtime_context_text = "\n".join(runtime_lines)
     web_search_instruction = (
         "联网搜索已开启。当前问题涉及外部事实或数据时，应主动使用联网搜索；涉及数据时，"
-        "同时检索本地资料并交叉核验，任一侧无结果或两侧不一致都要明确说明。\n"
+        "同时检索本地资料并交叉核验，任一侧无结果或两侧不一致都要明确说明。"
+        "只读工具没有本轮调用次数或重复调用限制；可按研究需要继续调用同一工具，"
+        "不得声称已达到固定次数上限。停止检索的依据是证据足以完成当前请求，而不是调用次数。\n"
         if allow_web_search
         else ""
     )
@@ -2801,8 +2802,15 @@ def _context_tool_content(title: str, rows: list[dict[str, str]], id_key: str = 
 
 def _stream_agent_events(agent: Any, inputs: dict[str, Any]):
     try:
-        recursion_limit = max(100, int(os.environ.get("CMHK_AGENT_RECURSION_LIMIT", "100")))
-        return agent.stream(inputs, stream_mode="messages", config={"recursion_limit": recursion_limit})
+        # LangGraph requires an integer recursion_limit and otherwise defaults
+        # to a small fixed step count. sys.maxsize removes the product-level
+        # tool/step quota while transport errors and user cancellation can
+        # still end a genuinely failed request.
+        return agent.stream(
+            inputs,
+            stream_mode="messages",
+            config={"recursion_limit": sys.maxsize},
+        )
     except TypeError:
         return agent.stream(inputs, stream_mode="messages")
 
@@ -2978,17 +2986,17 @@ def _message_token_usage(message: AIMessage | AIMessageChunk) -> dict[str, int]:
     return {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
 
 
-def _finalize_after_tool_limit(
+def _finalize_after_incomplete_run(
     original_user_message: str,
     tool_evidence: list[str],
     *,
     thinking_enabled: bool = False,
 ) -> tuple[str, dict[str, int]]:
-    """Finish once after an Agent ignores a tool's explicit stop response.
+    """Finish once when a provider or graph failure interrupts the answer.
 
     This path is never used for normal answers. It replaces an otherwise
-    unbounded ReAct loop with one tool-free model call, preserving the existing
-    answer while sharply reducing failure latency.
+    incomplete run with one tool-free model call based on evidence already
+    returned by tools.
     """
     config = load_ai_config()
     bounded_evidence: list[str] = []
@@ -3001,7 +3009,7 @@ def _finalize_after_tool_limit(
     prompt_messages = [
         SystemMessage(
             content=(
-                "你是小竞AI的最终回答整理器。Agent 已完成多次工具调用并触发调用上限；"
+                "你是小竞AI的最终回答整理器。Agent 工具链因运行异常或模型回答未完整结束而中断；"
                 "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
                 "证据不足时明确说明缺少什么，不得编造。正文控制在 1200 个中文字符以内，"
                 "必须完整收束，不得停在逗号、冒号、连接词或未闭合列表。保留工具结果中的"
@@ -3047,8 +3055,8 @@ def _finalize_after_tool_limit(
     content = _salvage_complete_answer(best_partial)
     if not content:
         content = (
-            "本轮已达到工具调用上限，系统已停止重复调用。"
-            "现有资料不足以可靠完成回答，请缩小范围后继续。"
+            "本轮工具链异常中断，现有资料不足以可靠完成回答。"
+            "请稍后重试，或缩小范围后继续。"
         )
     return content, _message_token_usage(last_response) if last_response is not None else {
         "inputTokens": 0,
@@ -3098,7 +3106,6 @@ def stream_agent(
     dataset_token = SELECTED_DATASET_IDS.set(selected_dataset_set)
     skill_token = SELECTED_SKILL_IDS.set(selected_skill_set)
     approved_token = APPROVED_ACTION_IDS.set({str(item) for item in (approved_action_ids or []) if str(item).strip()})
-    tool_token = TOOL_RUN_STATE.set({"counts": {}})
     thread_token = ACTIVE_CHAT_THREAD_ID.set(
         re.sub(r"[^A-Za-z0-9_.:-]", "", str(active_thread_id or ""))[:160]
     )
@@ -3551,7 +3558,7 @@ def stream_agent(
             or "模型最终回答未完整结束" in error_text
         )
         if recoverable_completion_failure:
-            final_text, final_usage = _finalize_after_tool_limit(
+            final_text, final_usage = _finalize_after_incomplete_run(
                 original_user_message,
                 tool_evidence,
                 thinking_enabled=thinking_enabled,
@@ -3600,7 +3607,6 @@ def stream_agent(
         SELECTED_DATASET_IDS.reset(dataset_token)
         SELECTED_SKILL_IDS.reset(skill_token)
         APPROVED_ACTION_IDS.reset(approved_token)
-        TOOL_RUN_STATE.reset(tool_token)
         ACTIVE_CHAT_THREAD_ID.reset(thread_token)
         CURRENT_USER_REQUEST.reset(request_token)
         AMBIGUOUS_HISTORY_PROBE.reset(ambiguous_token)

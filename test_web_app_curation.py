@@ -4,6 +4,7 @@ import base64
 import os
 import re
 import subprocess
+import sys
 import json
 import tempfile
 import time
@@ -1132,6 +1133,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("联网搜索已开启", prompt)
         self.assertIn("涉及外部事实或数据时，应主动使用联网搜索", prompt)
         self.assertIn("同时检索本地资料并交叉核验", prompt)
+        self.assertIn("只读工具没有本轮调用次数或重复调用限制", prompt)
+        self.assertIn("不得声称已达到固定次数上限", prompt)
         self.assertIn("任一侧无结果或两侧不一致都要明确说明", prompt)
         self.assertIn("是否调用工具以及如何组合", prompt)
         self.assertIn("不要误称环境不支持", prompt)
@@ -2075,52 +2078,44 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("1200 个中文字符", retry_text)
 
     def test_search_local_reports_does_not_limit_repeated_searches(self) -> None:
-        token = agent.TOOL_RUN_STATE.set({"counts": {}})
-        try:
-            with mock.patch("agent.retrieve_context", return_value=[]) as retrieve:
-                results = [
-                    agent.search_local_reports.invoke({"query": "现金流"})
-                    for _ in range(6)
-                ]
-        finally:
-            agent.TOOL_RUN_STATE.reset(token)
+        with mock.patch("agent.retrieve_context", return_value=[]) as retrieve:
+            results = [
+                agent.search_local_reports.invoke({"query": "现金流"})
+                for _ in range(12)
+            ]
 
-        self.assertEqual(retrieve.call_count, 6)
+        self.assertEqual(retrieve.call_count, 12)
         self.assertTrue(all(result == "没有找到相关的本地报告信息。" for result in results))
         self.assertTrue(all("达到本轮调用上限" not in result for result in results))
 
     def test_web_search_allows_repeated_calls_and_preserves_requested_result_count(self) -> None:
-        token = agent.TOOL_RUN_STATE.set({"counts": {"web_search": 99}})
-        try:
-            with (
-                mock.patch("agent._search_with_searxng", return_value=[]) as searxng,
-                mock.patch(
-                    "agent._search_with_duckduckgo",
-                    return_value=[
-                        {
-                            "title": "AWS Investor Relations",
-                            "url": f"https://ir.aboutamazon.com/{index}",
-                            "snippet": "AWS quarterly revenue and capital expenditure",
-                        }
-                        for index in range(8)
-                    ],
-                ) as ddgs,
-                mock.patch(
-                    "agent._filter_relevant_search_results",
-                    side_effect=lambda results, query, limit, **kwargs: (results[:limit], 0),
-                ),
-            ):
-                results = [
-                    agent.web_search.invoke({"query": f"AWS quarterly revenue {year}", "max_results": 8})
-                    for year in range(2019, 2025)
-                ]
-        finally:
-            agent.TOOL_RUN_STATE.reset(token)
+        with (
+            mock.patch("agent._search_with_searxng", return_value=[]) as searxng,
+            mock.patch(
+                "agent._search_with_duckduckgo",
+                return_value=[
+                    {
+                        "title": "AWS Investor Relations",
+                        "url": f"https://ir.aboutamazon.com/{index}",
+                        "snippet": "AWS quarterly revenue and capital expenditure",
+                    }
+                    for index in range(12)
+                ],
+            ) as ddgs,
+            mock.patch(
+                "agent._filter_relevant_search_results",
+                side_effect=lambda results, query, limit, **kwargs: (results[:limit], 0),
+            ),
+        ):
+            results = [
+                agent.web_search.invoke({"query": f"AWS quarterly revenue {year}", "max_results": 12})
+                for year in range(2014, 2026)
+            ]
 
-        self.assertEqual(searxng.call_count, 6)
-        self.assertEqual(ddgs.call_count, 6)
+        self.assertEqual(searxng.call_count, 12)
+        self.assertEqual(ddgs.call_count, 12)
         self.assertTrue(all("达到本轮调用上限" not in result for result in results))
-        self.assertTrue(all(result.count("[来源 ") == 8 for result in results))
+        self.assertTrue(all(result.count("[来源 ") == 12 for result in results))
 
     def test_aws_multi_year_quarterly_query_returns_complete_series(self) -> None:
         chunks = rag_llm._quarterly_exact_metric_chunks(
@@ -2171,18 +2166,14 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             "agent_knowledge/cmhk_macro_policy_2026-06-19/online_verification_2026-06-19.md",
             "agent_knowledge/cmhk_macro_policy_2026-06-19/manifest.json",
         ]
-        token = agent.TOOL_RUN_STATE.set({"counts": {}})
-        try:
-            with mock.patch(
-                "agent._read_local_reference_text",
-                side_effect=lambda source: f"[本地引用: {source}]",
-            ) as read_reference:
-                results = [
-                    agent.read_local_reference.invoke({"source": source})
-                    for source in sources
-                ]
-        finally:
-            agent.TOOL_RUN_STATE.reset(token)
+        with mock.patch(
+            "agent._read_local_reference_text",
+            side_effect=lambda source: f"[本地引用: {source}]",
+        ) as read_reference:
+            results = [
+                agent.read_local_reference.invoke({"source": source})
+                for source in sources
+            ]
 
         self.assertEqual(read_reference.call_count, 4)
         self.assertTrue(all("达到本轮调用上限" not in result for result in results))
@@ -2190,18 +2181,14 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
     def test_local_reference_does_not_limit_repeated_reads(self) -> None:
         source = "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_summary.md"
-        token = agent.TOOL_RUN_STATE.set({"counts": {}})
-        try:
-            with mock.patch(
-                "agent._read_local_reference_text",
-                return_value=f"[本地引用: {source}]",
-            ) as read_reference:
-                first = agent.read_local_reference.invoke({"source": source})
-                duplicate = agent.read_local_reference.invoke({
-                    "source": f"/references/{source}",
-                })
-        finally:
-            agent.TOOL_RUN_STATE.reset(token)
+        with mock.patch(
+            "agent._read_local_reference_text",
+            return_value=f"[本地引用: {source}]",
+        ) as read_reference:
+            first = agent.read_local_reference.invoke({"source": source})
+            duplicate = agent.read_local_reference.invoke({
+                "source": f"/references/{source}",
+            })
 
         self.assertIn("[本地引用:", first)
         self.assertIn("[本地引用:", duplicate)
@@ -2256,7 +2243,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         with (
             mock.patch("agent.get_agent", return_value=FakeAgent()),
             mock.patch(
-                "agent._finalize_after_tool_limit",
+                "agent._finalize_after_incomplete_run",
                 return_value=(repaired, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
             ) as finalize,
         ):
@@ -2279,7 +2266,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         with (
             mock.patch("agent.get_agent", return_value=FakeAgent()),
             mock.patch(
-                "agent._finalize_after_tool_limit",
+                "agent._finalize_after_incomplete_run",
                 return_value=(final, {"inputTokens": 5, "outputTokens": 8, "totalTokens": 13}),
             ) as finalize,
         ):
@@ -2291,7 +2278,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertFalse(any(event.get("type") == "error" for event in events))
         self.assertEqual(events[-1].get("type"), "done")
 
-    def test_agent_graph_has_bounded_recursion_limit(self) -> None:
+    def test_agent_graph_has_no_product_step_limit(self) -> None:
         captured: dict[str, object] = {}
 
         class FakeAgent:
@@ -2301,7 +2288,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         list(agent._stream_agent_events(FakeAgent(), {"messages": []}))
 
-        self.assertEqual(captured["config"], {"recursion_limit": 100})
+        self.assertEqual(captured["config"], {"recursion_limit": sys.maxsize})
 
     def test_legacy_tool_limit_text_does_not_stop_the_agent_stream(self) -> None:
         class FakeAgent:
@@ -2317,7 +2304,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         with (
             mock.patch("agent.get_agent", return_value=FakeAgent()),
-            mock.patch("agent._finalize_after_tool_limit") as finalize,
+            mock.patch("agent._finalize_after_incomplete_run") as finalize,
         ):
             events = list(agent.stream_agent("对比最近两周的竞对动态变化", thinking_enabled=False))
 
