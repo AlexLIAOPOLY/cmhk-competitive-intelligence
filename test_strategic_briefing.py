@@ -156,6 +156,10 @@ class StrategicBriefingTests(unittest.TestCase):
 
         def record_notification(**_kwargs):
             order.append("notify")
+            self.assertEqual(
+                briefing.os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS"),
+                "1",
+            )
             return "om_after_completion", "bot"
 
         def record_registry_final(_crawl_run_id, **kwargs):
@@ -236,12 +240,17 @@ class StrategicBriefingTests(unittest.TestCase):
                 "_send_scan_message",
                 side_effect=record_notification,
             ),
+            mock.patch.dict(
+                briefing.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "0"},
+            ),
         ):
             result = briefing._run_scan(
                 datetime(2026, 7, 29, 15, 0, tzinfo=briefing.HKT),
                 "2026-07-29@15:00-test",
                 "午后扫描",
                 {},
+                ensure_group_notifications=True,
             )
 
         self.assertEqual(
@@ -257,6 +266,26 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["message_id"], "om_after_completion")
         self.assertEqual(result["task_run_id"], "strategic_test_run")
+
+    def test_formal_scheduled_scan_stops_when_task_log_cannot_be_created(self):
+        with (
+            mock.patch.object(
+                briefing,
+                "start_crawl_run",
+                side_effect=OSError("registry unavailable"),
+            ),
+            mock.patch.object(briefing, "_run_scan_impl") as run_impl,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "无法建立任务日志"):
+                briefing._run_scan(
+                    datetime(2026, 7, 30, 9, 0, tzinfo=briefing.HKT),
+                    "2026-07-30@09:00",
+                    "晨间扫描",
+                    {},
+                    ensure_group_notifications=True,
+                )
+
+        run_impl.assert_not_called()
 
     def test_scan_notification_retries_with_stable_idempotency_key(self):
         response = {

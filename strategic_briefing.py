@@ -1533,6 +1533,8 @@ def _run_scan(
     slot_key: str,
     slot_label: str,
     state: dict[str, Any],
+    *,
+    ensure_group_notifications: bool = False,
 ) -> dict[str, Any]:
     started_monotonic = time.monotonic()
     crawl_run_id = ""
@@ -1557,8 +1559,25 @@ def _run_scan(
                 "scope": f"{slot_label}（{slot_key}）",
             },
         )
-    except Exception:
-        logging.exception("战略新闻扫描无法建立可视任务记录，扫描继续")
+    except Exception as exc:
+        logging.exception("战略新闻扫描无法建立可视任务记录")
+        if ensure_group_notifications:
+            raise RuntimeError("正式定时扫描无法建立任务日志，已停止本轮") from exc
+    if ensure_group_notifications:
+        was_enabled = (
+            os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") == "1"
+        )
+        os.environ["CMHK_STRATEGIC_GROUP_NOTIFICATIONS"] = "1"
+        _strategic_task_progress(
+            crawl_run_id,
+            stream_log_path,
+            "启动门控检查",
+            (
+                "任务日志已建立；正式群通知"
+                + ("保持开启" if was_enabled else "已自动开启")
+                + "；群消息仍只在飞书回读和结果归档全部完成后发送。"
+            ),
+        )
     try:
         result = _run_scan_impl(
             now,
@@ -4090,6 +4109,7 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                     slot_key,
                     _slot_label(index),
                     state,
+                    ensure_group_notifications=True,
                 )
                 scan_slots[slot_key] = {
                     "status": "completed",
