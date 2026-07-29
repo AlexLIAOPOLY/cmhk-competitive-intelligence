@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import threading
 import time
 from collections import Counter
@@ -57,6 +58,8 @@ HEADERS = [
 
 _LOCK = threading.RLock()
 PROCESS_LOCK_PATH = DATA_DIR / "news_review_sheet.lock"
+DASHBOARD_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
+DASHBOARD_PUBLISH_LOG = DATA_DIR / "dashboard_pages_publish.log"
 
 
 @contextmanager
@@ -100,6 +103,25 @@ def _now_iso() -> str:
 
 def _group_notifications_paused() -> bool:
     return os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1"
+
+
+def _schedule_public_dashboard_publish() -> dict[str, Any]:
+    if os.environ.get("CMHK_DASHBOARD_PAGES_AUTO_PUBLISH", "0") != "1":
+        return {"status": "disabled"}
+    if not DASHBOARD_PUBLISH_SCRIPT.exists():
+        return {"status": "missing_script"}
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    environment = os.environ.copy()
+    with DASHBOARD_PUBLISH_LOG.open("ab") as output:
+        process = subprocess.Popen(
+            [sys.executable, str(DASHBOARD_PUBLISH_SCRIPT)],
+            cwd=str(ROOT),
+            env=environment,
+            stdout=output,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    return {"status": "started", "pid": process.pid}
 
 
 def _read_json(path: Path, default: Any) -> Any:
@@ -1865,9 +1887,11 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
             }
         )
         _write_json(STATE_PATH, state)
+        dashboard_publish = _schedule_public_dashboard_publish()
         return {
             "status": "ok",
             "source_unchanged": source_unchanged,
+            "dashboard_publish": dashboard_publish,
             **latest,
             **sync_result,
             **review_result,
