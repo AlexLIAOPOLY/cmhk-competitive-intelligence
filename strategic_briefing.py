@@ -1528,6 +1528,16 @@ def _strategic_task_progress(
         logging.exception("战略新闻任务进度写入日志中心失败")
 
 
+def _strategic_log_time(value: Any) -> str:
+    try:
+        parsed = datetime.fromisoformat(str(value or "").replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=HKT)
+        return parsed.astimezone(HKT).strftime("%m-%d %H:%M")
+    except (TypeError, ValueError):
+        return "--"
+
+
 def _run_scan(
     now: datetime,
     slot_key: str,
@@ -1761,6 +1771,9 @@ def _run_scan_impl(
         discovery_result = {"error": _clean_text(exc, 300)}
         logging.exception("战略快讯新闻发现失败")
     agentic_search = discovery_result.get("agentic_search") or {}
+    fixed_search = agentic_search.get("fixed_search") or {}
+    admission_gate = agentic_search.get("admission_gate") or {}
+    agentic_rounds = agentic_search.get("rounds") or []
     _strategic_task_progress(
         crawl_run_id,
         stream_log_path,
@@ -1770,6 +1783,47 @@ def _run_scan_impl(
             f"固定搜索 {int(agentic_search.get('fixed_result_count') or 0)} 条，"
             f"Agentic补缺 {int(agentic_search.get('agentic_result_count') or 0)} 条，"
             f"查询错误 {len(discovery_result.get('query_errors') or [])} 个。"
+        ),
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "检索时间窗",
+        (
+            f"{_strategic_log_time(discovery_result.get('window_start'))} 至 "
+            f"{_strategic_log_time(discovery_result.get('window_end'))}（香港时间）；"
+            f"时间窗内接纳 {int(admission_gate.get('accepted_count') or 0)} 条，"
+            f"窗外或日期无效 {int(admission_gate.get('rejected_count') or 0)} 条。"
+        ),
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "固定监控检索",
+        (
+            f"执行 {int(agentic_search.get('fixed_query_count') or 0)} 条查询，"
+            f"返回 {int(agentic_search.get('fixed_result_count') or 0)} 条候选；"
+            f"零结果查询 {int(fixed_search.get('zero_result_count') or 0)} 条。"
+        ),
+    )
+    round_summary = "；".join(
+        (
+            f"{_clean_text(round_item.get('phase'), 30) or '补缺'}"
+            f"={_clean_text(round_item.get('status'), 30) or '完成'},"
+            f"查询{int((round_item.get('search') or {}).get('query_count') or round_item.get('query_count') or 0)}条,"
+            f"结果{int((round_item.get('search') or {}).get('result_count') or 0)}条"
+        )
+        for round_item in agentic_rounds
+        if isinstance(round_item, dict)
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "Agentic Search补缺",
+        (
+            f"Agent规划并执行 {int(agentic_search.get('agentic_query_count') or 0)} 条补缺查询，"
+            f"补回 {int(agentic_search.get('agentic_result_count') or 0)} 条候选"
+            + (f"；{round_summary}。" if round_summary else "。")
         ),
     )
     scheduled_search = (
@@ -1791,6 +1845,17 @@ def _run_scan_impl(
         passed_bridge_signal_ids = list(
             scheduled_search.get("admitted_signal_ids") or []
         )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "定时页面线索合并",
+        (
+            f"读取 {len(scheduled_search.get('attempted_signal_ids') or [])} 条页面变化线索，"
+            f"执行 {int(scheduled_search.get('query_count') or 0)} 条关联查询，"
+            f"返回 {int(scheduled_search.get('retrieval_result_count') or 0)} 条，"
+            f"最终接纳 {int(scheduled_search.get('admitted_result_count') or 0)} 条。"
+        ),
+    )
     review_result: dict[str, Any] = {}
     _strategic_task_progress(
         crawl_run_id,
@@ -1810,11 +1875,34 @@ def _run_scan_impl(
     _strategic_task_progress(
         crawl_run_id,
         stream_log_path,
-        "飞书逐格回读完成",
+        "AI审核结果",
         (
-            f"AI保留 {int(review_result.get('batch_count') or 0)} 条，"
-            f"历史重复 {int(review_result.get('semantic_duplicate_count') or 0)} 条，"
-            f"新增 {int(review_result.get('new_count') or 0)} 条；写入后逐格回读已确认。"
+            f"输入候选 {int(review_result.get('source_candidate_count') or discovery_result.get('result_count') or 0)} 条，"
+            f"AI确认保留 {int(review_result.get('batch_count') or 0)} 条；"
+            "单条审核异常已隔离，不影响其余候选。"
+        ),
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "历史语义去重",
+        (
+            f"对比历史 {int(review_result.get('semantic_history_count') or 0)} 条"
+            f"（{int(review_result.get('semantic_history_shards') or 0)} 个分片），"
+            f"确认重复 {int(review_result.get('semantic_duplicate_count') or 0)} 条，"
+            f"延期复核 {int(review_result.get('semantic_deferred_count') or 0)} 条，"
+            f"保留新增 {int(review_result.get('new_count') or 0)} 条。"
+        ),
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "飞书写入与逐格回读",
+        (
+            f"写入新增 {int(review_result.get('new_count') or 0)} 条，"
+            f"涉及 {int(review_result.get('new_source_count') or 0)} 个来源；"
+            f"飞书现有记录 {int(review_result.get('existing_count') or 0)} 条，"
+            f"写入后逐格回读已确认。"
         ),
     )
     _save_candidates(_load_candidates() + ranked)
@@ -1890,6 +1978,15 @@ def _run_scan_impl(
         stream_log_path,
         "结果归档完成",
         "候选、扫描状态和运行结果已全部落盘，准备发送群通知。",
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "群通知准备",
+        (
+            f"将按最新卡片样式汇总 {int(review_result.get('new_count') or 0)} 条新增信息；"
+            "确认飞书回读和结果归档均已完成后再发送。"
+        ),
     )
     try:
         message_id, identity = _send_scan_message(

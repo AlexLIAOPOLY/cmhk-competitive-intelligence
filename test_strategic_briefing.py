@@ -139,6 +139,11 @@ class StrategicBriefingTests(unittest.TestCase):
             "new_items": [],
             "sheet_url": "https://example.com/sheet",
             "source_candidate_count": 0,
+            "batch_count": 0,
+            "semantic_history_count": 300,
+            "semantic_history_shards": 3,
+            "semantic_duplicate_count": 0,
+            "semantic_deferred_count": 0,
         }
 
         def record_write(_path, payload):
@@ -177,7 +182,10 @@ class StrategicBriefingTests(unittest.TestCase):
                     "stream_log_path": "/tmp/strategic_test_run.jsonl",
                 },
             ),
-            mock.patch.object(briefing, "append_crawl_run_event"),
+            mock.patch.object(
+                briefing,
+                "append_crawl_run_event",
+            ) as append_crawl_event,
             mock.patch.object(briefing, "heartbeat_crawl_run"),
             mock.patch.object(
                 briefing,
@@ -214,7 +222,32 @@ class StrategicBriefingTests(unittest.TestCase):
                     "result_count": 0,
                     "hong_kong_count": 0,
                     "query_errors": [],
-                    "agentic_search": {},
+                    "window_start": "2026-07-29T08:00:00+08:00",
+                    "window_end": "2026-07-29T15:00:00+08:00",
+                    "agentic_search": {
+                        "fixed_query_count": 53,
+                        "fixed_result_count": 0,
+                        "fixed_search": {"zero_result_count": 53},
+                        "agentic_query_count": 2,
+                        "agentic_result_count": 0,
+                        "rounds": [
+                            {
+                                "phase": "expansion",
+                                "status": "completed",
+                                "search": {"query_count": 2, "result_count": 0},
+                            }
+                        ],
+                        "admission_gate": {
+                            "accepted_count": 0,
+                            "rejected_count": 0,
+                        },
+                        "scheduled_crawl_search": {
+                            "attempted_signal_ids": ["signal-1"],
+                            "query_count": 1,
+                            "retrieval_result_count": 0,
+                            "admitted_result_count": 0,
+                        },
+                    },
                 },
             ),
             mock.patch(
@@ -266,6 +299,22 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["message_id"], "om_after_completion")
         self.assertEqual(result["task_run_id"], "strategic_test_run")
+        task_log = "\n".join(
+            str(call.args[1].get("text") or "")
+            for call in append_crawl_event.call_args_list
+            if len(call.args) > 1 and isinstance(call.args[1], dict)
+        )
+        for expected_phase in (
+            "检索时间窗",
+            "固定监控检索",
+            "Agentic Search补缺",
+            "定时页面线索合并",
+            "AI审核结果",
+            "历史语义去重",
+            "飞书写入与逐格回读",
+            "群通知准备",
+        ):
+            self.assertIn(expected_phase, task_log)
 
     def test_formal_scheduled_scan_stops_when_task_log_cannot_be_created(self):
         with (
