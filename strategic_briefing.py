@@ -40,11 +40,11 @@ NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 18
+AI_EDITOR_VERSION = 19
 AI_EDITOR_CRITIC_ENABLED = (
-    os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "1") == "1"
+    os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
-AI_EDITOR_CRITIC_VERSION = 2
+AI_EDITOR_CRITIC_VERSION = 3
 LEGACY_DDGS_SEARCH_ENABLED = (
     os.environ.get("CMHK_LEGACY_STRATEGIC_DDGS_SEARCH", "0") == "1"
 )
@@ -152,29 +152,31 @@ _COMPACT_EXCLUSION_CODES = {
     "0": "无",
 }
 _STRATEGIC_INCLUSION_GUIDANCE = (
-    "必须按以下双通道标准判断，禁止使用‘有战略价值/无战略价值’作为没有事实依据的自由裁量。"
+    "必须按以下宽进双通道标准判断。目标是宁可多保留边缘相关信息，也不要漏掉真实竞对、政策或"
+    "战略关键词事件；禁止使用‘价值不够大、影响不够直接’作为自由裁量删除理由。"
     "第一通道是‘竞对直通’：标题或摘要确认正式监控运营商是事件主体、事件对象或被实质讨论的企业，"
     "并且不是同名实体、媒体名、体育队名、娱乐生活内容或关键词偶然出现时，decision_path必须为"
     "‘竞对直通’，should_include必须为true，signal_type必须为‘竞对经营动作’，category必须为"
     "‘竞对动态’。产品资费、促销、门店、客户服务、CSR、故障、经营数据、网络技术、合作、投资并购、"
     "管理层、监管和资本市场等大小事件全部纳入，不得再按重大程度筛选。"
-    "第二通道是‘战略信号’：新闻不是竞对事件时，只有同时满足两个条件才纳入："
+    "第二通道是‘战略信号’：新闻不是竞对事件时，按宽松标准纳入："
     "输入matched_keywords全部来自正式监控配置，不分来源、不分模块均有效；只要关键词与新闻事件"
-    "存在实质语义关联，并满足下述信号类型和业务影响条件，就必须纳入，不得再要求关联某家竞对，"
-    "不得因事件规模较小或来源于非竞对关键词而排除。"
+    "存在正文中的实质语义关联，而且标题或摘要描述了具体事件、变化、数据、合作、政策、技术、"
+    "市场动作或趋势证据，就应纳入，不得再要求关联某家竞对或证明对香港、CMHK有直接影响，"
+    "不得因事件规模较小、影响较间接、属于国际新闻或来源于非竞对关键词而排除。"
     "一是signal_type明确属于监管政策、市场需求、关键技术、基础设施、供应链、资本与并购、"
     "网络安全、宏观与地缘之一；二是business_impact能根据标题或摘要明确落到收入与需求、"
     "成本与效率、客户与渠道、产品与定价、网络与运营、合规与牌照、资本配置、供应韧性、"
-    "竞争格局之一。满足时decision_path必须为‘战略信号’且should_include必须为true；"
-    "不能因为没有出现被监测竞对就拒绝。"
+    "竞争格局之一；若只能判断为潜在、间接或长期影响，应选择最接近的一项而不是删除。满足时"
+    "decision_path必须为‘战略信号’且should_include必须为true；不能因为没有出现被监测竞对就拒绝。"
     "战略信号的具体例子包括：影响电信或数字业务的法律监管与牌照频谱变化；香港或目标市场的"
     "需求、客户和宏观指标变化；5G/6G、AI、云、算力、数据中心、海缆、卫星、芯片等出现可验证的"
     "部署、突破、投资、供给或成本变化；网络安全事件与数据合规变化；会改变市场准入、供应、成本、"
-    "投资或运营连续性的制裁、关税和地缘事件。仅泛泛评论、股市情绪、生活应用、产品评测、"
-    "没有具体变化的观点文章，不能只凭监控词纳入。"
-    "只有两条通道均不满足时才可decision_path=‘排除’且should_include=false，并从exclusion_code"
-    "中选择具体原因：同名或主体误判、体育娱乐或生活噪音、关键词偶然出现、非独立新闻或广告资料页、"
-    "缺少具体事件、无电信战略影响、重复或过期、其他明确噪音。"
+    "投资或运营连续性的制裁、关税和地缘事件。行业财报、数据中心与算力、芯片供需及提价、AI基础"
+    "设施合作、运营商对标数据等，只要有具体新事实，即使影响较间接也应纳入。"
+    "只有内容明显离谱时才可decision_path=‘排除’且should_include=false：确认是同名或主体误判、"
+    "体育娱乐或生活噪音、关键词只在媒体名/网址/搜索提示中偶然出现、没有任何具体事件的资料页，"
+    "或已经确认重复过期。不能仅以‘无电信战略影响’排除一条与正式关键词实质相关的具体新闻。"
     "输出时signal_type只能取竞对经营动作、监管政策、市场需求、关键技术、基础设施、供应链、"
     "资本与并购、网络安全、宏观与地缘、无；business_impact只能取收入与需求、成本与效率、"
     "客户与渠道、产品与定价、网络与运营、合规与牌照、资本配置、供应韧性、竞争格局、无；"
@@ -183,23 +185,25 @@ _STRATEGIC_INCLUSION_GUIDANCE = (
 _SOFT_PRIORITY_GUIDANCE = (
     "内容组合采用AI软优先级，不是程序硬拦截：香港监管政策、牌照频谱及政府产业政策，与香港本地"
     "运营商和本地竞对动态同等重要、同列最高优先级，不得因为不是竞对新闻而降级。"
-    "经语义核实的正式监控竞对信息仍按竞对直通处理。其他国际/行业新闻应更精选：只有出现具体新"
-    "事件，而且输入标题或摘要本身明确显示其对香港电信市场、CMHK业务决策或关键国际对标的直接"
-    "影响时才纳入；不得自行补写一条泛化的电信影响来放行普通海外科技新闻。只有宽泛的海外行业"
-    "趋势、一般性AI/芯片/网络安全消息或与香港业务联系薄弱的国际新闻应排除。"
+    "经语义核实的正式监控竞对信息仍按竞对直通处理。国际/行业新闻可以在排序和群卡片展示上"
+    "稍低优先，但不能因此从候选池删除；只要正式关键词与正文事件实质相关且存在具体新事实，就"
+    "应保留供人工审核。对影响较间接的一般AI、芯片、网络安全、宏观或海外科技新闻，可归为"
+    "国际/行业并降低优先级，不得仅因缺少香港或CMHK直接影响而排除。"
     "香港本地的数字经济、AI产业、数据中心、贸易需求及产业政策出现具体新变化，并能影响本地企业"
     "客户需求、网络基础设施、合规或投资时，应优先纳入。地域必须严格按事件适用范围判断："
     "中国内地部委单独发布的全国政策属于国际/行业；只有香港特区政府参与、政策明确适用于香港，"
     "或事件和受影响市场明确在香港时，才可判为香港本地。"
     "作出最终决定前逐项复核三件事：一、同名缩写是否真是监控竞对；二、香港地域是否有事件主体、"
     "发生地或受影响市场的明确证据，‘环保署’等未注明司法管辖区的机构名不得猜成香港；三、非竞对"
-    "国际新闻是否在输入事实中有直接香港或CMHK影响。长三角存贷款、一般内地峰会、普通海外AI"
-    "与芯片消息若没有这种直接证据，应排除。CMHK及其品牌是本公司，必须走战略信号通道，"
+    "国际新闻是否确有关键词对应的具体事件，而不是同名或偶然提词。长三角存贷款、一般内地峰会、"
+    "普通海外AI与芯片消息若有具体变化可保留为较低优先级；只有明显误命中或无事件内容才排除。"
+    "CMHK及其品牌是本公司，必须走战略信号通道，"
     "不得走竞对直通、不得归为竞对动态。"
     "i-CABLE、HOY等名称若只出现在来源媒体或网址，而标题摘要中的事件主体是房协、数码港、政府、"
     "其他企业或一般社会事件，绝不是竞对事件；只有新闻本身描述有线宽频、HOY或其集团的经营动作"
     "才是竞对直通。台湾的数位发展部（数发部）与台湾环保署事件属于国际/行业，不是香港本地。"
-    "Kimi等海外或内地通用AI模型新闻若没有输入所载的香港或CMHK直接影响，应排除。"
+    "Kimi等海外或内地通用AI模型新闻若有正式关键词对应的具体发布、能力、商业化或基础设施变化，"
+    "可作为较低优先级国际/行业候选保留；若只是名称偶然出现或没有具体事件才排除。"
     "category只能从公司动态、竞对动态、政策监管、行业动态、市场/产品类、基础设施/网络/技术类、"
     "宏观经济&国际形势&地缘政治&其他国际性质关注词汇中选择，不得照抄‘竞争对手’等上游模块名。"
 )
@@ -207,6 +211,14 @@ EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
 
 HKT = ZoneInfo("Asia/Hong_Kong")
+
+
+class AIUnstructuredResponse(RuntimeError):
+    """Structured-review model returned useful text but not a JSON object."""
+
+    def __init__(self, content: str):
+        super().__init__("公司内部 AI 未返回 JSON")
+        self.content = _clean_text(content, 4000)
 LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
 MONITOR_SHEET_TOKEN = (
     os.environ.get("CMHK_STRATEGY_SHEET_TOKEN") or "NB6Gsi9tChARfGtBDpFc6QfOnmb"
@@ -1061,6 +1073,20 @@ def _send_scan_message(
         new_items = []
     if not has_new_metrics and not new_items:
         new_items = list(candidates)
+    local_competitor_count = sum(
+        1
+        for item in new_items
+        if isinstance(item, dict)
+        and _clean_text(item.get("category"), 60) == "竞对动态"
+        and _clean_text(item.get("region"), 40) == "香港本地"
+    )
+    international_competitor_count = sum(
+        1
+        for item in new_items
+        if isinstance(item, dict)
+        and _clean_text(item.get("category"), 60) == "竞对动态"
+        and _clean_text(item.get("region"), 40) != "香港本地"
+    )
 
     def display_priority(item: dict[str, Any]) -> int:
         category = _clean_text(item.get("category") or item.get("module"), 80)
@@ -1255,24 +1281,62 @@ def _send_scan_message(
                     " · 香港时间"
                 ),
             },
-            "text_tag_list": [
-                {
-                    "tag": "text_tag",
-                    "text": {
-                        "tag": "plain_text",
-                        "content": f"香港本地 {local_count}",
-                    },
-                    "color": "blue",
-                },
-                {
-                    "tag": "text_tag",
-                    "text": {
-                        "tag": "plain_text",
-                        "content": f"待审核 {candidate_count}",
-                    },
-                    "color": "orange",
-                },
-            ],
+            "text_tag_list": (
+                (
+                    [
+                        {
+                            "tag": "text_tag",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": f"香港竞对 {local_competitor_count}",
+                            },
+                            "color": "blue",
+                        }
+                    ]
+                    if local_competitor_count
+                    else []
+                )
+                + (
+                    [
+                        {
+                            "tag": "text_tag",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": (
+                                    f"国际竞对 {international_competitor_count}"
+                                ),
+                            },
+                            "color": "turquoise",
+                        }
+                    ]
+                    if international_competitor_count
+                    else []
+                )
+                + (
+                    [
+                        {
+                            "tag": "text_tag",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": f"香港本地 {local_count}",
+                            },
+                            "color": "blue",
+                        }
+                    ]
+                    if local_count and not local_competitor_count
+                    else []
+                )
+                + [
+                    {
+                        "tag": "text_tag",
+                        "text": {
+                            "tag": "plain_text",
+                            "content": f"待审核 {candidate_count}",
+                        },
+                        "color": "orange",
+                    }
+                ]
+            ),
         },
         "elements": elements,
     }
@@ -1420,6 +1484,14 @@ def _require_scan_downstream_success(
         errors.append("新闻发现：" + discovery_error)
     if review_error:
         errors.append("飞书审核表：" + review_error)
+    if _clean_text(review_result.get("status"), 40) != "ok":
+        errors.append(
+            "飞书审核表：流程状态不是ok（"
+            + (_clean_text(review_result.get("status"), 40) or "缺失")
+            + "）"
+        )
+    if review_result.get("readback_verified") is not True:
+        errors.append("飞书审核表：写入后逐格回读尚未确认")
     if errors:
         raise RuntimeError("战略快讯下游处理失败；" + "；".join(errors))
 
@@ -1541,43 +1613,23 @@ def _run_scan(
         )
     review_result: dict[str, Any] = {}
     try:
-        review_result = news_review_sheet.run_cycle(force=True)
+        review_result = news_review_sheet.run_cycle(
+            force=True,
+            schedule_dashboard_publish=False,
+        )
     except Exception as exc:
         review_result = {"error": _clean_text(exc, 300)}
         logging.exception("战略快讯扫描完成，但飞书审核表同步失败")
     _require_scan_downstream_success(discovery_result, review_result)
-    message_id, identity = _send_scan_message(
-        now=now,
-        slot_label=slot_label,
-        candidates=ranked,
-        spec=spec,
-        review_result=review_result,
-        notification_key=slot_key,
-    )
-    pending_notifications = state.setdefault("pending_scan_notifications", {})
-    if identity == "paused":
-        pending_notifications[slot_key] = _pending_notification_payload(
-            now=now,
-            slot_label=slot_label,
-            spec=spec,
-            review_result=review_result,
-        )
-    else:
-        pending_notifications.pop(slot_key, None)
     _save_candidates(_load_candidates() + ranked)
     state["seen_urls"] = (
         list(state.get("seen_urls") or []) + [item["url"] for item in ranked]
     )[-1200:]
-    if message_id:
-        state["outbound_message_ids"] = (
-            list(state.get("outbound_message_ids") or []) + [message_id]
-        )[-300:]
     state["last_scan_at"] = _now_iso(now)
     state["last_scan_slot"] = slot_key
     state["last_scan_candidate_count"] = len(ranked)
     state["last_spec_hash"] = spec["spec_hash"]
     state["last_scan_error"] = ""
-    state["feishu_identity"] = identity
     bridge_commit = commit_signal_attempts(
         state,
         list(bridge_stats.get("attempted_signal_ids") or []),
@@ -1616,11 +1668,67 @@ def _run_scan(
             "agentic_search": discovery_result.get("agentic_search") or {},
             "error": discovery_result.get("error") or "",
         },
-        "message_id": message_id,
-        "feishu_identity": identity,
+        "status": "pipeline_completed",
+        "completed_at": _now_iso(),
+        "notification_status": "pending",
+        "message_id": "",
+        "feishu_identity": "",
         "review_sheet": review_result,
         "candidates": ranked,
     }
+    _atomic_write_json(RUNS_DIR / f"{slot_key.replace(':', '-')}.json", run_payload)
+    _append_event(
+        {
+            "type": "scan_pipeline_completed",
+            "slot": slot_key,
+            "candidate_count": len(ranked),
+            "review_sheet": {
+                "status": review_result.get("status"),
+                "new_count": review_result.get("new_count"),
+                "readback_verified": review_result.get("readback_verified"),
+            },
+        }
+    )
+    try:
+        message_id, identity = _send_scan_message(
+            now=now,
+            slot_label=slot_label,
+            candidates=ranked,
+            spec=spec,
+            review_result=review_result,
+            notification_key=slot_key,
+        )
+    except Exception as exc:
+        run_payload["status"] = "notification_failed"
+        run_payload["notification_status"] = "failed"
+        run_payload["notification_error"] = _clean_text(exc, 600)
+        _atomic_write_json(
+            RUNS_DIR / f"{slot_key.replace(':', '-')}.json",
+            run_payload,
+        )
+        raise
+    pending_notifications = state.setdefault("pending_scan_notifications", {})
+    if identity == "paused":
+        pending_notifications[slot_key] = _pending_notification_payload(
+            now=now,
+            slot_label=slot_label,
+            spec=spec,
+            review_result=review_result,
+        )
+        notification_status = "queued_while_paused"
+    else:
+        pending_notifications.pop(slot_key, None)
+        notification_status = "sent"
+    if message_id:
+        state["outbound_message_ids"] = (
+            list(state.get("outbound_message_ids") or []) + [message_id]
+        )[-300:]
+    state["feishu_identity"] = identity
+    run_payload["status"] = "completed"
+    run_payload["notification_status"] = notification_status
+    run_payload["message_id"] = message_id
+    run_payload["feishu_identity"] = identity
+    run_payload["notified_at"] = _now_iso()
     _atomic_write_json(RUNS_DIR / f"{slot_key.replace(':', '-')}.json", run_payload)
     _append_event(
         {
@@ -1698,6 +1806,7 @@ def _call_internal_ai(
     *,
     max_tokens: int = 900,
     model_override: str = "",
+    allow_plain_text: bool = False,
 ) -> dict[str, Any]:
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
@@ -1781,8 +1890,13 @@ def _call_internal_ai(
     except json.JSONDecodeError:
         match = re.search(r"\{.*\}", content, flags=re.S)
         if not match:
-            raise RuntimeError("公司内部 AI 未返回 JSON")
-        parsed = json.loads(match.group(0))
+            if allow_plain_text and content:
+                return {"_plain_text": content}
+            raise AIUnstructuredResponse(content)
+        try:
+            parsed = json.loads(match.group(0))
+        except json.JSONDecodeError as exc:
+            raise AIUnstructuredResponse(content) from exc
     return parsed if isinstance(parsed, dict) else {}
 
 
@@ -1891,6 +2005,41 @@ def _validated_ai_copy(
     signal_type = _to_simplified_chinese(value.get("signal_type"), 20)
     business_impact = _to_simplified_chinese(value.get("business_impact"), 20)
     exclusion_code = _to_simplified_chinese(value.get("exclusion_code"), 30)
+    if should_include:
+        if category == "竞对动态":
+            decision_path = "竞对直通"
+            signal_type = "竞对经营动作"
+            if not business_impact or business_impact == "无":
+                business_impact = "竞争格局"
+        else:
+            if decision_path not in {"竞对直通", "战略信号"}:
+                decision_path = "战略信号"
+            if signal_type not in _STRATEGIC_SIGNAL_TYPES or signal_type in {
+                "无",
+                "竞对经营动作",
+            }:
+                signal_type = {
+                    "政策监管": "监管政策",
+                    "基础设施/网络/技术类": "关键技术",
+                    "市场/产品类": "市场需求",
+                    "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观与地缘",
+                }.get(category, "市场需求")
+            if not business_impact or business_impact == "无":
+                business_impact = {
+                    "政策监管": "合规与牌照",
+                    "基础设施/网络/技术类": "成本与效率",
+                    "市场/产品类": "产品与定价",
+                    "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "供应韧性",
+                }.get(category, "竞争格局")
+        exclusion_code = "无"
+        if len(inclusion_reason) < 8:
+            inclusion_reason = "该具体事件与正式监控关键词实质相关，保留供人工审核。"
+        if len(region_reason) < 4:
+            region_reason = (
+                "事件明确发生于香港或影响香港市场。"
+                if region == "香港本地"
+                else "事件主体或主要影响市场位于香港以外。"
+            )
     if decision_path == "竞对直通":
         signal_type = "竞对经营动作"
         if not business_impact or business_impact == "无":
@@ -2048,6 +2197,56 @@ def _expanded_compact_decision(
     }
 
 
+def _plain_text_rescue_review(
+    source_item: dict[str, Any], *, model_override: str
+) -> dict[str, Any]:
+    """Use an AI-selected line protocol when a provider repeatedly ignores JSON."""
+    response = _call_internal_ai(
+        (
+            "你是CMHK竞情AI。输入matched_keywords中的运营商是CMHK正式监控竞对，不是本公司；"
+            "只要新闻主体确实是该运营商，任何真实事件都必须route=C，不能因海外、常规或影响小选X。"
+            "其他正式关键词只要对应具体事件、数据或变化就选S；仅同名误中、体育娱乐生活、偶然提词"
+            "或无具体事件选X。只输出一行7段，用|分隔："
+            "route|region|signal|impact|exclude|中文标题|中文摘要。"
+            "route C=竞对、S=战略、X=噪音；region H=香港、I=国际；"
+            "signal C=竞对、R=监管、D=需求、T=技术、I=基建、S=供应链、M=并购、N=网安、"
+            "G=宏观、0=无；impact R=收入、C=成本、U=客户、P=产品、O=运营、L=合规、"
+            "A=资本、S=供应、G=竞争、0=无；纳入exclude=0，排除exclude=1至8。"
+            "只依据输入事实，不得补写输入没有的年份、数字或主体。"
+        ),
+        json.dumps(_candidate_editor_input(_candidate_editor_key(source_item), source_item), ensure_ascii=False),
+        max_tokens=900,
+        model_override=model_override,
+        allow_plain_text=True,
+    )
+    line = _clean_text(response.get("_plain_text"), 4000)
+    parts = [part.strip() for part in line.strip("` \n").split("|", 6)]
+    if len(parts) != 7:
+        raise RuntimeError("公司内部 AI 救援复审未返回七段结果")
+    route, region, signal, impact, exclusion, title, summary = parts
+    compact = _expanded_compact_decision(
+        {
+            "route": route,
+            "region": region,
+            "signal": signal,
+            "impact": impact,
+            "exclude": exclusion,
+        },
+        source_item=source_item,
+    )
+    return _validated_ai_copy(
+        {
+            "title": title,
+            "summary": summary,
+            **compact,
+        },
+        require_review_fields=True,
+        require_decision_fields=True,
+        allowed_keywords=source_item.get("keywords"),
+        source_item=source_item,
+    )
+
+
 def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": key[:16],
@@ -2076,7 +2275,7 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
 def _critic_review_included(
     items: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Ask a short independent AI pass to challenge only included decisions."""
+    """Optionally correct metadata, but never let a second pass delete an inclusion."""
     if not AI_EDITOR_CRITIC_ENABLED or not items:
         return items, {
             "enabled": AI_EDITOR_CRITIC_ENABLED,
@@ -2188,7 +2387,11 @@ def _critic_review_included(
                 continue
             resolved_count += 1
             if not verdict["keep"]:
-                removed_count += 1
+                preserved = dict(item)
+                preserved["ai_critic_disagreed"] = True
+                preserved["ai_critic_version"] = AI_EDITOR_CRITIC_VERSION
+                preserved["ai_critic_reviewed_at"] = _now_iso()
+                kept.append(preserved)
                 continue
             updated = dict(item)
             region = _clean_text(verdict.get("region"), 20)
@@ -2217,6 +2420,7 @@ def _critic_review_included(
         "corrected_count": corrected_count,
         "error_count": error_count,
         "already_reviewed_count": already_reviewed_count,
+        "delete_enabled": False,
     }
 
 
@@ -2292,6 +2496,9 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     compact_retry_batch_count = 0
     compact_retry_item_count = 0
     compact_retry_resolved_count = 0
+    rescue_retry_attempt_count = 0
+    rescue_retry_resolved_count = 0
+    unstructured_copy_recovered_count = 0
     for offset in range(0, len(pending), AI_EDITOR_BATCH_SIZE):
         batch = pending[offset : offset + AI_EDITOR_BATCH_SIZE]
         request_items = []
@@ -2310,9 +2517,10 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     "\"signal_type\":\"战略信号类型\",\"business_impact\":\"业务影响类型\","
                     "\"exclusion_code\":\"排除原因代码\"}]}。"
                     "每条都必须返回且id原样保留。"
-                    "先判断should_include：只有新闻与输入matched_keywords中的至少一个监控词存在"
-                    "实质关联，并对竞对、香港电信市场、监管、技术、资本或战略决策有信息价值时才为true；"
-                    "仅媒体提及、同名误命中、泛社会新闻或关键词没有正文证据时必须为false。"
+                    "先判断should_include，并采用宽进原则：新闻与输入matched_keywords中的至少一个"
+                    "监控词在正文事件中存在实质关联，且描述了具体事件、数据或变化时，默认应为true；"
+                    "不要求证明对香港或CMHK有直接影响。只有媒体名或网址提及、同名误命中、体育娱乐"
+                    "生活噪音、完全无具体事件，或关键词没有正文证据时才为false。"
                     "程序不会用关键词正则、地域词表或内容类型规则替你提前排除、纳入或改写结论；"
                     "所有竞对身份、战略价值、地域和分类均由你结合标题、摘要、monitoring_module、"
                     "matched_keywords和configured_competitor_hint逐条审核。"
@@ -2397,7 +2605,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         "输入有几条就必须返回几条，id必须逐一原样保留；被排除的条目也必须返回，"
                         "绝对不能只返回入选项。不要输出任何额外字段或解释。"
                         "route代码：C=确认是正式监控竞对的真实事件；S=非竞对但命中正式关键词且"
-                        "同时存在具体战略事件和明确业务影响；X=排除。"
+                        "存在具体事件、数据或变化，业务影响可以是间接或长期；X=明显噪音才排除。"
                         "signal代码：C=竞对经营动作，R=监管政策，D=市场需求，T=关键技术，"
                         "I=基础设施，S=供应链，M=资本与并购，N=网络安全，G=宏观与地缘，0=无。"
                         "impact代码：R=收入与需求，C=成本与效率，U=客户与渠道，P=产品与定价，"
@@ -2409,8 +2617,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         "R/D/T/I/S/M/N/G之一、impact不能0、exclude必须0；route=X时signal和impact"
                         "必须0、exclude必须1至8之一。"
                         "判断规则只有两条：确认是正式监控竞对的真实事件就选C，除同名、媒体名、"
-                        "体育娱乐生活噪音或偶然提词外不得排除；其他内容只有同时命中matched_keywords、"
-                        "存在可验证的新动作或变化、且能落到明确业务影响时选S。"
+                        "体育娱乐生活噪音或偶然提词外不得排除；其他内容只要命中matched_keywords并"
+                        "存在可验证的新动作、数据或变化就选S，影响较间接也不能因此选X。"
                         f"{_SOFT_PRIORITY_GUIDANCE}"
                         "纯评论、观点、形势讨论和没有新变化的分析选X。"
                         "只依据输入事实，不要Markdown。"
@@ -2438,6 +2646,8 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             item_id = key[:16]
             compact_entry = compact_response_map.get(key[:16])
             compact_edited: dict[str, Any] | None = None
+            compact_decision: dict[str, Any] | None = None
+            decision_fields: dict[str, Any] | None = None
             if item_id not in validated_verbose and compact_entry:
                 try:
                     compact_entry = _expanded_compact_decision(
@@ -2509,74 +2719,177 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     continue
                 single_retry_attempts += 1
                 try:
+                    single_system_prompt = (
+                        "你是公司内部战略新闻审核员。只输出合法JSON对象，字段为title、summary、should_include、"
+                        "region、category、keywords、inclusion_reason、region_reason、decision_path、"
+                        "signal_type、business_impact、exclusion_code。"
+                        "title必须是简洁准确的简体中文标题。summary必须用简体中文写一至两句、16至96个中文字符"
+                        "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
+                        "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
+                        "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
+                        "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
+                        "should_include采用宽进原则：新闻与matched_keywords存在正文证据且有具体事件、"
+                        "数据或变化时默认true，不要求证明对香港或CMHK有直接影响；只有同名误命中、"
+                        "体育娱乐生活噪音、偶然提词或完全无具体事件时才false。"
+                        "程序不会用关键词正则、地域词表或内容类型规则替你提前作出业务判断。"
+                        "先根据标题和摘要确认被监测竞对确实是事件主体、对象或被实质讨论的企业；"
+                        "缩写重名、媒体名、体育队名、人名、地名及偶然提词必须排除。"
+                        "特别注意：只有香港电讯品牌csl才是竞对；澳洲生物科技公司CSL Limited的"
+                        "股票、利润和评级不是竞对。1010数字/股价、CTG地名、HGC无关缩写也必须排除。"
+                        "matched_keywords来自正式监控配置；标题或摘要确认命中的运营商是事件主体、"
+                        "合作对象或被实质讨论时，该运营商就是被监测竞对，"
+                        "不得以‘不是目标竞对、不是香港公司、缺乏香港影响’为由淘汰。"
+                        "configured_competitor_hint若非空仅是搜索来源提示，仍需由你审核语义。"
+                        "KDDI、AT&T、Verizon、T-Mobile、Vodafone、Orange、Telstra、Singtel、"
+                        "NTT Docomo、SoftBank、Jio等国际对标运营商也在竞对监控范围内。"
+                        "确认是真实竞对信息后，无论事件大小should_include都必须为true；"
+                        "常规经营、产品资费、促销、客户服务、网络技术、合作投资、"
+                        "管理层及资本市场信息都不得因不够重大而淘汰。"
+                        f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
+                        f"{_STRATEGIC_INCLUSION_GUIDANCE}"
+                        f"{_SOFT_PRIORITY_GUIDANCE}"
+                        "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
+                        "并用顿号分隔；inclusion_reason必须写明具体事件事实到具体业务影响；"
+                        "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
+                    )
+                    single_user_prompt = json.dumps(source, ensure_ascii=False)
                     retry = _call_internal_ai(
-                        (
-                            "你是公司内部战略新闻审核员。只输出合法JSON对象，字段为title、summary、should_include、"
-                            "region、category、keywords、inclusion_reason、region_reason、decision_path、"
-                            "signal_type、business_impact、exclusion_code。"
-                            "title必须是简洁准确的简体中文标题。summary必须用简体中文写一至两句、16至96个中文字符"
-                            "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
-                            "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
-                            "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"
-                            "严禁依据来源媒体、媒体域名、报道语言或媒体所在地判断。"
-                            "should_include只有在新闻与matched_keywords存在正文证据和战略信息价值时才为true。"
-                            "程序不会用关键词正则、地域词表或内容类型规则替你提前作出业务判断。"
-                            "先根据标题和摘要确认被监测竞对确实是事件主体、对象或被实质讨论的企业；"
-                            "缩写重名、媒体名、体育队名、人名、地名及偶然提词必须排除。"
-                            "特别注意：只有香港电讯品牌csl才是竞对；澳洲生物科技公司CSL Limited的"
-                            "股票、利润和评级不是竞对。1010数字/股价、CTG地名、HGC无关缩写也必须排除。"
-                            "matched_keywords来自正式监控配置；标题或摘要确认命中的运营商是事件主体、"
-                            "合作对象或被实质讨论时，该运营商就是被监测竞对，"
-                            "不得以‘不是目标竞对、不是香港公司、缺乏香港影响’为由淘汰。"
-                            "configured_competitor_hint若非空仅是搜索来源提示，仍需由你审核语义。"
-                            "KDDI、AT&T、Verizon、T-Mobile、Vodafone、Orange、Telstra、Singtel、"
-                            "NTT Docomo、SoftBank、Jio等国际对标运营商也在竞对监控范围内。"
-                            "确认是真实竞对信息后，无论事件大小should_include都必须为true；"
-                            "常规经营、产品资费、促销、客户服务、网络技术、合作投资、"
-                            "管理层及资本市场信息都不得因不够重大而淘汰。"
-                            f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
-                            f"{_STRATEGIC_INCLUSION_GUIDANCE}"
-                            f"{_SOFT_PRIORITY_GUIDANCE}"
-                            "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
-                            "并用顿号分隔；inclusion_reason必须写明具体事件事实到具体业务影响；"
-                            "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
-                        ),
-                        json.dumps(source, ensure_ascii=False),
+                        single_system_prompt,
+                        single_user_prompt,
                         max_tokens=1200,
                     )
-                    retry_items = (
-                        retry.get("items")
-                        if isinstance(retry, dict)
-                        else None
-                    )
+                except Exception as primary_exc:
                     if (
-                        isinstance(retry_items, list)
-                        and len(retry_items) == 1
-                        and isinstance(retry_items[0], dict)
+                        isinstance(primary_exc, AIUnstructuredResponse)
+                        and compact_decision
+                        and decision_fields
+                        and re.search(r"[\u4e00-\u9fff]", primary_exc.content)
+                        and len(primary_exc.content) >= 16
                     ):
-                        retry = retry_items[0]
-                    edited = _validated_ai_copy(
-                        retry,
-                        require_review_fields=True,
-                        require_decision_fields=True,
-                        allowed_keywords=_item.get("keywords"),
-                        source_item=_item,
-                    )
-                except Exception as exc:
-                    error = _clean_text(exc, 240)
-                    logging.error(
-                        "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
-                        source["id"],
-                        error,
-                    )
-                    deferred_reviews.append(
-                        {
-                            "id": source["id"],
-                            "title": source["title"],
-                            "error": error,
+                        retry = {
+                            "title": primary_exc.content,
+                            "summary": primary_exc.content,
+                            **decision_fields,
                         }
-                    )
-                    continue
+                        unstructured_copy_recovered_count += 1
+                    else:
+                        rescue_model = _clean_text(
+                            os.environ.get("CMHK_STRATEGY_AI_RESCUE_MODEL")
+                            or load_ai_config(include_key=False).get("model"),
+                            120,
+                        )
+                        primary_model = _clean_text(
+                            os.environ.get("CMHK_STRATEGY_AI_MODEL")
+                            or "Qwen3-30B-A3B-Instruct-2507",
+                            120,
+                        )
+                        if not rescue_model or rescue_model == primary_model:
+                            raise
+                        rescue_retry_attempt_count += 1
+                        logging.warning(
+                            "候选 %s 主审核模型输出异常，改由救援模型 %s 复审：%s",
+                            source["id"],
+                            rescue_model,
+                            _clean_text(primary_exc, 180),
+                        )
+                        try:
+                            retry = _call_internal_ai(
+                                single_system_prompt,
+                                single_user_prompt,
+                                max_tokens=1200,
+                                model_override=rescue_model,
+                            )
+                            rescue_retry_resolved_count += 1
+                        except AIUnstructuredResponse as rescue_exc:
+                            if (
+                                compact_decision
+                                and decision_fields
+                                and re.search(r"[\u4e00-\u9fff]", rescue_exc.content)
+                                and len(rescue_exc.content) >= 16
+                            ):
+                                retry = {
+                                    "title": rescue_exc.content,
+                                    "summary": rescue_exc.content,
+                                    **decision_fields,
+                                }
+                                rescue_retry_resolved_count += 1
+                                unstructured_copy_recovered_count += 1
+                            else:
+                                try:
+                                    edited = _plain_text_rescue_review(
+                                        _item,
+                                        model_override=rescue_model,
+                                    )
+                                    rescue_retry_resolved_count += 1
+                                    unstructured_copy_recovered_count += 1
+                                    retry = None
+                                except Exception as line_exc:
+                                    error = _clean_text(line_exc, 240)
+                                    logging.error(
+                                        "候选 %s 主审核与两种救援协议均失败，留待下轮：%s",
+                                        source["id"],
+                                        error,
+                                    )
+                                    deferred_reviews.append(
+                                        {
+                                            "id": source["id"],
+                                            "title": source["title"],
+                                            "error": error,
+                                        }
+                                    )
+                                    continue
+                        except Exception as rescue_exc:
+                            error = _clean_text(rescue_exc, 240)
+                            logging.error(
+                                "候选 %s 主审核与救援模型均失败，留待下轮：%s",
+                                source["id"],
+                                error,
+                            )
+                            deferred_reviews.append(
+                                {
+                                    "id": source["id"],
+                                    "title": source["title"],
+                                    "error": error,
+                                }
+                            )
+                            continue
+                if edited is not None:
+                    pass
+                else:
+                    try:
+                        retry_items = (
+                            retry.get("items")
+                            if isinstance(retry, dict)
+                            else None
+                        )
+                        if (
+                            isinstance(retry_items, list)
+                            and len(retry_items) == 1
+                            and isinstance(retry_items[0], dict)
+                        ):
+                            retry = retry_items[0]
+                        edited = _validated_ai_copy(
+                            retry,
+                            require_review_fields=True,
+                            require_decision_fields=True,
+                            allowed_keywords=_item.get("keywords"),
+                            source_item=_item,
+                        )
+                    except Exception as exc:
+                        error = _clean_text(exc, 240)
+                        logging.error(
+                            "候选 %s 经批量和单条 AI 编辑后仍不合格，留待下轮：%s",
+                            source["id"],
+                            error,
+                        )
+                        deferred_reviews.append(
+                            {
+                                "id": source["id"],
+                                "title": source["title"],
+                                "error": error,
+                            }
+                        )
+                        continue
             resolved[key] = edited
             cache[key] = {
                 **edited,
@@ -2662,13 +2975,18 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         "compact_retry_batch_count": compact_retry_batch_count,
         "compact_retry_item_count": compact_retry_item_count,
         "compact_retry_resolved_count": compact_retry_resolved_count,
+        "rescue_retry_attempt_count": rescue_retry_attempt_count,
+        "rescue_retry_resolved_count": rescue_retry_resolved_count,
+        "unstructured_copy_recovered_count": unstructured_copy_recovered_count,
         "critic": critic_audit,
         "policy": {
-            "mode": "verbose_batch_then_compact_missing_review_then_bounded_item_retry",
+            "mode": "wide_verbose_review_then_compact_missing_review_then_bounded_item_retry",
             "batch_blocking": False,
             "ai_soft_priority": "香港政策监管=香港本地运营商>一般国际行业",
             "missing_output_is_not_business_exclusion": True,
             "business_content_hard_filters": False,
+            "secondary_delete_enabled": False,
+            "default_bias": "宁可多收边缘相关信息，不漏真实竞对和关键词战略事件",
         },
         "deferred": deferred_reviews,
     }

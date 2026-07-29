@@ -1167,6 +1167,7 @@ def sync_candidates(
         return {
             "sheet_id": sheet_id,
             "sheet_url": _sheet_url(sheet_id),
+            "readback_verified": True,
             "candidate_count": candidate_count,
             "batch_count": len(items),
             "archived_count": archived_count,
@@ -1825,7 +1826,11 @@ def _current_source_generated_at() -> str:
         return _text(payload.get("generated_at"), 60)
     return ""
 
-def run_cycle(*, force: bool = False) -> dict[str, Any]:
+def run_cycle(
+    *,
+    force: bool = False,
+    schedule_dashboard_publish: bool = True,
+) -> dict[str, Any]:
     with _LOCK, _review_process_lock(wait=force) as process_lock_acquired:
         if not process_lock_acquired:
             return {
@@ -1887,7 +1892,11 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
             }
         )
         _write_json(STATE_PATH, state)
-        dashboard_publish = _schedule_public_dashboard_publish()
+        dashboard_publish = (
+            _schedule_public_dashboard_publish()
+            if schedule_dashboard_publish
+            else {"status": "deferred_until_periodic_cycle"}
+        )
         return {
             "status": "ok",
             "source_unchanged": source_unchanged,

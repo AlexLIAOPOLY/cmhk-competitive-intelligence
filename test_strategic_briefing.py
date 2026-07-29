@@ -121,8 +121,114 @@ class StrategicBriefingTests(unittest.TestCase):
 
         briefing._require_scan_downstream_success(
             {"result_count": 29},
-            {"status": "ok", "new_count": 1},
+            {"status": "ok", "new_count": 1, "readback_verified": True},
         )
+
+        with self.assertRaisesRegex(RuntimeError, "逐格回读"):
+            briefing._require_scan_downstream_success(
+                {"result_count": 29},
+                {"status": "ok", "new_count": 1},
+            )
+
+    def test_scan_persists_completed_pipeline_before_group_notification(self):
+        order = []
+        review_result = {
+            "status": "ok",
+            "readback_verified": True,
+            "new_count": 0,
+            "new_items": [],
+            "sheet_url": "https://example.com/sheet",
+            "source_candidate_count": 0,
+        }
+
+        def record_write(_path, payload):
+            status = payload.get("status") if isinstance(payload, dict) else ""
+            if status == "pipeline_completed":
+                order.append("pipeline_persisted")
+            elif status == "completed":
+                order.append("final_persisted")
+
+        def record_review(**kwargs):
+            order.append("review")
+            self.assertTrue(kwargs["force"])
+            self.assertFalse(kwargs["schedule_dashboard_publish"])
+            return review_result
+
+        def record_notification(**_kwargs):
+            order.append("notify")
+            return "om_after_completion", "bot"
+
+        with (
+            mock.patch.object(
+                briefing,
+                "read_monitoring_spec",
+                return_value={
+                    "spec_hash": "spec",
+                    "module_count": 6,
+                    "keyword_count": 135,
+                    "source_urls": [],
+                },
+            ),
+            mock.patch.object(
+                briefing,
+                "load_pending_signals",
+                return_value={"signals": [], "expired_signal_ids": []},
+            ),
+            mock.patch.object(
+                briefing.news_review_sheet,
+                "curate_news_items",
+                return_value=([], {}),
+                create=True,
+            ) if hasattr(briefing, "news_review_sheet") else mock.patch(
+                "news_review_sheet.curate_news_items",
+                return_value=([], {}),
+            ),
+            mock.patch(
+                "news_discovery_vote_digest.send_digest",
+                return_value={
+                    "result_count": 0,
+                    "hong_kong_count": 0,
+                    "query_errors": [],
+                    "agentic_search": {},
+                },
+            ),
+            mock.patch(
+                "news_review_sheet.run_cycle",
+                side_effect=record_review,
+            ),
+            mock.patch.object(briefing, "polish_candidates_before_review", return_value=[]),
+            mock.patch.object(briefing, "_load_candidates", return_value=[]),
+            mock.patch.object(briefing, "_save_candidates"),
+            mock.patch.object(
+                briefing,
+                "commit_signal_attempts",
+                return_value={"attempted": 0, "passed": 0, "consumed": 0},
+            ),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=record_write,
+            ),
+            mock.patch.object(briefing, "_append_event"),
+            mock.patch.object(
+                briefing,
+                "_send_scan_message",
+                side_effect=record_notification,
+            ),
+        ):
+            result = briefing._run_scan(
+                datetime(2026, 7, 29, 15, 0, tzinfo=briefing.HKT),
+                "2026-07-29@15:00-test",
+                "午后扫描",
+                {},
+            )
+
+        self.assertEqual(
+            order,
+            ["review", "pipeline_persisted", "notify", "final_persisted"],
+        )
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(result["message_id"], "om_after_completion")
 
     def test_scan_notification_retries_with_stable_idempotency_key(self):
         response = {
@@ -183,6 +289,7 @@ class StrategicBriefingTests(unittest.TestCase):
             }
             for index in range(1, 7)
         ]
+        items[-1]["region"] = "国际/行业"
         response = {
             "data": {"message_id": "om_notification"},
             "_identity": "bot",
@@ -207,7 +314,7 @@ class StrategicBriefingTests(unittest.TestCase):
                     "new_count": 6,
                     "new_items": items,
                     "new_category_counts": {"竞对动态": 6},
-                    "new_region_counts": {"香港本地": 6},
+                    "new_region_counts": {"香港本地": 5, "国际/行业": 1},
                     "new_source_count": 1,
                     "input_count": 120,
                     "source_candidate_count": 22,
@@ -225,6 +332,9 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("另有 1 条候选", rendered)
         self.assertIn("检索发现 **120** → AI确认 **22**", rendered)
         self.assertIn("审核本轮6条新闻", rendered)
+        self.assertIn("香港竞对 5", rendered)
+        self.assertIn("国际竞对 1", rendered)
+        self.assertIn("待审核 6", rendered)
 
     def test_pending_scan_notification_replays_once_after_resume(self):
         slot_key = "2026-07-28@09:00"
@@ -410,7 +520,7 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
         self.assertIn(
-            "其他国际/行业新闻应更精选",
+            "国际/行业新闻可以在排序和群卡片展示上稍低优先",
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
         self.assertIn(
@@ -418,7 +528,7 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
         self.assertIn(
-            "不得自行补写一条泛化的电信影响",
+            "不能因此从候选池删除",
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
         self.assertIn(
@@ -430,7 +540,7 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
         self.assertIn(
-            "长三角存贷款、一般内地峰会",
+            "普通海外AI与芯片消息若有具体变化可保留",
             briefing._SOFT_PRIORITY_GUIDANCE,
         )
         self.assertIn(
@@ -495,7 +605,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_signal_type"], "监管政策")
         self.assertEqual(result[0]["ai_business_impact"], "合规与牌照")
 
-    def test_ai_critic_removes_media_name_false_competitor_and_corrects_region(self):
+    def test_ai_critic_cannot_remove_included_item_but_can_correct_region(self):
         media_item = {
             "title": "房协与数码港推房地产科技计划",
             "snippet": "房协与数码港支持初创分析停车场车辆。",
@@ -542,9 +652,11 @@ class StrategicBriefingTests(unittest.TestCase):
                 [media_item, taiwan_item]
             )
 
-        self.assertEqual(len(kept), 1)
-        self.assertEqual(kept[0]["region"], "国际/行业")
-        self.assertEqual(audit["removed_count"], 1)
+        self.assertEqual(len(kept), 2)
+        self.assertTrue(kept[0]["ai_critic_disagreed"])
+        self.assertEqual(kept[1]["region"], "国际/行业")
+        self.assertEqual(audit["removed_count"], 0)
+        self.assertFalse(audit["delete_enabled"])
         self.assertEqual(audit["corrected_count"], 1)
 
     def test_ai_critic_only_reviews_a_kept_candidate_once_per_pipeline(self):
@@ -667,27 +779,29 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_category"], "宏观与政策")
         self.assertEqual(ai_call.call_count, 1)
 
-    def test_strategic_signal_requires_concrete_business_impact(self):
-        with self.assertRaisesRegex(RuntimeError, "缺少具体业务影响"):
-            briefing._validated_ai_copy(
-                {
-                    "title": "行业发布人工智能发展报告",
-                    "summary": "报告梳理人工智能产业趋势，但没有说明对电信业务的具体影响。",
-                    "should_include": True,
-                    "region": "国际/行业",
-                    "category": "行业动态",
-                    "keywords": "AI",
-                    "inclusion_reason": "报告讨论人工智能发展，因此可能具有战略价值。",
-                    "region_reason": "报告讨论全球行业趋势。",
-                    "decision_path": "战略信号",
-                    "signal_type": "关键技术",
-                    "business_impact": "无",
-                    "exclusion_code": "无",
-                },
-                require_review_fields=True,
-                require_decision_fields=True,
-                allowed_keywords="AI",
-            )
+    def test_strategic_signal_fills_missing_business_impact_without_dropping(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "行业发布人工智能发展报告",
+                "summary": "报告梳理人工智能产业趋势，并公布模型部署和行业应用的新数据。",
+                "should_include": True,
+                "region": "国际/行业",
+                "category": "行业动态",
+                "keywords": "AI",
+                "inclusion_reason": "报告公布人工智能部署和行业应用的具体变化。",
+                "region_reason": "报告讨论全球行业趋势。",
+                "decision_path": "战略信号",
+                "signal_type": "关键技术",
+                "business_impact": "无",
+                "exclusion_code": "无",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords="AI",
+        )
+
+        self.assertTrue(result["should_include"])
+        self.assertEqual(result["business_impact"], "竞争格局")
 
     def test_commentary_decision_is_not_overridden_by_regex(self):
         result = briefing._validated_ai_copy(
@@ -883,7 +997,7 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_call_internal_ai",
-                side_effect=[{}, wrapped_retry],
+                side_effect=[{}, {}, wrapped_retry],
             ),
         ):
             result = briefing.polish_candidates_before_review([item])
@@ -1028,6 +1142,36 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result[0]["ai_decision_path"], "战略信号")
         self.assertEqual(result[0]["ai_category"], "政策监管")
         self.assertEqual(call.call_count, 2)
+
+    def test_plain_text_ai_rescue_keeps_real_international_competitor(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "Vodafone Qatar reports 22% increase in net profit for H1",
+            "snippet": "Vodafone Qatar announced its consolidated half-year results.",
+            "keywords": ["Vodafone"],
+            "source": "Example",
+            "url": "https://example.com/vodafone-results",
+        }
+        with mock.patch.object(
+            briefing,
+            "_call_internal_ai",
+            return_value={
+                "_plain_text": (
+                    "C|I|C|R|0|沃达丰卡塔尔上半年净利润增长22%|"
+                    "沃达丰卡塔尔公布上半年业绩，净利润同比增长22%。"
+                )
+            },
+        ):
+            result = briefing._plain_text_rescue_review(
+                item,
+                model_override="deepseek-v4",
+            )
+
+        self.assertTrue(result["should_include"])
+        self.assertEqual(result["decision_path"], "竞对直通")
+        self.assertEqual(result["category"], "竞对动态")
+        self.assertEqual(result["region"], "国际/行业")
 
     def test_single_item_retry_budget_defers_without_unbounded_calls(self):
         items = [
