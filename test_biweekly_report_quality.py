@@ -17,8 +17,7 @@ def detailed_text(prefix: str, event_date: str = "2026年7月12日") -> str:
     del event_date
     return (
         f"{prefix}"
-        "项目覆盖核心业务场景，并公布当前实施范围、合作安排及关键数据。"
-        "相关部署已进入落地阶段。"
+        "项目覆盖核心业务场景，已公布实施范围、合作安排及关键数据并进入落地阶段。"
     )
 
 
@@ -198,6 +197,86 @@ class PublicationLabelTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "网页搜索结果噪声"):
             report.validate_human_template_content(make_model(item))
 
+    def test_fallback_selects_only_concise_snippet_from_matching_web_evidence(self) -> None:
+        item = make_item(
+            "W001",
+            1,
+            title="PCB行业龙头投资52亿元建设第二工厂",
+        )
+        item["originalTitle"] = item["title"]
+        item["rawDetail"] = item["title"]
+        item["detail"] = item["title"]
+        item["webResearch"] = {
+            "results": [
+                {
+                    "title": "无关地区举办消费品展览",
+                    "snippet": "展览吸引数百家企业参展，并发布多项消费数据。",
+                },
+                {
+                    "title": "PCB行业龙头投资52亿元建设第二工厂",
+                    "snippet": (
+                        "项目在东莞松山湖动工，聚焦AI服务器高频高速材料和高端封装基板材料。"
+                        "建成后将为云计算、6G通信及智能汽车电子提供关键材料。"
+                    ),
+                },
+            ]
+        }
+
+        detail = report.deterministic_limited_weekly_detail(item)
+
+        self.assertIn("东莞松山湖", detail)
+        self.assertNotIn("消费品展览", detail)
+        self.assertTrue(report.summary_is_concise(detail))
+        self.assertTrue(report.summary_adds_information(item["title"], detail, item["title"]))
+
+    def test_title_only_evidence_is_rewritten_as_prose_without_new_facts(self) -> None:
+        pcb = make_item(
+            "W001",
+            1,
+            title="PCB行业龙头投52亿建第二工厂 东莞「全球智造中心」建设加速",
+        )
+        pcb["originalTitle"] = pcb["title"]
+        pcb["rawDetail"] = pcb["title"]
+        pcb["detail"] = pcb["title"]
+        pcb["webResearch"] = {"results": []}
+        self.assertEqual(
+            report.deterministic_limited_weekly_detail(pcb),
+            "PCB行业龙头投资52亿元建设第二工厂，东莞「全球智造中心」建设加速。",
+        )
+
+        grant = make_item(
+            "W002",
+            2,
+            title="研资局拨1.4亿资助20学者 项目多聚焦AI安全",
+        )
+        grant["originalTitle"] = grant["title"]
+        grant["rawDetail"] = grant["title"]
+        grant["detail"] = grant["title"]
+        grant["webResearch"] = {"results": []}
+        self.assertEqual(
+            report.deterministic_limited_weekly_detail(grant),
+            "研资局拨款1.4亿元资助20名学者，资助项目主要聚焦AI安全。",
+        )
+
+        agreement = make_item(
+            "W003",
+            3,
+            title="特区政府与国家工信部签署协议推进共建制造业创新中心- 港闻",
+        )
+        agreement["originalTitle"] = agreement["title"]
+        agreement["title"] = report.deterministic_evidence_weekly_title(agreement)
+        agreement["rawDetail"] = agreement["title"]
+        agreement["detail"] = agreement["title"]
+        agreement["webResearch"] = {"results": []}
+        self.assertEqual(
+            agreement["title"],
+            "特区政府与国家工信部签署协议推进共建制造业创新中心",
+        )
+        self.assertEqual(
+            report.deterministic_limited_weekly_detail(agreement),
+            "特区政府与国家工信部签署合作协议，将共同推进制造业创新中心建设。",
+        )
+
     def test_overlong_detail_is_trimmed_only_at_a_complete_sentence(self) -> None:
         detail = (
             "据测试来源于2026年7月12日发布的信息，测试主体公布第一项可核验进展。"
@@ -218,6 +297,16 @@ class PublicationLabelTests(unittest.TestCase):
         item["reviewDecision"] = "approve"
         with self.assertRaisesRegex(ValueError, "截断省略号"):
             report.validate_report_model(make_model(item))
+
+    def test_visible_summary_is_limited_to_two_sentences_and_120_characters(self) -> None:
+        self.assertTrue(report.summary_is_concise("主体公布关键方案，覆盖三类业务场景。"))
+        self.assertFalse(report.summary_is_concise("第一句。第二句。第三句。"))
+        self.assertFalse(report.summary_is_concise("主体公布" + "关键数据" * 30 + "。"))
+
+        item = make_item("W001", 1)
+        item["detail"] = "第一句交代主体动作。第二句补充关键数字。第三句继续搬运活动背景。"
+        with self.assertRaisesRegex(ValueError, "超过两句或120个字符"):
+            report.validate_human_template_content(make_model(item))
 
 
 class StrategicReferenceDocxStructureTests(unittest.TestCase):
