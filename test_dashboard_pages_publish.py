@@ -34,10 +34,14 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 }
             ],
         }
+        later_payload = {
+            **payload,
+            "generated_at": "2026-07-29T10:05:00+08:00",
+        }
         with tempfile.TemporaryDirectory() as temp, mock.patch.object(
             publisher,
             "_public_news_payload",
-            return_value=payload,
+            side_effect=[payload, later_payload],
         ):
             first = Path(temp) / "first"
             second = Path(temp) / "second"

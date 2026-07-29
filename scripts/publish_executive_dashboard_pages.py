@@ -144,15 +144,23 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
     (destination / ".nojekyll").touch()
 
     payload = dict(_public_news_payload())
-    provisional = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
-    (destination / "strategic-briefs.json").write_text(provisional, encoding="utf-8")
-
     digest = hashlib.sha256()
     for path in sorted(item for item in destination.rglob("*") if item.is_file()):
         if path.name == ".DS_Store":
             continue
         digest.update(str(path.relative_to(destination)).encode("utf-8"))
         digest.update(path.read_bytes())
+    digest.update(
+        json.dumps(
+            {
+                "ok": bool(payload.get("ok")),
+                "items": payload.get("items") or [],
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
     site_version = digest.hexdigest()
     payload["site_version"] = site_version
     (destination / "strategic-briefs.json").write_text(
