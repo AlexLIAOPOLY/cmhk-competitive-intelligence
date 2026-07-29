@@ -1,3 +1,4 @@
+import json
 import time
 import unittest
 from datetime import datetime
@@ -167,6 +168,63 @@ class StrategicBriefingTests(unittest.TestCase):
             r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
         )
         sleep.assert_called_once_with(1)
+
+    def test_scan_notification_lists_at_most_five_priority_items(self):
+        items = [
+            {
+                "title": f"香港竞对动态{index}",
+                "summary": f"第{index}条动态的事实摘要。",
+                "category": "竞对动态",
+                "region": "香港本地",
+                "source": "测试媒体",
+                "published_at": f"2026-07-29T08:0{index}:00+08:00",
+                "url": f"https://example.com/news/{index}",
+                "inclusion_reason": "竞对推出新产品，影响产品定价和客户竞争。",
+            }
+            for index in range(1, 7)
+        ]
+        response = {
+            "data": {"message_id": "om_notification"},
+            "_identity": "bot",
+        }
+        with (
+            mock.patch.dict(
+                briefing.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "1"},
+            ),
+            mock.patch.object(
+                briefing,
+                "_lark_api",
+                return_value=response,
+            ) as lark_api,
+        ):
+            briefing._send_scan_message(
+                now=datetime(2026, 7, 29, 9, 0, tzinfo=briefing.HKT),
+                slot_label="晨间扫描",
+                candidates=[],
+                spec={"keyword_count": 135, "module_count": 6},
+                review_result={
+                    "new_count": 6,
+                    "new_items": items,
+                    "new_category_counts": {"竞对动态": 6},
+                    "new_region_counts": {"香港本地": 6},
+                    "new_source_count": 1,
+                    "input_count": 120,
+                    "source_candidate_count": 22,
+                    "semantic_duplicate_count": 16,
+                    "sheet_url": "https://example.com/sheet",
+                },
+                notification_key="2026-07-29@09:00",
+            )
+
+        card = json.loads(lark_api.call_args.kwargs["data"]["content"])
+        rendered = json.dumps(card, ensure_ascii=False)
+        self.assertIn("晨间竞争情报｜6条新增动态待审核", rendered)
+        self.assertIn("香港竞对动态5", rendered)
+        self.assertNotIn("香港竞对动态6", rendered)
+        self.assertIn("另有 1 条候选", rendered)
+        self.assertIn("检索发现 **120** → AI确认 **22**", rendered)
+        self.assertIn("审核本轮6条新闻", rendered)
 
     def test_pending_scan_notification_replays_once_after_resume(self):
         slot_key = "2026-07-28@09:00"

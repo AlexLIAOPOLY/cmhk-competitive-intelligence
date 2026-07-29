@@ -206,6 +206,23 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             result = review_sheet.sync_candidates([self._new_item()])
 
         self.assertEqual(result["candidate_count"], 2)
+        self.assertEqual(
+            result["new_items"],
+            [
+                {
+                    "news_id": self._new_item()["news_id"],
+                    "title": "今日新新闻",
+                    "summary": "这是一条应当追加到历史记录之后的今日新闻摘要。",
+                    "category": "行业动态",
+                    "region": "国际/行业",
+                    "source": "今日媒体",
+                    "published_at": "2026-07-22",
+                    "url": "https://example.com/new",
+                    "inclusion_reason": "",
+                    "business_impact": "",
+                }
+            ],
+        )
         self.assertEqual([cell_range for cell_range, _ in writes], ["A2:N3"])
         self.assertEqual(writes[0][1][0][6], "今日新新闻")
         self.assertEqual(writes[0][1][1], self._existing_row())

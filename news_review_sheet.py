@@ -1007,6 +1007,7 @@ def sync_candidates(
         new_category_counts: Counter[str] = Counter()
         new_region_counts: Counter[str] = Counter()
         new_sources: set[str] = set()
+        new_items: list[dict[str, Any]] = []
         for item in prepared_items:
             news_id = _text(item.get("news_id"), 80)
             value = _candidate_row(item, generated_at)
@@ -1016,6 +1017,42 @@ def sync_candidates(
             source = _text(item.get("source") or item.get("source_domain"), 160)
             if source:
                 new_sources.add(source)
+            new_items.append(
+                {
+                    "news_id": news_id,
+                    "title": _text(item.get("ai_title") or item.get("title"), 500),
+                    "summary": _text(
+                        item.get("ai_summary")
+                        or item.get("summary")
+                        or item.get("snippet"),
+                        1000,
+                    ),
+                    "category": _text(item.get("category") or "未分类", 80),
+                    "region": _text(item.get("region") or "未分类", 80),
+                    "source": source,
+                    "published_at": _text(
+                        item.get("published_at")
+                        or item.get("source_date")
+                        or item.get("publication_date"),
+                        80,
+                    ),
+                    "url": _text(
+                        item.get("url") or item.get("source_url"),
+                        1600,
+                    ),
+                    "inclusion_reason": _text(
+                        item.get("ai_inclusion_reason")
+                        or item.get("inclusion_reason")
+                        or item.get("why"),
+                        1000,
+                    ),
+                    "business_impact": _text(
+                        item.get("ai_business_impact")
+                        or item.get("business_impact"),
+                        120,
+                    ),
+                }
+            )
             new_values.append(value)
             existing_status[news_id] = (value[0], value[2])
         new_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
@@ -1117,6 +1154,7 @@ def sync_candidates(
             "new_category_counts": dict(new_category_counts),
             "new_region_counts": dict(new_region_counts),
             "new_source_count": len(new_sources),
+            "new_items": new_items,
             "existing_count": len(existing_status),
             "semantic_duplicate_count": len(semantic_result["duplicates"]),
             "semantic_deferred_count": len(semantic_result["deferred"]),
@@ -1796,6 +1834,7 @@ def run_cycle(*, force: bool = False) -> dict[str, Any]:
                     "sheet_url": _text(state.get("sheet_url"), 1600),
                     "candidate_count": int(state.get("last_candidate_count") or 0),
                     "new_count": 0,
+                    "new_items": [],
                     "semantic_duplicate_count": 0,
                     "semantic_deferred_count": 0,
                 }

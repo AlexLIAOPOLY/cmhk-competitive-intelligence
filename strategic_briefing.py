@@ -1056,25 +1056,55 @@ def _send_scan_message(
     if not isinstance(filtered_reasons, dict):
         filtered_reasons = {}
     sheet_url = _normalize_url(review.get("sheet_url") or "")
-    category_lines = "\n".join(
-        f"- **{name}**：{count} 条"
-        for name, count in sorted(
-            category_counts.items(),
-            key=lambda item: (-item[1], item[0]),
-        )
+    new_items = review.get("new_items") or []
+    if not isinstance(new_items, list):
+        new_items = []
+    if not has_new_metrics and not new_items:
+        new_items = list(candidates)
+
+    def display_priority(item: dict[str, Any]) -> int:
+        category = _clean_text(item.get("category") or item.get("module"), 80)
+        region = _clean_text(item.get("region"), 40)
+        if category == "竞对动态" and region == "香港本地":
+            rank = 0
+        elif category == "政策监管" and region == "香港本地":
+            rank = 1
+        elif category == "公司动态" or region == "香港本地":
+            rank = 2
+        elif category == "竞对动态":
+            rank = 3
+        else:
+            rank = 4
+        return rank
+
+    display_items = sorted(
+        (item for item in new_items if isinstance(item, dict)),
+        key=display_priority,
+    )[:5]
+    period_name = "晨间" if "晨间" in slot_label else "午后"
+    title = (
+        f"{period_name}竞争情报｜{candidate_count}条新增动态待审核"
+        if candidate_count
+        else f"{period_name}竞争情报｜本轮无新增动态"
     )
-    title = f"战略快讯扫描完成｜{now:%m月%d日}{slot_label}"
+    window_start = (
+        (now - timedelta(days=1)).replace(hour=14, minute=0, second=0, microsecond=0)
+        if "晨间" in slot_label
+        else now.replace(hour=8, minute=0, second=0, microsecond=0)
+    )
     if candidate_count:
+        top_titles = "；".join(
+            _clean_text(item.get("title"), 42)
+            for item in display_items[:3]
+            if _clean_text(item.get("title"), 42)
+        )
         result_text = (
-            f"**本轮结果**  门控通过 **{qualified_count} 条**，"
-            f"新增 **{candidate_count} 条**待审核候选，"
-            f"覆盖 **{len(category_counts)} 个方面**。\n"
-            + (f"其中香港本地 **{local_count} 条**" if local_count else "")
-            + (f" · 来自 **{source_count} 个来源**" if source_count else "")
-        ).rstrip("。") + "。"
-        detail_text = (
-            f"**分类概览**\n{category_lines}\n\n"
-            "<font color='grey'>AI中文标题、内容简介及每条原文链接已整理到飞书审核表。</font>"
+            f"**今日关键信号**\n重点涉及：{top_titles}。"
+            if top_titles
+            else (
+                f"**本轮概览**\n新增 **{candidate_count} 条**待审核动态，"
+                f"其中香港本地 **{local_count} 条**。"
+            )
         )
     else:
         if qualified_count:
@@ -1097,23 +1127,87 @@ def _send_scan_message(
             )[:4]
             if int(count or 0) > 0
         )
-        detail_text = (
-            f"**本轮过滤原因**\n{reason_lines}\n\n"
+        result_text = (
+            f"{result_text}\n\n**主要原因**\n{reason_lines}"
             if reason_lines
-            else ""
-        ) + "<font color='grey'>系统将在下一时段继续扫描。</font>"
+            else result_text
+        )
     elements: list[dict[str, Any]] = [
-        {
-            "tag": "markdown",
-            "content": (
-                f"**扫描范围**  {spec['keyword_count']} 个关键词 · "
-                f"{spec['module_count']} 个监测模块\n"
-                f"{result_text}"
-            ),
-        },
-        {"tag": "hr"},
-        {"tag": "markdown", "content": detail_text},
+        {"tag": "markdown", "content": result_text},
     ]
+    for index, item in enumerate(display_items, start=1):
+        title_text = _clean_text(item.get("title"), 180) or "未命名动态"
+        summary = _clean_text(item.get("summary"), 220)
+        impact = _clean_text(
+            item.get("inclusion_reason") or item.get("business_impact"), 180
+        )
+        category = _clean_text(item.get("category"), 60) or "战略动态"
+        region = _clean_text(item.get("region"), 40) or "未分类"
+        source = _clean_text(item.get("source"), 100) or "来源待核"
+        published_at = _clean_text(item.get("published_at"), 80)
+        try:
+            published_text = datetime.fromisoformat(
+                published_at.replace("Z", "+00:00")
+            ).astimezone(HKT).strftime("%m月%d日 %H:%M")
+        except ValueError:
+            published_text = published_at[:16] or "时间待核"
+        url = _normalize_url(item.get("url") or item.get("source_url") or "")
+        linked_title = f"[**{title_text}**]({url})" if url else f"**{title_text}**"
+        body_lines = [
+            f"**{index:02d}｜{category} · {region}**",
+            linked_title,
+        ]
+        if summary:
+            body_lines.append(summary)
+        if impact:
+            body_lines.append(f"**业务影响：** {impact}")
+        body_lines.append(
+            f"<font color='grey'>{source} · {published_text}</font>"
+        )
+        elements.extend(
+            [
+                {"tag": "hr"},
+                {"tag": "markdown", "content": "\n".join(body_lines)},
+            ]
+        )
+    hidden_count = max(0, candidate_count - len(display_items))
+    if hidden_count:
+        category_summary = "、".join(
+            f"{name}{count}条"
+            for name, count in sorted(
+                category_counts.items(),
+                key=lambda item: (-item[1], item[0]),
+            )
+        )
+        elements.extend(
+            [
+                {"tag": "hr"},
+                {
+                    "tag": "markdown",
+                    "content": (
+                        f"**另有 {hidden_count} 条候选**"
+                        + (f"：{category_summary}" if category_summary else "")
+                        + "\n完整标题、摘要和原文链接请进入审核表查看。"
+                    ),
+                },
+            ]
+        )
+    if candidate_count:
+        semantic_duplicates = int(review.get("semantic_duplicate_count") or 0)
+        elements.extend(
+            [
+                {"tag": "hr"},
+                {
+                    "tag": "markdown",
+                    "content": (
+                        f"**本轮质量漏斗**\n检索发现 **{input_count}** → "
+                        f"AI确认 **{qualified_count}** → "
+                        f"历史重复 **{semantic_duplicates}** → "
+                        f"新增 **{candidate_count}**"
+                    ),
+                },
+            ]
+        )
     if sheet_url:
         elements.append(
             {
@@ -1121,7 +1215,14 @@ def _send_scan_message(
                 "actions": [
                     {
                         "tag": "button",
-                        "text": {"tag": "plain_text", "content": "打开飞书审核表"},
+                        "text": {
+                            "tag": "plain_text",
+                            "content": (
+                                f"审核本轮{candidate_count}条新闻"
+                                if candidate_count
+                                else "打开完整候选池"
+                            ),
+                        },
                         "type": "primary",
                         "url": sheet_url,
                     }
@@ -1134,7 +1235,10 @@ def _send_scan_message(
             "elements": [
                 {
                     "tag": "plain_text",
-                    "content": "请在表内第一列选择接受、暂缓或不接受；接受后约5分钟同步到APP。",
+                    "content": (
+                        "卡片最多展示5条重点动态；完整候选请进入审核表。"
+                        "接受后约5分钟同步到APP。"
+                    ),
                 }
             ],
         }
@@ -1142,22 +1246,31 @@ def _send_scan_message(
     card = {
         "config": {"wide_screen_mode": True, "enable_forward": True},
         "header": {
-            "template": "turquoise",
+            "template": "blue" if candidate_count else "green",
             "title": {"tag": "plain_text", "content": title},
             "subtitle": {
                 "tag": "plain_text",
-                "content": f"{now:%Y-%m-%d %H:%M} · 人工筛选",
+                "content": (
+                    f"覆盖 {window_start:%m月%d日 %H:%M}—{now:%m月%d日 %H:%M}"
+                    " · 香港时间"
+                ),
             },
             "text_tag_list": [
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": f"{len(category_counts)} 个方面"},
-                    "color": "orange",
+                    "text": {
+                        "tag": "plain_text",
+                        "content": f"香港本地 {local_count}",
+                    },
+                    "color": "blue",
                 },
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": f"{candidate_count} 条"},
-                    "color": "blue",
+                    "text": {
+                        "tag": "plain_text",
+                        "content": f"待审核 {candidate_count}",
+                    },
+                    "color": "orange",
                 },
             ],
         },
@@ -1216,11 +1329,13 @@ def _pending_notification_payload(
         "new_category_counts",
         "new_region_counts",
         "new_source_count",
+        "new_items",
         "category_counts",
         "region_counts",
         "source_count",
         "input_count",
         "source_candidate_count",
+        "semantic_duplicate_count",
         "batch_count",
         "filtered_reasons",
         "sheet_url",
