@@ -1,7 +1,39 @@
 {
   "ok": true,
-  "generated_at": "2026-07-29T15:28:10+08:00",
+  "generated_at": "2026-07-29T15:58:33+08:00",
   "items": [
+    {
+      "id": "NEWS-42A8A8BD467BFE",
+      "title": "商汤大装置持续拓展产业生态边界 集中落地多项重磅战略合作",
+      "summary": "商汤大装置与国信数算签署全国一体化算力网试验场战略合作，联合举办AI基础设施创新发展论坛。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.leiphone.com/category/industrynews/sO1Q58AgzvWr2mFJ.html",
+      "published_at": "2026-07-29"
+    },
+    {
+      "id": "NEWS-FAB947EEC47797",
+      "title": "工信部等七部门：启动2026年首批工业和信息化领域创新任务揭榜挂帅工作",
+      "summary": "工信部等七部门启动2026年工业和信息化领域创新任务揭榜挂帅，布局24个专题。",
+      "category": "政策监管",
+      "source_url": "https://www.msn.cn/zh-cn/news/other/%E5%B7%A5%E4%BF%A1%E9%83%A8%E7%AD%89%E4%B8%83%E9%83%A8%E9%97%A8-%E5%90%AF%E5%8A%A82026%E5%B9%B4%E9%A6%96%E6%89%B9%E5%B7%A5%E4%B8%9A%E5%92%8C%E4%BF%A1%E6%81%AF%E5%8C%96%E9%A2%86%E5%9F%9F%E5%88%9B%E6%96%B0%E4%BB%BB%E5%8A%A1%E6%8F%AD%E6%A6%9C%E6%8C%82%E5%B8%85%E5%B7%A5%E4%BD%9C/ar-AA28WMXs",
+      "published_at": "2026-07-29"
+    },
+    {
+      "id": "NEWS-06E6A466DAC09B",
+      "title": "AI需求激增致内存供应预计2027年极度短缺",
+      "summary": "台湾宇瞻科技警告，AI对系统内存需求急剧增加，预计2027年通用DRAM供应将削减70%，市场将从涨价演变为极度缺货。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://unwire.hk/2026/07/29/apacer-dram-shortage-2027/fun-tech/",
+      "published_at": "2026-07-29"
+    },
+    {
+      "id": "NEWS-D1FCD36EAD0013",
+      "title": "内地企业拟利用香港专业服务支援东盟业务发展",
+      "summary": "调查显示83%内地企业计划利用香港专业服务支援东盟业务，凸显香港在跨境商业服务中的枢纽价值。",
+      "category": "竞争对手",
+      "source_url": "https://finance.now.com/news/post.php?id=979932",
+      "published_at": "2026-07-29"
+    },
     {
       "id": "NEWS-87A3B4B37D77A9",
       "title": "PCB行业龙头投52亿建第二工厂 东莞「全球智造中心」建设加速",
@@ -33,39 +65,7 @@
       "category": "竞对动态",
       "source_url": "https://hk.finance.yahoo.com/news/%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%A8%8A-06823-%E6%8E%A8%E5%87%BA%E8%87%AA%E4%B8%BB%E9%96%8B%E7%99%BC-ai-%E5%B9%B3%E5%8F%B0-040024482.html",
       "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-258436E031C21D",
-      "title": "香港出口创42年最大增幅AI需求成最大推手",
-      "summary": "香港出口按年飙升53.4%创42年新高，强劲增长主要受人工智能相关需求大幅拉动。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9PN2k0YVh4VnFWN2FvNVRXc0s3b1pmNEY0RUVfT2J2bFdRU1pkOHJHWmd0SkNCYXNibkNTWW5pdDVWS3RHVW1YUXJrcGdhUGlHSFdOanVXWTl5czktUDMxeTROOUFaYzFjVG11VUdtRF9WUHdXR1NF?oc=5",
-      "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-317B71E3178989",
-      "title": "HKT举办2026科技周 共建香港AI创新枢纽",
-      "summary": "HKT举办2026科技周，汇聚全球伙伴生态，旨在共建香港AI创新枢纽。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi1AJBVV95cUxOM3EwZlh6RXhFWVBuX25vdGlDdkNpN3U4bTAtLV82c0pIdnJGRmtZZFQzUzRKUFRjcWhoeG81MFlxQzduamVyYnhtWDRuS3ZPUGhsVHVQc1c5WGR6Q21lYkRsOGp6dGMteFV1RmtybkR2aVlxRzVCUzNaaU5VT2lrdjJ4d0NPVW1iaTRDSjljeGJoeXhFdUZhbk5jWEZfbDlDNjBPUXFXOUVYeU94bWxvN1JzNEVXMHBrakIxUmtOQWV3aXBfenc0RFBiU2VBUGRxekJONDl1UTBVLTJyVTFCU2FMR25fdlk2M2dZSm5BXzlEU2NDN2hrVmczVWY5ZnNqRzF3V09fdk5lRWlxX2NfRXNsaTZ2UEZaWVhGT2hfTzRENWw2THI4aFBmLXJVSEsxX20xWDRYVDZKYk1HWE9VUUlvT0pWdG4xUXhmSTl3SXZkd0JS?oc=5",
-      "published_at": "2026-07-27"
-    },
-    {
-      "id": "NEWS-12B7543B26A1C1",
-      "title": "贸发局预测AI带动电子产品出口增长近三成",
-      "summary": "贸发局预测人工智能需求将带动电子产品出口增长近三成，反映科技产业对贸易的强劲拉动作用。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE10aHE5UEN4djVQQ3hoT2xXeHhzanF6b0czTHNWZEpQd0V6SWJXU09yVE9wY3YwaHBObVlkS2lQVnFBRDhuN2RUek9iMGs2NTZDMlpzelp3U3VpdHRxVGJPazRGT3Z5LXBHUVlJTUdfNlgyMGJ2?oc=5",
-      "published_at": "2026-07-25"
-    },
-    {
-      "id": "NEWS-66B2C6FEDA7E9A",
-      "title": "中国联通在京发布5G-A大上行网络能力",
-      "summary": "中国联通在北京部署超万站5G-A基站，实现上行1Gbps峰值速率，核心城区20Mbps上行泛在速率满足度超91%。",
-      "category": "竞对动态",
-      "source_url": "https://finance.sina.com.cn/roll/2026-07-24/doc-iniivyeq9293892.shtml",
-      "published_at": "2026-07-24"
     }
   ],
-  "site_version": "d307471f37956e97761abc6894d072dc98e19f81264f9ea5ab68db64b0051423"
+  "site_version": "97d34d8d9c9b9897323f36458813e2fa246d7f6b64e8235809963ceab2da5207"
 }
