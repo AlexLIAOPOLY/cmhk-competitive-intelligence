@@ -2506,11 +2506,12 @@ def reconcile_misclassified_general_tasks() -> list[dict]:
 def _normalize_crawl_task(run: dict) -> dict:
     crawl_id = str(run.get("crawl_run_id") or "")
     stream = run.get("stream_log") if isinstance(run.get("stream_log"), dict) else {}
+    task_kind = str(run.get("task_kind") or "crawl")
     return {
         "task_id": "crawl:" + crawl_id,
         "task_run_id": crawl_id,
-        "kind": "crawl",
-        "kind_label": "爬虫",
+        "kind": task_kind,
+        "kind_label": "新闻爬虫" if task_kind == "strategic-news" else "爬虫",
         "title": str(run.get("trigger") or "爬虫任务"),
         "scope": str(run.get("scope") or "未记录范围"),
         "run_status": str(run.get("run_status") or "completed"),

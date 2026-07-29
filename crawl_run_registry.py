@@ -213,7 +213,14 @@ def _stream_log_stats(path: Path | None) -> dict[str, int]:
     return {"bytes": len(raw), "lines": len(raw.splitlines())}
 
 
-def start_crawl_run(*, trigger: str, scope: str = "") -> dict[str, Any]:
+def start_crawl_run(
+    *,
+    trigger: str,
+    scope: str = "",
+    task_kind: str = "crawl",
+    phase: str = "任务启动",
+    progress_detail: str = "后台已接收爬虫任务，正在准备执行。",
+) -> dict[str, Any]:
     """Register a run and reserve its immutable full-log file before work starts."""
     ensure_registry_docs()
     started = datetime.now(ZoneInfo("Asia/Hong_Kong"))
@@ -224,11 +231,12 @@ def start_crawl_run(*, trigger: str, scope: str = "") -> dict[str, Any]:
         "crawl_run_id": crawl_run_id,
         "trigger": trigger,
         "scope": scope,
+        "task_kind": task_kind,
         "run_status": "running",
         "backend_pid": os.getpid(),
         "worker_pid": 0,
-        "phase": "任务启动",
-        "progress_detail": "后台已接收爬虫任务，正在准备执行。",
+        "phase": phase,
+        "progress_detail": progress_detail,
         "heartbeat_at_hkt": started.isoformat(timespec="seconds"),
         "started_at_hkt": started.isoformat(timespec="seconds"),
         "completed_at_hkt": "",
@@ -247,6 +255,42 @@ def start_crawl_run(*, trigger: str, scope: str = "") -> dict[str, Any]:
     }
     _save_run_record(record)
     return {**record, "stream_log_path": str(stream_log)}
+
+
+def finalize_operational_crawl_run(
+    crawl_run_id: str,
+    *,
+    ok: bool,
+    duration_ms: int,
+    progress_detail: str,
+    failure_stage: str = "",
+    summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Finalize a crawler-shaped operational task without borrowing full-crawl metrics."""
+    with REGISTRY_LOCK:
+        record = _read_json(RUNS_DIR / f"{_safe_id(crawl_run_id)}.json", {})
+        if not isinstance(record, dict) or not record:
+            raise ValueError(f"crawl run not found: {crawl_run_id}")
+        relative = str((record.get("local_files") or {}).get("stream_log") or "")
+        stream_path = ROOT / relative if relative else RUNS_DIR / f"{crawl_run_id}.jsonl"
+        now = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
+        record.update(
+            {
+                "run_status": "completed" if ok else "failed",
+                "worker_pid": 0,
+                "phase": "已完成" if ok else "失败",
+                "progress_detail": progress_detail,
+                "status_detail": progress_detail,
+                "failure_stage": failure_stage,
+                "heartbeat_at_hkt": now,
+                "completed_at_hkt": now,
+                "crawl_return_code": 0 if ok else 1,
+                "duration_ms": max(0, int(duration_ms or 0)),
+                "operational_summary": dict(summary or {}),
+            }
+        )
+        record["stream_log"] = _stream_log_stats(stream_path)
+        return _save_run_record(record)
 
 
 def append_crawl_run_event(log_path: str | Path, payload: dict[str, Any]) -> None:

@@ -158,7 +158,28 @@ class StrategicBriefingTests(unittest.TestCase):
             order.append("notify")
             return "om_after_completion", "bot"
 
+        def record_registry_final(_crawl_run_id, **kwargs):
+            order.append("registry_finalized")
+            self.assertTrue(kwargs["ok"])
+            self.assertTrue(kwargs["summary"]["readback_verified"])
+            return {}
+
         with (
+            mock.patch.object(
+                briefing,
+                "start_crawl_run",
+                return_value={
+                    "crawl_run_id": "strategic_test_run",
+                    "stream_log_path": "/tmp/strategic_test_run.jsonl",
+                },
+            ),
+            mock.patch.object(briefing, "append_crawl_run_event"),
+            mock.patch.object(briefing, "heartbeat_crawl_run"),
+            mock.patch.object(
+                briefing,
+                "finalize_operational_crawl_run",
+                side_effect=record_registry_final,
+            ),
             mock.patch.object(
                 briefing,
                 "read_monitoring_spec",
@@ -225,10 +246,17 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(
             order,
-            ["review", "pipeline_persisted", "notify", "final_persisted"],
+            [
+                "review",
+                "pipeline_persisted",
+                "notify",
+                "final_persisted",
+                "registry_finalized",
+            ],
         )
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["message_id"], "om_after_completion")
+        self.assertEqual(result["task_run_id"], "strategic_test_run")
 
     def test_scan_notification_retries_with_stable_idempotency_key(self):
         response = {

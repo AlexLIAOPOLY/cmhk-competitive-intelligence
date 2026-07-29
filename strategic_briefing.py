@@ -24,6 +24,12 @@ from opencc import OpenCC
 
 from ai_config import load_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
+from crawl_run_registry import (
+    append_crawl_run_event,
+    finalize_operational_crawl_run,
+    heartbeat_crawl_run,
+    start_crawl_run,
+)
 from scheduled_crawl_news_bridge import (
     commit_signal_attempts,
     load_pending_signals,
@@ -1496,13 +1502,150 @@ def _require_scan_downstream_success(
         raise RuntimeError("战略快讯下游处理失败；" + "；".join(errors))
 
 
+def _strategic_task_progress(
+    crawl_run_id: str,
+    stream_log_path: str | Path,
+    phase: str,
+    detail: str,
+) -> None:
+    if not crawl_run_id:
+        return
+    try:
+        heartbeat_crawl_run(
+            crawl_run_id,
+            phase,
+            detail,
+            append_log=False,
+        )
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "log",
+                "text": f"[{datetime.now(HKT):%Y-%m-%d %H:%M:%S}] {phase}：{detail}",
+            },
+        )
+    except Exception:
+        logging.exception("战略新闻任务进度写入日志中心失败")
+
+
 def _run_scan(
     now: datetime,
     slot_key: str,
     slot_label: str,
     state: dict[str, Any],
 ) -> dict[str, Any]:
+    started_monotonic = time.monotonic()
+    crawl_run_id = ""
+    stream_log_path: str | Path = ""
+    try:
+        started_record = start_crawl_run(
+            trigger="战略新闻定时爬虫",
+            scope=f"{slot_label}（{slot_key}）",
+            task_kind="strategic-news",
+            phase="搜索准备",
+            progress_detail="已建立任务记录，正在加载固定监控、关键词和定时页面线索。",
+        )
+        crawl_run_id = str(started_record.get("crawl_run_id") or "")
+        stream_log_path = str(started_record.get("stream_log_path") or "")
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "run_start",
+                "crawlRunId": crawl_run_id,
+                "startedAt": _now_iso(now),
+                "trigger": "战略新闻定时爬虫",
+                "scope": f"{slot_label}（{slot_key}）",
+            },
+        )
+    except Exception:
+        logging.exception("战略新闻扫描无法建立可视任务记录，扫描继续")
+    try:
+        result = _run_scan_impl(
+            now,
+            slot_key,
+            slot_label,
+            state,
+            crawl_run_id=crawl_run_id,
+            stream_log_path=stream_log_path,
+        )
+    except Exception as exc:
+        detail = f"战略新闻扫描失败：{_clean_text(exc, 500)}"
+        if crawl_run_id:
+            _strategic_task_progress(
+                crawl_run_id,
+                stream_log_path,
+                "失败",
+                detail,
+            )
+            append_crawl_run_event(
+                stream_log_path,
+                {"type": "done", "ok": False, "stage": "strategic_news", "error": detail},
+            )
+            try:
+                finalize_operational_crawl_run(
+                    crawl_run_id,
+                    ok=False,
+                    duration_ms=round((time.monotonic() - started_monotonic) * 1000),
+                    progress_detail=detail,
+                    failure_stage="strategic_news",
+                )
+            except Exception:
+                logging.exception("战略新闻失败任务无法完成日志归档")
+        raise
+    if crawl_run_id:
+        review = result.get("review_sheet") or {}
+        summary = {
+            "slot": slot_key,
+            "discovered": int((result.get("news_discovery") or {}).get("result_count") or 0),
+            "ai_retained": int(review.get("batch_count") or 0),
+            "history_duplicates": int(review.get("semantic_duplicate_count") or 0),
+            "new_count": int(review.get("new_count") or 0),
+            "readback_verified": review.get("readback_verified") is True,
+            "notification_status": result.get("notification_status") or "",
+            "message_id": result.get("message_id") or "",
+        }
+        detail = (
+            f"扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；"
+            f"发现 {summary['discovered']} 条，AI保留 {summary['ai_retained']} 条，"
+            f"历史重复 {summary['history_duplicates']} 条，新增 {summary['new_count']} 条。"
+        )
+        append_crawl_run_event(
+            stream_log_path,
+            {"type": "done", "ok": True, "returnCode": 0, "summary": summary},
+        )
+        try:
+            finalize_operational_crawl_run(
+                crawl_run_id,
+                ok=True,
+                duration_ms=round((time.monotonic() - started_monotonic) * 1000),
+                progress_detail=detail,
+                summary=summary,
+            )
+        except Exception:
+            logging.exception("战略新闻完成任务无法完成日志归档")
+        result["task_run_id"] = crawl_run_id
+    return result
+
+
+def _run_scan_impl(
+    now: datetime,
+    slot_key: str,
+    slot_label: str,
+    state: dict[str, Any],
+    *,
+    crawl_run_id: str = "",
+    stream_log_path: str | Path = "",
+) -> dict[str, Any]:
     spec = read_monitoring_spec()
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "搜索准备",
+        (
+            f"已加载 {spec['module_count']} 个监控模块、{spec['keyword_count']} 个关键词、"
+            f"{len(spec['source_urls'])} 个固定页面来源。"
+        ),
+    )
     # The comprehensive date-aware discovery layer below already executes all
     # fixed monitoring keywords, fixed-page leads, and Agentic gap searches.
     # Keep the old sequential DDGS branch opt-in only: in production it yielded
@@ -1582,6 +1725,12 @@ def _run_scan(
     _enrich_with_crawler(ranked)
     ranked = polish_candidates_before_review(ranked)
     discovery_result: dict[str, Any] = {}
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "固定监控与Agentic Search",
+        "正在执行固定页面、固定关键词、定时爬虫线索和Agentic补缺搜索。",
+    )
     try:
         import news_discovery_vote_digest
 
@@ -1592,6 +1741,18 @@ def _run_scan(
     except Exception as exc:
         discovery_result = {"error": _clean_text(exc, 300)}
         logging.exception("战略快讯新闻发现失败")
+    agentic_search = discovery_result.get("agentic_search") or {}
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "新闻发现完成",
+        (
+            f"时间窗内发现 {int(discovery_result.get('result_count') or 0)} 条；"
+            f"固定搜索 {int(agentic_search.get('fixed_result_count') or 0)} 条，"
+            f"Agentic补缺 {int(agentic_search.get('agentic_result_count') or 0)} 条，"
+            f"查询错误 {len(discovery_result.get('query_errors') or [])} 个。"
+        ),
+    )
     scheduled_search = (
         (discovery_result.get("agentic_search") or {}).get(
             "scheduled_crawl_search"
@@ -1612,6 +1773,12 @@ def _run_scan(
             scheduled_search.get("admitted_signal_ids") or []
         )
     review_result: dict[str, Any] = {}
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "AI审核、历史去重与飞书同步",
+        "正在逐条审核候选、隔离单条异常、执行全历史语义去重并写入飞书。",
+    )
     try:
         review_result = news_review_sheet.run_cycle(
             force=True,
@@ -1621,6 +1788,16 @@ def _run_scan(
         review_result = {"error": _clean_text(exc, 300)}
         logging.exception("战略快讯扫描完成，但飞书审核表同步失败")
     _require_scan_downstream_success(discovery_result, review_result)
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "飞书逐格回读完成",
+        (
+            f"AI保留 {int(review_result.get('batch_count') or 0)} 条，"
+            f"历史重复 {int(review_result.get('semantic_duplicate_count') or 0)} 条，"
+            f"新增 {int(review_result.get('new_count') or 0)} 条；写入后逐格回读已确认。"
+        ),
+    )
     _save_candidates(_load_candidates() + ranked)
     state["seen_urls"] = (
         list(state.get("seen_urls") or []) + [item["url"] for item in ranked]
@@ -1689,6 +1866,12 @@ def _run_scan(
             },
         }
     )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "结果归档完成",
+        "候选、扫描状态和运行结果已全部落盘，准备发送群通知。",
+    )
     try:
         message_id, identity = _send_scan_message(
             now=now,
@@ -1730,6 +1913,15 @@ def _run_scan(
     run_payload["feishu_identity"] = identity
     run_payload["notified_at"] = _now_iso()
     _atomic_write_json(RUNS_DIR / f"{slot_key.replace(':', '-')}.json", run_payload)
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "群通知完成",
+        (
+            f"通知状态：{notification_status}；"
+            f"消息ID：{message_id or '通知暂停时已进入待发队列'}。"
+        ),
+    )
     _append_event(
         {
             "type": "scan_completed",

@@ -18,6 +18,23 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_strategic_news_crawl_is_visible_as_news_crawler_task(self) -> None:
+        task = web_app._normalize_crawl_task(
+            {
+                "crawl_run_id": "20260729_150000_news",
+                "task_kind": "strategic-news",
+                "trigger": "战略新闻定时爬虫",
+                "scope": "午后扫描（2026-07-29@15:00）",
+                "run_status": "running",
+                "stream_log": {"lines": 6, "bytes": 800},
+            }
+        )
+
+        self.assertEqual(task["kind"], "strategic-news")
+        self.assertEqual(task["kind_label"], "新闻爬虫")
+        self.assertEqual(task["title"], "战略新闻定时爬虫")
+        self.assertEqual(task["lines"], 6)
+
     def test_homepage_uses_candidate_activity_when_no_confirmed_signals_exist(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
 
