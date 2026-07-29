@@ -14,12 +14,11 @@ import generate_weekly_report as report
 
 
 def detailed_text(prefix: str, event_date: str = "2026年7月12日") -> str:
-    return report.ensure_detailed_paragraph(
-        f"据测试来源于{event_date}发布的信息，{prefix}"
-        + "公开资料说明事项的业务背景、当前进展及可核验边界。"
-        + "相关变化需要结合后续正式披露持续跟踪，本报告不对来源以外的信息作确定性推断。",
-        min_chars=120,
-        max_chars=300,
+    del event_date
+    return (
+        f"{prefix}"
+        "项目覆盖核心业务场景，并公布当前实施范围、合作安排及关键数据。"
+        "相关部署已进入落地阶段。"
     )
 
 
@@ -140,22 +139,17 @@ class PublicationLabelTests(unittest.TestCase):
         self.assertIn("发布时间：2026年7月12日", rendered_text)
         self.assertNotIn("发布时间：2026年7月15日", rendered_text)
 
-    def test_each_detail_must_put_the_locked_publication_date_in_the_first_sentence(self) -> None:
+    def test_detail_omits_source_date_leadin_and_follow_up_scaffolding(self) -> None:
         valid = detailed_text("测试主体公布一项新进展。")
-        misplaced = report.ensure_detailed_paragraph(
-            "测试主体公布一项新进展。"
-            "据测试来源于2026年7月12日发布的信息，相关部署已经开始。"
-            "公开资料说明了当前进展与可核验边界。"
+        scaffolded = (
+            "据测试来源于2026年7月12日发布的信息，测试主体公布一项新进展。"
+            "项目已经进入实施阶段。后续仍需关注执行进度。"
         )
-
-        self.assertTrue(report.detail_mentions_publication_date(valid, "2026-07-12"))
-        self.assertFalse(report.detail_mentions_publication_date(misplaced, "2026-07-12"))
-
         item = make_item("W001", 1)
-        item["detail"] = misplaced
+        item["detail"] = scaffolded
         item["reviewDecision"] = "approve"
         model = make_model(item)
-        with self.assertRaisesRegex(ValueError, "首句未写明公开发布时间"):
+        with self.assertRaisesRegex(ValueError, "来源日期套话或关注式结尾"):
             report.validate_report_model(model)
 
         item["detail"] = valid
@@ -706,9 +700,10 @@ class IndependentReviewerTests(unittest.TestCase):
         self.assertEqual(reviewed[0]["writerStatus"], "deterministic_evidence_repair")
         self.assertEqual(audit["evidenceRepairCount"], 1)
         self.assertEqual(audit["rejectedItems"], 0)
-        self.assertGreaterEqual(
-            len(re.sub(r"\s+", "", reviewed[0]["detail"])),
-            report.MIN_WEEKLY_DETAIL_CHARS,
+        self.assertFalse(report.summary_has_unneeded_scaffolding(reviewed[0]["detail"]))
+        self.assertEqual(
+            report.simplified_chinese(reviewed[0]["detail"]),
+            reviewed[0]["detail"],
         )
         self.assertIn("最终证据约束修复完成", " ".join(progress_messages))
         self.assertNotIn("已停止整份周报", " ".join(progress_messages))

@@ -7,11 +7,67 @@ from unittest.mock import patch
 
 from docx import Document
 
-from generate_weekly_report import curated_section, localized_weekly_value
+from generate_weekly_report import (
+    curated_section,
+    localized_weekly_value,
+    normalize_weekly_model_simplified,
+    review_sheet_section,
+)
 from tts_service import build_audio_summary, normalize_for_speech, prepare_tts_text
 
 
 class WeeklyReportContentTests(unittest.TestCase):
+    def test_highlighted_ai_and_technology_news_are_industry_information(self):
+        cases = [
+            ("政策监管", "工信部发文促进中小企业AI深度融合"),
+            ("宏观经济", "贸发局预测AI拉动电子产品出口增近三成"),
+            ("政策监管", "中国规划建设国家级零碳算力设施"),
+            ("本地运营商", "香港电讯调查：43%企业保留AI预算"),
+        ]
+        for category, title in cases:
+            with self.subTest(title=title):
+                self.assertEqual(
+                    review_sheet_section(
+                        {
+                            "category": category,
+                            "region": "香港本地",
+                            "title": title,
+                            "summary": title,
+                            "keywords": "人工智能 算力",
+                        }
+                    ),
+                    "行业资讯",
+                )
+
+    def test_all_visible_weekly_text_is_normalized_to_simplified_chinese(self):
+        model = {
+            "company": "中國移動香港公司",
+            "department": "戰略部",
+            "title": "戰略內參",
+            "toc": [{"section": "行業資訊", "tag": "人工智能", "title": "企業保留預算"}],
+            "sections": [
+                {
+                    "name": "行業資訊",
+                    "narrative": "",
+                    "items": [
+                        {
+                            "section": "行業資訊",
+                            "tag": "人工智能",
+                            "title": "企業保留預算",
+                            "detail": "香港電訊調查顯示企業持續投資人工智能。",
+                            "sourceName": "香港電訊",
+                        }
+                    ],
+                }
+            ],
+            "sources": [{"sourceName": "香港電訊", "title": "企業調查"}],
+        }
+        normalized = normalize_weekly_model_simplified(model)
+        visible = str(normalized)
+        self.assertIn("中国移动香港公司", visible)
+        self.assertIn("香港电讯调查显示企业持续投资人工智能", visible)
+        self.assertNotIn("企業", visible)
+
     def test_political_english_fact_is_localized_to_concrete_chinese(self):
         row = {
             "company": "政治新闻",

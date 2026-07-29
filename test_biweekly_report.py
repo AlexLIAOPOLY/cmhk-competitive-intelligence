@@ -366,7 +366,8 @@ class ManualWeeklySelectionTests(unittest.TestCase):
         self.assertEqual(model["generationMode"], "limited")
         self.assertEqual(final_item["title"], "人工选中的测试新闻")
         self.assertEqual(final_item["reviewDecision"], "evidence_repair")
-        self.assertGreaterEqual(len(re.sub(r"\s+", "", final_item["detail"])), 120)
+        self.assertIn("测试主体公布业务进展", final_item["detail"])
+        self.assertFalse(report.summary_has_unneeded_scaffolding(final_item["detail"]))
         self.assertIn("联网服务不可用", model["generationLimitations"][0]["reason"])
 
 
@@ -384,18 +385,15 @@ class BiweeklyContentQualityTests(unittest.TestCase):
             ],
         )
 
-    def test_short_title_like_text_is_expanded_to_a_real_paragraph(self) -> None:
+    def test_short_source_text_is_not_padded_with_generic_language(self) -> None:
         short_text = "运营商发布新5G套餐。"
 
         first = report.ensure_detailed_paragraph(short_text, min_chars=120, max_chars=300)
         second = report.ensure_detailed_paragraph(short_text, min_chars=120, max_chars=300)
-        meaningful_length = len(re.sub(r"\s+", "", first))
 
         self.assertEqual(first, second, "LLM失败回退必须是确定性的")
-        self.assertIn(short_text, first)
-        self.assertGreaterEqual(meaningful_length, 120)
-        self.assertLessEqual(len(first), 300)
-        self.assertNotEqual(first.strip(), short_text)
+        self.assertEqual(first, short_text)
+        self.assertFalse(report.summary_has_unneeded_scaffolding(first))
 
     def test_llm_timeout_repairs_online_then_fails_closed_instead_of_dropping_item(self) -> None:
         original = {
