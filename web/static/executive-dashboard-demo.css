@@ -706,18 +706,21 @@ h1 {
 .revenue-block > strong small { margin-left: 6px; color: #9ab9c9; font-size: 11px; }
 
 .revenue-compare {
+  width: min(100%, 320px);
   height: 74px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: end;
-  gap: 11px;
+  column-gap: 10px;
   margin-top: 11px;
   border-bottom: 1px solid rgba(110, 185, 219, .18);
 }
 
 .revenue-compare > i {
   position: relative;
-  width: 22px;
+  width: 26px;
   height: var(--value);
+  justify-self: center;
   background: linear-gradient(180deg, var(--cyan), rgba(46, 102, 200, .54));
   box-shadow: 0 0 12px rgba(53, 217, 255, .2);
   transition: height .78s cubic-bezier(.2, .8, .2, 1);
@@ -930,6 +933,9 @@ h1 {
   .reach-extra { grid-column: 1; margin-bottom: 0; }
   .reach-pair { grid-column: 1; }
   .revenue-block { width: 58%; }
+  .revenue-compare { column-gap: 4px; }
+  .revenue-compare > i { width: 22px; }
+  .revenue-compare b { font-size: 8px; }
   .finance-extra { width: 54%; }
   .profit-kpis > div { min-width: 112px; }
   .profit-line { width: 55%; }
