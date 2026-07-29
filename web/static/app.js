@@ -1242,6 +1242,7 @@ function renderCollectionOverview(status) {
   const results = status.results || {};
   const blocks = Array.isArray(visuals.blocks) ? visuals.blocks : [];
   const entities = Array.isArray(visuals.entities) ? visuals.entities : [];
+  const newsFunnel = visuals.newsFunnel || {};
   const taskCount = Number(results.count || settings.totalRows || 0);
   const acceptedFacts = Number(rejection.accepted || 0);
   const rawSources = Number(quality.rawSources || 0);
@@ -1280,6 +1281,39 @@ function renderCollectionOverview(status) {
             `;
           }).join("")
         : '<div class="collection-empty">暂无采集内容构成</div>';
+    }
+  }
+
+  const funnelStages = Array.isArray(newsFunnel.stages) ? newsFunnel.stages : [];
+  const funnelHost = document.getElementById("collectionFunnel");
+  const funnelScope = String(newsFunnel.label || newsFunnel.scope || "").replace(/[（）]/g, "");
+  setText("collectionFunnelScope", funnelScope || "暂无完成记录");
+  if (funnelHost) {
+    const funnelSignature = funnelStages
+      .map((item) => `${String(item.key || "")}:${Number(item.value || 0)}`)
+      .join("|") + `|duplicates:${Number(newsFunnel.historyDuplicates || 0)}`;
+    if (funnelHost.dataset.signature !== funnelSignature) {
+      funnelHost.dataset.signature = funnelSignature;
+      const peak = Math.max(1, ...funnelStages.map((item) => Number(item.value || 0)));
+      const duplicateCount = Number(newsFunnel.historyDuplicates || 0);
+      funnelHost.innerHTML = funnelStages.length
+        ? funnelStages.map((item, index) => {
+            const value = Number(item.value || 0);
+            const width = Math.max(30, (value / peak) * 100);
+            const duplicateNote = item.key === "deduplicated" && duplicateCount
+              ? `<small>排除 ${duplicateCount} 条重复</small>`
+              : "";
+            return `
+              <div class="collection-funnel-row">
+                <div class="collection-funnel-bar is-stage-${index + 1}" style="--funnel-width:${width}%">
+                  <span>${escapeHtml(item.label || "筛选阶段")}</span>
+                  <b>${value}</b>
+                </div>
+                ${duplicateNote}
+              </div>
+            `;
+          }).join("")
+        : '<div class="collection-empty">暂无已完成的战略新闻筛选记录</div>';
     }
   }
 

@@ -10150,6 +10150,84 @@ body.report-library-open::before {
   margin-top: 5px;
 }
 
+.collection-funnel-section {
+  padding-bottom: 10px;
+}
+
+.collection-funnel-section .collection-section-title {
+  margin-bottom: 8px;
+}
+
+.collection-funnel-section .collection-section-title > span {
+  max-width: 58%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-funnel {
+  display: grid;
+  gap: 4px;
+}
+
+.collection-funnel-row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  min-height: 22px;
+}
+
+.collection-funnel-bar {
+  display: flex;
+  width: var(--funnel-width);
+  min-width: 30%;
+  height: 22px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(12px, 8%);
+  clip-path: polygon(4% 0, 96% 0, 100% 100%, 0 100%);
+  color: #174763;
+  background: rgba(55, 164, 220, 0.18);
+  font-size: 11px;
+  line-height: 1;
+  transition: width 220ms ease;
+}
+
+.collection-funnel-bar.is-stage-2 {
+  background: rgba(27, 157, 128, 0.2);
+}
+
+.collection-funnel-bar.is-stage-3 {
+  background: rgba(118, 86, 214, 0.18);
+}
+
+.collection-funnel-bar.is-stage-4 {
+  color: #fff;
+  background: #0878bd;
+}
+
+.collection-funnel-bar span {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 650;
+}
+
+.collection-funnel-bar b {
+  color: inherit;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.collection-funnel-row small {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  color: #7c6a9f;
+  font-size: 9px;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
 .collection-entity-section {
   margin-top: auto;
   padding-bottom: 2px;
@@ -10183,6 +10261,29 @@ body.report-library-open::before {
   .signal-kpi strong,
   .collection-kpi-grid strong {
     font-size: 24px;
+  }
+}
+
+@media (max-width: 1500px) and (min-width: 901px) {
+  .collection-section[aria-labelledby="collectionCompositionTitle"] {
+    display: none;
+  }
+
+  .collection-funnel-section {
+    margin-top: 12px;
+  }
+
+  .collection-entity-section {
+    display: none;
+  }
+
+  .collection-funnel-row {
+    min-height: 19px;
+  }
+
+  .collection-funnel-bar {
+    height: 19px;
+    font-size: 10px;
   }
 }
 

@@ -18,6 +18,35 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_latest_news_funnel_uses_completed_strategic_scan_summary(self) -> None:
+        with mock.patch.object(
+            web_app,
+            "load_crawl_run_index",
+            return_value=[
+                {
+                    "task_kind": "strategic-news",
+                    "run_status": "completed",
+                    "scope": "午后扫描（2026-07-29@15:00）",
+                    "completed_at_hkt": "2026-07-29T15:52:38+08:00",
+                    "operational_summary": {
+                        "slot": "2026-07-29@15:00-rerun-v2",
+                        "discovered": 47,
+                        "ai_retained": 19,
+                        "history_duplicates": 2,
+                        "new_count": 17,
+                    },
+                }
+            ],
+        ):
+            funnel = web_app.build_latest_news_funnel()
+
+        self.assertEqual(
+            [(item["label"], item["value"]) for item in funnel["stages"]],
+            [("检索发现", 47), ("AI确认", 19), ("历史去重", 17), ("本轮新增", 17)],
+        )
+        self.assertEqual(funnel["historyDuplicates"], 2)
+        self.assertEqual(funnel["label"], "7月29日 15:00")
+
     def test_strategic_news_crawl_is_visible_as_news_crawler_task(self) -> None:
         task = web_app._normalize_crawl_task(
             {

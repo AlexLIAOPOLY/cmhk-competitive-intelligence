@@ -1369,6 +1369,7 @@ def build_status() -> dict:
     # Calculate latest timestamp from crawler output rather than HTML reports
     latest_crawl_time = max((path.stat().st_mtime for path in result_files if path.exists()), default=None)
     settings = build_settings_payload()
+    latest_news_funnel = build_latest_news_funnel()
     
     # Sort outputs by mtime descending
     outputs.sort(key=lambda x: x["mtime"], reverse=True)
@@ -1417,6 +1418,7 @@ def build_status() -> dict:
                 reverse=True,
             )[:6],
             "rejection": build_curation_rejection_visuals(),
+            "newsFunnel": latest_news_funnel,
             "entities": sorted(
                 [{"label": key, "value": value} for key, value in entity_counts.items()],
                 key=lambda item: item["value"],
@@ -1436,6 +1438,54 @@ def build_status() -> dict:
         "settings": settings["summary"],
         "ai": load_ai_config(include_key=False),
         "latestOutputText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(latest_crawl_time)) if latest_crawl_time else "未生成",
+    }
+
+
+def build_latest_news_funnel() -> dict:
+    for run in load_crawl_run_index():
+        if str(run.get("task_kind") or "") != "strategic-news":
+            continue
+        if str(run.get("run_status") or "") != "completed":
+            continue
+        summary = run.get("operational_summary")
+        if not isinstance(summary, dict):
+            continue
+        discovered = max(0, int(summary.get("discovered") or 0))
+        ai_confirmed = max(0, int(summary.get("ai_retained") or 0))
+        history_duplicates = max(
+            0,
+            min(ai_confirmed, int(summary.get("history_duplicates") or 0)),
+        )
+        new_count = max(0, int(summary.get("new_count") or 0))
+        deduplicated = max(0, ai_confirmed - history_duplicates)
+        slot = str(summary.get("slot") or "")
+        slot_match = re.match(
+            r"^(\d{4})-(\d{2})-(\d{2})@(\d{2}:\d{2})",
+            slot,
+        )
+        slot_label = (
+            f"{int(slot_match.group(2))}月{int(slot_match.group(3))}日 {slot_match.group(4)}"
+            if slot_match
+            else ""
+        )
+        return {
+            "scope": str(run.get("scope") or ""),
+            "label": slot_label,
+            "completedAt": str(run.get("completed_at_hkt") or ""),
+            "historyDuplicates": history_duplicates,
+            "stages": [
+                {"key": "discovered", "label": "检索发现", "value": discovered},
+                {"key": "confirmed", "label": "AI确认", "value": ai_confirmed},
+                {"key": "deduplicated", "label": "历史去重", "value": deduplicated},
+                {"key": "new", "label": "本轮新增", "value": new_count},
+            ],
+        }
+    return {
+        "scope": "",
+        "label": "",
+        "completedAt": "",
+        "historyDuplicates": 0,
+        "stages": [],
     }
 
 
