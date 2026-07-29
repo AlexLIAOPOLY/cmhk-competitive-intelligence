@@ -11036,12 +11036,13 @@ button.command-btn:disabled {
 
 .daily-content-panel > header strong {
   color: #294a60;
-  font-size: 13px;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .daily-content-panel > header small {
   color: #708594;
-  font-size: 10px;
+  font-size: 14px;
 }
 
 .daily-content-charts {
@@ -11070,36 +11071,37 @@ button.command-btn:disabled {
 
 .daily-content-chart figcaption span {
   color: #5d7585;
-  font-size: 11px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .daily-content-chart figcaption b {
   color: #2d5970;
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .daily-content-chart > div {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .daily-content-bar {
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr) 20px;
+  grid-template-columns: 112px minmax(0, 1fr) 28px;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
 }
 
 .daily-content-bar > span {
   overflow: hidden;
   color: #627b8a;
-  font-size: 10px;
+  font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .daily-content-bar i {
-  height: 7px;
+  height: 10px;
   overflow: hidden;
   border-radius: 999px;
   background: rgba(55, 105, 135, 0.08);
@@ -11115,7 +11117,7 @@ button.command-btn:disabled {
 
 .daily-content-bar b {
   color: #31566c;
-  font-size: 10px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -11138,12 +11140,12 @@ button.command-btn:disabled {
 
 @media (min-width: 1051px) and (max-width: 1280px) {
   .insight-board {
-    grid-template-rows: 104px 550px;
+    grid-template-rows: 104px 610px;
   }
 
   .signal-overview,
   .collection-overview {
-    height: 550px;
+    height: 610px;
   }
 }
 
@@ -11172,7 +11174,7 @@ button.command-btn:disabled {
   }
 
   .collection-overview {
-    min-height: 940px;
+    min-height: 1020px;
   }
 
   .daily-content-charts {
