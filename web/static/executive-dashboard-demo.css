@@ -271,6 +271,11 @@ h1 {
 .scene-business,
 .scene-finance { object-position: center; }
 
+.scene-finance {
+  opacity: .76;
+  filter: saturate(1.1) contrast(1.06) brightness(1.08);
+}
+
 .scene-network {
   opacity: .8;
   filter: saturate(1.14) contrast(1.1) brightness(1.08);
