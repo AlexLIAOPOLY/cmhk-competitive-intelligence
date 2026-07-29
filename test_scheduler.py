@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest import mock
 
 import daily_crawl_and_write
+import crawl_run_registry
 import scheduler
 
 
@@ -30,6 +31,32 @@ class FeishuCliEnvironmentTests(unittest.TestCase):
         self.assertEqual(command_env["LARK_CLI_NO_PROXY"], "1")
         self.assertNotIn("HTTP_PROXY", command_env)
         self.assertNotIn("HTTPS_PROXY", command_env)
+
+
+class CrawlRunReconciliationTests(unittest.TestCase):
+    def test_live_external_scheduler_is_not_marked_interrupted(self) -> None:
+        record = {
+            "crawl_run_id": "crawl-live-external",
+            "run_status": "running",
+            "backend_pid": 12345,
+            "worker_pid": 0,
+        }
+        with (
+            mock.patch.object(crawl_run_registry, "load_index", return_value=[record]),
+            mock.patch.object(
+                crawl_run_registry,
+                "_pid_alive",
+                side_effect=lambda pid: pid == 12345,
+            ),
+            mock.patch.object(
+                crawl_run_registry,
+                "mark_crawl_run_interrupted",
+            ) as mark_interrupted,
+        ):
+            updated = crawl_run_registry.reconcile_interrupted_crawl_runs()
+
+        self.assertEqual(updated, [])
+        mark_interrupted.assert_not_called()
 
     def test_run_cmd_retries_eof_without_enabling_proxy(self) -> None:
         failed = subprocess.CompletedProcess(

@@ -475,10 +475,14 @@ def mark_crawl_run_interrupted(
 
 
 def reconcile_interrupted_crawl_runs() -> list[dict[str, Any]]:
-    """Mark running records from a previous backend process as interrupted."""
+    """Mark running records whose backend and worker processes are both gone."""
     updated: list[dict[str, Any]] = []
     for item in reversed(load_index()):
         if not isinstance(item, dict) or item.get("run_status") != "running":
+            continue
+        backend_pid = int(item.get("backend_pid") or 0)
+        worker_pid = int(item.get("worker_pid") or 0)
+        if _pid_alive(backend_pid) or _pid_alive(worker_pid):
             continue
         record = mark_crawl_run_interrupted(
             str(item.get("crawl_run_id") or ""),
@@ -488,6 +492,18 @@ def reconcile_interrupted_crawl_runs() -> list[dict[str, Any]]:
         if record:
             updated.append(record)
     return updated
+
+
+def _pid_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
 
 
 def load_crawl_run_log(crawl_run_id: str) -> dict[str, Any]:
