@@ -12,11 +12,3 @@ All four prompts requested a wide deep-navy executive visual, restrained cyan/mi
 `china-mobile-logo-transparent.png` is a transparent-background derivative of the China Mobile logo used in a China Mobile Hong Kong press release distributed by PR Newswire:
 
 https://hk.prnasia.com/story/266739-2.shtml
-
-The moving comparison rail uses current brand artwork from the operators' own sites:
-
-- `hkt-logo.svg`: the inline HKT header mark from https://www.hkt.com/en/about-hkt/
-- `three-hk-logo.svg`: https://web.three.com.hk/3hklogo-en.svg
-- `smartone-logo.svg`: https://www.smartone.com/CSS_V3/smt_nav_pack/assets/images/common/logo_d.svg
-
-The 3 Hong Kong source SVG is the official black version; the dashboard applies a CSS invert filter only for contrast on the deep-navy background.
