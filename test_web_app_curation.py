@@ -48,6 +48,11 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("Array.isArray(visuals.todayNewsRounds)", app)
         self.assertIn("上午及下午扫描尚未完成", app)
         self.assertIn("daily-asset-round", app)
+        self.assertIn("最新一轮内容分布", app)
+        self.assertIn('"主题构成"', app)
+        self.assertIn('"业务影响"', app)
+        self.assertIn("Array.isArray(newsFunnel.categories)", app)
+        self.assertIn("Array.isArray(newsFunnel.impacts)", app)
 
     def test_latest_news_funnel_uses_completed_strategic_scan_summary(self) -> None:
         with (

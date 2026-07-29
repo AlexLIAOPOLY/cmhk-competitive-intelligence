@@ -1295,7 +1295,19 @@ function renderCollectionOverview(status) {
     `;
   };
 
-  assetHost.innerHTML = todayNewsRounds.length
+  const contentCharts = [
+    {
+      label: "主题构成",
+      items: Array.isArray(newsFunnel.categories) ? newsFunnel.categories.slice(0, 5) : [],
+      color: "#178dca",
+    },
+    {
+      label: "业务影响",
+      items: Array.isArray(newsFunnel.impacts) ? newsFunnel.impacts.slice(0, 5) : [],
+      color: "#20a986",
+    },
+  ];
+  const roundsMarkup = todayNewsRounds.length
     ? todayNewsRounds.map((round, roundIndex) => `
       <section class="daily-asset-round" aria-labelledby="dailyAssetRound-${roundIndex}">
         <header class="daily-asset-round-header">
@@ -1311,6 +1323,42 @@ function renderCollectionOverview(status) {
       </section>
     `).join("")
     : '<div class="collection-empty">今日上午及下午扫描尚未完成</div>';
+  const comparisonMarkup = contentCharts.some((chart) => chart.items.length)
+    ? `
+      <section class="daily-content-panel" aria-labelledby="dailyContentTitle">
+        <header>
+          <strong id="dailyContentTitle">最新一轮内容分布</strong>
+          <small>${escapeHtml(String(newsFunnel.label || "").replace(/[（）]/g, ""))}</small>
+        </header>
+        <div class="daily-content-charts">
+          ${contentCharts.map((chart) => {
+            const peak = Math.max(1, ...chart.items.map((item) => Number(item.value || 0)));
+            const total = chart.items.reduce((sum, item) => sum + Number(item.value || 0), 0);
+            return `
+              <figure class="daily-content-chart">
+                <figcaption><span>${escapeHtml(chart.label)}</span><b>${total} 条</b></figcaption>
+                <div>
+                  ${chart.items.map((item) => {
+                    const value = Number(item.value || 0);
+                    return `
+                      <div class="daily-content-bar">
+                        <span>${escapeHtml(item.label || "其他")}</span>
+                        <i title="${escapeHtml(item.label || "其他")}：${value} 条">
+                          <em style="--content-width:${Math.max(4, (value / peak) * 100)}%;--content-color:${chart.color}"></em>
+                        </i>
+                        <b>${value}</b>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              </figure>
+            `;
+          }).join("")}
+        </div>
+      </section>
+    `
+    : "";
+  assetHost.innerHTML = `<div class="daily-asset-rounds">${roundsMarkup}</div>${comparisonMarkup}`;
 
   assetHost.querySelectorAll(".collection-funnel").forEach((funnelHost) => {
     const tooltip = funnelHost.querySelector(".collection-funnel-tooltip");
