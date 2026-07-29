@@ -18,6 +18,14 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_collection_overview_is_labeled_as_today_with_real_timestamp(self) -> None:
+        html = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn('id="collectionOverviewTitle">今日信息资产</h2>', html)
+        self.assertIn('id="collectionOverviewUpdated">截至 --</small>', html)
+        self.assertIn('setText("collectionOverviewUpdated", `截至 ${assetTimeText}`)', app)
+
     def test_latest_news_funnel_uses_completed_strategic_scan_summary(self) -> None:
         with mock.patch.object(
             web_app,

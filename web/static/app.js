@@ -1254,6 +1254,32 @@ function renderCollectionOverview(status) {
   setText("collectionTaskCount", String(taskCount || "--"));
   setText("collectionFactCount", String(acceptedFacts || "--"));
   setText("collectionSourceCount", String(rawSources || "--"));
+  const assetTimestamps = [status.latestOutputText, newsFunnel.completedAt]
+    .map((value) => {
+      const raw = String(value || "").trim();
+      if (!raw || raw === "未生成") return null;
+      const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw)
+        ? `${raw.replace(" ", "T")}+08:00`
+        : raw;
+      const parsed = new Date(normalized);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    })
+    .filter(Boolean);
+  const latestAssetTime = assetTimestamps.length
+    ? new Date(Math.max(...assetTimestamps.map((value) => value.getTime())))
+    : null;
+  const assetTimeText = latestAssetTime
+    ? new Intl.DateTimeFormat("zh-CN", {
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        hourCycle: "h23",
+        timeZone: "Asia/Hong_Kong",
+      }).format(latestAssetTime)
+    : "--";
+  setText("collectionOverviewUpdated", `截至 ${assetTimeText}`);
 
   const compositionTotal = sumValues(blocks);
   setText("collectionCompositionTotal", `${compositionTotal} 项`);

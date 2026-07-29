@@ -10042,6 +10042,19 @@ body.report-library-open::before {
   letter-spacing: 0.01em;
 }
 
+.collection-overview-header > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.collection-overview-updated {
+  color: #7b8f9d;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .signal-kpi-grid {
   margin-top: 15px;
 }
