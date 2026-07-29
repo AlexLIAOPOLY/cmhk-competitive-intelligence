@@ -4230,94 +4230,11 @@ function renderChartBlock(jsonText) {
   return `<div class="chat-chart-card">${svg}<div class="chart-legend">${legend}</div>${notes}</div>`;
 }
 
-const ASSISTANT_PROCESS_MARKERS = "(?:用户问的是|“[^”]{1,20}”通常指|\"[^\"]{1,20}\"通常指|我先|我来|我读取|我确认|我联网|我同步|我打开|我调用|我需要|我继续|我再读取|为了获取|检索到了|检索只返回|联网已搜到|本地检索结果|本地数据已命中|本地数据已经命中|本地数据已确认|数据包摘要显示|数据包显示|实际上，从数据包摘要|但早期的数据|CSV文件|CSV内容太大|包含所有公司的数据|再读取|再读取一下|让我|现在让我|现在我(?:已|来|开始|生成|整理)|现在(?:生成|整理|读取|检索)|我整理一下|数据已经齐全|数据非常清晰|数据充足|搜索高度一致|很好|我已经有了|从JSON中|从数据中我已获取|已获取|需要搜索|需要确认|需要.*数据|从已有的数据|从JSON看到|当前时间为|按当前日期|上一个季度就是|[^。！？\\n]{0,30}最新一个完整季度是)";
-
-function isProcessClause(text) {
-  const clean = String(text || "").replace(/\s+/g, " ").trim();
-  if (!clean) return false;
-  if (/^(?:当前时间|按当前日期|上个完整季度|上一个完整季度)/.test(clean)) return false;
-  if (new RegExp(`^${ASSISTANT_PROCESS_MARKERS}`).test(clean)) return true;
-  return (
-    /(?:检索|搜索|命中|读取|核验|交叉验证|确认口径|确认详细|关键引用|公开来源|数据库原文|摘要片段|CSV文件|CSV内容|数据充足|verification_status|verification_count|official_match)/i.test(clean) &&
-    !/(?:营业收入|收入为|同比|亿元|百万元|核心数据|一句话结论|关键数据)/.test(clean)
-  );
-}
-
-function removeProcessClauses(text, collector = null) {
-  return String(text || "")
-    .split(/\n+/)
-    .map((line) => {
-      // Markdown table rows are structured data. Splitting them on commas
-      // corrupts values such as 263,707 and can remove the closing pipes when
-      // a later cell contains audit terms such as official_match.
-      if (line.trimStart().startsWith("|")) return line;
-      const parts = line.match(/[^。！？；;]+[。！？；;]?/g) || [line];
-      const kept = [];
-      parts.forEach((part) => {
-        const commaParts = part.match(/[^，,]+[，,]?/g) || [part];
-        const keptCommaParts = [];
-        commaParts.forEach((piece) => {
-          const clean = piece.trim();
-          if (!clean) return;
-          if (isProcessClause(clean)) {
-            const preceding = keptCommaParts.join("").trim();
-            const dependentPrefix = (
-              /^(?:请|若|如果|如需)/.test(preceding)
-              || /(?:后|时|前|以便|从而|因此|这样)[，,]$/.test(preceding)
-              || /^(?:以便|从而|因此|这样|同时|并且|以及)/.test(clean)
-            );
-            // Do not cut a dependent clause out of an otherwise normal final
-            // sentence.  That used to turn complete text such as
-            // “请进一步说明，以便我为您准确检索……” into “请进一步说明，”.
-            if (dependentPrefix) {
-              keptCommaParts.push(piece);
-              return;
-            }
-            if (collector) collector.push(clean.replace(/\s+/g, " "));
-            return;
-          }
-          keptCommaParts.push(piece);
-        });
-        const joined = keptCommaParts.join("").trim();
-        if (joined) kept.push(joined);
-      });
-      return kept.join("").trim();
-    })
-    .filter(Boolean)
-    .join("\n")
-    .trim();
-}
-
 function extractAssistantProcessLines(content) {
-  const original = content || "";
-  if (!original.trim()) return { answer: original, processLines: [] };
-  const processSentencePattern = new RegExp(`(^|[。！？]\\s*)(${ASSISTANT_PROCESS_MARKERS}[^。！？]*(?:[。！？]|$))`, "g");
-  const processLines = [];
-  let answer = original.replace(processSentencePattern, (match, prefix, sentence) => {
-    const clean = sentence.replace(/\s+/g, " ").trim();
-    if (clean) processLines.push(clean);
-    return prefix && prefix.trim() ? prefix.trim() : "";
-  });
-  const processLinePattern = new RegExp(`^\\s*${ASSISTANT_PROCESS_MARKERS}[\\s\\S]*?(?:。|！|？|$)\\s*$`);
-  answer = answer
-    .split(/\n+/)
-    .filter((line) => {
-      const clean = line.trim();
-      if (!clean) return false;
-      if (processLinePattern.test(clean)) {
-        processLines.push(clean.replace(/\s+/g, " "));
-        return false;
-      }
-      if (/需要(?:搜索|确认|补充|获取|读取|更多).*数据/.test(clean)) {
-        processLines.push(clean.replace(/\s+/g, " "));
-        return false;
-      }
-      return true;
-    })
-    .join("\n")
-    .trim();
-  answer = removeProcessClauses(answer, processLines);
-  return { answer, processLines: [...new Set(processLines)].slice(0, 12) };
+  // Live reasoning and tool activity already arrive as structured SSE events.
+  // Guessing from natural-language keywords can only rewrite valid model prose,
+  // so legacy messages are rendered exactly as they were saved.
+  return { answer: content || "", processLines: [] };
 }
 
 function stripAssistantControlText(content) {
@@ -4333,33 +4250,6 @@ function stripAssistantControlText(content) {
   text = text.replace(/<引用来源>[\s\S]*$/gi, "").trim();
   text = text.replace(/\\<引用来源\\>[\s\S]*$/gi, "").trim();
   text = text.replace(/\[引用来源\][\s\S]*$/gi, "").trim();
-  text = text.replace(/^\s*(?:联网搜索已关闭|当前联网搜索已关闭|已关闭联网搜索|由于联网搜索|因为联网搜索|本轮不会调用|我不能联网|当前不能联网)[^\n。！？]*(?:[。！？]|\n|$)/gmi, "").trim();
-  const beforeProcessFiltering = text;
-  const processMarkers = ASSISTANT_PROCESS_MARKERS;
-  const processSentencePattern = new RegExp(`(^|[。！？]\\s*)${processMarkers}[^。！？]*(?:[。！？]|$)`, "g");
-  text = text.replace(processSentencePattern, (match, prefix) => (prefix && prefix.trim() ? prefix.trim() : "")).trim();
-  const processLinePattern = new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?:。|$)\\s*$`);
-  text = text
-    .split(/\n+/)
-    .filter((line) => {
-      const clean = line.trim();
-      if (!clean) return false;
-      if (processLinePattern.test(clean)) return false;
-      if (/需要(?:搜索|确认|补充|获取|读取|更多).*数据/.test(clean)) return false;
-      if (/^(?:各年收入|从已有的数据|从JSON看到|我需要确认)/.test(clean)) return false;
-      return true;
-    })
-    .join("\n")
-    .trim();
-  text = text.replace(new RegExp(`^\\s*${processMarkers}[\\s\\S]*?(?=\\n\\s*(?:#{1,3}\\s+|[一二三四五六七八九十\\d]+[、.]\\s+|[^\\n：:]{2,18}[：:]|$))`, "g"), "").trim();
-  text = removeProcessClauses(text);
-  const danglingVisibleEnd = /(?:[,，;；:：、（(【\[]|(?:以及|包括|例如|建议|如下|结合|通过|从而|并且|或者|与|和))$/;
-  if (danglingVisibleEnd.test(text) && !danglingVisibleEnd.test(beforeProcessFiltering)) {
-    // Process-text cleanup must never turn a complete model response into a
-    // visibly truncated sentence. Keep all existing cleanup rules, but roll
-    // this destructive case back to the complete control-tag-free prose.
-    text = beforeProcessFiltering;
-  }
   text = text.replace(/^\s*[-–—]{3,}\s*$/gm, "").trim();
   return text;
 }

@@ -314,15 +314,14 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('assistantHistoryEntry.completedAt = new Date().toISOString()', app)
         self.assertIn('threadId: state.activeThreadId', app)
 
-    def test_process_filter_preserves_complete_dependent_sentences(self) -> None:
+    def test_legacy_process_extraction_preserves_model_prose_verbatim(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
-        start = app.index("const ASSISTANT_PROCESS_MARKERS")
-        end = app.index("function extractAssistantProcessLines", start)
+        start = app.index("function extractAssistantProcessLines")
+        end = app.index("function stripAssistantControlText", start)
         snippet = app[start:end] + "\n" + (
-            "console.log(JSON.stringify(["
-            "removeProcessClauses('请进一步说明，以便我为您准确检索和提供信息。'),"
-            "removeProcessClauses('明确主体后，我将检索本地资料并整理路线图。')"
-            "]));"
+            "console.log(JSON.stringify("
+            "extractAssistantProcessLines('我确认官方信息，核验状态为已确认。')"
+            "));"
         )
         completed = subprocess.run(
             ["node", "-e", snippet],
@@ -332,15 +331,12 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         )
         self.assertEqual(
             json.loads(completed.stdout),
-            [
-                "请进一步说明，以便我为您准确检索和提供信息。",
-                "明确主体后，我将检索本地资料并整理路线图。",
-            ],
+            {"answer": "我确认官方信息，核验状态为已确认。", "processLines": []},
         )
 
-    def test_control_filter_never_turns_complete_prose_into_a_dangling_comma(self) -> None:
+    def test_control_filter_removes_tags_without_rewriting_model_prose(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
-        start = app.index("const ASSISTANT_PROCESS_MARKERS")
+        start = app.index("function stripAssistantControlText")
         end = app.index("function expandCitationIndexes", start)
         snippet = app[start:end] + "\n" + (
             "console.log(JSON.stringify(["
@@ -1270,10 +1266,13 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         web_token = agent.WEB_SEARCH_AVAILABLE.set(True)
         try:
             with (
-                mock.patch("agent._search_local_reports_only", return_value=local_result),
+                mock.patch("agent._search_local_reports_only", return_value=local_result) as local_invoke,
                 mock.patch("agent._web_search_only", return_value=web_result) as web_invoke,
             ):
-                result = agent.search_local_reports.invoke({"query": "SmarTone HGC 稳定性"})
+                result = agent.search_local_reports.invoke({
+                    "query": "SmarTone HGC 稳定性",
+                    "max_results": 25,
+                })
         finally:
             agent.WEB_SEARCH_AVAILABLE.reset(web_token)
 
@@ -1282,7 +1281,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("本地证据", result)
         self.assertIn("联网证据", result)
         self.assertEqual(result.count("<metadata>"), 1)
-        web_invoke.assert_called_once_with("SmarTone HGC 稳定性", 6)
+        local_invoke.assert_called_once_with("SmarTone HGC 稳定性", 25)
+        web_invoke.assert_called_once_with("SmarTone HGC 稳定性", 25)
 
     def test_generic_web_search_returns_no_sources_when_every_result_is_irrelevant(self) -> None:
         poisoned = [
@@ -2149,7 +2149,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         retry_text = "\n".join(str(item.content or "") for item in retry_messages)
         self.assertLess(len(retry_text), 25000)
         self.assertNotIn("tools", generate.call_args_list[1].kwargs)
-        self.assertIn("1200 个中文字符", retry_text)
+        self.assertIn("按问题本身决定合适的详略", retry_text)
+        self.assertNotIn("1200 个中文字符", retry_text)
 
     def test_search_local_reports_does_not_limit_repeated_searches(self) -> None:
         with mock.patch("agent.retrieve_context", return_value=[]) as retrieve:
@@ -2488,12 +2489,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(len(starts), 4)
         self.assertEqual(events[-1].get("type"), "done")
 
-    def test_markdown_limiter_streams_plain_text_but_buffers_table_rows(self) -> None:
-        limiter = agent.MarkdownTableLimiter()
-        self.assertEqual(limiter.feed("普通正文第一段"), "普通正文第一段")
-        self.assertEqual(limiter.feed("继续流式返回"), "继续流式返回")
-        self.assertEqual(limiter.feed("|列一|列二"), "")
-        self.assertEqual(limiter.feed("|\n"), "|列一|列二|\n")
+    def test_stream_does_not_install_a_markdown_table_limiter(self) -> None:
+        self.assertFalse(hasattr(agent, "MarkdownTableLimiter"))
 
     def test_non_streaming_ai_message_keeps_reasoning_panel_and_final_answer(self) -> None:
         class FakeAgent:
@@ -2580,8 +2577,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(captured["stream_mode"], "messages")
         self.assertNotIn("普通寒暄", captured["message"])
         self.assertIn("中国铁塔", captured["message"])
-        self.assertIn("只能作为背景", captured["message"])
-        self.assertIn("不能自动把历史主题补全为本轮问题", captured["message"])
+        self.assertIn("若与本轮用户新指令冲突，以本轮新指令为准", captured["message"])
+        self.assertNotIn("只能作为背景", captured["message"])
+        self.assertNotIn("不能自动把历史主题补全为本轮问题", captured["message"])
         self.assertIn("quarterly_competitor_metrics", captured["message"])
         self.assertNotIn("长期记忆召回", captured["message"])
 
@@ -2758,15 +2756,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         tool_names = {item.name for item in agent._agent_tools(allow_web_search=False, user_message="你来判断要查什么")}
         self.assertIn("search_chat_history", tool_names)
 
-    def test_ambiguous_short_input_requires_history_probe_but_complete_math_does_not(self) -> None:
-        self.assertTrue(agent._should_probe_chat_history_for_ambiguity("富裕"))
-        self.assertTrue(agent._should_probe_chat_history_for_ambiguity("不行"))
-        self.assertTrue(agent._should_probe_chat_history_for_ambiguity("那个呢"))
-        self.assertFalse(agent._should_probe_chat_history_for_ambiguity("2加2等于多少？"))
-        self.assertFalse(agent._should_probe_chat_history_for_ambiguity("分析中国移动收入"))
-        self.assertFalse(agent._should_probe_chat_history_for_ambiguity("你好"))
+    def test_short_input_does_not_install_a_cross_thread_history_gate(self) -> None:
+        self.assertFalse(hasattr(agent, "_should_probe_chat_history_for_ambiguity"))
+        self.assertFalse(hasattr(agent, "AMBIGUOUS_HISTORY_PROBE"))
 
-    def test_ambiguous_history_probe_excludes_current_turn_and_falls_back_to_recent_history(self) -> None:
+    def test_history_search_excludes_current_turn_without_unrelated_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             path = os.path.join(tempdir, "threads.json")
             with open(path, "w", encoding="utf-8") as handle:
@@ -2800,7 +2794,6 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 )
             thread_token = agent.ACTIVE_CHAT_THREAD_ID.set("current-thread")
             request_token = agent.CURRENT_USER_REQUEST.set("富裕")
-            ambiguous_token = agent.AMBIGUOUS_HISTORY_PROBE.set(True)
             try:
                 with mock.patch("agent.CHAT_THREADS_PATH", agent.Path(path)):
                     result = agent.search_chat_history.invoke({
@@ -2812,10 +2805,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             finally:
                 agent.ACTIVE_CHAT_THREAD_ID.reset(thread_token)
                 agent.CURRENT_USER_REQUEST.reset(request_token)
-                agent.AMBIGUOUS_HISTORY_PROBE.reset(ambiguous_token)
 
-        self.assertIn("关键词未直接命中", result)
-        self.assertIn("请继续整理昨天的战略周报", result)
+        self.assertIn("未在已保存的历史聊天线程中找到匹配消息", result)
+        self.assertNotIn("请继续整理昨天的战略周报", result)
         self.assertNotIn("正在分析请求", result)
 
     def test_ambiguous_input_does_not_disable_available_capabilities(self) -> None:
@@ -2866,7 +2858,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("自主选择可用的", prompt)
         self.assertNotIn("必须双检索", prompt)
 
-    def test_disabled_web_search_notice_is_removed_from_stream(self) -> None:
+    def test_disabled_web_search_does_not_rewrite_model_output(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None):
                 yield agent.AIMessageChunk(content="联网搜索已关闭，"), {}
@@ -2877,9 +2869,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             events = list(agent.stream_agent("搜一下移动收入趋势", force_web_search=False))
 
         text = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
-        self.assertEqual(text, "中国移动收入趋势如下。")
-        self.assertNotIn("联网搜索已关闭", text)
-        self.assertNotIn("web_search", text)
+        self.assertEqual(
+            text,
+            "联网搜索已关闭，本轮不会调用 web_search 或 read_webpage。中国移动收入趋势如下。",
+        )
 
 
 class AgentForecastDatasetBoundaryTests(unittest.TestCase):

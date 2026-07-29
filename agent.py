@@ -74,7 +74,8 @@ def _looks_like_unstable_model_text(value: str) -> bool:
         return True
     if re.search(r"(?:\d{2,5}[;:,]){12,}", text):
         return True
-    if len(re.findall(r"\[(?:来源\s*)?\d+\]", text)) > 24:
+    citations = re.findall(r"\[(?:来源\s*)?(\d+)\]", text)
+    if citations and collections.Counter(citations).most_common(1)[0][1] > 12:
         return True
     if len(re.findall(r"[⁰¹²³⁴⁵⁶⁷⁸⁹]", text)) > 30:
         return True
@@ -88,8 +89,6 @@ def _looks_like_unstable_model_text(value: str) -> bool:
     if re.search(r"[\u0400-\u052f\u0600-\u06ff\u3040-\u30ff\uac00-\ud7af]", text):
         return True
     compact = re.sub(r"\s+", "", text)
-    if len(compact) > 10000:
-        return True
     if len(compact) >= 500:
         cjk = len(re.findall(r"[\u4e00-\u9fff]", compact))
         latin = len(re.findall(r"[A-Za-z]", compact))
@@ -184,23 +183,18 @@ _NON_AI_FOLLOW_UP_SUGGESTIONS = {
 
 
 def _normalize_follow_up_suggestions(items: Any) -> list[str]:
-    """Return up to three unique, safe follow-up questions."""
+    """Normalize model-generated follow-ups for the three suggestion buttons."""
     if not isinstance(items, (list, tuple)):
         return []
-    blocked = re.compile(
-        r"(?:是否需要我|需要我(?:来)?|要我(?:来)?|您希望|你希望|"
-        r"是否需要|要不要|需不需要|我可以(?:为你|为您)?|"
-        r"读取.*(?:具体)?文件|数据集中的|调用.*工具|内部工具|"
-        r"联网搜索|打开.*搜索|搜索.*开关|前端开关|工具配置|"
-        r"web_search|read_webpage|search_local_reports)",
+    internal_or_answer_fragment = re.compile(
+        r"(?:是否需要我|需要我(?:来)?|要我(?:来)?|我可以(?:为你|为您)?|"
+        r"读取.*文件|内部工具|web_search|read_webpage|search_local_reports|"
+        r"^(?:数据来源|数据完整性|分析局限性)\s*[:：])",
         re.IGNORECASE,
     )
-    question_start = re.compile(
-        r"^(?:请|帮我|麻烦|我想|我要|如何|为什么|为何|什么|哪些|哪个|是否|能否|"
-        r"可否|可以|怎么|多少|何时|哪里)"
-    )
-    action_start = re.compile(
-        r"^(?:查看|分析|对比|比较|评估|梳理|解释|预测|计算|核验|了解|说明|展示|总结|制定|补充)"
+    direct_request = re.compile(
+        r"^(?:请|帮我|如何|为什么|什么|哪些|哪个|是否|能否|怎么|多少|何时|哪里|"
+        r"查看|分析|对比|比较|评估|梳理|解释|预测|计算|核验|展示|总结|补充)"
     )
     normalized: list[str] = []
     for item in items:
@@ -211,17 +205,12 @@ def _normalize_follow_up_suggestions(items: Any) -> list[str]:
         text = re.sub(r"(?:相关)?文件来源", "官方来源", text)
         text = re.sub(r"[*_`]+", "", text)
         text = re.sub(r"\s+", " ", text).strip()
-        early_heading = re.match(r"^[^：:?？]{1,16}[：:]", text)
-        request_like = (
-            text.endswith(("？", "?"))
-            or bool(question_start.search(text))
-            or (bool(action_start.search(text)) and not early_heading)
-        )
+        request_like = text.endswith(("？", "?")) or bool(direct_request.search(text))
         if (
             not text
-            or len(text) > 60
-            or blocked.search(text)
+            or len(text) > 100
             or text in normalized
+            or internal_or_answer_fragment.search(text)
             or not request_like
         ):
             continue
@@ -308,9 +297,8 @@ def _ensure_ai_follow_up_suggestions(
         SystemMessage(
             content=(
                 "根据用户问题和当前回答，自主生成3个自然、具体、互不重复的简体中文后续问题，"
-                "让用户可以直接点击继续对话。每一项都应是完整的提问或请求，不能是答案片段、"
-                "标题、单个年份或Q1/Q2数值，也不要写成“数据完整性：……”这类说明段落。"
-                "每个不超过40字。只输出JSON字符串数组。"
+                "让用户可以直接点击继续对话。问题应承接回答中尚值得继续分析的内容，"
+                "不要复述答案、描述内部工具或询问是否要读取文件。只输出JSON字符串数组。"
             )
         ),
         HumanMessage(
@@ -512,8 +500,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
         if context_text:
             prompt += (
                 f"\n\n已取得的工具结果：\n{context_text}\n\n"
-                "请基于这些结果回答，不要再次调用工具。正文控制在 1200 个中文字符以内；"
-                "数据范围过大时优先给出最关键、可核验的结果和明确边界，不要用超长表格。"
+                "请基于这些结果回答，不要再次调用工具。完整覆盖用户问题，并按问题本身决定合适的详略。"
             )
         return [stable[0], HumanMessage(content=prompt)]
 
@@ -525,7 +512,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 f"{stable[0].content} 上一次生成在句子或列表中途停止。"
                 "请重新生成完整结果，不得以逗号、分号、冒号、连接词或未闭合列表结束；"
                 "最后一个正文句子必须完整收束。"
-                "只保留最关键结论，正文不得超过 1200 个中文字符，不要输出超长表格。"
+                "完整覆盖用户问题，并按问题本身决定合适的详略。"
             )
         )
         if partial_content:
@@ -703,7 +690,6 @@ SELECTED_SKILL_IDS: ContextVar[set[str] | None] = ContextVar("SELECTED_SKILL_IDS
 APPROVED_ACTION_IDS: ContextVar[set[str]] = ContextVar("APPROVED_ACTION_IDS", default=set())
 ACTIVE_CHAT_THREAD_ID: ContextVar[str] = ContextVar("ACTIVE_CHAT_THREAD_ID", default="")
 CURRENT_USER_REQUEST: ContextVar[str] = ContextVar("CURRENT_USER_REQUEST", default="")
-AMBIGUOUS_HISTORY_PROBE: ContextVar[bool] = ContextVar("AMBIGUOUS_HISTORY_PROBE", default=False)
 WEB_SEARCH_AVAILABLE: ContextVar[bool] = ContextVar("WEB_SEARCH_AVAILABLE", default=False)
 
 
@@ -724,85 +710,6 @@ def _allocate_web_search_indexes(count: int) -> int:
 def _clean_search_text(value: Any, limit: int = 500) -> str:
     text = " ".join(str(value or "").split())
     return text[:limit]
-
-
-class MarkdownTableLimiter:
-    """Limit streamed Markdown tables before they reach the browser."""
-
-    def __init__(self, max_rows: int = 30, max_columns: int = 8) -> None:
-        self.max_rows = max_rows
-        self.max_columns = max_columns
-        self.buffer = ""
-        self.in_table = False
-        self.row_count = 0
-        self.notice_sent = False
-
-    @staticmethod
-    def _is_table_line(line: str) -> bool:
-        stripped = line.strip()
-        return stripped.startswith("|") and stripped.endswith("|") and stripped.count("|") >= 2
-
-    @staticmethod
-    def _is_separator_line(line: str) -> bool:
-        cells = line.strip().split("|")[1:-1]
-        return bool(cells) and all(re.fullmatch(r"\s*:?-{3,}:?\s*", cell or "") for cell in cells)
-
-    def _cap_columns(self, line: str) -> str:
-        newline = "\n" if line.endswith("\n") else ""
-        cells = line.strip().split("|")[1:-1]
-        if len(cells) <= self.max_columns:
-            return line
-        capped = cells[: self.max_columns]
-        return "|" + "|".join(capped) + "|" + newline
-
-    def _process_line(self, line: str) -> str:
-        if not self._is_table_line(line):
-            self.in_table = False
-            self.row_count = 0
-            self.notice_sent = False
-            return line
-        if not self.in_table:
-            self.in_table = True
-            self.row_count = 0
-            self.notice_sent = False
-        if self._is_separator_line(line):
-            return self._cap_columns(line)
-        self.row_count += 1
-        if self.row_count > self.max_rows:
-            if self.notice_sent:
-                return ""
-            self.notice_sent = True
-            return "\n表格已由后端截断：最多显示 30 行、8 列；请缩小范围或导出 CSV 查看完整数据。\n"
-        return self._cap_columns(line)
-
-    def feed(self, text: str) -> str:
-        if not text:
-            return ""
-        self.buffer += text
-        output: list[str] = []
-        while True:
-            newline_index = self.buffer.find("\n")
-            if newline_index < 0:
-                break
-            line = self.buffer[: newline_index + 1]
-            self.buffer = self.buffer[newline_index + 1 :]
-            output.append(self._process_line(line))
-        if not self.in_table and self.buffer:
-            stripped = self.buffer.lstrip()
-            if stripped and not stripped.startswith("|"):
-                output.append(self.buffer)
-                self.buffer = ""
-        return "".join(output)
-
-    def flush(self) -> str:
-        if not self.buffer:
-            return ""
-        line = self.buffer
-        self.buffer = ""
-        stripped = line.strip()
-        if stripped.startswith("|") and not stripped.endswith("|"):
-            return ""
-        return self._process_line(line)
 
 
 def _parse_skill_frontmatter(text: str) -> dict[str, Any]:
@@ -861,8 +768,10 @@ def available_agent_skills() -> list[dict[str, Any]]:
             "data": display_meta.get("data") or "",
             "path": skill_file.relative_to(ROOT).as_posix(),
         }
-    visible = [by_id[skill_id] for skill_id in FRONTEND_SKILL_ORDER if skill_id in by_id]
-    return visible
+    preferred = [by_id[skill_id] for skill_id in FRONTEND_SKILL_ORDER if skill_id in by_id]
+    preferred_ids = {item["id"] for item in preferred}
+    remaining = [item for skill_id, item in sorted(by_id.items()) if skill_id not in preferred_ids]
+    return [*preferred, *remaining]
 
 
 def _selected_skill_context(skill_ids: list[str] | None, message: str = "") -> str:
@@ -870,7 +779,7 @@ def _selected_skill_context(skill_ids: list[str] | None, message: str = "") -> s
         return ""
     by_id = {item["id"]: item for item in available_agent_skills()}
     lines: list[str] = []
-    for skill_id in skill_ids[:5]:
+    for skill_id in skill_ids:
         clean_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(skill_id or ""))
         item = by_id.get(clean_id)
         if item:
@@ -1300,13 +1209,13 @@ def read_agent_skill(skill_id: str) -> str:
             if not match.startswith(("/", "http://", "https://")) and ".." not in match
         }
     )
-    refs_text = "\n".join(f"- {item}" for item in referenced_files[:12]) or "- 未发现显式引用文件"
+    refs_text = "\n".join(f"- {item}" for item in referenced_files) or "- 未发现显式引用文件"
     return (
         f"[Agent Skill: {clean_id}]\n"
         f"路径：{skill_file.relative_to(ROOT).as_posix()}\n"
         "已读取完整 SKILL.md。若下列引用文件与本轮任务相关，应继续用本地检索/读取工具追溯，而不是只停留在 Skill 标题。\n"
         f"引用文件线索：\n{refs_text}\n\n"
-        f"{text[:20000]}"
+        f"{text}"
     )
 
 
@@ -1358,20 +1267,20 @@ def list_crawl_runs(limit: int = 5) -> str:
     """列出最近几次全量爬虫运行索引。
     当用户询问爬虫日志、上次爬虫结果、失败链接、覆盖率、飞书日志页、Agent 数据整理运行记录或调度追溯时，先使用此工具。
     """
-    safe_limit = max(1, min(int(limit or 5), 10))
-    return latest_crawl_run_summary(safe_limit)
+    return latest_crawl_run_summary(max(1, int(limit or 5)))
 
 
-def _search_local_reports_only(query: str) -> str:
+def _search_local_reports_only(query: str, max_results: int = 12) -> str:
     """Return local retrieval evidence without deciding how the Agent uses it."""
+    limit = max(1, int(max_results or 12))
     chunks = retrieve_context(
         query,
-        limit=6,
+        limit=limit,
         dataset_ids=_effective_selected_dataset_ids(),
     )
     if not chunks:
         return "没有找到相关的本地报告信息。"
-    context_package = build_context_package(chunks, token_budget=3200, model=_agent_model_name())
+    context_package = build_context_package(chunks, model=_agent_model_name())
     chunks = context_package["chunks"]
     audit = context_package["audit"]
     quality = retrieval_quality(query, chunks, audit)
@@ -1416,19 +1325,21 @@ def _search_local_reports_only(query: str) -> str:
 
 
 @tool
-def search_local_reports(query: str) -> str:
+def search_local_reports(query: str, max_results: int = 12) -> str:
     """按当前分析意图研究本地数据库、报告和公开网页。
     联网开启时，这个工具会用同一查询同时返回“本地资料”和“联网资料”；联网关闭时只查本地。
     query 要写清本次想找的主体、指标、时期和比较维度；不同分析目的应使用不同查询，
     例如“套餐价格与合约”和“网络时延、抖动、稳定性”不要写成同一个宽泛查询。
     返回“没有找到”只代表本次查询未命中，不代表数据库中一定不存在；可自行换词继续搜索，
     也可用 list_local_datasets 或 read_local_reference 检查覆盖范围和原文。
+    max_results 是本次希望取得的候选数量，后端不会静默缩减；一次结果不足时可提高数量或换词继续检索。
     此工具不限制同一轮调用次数，模型可以按分析需要反复检索。
     """
-    local_raw = _search_local_reports_only(query)
+    limit = max(1, int(max_results or 12))
+    local_raw = _search_local_reports_only(query, limit)
     if not WEB_SEARCH_AVAILABLE.get():
         return local_raw
-    web_raw = _web_search_only(query, 6)
+    web_raw = _web_search_only(query, limit)
     return _merge_local_and_web_research(local_raw, web_raw)
 
 
@@ -1781,7 +1692,7 @@ def trigger_carrier_performance_report_generation() -> str:
 
 
 @tool
-def list_report_outputs() -> str:
+def list_report_outputs(limit: int = 0) -> str:
     """列出当前可下载的正式 Word 输出文件。
     当用户询问输出文件、周报在哪里、有哪些 Word、最新文件、下载对象或报告产物时使用。
     """
@@ -1797,7 +1708,8 @@ def list_report_outputs() -> str:
     lines = ["当前可用输出文件："]
     refs = []
     links = []
-    for index, item in enumerate(outputs[:30], 1):
+    visible_outputs = outputs[: max(1, int(limit))] if int(limit or 0) > 0 else outputs
+    for index, item in enumerate(visible_outputs, 1):
         name = item.get("name") or item.get("path") or f"output-{index}"
         report_type = item.get("reportType") or "unknown"
         mtime = item.get("mtimeText") or item.get("mtime") or ""
@@ -1809,7 +1721,7 @@ def list_report_outputs() -> str:
             link = {"label": name, "url": url}
             links.append(link)
             refs.append({"index": index, "source": name, "links": [link]})
-    meta = {"type": "meta", "sources": [item.get("name") for item in outputs[:30]], "links": links, "references": refs}
+    meta = {"type": "meta", "sources": [item.get("name") for item in visible_outputs], "links": links, "references": refs}
     return "\n".join(lines) + f"\n<metadata>{json.dumps(meta, ensure_ascii=False)}</metadata>"
 
 
@@ -1828,7 +1740,7 @@ def get_crawl_settings_summary() -> str:
     rows = settings.get("rows") or []
     enabled = [row for row in rows if row.get("enabled")]
     preview = []
-    for row in enabled[:20]:
+    for row in enabled:
         entities = row.get("entities") or []
         fields = row.get("fields") or []
         preview.append(
@@ -2210,7 +2122,7 @@ def forecast_quarterly_metric(
     subject = _clean_search_text(spec.get("subject") or subject, 80)
     metric_key = _clean_search_text(spec.get("metric_key") or metric_key or "revenue", 80)
     category = _clean_search_text(spec.get("category") or category, 80)
-    horizon = max(1, min(int(spec.get("horizon") or horizon or 4), 8))
+    horizon = max(1, int(spec.get("horizon") or horizon or 4))
     if not subject:
         return "预测失败：缺少 subject。请指定主体，例如 AWS、中国移动、Microsoft Azure / Intelligent Cloud。"
     csv_path = _selected_quarterly_metrics_path()
@@ -2260,16 +2172,16 @@ def forecast_quarterly_metric(
         table_lines.append(f"| {period} | {forecast:,.0f} | {low:,.0f} | {high:,.0f} |")
     history_tail = [
         {"period": period, "value": value}
-        for period, value in zip(periods[-12:], values[-12:])
+        for period, value in zip(periods, values)
     ]
     chart_spec = {
         "type": "line",
         "title": f"{subject} {metric_zh} 历史与预测",
         "unit": unit,
-        "x": periods[-12:] + future_periods,
+        "x": periods + future_periods,
         "series": [
-            {"name": "历史", "data": values[-12:] + [None] * horizon},
-            {"name": "预测", "data": [None] * len(values[-12:]) + [round(item, 3) for item in forecasts]},
+            {"name": "历史", "data": values + [None] * horizon},
+            {"name": "预测", "data": [None] * len(values) + [round(item, 3) for item in forecasts]},
         ],
     }
     try:
@@ -2427,7 +2339,6 @@ def _chat_history_rows(
     rows: list[dict[str, Any]] = []
     active_thread_id = ACTIVE_CHAT_THREAD_ID.get()
     current_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
-    exclude_current_turn = AMBIGUOUS_HISTORY_PROBE.get()
     for thread in threads:
         if not isinstance(thread, dict):
             continue
@@ -2445,8 +2356,7 @@ def _chat_history_rows(
             if not content:
                 continue
             if (
-                exclude_current_turn
-                and current_thread_id == active_thread_id
+                current_thread_id == active_thread_id
                 and index >= max(0, len(messages) - 2)
                 and (
                     content == current_request
@@ -2534,7 +2444,7 @@ def _chat_history_rows(
                 }
             )
     rows.sort(key=lambda item: (int(item["score"]), str(item.get("thread_updated_at") or "")), reverse=True)
-    return rows[: max(1, min(int(limit or 5), 20))]
+    return rows[: max(1, int(limit or 5))]
 
 
 @tool
@@ -2557,33 +2467,18 @@ def search_chat_history(
     rows = _chat_history_rows(
         query=query,
         limit=limit,
-        context_window=max(0, min(int(context_window or 0), 5)),
+        context_window=max(0, int(context_window or 0)),
         start_time=start_time,
         end_time=end_time,
         role=role,
         thread_id=thread_id,
     )
-    fallback_recent = False
-    if not rows and query and AMBIGUOUS_HISTORY_PROBE.get() and not thread_id:
-        rows = _chat_history_rows(
-            query="",
-            limit=limit,
-            context_window=max(0, min(int(context_window or 0), 5)),
-            start_time=start_time,
-            end_time=end_time,
-            role="user" if role == "all" else role,
-        )
-        fallback_recent = bool(rows)
     if not rows:
         requested_range = ""
         if start_time or end_time:
             requested_range = f"（时间范围：{start_time or '最早'} 至 {end_time or '现在'}）"
         return f"未在已保存的历史聊天线程中找到匹配消息{requested_range}。"
-    lines = [
-        "历史聊天记录候选（关键词未直接命中，以下为最近历史，请判断是否相关）："
-        if fallback_recent else
-        "历史聊天记录命中："
-    ]
+    lines = ["历史聊天记录命中："]
     for index, item in enumerate(rows, 1):
         role = "AI" if str(item.get("role") or "").lower() == "assistant" else "用户"
         if item.get("time_precision") == "message":
@@ -2637,7 +2532,7 @@ def remember_agent_memory(content: str, kind: str = "semantic", tags: str = "", 
 @tool
 def list_agent_memory(limit: int = 10) -> str:
     """列出最近的小竞AI长期运行记忆，用于审计 agent 记住了什么。"""
-    rows = load_memories(limit=max(1, min(int(limit or 10), 30)))
+    rows = load_memories(limit=max(1, int(limit or 10)))
     if not rows:
         return "当前没有长期记忆。"
     return "\n\n".join(
@@ -2791,7 +2686,7 @@ def _selected_skill_summaries(skill_ids: list[str] | None) -> list[dict[str, str
         return []
     by_id = {item["id"]: item for item in available_agent_skills()}
     rows = []
-    for skill_id in requested[:5]:
+    for skill_id in requested:
         item = by_id.get(skill_id)
         if not item:
             continue
@@ -2866,19 +2761,6 @@ def _format_conversation_history(history: list[dict[str, Any]] | None) -> str:
     if not lines:
         return ""
     return "同一聊天线程的最近对话如下，用于理解代词、继续追问和上一轮结论；若与本轮用户新指令冲突，以本轮新指令为准。\n" + "\n".join(lines)
-
-
-def _format_background_conversation_history(history: list[dict[str, Any]] | None) -> str:
-    base = _format_conversation_history(history)
-    if not base:
-        return ""
-    return (
-        "同一聊天线程的最近对话如下，只能作为背景。"
-        "本轮用户输入很短，不能自动把历史主题补全为本轮问题；"
-        "除非本轮短句明确包含“继续/上面/这个/刚才/它/该公司/那个数据”等承接词，"
-        "否则应按本轮字面意思回答。\n"
-        f"{base}"
-    )
 
 
 def _tool_process_text(tool_name: str) -> str:
@@ -2963,32 +2845,6 @@ def _is_user_profile_query(message: str) -> bool:
     return any(marker in text for marker in profile_markers)
 
 
-def _is_explicit_chat_continuation(message: str) -> bool:
-    text = re.sub(r"\s+", "", str(message or "")).strip().lower()
-    continuation_markers = (
-        "这个", "那个", "它", "上面", "前面", "刚才", "之前那个", "继续", "接着", "然后呢",
-        "后来呢", "还是不行", "不行", "不对", "怎么回事", "什么意思", "看不到", "没反应",
-    )
-    return any(marker in text for marker in continuation_markers)
-
-
-def _should_probe_chat_history_for_ambiguity(message: str) -> bool:
-    """Return true when past context should be checked before asking a question."""
-    text = re.sub(r"\s+", "", str(message or "")).strip().lower()
-    if not text or _is_plain_conversational_query(text) or _is_user_profile_query(text):
-        return False
-    if re.fullmatch(r"[\d.]+(?:[+\-*/×÷][\d.]+)+(?:等于多少|是多少|=|？|\?)?", text):
-        return False
-    if _is_explicit_chat_continuation(text):
-        return True
-    explicit_intent_markers = (
-        "什么", "多少", "为何", "为什么", "怎么", "如何", "哪里", "哪个", "是否", "有没有", "吗", "呢",
-        "请", "帮我", "查看", "分析", "生成", "搜索", "查询", "告诉", "对比", "总结", "介绍", "解释",
-        "预测", "画图", "列出", "读取", "更新", "爬取", "周报", "报告",
-    )
-    return len(text) <= 8 and not any(marker in text for marker in explicit_intent_markers)
-
-
 def _message_token_usage(message: AIMessage | AIMessageChunk) -> dict[str, int]:
     """Normalize provider token metadata without depending on one gateway shape."""
     candidates: list[dict[str, Any]] = []
@@ -3043,7 +2899,7 @@ def _finalize_after_incomplete_run(
             content=(
                 "你是小竞AI的最终回答整理器。Agent 工具链因运行异常或模型回答未完整结束而中断；"
                 "不得再调用工具。请根据已有工具结果直接给出完整、连贯、专业的简体中文回答。"
-                "证据不足时明确说明缺少什么，不得编造。正文控制在 1200 个中文字符以内，"
+                "证据不足时明确说明缺少什么，不得编造。按用户问题决定合适的详略，"
                 "必须完整收束，不得停在逗号、冒号、连接词或未闭合列表。保留工具结果中的"
                 "数字来源编号。"
             )
@@ -3113,13 +2969,6 @@ def stream_agent(
     _reset_web_search_indexes()
     original_user_message = message
     plain_conversation = _is_plain_conversational_query(message)
-    ambiguous_history_probe = _should_probe_chat_history_for_ambiguity(message)
-    same_thread_continuation = bool(conversation_history) and _is_explicit_chat_continuation(message)
-    if same_thread_continuation:
-        # The browser already sends the preceding turns before adding the new
-        # user message. Prefer that exact, freshest thread context over a
-        # cross-thread persistence search, which can lag by one save cycle.
-        ambiguous_history_probe = False
     try:
         captured_memory = None if plain_conversation else auto_capture_user_memory(message)
     except Exception:
@@ -3142,7 +2991,6 @@ def stream_agent(
         re.sub(r"[^A-Za-z0-9_.:-]", "", str(active_thread_id or ""))[:160]
     )
     request_token = CURRENT_USER_REQUEST.set(_clean_search_text(original_user_message, 1200))
-    ambiguous_token = AMBIGUOUS_HISTORY_PROBE.set(ambiguous_history_probe)
     web_search_token = WEB_SEARCH_AVAILABLE.set(force_web_search)
     recorder = AgentRunRecorder(
         message=message,
@@ -3193,11 +3041,7 @@ def stream_agent(
     # rendered as fake tool calls; the UI should only show tools the Agent chose.
     if recalled_memory:
         message = f"{recalled_memory}\n\n用户问题：{message}"
-    history_context = (
-        _format_background_conversation_history(conversation_history)
-        if plain_conversation
-        else _format_conversation_history(conversation_history)
-    )
+    history_context = _format_conversation_history(conversation_history)
     if history_context:
         message = f"{history_context}\n\n本轮用户问题：{message}"
     if skill_context:
@@ -3216,30 +3060,6 @@ def stream_agent(
     tool_calls_acc = {}
     pending_tool_calls: dict[str, dict[str, str]] = {}
     emitted_process_tools: set[str] = set()
-    disabled_web_notice_prefixes = (
-        "联网搜索已关闭",
-        "当前联网搜索已关闭",
-        "已关闭联网搜索",
-        "由于联网搜索",
-        "因为联网搜索",
-        "本轮不会调用",
-        "我不能联网",
-        "当前不能联网",
-    )
-    disabled_web_notice_markers = (
-        "联网搜索已关闭",
-        "不会调用 web_search",
-        "不会调用 `web_search`",
-        "web_search",
-        "read_webpage",
-        "打开联网搜索",
-        "联网搜索开关",
-        "前端开关",
-        "工具配置",
-    )
-    disabled_web_notice_buffer = ""
-    checking_disabled_web_notice = not force_web_search
-    table_limiter = MarkdownTableLimiter()
     token_usage = {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
     tool_evidence: list[str] = []
 
@@ -3327,45 +3147,6 @@ def stream_agent(
             if cursor < len(text):
                 time.sleep(delay_seconds)
 
-    def filter_disabled_web_notice(text: str) -> list[str]:
-        """Drop a leading web-toggle explanation; keep normal streaming intact."""
-        nonlocal disabled_web_notice_buffer, checking_disabled_web_notice
-        if not checking_disabled_web_notice:
-            return [text] if text else []
-
-        disabled_web_notice_buffer += text
-        leading = disabled_web_notice_buffer.lstrip()
-
-        sentence_end_positions = [
-            pos
-            for pos in (
-                leading.find("。"),
-                leading.find("\n"),
-                leading.find("！"),
-                leading.find("？"),
-                leading.find(". "),
-            )
-            if pos >= 0
-        ]
-        cut_at = min(sentence_end_positions) + 1 if sentence_end_positions else -1
-        first_sentence = leading[:cut_at] if cut_at > 0 else leading
-        matched_notice = (
-            any(prefix.startswith(leading) or leading.startswith(prefix) for prefix in disabled_web_notice_prefixes)
-            or any(marker in first_sentence for marker in disabled_web_notice_markers)
-        )
-        if matched_notice:
-            if cut_at < 0:
-                return []
-            checking_disabled_web_notice = False
-            remainder = leading[cut_at:].lstrip()
-            disabled_web_notice_buffer = ""
-            return [remainder] if remainder else []
-
-        checking_disabled_web_notice = False
-        buffered = disabled_web_notice_buffer
-        disabled_web_notice_buffer = ""
-        return [buffered] if buffered else []
-
     def follow_up_event() -> dict[str, Any]:
         suggestions, suggestion_usage, source = _ensure_ai_follow_up_suggestions(
             original_user_message,
@@ -3427,18 +3208,15 @@ def stream_agent(
                         recorder.observe(event)
                         yield event
                 if chunk.content and isinstance(chunk.content, str):
-                    for text in filter_disabled_web_notice(chunk.content):
-                        content_parts = (
-                            replay_validated_text(text, delay_seconds=0.018)
-                            if isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
-                            else [text]
-                        )
-                        for content_part in content_parts:
-                            limited_text = table_limiter.feed(content_part)
-                            if limited_text:
-                                event = {"type": "delta", "text": limited_text}
-                                recorder.observe(event)
-                                yield event
+                    content_parts = (
+                        replay_validated_text(chunk.content, delay_seconds=0.018)
+                        if isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
+                        else [chunk.content]
+                    )
+                    for content_part in content_parts:
+                        event = {"type": "delta", "text": content_part}
+                        recorder.observe(event)
+                        yield event
                 tool_call_chunks = getattr(chunk, "tool_call_chunks", None) or []
                 if not tool_call_chunks:
                     for index, tool_call in enumerate(getattr(chunk, "tool_calls", None) or []):
@@ -3544,20 +3322,6 @@ def stream_agent(
             yield from finalize_pending_tool_calls(
                 "Agent 事件流已经结束，但没有收到此工具的返回结果。"
             )
-        if checking_disabled_web_notice and disabled_web_notice_buffer:
-            leading = disabled_web_notice_buffer.lstrip()
-            if not any(leading.startswith(prefix) for prefix in disabled_web_notice_prefixes):
-                limited_text = table_limiter.feed(disabled_web_notice_buffer)
-                if limited_text:
-                    event = {"type": "delta", "text": limited_text}
-                    recorder.observe(event)
-                    yield event
-            disabled_web_notice_buffer = ""
-        tail_text = table_limiter.flush()
-        if tail_text:
-            event = {"type": "delta", "text": tail_text}
-            recorder.observe(event)
-            yield event
         suggestions_event = follow_up_event()
         recorder.observe(suggestions_event)
         yield suggestions_event
@@ -3599,14 +3363,7 @@ def stream_agent(
             for key in token_usage:
                 token_usage[key] += final_usage[key]
             for content_part in replay_validated_text(final_text, delay_seconds=0.018):
-                limited_text = table_limiter.feed(content_part)
-                if limited_text:
-                    event = {"type": "delta", "text": limited_text}
-                    recorder.observe(event)
-                    yield event
-            tail_text = table_limiter.flush()
-            if tail_text:
-                event = {"type": "delta", "text": tail_text}
+                event = {"type": "delta", "text": content_part}
                 recorder.observe(event)
                 yield event
             suggestions_event = follow_up_event()
@@ -3642,5 +3399,4 @@ def stream_agent(
         APPROVED_ACTION_IDS.reset(approved_token)
         ACTIVE_CHAT_THREAD_ID.reset(thread_token)
         CURRENT_USER_REQUEST.reset(request_token)
-        AMBIGUOUS_HISTORY_PROBE.reset(ambiguous_token)
         WEB_SEARCH_AVAILABLE.reset(web_search_token)
