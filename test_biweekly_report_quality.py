@@ -95,7 +95,7 @@ def write_small_template(path: Path) -> None:
 
 
 class PublicationLabelTests(unittest.TestCase):
-    def test_each_event_label_uses_publication_date_not_generation_or_crawl_time(self) -> None:
+    def test_publication_date_stays_in_audit_data_but_is_hidden_from_report_body(self) -> None:
         row = {
             "id": "row-publication-date",
             "company": "测试主体",
@@ -123,8 +123,9 @@ class PublicationLabelTests(unittest.TestCase):
         model = make_model(item)
         markdown = report.weekly_to_markdown(model)
 
-        self.assertIn("发布时间：2026年7月12日", markdown)
-        self.assertNotIn("发布时间：2026年7月15日", markdown)
+        self.assertNotIn("发布时间", markdown)
+        self.assertNotIn("来源：", markdown)
+        self.assertEqual(model["sources"][0]["publishedAt"], "2026-07-12")
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -136,8 +137,8 @@ class PublicationLabelTests(unittest.TestCase):
             rendered = Document(output_path)
             rendered_text = "\n".join(paragraph.text for paragraph in rendered.paragraphs)
 
-        self.assertIn("发布时间：2026年7月12日", rendered_text)
-        self.assertNotIn("发布时间：2026年7月15日", rendered_text)
+        self.assertNotIn("发布时间", rendered_text)
+        self.assertNotIn("来源：", rendered_text)
 
     def test_detail_omits_source_date_leadin_and_follow_up_scaffolding(self) -> None:
         valid = detailed_text("测试主体公布一项新进展。")
@@ -154,6 +155,48 @@ class PublicationLabelTests(unittest.TestCase):
 
         item["detail"] = valid
         report.validate_report_model(model)
+
+    def test_title_only_body_and_embedded_webpage_timestamp_are_rejected(self) -> None:
+        item = make_item("W001", 1, title="测试主体推进新一轮业务部署")
+        item["detail"] = item["title"]
+        with self.assertRaisesRegex(ValueError, "重复标题"):
+            report.validate_human_template_content(make_model(item))
+
+        item["detail"] = (
+            "测试主体扩大跨境业务合作，并披露新的供应链数据。"
+            "发表时间：28/07/2026 - 15:29。"
+        )
+        with self.assertRaisesRegex(ValueError, "发布时间、来源套话或关注式结尾"):
+            report.validate_human_template_content(make_model(item))
+
+    def test_publication_scaffolding_is_removed_before_model_payload(self) -> None:
+        cleaned = report.strip_publication_scaffolding(
+            "发表时间：28/07/2026 - 15:29。。测试主体披露跨境业务合作及供应链数据。",
+            "2026-07-24",
+        )
+        self.assertEqual(cleaned, "测试主体披露跨境业务合作及供应链数据。")
+
+    def test_search_result_noise_is_rejected_and_never_joined_into_fallback(self) -> None:
+        item = make_item("W001", 1, title="工信部推动中小企业AI深度融合")
+        item["detail"] = (
+            "工信部推动人工智能与中小企业深度融合。"
+            "© 2026 - Конфиденциальность - Условия。"
+        )
+        item["rawDetail"] = "工信部发文促进人工智能在中小企业深度融合应用。"
+        item["webResearch"] = {
+            "results": [
+                {"snippet": "无关视频标题，完整版视频下载。"},
+                {"snippet": "德国政府分析其他行业的贸易流向。"},
+            ]
+        }
+
+        self.assertTrue(report.summary_has_search_noise(item["detail"]))
+        self.assertEqual(
+            report.deterministic_limited_weekly_detail(item),
+            "工信部发文促进人工智能在中小企业深度融合应用。",
+        )
+        with self.assertRaisesRegex(ValueError, "网页搜索结果噪声"):
+            report.validate_human_template_content(make_model(item))
 
     def test_overlong_detail_is_trimmed_only_at_a_complete_sentence(self) -> None:
         detail = (
@@ -194,20 +237,22 @@ class StrategicReferenceDocxStructureTests(unittest.TestCase):
         texts = [paragraph.text.strip() for paragraph in rendered.paragraphs]
         body_start = texts.index("行业资讯")
         self.assertEqual(
-            texts[body_start : body_start + 5],
+            texts[body_start : body_start + 4],
             [
                 "行业资讯",
                 "业务动态",
                 item["title"],
                 item["detail"],
-                "发布时间：2026年7月12日　来源：[S1] 测试来源",
             ],
         )
+        self.assertNotIn("发布时间", "\n".join(texts))
+        self.assertNotIn("来源：", "\n".join(texts))
         self.assertFalse(re.match(r"^(?:\d+|[一二三四五六七八九十]+)、", texts[body_start + 2]))
 
         tag_paragraph = rendered.paragraphs[body_start + 1]
         self.assertTrue(tag_paragraph.runs)
         self.assertEqual(tag_paragraph.runs[0].font.color.rgb, RGBColor(0xA6, 0xA6, 0xA6))
+        self.assertTrue(rendered.paragraphs[body_start].paragraph_format.page_break_before)
 
 
 class IndependentReviewerTests(unittest.TestCase):
