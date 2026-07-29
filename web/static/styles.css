@@ -11061,8 +11061,12 @@ button.command-btn:disabled {
 }
 
 .daily-content-panel {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
   margin-top: 16px;
-  padding-top: 14px;
+  padding: 14px 0 8px;
   border-top: 1px solid rgba(29, 100, 142, 0.14);
 }
 
@@ -11087,12 +11091,18 @@ button.command-btn:disabled {
 .daily-content-charts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 28px;
+  min-height: 0;
+  flex: 1 1 auto;
   margin-top: 11px;
 }
 
 .daily-content-chart {
+  display: flex;
   min-width: 0;
+  min-height: 0;
+  flex-direction: column;
   margin: 0;
 }
 
@@ -11121,7 +11131,11 @@ button.command-btn:disabled {
 
 .daily-content-chart > div {
   display: grid;
-  gap: 8px;
+  min-height: 0;
+  flex: 1 1 auto;
+  grid-auto-rows: minmax(28px, auto);
+  align-content: space-evenly;
+  gap: 10px;
 }
 
 .daily-content-bar {
@@ -11129,12 +11143,15 @@ button.command-btn:disabled {
   grid-template-columns: 112px minmax(0, 1fr) 28px;
   align-items: center;
   gap: 9px;
+  min-height: 28px;
 }
 
 .daily-content-bar > span {
   overflow: hidden;
   color: #627b8a;
   font-size: 14px;
+  letter-spacing: 0.018em;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
