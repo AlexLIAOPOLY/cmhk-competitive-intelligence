@@ -489,6 +489,84 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(audit["removed_count"], 1)
         self.assertEqual(audit["corrected_count"], 1)
 
+    def test_ai_critic_only_reviews_a_kept_candidate_once_per_pipeline(self):
+        item = {
+            "title": "有线宽频召开股东特别大会",
+            "snippet": "有线宽频发布股东特别大会及暂停办理股份过户登记公告。",
+            "keywords": ["i-CABLE", "有线宽频"],
+            "canonical_competitor": "i-CABLE",
+            "source": "信报",
+            "url": "https://example.com/icable-egm",
+            "region": "香港本地",
+            "category": "竞对动态",
+        }
+        response = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "keep": True,
+                    "region": "香港本地",
+                    "category": "竞对动态",
+                    "reason": "有线宽频是事件主体，股东大会属于竞对资本治理动态。",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "AI_EDITOR_CRITIC_ENABLED", True),
+            mock.patch.object(
+                briefing, "_call_internal_ai", return_value=response
+            ) as ai_call,
+        ):
+            first, first_audit = briefing._critic_review_included([item])
+            second, second_audit = briefing._critic_review_included(first)
+
+        self.assertEqual(ai_call.call_count, 1)
+        self.assertEqual(first_audit["already_reviewed_count"], 0)
+        self.assertEqual(second_audit["already_reviewed_count"], 1)
+        self.assertEqual(
+            second[0]["ai_critic_version"],
+            briefing.AI_EDITOR_CRITIC_VERSION,
+        )
+
+    def test_ai_critic_prompt_protects_competitor_when_search_hint_points_elsewhere(self):
+        item = {
+            "title": "AT&T完成收购EchoStar频谱牌照",
+            "snippet": "AT&T完成约230亿美元无线频谱牌照交易。",
+            "keywords": ["中国联通香港"],
+            "canonical_competitor": "China Unicom Hong Kong",
+            "source": "Yahoo Finance",
+            "url": "https://example.com/att-spectrum",
+            "region": "国际/行业",
+            "category": "竞对动态",
+        }
+        response = {
+            "items": [
+                {
+                    "id": briefing._candidate_editor_key(item)[:16],
+                    "keep": True,
+                    "region": "国际/行业",
+                    "category": "竞对动态",
+                    "reason": "AT&T是正式监控竞对，频谱牌照收购属于竞对网络与资本动作。",
+                }
+            ]
+        }
+        with (
+            mock.patch.object(briefing, "AI_EDITOR_CRITIC_ENABLED", True),
+            mock.patch.object(
+                briefing, "_call_internal_ai", return_value=response
+            ) as ai_call,
+        ):
+            kept, _audit = briefing._critic_review_included([item])
+
+        prompt = ai_call.call_args.args[0]
+        self.assertEqual(len(kept), 1)
+        self.assertIn(
+            "即使matched_keywords或configured_competitor_hint",
+            prompt,
+        )
+        self.assertIn("频谱和牌照", prompt)
+        self.assertIn("股东大会", prompt)
+
     def test_manufacturing_innovation_agreement_reaches_ai_and_can_be_included(self):
         item = {
             "module": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",

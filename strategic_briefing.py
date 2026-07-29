@@ -44,6 +44,7 @@ AI_EDITOR_VERSION = 18
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "1") == "1"
 )
+AI_EDITOR_CRITIC_VERSION = 2
 LEGACY_DDGS_SEARCH_ENABLED = (
     os.environ.get("CMHK_LEGACY_STRATEGIC_DDGS_SEARCH", "0") == "1"
 )
@@ -1969,6 +1970,7 @@ def _critic_review_included(
             "removed_count": 0,
             "corrected_count": 0,
             "error_count": 0,
+            "already_reviewed_count": 0,
         }
     allowed_categories = {
         "公司动态",
@@ -1984,8 +1986,16 @@ def _critic_review_included(
     removed_count = 0
     corrected_count = 0
     error_count = 0
-    for offset in range(0, len(items), 4):
-        batch = items[offset : offset + 4]
+    already_reviewed_count = 0
+    pending_items: list[dict[str, Any]] = []
+    for item in items:
+        if item.get("ai_critic_version") == AI_EDITOR_CRITIC_VERSION:
+            kept.append(item)
+            already_reviewed_count += 1
+        else:
+            pending_items.append(item)
+    for offset in range(0, len(pending_items), 4):
+        batch = pending_items[offset : offset + 4]
         request_items = []
         item_by_id: dict[str, dict[str, Any]] = {}
         for item in batch:
@@ -2004,11 +2014,20 @@ def _critic_review_included(
                     "任何正式监控竞对的真实信息都keep=true，但竞对名只出现在来源媒体、网址、"
                     "搜索提示、同名缩写或偶然提词时不是竞对。i-CABLE媒体报道房协、政府或第三方"
                     "事件不等于有线宽频经营动作。HKT、PCCW、香港电讯、csl明确属于被监控竞对；"
+                    "i-CABLE、有线宽频、HKBN、3 Hong Kong、SmarTone、HGC以及AT&T、Verizon、"
+                    "T-Mobile、Vodafone、Orange、Telstra、Singtel、KDDI、NTT Docomo、SoftBank、"
+                    "Jio均属于正式监控竞对。标题或摘要确认这些竞对是事件主体、收购方、合作方或"
+                    "被实质讨论的企业时，必须keep=true；即使matched_keywords或"
+                    "configured_competitor_hint来自另一个搜索计划，也必须以正文确认的竞对主体为准。"
+                    "竞对的产品资费、促销、客户服务、经营数据、网络建设、频谱和牌照、技术合作、"
+                    "投资并购、融资、股东大会、暂停过户、管理层、监管及其他资本市场信息都必须保留，"
+                    "不得因事件常规、规模小、属于国际新闻或对香港影响不够直接而删除。"
                     "只有CMHK、中国移动香港及其品牌属于本公司，二者绝不能混淆。"
                     "香港地域必须由事件主体、发生地或受影响市场明确证明，不能由香港媒体、语言、"
                     "关键词或搜索来源推断；标题摘要未明确写出香港机构、香港市场或香港运营商时，"
                     "不得把含糊的环保署、数发部等机构猜成香港。台湾数发部、台湾环保署属于国际/行业。"
-                    "非竞对国际新闻只有输入事实明确显示对香港电信市场、CMHK决策或关键运营商"
+                    "确认不是真实竞对事件之后，其他国际新闻只有输入事实明确显示对香港电信市场、"
+                    "CMHK决策或关键运营商"
                     "对标有直接影响才保留；一般AI模型、峰会、股市和宽泛宏观消息应删除。"
                     "香港政策、香港数字产业和本地运营商动作与竞对同等优先。"
                     "category只能是公司动态、竞对动态、政策监管、行业动态、市场/产品类、"
@@ -2045,7 +2064,10 @@ def _critic_review_included(
             if not isinstance(verdict, dict) or not isinstance(
                 verdict.get("keep"), bool
             ):
-                kept.append(item)
+                preserved = dict(item)
+                preserved["ai_critic_version"] = AI_EDITOR_CRITIC_VERSION
+                preserved["ai_critic_reviewed_at"] = _now_iso()
+                kept.append(preserved)
                 if response_map:
                     error_count += 1
                 continue
@@ -2069,6 +2091,8 @@ def _critic_review_included(
             reason = _to_simplified_chinese(verdict.get("reason"), 120)
             if reason:
                 updated["ai_inclusion_reason"] = reason
+            updated["ai_critic_version"] = AI_EDITOR_CRITIC_VERSION
+            updated["ai_critic_reviewed_at"] = _now_iso()
             kept.append(updated)
     return kept, {
         "enabled": True,
@@ -2077,6 +2101,7 @@ def _critic_review_included(
         "removed_count": removed_count,
         "corrected_count": corrected_count,
         "error_count": error_count,
+        "already_reviewed_count": already_reviewed_count,
     }
 
 
