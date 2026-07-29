@@ -1152,7 +1152,6 @@ function renderStrategicOverview(rawItems, rawCandidateItems = []) {
   setText("activeTopicCount", String(categories.length));
   setText("latestSignalDate", latestDate ? formatShortDate(latestDate) : "--");
   setText("signalTrendTitle", showCandidateFallback ? "每日候选趋势" : "每日信号趋势");
-  setText("signalTrendSubtitle", showCandidateFallback ? "采集候选 · 非确认信号" : "按主题堆叠");
   setText("signalTrendTotal", showCandidateFallback ? `${chartItems.length} 条候选` : `${items.length} 条`);
   setText("signalTopicTitle", showCandidateFallback ? "候选主题" : "主题热度");
   setText("signalTopicSubtitle", showCandidateFallback ? "采集候选构成" : "确认信号构成");
@@ -1325,33 +1324,71 @@ function renderCollectionOverview(status) {
       .join("|") + `|duplicates:${Number(newsFunnel.historyDuplicates || 0)}`;
     if (funnelHost.dataset.signature !== funnelSignature) {
       funnelHost.dataset.signature = funnelSignature;
-      const peak = Math.max(1, ...funnelStages.map((item) => Number(item.value || 0)));
-      const duplicateCount = Number(newsFunnel.historyDuplicates || 0);
-      funnelHost.innerHTML = funnelStages.length
-        ? funnelStages.map((item, index) => {
+      const visibleStages = funnelStages.slice(0, 4);
+      const funnelCenter = 180;
+      const funnelTop = 4;
+      const funnelStageHeight = 40;
+      const funnelWidths = [340, 282, 224, 170, 120];
+      funnelHost.innerHTML = visibleStages.length
+        ? `
+          <svg
+            class="collection-funnel-svg"
+            viewBox="0 0 360 ${funnelTop * 2 + visibleStages.length * funnelStageHeight}"
+            role="img"
+            aria-label="最近一次战略新闻筛选漏斗"
+          >
+            <defs>
+              <linearGradient id="collectionFunnelStage1" x1="0" x2="1">
+                <stop offset="0%" stop-color="#d9eff9"></stop>
+                <stop offset="100%" stop-color="#a9d9ef"></stop>
+              </linearGradient>
+              <linearGradient id="collectionFunnelStage2" x1="0" x2="1">
+                <stop offset="0%" stop-color="#c9ebe1"></stop>
+                <stop offset="100%" stop-color="#9bd8c6"></stop>
+              </linearGradient>
+              <linearGradient id="collectionFunnelStage3" x1="0" x2="1">
+                <stop offset="0%" stop-color="#ddd8f5"></stop>
+                <stop offset="100%" stop-color="#bfb4e8"></stop>
+              </linearGradient>
+              <linearGradient id="collectionFunnelStage4" x1="0" x2="1">
+                <stop offset="0%" stop-color="#1595cf"></stop>
+                <stop offset="100%" stop-color="#0872b4"></stop>
+              </linearGradient>
+            </defs>
+            ${visibleStages.map((item, index) => {
             const value = Number(item.value || 0);
-            const width = Math.max(38, (value / peak) * 100);
-            const rate = Number(item.rate || 0);
-            const note = String(item.note || "");
             const detail = String(item.detail || "");
             const accessibleText = `${item.label || "筛选阶段"} ${value} 条。${detail}`;
+            const y1 = funnelTop + index * funnelStageHeight;
+            const y2 = y1 + funnelStageHeight;
+            const width1 = funnelWidths[index];
+            const width2 = funnelWidths[index + 1];
+            const left1 = funnelCenter - width1 / 2;
+            const right1 = funnelCenter + width1 / 2;
+            const left2 = funnelCenter - width2 / 2;
+            const right2 = funnelCenter + width2 / 2;
+            const labelY = y1 + funnelStageHeight / 2 + 4;
             return `
-              <div class="collection-funnel-row">
-                <div
-                  class="collection-funnel-bar is-stage-${index + 1}"
-                  style="--funnel-width:${width}%"
-                  tabindex="0"
-                  aria-label="${escapeHtml(accessibleText)}"
-                  data-funnel-title="${escapeHtml(item.label || "筛选阶段")} · ${value} 条"
-                  data-funnel-detail="${escapeHtml(detail)}"
-                >
-                  <span>${escapeHtml(item.label || "筛选阶段")}</span>
-                  <b>${value}</b>
-                </div>
-                <small>${escapeHtml(note || (rate ? `保留 ${rate}%` : ""))}</small>
-              </div>
+              <g
+                class="collection-funnel-stage is-stage-${index + 1}"
+                tabindex="0"
+                role="button"
+                aria-label="${escapeHtml(accessibleText)}"
+                data-funnel-title="${escapeHtml(item.label || "筛选阶段")} · ${value} 条"
+                data-funnel-detail="${escapeHtml(detail)}"
+              >
+                <polygon
+                  points="${left1},${y1} ${right1},${y1} ${right2},${y2} ${left2},${y2}"
+                  fill="url(#collectionFunnelStage${index + 1})"
+                ></polygon>
+                <text class="collection-funnel-stage-label" x="${funnelCenter}" y="${labelY}" text-anchor="middle">
+                  ${escapeHtml(item.label || "筛选阶段")}
+                  <tspan class="collection-funnel-stage-value" dx="8">${value}</tspan>
+                </text>
+              </g>
             `;
-          }).join("") + `
+          }).join("")}
+          </svg>
             <div class="collection-funnel-tooltip" role="tooltip" hidden>
               <strong></strong>
               <span></span>
@@ -1362,7 +1399,7 @@ function renderCollectionOverview(status) {
       const hideTooltip = () => {
         if (tooltip) tooltip.hidden = true;
       };
-      funnelHost.querySelectorAll(".collection-funnel-bar").forEach((bar) => {
+      funnelHost.querySelectorAll(".collection-funnel-stage").forEach((bar) => {
         const showTooltip = () => {
           if (!tooltip) return;
           const title = tooltip.querySelector("strong");
@@ -1373,6 +1410,7 @@ function renderCollectionOverview(status) {
         };
         bar.addEventListener("mouseenter", showTooltip);
         bar.addEventListener("focus", showTooltip);
+        bar.addEventListener("click", showTooltip);
         bar.addEventListener("mouseleave", hideTooltip);
         bar.addEventListener("blur", hideTooltip);
       });
