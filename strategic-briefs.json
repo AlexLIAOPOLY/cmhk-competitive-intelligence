@@ -1,62 +1,7 @@
 {
   "ok": true,
+  "generated_at": "2026-07-26T09:27:50+08:00",
   "items": [
-    {
-      "id": "NEWS-87A3B4B37D77A9",
-      "title": "PCB行业龙头投52亿建第二工厂 东莞「全球智造中心」建设加速",
-      "summary": "PCB行业龙头投52亿建第二工厂 东莞「全球智造中心」建设加速 香港商报",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMickFVX3lxTE9DSTVwSHR2d1FENGRscEtjTms0ak96WHNPWEFLcGxqMGpNUTZGSEJTOGpteGp2a2ExWE1iX0FQN3FJc2dEdGtxWVZyYmxKWnJxQkdlQjVLTFVjRDdGdHU0aE80Y0p0bVQwNFlNSTQzN0JZZw?oc=5",
-      "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-62446C9F276211",
-      "title": "特区政府与国家工信部签署协议推进共建制造业创新中心- 港闻",
-      "summary": "特区政府与国家工信部签署协议推进共建制造业创新中心- 港闻 点新闻",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9YT2tlbjMwMFNVV1JlcWt5c3k3NFNZajRheWpzYnRxQ1lJM1FlQkdRX3JtdzNjN2RvdlFHTzdfUldrZ1QtOWlpdEJCVnVLSVk4T3lqVUhiR3JhM2FLZ2FsTzVVazhCMjZHeGhoendkYXZoTjZLRG9vSUF3?oc=5",
-      "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-E0C13600B5E1C7",
-      "title": "湾区媒体「重走长征路」 见证红土地蝶变「中国数谷」 「大湾区研发+贵州算力」协同破局数智产业规模",
-      "summary": "湾区媒体「重走长征路」 见证红土地蝶变「中国数谷」 「大湾区研发+贵州算力」协同破局数智产业规模近三千亿 香港文汇报",
-      "category": "AI与科技",
-      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1JamJyNWVuWGoxU29veUxEbGR3QU5EOGx6dUtlTVF2Q2sxeVZxSTd5UGJTWDA3MkdsWkU4ZWJqMXdjZEh4aVpoc0NtUWlPVjRoRlRRLTVTNkdSQjFTNHdJTTh4Ymh5ZzNWWlBDS196U3JFcmNQaXNOdmJoUDQ?oc=5",
-      "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-16EE1F137FC9FD",
-      "title": "香港电讯推出自主开发 AI 平台 HKT.AI",
-      "summary": "香港电讯推出自主开发一站式综合 AI 平台 HKT.AI，汇聚全球 AI 资源，协助企业及个人用户无缝使用不同工具，推动全民 AI 普及应用。",
-      "category": "竞对动态",
-      "source_url": "https://hk.finance.yahoo.com/news/%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%A8%8A-06823-%E6%8E%A8%E5%87%BA%E8%87%AA%E4%B8%BB%E9%96%8B%E7%99%BC-ai-%E5%B9%B3%E5%8F%B0-040024482.html",
-      "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-258436E031C21D",
-      "title": "香港出口创42年最大增幅AI需求成最大推手",
-      "summary": "香港出口按年飙升53.4%创42年新高，强劲增长主要受人工智能相关需求大幅拉动。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9PN2k0YVh4VnFWN2FvNVRXc0s3b1pmNEY0RUVfT2J2bFdRU1pkOHJHWmd0SkNCYXNibkNTWW5pdDVWS3RHVW1YUXJrcGdhUGlHSFdOanVXWTl5czktUDMxeTROOUFaYzFjVG11VUdtRF9WUHdXR1NF?oc=5",
-      "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-317B71E3178989",
-      "title": "HKT举办2026科技周 共建香港AI创新枢纽",
-      "summary": "HKT举办2026科技周，汇聚全球伙伴生态，旨在共建香港AI创新枢纽。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi1AJBVV95cUxOM3EwZlh6RXhFWVBuX25vdGlDdkNpN3U4bTAtLV82c0pIdnJGRmtZZFQzUzRKUFRjcWhoeG81MFlxQzduamVyYnhtWDRuS3ZPUGhsVHVQc1c5WGR6Q21lYkRsOGp6dGMteFV1RmtybkR2aVlxRzVCUzNaaU5VT2lrdjJ4d0NPVW1iaTRDSjljeGJoeXhFdUZhbk5jWEZfbDlDNjBPUXFXOUVYeU94bWxvN1JzNEVXMHBrakIxUmtOQWV3aXBfenc0RFBiU2VBUGRxekJONDl1UTBVLTJyVTFCU2FMR25fdlk2M2dZSm5BXzlEU2NDN2hrVmczVWY5ZnNqRzF3V09fdk5lRWlxX2NfRXNsaTZ2UEZaWVhGT2hfTzRENWw2THI4aFBmLXJVSEsxX20xWDRYVDZKYk1HWE9VUUlvT0pWdG4xUXhmSTl3SXZkd0JS?oc=5",
-      "published_at": "2026-07-27"
-    },
-    {
-      "id": "NEWS-12B7543B26A1C1",
-      "title": "贸发局预测AI带动电子产品出口增长近三成",
-      "summary": "贸发局预测人工智能需求将带动电子产品出口增长近三成，反映科技产业对贸易的强劲拉动作用。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE10aHE5UEN4djVQQ3hoT2xXeHhzanF6b0czTHNWZEpQd0V6SWJXU09yVE9wY3YwaHBObVlkS2lQVnFBRDhuN2RUek9iMGs2NTZDMlpzelp3U3VpdHRxVGJPazRGT3Z5LXBHUVlJTUdfNlgyMGJ2?oc=5",
-      "published_at": "2026-07-25"
-    },
     {
       "id": "NEWS-66B2C6FEDA7E9A",
       "title": "中国联通在京发布5G-A大上行网络能力",
@@ -64,6 +9,63 @@
       "category": "竞对动态",
       "source_url": "https://finance.sina.com.cn/roll/2026-07-24/doc-iniivyeq9293892.shtml",
       "published_at": "2026-07-24"
+    },
+    {
+      "id": "NEWS-7D69927BB490CB",
+      "title": "AI出海打开跨境链路 中企与东南亚商贸互通",
+      "summary": "AI技术助力中企打通跨境业务链路，促进与东南亚地区的商贸互通与合作发展。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBOMDh6RVNPY2NwVG5pYnJNME5VZXNNdGx5emlBQ0ZMb1pwbU5ITjVuUEczNTJJYTRjaFVwX3BIQndRNDZSZTVUZHFmRnhCN2xEUnFnZF9FZ0NuN1dibWE3MDZ4U25TZUhFTkZhM3RQc3JPTmcwaGlzRGowSWY?oc=5",
+      "published_at": "2026-07-24"
+    },
+    {
+      "id": "NEWS-CD6219E77F4FEC",
+      "title": "创新科技及工业局局长出席APEC数字与人工智能会议",
+      "summary": "创新科技及工业局局长在成都出席亚太经合组织数字与人工智能部长级会议。",
+      "category": "政策与监管",
+      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFAxNjBKVExZOUM2MkF4LVFOTGNKcFdkM2s1aGk4a2RHd2RfQjd4ZWdOTmNwSHBQX3dZN0pjendFUEdPSlFjcGhUTXBqOUVKREpjcUlLeHNBOEpUM2M4RjFNLWpqOW9FMDhENy1kdVBCTFpLc05F?oc=5",
+      "published_at": "2026-07-24"
+    },
+    {
+      "id": "NEWS-62ACBC3D782AE9",
+      "title": "特朗普称习主席9月24日访美将讨论人工智能议题",
+      "summary": "特朗普表示，中国国家主席习近平将于9月24日访问美国，双方将重点讨论人工智能相关议题。",
+      "category": "AI与科技",
+      "source_url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOLWVOYjRaZVp2MkdfUFVJcFVrUUo2Z3NfbWViRk96bTQ4T01GcHpjUWRIUjh6WXU0V1dwNlJsOUNzUV9ibW5tVHNRMDk5RDctdG5BM0ZHRDd2Y0tSOGFaZVVWQzloWEN6VHNVWTBPRmd4TDBlWU9QSGZsQzFWYktWamE2SExtZElJdHo4?oc=5",
+      "published_at": "2026-07-24"
+    },
+    {
+      "id": "NEWS-131670300F8F1F",
+      "title": "和记电讯香港联合海洋公园推出5G与AI融合STEAM课程",
+      "summary": "和记电讯香港与海洋公园合作推出绿色科技课程，将5G监测数据融入AI保育与再生能源教学。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiogNBVV95cUxNc3hRT05fZ2JjZG1oOHJ1TFdOMlVlem5tajY2ejZuMzJqTFc2RU0tX3hCQlBhUVlJNndXcjFadmx4ODdyVGhTU2dPMDdWbWU2ZUd0ZHJPUWI4RUl2bFZVcEkzdVBHN2xidkhPUDNJRDAtZ2J4aXI2NGp5ZnRkZTZLVG9Rb09HT2NWTWp6ODl2N2trLThUejdsbzY1SGd4N1RhTFpLcThhNnFUVFB6LXNwSHRYWmpEMUJSNmJsWmlicWFQdFFiWUpvUmJyY1NqOXA1T3E1SW5YNHVyMGJZQzR4Wi02UmdvengyTG1saEJXNFVlUlAySy1oRnlOSWREZ1F2LVBkQXA0UmFsRUhYR2xrWmpxcm40NnVzMXNqV3Z0cUhRS3RhNGRTdUkzcmZkR1VkQktURGx3UUZlZ3hlTkRkdFF2ZHhSVFFRal9DaE1mN0NHLTFySUFZR3pFODdRNHQteExyd0NKdmJlcFlkcElueE1HOXlJb2hRdXlfNEphcnBYb1NwUzI3Y3U4QW5tMnZlNmpVUkg0RHV3RXB3bkl4bnZB?oc=5",
+      "published_at": "2026-07-23"
+    },
+    {
+      "id": "NEWS-D5532E0AF62836",
+      "title": "中国规划国家级零碳算力设施",
+      "summary": "中国规划建设国家级零碳算力设施，推动绿色算力基础设施发展。",
+      "category": "AI与科技",
+      "source_url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1ObUp6Ml9vMDVucm1IemZBc0oxU1VaTklpZUFFeV9kWHk0bXdZa3RFNjhIbThreTZ4R19IT2ZWTFlmSHBJSUtSSG1nY1IyWUJ40gFWQVVfeXFMTTlXdFVEMEZFUlY0bkhMbjFjZzk5Mml6eWJDQS0ydWJSSWhSWndnU1lNU3B3UmVPaHJSUkl4Vl9ZRkRFVnVDVVZrbEJLUkozZkRIelU5d0E?oc=5",
+      "published_at": "2026-07-23"
+    },
+    {
+      "id": "NEWS-F2DA8AEF5EEE9D",
+      "title": "HKT夥理大 光纖系統分析路況",
+      "summary": "HKT與香港理工大學合作，利用光纖系統技術分析路況，拓展智慧交通應用場景。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMixAJBVV95cUxOUUdFQlUzYnZYQ3VRVk0tMXBuLU9idjJpZ0xUaEwxXzFzRHFrVjJJX2FNV2VHcUtoWTRONWhqZVVGdm9leVFJMlZUYVlPZml5aEZsQ3lsTFZZMDJscHZHSXFSNXhZdVFFeDNnYVRwZmNkbGdEWkNDcGNVRFVrcHJDaGtLSlR6ZVVKTm1ETFVJVFllZmdEczBlYVlrMTUtbWJ5WnFNLUFqYVBHVXpZUHRKNjkzRE4xUThZc0VuLVVYM1VIZUZ2a2FPUEtQcFVJeTZXQUVWT25TVkdLMkVMWVV3UTk1TDY5YUhKNE0zeDhuQzVncGFWTDdLcGpfeFF3TGtuYkt6Q25NNXltWmNRbnBnVWxpeUdNai1wdTVaU3RiMEdiM3NRX0Z6b0htQjNZRW91bTlLbWpkLWZEQTJBZFJTR3REMGU?oc=5",
+      "published_at": "2026-07-22"
+    },
+    {
+      "id": "NEWS-9DDD5B7558CC7D",
+      "title": "香港電訊：43%受訪公司留預算投資AI",
+      "summary": "香港電訊發布調查顯示，43%受訪企業保留預算投資AI，反映市場對AI基礎設施的持續需求。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOM1Zpa3lPZ2JXMVdiUklBUW04SDVqc25TWFR3ejJsR1A1QVVSb1Fvb29HUTdFampmSW9CazEybEhiSklUbkVxTnA4cG04SHJrQUZfeHNMbWJIcUY3WHB6M29sZ2Y5azREUncxYUlJa2tEc1NwMDdCU0lyRUw3QmxCajdR?oc=5",
+      "published_at": "2026-07-22"
     }
-  ]
+  ],
+  "site_version": "412834e58b469db2f99cddfc811d55f78e82fe6515ae75b57b3fbaa66452db84"
 }
