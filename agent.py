@@ -11,6 +11,7 @@ import subprocess
 import sys
 import threading
 import time
+import uuid
 from contextvars import ContextVar
 from datetime import datetime
 from io import BytesIO
@@ -465,6 +466,207 @@ def _salvage_complete_answer(value: str) -> str:
     )
 
 
+_TARIFF_ANSWER_BRAND_ALIASES = {
+    "HKT SME": ("hkt sme",),
+    "3HK / Hutchison": ("3hk", "3香港", "hutchison", "和记", "和記"),
+    "SmarTone": ("smartone", "数码通", "數碼通"),
+    "NETVIGATOR": ("netvigator", "网上行", "網上行"),
+    "i-CABLE": ("i-cable", "icable", "有线宽频", "有線寬頻"),
+    "HKBN": ("hkbn", "香港宽频", "香港寬頻"),
+    "HGC": ("hgc", "环球全域", "環球全域"),
+    "1O1O": ("1o1o", "1010"),
+    "csl": ("csl",),
+}
+
+
+def _tariff_answer_evidence_mismatch(messages: Any, content: str) -> str:
+    """Detect a final tariff answer that discards an explicit cross-brand overview."""
+    request = ""
+    overview = ""
+    for message in messages:
+        if isinstance(message, HumanMessage):
+            candidate = str(message.content or "")
+            match = re.search(
+                r"<current_user_request>(.*?)</current_user_request>",
+                candidate,
+                re.DOTALL | re.IGNORECASE,
+            )
+            request = (match.group(1) if match else candidate).strip()
+        elif isinstance(message, ToolMessage):
+            candidate = str(message.content or "")
+            if "跨品牌当前正式套餐总览" in candidate:
+                overview = candidate
+    if not overview or not content:
+        return ""
+
+    lowered_request = request.lower()
+    wants_mobile = any(
+        term in lowered_request
+        for term in ["移动", "移動", "流动", "流動", "mobile", "5g", "4g", "sim"]
+    )
+    wants_broadband = any(
+        term in lowered_request
+        for term in ["宽频", "寬頻", "宽带", "寬帶", "broadband", "光纤", "光纖"]
+    )
+    if not wants_mobile and not wants_broadband:
+        return ""
+
+    available: dict[str, list[tuple[str, str]]] = {"mobile": [], "broadband": []}
+    for line in overview.splitlines():
+        match = re.match(
+            r"brand=(.+?); matched_records=\d+; "
+            r"mobile=(missing|\[[^\]]+\]); broadband=(missing|\[[^\]]+\])\.",
+            line.strip(),
+        )
+        if not match:
+            continue
+        brand = match.group(1).strip()
+        for kind, value in [("mobile", match.group(2)), ("broadband", match.group(3))]:
+            if value == "missing":
+                continue
+            fee_match = re.search(r"fee_HKD=([0-9]+(?:\.[0-9]+)?)", value)
+            if fee_match:
+                available[kind].append((brand, fee_match.group(1)))
+
+    lowered_answer = content.lower()
+
+    def supported_count(kind: str) -> int:
+        supported = 0
+        for brand, fee in available[kind]:
+            aliases = _TARIFF_ANSWER_BRAND_ALIASES.get(brand, (brand.lower(),))
+            mentions_brand = any(alias.lower() in lowered_answer for alias in aliases)
+            mentions_fee = any(
+                marker in lowered_answer
+                for marker in [f"hk${fee}".lower(), f"${fee}", f"{fee}元", f"{fee} 元"]
+            )
+            if mentions_brand and mentions_fee:
+                supported += 1
+        return supported
+
+    failures: list[str] = []
+    if wants_mobile and len(available["mobile"]) >= 2 and supported_count("mobile") < 2:
+        failures.append("移动套餐未引用至少两个本地正式品牌及其月费")
+    if wants_broadband and len(available["broadband"]) >= 2 and supported_count("broadband") < 2:
+        failures.append("宽频套餐未引用至少两个本地正式品牌及其月费")
+    if failures:
+        return "；".join(failures)
+    return ""
+
+
+def _tariff_evidence_retry_messages(
+    messages: Any,
+    previous_candidate: str,
+    mismatch_reason: str,
+) -> list[Any]:
+    request = ""
+    overview = ""
+    web_evidence: list[str] = []
+    for message in messages:
+        if isinstance(message, HumanMessage):
+            candidate = str(message.content or "")
+            match = re.search(
+                r"<current_user_request>(.*?)</current_user_request>",
+                candidate,
+                re.DOTALL | re.IGNORECASE,
+            )
+            request = (match.group(1) if match else candidate).strip()
+        elif isinstance(message, ToolMessage):
+            candidate = str(message.content or "")
+            if "跨品牌当前正式套餐总览" in candidate:
+                overview = candidate
+            elif getattr(message, "name", "") in {"web_search", "read_webpage"}:
+                web_evidence.append(candidate[:2200])
+    return [
+        SystemMessage(
+            content=(
+                "你是小竞AI的证据一致性整理器。只根据下方已有证据重写最终答案，不得调用工具。"
+                "本地结构化套餐总览是数据库覆盖与本地价格的权威证据；联网未搜到某品牌时，只能说明"
+                "联网侧未核验到，不能改写成数据库没有。用户要求移动与宽频时，两部分都要回答，"
+                "每部分至少列出两个总览中已有的品牌、月费及关键套餐字段，并说明本地与联网口径差异。"
+                "不得编造总览和联网证据之外的价格、合约或促销。"
+            )
+        ),
+        HumanMessage(
+            content=(
+                f"用户请求：\n{request}\n\n"
+                f"上一候选答案的问题：{mismatch_reason}\n\n"
+                f"本地结构化套餐总览：\n{overview[:14000]}\n\n"
+                f"最近联网证据：\n{chr(10).join(web_evidence[-2:]) or '联网侧没有可用补充。'}\n\n"
+                f"上一候选答案：\n{previous_candidate[:5000]}"
+            )
+        ),
+    ]
+
+
+def _tariff_evidence_fallback_answer(messages: Any) -> str:
+    """Render a faithful compact answer when every model completion drops tariff evidence."""
+    overview = ""
+    for message in messages:
+        if isinstance(message, ToolMessage):
+            candidate = str(message.content or "")
+            if "跨品牌当前正式套餐总览" in candidate:
+                overview = candidate
+                break
+    if not overview:
+        return ""
+
+    rows: list[tuple[str, str, str]] = []
+    for line in overview.splitlines():
+        match = re.match(
+            r"brand=(.+?); matched_records=\d+; "
+            r"mobile=(missing|\[[^\]]+\]); broadband=(missing|\[[^\]]+\])\.",
+            line.strip(),
+        )
+        if not match:
+            continue
+
+        def describe(value: str, kind: str) -> str:
+            if value == "missing":
+                return "本次当前正式子集未命中"
+            fields = dict(
+                re.findall(
+                    r"(plan|fee_HKD|data_GB|speed_Mbps|contract_months)=([^;\]]*)",
+                    value,
+                )
+            )
+            details = [str(fields.get("plan") or "-")]
+            fee = str(fields.get("fee_HKD") or "-")
+            if fee != "-":
+                details.append(f"HK${fee}/月")
+            if kind == "mobile" and str(fields.get("data_GB") or "-") != "-":
+                details.append(f"{fields['data_GB']}GB")
+            if kind == "broadband" and str(fields.get("speed_Mbps") or "-") != "-":
+                details.append(f"{fields['speed_Mbps']}Mbps")
+            if str(fields.get("contract_months") or "-") != "-":
+                details.append(f"{fields['contract_months']}个月合约")
+            return "；".join(details)
+
+        rows.append(
+            (
+                match.group(1).strip(),
+                describe(match.group(2), "mobile"),
+                describe(match.group(3), "broadband"),
+            )
+        )
+    if not rows:
+        return ""
+
+    table_rows = "\n".join(
+        f"| {brand} | {mobile} | {broadband} |"
+        for brand, mobile, broadband in rows
+    )
+    return (
+        "本地正式套餐库确实同时包含移动与宽频记录，不能把联网未检出解释为数据库没有。"
+        "以下是本轮本地结构化总览中的当前代表记录：\n\n"
+        "| 品牌 | 移动套餐代表记录 | 宽频套餐代表记录 |\n"
+        "|---|---|---|\n"
+        f"{table_rows}\n\n"
+        "口径说明：表内“未命中”只表示该品牌在本次当前正式子集中没有对应产品类型；"
+        "联网侧本轮未取得足以逐项更新这些本地记录的官方套餐页，因此不能据此否定本地覆盖。"
+        "促销会随渠道和日期变化，未在本地结构化记录中明确列出的优惠不作推断。"
+    )
+
+
 class StableAgentChatDeepSeek(ChatDeepSeek):
     """Retry malformed non-streaming Agent generations before they reach the UI."""
 
@@ -565,6 +767,7 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
         fallback_index = 0
         active_fallback_name = ""
         active_client: ChatDeepSeek | None = None
+        last_evidence_mismatch = ""
         for attempt in range(self.stable_attempts):
             try:
                 last_result = (
@@ -598,6 +801,12 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 reasoning = str(additional.get("reasoning_content") or additional.get("reasoning") or "")
             malformed_tool_call = bool(re.search(r"DSML|tool_calls?>|invoke\s*(?:name|=)", content, re.IGNORECASE))
             tool_calls = list(getattr(model_message, "tool_calls", None) or [])
+            evidence_mismatch = (
+                ""
+                if tool_calls
+                else _tariff_answer_evidence_mismatch(messages, content)
+            )
+            last_evidence_mismatch = evidence_mismatch
             structurally_incomplete = bool(
                 content
                 and _looks_like_incomplete_model_answer(
@@ -611,13 +820,31 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
             )
             if incomplete_answer and len(content) > len(best_partial_content):
                 best_partial_content = content
-            if not malformed_tool_call and not incomplete_answer and not _looks_like_unstable_model_text(content) and not _looks_like_unstable_model_text(reasoning):
+            if (
+                not malformed_tool_call
+                and not incomplete_answer
+                and not evidence_mismatch
+                and not _looks_like_unstable_model_text(content)
+                and not _looks_like_unstable_model_text(reasoning)
+            ):
                 return last_result
             if attempt + 1 >= self.stable_attempts:
                 break
             if malformed_tool_call and retry_kwargs.get("tools"):
                 retry_kwargs["tool_choice"] = "required"
-            if incomplete_answer:
+            if evidence_mismatch:
+                best_partial_content = content
+                retry_messages = _tariff_evidence_retry_messages(
+                    messages,
+                    content,
+                    evidence_mismatch,
+                )
+                retry_kwargs = {
+                    key: value
+                    for key, value in retry_kwargs.items()
+                    if key not in {"tools", "tool_choice", "parallel_tool_calls"}
+                }
+            elif incomplete_answer:
                 # Repair only a genuinely truncated or malformed answer. The
                 # application does not prescribe which business tools or
                 # sections the Agent must have chosen.
@@ -631,7 +858,15 @@ class StableAgentChatDeepSeek(ChatDeepSeek):
                 retry_messages = self._stable_messages(messages)
 
         fallback_kwargs = {key: value for key, value in kwargs.items() if key not in {"tools", "tool_choice", "parallel_tool_calls"}}
-        fallback_messages = self._completion_retry_messages(messages, best_partial_content)
+        fallback_messages = (
+            _tariff_evidence_retry_messages(
+                messages,
+                best_partial_content,
+                last_evidence_mismatch,
+            )
+            if last_evidence_mismatch
+            else self._completion_retry_messages(messages, best_partial_content)
+        )
         # The selected model already had two attempts. Use at most two compact
         # tool-free fallback calls instead of retrying the same large prompt and
         # then walking every configured model.
@@ -1429,6 +1664,30 @@ def _read_local_reference_text(source: str) -> str:
     target = web_app.reference_path(clean)
     if not target or not target.exists():
         return f"本地引用读取失败：未找到允许读取的本地引用 {clean}。"
+    if clean == "agent_knowledge/competitor_product_tariffs/product_tariffs_formal_agent_records.csv":
+        original_request = _clean_search_text(CURRENT_USER_REQUEST.get(), 1200)
+        if original_request:
+            tariff_chunks = [
+                chunk
+                for chunk in retrieve_context(
+                    original_request,
+                    limit=8,
+                    dataset_ids={"competitor_product_tariffs"},
+                )
+                if chunk.get("source") == clean
+                and "数据集全局覆盖锚点" in str(chunk.get("text") or "")
+            ]
+            if tariff_chunks:
+                structured_text = "\n\n".join(
+                    str(chunk.get("text") or "")
+                    for chunk in tariff_chunks
+                )
+                return (
+                    f"[本地引用: {clean}]\n"
+                    "以下为根据本轮用户问题读取的正式资费结构化原文；"
+                    "它覆盖所有相关品牌块，不能用 CSV 文件头附近的单一品牌代替全库结论。\n"
+                    f"{structured_text[:18000]}"
+                )
     try:
         text = web_app.read_display_text(target)
     except Exception as exc:
@@ -2724,6 +2983,7 @@ def get_agent(
     web_search_instruction = (
         "联网搜索已开启。当前问题涉及外部事实或数据时，应主动使用联网搜索；涉及数据时，"
         "同时检索本地资料并交叉核验，任一侧无结果或两侧不一致都要明确说明。"
+        "用户明确要求联网搜索、联网核验或在线交叉核验时，必须实际调用 web_search。"
         "只读工具没有本轮调用次数或重复调用限制；可按研究需要继续调用同一工具，"
         "不得声称已达到固定次数上限。停止检索的依据是证据足以完成当前请求，而不是调用次数。\n"
         if allow_web_search
@@ -2745,6 +3005,10 @@ def get_agent(
         "季度或半年度指标趋势图直接调用 render_quarterly_metric_chart；工具返回的图片才算完成画图。\n"
         "使用数据时保留指标名称、期间、单位和工具提供的数字来源编号。若证据本身存在明确"
         "冲突、不可比或不足，如实说明，不替证据补造确定结论。\n"
+        "多轮工具结果可能采用不同查询范围：后续品牌、期间或指标子集不能覆盖或否定此前的"
+        "全库覆盖证据；必须区分数据库整体覆盖与本次查询命中，再判断数据是否真正缺失。\n"
+        "用户同时要求多个产品类型或比较维度时，只要本地结构化总览已有对应记录，最终回答就应"
+        "逐项覆盖，不得因后续联网结果不足而删掉已经检索到的本地维度或品牌。\n"
         "历史聊天和长期记忆只作为辅助上下文；本轮用户指令优先。生成报告、启动爬虫等有副作用"
         "的工具只在用户确实要求时使用，并遵循后端审批。\n"
         "答案聚焦用户的问题。系统会独立生成推荐追问和来源列表，无需在正文中输出控制标签。"
@@ -2999,8 +3263,19 @@ def _finalize_after_incomplete_run(
     returned by tools.
     """
     config = load_ai_config()
+    tariff_overview = next(
+        (
+            str(item or "")
+            for item in tool_evidence
+            if "跨品牌当前正式套餐总览" in str(item or "")
+        ),
+        "",
+    )
+    selected_evidence = list(tool_evidence[-7:])
+    if tariff_overview and tariff_overview not in selected_evidence:
+        selected_evidence.insert(0, tariff_overview)
     bounded_evidence: list[str] = []
-    for item in tool_evidence[-8:]:
+    for item in selected_evidence:
         text = str(item or "")
         if len(text) > 6000:
             text = f"{text[:2800]}\n\n[中间内容已压缩]\n\n{text[-2800:]}"
@@ -3027,6 +3302,15 @@ def _finalize_after_incomplete_run(
     model_names = list(dict.fromkeys([selected_model, "deepseek-v4"]))
     last_response: Any = None
     best_partial = ""
+    validation_messages: list[Any] = [HumanMessage(content=original_user_message)]
+    if tariff_overview:
+        validation_messages.append(
+            ToolMessage(
+                content=tariff_overview,
+                name="search_local_reports",
+                tool_call_id="recovered-tariff-overview",
+            )
+        )
     for model_name in model_names:
         model = ChatDeepSeek(
             model=model_name,
@@ -3046,12 +3330,30 @@ def _finalize_after_incomplete_run(
         content = str(getattr(response, "content", "") or "").strip()
         if len(content) > len(best_partial):
             best_partial = content
+        evidence_mismatch = _tariff_answer_evidence_mismatch(
+            validation_messages,
+            content,
+        )
         if (
             content
+            and not evidence_mismatch
             and not _looks_like_unstable_model_text(content)
             and not _looks_like_incomplete_model_answer(content)
         ):
             return content, _message_token_usage(response)
+        if evidence_mismatch:
+            prompt_messages = _tariff_evidence_retry_messages(
+                validation_messages,
+                content,
+                evidence_mismatch,
+            )
+    evidence_fallback = _tariff_evidence_fallback_answer(validation_messages)
+    if evidence_fallback:
+        return evidence_fallback, _message_token_usage(last_response) if last_response is not None else {
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "totalTokens": 0,
+        }
     content = _salvage_complete_answer(best_partial)
     if not content:
         content = (
@@ -3103,6 +3405,16 @@ def stream_agent(
         for item in (selected_skill_ids or [])
         if str(item or "").strip()
     }
+    tariff_web_prefetch = bool(
+        force_web_search
+        and "competitor_product_tariffs" in effective_dataset_ids(selected_dataset_set)
+        and re.search(
+            r"套餐|资费|資費|月费|月費|宽频|寬頻|宽带|寬帶|移动|移動|流动|流動|"
+            r"mobile|broadband|tariff|plan",
+            original_user_message,
+            re.IGNORECASE,
+        )
+    )
     dataset_token = SELECTED_DATASET_IDS.set(selected_dataset_set)
     skill_token = SELECTED_SKILL_IDS.set(selected_skill_set)
     approved_token = APPROVED_ACTION_IDS.set({str(item) for item in (approved_action_ids or []) if str(item).strip()})
@@ -3178,6 +3490,23 @@ def stream_agent(
             f"前端已选择的本地数据库 id：{', '.join(sorted(selected_dataset_set))}\n\n"
             f"用户问题：{message}"
         )
+    prefetched_web_result = ""
+    if tariff_web_prefetch:
+        try:
+            prefetched_web_result = str(
+                web_search.invoke(
+                    {"query": original_user_message, "max_results": 8}
+                )
+                or ""
+            )
+        except Exception as exc:
+            prefetched_web_result = f"联网搜索执行失败：{exc}"
+        message = (
+            "系统已按联网开关先执行一次本轮网页检索。以下是真实工具结果；"
+            "请与本地数据库结果交叉核验，仍可按需要继续调用联网工具：\n"
+            f"{prefetched_web_result[:7000]}\n\n"
+            f"用户问题：{message}"
+        )
     inputs = {"messages": [("user", message)]}
     
     tool_calls_acc = {}
@@ -3208,7 +3537,7 @@ def stream_agent(
     checking_disabled_web_notice = not force_web_search
     table_limiter = MarkdownTableLimiter()
     token_usage = {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}
-    tool_evidence: list[str] = []
+    tool_evidence: list[str] = [prefetched_web_result] if prefetched_web_result else []
 
     def finalize_pending_tool_calls(reason: str) -> Generator[dict[str, Any], None, None]:
         """Close every visible tool card even when the Agent loop stops early."""
@@ -3359,12 +3688,63 @@ def stream_agent(
     }
     recorder.observe(status_event)
     yield status_event
+    if prefetched_web_result:
+        prefetched_call_id = f"prefetch-web-{uuid.uuid4().hex[:16]}"
+        start_event = {
+            "type": "tool_call_start",
+            "id": prefetched_call_id,
+            "name": "web_search",
+            "args": json.dumps(
+                {"query": original_user_message, "max_results": 8},
+                ensure_ascii=False,
+            ),
+            "processText": _tool_process_text("web_search"),
+        }
+        recorder.observe(start_event)
+        yield start_event
+        result_event = {
+            "type": "tool_call_result",
+            "id": prefetched_call_id,
+            "name": "web_search",
+            "args": start_event["args"],
+            "content": _display_tool_result("web_search", prefetched_web_result, None),
+        }
+        recorder.observe(result_event)
+        yield result_event
     try:
         events = _stream_agent_events(agent, inputs)
         for chunk, metadata in events:
             if isinstance(chunk, (AIMessage, AIMessageChunk)):
                 full_message = isinstance(chunk, AIMessage) and not isinstance(chunk, AIMessageChunk)
                 full_message_tool_calls = list(getattr(chunk, "tool_calls", None) or [])
+                if full_message and not full_message_tool_calls and isinstance(chunk.content, str):
+                    tariff_overview = next(
+                        (
+                            evidence
+                            for evidence in tool_evidence
+                            if "跨品牌当前正式套餐总览" in evidence
+                        ),
+                        "",
+                    )
+                    if tariff_overview:
+                        validation_messages = [
+                            HumanMessage(content=original_user_message),
+                            ToolMessage(
+                                content=tariff_overview,
+                                name="search_local_reports",
+                                tool_call_id="stream-tariff-overview",
+                            ),
+                        ]
+                        mismatch = _tariff_answer_evidence_mismatch(
+                            validation_messages,
+                            chunk.content,
+                        )
+                        if mismatch:
+                            corrected = _tariff_evidence_fallback_answer(
+                                validation_messages
+                            )
+                            if corrected:
+                                chunk.content = corrected
                 if (
                     full_message
                     and isinstance(chunk.content, str)

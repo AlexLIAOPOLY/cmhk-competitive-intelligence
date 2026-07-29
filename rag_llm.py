@@ -571,6 +571,17 @@ def _product_tariff_exact_chunks(
         "csl": ["csl"],
         "HKT": ["hkt"],
     }
+    dataset_rows = list(rows)
+    dataset_brand_names = [
+        brand
+        for brand in brand_aliases
+        if any((row.get("品牌") or "").strip() == brand for row in dataset_rows)
+    ]
+    dataset_current_records = sum(
+        1
+        for row in dataset_rows
+        if (row.get("时间类型") or "").strip() == "当前"
+    )
     matched_brands: list[str] = []
     remaining_for_hkt = lowered
     for brand, aliases in brand_aliases.items():
@@ -581,6 +592,13 @@ def _product_tariff_exact_chunks(
                     remaining_for_hkt = remaining_for_hkt.replace(alias, "")
     if "HKT" in matched_brands and "hkt" not in remaining_for_hkt:
         matched_brands.remove("HKT")
+    if re.search(
+        r"全库|全資料庫|全数据库|所有品牌|全部品牌|所有竞对|全部竞对|"
+        r"所有競對|全部競對|主要竞对|主要競對|cross[- ]brand|all brands",
+        lowered,
+        re.IGNORECASE,
+    ):
+        matched_brands = []
     if matched_brands:
         rows = [row for row in rows if (row.get("品牌") or "").strip() in matched_brands]
 
@@ -622,6 +640,8 @@ def _product_tariff_exact_chunks(
     def product_kind(row: dict[str, str]) -> str:
         category = (row.get("产品类别") or "").lower()
         if (row.get("宽频速度_Mbps") or "").strip():
+            return "宽频"
+        if any(term in category for term in ["home_5g_broadband", "5g home broadband", "家居5g", "5g家居"]):
             return "宽频"
         if any(term in category for term in ["mobile", "5g", "4g", "3g", "sim", "roaming", "流动", "流動"]):
             return "移动"
@@ -737,11 +757,96 @@ def _product_tariff_exact_chunks(
         )
 
     chunks: list[dict[str, Any]] = []
+    if len(matched_brands) != 1:
+        def representative_row(brand_rows: list[dict[str, str]], kind: str) -> dict[str, str] | None:
+            candidates = [row for row in brand_rows if product_kind(row) == kind]
+            if not candidates:
+                return None
+
+            def score(row: dict[str, str]) -> tuple[int, tuple[str, str, str]]:
+                name = f"{row.get('产品类别') or ''} {row.get('套餐名称') or ''}".lower()
+                value = 0
+                if compact_value(row, "月费_HKD", "平均月费_HKD") != "-":
+                    value += 4
+                if compact_value(row, "合约月数") != "-":
+                    value += 3
+                if kind == "移动" and compact_value(row, "本地数据_GB") != "-":
+                    value += 4
+                if kind == "宽频" and compact_value(row, "宽频速度_Mbps") != "-":
+                    value += 4
+                if any(term in name for term in ["consumer", "home_", "service plan", "monthly plan"]):
+                    value += 2
+                if any(term in name for term in ["add-on", "addon", "附加", "行政费", "roaming", "漫游"]):
+                    value -= 3
+                return value, row_recency(row)
+
+            return max(candidates, key=score)
+
+        overview_lines = [
+            (
+                "跨品牌当前正式套餐总览：本块用于回答多品牌比较；"
+                f"query_matched_records={len(rows)}; query_matched_brands={len(by_brand)}。"
+                "每个 mobile/broadband 值均为该品牌当前正式记录中的代表行；"
+                "missing 表示本次正式当前子集中没有该产品类型，不代表其他历史期间也没有。"
+            )
+        ]
+        for brand in brand_names:
+            brand_rows = by_brand[brand]
+            values: list[str] = []
+            for kind, label in [("移动", "mobile"), ("宽频", "broadband")]:
+                row = representative_row(brand_rows, kind)
+                if row is None:
+                    values.append(f"{label}=missing")
+                    continue
+                plan = compact_value(row, "套餐名称")
+                if len(plan) > 86:
+                    plan = f"{plan[:83]}..."
+                values.append(
+                    f"{label}=[plan={plan}; fee_HKD={compact_value(row, '月费_HKD', '平均月费_HKD')}; "
+                    f"data_GB={compact_value(row, '本地数据_GB')}; "
+                    f"speed_Mbps={compact_value(row, '宽频速度_Mbps')}; "
+                    f"contract_months={compact_value(row, '合约月数')}; "
+                    f"source_id={compact_value(row, '来源ID')}]"
+                )
+            overview_lines.append(
+                f"brand={brand}; matched_records={len(brand_rows)}; {'; '.join(values)}."
+            )
+        chunks.append(
+            {
+                "source": source,
+                "text": (
+                    "产品资费结构化检索结果（跨品牌总览）。"
+                    f"查询结果块：chunk_brands={','.join(brand_names)}。"
+                    "数据集全局覆盖锚点："
+                    f"dataset_total_formal_records={len(dataset_rows)}; "
+                    f"dataset_current_formal_records={dataset_current_records}; "
+                    f"dataset_total_brands={len(dataset_brand_names)}; "
+                    f"dataset_brands={','.join(dataset_brand_names)}。"
+                    f"本次查询范围：query_scope={'named_brand_comparison' if matched_brands else 'cross_brand'}。"
+                    "不得把任一单品牌或单产品类型子查询概括成整个数据库覆盖。\n"
+                    + "\n".join(overview_lines)
+                ),
+                "links": local_link,
+            }
+        )
     brands_per_chunk = 1 if matched_brands else 3
     sample_per_brand = 10 if matched_brands else 2
     for start in range(0, len(brand_names), brands_per_chunk):
         group = brand_names[start : start + brands_per_chunk]
         lines = [
+            (
+                f"查询结果块：chunk_brands={','.join(group)}。"
+                "数据集全局覆盖锚点："
+                f"dataset_total_formal_records={len(dataset_rows)}; "
+                f"dataset_current_formal_records={dataset_current_records}; "
+                f"dataset_total_brands={len(dataset_brand_names)}; "
+                f"dataset_brands={','.join(dataset_brand_names)}。"
+                f"本次查询范围：query_scope={'brand_subset' if matched_brands else 'cross_brand'}; "
+                f"query_matched_records={len(rows)}; query_matched_brands={len(by_brand)}。"
+                "查询结果是全库在当前关键词、品牌、产品类型和期间条件下的命中子集；"
+                "不得因本次子集未出现某品牌，就推断整个数据库没有该品牌。"
+                "判断数据库整体覆盖只能使用本行的全局覆盖锚点。"
+            ),
             (
                 "产品资费结构化检索结果：仅使用 record_class=formal_product_tariff；"
                 f"matched_records={len(rows)}; matched_brands={len(by_brand)}; "

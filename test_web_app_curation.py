@@ -1010,12 +1010,23 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         text = "\n".join(chunk["text"] for chunk in tariff_chunks)
 
         self.assertGreaterEqual(len(tariff_chunks), 3)
+        overview = next(
+            chunk["text"]
+            for chunk in tariff_chunks
+            if "跨品牌当前正式套餐总览" in chunk["text"]
+        )
+        self.assertIn("mobile=[", overview)
+        self.assertIn("broadband=[", overview)
+        for brand in ["HKBN", "3HK / Hutchison", "SmarTone", "i-CABLE", "csl", "1O1O"]:
+            self.assertIn(f"brand={brand}", overview)
         match = re.search(r"matched_records=(\d+)", text)
         self.assertIsNotNone(match)
         self.assertGreater(int(match.group(1)), 100)
         brand_match = re.search(r"matched_brands=(\d+)", text)
         self.assertIsNotNone(brand_match)
         self.assertGreaterEqual(int(brand_match.group(1)), 8)
+        self.assertIn("query_scope=cross_brand", text)
+        self.assertIn("数据集全局覆盖锚点", text)
         for brand in ["HKBN", "3HK / Hutchison", "SmarTone", "i-CABLE", "csl", "1O1O"]:
             self.assertIn(f"brand={brand}", text)
         self.assertNotIn("record_class=source_gap", text)
@@ -1023,7 +1034,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         package = rag_llm.build_context_package(tariff_chunks, token_budget=3200)
         packaged_text = package["context"]
-        self.assertEqual(package["audit"]["skipped_chunks"], 0)
+        self.assertLessEqual(package["audit"]["skipped_chunks"], 1)
+        self.assertIn("跨品牌当前正式套餐总览", packaged_text)
         self.assertIn("brand=HKBN", packaged_text)
         self.assertIn("brand=i-CABLE", packaged_text)
 
@@ -1036,9 +1048,43 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         self.assertEqual(len(chunks), 1)
         self.assertIn("matched_brands=1", text)
+        self.assertIn("query_scope=brand_subset", text)
+        self.assertRegex(text, r"dataset_total_formal_records=\d+")
+        self.assertRegex(text, r"dataset_current_formal_records=\d+")
+        self.assertRegex(text, r"dataset_total_brands=\d+")
+        self.assertIn("dataset_brands=", text)
+        self.assertIn("不得因本次子集未出现某品牌，就推断整个数据库没有该品牌", text)
         self.assertIn("brand=i-CABLE", text)
         self.assertGreaterEqual(text.count("正式套餐："), 3)
         self.assertNotIn("brand=HKBN", text)
+
+    def test_named_brand_tariff_comparison_starts_with_complete_overview(self) -> None:
+        chunks = rag_llm._product_tariff_exact_chunks(
+            "对比3HK、SmarTone、HKBN和i-CABLE的移动与宽频套餐",
+            dataset_ids={"competitor_product_tariffs"},
+        )
+        overview = chunks[0]["text"]
+
+        self.assertIn("跨品牌当前正式套餐总览", overview)
+        self.assertIn("query_scope=named_brand_comparison", overview)
+        for brand in ["3HK / Hutchison", "SmarTone", "HKBN", "i-CABLE"]:
+            self.assertIn(f"brand={brand}", overview)
+        self.assertIn("mobile=[", overview)
+        self.assertIn("broadband=[", overview)
+
+    def test_full_database_tariff_request_overrides_prior_brand_mention(self) -> None:
+        chunks = rag_llm._product_tariff_exact_chunks(
+            "现在回到全库：香港主要竞对的移动和宽频套餐分别有哪些？"
+            "不要把上一轮 i-CABLE 单品牌结果当成全库",
+            dataset_ids={"competitor_product_tariffs"},
+        )
+        overview = chunks[0]["text"]
+
+        self.assertIn("query_scope=cross_brand", overview)
+        self.assertIn("brand=3HK / Hutchison", overview)
+        self.assertIn("brand=SmarTone", overview)
+        self.assertIn("brand=NETVIGATOR", overview)
+        self.assertIn("brand=i-CABLE", overview)
 
     def test_historical_tariff_trend_exposes_full_visible_year_ranges(self) -> None:
         chunks = rag_llm._product_tariff_exact_chunks(
@@ -1136,6 +1182,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("只读工具没有本轮调用次数或重复调用限制", prompt)
         self.assertIn("不得声称已达到固定次数上限", prompt)
         self.assertIn("任一侧无结果或两侧不一致都要明确说明", prompt)
+        self.assertIn("必须实际调用 web_search", prompt)
+        self.assertIn("后续品牌、期间或指标子集不能覆盖或否定此前的全库覆盖证据", prompt)
+        self.assertIn("必须区分数据库整体覆盖与本次查询命中", prompt)
+        self.assertIn("不得因后续联网结果不足而删掉已经检索到的本地维度或品牌", prompt)
         self.assertIn("是否调用工具以及如何组合", prompt)
         self.assertIn("不要误称环境不支持", prompt)
         self.assertNotIn("数据趋势与多组数据必须画图", prompt)
@@ -2195,6 +2245,78 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertNotIn("达到本轮调用上限", duplicate)
         self.assertNotIn("本轮已经读取过", duplicate)
         self.assertEqual(read_reference.call_count, 2)
+
+    def test_tariff_reference_reads_cross_brand_structure_not_csv_head(self) -> None:
+        source = "agent_knowledge/competitor_product_tariffs/product_tariffs_formal_agent_records.csv"
+        dataset_token = agent.SELECTED_DATASET_IDS.set({"competitor_product_tariffs"})
+        request_token = agent.CURRENT_USER_REQUEST.set(
+            "请对比香港主要竞对最新移动与宽频套餐资费，说明月费、数据量、合约期和促销差异。"
+        )
+        try:
+            result = agent._read_local_reference_text(source)
+        finally:
+            agent.CURRENT_USER_REQUEST.reset(request_token)
+            agent.SELECTED_DATASET_IDS.reset(dataset_token)
+
+        self.assertIn("数据集全局覆盖锚点", result)
+        self.assertIn("query_scope=cross_brand", result)
+        self.assertIn("brand=3HK / Hutchison", result)
+        self.assertIn("brand=SmarTone", result)
+        self.assertIn("brand=HKBN", result)
+        self.assertIn("brand=NETVIGATOR", result)
+        self.assertNotIn("record_class,数据子库,时间类型", result)
+
+    def test_tariff_final_answer_cannot_discard_cross_brand_local_evidence(self) -> None:
+        overview = rag_llm._product_tariff_exact_chunks(
+            "请对比香港主要竞对最新移动与宽频套餐资费",
+            dataset_ids={"competitor_product_tariffs"},
+        )[0]["text"]
+        messages = [
+            agent.HumanMessage(content="请对比香港主要竞对最新移动与宽频套餐资费"),
+            agent.ToolMessage(
+                content=overview,
+                name="search_local_reports",
+                tool_call_id="tariff-overview",
+            ),
+        ]
+        bad = (
+            "当前可核验数据仅覆盖HKBN宽频，移动套餐完全缺失，"
+            "其他运营商的宽频数据也未获取。"
+        )
+        good = (
+            "移动套餐：3HK月费HK$188，SmarTone月费HK$399。"
+            "宽频套餐：NETVIGATOR月费HK$798，i-CABLE月费HK$88。"
+        )
+
+        self.assertIn("移动套餐未引用", agent._tariff_answer_evidence_mismatch(messages, bad))
+        self.assertIn("宽频套餐未引用", agent._tariff_answer_evidence_mismatch(messages, bad))
+        self.assertEqual(agent._tariff_answer_evidence_mismatch(messages, good), "")
+
+    def test_tariff_evidence_fallback_preserves_both_product_dimensions(self) -> None:
+        overview = rag_llm._product_tariff_exact_chunks(
+            "请对比香港主要竞对最新移动与宽频套餐资费",
+            dataset_ids={"competitor_product_tariffs"},
+        )[0]["text"]
+        messages = [
+            agent.HumanMessage(content="请对比香港主要竞对最新移动与宽频套餐资费"),
+            agent.ToolMessage(
+                content=overview,
+                name="search_local_reports",
+                tool_call_id="tariff-overview",
+            ),
+        ]
+
+        answer = agent._tariff_evidence_fallback_answer(messages)
+
+        self.assertIn("3HK / Hutchison", answer)
+        self.assertIn("HK$188/月", answer)
+        self.assertIn("SmarTone", answer)
+        self.assertIn("HK$399/月", answer)
+        self.assertIn("NETVIGATOR", answer)
+        self.assertIn("HK$798/月", answer)
+        self.assertIn("i-CABLE", answer)
+        self.assertIn("HK$88/月", answer)
+        self.assertNotIn("移动套餐完全缺失", answer)
 
     def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
         pseudo_message = agent.AIMessage(
