@@ -62,6 +62,12 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('id="competitorSignalCount"', html)
         self.assertIn('id="activeTopicCount"', html)
         self.assertIn("Array.isArray(visuals.todayNewsRounds)", app)
+        overview_renderer = app[app.index("function renderCollectionOverview"):app.index("const assetHost", app.index("function renderCollectionOverview"))]
+        self.assertIn('month: "long"', overview_renderer)
+        self.assertIn('day: "numeric"', overview_renderer)
+        self.assertNotIn('hour: "2-digit"', overview_renderer)
+        self.assertNotIn('minute: "2-digit"', overview_renderer)
+        self.assertIn("newsFunnel.completedAt || latestRoundDate", overview_renderer)
         self.assertIn("上午及下午扫描尚未完成", app)
         self.assertIn("daily-scan-comparison", app)
         self.assertIn("daily-unified-funnel-svg", app)

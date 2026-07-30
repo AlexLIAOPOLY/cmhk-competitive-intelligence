@@ -1227,20 +1227,23 @@ function renderCollectionOverview(status) {
   const visuals = status.visuals || {};
   const todayNewsRounds = Array.isArray(visuals.todayNewsRounds) ? visuals.todayNewsRounds : [];
   const newsFunnel = visuals.newsFunnel || {};
-  const rawCompletedAt = String(newsFunnel.completedAt || "").trim();
-  const normalizedCompletedAt = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(rawCompletedAt)
-    ? `${rawCompletedAt.replace(" ", "T")}+08:00`
-    : rawCompletedAt;
+  const latestRoundDate = todayNewsRounds
+    .map((round) => String(round.key || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "")
+    .filter(Boolean)
+    .sort()
+    .at(-1) || "";
+  const rawCompletedAt = String(newsFunnel.completedAt || latestRoundDate).trim();
+  const normalizedCompletedAt = /^\d{4}-\d{2}-\d{2}$/.test(rawCompletedAt)
+    ? `${rawCompletedAt}T00:00:00+08:00`
+    : /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(rawCompletedAt)
+      ? `${rawCompletedAt.replace(" ", "T")}+08:00`
+      : rawCompletedAt;
   const latestAssetTime = normalizedCompletedAt ? new Date(normalizedCompletedAt) : null;
   const assetTimeText = latestAssetTime
     && !Number.isNaN(latestAssetTime.getTime())
     ? new Intl.DateTimeFormat("zh-CN", {
         month: "long",
         day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-        hourCycle: "h23",
         timeZone: "Asia/Hong_Kong",
       }).format(latestAssetTime)
     : "--";
