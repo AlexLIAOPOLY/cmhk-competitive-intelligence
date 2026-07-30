@@ -18,6 +18,19 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_status_reports_any_running_unified_task(self) -> None:
+        with mock.patch.object(
+            web_app,
+            "load_unified_task_index",
+            return_value=[
+                {"task_id": "task:finished", "run_status": "completed"},
+                {"task_id": "crawl:active", "run_status": "running"},
+            ],
+        ):
+            status = web_app.build_status()
+
+        self.assertEqual(status["tasks"], {"runningCount": 1, "hasRunning": True})
+
     def test_frequency_scheduler_can_be_external_without_disabling_news_monitor(self) -> None:
         with (
             mock.patch.dict(
@@ -464,6 +477,18 @@ class ChatImageAnalysisTests(unittest.TestCase):
 
 
 class FrontendCitationRenderingTests(unittest.TestCase):
+    def test_log_button_breathes_while_any_unified_task_is_running(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn("function renderLogButtonActivity()", app)
+        self.assertIn("state.hasRunningTasks || localBusy", app)
+        self.assertIn("status.tasks?.hasRunning", app)
+        self.assertIn('els.logButton.classList.toggle("log-glowing", active)', app)
+        self.assertIn('els.logButton.setAttribute("aria-busy", active ? "true" : "false")', app)
+        self.assertIn("@keyframes logGlow", styles)
+        self.assertIn("animation: logGlow 1.8s infinite ease-in-out", styles)
+
     def test_chat_launcher_is_icon_only_and_keeps_an_accessible_name(self) -> None:
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")

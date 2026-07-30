@@ -1306,6 +1306,11 @@ def delete_report_files(paths: list[str]) -> dict:
 
 def build_status() -> dict:
     result_files = sorted(RESULTS_DIR.glob("row_*.json"), key=lambda p: int(p.stem.split("_")[1]))
+    running_tasks = [
+        task
+        for task in load_unified_task_index(limit=1000)
+        if str(task.get("run_status") or "") == "running"
+    ]
     
     outputs = [file_info(path) for path in current_report_files()]
     
@@ -1440,6 +1445,10 @@ def build_status() -> dict:
         "outputs": outputs,
         "settings": settings["summary"],
         "ai": load_ai_config(include_key=False),
+        "tasks": {
+            "runningCount": len(running_tasks),
+            "hasRunning": bool(running_tasks),
+        },
         "latestOutputText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(latest_crawl_time)) if latest_crawl_time else "未生成",
     }
 

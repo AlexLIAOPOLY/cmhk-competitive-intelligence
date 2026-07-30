@@ -65,6 +65,7 @@ const state = {
   activeCrawlRunId: null,
   crawlLogPollTimer: null,
   crawlLogPollBusy: false,
+  hasRunningTasks: false,
   reportLibraryBaselineReady: false,
 };
 
@@ -237,6 +238,16 @@ function setTaskButtonState(button, { active, reason, idleLabel, activeLabel, pr
   if (!preserveContent) button.textContent = active ? activeLabel : idleLabel;
 }
 
+function renderLogButtonActivity() {
+  if (!els.logButton) return;
+  const localBusy = Object.values(state.busyActions || {}).some(Boolean);
+  const active = Boolean(state.hasRunningTasks || localBusy);
+  els.logButton.classList.toggle("log-glowing", active);
+  els.logButton.setAttribute("aria-busy", active ? "true" : "false");
+  els.logButton.setAttribute("aria-label", active ? "日志，有任务正在运行" : "日志");
+  els.logButton.title = active ? "有任务正在运行，点击查看日志" : "日志";
+}
+
 function setBusy(value, label = "运行中", action = "all") {
   ensureTaskBusyInteraction();
   state.busyActions ||= { crawl: false, generate: false, performance: false };
@@ -318,7 +329,7 @@ function setBusy(value, label = "运行中", action = "all") {
   else if (performanceBusy) els.runState.textContent = "业绩摘要生成中";
   else els.runState.textContent = "准备就绪";
 
-  els.logButton.classList.toggle("log-glowing", anyBusy);
+  renderLogButtonActivity();
 }
 
 function renderChatSubmitState() {
@@ -1818,6 +1829,10 @@ function updateReportLibraryNewIndicator(files) {
 
 function renderStatus(status) {
   state.status = status;
+  state.hasRunningTasks = Boolean(
+    status.tasks?.hasRunning || Number(status.tasks?.runningCount || 0) > 0
+  );
+  renderLogButtonActivity();
   els.statusSummary.textContent = `数据 ${status.results.count} 个 · 范围 ${status.settings.enabledRows}/${status.settings.totalRows} 行 · 输出 ${status.latestOutputText}`;
   if (status.ai && els.aiConfigStatus) {
     els.aiConfigStatus.textContent = `${status.ai.provider} / ${status.ai.model} / ${status.ai.base_url} / ${status.ai.has_api_key ? "API Key 已保存" : "未保存 API Key"}`;
@@ -3208,6 +3223,10 @@ async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "任务记录加载失败");
     state.crawlRuns = Array.isArray(data.tasks) ? data.tasks : [];
+    state.hasRunningTasks = state.crawlRuns.some(function (task) {
+      return String(task.run_status || "") === "running";
+    });
+    renderLogButtonActivity();
     renderCrawlRunList();
     let target = selectRunId || (selectLatest && state.crawlRuns.length ? state.crawlRuns[0].task_id : "");
     if (target) {

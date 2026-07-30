@@ -5607,9 +5607,14 @@ pre {
 
 
 @keyframes logGlow {
-  0% { box-shadow: 0 0 5px rgba(14, 165, 233, 0.2); background: rgba(14, 165, 233, 0.05); }
-  50% { box-shadow: 0 0 15px rgba(14, 165, 233, 0.8), 0 0 20px rgba(14, 165, 233, 0.4); background: rgba(14, 165, 233, 0.15); }
-  100% { box-shadow: 0 0 5px rgba(14, 165, 233, 0.2); background: rgba(14, 165, 233, 0.05); }
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.12), 0 2px 8px rgba(14, 165, 233, 0.16);
+    background: rgba(224, 242, 254, 0.72);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(14, 165, 233, 0.13), 0 4px 18px rgba(14, 165, 233, 0.42);
+    background: rgba(186, 230, 253, 0.96);
+  }
 }
 
 /* Persistent crawl log history */
@@ -5720,9 +5725,17 @@ pre {
 }
 
 .log-glowing {
-  animation: logGlow 2s infinite ease-in-out;
-  border-color: rgba(14, 165, 233, 0.5) !important;
-  color: #0ea5e9 !important;
+  animation: logGlow 1.8s infinite ease-in-out;
+  border-color: rgba(14, 165, 233, 0.72) !important;
+  color: #0284c7 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .log-glowing {
+    animation: none;
+    background: #bae6fd;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
+  }
 }
 
 /* Company metrics table */
