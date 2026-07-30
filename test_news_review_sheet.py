@@ -186,7 +186,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 ),
             ),
             mock.patch.object(review_sheet, "_read_json", return_value={}),
-            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(review_sheet, "_write_json") as write_json,
             mock.patch.object(
                 review_sheet,
                 "curate_news_items",
@@ -226,6 +226,12 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual([cell_range for cell_range, _ in writes], ["A2:N3"])
         self.assertEqual(writes[0][1][0][6], "今日新新闻")
         self.assertEqual(writes[0][1][1], self._existing_row())
+        saved_state = write_json.call_args.args[1]
+        metadata = saved_state[review_sheet.GATE_METADATA_STATE_KEY]
+        self.assertEqual(
+            metadata["https://example.com/new"]["published_at"],
+            "2026-07-22",
+        )
 
     def test_sync_places_current_batch_first_when_search_dates_match(self):
         writes = []
@@ -665,6 +671,100 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             result["blocked_reviews"][0]["reason"],
             "缺少可验证发布日期",
         )
+
+    def test_apply_reviews_restores_precise_gate_metadata_after_sheet_round_trip(self):
+        accepted = self._existing_row()
+        accepted[0] = "接受"
+        accepted[2] = "同步失败"
+        accepted[3] = "2026-07-30"
+        accepted[6] = "香港电讯上半年多赚4%至21.5亿"
+        accepted[9] = "2026-07-29"
+        accepted[10] = "https://example.com/hkt-interim-results"
+        metadata_key = review_sheet._gate_metadata_key(accepted[10])
+        writes = []
+        published_payloads = []
+
+        def read_json(path, default):
+            if path == review_sheet.STATE_PATH:
+                return {
+                    review_sheet.GATE_METADATA_STATE_KEY: {
+                        metadata_key: {
+                            "published_at": "2026-07-29T17:16:00+08:00",
+                            "search_window_start": "2026-07-29T14:00:00+08:00",
+                            "search_window_end": "2026-07-30T10:46:54+08:00",
+                            "search_origin": "background_fixed_keywords",
+                        }
+                    }
+                }
+            return {"items": []}
+
+        with (
+            mock.patch.object(review_sheet, "_read_rows", return_value=[accepted]),
+            mock.patch.object(review_sheet, "_read_json", side_effect=read_json),
+            mock.patch.object(
+                review_sheet,
+                "_write_json",
+                side_effect=lambda path, payload: published_payloads.append(
+                    (path, payload)
+                ),
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda sheet, cell_range, values: writes.append(
+                    (sheet, cell_range, values)
+                ),
+            ),
+        ):
+            result = review_sheet.apply_reviews("sheet")
+
+        self.assertEqual(result["accepted_count"], 1)
+        self.assertEqual(result["blocked_accept_count"], 0)
+        self.assertEqual(writes, [("sheet", "C2:C2", [["已纳入"]])])
+        published = next(
+            payload
+            for path, payload in published_payloads
+            if path == review_sheet.PUBLISHED_PATH
+        )
+        self.assertEqual(
+            published["items"][0]["published_at"],
+            "2026-07-29T17:16:00+08:00",
+        )
+
+    def test_cross_day_sheet_row_without_precise_metadata_stays_blocked(self):
+        accepted = self._existing_row()
+        accepted[0] = "接受"
+        accepted[2] = "同步失败"
+        accepted[3] = "2026-07-30"
+        accepted[9] = "2026-07-29"
+        writes = []
+        with (
+            mock.patch.object(review_sheet, "_read_rows", return_value=[accepted]),
+            mock.patch.object(
+                review_sheet,
+                "_read_json",
+                side_effect=lambda path, default: (
+                    {} if path == review_sheet.STATE_PATH else {"items": []}
+                ),
+            ),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda sheet, cell_range, values: writes.append(
+                    (sheet, cell_range, values)
+                ),
+            ),
+        ):
+            result = review_sheet.apply_reviews("sheet")
+
+        self.assertEqual(result["accepted_count"], 0)
+        self.assertEqual(result["blocked_accept_count"], 1)
+        self.assertEqual(
+            result["blocked_reviews"][0]["reason"],
+            "不在明确检索时间窗口",
+        )
+        self.assertEqual(writes, [])
 
     def test_ensure_sheet_refuses_automatic_schema_migration_before_writing(self):
         writes = []

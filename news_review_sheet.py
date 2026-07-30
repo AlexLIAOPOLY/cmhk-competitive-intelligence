@@ -26,6 +26,7 @@ LATEST_PATH = DATA_DIR / "news_discovery_latest.json"
 FULL_DISCOVERY_PATH = DATA_DIR / "news_discovery_full.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 STATE_PATH = DATA_DIR / "news_review_sheet_state.json"
+GATE_METADATA_STATE_KEY = "candidate_gate_metadata"
 
 HKT = ZoneInfo("Asia/Hong_Kong")
 LARK_CLI = os.environ.get("LARK_CLI") or shutil.which("lark-cli") or "/opt/homebrew/bin/lark-cli"
@@ -821,6 +822,25 @@ def _timestamp_hkt(value: Any) -> datetime | None:
     return parsed.astimezone(HKT)
 
 
+def _gate_metadata(item: dict[str, Any]) -> dict[str, str]:
+    metadata = {
+        "published_at": _text(
+            item.get("published_at")
+            or item.get("source_date")
+            or item.get("publication_date"),
+            80,
+        ),
+        "search_window_start": _text(item.get("search_window_start"), 80),
+        "search_window_end": _text(item.get("search_window_end"), 80),
+        "search_origin": _text(item.get("search_origin"), 100),
+    }
+    return {key: value for key, value in metadata.items() if value}
+
+
+def _gate_metadata_key(value: Any) -> str:
+    return _canonical_news_url(value)
+
+
 def _category_label(item: dict[str, Any]) -> str:
     text = " ".join(
         (
@@ -1012,6 +1032,16 @@ def sync_candidates(
                 f"当前 {existing_row_count} 条，上次 {previous_candidate_count} 条"
             )
         curated_items, gate_reasons = curate_news_items(list(items))
+        candidate_gate_metadata = (
+            dict(state.get(GATE_METADATA_STATE_KEY) or {})
+            if isinstance(state.get(GATE_METADATA_STATE_KEY), dict)
+            else {}
+        )
+        for item in curated_items:
+            metadata_key = _gate_metadata_key(item.get("url"))
+            metadata = _gate_metadata(item)
+            if metadata_key and metadata:
+                candidate_gate_metadata[metadata_key] = metadata
         from strategic_briefing import (
             agent_semantic_deduplicate_candidates,
             polish_candidates_before_review,
@@ -1084,6 +1114,16 @@ def sync_candidates(
         existing_values = list(existing_rows_by_id.values())
         ordered_values = new_values + existing_values
         ordered_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
+        active_metadata_keys = {
+            _gate_metadata_key(row[10])
+            for row in ordered_values
+            if _gate_metadata_key(row[10])
+        }
+        candidate_gate_metadata = {
+            key: metadata
+            for key, metadata in candidate_gate_metadata.items()
+            if key in active_metadata_keys and isinstance(metadata, dict)
+        }
         if len(ordered_values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 行数据上限")
         _validate_sheet_rows(ordered_values, context="待写入飞书审核表")
@@ -1159,6 +1199,7 @@ def sync_candidates(
                 "last_semantic_deferred_count": len(semantic_result["deferred"]),
                 "last_semantic_history_count": semantic_result["history_count"],
                 "last_semantic_history_shards": semantic_result["history_shards"],
+                GATE_METADATA_STATE_KEY: candidate_gate_metadata,
                 "last_sync_at": _now_iso(),
                 "group_notifications_paused": _group_notifications_paused(),
             }
@@ -1303,6 +1344,13 @@ def load_weekly_report_candidates(
 def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
     with _LOCK:
         sheet_id = sheet_id or ensure_sheet()
+        state = _read_json(STATE_PATH, {})
+        candidate_gate_metadata = (
+            state.get(GATE_METADATA_STATE_KEY)
+            if isinstance(state, dict)
+            and isinstance(state.get(GATE_METADATA_STATE_KEY), dict)
+            else {}
+        )
         rows = [
             _row_dict(row, index)
             for index, row in enumerate(_read_rows(sheet_id), start=2)
@@ -1338,6 +1386,12 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
             if row["news_id"] in retained_ids:
                 blocked_rows[row["row_number"]] = "重复新闻"
                 continue
+            metadata = candidate_gate_metadata.get(
+                _gate_metadata_key(row["source_url"]),
+                {},
+            )
+            if not isinstance(metadata, dict):
+                metadata = {}
             gate_item = {
                 "title": row["title"],
                 "snippet": f"{row['summary']} {row['keywords']} {row['note']}",
@@ -1345,7 +1399,11 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                 "url": row["source_url"],
                 "keywords": row["keywords"],
                 "source_date": row["source_date"],
+                "published_at": metadata.get("published_at") or row["source_date"],
                 "search_date": row["search_date"],
+                "search_window_start": metadata.get("search_window_start"),
+                "search_window_end": metadata.get("search_window_end"),
+                "search_origin": metadata.get("search_origin"),
             }
             allowed, reason = _review_news_candidate(gate_item)
             if not allowed:
@@ -1374,7 +1432,7 @@ def apply_reviews(sheet_id: str | None = None) -> dict[str, Any]:
                     "region": row["region"],
                     "keywords": row["keywords"],
                     "information_flow": row["information_flow"],
-                    "published_at": row["source_date"],
+                    "published_at": metadata.get("published_at") or row["source_date"],
                     "approved_at": previous.get("approved_at") or now_text,
                     "approved_by": "飞书表格人工审核",
                     "approval_source": SHEET_SOURCE,
