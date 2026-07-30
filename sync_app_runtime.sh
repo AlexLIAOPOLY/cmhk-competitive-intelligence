@@ -8,6 +8,7 @@ mkdir -p "$RUNTIME"
 rsync -a \
   --exclude='.git/' \
   --exclude='Codex/' \
+  --exclude='agent_chat_threads/' \
   --exclude='__pycache__/' \
   --exclude='*.pyc' \
   --exclude='.DS_Store' \

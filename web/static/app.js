@@ -4226,7 +4226,7 @@ function markdownToHtml(markdown) {
       html.push(`<h3>${inlineMarkdown(line.replace(/^[一二三四五六七八九十]+[、.]\s*/, ""))}</h3>`);
       continue;
     }
-    if (/^[^：:]{2,18}[：:]$/.test(line)) {
+    if (!/^[-*]\s+/.test(line) && /^[^：:]{2,18}[：:]$/.test(line)) {
       closeList();
       html.push(`<h3>${inlineMarkdown(line.replace(/[：:]$/, ""))}</h3>`);
       continue;

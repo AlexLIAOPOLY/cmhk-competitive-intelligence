@@ -790,6 +790,31 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("content.innerHTML = markdownToHtml(content._rawReasoning)", reasoning_renderer)
         self.assertNotIn("content.textContent = content._rawReasoning", reasoning_renderer)
 
+    def test_bold_bullet_label_with_colon_is_not_misclassified_as_heading(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        start = app.index("function escapeHtml")
+        end = app.index("function parseChartNumber", start)
+        snippet = app[start:end] + "\n" + (
+            "console.log(markdownToHtml("
+            "'## 风险与下一步动作\\n"
+            "*   **风险**：若价格战持续。\\n"
+            "*   **下一步动作建议**：\\n"
+            "*   **停止价格战**：避免无效竞争。'));"
+        )
+        completed = subprocess.run(
+            ["node", "-e", snippet],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        rendered = completed.stdout
+        self.assertIn("<li><strong>下一步动作建议</strong>：</li>", rendered)
+        self.assertNotIn("<h3>*", rendered)
+
+    def test_runtime_sync_preserves_live_chat_history(self) -> None:
+        script = (web_app.ROOT / "sync_app_runtime.sh").read_text(encoding="utf-8")
+        self.assertIn("--exclude='agent_chat_threads/'", script)
+
     def test_frontend_finalizes_orphaned_tool_cards_for_live_and_restored_chats(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         start = app.index("function finalizePendingAssistantToolEvents")
