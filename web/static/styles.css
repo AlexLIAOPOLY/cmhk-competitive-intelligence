@@ -10965,112 +10965,173 @@ button.command-btn:disabled {
   border-top: 1px solid rgba(29, 100, 142, 0.14);
 }
 
-.daily-asset-rounds {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.daily-scan-comparison {
+  padding: 15px 0 6px;
 }
 
-.daily-asset-round {
-  min-width: 0;
-  padding: 16px 20px 0;
-}
-
-.daily-asset-round:first-child {
-  padding-left: 0;
-}
-
-.daily-asset-round:last-child {
-  padding-right: 0;
-}
-
-.daily-asset-round + .daily-asset-round {
-  border-left: 1px solid rgba(29, 100, 142, 0.14);
-}
-
-.daily-asset-round-header,
-.daily-asset-round-header > div {
+.daily-scan-comparison > header,
+.daily-scan-series,
+.daily-scan-series > span {
   display: flex;
-  align-items: baseline;
+  align-items: center;
 }
 
-.daily-asset-round-header {
+.daily-scan-comparison > header {
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
 }
 
-.daily-asset-round-header > div {
-  gap: 8px;
+.daily-scan-comparison > header > strong {
+  color: #294a60;
+  font-size: 18px;
 }
 
-.daily-asset-round-header h3 {
-  margin: 0;
-  color: #234960;
-  font-size: 17px;
+.daily-scan-series {
+  gap: 16px;
 }
 
-.daily-asset-round-header time {
-  color: #7a8f9d;
+.daily-scan-series > span {
+  gap: 5px;
+  color: #647b8b;
   font-size: 11px;
-  font-variant-numeric: tabular-nums;
-}
-
-.daily-asset-round-header > span {
-  color: #16815f;
-  font-size: 10px;
-}
-
-.daily-asset-round-header > span.is-reconciled {
-  color: #ad6817;
-}
-
-.daily-asset-kpis {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 18px;
-}
-
-.daily-asset-kpis > div {
-  min-width: 0;
-  padding: 0 13px;
-  border-right: 1px solid rgba(29, 100, 142, 0.13);
-}
-
-.daily-asset-kpis > div:first-child {
-  padding-left: 0;
-}
-
-.daily-asset-kpis > div:last-child {
-  padding-right: 0;
-  border-right: 0;
-}
-
-.daily-asset-kpis span,
-.daily-asset-kpis strong {
-  display: block;
-}
-
-.daily-asset-kpis span {
-  overflow: hidden;
-  color: #718695;
-  font-size: 11px;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.daily-asset-kpis strong {
-  margin-top: 4px;
-  color: #12668f;
-  font-size: 25px;
-  line-height: 1.15;
+.daily-scan-series i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--series-color);
+}
+
+.daily-scan-series b {
+  color: #405f72;
+  font-size: 12px;
+}
+
+.daily-scan-series time {
+  color: #8295a2;
   font-variant-numeric: tabular-nums;
 }
 
-.daily-round-funnel {
-  margin-top: 16px;
+.daily-scan-series em {
+  padding-left: 2px;
+  color: #17815f;
+  font-style: normal;
 }
 
-.daily-round-funnel .collection-funnel-svg {
-  max-height: 184px;
+.daily-scan-series .is-pending em {
+  color: #8a7cae;
+}
+
+.daily-scan-series .is-reconciled em {
+  color: #ad6817;
+}
+
+.daily-mirror-head,
+.daily-mirror-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr);
+  align-items: center;
+}
+
+.daily-mirror-head {
+  margin-top: 12px;
+  color: #8093a0;
+  font-size: 10px;
+}
+
+.daily-mirror-head span:first-child {
+  text-align: right;
+}
+
+.daily-mirror-head span:last-child {
+  text-align: left;
+}
+
+.daily-mirror-head b {
+  color: #69818f;
+  font-weight: 600;
+  text-align: center;
+}
+
+.daily-mirror-funnel {
+  display: grid;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.daily-mirror-row {
+  min-height: 36px;
+}
+
+.daily-mirror-row > strong {
+  position: relative;
+  z-index: 1;
+  color: #587486;
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.daily-mirror-lane {
+  display: grid;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.daily-mirror-lane.is-morning {
+  grid-template-columns: 30px minmax(0, 1fr);
+}
+
+.daily-mirror-lane.is-afternoon {
+  grid-template-columns: minmax(0, 1fr) 30px;
+}
+
+.daily-mirror-lane > b {
+  color: #355b71;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.daily-mirror-track {
+  display: flex;
+  min-width: 0;
+  height: 31px;
+}
+
+.daily-mirror-lane.is-morning .daily-mirror-track {
+  justify-content: flex-end;
+}
+
+.daily-mirror-lane.is-afternoon .daily-mirror-track {
+  justify-content: flex-start;
+}
+
+.daily-mirror-bar {
+  width: var(--mirror-width);
+  min-width: 4px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: var(--mirror-color);
+  transition: filter 160ms ease, width 260ms ease;
+}
+
+.daily-mirror-lane.is-morning .daily-mirror-bar {
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.daily-mirror-lane.is-afternoon .daily-mirror-bar {
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 0 100%);
+}
+
+.daily-mirror-bar:hover,
+.daily-mirror-bar:focus-visible {
+  filter: brightness(1.04) drop-shadow(0 3px 4px rgba(30, 81, 112, 0.18));
 }
 
 .daily-content-panel {
@@ -11243,18 +11304,8 @@ button.command-btn:disabled {
 }
 
 @media (max-width: 1180px) and (min-width: 1051px) {
-  .daily-asset-round {
-    padding-right: 15px;
-    padding-left: 15px;
-  }
-
-  .daily-asset-kpis > div {
-    padding-right: 7px;
-    padding-left: 7px;
-  }
-
-  .daily-asset-kpis strong {
-    font-size: 21px;
+  .daily-scan-series {
+    gap: 10px;
   }
 }
 
@@ -11280,17 +11331,40 @@ button.command-btn:disabled {
 }
 
 @media (max-width: 760px) {
-  .daily-asset-rounds {
-    grid-template-columns: minmax(0, 1fr);
+  .daily-scan-comparison > header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .daily-asset-round {
-    padding: 18px 0 20px;
+  .daily-scan-series {
+    width: 100%;
+    justify-content: space-between;
   }
 
-  .daily-asset-round + .daily-asset-round {
-    border-top: 1px solid rgba(29, 100, 142, 0.14);
-    border-left: 0;
+  .daily-mirror-head,
+  .daily-mirror-row {
+    grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
+  }
+
+  .daily-mirror-lane {
+    gap: 4px;
+  }
+
+  .daily-mirror-lane.is-morning {
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+
+  .daily-mirror-lane.is-afternoon {
+    grid-template-columns: minmax(0, 1fr) 22px;
+  }
+
+  .daily-mirror-row > strong {
+    font-size: 10px;
+  }
+
+  .daily-mirror-track {
+    height: 28px;
   }
 
   .collection-overview {

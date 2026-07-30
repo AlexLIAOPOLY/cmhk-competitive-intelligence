@@ -1264,71 +1264,92 @@ function renderCollectionOverview(status) {
   if (assetHost.dataset.signature === signature) return;
   assetHost.dataset.signature = signature;
 
-  const funnelColors = [
-    ["#d9eff9", "#a9d9ef"],
-    ["#c9ebe1", "#9bd8c6"],
-    ["#ddd8f5", "#bfb4e8"],
-    ["#1595cf", "#0872b4"],
-  ];
-  const renderFunnel = (round, roundIndex) => {
-    const stages = Array.isArray(round.stages) ? round.stages.slice(0, 4) : [];
-    if (!stages.length) return '<div class="collection-empty">该轮扫描尚未完成</div>';
-    const center = 180;
-    const top = 4;
-    const stageHeight = 42;
-    const widths = [340, 282, 224, 170, 120];
-    return `
-      <div class="collection-funnel daily-round-funnel">
-        <svg class="collection-funnel-svg" viewBox="0 0 360 ${top * 2 + stages.length * stageHeight}" role="img" aria-label="${escapeHtml(round.label || "本轮")}筛选漏斗">
-          <defs>
-            ${funnelColors.map((colors, index) => `
-              <linearGradient id="dailyFunnel-${roundIndex}-${index}" x1="0" x2="1">
-                <stop offset="0%" stop-color="${colors[0]}"></stop>
-                <stop offset="100%" stop-color="${colors[1]}"></stop>
-              </linearGradient>
-            `).join("")}
-          </defs>
-          ${stages.map((item, index) => {
-            const value = Number(item.value || 0);
-            const detail = String(item.detail || "");
-            const y1 = top + index * stageHeight;
-            const y2 = y1 + stageHeight;
-            const left1 = center - widths[index] / 2;
-            const right1 = center + widths[index] / 2;
-            const left2 = center - widths[index + 1] / 2;
-            const right2 = center + widths[index + 1] / 2;
-            return `
-              <g class="collection-funnel-stage is-stage-${index + 1}" tabindex="0" role="button"
-                aria-label="${escapeHtml(`${item.label || "筛选阶段"} ${value} 条。${detail}`)}"
-                data-funnel-title="${escapeHtml(item.label || "筛选阶段")} · ${value} 条"
-                data-funnel-detail="${escapeHtml(detail)}">
-                <polygon points="${left1},${y1} ${right1},${y1} ${right2},${y2} ${left2},${y2}" fill="url(#dailyFunnel-${roundIndex}-${index})"></polygon>
-                <text class="collection-funnel-stage-label" x="${center}" y="${y1 + stageHeight / 2 + 4}" text-anchor="middle">
-                  ${escapeHtml(item.label || "筛选阶段")}<tspan class="collection-funnel-stage-value" dx="8">${value}</tspan>
-                </text>
-              </g>
-            `;
-          }).join("")}
-        </svg>
-        <div class="collection-funnel-tooltip" role="tooltip" hidden><strong></strong><span></span></div>
-      </div>
-    `;
-  };
-
   const roundSeries = [
     {
       key: "morning",
       label: "上午",
       color: "#178dca",
+      colors: ["#b8def0", "#7fc5e4", "#48a9d5", "#178dca"],
       round: todayNewsRounds.find((round) => round.label === "上午") || null,
     },
     {
       key: "afternoon",
       label: "下午",
       color: "#8b6fd6",
+      colors: ["#ded7f6", "#c6b9ed", "#a891e2", "#8b6fd6"],
       round: todayNewsRounds.find((round) => round.label === "下午") || null,
     },
   ];
+  const renderRoundComparison = () => {
+    const referenceStages = roundSeries
+      .map((series) => series.round?.stages)
+      .find((stages) => Array.isArray(stages) && stages.length) || [];
+    const stageCount = Math.min(4, referenceStages.length);
+    if (!stageCount) return '<div class="collection-empty">今日上午及下午扫描尚未完成</div>';
+    const maxValue = Math.max(
+      1,
+      ...roundSeries.flatMap((series) => (
+        Array.isArray(series.round?.stages)
+          ? series.round.stages.slice(0, stageCount).map((stage) => Number(stage.value || 0))
+          : []
+      )),
+    );
+    const statusClass = (series) => {
+      if (!series.round) return "is-pending";
+      if (series.round.status === "已补录") return "is-reconciled";
+      return "is-complete";
+    };
+    return `
+      <section class="daily-scan-comparison collection-funnel" aria-labelledby="dailyScanComparisonTitle">
+        <header>
+          <strong id="dailyScanComparisonTitle">当日扫描漏斗</strong>
+          <div class="daily-scan-series">
+            ${roundSeries.map((series) => `
+              <span class="${statusClass(series)}" style="--series-color:${series.color}">
+                <i></i><b>${series.label}</b><time>${escapeHtml(series.round?.time || (series.key === "morning" ? "09:00" : "15:00"))}</time>
+                <em>${escapeHtml(series.round?.status || "待运行")}</em>
+              </span>
+            `).join("")}
+          </div>
+        </header>
+        <div class="daily-mirror-head" aria-hidden="true">
+          <span>上午</span><b>筛选阶段</b><span>下午</span>
+        </div>
+        <div class="daily-mirror-funnel" role="img" aria-label="当天上午与下午扫描筛选数量对比">
+          ${Array.from({ length: stageCount }, (_, stageIndex) => {
+            const label = referenceStages[stageIndex]?.label || "筛选阶段";
+            return `
+              <div class="daily-mirror-row">
+                ${roundSeries.map((series, seriesIndex) => {
+                  const stage = series.round?.stages?.[stageIndex] || null;
+                  const value = stage ? Math.max(0, Number(stage.value || 0)) : 0;
+                  const width = value ? Math.max(3, (value / maxValue) * 100) : 0;
+                  const laneClass = series.key === "morning" ? "is-morning" : "is-afternoon";
+                  const lane = `
+                    <div class="daily-mirror-lane ${laneClass}">
+                      ${series.key === "morning" ? `<b>${stage ? value : "–"}</b>` : ""}
+                      <span class="daily-mirror-track">
+                        ${stage ? `
+                          <button type="button" class="daily-mirror-bar collection-funnel-stage is-stage-${stageIndex + 1}"
+                            style="--mirror-width:${width}%;--mirror-color:${series.colors[stageIndex]}"
+                            aria-label="${escapeHtml(`${series.label}${label} ${value} 条。${stage.detail || ""}`)}"
+                            data-funnel-title="${escapeHtml(`${series.label}${label}`)} · ${value} 条"
+                            data-funnel-detail="${escapeHtml(stage.detail || "")}"></button>
+                        ` : ""}
+                      </span>
+                      ${series.key === "afternoon" ? `<b>${stage ? value : "–"}</b>` : ""}
+                    </div>
+                  `;
+                  return seriesIndex === 0 ? `${lane}<strong>${escapeHtml(label)}</strong>` : lane;
+                }).join("")}
+              </div>
+            `;
+          }).join("")}
+        </div>
+        <div class="collection-funnel-tooltip" role="tooltip" hidden><strong></strong><span></span></div>
+      </section>
+    `;
+  };
   const mergeRoundDistribution = (field) => {
     const grouped = new Map();
     roundSeries.forEach((series) => {
@@ -1367,22 +1388,7 @@ function renderCollectionOverview(status) {
       items: mergeRoundDistribution("impacts"),
     },
   ];
-  const roundsMarkup = todayNewsRounds.length
-    ? todayNewsRounds.map((round, roundIndex) => `
-      <section class="daily-asset-round" aria-labelledby="dailyAssetRound-${roundIndex}">
-        <header class="daily-asset-round-header">
-          <div><h3 id="dailyAssetRound-${roundIndex}">${escapeHtml(round.label || "扫描")}扫描</h3><time>${escapeHtml(round.time || "")}</time></div>
-          <span class="${round.status === "已补录" ? "is-reconciled" : ""}">${escapeHtml(round.status || "已完成")}</span>
-        </header>
-        <div class="daily-asset-kpis">
-          <div><span>检索发现</span><strong>${Number(round.discovered || 0)}</strong></div>
-          <div><span>AI确认</span><strong>${Number(round.confirmed || 0)}</strong></div>
-          <div><span>新增入库</span><strong>${Number(round.newCount || 0)}</strong></div>
-        </div>
-        ${renderFunnel(round, roundIndex)}
-      </section>
-    `).join("")
-    : '<div class="collection-empty">今日上午及下午扫描尚未完成</div>';
+  const roundsMarkup = renderRoundComparison();
   const comparisonMarkup = contentCharts.some((chart) => chart.items.length)
     ? `
       <section class="daily-content-panel" aria-labelledby="dailyContentTitle">
@@ -1433,7 +1439,7 @@ function renderCollectionOverview(status) {
       </section>
     `
     : "";
-  assetHost.innerHTML = `<div class="daily-asset-rounds">${roundsMarkup}</div>${comparisonMarkup}`;
+  assetHost.innerHTML = `${roundsMarkup}${comparisonMarkup}`;
 
   assetHost.querySelectorAll(".collection-funnel").forEach((funnelHost) => {
     const tooltip = funnelHost.querySelector(".collection-funnel-tooltip");
