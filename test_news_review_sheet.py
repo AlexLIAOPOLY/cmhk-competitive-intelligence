@@ -6,6 +6,22 @@ import strategic_briefing
 
 
 class NewsReviewSheetSyncTests(unittest.TestCase):
+    def test_canonical_news_url_preserves_article_identity_query(self):
+        first = (
+            "https://hkcna.hk/docDetail.jsp?id=101381240&channel=4372"
+            "&utm_source=test"
+        )
+        second = "https://hkcna.hk/docDetail.jsp?channel=4372&id=101381961"
+
+        self.assertNotEqual(
+            review_sheet._canonical_news_url(first),
+            review_sheet._canonical_news_url(second),
+        )
+        self.assertEqual(
+            review_sheet._canonical_news_url(first),
+            "https://hkcna.hk/docDetail.jsp?channel=4372&id=101381240",
+        )
+
     def test_non_forced_cycle_skips_when_another_process_holds_lock(self):
         with mock.patch.object(
             review_sheet,

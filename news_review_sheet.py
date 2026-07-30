@@ -17,7 +17,7 @@ from difflib import SequenceMatcher
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent
@@ -1619,7 +1619,25 @@ def _canonical_news_url(value: Any) -> str:
         parsed = urlparse(text)
     except ValueError:
         return text
-    return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{parsed.path.rstrip('/')}"
+    query = urlencode(
+        sorted(
+            (key, item)
+            for key, item in parse_qsl(parsed.query, keep_blank_values=True)
+            if not key.lower().startswith("utm_")
+            and key.lower() not in {"fbclid", "gclid", "oc"}
+        ),
+        doseq=True,
+    )
+    return urlunparse(
+        (
+            parsed.scheme.lower(),
+            parsed.netloc.lower(),
+            parsed.path.rstrip("/"),
+            "",
+            query,
+            "",
+        )
+    )
 
 
 def _url_publication_hint(value: Any) -> str:

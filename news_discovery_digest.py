@@ -355,6 +355,56 @@ PRIORITY_NEWS_QUERIES: tuple[tuple[str, tuple[str, ...]], ...] = (
     ),
 )
 
+LOCAL_STRATEGIC_QUERY_PLANS: tuple[dict[str, Any], ...] = (
+    {
+        "module": "香港本地新闻",
+        "query": (
+            '香港 ("自动驾驶" OR "自動駕駛" OR "无人驾驶" OR "無人駕駛" '
+            'OR "蘿蔔快跑" OR "萝卜快跑")'
+        ),
+        "keywords": [
+            "香港",
+            "自动驾驶",
+            "自動駕駛",
+            "无人驾驶",
+            "無人駕駛",
+            "蘿蔔快跑",
+            "萝卜快跑",
+        ],
+        "agentic_intent": "香港智慧交通、自动驾驶测试及商业化进展",
+    },
+    {
+        "module": "香港本地新闻",
+        "query": (
+            '香港 ("皇岗口岸" OR "皇崗口岸" OR "一地两检" OR "一地兩檢" '
+            'OR "跨境基础设施" OR "跨境基建")'
+        ),
+        "keywords": [
+            "香港",
+            "皇岗口岸",
+            "皇崗口岸",
+            "一地两检",
+            "一地兩檢",
+            "跨境基础设施",
+            "跨境基建",
+        ],
+        "agentic_intent": "香港跨境口岸、基础设施与深港融合变化",
+    },
+)
+
+
+def _local_strategic_plans() -> list[dict[str, Any]]:
+    return [
+        {
+            **plan,
+            "fallback_query": plan["query"],
+            "lookback_days": 7,
+            "search_origin": "background_fixed_keywords",
+            "semantic_relevance": True,
+        }
+        for plan in LOCAL_STRATEGIC_QUERY_PLANS
+    ]
+
 
 def _mandatory_competitor_plans() -> list[dict[str, Any]]:
     plans: list[dict[str, Any]] = []
@@ -668,6 +718,8 @@ def _call_agentic_search_agent(
         "香港本地竞对、香港运营商动态、香港监管政策和本地数字产业政策同列最高优先级。"
         "既要补齐所有被监控运营商及其品牌的结果缺口，也要检查OFCA、创新科技及工业局、"
         "数字政策办公室、香港特区政府与内地部委合作等政策和本地产业事件是否缺失。"
+        "还要检查香港智慧交通、自动驾驶测试与商业化、口岸通关、跨境基础设施及深港融合是否有"
+        "具体新变化；这类信息即使不是传统电信新闻，也应作为香港本地战略候选交给下游AI审核。"
         "不要只寻找重大事件；产品资费、促销、客户服务、经营数据、网络技术、合作、投资、"
         "管理层、监管和资本市场等任何有明确时效的竞对动态都值得检索。"
         "查询应组合主体/别名与事件意图，例如业绩指引、网络建设、资费调整、合作并购、监管影响、"
@@ -1009,7 +1061,13 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
             "定时页面爬虫线索读取失败: "
             + _clean_text(scheduled_trace.get("error"), 240)
         )
-    plans = competitor_plans + priority_plans + scheduled_plans + base_plans
+    plans = (
+        competitor_plans
+        + priority_plans
+        + _local_strategic_plans()
+        + scheduled_plans
+        + base_plans
+    )
     all_items, search_errors, legacy_stats = _execute_search_plans(
         plans,
         start_at=start_at,

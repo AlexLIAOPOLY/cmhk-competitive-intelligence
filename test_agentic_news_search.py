@@ -43,6 +43,21 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertGreaterEqual(call.call_args.kwargs["max_tokens"], 2600)
         self.assertIn("query最多180个字符", call.call_args.args[0])
         self.assertIn("香港监管政策和本地数字产业政策同列最高优先级", call.call_args.args[0])
+        self.assertIn("自动驾驶测试与商业化", call.call_args.args[0])
+        self.assertIn("口岸通关", call.call_args.args[0])
+
+    def test_local_strategic_plans_target_hk_transport_and_cross_border_gaps(self):
+        plans = digest._local_strategic_plans()
+
+        self.assertEqual(len(plans), 2)
+        self.assertTrue(all(plan["module"] == "香港本地新闻" for plan in plans))
+        self.assertTrue(all(plan["semantic_relevance"] is True for plan in plans))
+        self.assertTrue(all(plan["lookback_days"] == 7 for plan in plans))
+        queries = " ".join(plan["query"] for plan in plans)
+        self.assertIn("自动驾驶", queries)
+        self.assertIn("蘿蔔快跑", queries)
+        self.assertIn("皇崗口岸", queries)
+        self.assertIn("一地兩檢", queries)
 
     def test_scheduled_crawl_signal_becomes_date_aware_search_plan(self):
         signal = {
@@ -377,6 +392,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
             }]),
             mock.patch.object(digest, "BENCHMARK_OPERATOR_QUERIES", ()),
             mock.patch.object(digest, "PRIORITY_NEWS_QUERIES", ()),
+            mock.patch.object(digest, "_local_strategic_plans", return_value=[]),
             mock.patch.object(
                 digest,
                 "_scheduled_crawl_plans",
