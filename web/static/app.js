@@ -1286,19 +1286,15 @@ function renderCollectionOverview(status) {
       .find((stages) => Array.isArray(stages) && stages.length) || [];
     const stageCount = Math.min(4, referenceStages.length);
     if (!stageCount) return '<div class="collection-empty">今日上午及下午扫描尚未完成</div>';
-    const maxValue = Math.max(
-      1,
-      ...roundSeries.flatMap((series) => (
-        Array.isArray(series.round?.stages)
-          ? series.round.stages.slice(0, stageCount).map((stage) => Number(stage.value || 0))
-          : []
-      )),
-    );
     const statusClass = (series) => {
       if (!series.round) return "is-pending";
       if (series.round.status === "已补录") return "is-reconciled";
       return "is-complete";
     };
+    const center = 190;
+    const top = 22;
+    const stageHeight = 43;
+    const widths = [300, 246, 194, 142, 92];
     return `
       <section class="daily-scan-comparison collection-funnel" aria-labelledby="dailyScanComparisonTitle">
         <header>
@@ -1312,40 +1308,52 @@ function renderCollectionOverview(status) {
             `).join("")}
           </div>
         </header>
-        <div class="daily-mirror-head" aria-hidden="true">
-          <span>上午</span><b>筛选阶段</b><span>下午</span>
-        </div>
-        <div class="daily-mirror-funnel" role="img" aria-label="当天上午与下午扫描筛选数量对比">
+        <svg class="daily-unified-funnel-svg" viewBox="0 0 380 ${top + stageCount * stageHeight + 4}"
+          role="img" aria-label="当天上午与下午扫描合并漏斗">
+          <text class="daily-unified-funnel-heading is-morning" x="18" y="14" text-anchor="middle">上午</text>
+          <text class="daily-unified-funnel-heading" x="${center}" y="14" text-anchor="middle">筛选阶段</text>
+          <text class="daily-unified-funnel-heading is-afternoon" x="362" y="14" text-anchor="middle">下午</text>
           ${Array.from({ length: stageCount }, (_, stageIndex) => {
             const label = referenceStages[stageIndex]?.label || "筛选阶段";
+            const morningStage = roundSeries[0].round?.stages?.[stageIndex] || null;
+            const afternoonStage = roundSeries[1].round?.stages?.[stageIndex] || null;
+            const morningValue = morningStage ? Math.max(0, Number(morningStage.value || 0)) : 0;
+            const afternoonValue = afternoonStage ? Math.max(0, Number(afternoonStage.value || 0)) : 0;
+            const total = morningValue + afternoonValue;
+            const morningRatio = total ? morningValue / total : 1;
+            const y1 = top + stageIndex * stageHeight;
+            const y2 = y1 + stageHeight;
+            const left1 = center - widths[stageIndex] / 2;
+            const right1 = center + widths[stageIndex] / 2;
+            const left2 = center - widths[stageIndex + 1] / 2;
+            const right2 = center + widths[stageIndex + 1] / 2;
+            const split1 = left1 + widths[stageIndex] * morningRatio;
+            const split2 = left2 + widths[stageIndex + 1] * morningRatio;
+            const detail = `上午 ${morningStage ? morningValue : "待运行"}；下午 ${afternoonStage ? afternoonValue : "待运行"}。${morningStage?.detail || afternoonStage?.detail || ""}`;
             return `
-              <div class="daily-mirror-row">
-                ${roundSeries.map((series, seriesIndex) => {
-                  const stage = series.round?.stages?.[stageIndex] || null;
-                  const value = stage ? Math.max(0, Number(stage.value || 0)) : 0;
-                  const width = value ? Math.max(3, (value / maxValue) * 100) : 0;
-                  const laneClass = series.key === "morning" ? "is-morning" : "is-afternoon";
-                  const lane = `
-                    <div class="daily-mirror-lane ${laneClass}">
-                      ${series.key === "morning" ? `<b>${stage ? value : "–"}</b>` : ""}
-                      <span class="daily-mirror-track">
-                        ${stage ? `
-                          <button type="button" class="daily-mirror-bar collection-funnel-stage is-stage-${stageIndex + 1}"
-                            style="--mirror-width:${width}%;--mirror-color:${series.colors[stageIndex]}"
-                            aria-label="${escapeHtml(`${series.label}${label} ${value} 条。${stage.detail || ""}`)}"
-                            data-funnel-title="${escapeHtml(`${series.label}${label}`)} · ${value} 条"
-                            data-funnel-detail="${escapeHtml(stage.detail || "")}"></button>
-                        ` : ""}
-                      </span>
-                      ${series.key === "afternoon" ? `<b>${stage ? value : "–"}</b>` : ""}
-                    </div>
-                  `;
-                  return seriesIndex === 0 ? `${lane}<strong>${escapeHtml(label)}</strong>` : lane;
-                }).join("")}
-              </div>
+              <g class="collection-funnel-stage daily-unified-funnel-stage is-stage-${stageIndex + 1}"
+                tabindex="0" role="button"
+                aria-label="${escapeHtml(`${label}共 ${total} 条。${detail}`)}"
+                data-funnel-title="${escapeHtml(label)} · ${total} 条"
+                data-funnel-detail="${escapeHtml(detail)}">
+                ${morningValue ? `
+                  <polygon class="is-morning" points="${left1},${y1} ${split1},${y1} ${split2},${y2} ${left2},${y2}"
+                    fill="${roundSeries[0].colors[stageIndex]}"></polygon>
+                ` : ""}
+                ${afternoonValue ? `
+                  <polygon class="is-afternoon" points="${split1},${y1} ${right1},${y1} ${right2},${y2} ${split2},${y2}"
+                    fill="${roundSeries[1].colors[stageIndex]}"></polygon>
+                ` : ""}
+                <text class="daily-unified-funnel-value is-morning" x="18" y="${y1 + stageHeight / 2 + 4}"
+                  text-anchor="middle">${morningStage ? morningValue : "–"}</text>
+                <text class="daily-unified-funnel-label" x="${center}" y="${y1 + stageHeight / 2 + 4}"
+                  text-anchor="middle">${escapeHtml(label)}</text>
+                <text class="daily-unified-funnel-value is-afternoon" x="362" y="${y1 + stageHeight / 2 + 4}"
+                  text-anchor="middle">${afternoonStage ? afternoonValue : "–"}</text>
+              </g>
             `;
           }).join("")}
-        </div>
+        </svg>
         <div class="collection-funnel-tooltip" role="tooltip" hidden><strong></strong><span></span></div>
       </section>
     `;

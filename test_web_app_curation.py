@@ -64,7 +64,8 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("Array.isArray(visuals.todayNewsRounds)", app)
         self.assertIn("上午及下午扫描尚未完成", app)
         self.assertIn("daily-scan-comparison", app)
-        self.assertIn("daily-mirror-funnel", app)
+        self.assertIn("daily-unified-funnel-svg", app)
+        self.assertIn("daily-unified-funnel-stage", app)
         self.assertIn("当日扫描漏斗", app)
         self.assertIn("renderRoundComparison", app)
         self.assertNotIn("daily-asset-kpis", app)
@@ -993,7 +994,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("if (assetHost.dataset.signature === signature) return;", app)
         self.assertIn("assetHost.dataset.signature = signature;", app)
         self.assertIn('id="dailyScanComparisonTitle"', app)
-        self.assertIn("daily-mirror-row", app)
+        self.assertIn("daily-unified-funnel-stage", app)
         self.assertNotIn("animation: cockpit-bar-grow", styles)
         self.assertNotIn("animation: cockpit-rise 400ms", styles)
 

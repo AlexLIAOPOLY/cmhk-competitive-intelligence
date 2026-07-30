@@ -11028,110 +11028,51 @@ button.command-btn:disabled {
   color: #ad6817;
 }
 
-.daily-mirror-head,
-.daily-mirror-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 86px minmax(0, 1fr);
-  align-items: center;
+.daily-unified-funnel-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 202px;
+  margin-top: 9px;
+  overflow: visible;
 }
 
-.daily-mirror-head {
-  margin-top: 12px;
-  color: #8093a0;
+.daily-unified-funnel-heading {
+  fill: #708795;
   font-size: 10px;
-}
-
-.daily-mirror-head span:first-child {
-  text-align: right;
-}
-
-.daily-mirror-head span:last-child {
-  text-align: left;
-}
-
-.daily-mirror-head b {
-  color: #69818f;
   font-weight: 600;
-  text-align: center;
 }
 
-.daily-mirror-funnel {
-  display: grid;
-  gap: 3px;
-  margin-top: 5px;
+.daily-unified-funnel-heading.is-morning,
+.daily-unified-funnel-value.is-morning {
+  fill: #167fb5;
 }
 
-.daily-mirror-row {
-  min-height: 36px;
+.daily-unified-funnel-heading.is-afternoon,
+.daily-unified-funnel-value.is-afternoon {
+  fill: #8064ca;
 }
 
-.daily-mirror-row > strong {
-  position: relative;
-  z-index: 1;
-  color: #587486;
+.daily-unified-funnel-stage polygon {
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-width: 1.4;
+}
+
+.daily-unified-funnel-label {
+  fill: #294f64;
+  stroke: rgba(255, 255, 255, 0.82);
+  stroke-width: 3px;
+  paint-order: stroke fill;
   font-size: 11px;
-  font-weight: 650;
-  text-align: center;
-  white-space: nowrap;
+  font-weight: 700;
+  pointer-events: none;
 }
 
-.daily-mirror-lane {
-  display: grid;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-}
-
-.daily-mirror-lane.is-morning {
-  grid-template-columns: 30px minmax(0, 1fr);
-}
-
-.daily-mirror-lane.is-afternoon {
-  grid-template-columns: minmax(0, 1fr) 30px;
-}
-
-.daily-mirror-lane > b {
-  color: #355b71;
+.daily-unified-funnel-value {
   font-size: 12px;
+  font-weight: 750;
   font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-
-.daily-mirror-track {
-  display: flex;
-  min-width: 0;
-  height: 31px;
-}
-
-.daily-mirror-lane.is-morning .daily-mirror-track {
-  justify-content: flex-end;
-}
-
-.daily-mirror-lane.is-afternoon .daily-mirror-track {
-  justify-content: flex-start;
-}
-
-.daily-mirror-bar {
-  width: var(--mirror-width);
-  min-width: 4px;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  background: var(--mirror-color);
-  transition: filter 160ms ease, width 260ms ease;
-}
-
-.daily-mirror-lane.is-morning .daily-mirror-bar {
-  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%);
-}
-
-.daily-mirror-lane.is-afternoon .daily-mirror-bar {
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 0 100%);
-}
-
-.daily-mirror-bar:hover,
-.daily-mirror-bar:focus-visible {
-  filter: brightness(1.04) drop-shadow(0 3px 4px rgba(30, 81, 112, 0.18));
+  pointer-events: none;
 }
 
 .daily-content-panel {
@@ -11342,29 +11283,9 @@ button.command-btn:disabled {
     justify-content: space-between;
   }
 
-  .daily-mirror-head,
-  .daily-mirror-row {
-    grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
-  }
-
-  .daily-mirror-lane {
-    gap: 4px;
-  }
-
-  .daily-mirror-lane.is-morning {
-    grid-template-columns: 22px minmax(0, 1fr);
-  }
-
-  .daily-mirror-lane.is-afternoon {
-    grid-template-columns: minmax(0, 1fr) 22px;
-  }
-
-  .daily-mirror-row > strong {
-    font-size: 10px;
-  }
-
-  .daily-mirror-track {
-    height: 28px;
+  .daily-unified-funnel-svg {
+    min-width: 0;
+    max-height: 188px;
   }
 
   .collection-overview {
