@@ -814,6 +814,23 @@ class FrontendCitationRenderingTests(unittest.TestCase):
     def test_runtime_sync_preserves_live_chat_history(self) -> None:
         script = (web_app.ROOT / "sync_app_runtime.sh").read_text(encoding="utf-8")
         self.assertIn("--exclude='agent_chat_threads/'", script)
+        for runtime_state in (
+            "strategy_briefing/",
+            "agent_knowledge/crawl_run_logs/",
+            "results/",
+            "curation_data/",
+            "crawl_runs/",
+            "task_runs/",
+            "agent_runs/",
+            "run_log.json",
+            "run_log.tsv",
+            "final_audit.md",
+            "coverage_report.tsv",
+            "daily_validation.json",
+            "scheduler_state.json",
+            "scheduler_pending_run.json",
+        ):
+            self.assertIn(f"--exclude='{runtime_state}'", script)
 
     def test_frontend_finalizes_orphaned_tool_cards_for_live_and_restored_chats(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

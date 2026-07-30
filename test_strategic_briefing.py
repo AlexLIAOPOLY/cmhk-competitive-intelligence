@@ -1,7 +1,9 @@
 import json
+import tempfile
 import time
 import unittest
 from datetime import datetime
+from pathlib import Path
 from unittest import mock
 
 import strategic_briefing as briefing
@@ -275,7 +277,7 @@ class StrategicBriefingTests(unittest.TestCase):
             ),
             mock.patch.dict(
                 briefing.os.environ,
-                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "0"},
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "1"},
             ),
         ):
             result = briefing._run_scan(
@@ -336,6 +338,267 @@ class StrategicBriefingTests(unittest.TestCase):
 
         run_impl.assert_not_called()
 
+    def test_formal_scan_respects_paused_notification_configuration(self):
+        result = {
+            "status": "completed",
+            "notification_status": "queued_while_paused",
+            "message_id": "",
+            "news_discovery": {"result_count": 0},
+            "review_sheet": {
+                "batch_count": 0,
+                "semantic_duplicate_count": 0,
+                "new_count": 0,
+                "readback_verified": True,
+            },
+        }
+
+        def run_impl(*_args, **_kwargs):
+            self.assertEqual(
+                briefing.os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS"),
+                "0",
+            )
+            return dict(result)
+
+        with (
+            mock.patch.dict(
+                briefing.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "0"},
+            ),
+            mock.patch.object(briefing, "_completed_scan_archive", return_value={}),
+            mock.patch.object(
+                briefing,
+                "start_crawl_run",
+                return_value={
+                    "crawl_run_id": "paused_notification_test",
+                    "stream_log_path": "/tmp/paused_notification_test.jsonl",
+                },
+            ),
+            mock.patch.object(briefing, "append_crawl_run_event"),
+            mock.patch.object(briefing, "heartbeat_crawl_run"),
+            mock.patch.object(briefing, "finalize_operational_crawl_run"),
+            mock.patch.object(briefing, "_run_scan_impl", side_effect=run_impl),
+        ):
+            completed = briefing._run_scan(
+                datetime(2026, 7, 30, 9, 0, tzinfo=briefing.HKT),
+                "2026-07-30@09:00-paused-test",
+                "晨间扫描",
+                {},
+                ensure_group_notifications=True,
+            )
+
+        self.assertEqual(completed["notification_status"], "queued_while_paused")
+
+    def test_completed_scan_archive_prevents_any_second_run(self):
+        slot_key = "2026-07-30@09:00"
+        archived = {
+            "slot": slot_key,
+            "slot_label": "晨间扫描",
+            "status": "completed",
+            "notification_status": "sent",
+            "message_id": "om_first_success",
+            "candidate_count": 10,
+            "completed_at": "2026-07-30T09:19:15+08:00",
+            "review_sheet": {"new_count": 10},
+        }
+        state = {}
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary)),
+            mock.patch.object(briefing, "start_crawl_run") as start_run,
+            mock.patch.object(briefing, "_run_scan_impl") as run_impl,
+        ):
+            briefing._atomic_write_json(
+                briefing._scan_run_path(slot_key),
+                archived,
+            )
+            result = briefing._run_scan(
+                datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT),
+                slot_key,
+                "晨间扫描",
+                state,
+                ensure_group_notifications=True,
+            )
+
+        self.assertTrue(result["reused_completed_slot"])
+        self.assertEqual(result["message_id"], "om_first_success")
+        self.assertEqual(
+            state["scan_slots"][slot_key]["status"],
+            "completed",
+        )
+        self.assertTrue(
+            state["scan_slots"][slot_key]["recovered_from_archive"],
+        )
+        self.assertEqual(state["outbound_message_ids"], ["om_first_success"])
+        start_run.assert_not_called()
+        run_impl.assert_not_called()
+
+    def test_incomplete_archive_does_not_block_retry(self):
+        slot_key = "2026-07-30@09:00"
+        incomplete = {
+            "slot": slot_key,
+            "status": "completed",
+            "notification_status": "sent",
+            "message_id": "",
+        }
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary)),
+        ):
+            briefing._atomic_write_json(
+                briefing._scan_run_path(slot_key),
+                incomplete,
+            )
+            self.assertEqual(briefing._completed_scan_archive(slot_key), {})
+
+    def test_cycle_recovers_completed_archive_from_stale_state(self):
+        now = datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT)
+        slot_key = "2026-07-30@09:00"
+        archived = {
+            "slot": slot_key,
+            "slot_label": "晨间扫描",
+            "status": "completed",
+            "notification_status": "sent",
+            "message_id": "om_already_sent",
+            "candidate_count": 10,
+            "completed_at": "2026-07-30T09:19:15+08:00",
+            "review_sheet": {"new_count": 10},
+        }
+        stale_state = {
+            "initialized_at": "2026-07-29T08:00:00+08:00",
+            "scan_slots": {},
+            "last_group_bucket": int(now.timestamp())
+            // briefing.GROUP_CHECK_SECONDS,
+        }
+        saved = {}
+
+        def completed_archive(key):
+            return archived if key == slot_key else {}
+
+        def save_state(state):
+            saved.update(state)
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "DATA_DIR", Path(temporary)),
+            mock.patch.object(
+                briefing,
+                "RUNS_DIR",
+                Path(temporary) / "runs",
+            ),
+            mock.patch.object(
+                briefing,
+                "PROCESS_LOCK_PATH",
+                Path(temporary) / "cycle.lock",
+            ),
+            mock.patch.object(briefing, "MONITOR_ENABLED", True),
+            mock.patch.object(briefing, "_load_state", return_value=stale_state),
+            mock.patch.object(
+                briefing,
+                "_completed_scan_archive",
+                side_effect=completed_archive,
+            ),
+            mock.patch.object(briefing, "_run_scan") as run_scan,
+            mock.patch.object(
+                briefing,
+                "_flush_pending_scan_notifications",
+                return_value=[],
+            ),
+            mock.patch.object(briefing, "_save_state", side_effect=save_state),
+        ):
+            result = briefing.run_cycle(now)
+
+        self.assertEqual(result["scans"], [])
+        self.assertEqual(
+            saved["scan_slots"][slot_key]["message_id"],
+            "om_already_sent",
+        )
+        self.assertTrue(
+            saved["scan_slots"][slot_key]["recovered_from_archive"],
+        )
+        run_scan.assert_not_called()
+
+    def test_paused_completed_archive_recovers_pending_notification(self):
+        slot_key = "2026-07-30@15:00"
+        archived = {
+            "slot": slot_key,
+            "slot_label": "午后扫描",
+            "status": "completed",
+            "notification_status": "queued_while_paused",
+            "message_id": "",
+            "candidate_count": 2,
+            "scanned_at": "2026-07-30T15:00:00+08:00",
+            "spec": {"keyword_count": 135, "module_count": 6},
+            "review_sheet": {"new_count": 2, "new_items": []},
+        }
+        state = {}
+
+        briefing._recover_completed_scan_slot(state, slot_key, archived)
+
+        pending = state["pending_scan_notifications"][slot_key]
+        self.assertEqual(pending["slot_label"], "午后扫描")
+        self.assertEqual(pending["review_result"]["new_count"], 2)
+
+    def test_replayed_notification_marks_archive_as_sent(self):
+        slot_key = "2026-07-30@15:00"
+        archived = {
+            "slot": slot_key,
+            "slot_label": "午后扫描",
+            "status": "completed",
+            "notification_status": "queued_while_paused",
+            "message_id": "",
+            "scanned_at": "2026-07-30T15:00:00+08:00",
+            "spec": {"keyword_count": 135, "module_count": 6},
+            "review_sheet": {"new_count": 2},
+        }
+        state = {
+            "scan_slots": {slot_key: {"status": "completed"}},
+            "pending_scan_notifications": {
+                slot_key: {
+                    "now": "2026-07-30T15:00:00+08:00",
+                    "slot_label": "午后扫描",
+                    "spec": archived["spec"],
+                    "review_result": archived["review_sheet"],
+                }
+            },
+        }
+
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            mock.patch.object(briefing, "RUNS_DIR", Path(temporary)),
+            mock.patch.dict(
+                briefing.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "1"},
+            ),
+            mock.patch.object(
+                briefing,
+                "_send_scan_message",
+                return_value=("om_replayed_once", "bot"),
+            ),
+            mock.patch.object(briefing, "_append_event"),
+        ):
+            briefing._atomic_write_json(
+                briefing._scan_run_path(slot_key),
+                archived,
+            )
+            sent = briefing._flush_pending_scan_notifications(
+                datetime(2026, 7, 30, 15, 10, tzinfo=briefing.HKT),
+                state,
+            )
+            final_archive = briefing._read_json(
+                briefing._scan_run_path(slot_key),
+                {},
+            )
+
+        self.assertEqual(
+            sent,
+            [{"slot": slot_key, "message_id": "om_replayed_once"}],
+        )
+        self.assertEqual(final_archive["notification_status"], "sent")
+        self.assertEqual(final_archive["message_id"], "om_replayed_once")
+        self.assertEqual(state["pending_scan_notifications"], {})
+
     def test_scan_notification_retries_with_stable_idempotency_key(self):
         response = {
             "data": {"message_id": "om_notification"},
@@ -349,7 +612,7 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_lark_api",
-                side_effect=[RuntimeError("temporary EOF"), response],
+                side_effect=[RuntimeError("temporary EOF"), response, response],
             ) as lark_api,
             mock.patch.object(briefing.time, "sleep") as sleep,
         ):
@@ -368,13 +631,34 @@ class StrategicBriefingTests(unittest.TestCase):
                 },
                 notification_key="2026-07-28@09:00",
             )
+            repeated_message_id, _ = briefing._send_scan_message(
+                now=datetime(2026, 7, 28, 9, 0, tzinfo=briefing.HKT),
+                slot_label="晨间扫描",
+                candidates=[],
+                spec={"keyword_count": 136, "module_count": 6},
+                review_result={
+                    "new_count": 16,
+                    "new_category_counts": {"竞对动态": 16},
+                    "new_region_counts": {"香港本地": 3, "国际/行业": 13},
+                    "new_source_count": 14,
+                    "source_candidate_count": 26,
+                    "sheet_url": "https://example.com/sheet",
+                },
+                notification_key="2026-07-28@09:00",
+            )
 
         self.assertEqual(message_id, "om_notification")
+        self.assertEqual(repeated_message_id, "om_notification")
         self.assertEqual(identity, "bot")
-        self.assertEqual(lark_api.call_count, 2)
+        self.assertEqual(lark_api.call_count, 3)
         first_uuid = lark_api.call_args_list[0].kwargs["data"]["uuid"]
         second_uuid = lark_api.call_args_list[1].kwargs["data"]["uuid"]
         self.assertEqual(first_uuid, second_uuid)
+        self.assertEqual(
+            first_uuid,
+            lark_api.call_args_list[2].kwargs["data"]["uuid"],
+        )
+        self.assertNotIn("uuid", lark_api.call_args_list[0].kwargs["params"])
         self.assertRegex(
             first_uuid,
             r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",

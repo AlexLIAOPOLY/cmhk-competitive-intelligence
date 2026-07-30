@@ -242,13 +242,16 @@ def next_run_time(frequency: str, last_run: datetime | None, now: datetime) -> d
 
 def load_state() -> dict[str, object]:
     if not STATE_PATH.exists():
-        return {"attempts": {}, "completed_once": {}}
-    try:
-        state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {"attempts": {}, "completed_once": {}}
+        state: dict[str, object] = {}
+    else:
+        try:
+            state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            state = {}
     state.setdefault("attempts", {})
     state.setdefault("completed_once", {})
+    state.setdefault("last_completed", {})
+    _restore_completed_rows_from_run_archive(state)
     return state
 
 
@@ -289,24 +292,66 @@ def _scope_rows(scope: str) -> list[int]:
     ]
 
 
+def _restore_completed_rows_from_run_archive(state: dict[str, object]) -> None:
+    last_completed = (
+        state.get("last_completed")
+        if isinstance(state.get("last_completed"), dict)
+        else {}
+    )
+    try:
+        records = load_crawl_run_index()
+    except Exception:
+        logging.exception("无法从任务归档恢复定时爬虫完成时间")
+        state["last_completed"] = last_completed
+        return
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if (
+            record.get("trigger") != "定时爬虫"
+            or record.get("run_status") != "completed"
+        ):
+            continue
+        completed_at = parse_datetime(
+            record.get("completed_at_hkt") or record.get("started_at_hkt")
+        )
+        if completed_at is None:
+            continue
+        for row in _scope_rows(str(record.get("scope") or "")):
+            previous = parse_datetime(last_completed.get(str(row)))
+            if previous is None or completed_at > previous:
+                last_completed[str(row)] = completed_at.isoformat(
+                    timespec="seconds"
+                )
+    state["last_completed"] = last_completed
+
+
 def _mark_rows_completed(state: dict[str, object], rows: list[int]) -> None:
     attempts = state.get("attempts") if isinstance(state.get("attempts"), dict) else {}
+    last_completed = (
+        state.get("last_completed")
+        if isinstance(state.get("last_completed"), dict)
+        else {}
+    )
     completed_once = (
         state.get("completed_once")
         if isinstance(state.get("completed_once"), dict)
         else {}
     )
+    completed_at = datetime.now(HKT).isoformat(timespec="seconds")
     frequencies = {
         int(item["row"]): str(item.get("frequency") or "")
         for item in read_live_schedule()
     }
     for row in rows:
         attempts.pop(str(row), None)
+        last_completed[str(row)] = completed_at
         frequency = frequencies.get(row, "")
         schedule = canonical_schedule(frequency)
         if schedule and schedule[0] == "once":
             completed_once[str(row)] = frequency
     state["attempts"] = attempts
+    state["last_completed"] = last_completed
     state["completed_once"] = completed_once
     save_state(state)
 
@@ -387,6 +432,11 @@ def agent_audit_process_running() -> bool:
 
 def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[dict[str, object]]]:
     attempts = state.get("attempts") if isinstance(state.get("attempts"), dict) else {}
+    last_completed = (
+        state.get("last_completed")
+        if isinstance(state.get("last_completed"), dict)
+        else {}
+    )
     completed_once = state.get("completed_once") if isinstance(state.get("completed_once"), dict) else {}
     due: list[int] = []
     audit: list[dict[str, object]] = []
@@ -395,7 +445,16 @@ def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[d
         frequency = str(item.get("frequency") or "")
         schedule = canonical_schedule(frequency)
         last_attempt = parse_datetime(attempts.get(str(row_no)))
-        last_run = last_success(row_no, before=last_attempt) if last_attempt else last_success(row_no)
+        result_success = (
+            last_success(row_no, before=last_attempt)
+            if last_attempt
+            else last_success(row_no)
+        )
+        ledger_success = parse_datetime(last_completed.get(str(row_no)))
+        last_run = max(
+            (value for value in (result_success, ledger_success) if value),
+            default=None,
+        )
         next_run = next_run_time(frequency, last_run, now)
         status = "disabled" if schedule is None else "waiting"
         if schedule and schedule[0] == "once" and completed_once.get(str(row_no)) == frequency:

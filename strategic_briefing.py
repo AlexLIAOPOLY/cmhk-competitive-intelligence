@@ -350,6 +350,81 @@ def _save_state(state: dict[str, Any]) -> None:
     _atomic_write_json(STATE_PATH, state)
 
 
+def _scan_run_path(slot_key: str) -> Path:
+    return RUNS_DIR / f"{slot_key.replace(':', '-')}.json"
+
+
+def _completed_scan_archive(slot_key: str) -> dict[str, Any]:
+    # Feishu's request UUID only deduplicates for one hour. The completed
+    # archive is the durable fence for restarts or deployments after that.
+    payload = _read_json(_scan_run_path(slot_key), {})
+    if not isinstance(payload, dict) or payload.get("slot") != slot_key:
+        return {}
+    notification_status = str(payload.get("notification_status") or "")
+    if payload.get("status") != "completed":
+        return {}
+    if notification_status == "sent" and not payload.get("message_id"):
+        return {}
+    if notification_status not in {"sent", "queued_while_paused"}:
+        return {}
+    return payload
+
+
+def _recover_completed_scan_slot(
+    state: dict[str, Any],
+    slot_key: str,
+    archive: dict[str, Any],
+) -> None:
+    review = archive.get("review_sheet")
+    if not isinstance(review, dict):
+        review = {}
+    message_id = str(archive.get("message_id") or "")
+    scan_slots = state.setdefault("scan_slots", {})
+    scan_slots[slot_key] = {
+        "status": "completed",
+        "at": str(archive.get("completed_at") or archive.get("scanned_at") or ""),
+        "candidate_count": int(archive.get("candidate_count") or 0),
+        "message_id": message_id,
+        "recovered_from_archive": True,
+    }
+    if message_id:
+        outbound = list(state.get("outbound_message_ids") or [])
+        if message_id not in outbound:
+            outbound.append(message_id)
+        state["outbound_message_ids"] = outbound[-300:]
+    if archive.get("notification_status") == "queued_while_paused":
+        try:
+            scheduled_at = datetime.fromisoformat(str(archive.get("scanned_at") or ""))
+        except ValueError:
+            scheduled_at = datetime.now(HKT)
+        state.setdefault("pending_scan_notifications", {})[slot_key] = (
+            _pending_notification_payload(
+                now=scheduled_at,
+                slot_label=str(archive.get("slot_label") or "定时扫描"),
+                spec=archive.get("spec") if isinstance(archive.get("spec"), dict) else {},
+                review_result=review,
+            )
+        )
+
+
+def _mark_scan_archive_notification_sent(
+    slot_key: str,
+    message_id: str,
+    identity: str,
+    now: datetime,
+) -> None:
+    path = _scan_run_path(slot_key)
+    archive = _read_json(path, {})
+    if not isinstance(archive, dict) or archive.get("slot") != slot_key:
+        return
+    archive["status"] = "completed"
+    archive["notification_status"] = "sent"
+    archive["message_id"] = message_id
+    archive["feishu_identity"] = identity
+    archive["notified_at"] = _now_iso(now)
+    _atomic_write_json(path, archive)
+
+
 def _load_candidates() -> list[dict[str, Any]]:
     payload = _read_json(CANDIDATES_PATH, {"items": []})
     items = payload.get("items") if isinstance(payload, dict) else payload
@@ -1501,6 +1576,12 @@ def _flush_pending_scan_notifications(
         )
         if not message_id:
             continue
+        _mark_scan_archive_notification_sent(
+            slot_key,
+            message_id,
+            identity,
+            now,
+        )
         state["outbound_message_ids"] = (
             list(state.get("outbound_message_ids") or []) + [message_id]
         )[-300:]
@@ -1589,6 +1670,10 @@ def _run_scan(
     *,
     ensure_group_notifications: bool = False,
 ) -> dict[str, Any]:
+    archived = _completed_scan_archive(slot_key)
+    if archived:
+        _recover_completed_scan_slot(state, slot_key, archived)
+        return {**archived, "reused_completed_slot": True}
     started_monotonic = time.monotonic()
     crawl_run_id = ""
     stream_log_path: str | Path = ""
@@ -1617,17 +1702,16 @@ def _run_scan(
         if ensure_group_notifications:
             raise RuntimeError("正式定时扫描无法建立任务日志，已停止本轮") from exc
     if ensure_group_notifications:
-        was_enabled = (
+        notifications_enabled = (
             os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") == "1"
         )
-        os.environ["CMHK_STRATEGIC_GROUP_NOTIFICATIONS"] = "1"
         _strategic_task_progress(
             crawl_run_id,
             stream_log_path,
             "启动门控检查",
             (
                 "任务日志已建立；正式群通知"
-                + ("保持开启" if was_enabled else "已自动开启")
+                + ("保持开启" if notifications_enabled else "按配置暂停")
                 + "；群消息仍只在飞书回读和结果归档全部完成后发送。"
             ),
         )
@@ -2003,7 +2087,7 @@ def _run_scan_impl(
         "review_sheet": review_result,
         "candidates": ranked,
     }
-    _atomic_write_json(RUNS_DIR / f"{slot_key.replace(':', '-')}.json", run_payload)
+    _atomic_write_json(_scan_run_path(slot_key), run_payload)
     _append_event(
         {
             "type": "scan_pipeline_completed",
@@ -2045,7 +2129,7 @@ def _run_scan_impl(
         run_payload["notification_status"] = "failed"
         run_payload["notification_error"] = _clean_text(exc, 600)
         _atomic_write_json(
-            RUNS_DIR / f"{slot_key.replace(':', '-')}.json",
+            _scan_run_path(slot_key),
             run_payload,
         )
         raise
@@ -2071,7 +2155,7 @@ def _run_scan_impl(
     run_payload["message_id"] = message_id
     run_payload["feishu_identity"] = identity
     run_payload["notified_at"] = _now_iso()
-    _atomic_write_json(RUNS_DIR / f"{slot_key.replace(':', '-')}.json", run_payload)
+    _atomic_write_json(_scan_run_path(slot_key), run_payload)
     _strategic_task_progress(
         crawl_run_id,
         stream_log_path,
@@ -4213,6 +4297,10 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
         for index, scan_time in enumerate(SCAN_TIMES):
             slot_at = datetime.combine(now.date(), scan_time, tzinfo=HKT)
             slot_key = f"{now:%Y-%m-%d}@{scan_time:%H:%M}"
+            archived = _completed_scan_archive(slot_key)
+            if archived:
+                _recover_completed_scan_slot(state, slot_key, archived)
+                continue
             entry = (
                 scan_slots.get(slot_key)
                 if isinstance(scan_slots.get(slot_key), dict)

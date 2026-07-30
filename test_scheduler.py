@@ -197,9 +197,11 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 ),
                 mock.patch.object(scheduler, "register_crawl_run") as register,
             ):
-                ok = scheduler.run_due_rows([3], {})
+                state = {}
+                ok = scheduler.run_due_rows([3], state)
 
         self.assertTrue(ok)
+        self.assertIn("3", state["last_completed"])
         capture.assert_called_once()
         self.assertEqual(capture.call_args.args[:2], ("crawl-success", [3]))
         self.assertEqual(
@@ -319,6 +321,8 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         bridge.assert_called_once()
         subprocess_run.assert_not_called()
         self.assertEqual(state["attempts"], {})
+        self.assertIn("3", state["last_completed"])
+        self.assertIn("4", state["last_completed"])
         self.assertEqual(register.call_args.kwargs["crawl_return_code"], 0)
         clear_pending.assert_called_once()
 
@@ -346,6 +350,69 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertEqual(due, [3])
         self.assertEqual(audit[0]["status"], "due")
         last_success.assert_called_once_with(3, before=attempt)
+
+    def test_completed_ledger_prevents_immediate_repeat_with_stale_result_time(self) -> None:
+        now = scheduler.datetime(2026, 7, 30, 11, 7, tzinfo=scheduler.HKT)
+        stale_result = scheduler.datetime(2026, 7, 29, 3, 0, tzinfo=scheduler.HKT)
+        completed = scheduler.datetime(2026, 7, 30, 11, 6, tzinfo=scheduler.HKT)
+        with (
+            mock.patch.object(
+                scheduler,
+                "read_live_schedule",
+                return_value=[{"row": 3, "frequency": "每天 03:00"}],
+            ),
+            mock.patch.object(
+                scheduler,
+                "last_success",
+                return_value=stale_result,
+            ),
+        ):
+            due, audit = scheduler.due_rows(
+                now,
+                {
+                    "attempts": {},
+                    "last_completed": {
+                        "3": completed.isoformat(timespec="seconds"),
+                    },
+                },
+            )
+
+        self.assertEqual(due, [])
+        self.assertEqual(audit[0]["status"], "waiting")
+        self.assertEqual(
+            audit[0]["last_success_hkt"],
+            completed.isoformat(timespec="seconds"),
+        )
+
+    def test_completed_ledger_is_restored_from_successful_run_archive(self) -> None:
+        state = {"last_completed": {}}
+        with mock.patch.object(
+            scheduler,
+            "load_crawl_run_index",
+            return_value=[
+                {
+                    "trigger": "定时爬虫",
+                    "run_status": "completed",
+                    "scope": "定时指定行（第2行、第3行）",
+                    "completed_at_hkt": "2026-07-30T11:06:15+08:00",
+                },
+                {
+                    "trigger": "战略新闻定时爬虫",
+                    "run_status": "completed",
+                    "scope": "晨间扫描（2026-07-30@09:00）",
+                    "completed_at_hkt": "2026-07-30T10:56:36+08:00",
+                },
+            ],
+        ):
+            scheduler._restore_completed_rows_from_run_archive(state)
+
+        self.assertEqual(
+            state["last_completed"],
+            {
+                "2": "2026-07-30T11:06:15+08:00",
+                "3": "2026-07-30T11:06:15+08:00",
+            },
+        )
 
     def test_interrupted_pending_resume_bypasses_retry_backoff(self) -> None:
         pending = {
