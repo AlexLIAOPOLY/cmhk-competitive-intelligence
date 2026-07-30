@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-07-30T15:12:20+08:00",
+  "generated_at": "2026-07-30T18:03:37+08:00",
   "items": [
     {
       "id": "NEWS-E4D59059AC6C5D",
@@ -9,6 +9,14 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
       "published_at": "2026-07-30"
+    },
+    {
+      "id": "NEWS-ADEDCB2568C529",
+      "title": "香港电讯上半年多赚4%至21.5亿",
+      "summary": "香港电讯上半年净利润增长4%至21.5亿港元，每单位派息增加3%至34.8仙。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE0zdms4eUxCZkxpTVJwZ2d6Rkg2VnR6VnhmTXpWakREM2NBRlJLLS1nT2xaQjZDQy1pZ2t3ME1mU29kcXNPUFhMa1Bkck1pV2R2?oc=5",
+      "published_at": "2026-07-29T17:16:00+08:00"
     },
     {
       "id": "NEWS-42A8A8BD467BFE",
@@ -57,15 +65,7 @@
       "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
       "source_url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9YT2tlbjMwMFNVV1JlcWt5c3k3NFNZajRheWpzYnRxQ1lJM1FlQkdRX3JtdzNjN2RvdlFHTzdfUldrZ1QtOWlpdEJCVnVLSVk4T3lqVUhiR3JhM2FLZ2FsTzVVazhCMjZHeGhoendkYXZoTjZLRG9vSUF3?oc=5",
       "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-E0C13600B5E1C7",
-      "title": "湾区媒体「重走长征路」 见证红土地蝶变「中国数谷」 「大湾区研发+贵州算力」协同破局数智产业规模",
-      "summary": "湾区媒体「重走长征路」 见证红土地蝶变「中国数谷」 「大湾区研发+贵州算力」协同破局数智产业规模近三千亿 香港文汇报",
-      "category": "AI与科技",
-      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1JamJyNWVuWGoxU29veUxEbGR3QU5EOGx6dUtlTVF2Q2sxeVZxSTd5UGJTWDA3MkdsWkU4ZWJqMXdjZEh4aVpoc0NtUWlPVjRoRlRRLTVTNkdSQjFTNHdJTTh4Ymh5ZzNWWlBDS196U3JFcmNQaXNOdmJoUDQ?oc=5",
-      "published_at": "2026-07-28"
     }
   ],
-  "site_version": "521c5accc8c104f2b315a52c031076fc0b7b506af87251af245f321f55262f4d"
+  "site_version": "aa08e0d5a983991f05bd6bd619a787ab4f9b5f2d1a630761d6a6d4b223738359"
 }
