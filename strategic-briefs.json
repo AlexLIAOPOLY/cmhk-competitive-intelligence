@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-07-30T10:57:08+08:00",
+  "generated_at": "2026-07-30T15:12:20+08:00",
   "items": [
+    {
+      "id": "NEWS-E4D59059AC6C5D",
+      "title": "金管局维持基本利率4厘不变",
+      "summary": "香港金管局宣布维持基本利率在4厘水平不变。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
+      "published_at": "2026-07-30"
+    },
     {
       "id": "NEWS-42A8A8BD467BFE",
       "title": "商汤大装置持续拓展产业生态边界 集中落地多项重磅战略合作",
@@ -57,15 +65,7 @@
       "category": "AI与科技",
       "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE1JamJyNWVuWGoxU29veUxEbGR3QU5EOGx6dUtlTVF2Q2sxeVZxSTd5UGJTWDA3MkdsWkU4ZWJqMXdjZEh4aVpoc0NtUWlPVjRoRlRRLTVTNkdSQjFTNHdJTTh4Ymh5ZzNWWlBDS196U3JFcmNQaXNOdmJoUDQ?oc=5",
       "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-16EE1F137FC9FD",
-      "title": "香港电讯推出自主开发 AI 平台 HKT.AI",
-      "summary": "香港电讯推出自主开发一站式综合 AI 平台 HKT.AI，汇聚全球 AI 资源，协助企业及个人用户无缝使用不同工具，推动全民 AI 普及应用。",
-      "category": "竞对动态",
-      "source_url": "https://hk.finance.yahoo.com/news/%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%A8%8A-06823-%E6%8E%A8%E5%87%BA%E8%87%AA%E4%B8%BB%E9%96%8B%E7%99%BC-ai-%E5%B9%B3%E5%8F%B0-040024482.html",
-      "published_at": "2026-07-28"
     }
   ],
-  "site_version": "97d34d8d9c9b9897323f36458813e2fa246d7f6b64e8235809963ceab2da5207"
+  "site_version": "521c5accc8c104f2b315a52c031076fc0b7b506af87251af245f321f55262f4d"
 }
