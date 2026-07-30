@@ -1563,6 +1563,10 @@ def build_today_news_rounds(today_key: str = "") -> list[dict]:
                 "historyDuplicates": history_duplicates,
                 "newCount": new_count,
                 "note": str(dashboard_summary.get("note") or "").strip(),
+                "categories": _group_latest_news_categories(
+                    review_sheet.get("new_category_counts")
+                ),
+                "impacts": _group_latest_news_impacts(review_sheet.get("new_items")),
                 "stages": stages,
             }
         )

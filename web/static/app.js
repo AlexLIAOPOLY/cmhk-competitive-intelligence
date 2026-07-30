@@ -1250,7 +1250,16 @@ function renderCollectionOverview(status) {
   const assetHost = document.getElementById("dailyAssetGrid");
   if (!assetHost) return;
   const signature = todayNewsRounds
-    .map((round) => `${round.key}:${round.status}:${round.discovered}:${round.confirmed}:${round.historyDuplicates}:${round.newCount}`)
+    .map((round) => [
+      round.key,
+      round.status,
+      round.discovered,
+      round.confirmed,
+      round.historyDuplicates,
+      round.newCount,
+      JSON.stringify(round.categories || []),
+      JSON.stringify(round.impacts || []),
+    ].join(":"))
     .join("|");
   if (assetHost.dataset.signature === signature) return;
   assetHost.dataset.signature = signature;
@@ -1306,16 +1315,56 @@ function renderCollectionOverview(status) {
     `;
   };
 
+  const roundSeries = [
+    {
+      key: "morning",
+      label: "上午",
+      color: "#178dca",
+      round: todayNewsRounds.find((round) => round.label === "上午") || null,
+    },
+    {
+      key: "afternoon",
+      label: "下午",
+      color: "#8b6fd6",
+      round: todayNewsRounds.find((round) => round.label === "下午") || null,
+    },
+  ];
+  const mergeRoundDistribution = (field) => {
+    const grouped = new Map();
+    roundSeries.forEach((series) => {
+      const items = Array.isArray(series.round?.[field]) ? series.round[field] : [];
+      items.forEach((item) => {
+        const label = String(item.label || "其他").trim() || "其他";
+        const value = Math.max(0, Number(item.value || 0));
+        if (!grouped.has(label)) grouped.set(label, { label, morning: 0, afternoon: 0 });
+        grouped.get(label)[series.key] += value;
+      });
+    });
+    const ranked = Array.from(grouped.values())
+      .map((item) => ({ ...item, total: item.morning + item.afternoon }))
+      .filter((item) => item.total > 0)
+      .sort((left, right) => right.total - left.total || left.label.localeCompare(right.label, "zh-CN"));
+    if (ranked.length <= 5) return ranked;
+    const visible = ranked.slice(0, 4);
+    const remainder = ranked.slice(4).reduce(
+      (sum, item) => ({
+        label: "其他",
+        morning: sum.morning + item.morning,
+        afternoon: sum.afternoon + item.afternoon,
+        total: sum.total + item.total,
+      }),
+      { label: "其他", morning: 0, afternoon: 0, total: 0 },
+    );
+    return [...visible, remainder];
+  };
   const contentCharts = [
     {
       label: "主题构成",
-      items: Array.isArray(newsFunnel.categories) ? newsFunnel.categories.slice(0, 5) : [],
-      color: "#178dca",
+      items: mergeRoundDistribution("categories"),
     },
     {
       label: "业务影响",
-      items: Array.isArray(newsFunnel.impacts) ? newsFunnel.impacts.slice(0, 5) : [],
-      color: "#20a986",
+      items: mergeRoundDistribution("impacts"),
     },
   ];
   const roundsMarkup = todayNewsRounds.length
@@ -1338,26 +1387,41 @@ function renderCollectionOverview(status) {
     ? `
       <section class="daily-content-panel" aria-labelledby="dailyContentTitle">
         <header>
-          <strong id="dailyContentTitle">最新一轮内容分布</strong>
-          <small>${escapeHtml(String(newsFunnel.label || "").replace(/[（）]/g, ""))}</small>
+          <strong id="dailyContentTitle">当天内容分布</strong>
+          <div>
+            <span class="daily-content-legend" aria-label="时段颜色">
+              ${roundSeries.map((series) => `
+                <i style="--legend-color:${series.color}">${series.label}</i>
+              `).join("")}
+            </span>
+            <small>${escapeHtml(String(newsFunnel.label || "").replace(/[（）]/g, "").split(/\s+/)[0])}</small>
+          </div>
         </header>
         <div class="daily-content-charts">
           ${contentCharts.map((chart) => {
-            const peak = Math.max(1, ...chart.items.map((item) => Number(item.value || 0)));
-            const total = chart.items.reduce((sum, item) => sum + Number(item.value || 0), 0);
+            const peak = Math.max(1, ...chart.items.map((item) => Number(item.total || 0)));
+            const total = chart.items.reduce((sum, item) => sum + Number(item.total || 0), 0);
             return `
               <figure class="daily-content-chart">
                 <figcaption><span>${escapeHtml(chart.label)}</span><b>${total} 条</b></figcaption>
                 <div>
                   ${chart.items.map((item) => {
-                    const value = Number(item.value || 0);
+                    const morning = Number(item.morning || 0);
+                    const afternoon = Number(item.afternoon || 0);
                     return `
                       <div class="daily-content-bar">
                         <span>${escapeHtml(item.label || "其他")}</span>
-                        <i title="${escapeHtml(item.label || "其他")}：${value} 条">
-                          <em style="--content-width:${Math.max(4, (value / peak) * 100)}%;--content-color:${chart.color}"></em>
+                        <i title="${escapeHtml(item.label || "其他")}：上午 ${morning} 条，下午 ${afternoon} 条">
+                          ${roundSeries.map((series) => {
+                            const value = Number(item[series.key] || 0);
+                            return value > 0
+                              ? `<em style="--content-width:${(value / peak) * 100}%;--content-color:${series.color}"></em>`
+                              : "";
+                          }).join("")}
                         </i>
-                        <b>${value}</b>
+                        <b aria-label="上午 ${morning} 条，下午 ${afternoon} 条">
+                          <span class="is-morning">${morning}</span><small>/</small><span class="is-afternoon">${afternoon}</span>
+                        </b>
                       </div>
                     `;
                   }).join("")}

@@ -64,11 +64,13 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("Array.isArray(visuals.todayNewsRounds)", app)
         self.assertIn("上午及下午扫描尚未完成", app)
         self.assertIn("daily-asset-round", app)
-        self.assertIn("最新一轮内容分布", app)
+        self.assertIn("当天内容分布", app)
         self.assertIn('"主题构成"', app)
         self.assertIn('"业务影响"', app)
-        self.assertIn("Array.isArray(newsFunnel.categories)", app)
-        self.assertIn("Array.isArray(newsFunnel.impacts)", app)
+        self.assertIn('mergeRoundDistribution("categories")', app)
+        self.assertIn('mergeRoundDistribution("impacts")', app)
+        self.assertIn('label: "上午"', app)
+        self.assertIn('label: "下午"', app)
 
     def test_latest_news_funnel_uses_completed_strategic_scan_summary(self) -> None:
         with (
@@ -142,7 +144,16 @@ class ReportFileNameTests(unittest.TestCase):
                 json.dumps(
                     {
                         "news_discovery": {"result_count": 120},
-                        "review_sheet": {"batch_count": 18, "new_count": 1},
+                        "review_sheet": {
+                            "batch_count": 18,
+                            "new_count": 1,
+                            "new_category_counts": {"竞对动态": 2, "政策监管": 1},
+                            "new_items": [
+                                {"business_impact": "竞争格局"},
+                                {"business_impact": "收入与需求"},
+                                {"business_impact": "收入与需求"},
+                            ],
+                        },
                         "dashboard_summary": {
                             "discovered": 120,
                             "confirmed": 20,
@@ -164,6 +175,11 @@ class ReportFileNameTests(unittest.TestCase):
                             "batch_count": 19,
                             "new_count": 17,
                             "semantic_duplicate_count": 2,
+                            "new_category_counts": {"竞对动态": 3, "政策监管": 2},
+                            "new_items": [
+                                {"business_impact": "竞争格局"},
+                                {"business_impact": "客户与渠道"},
+                            ],
                         },
                     },
                     ensure_ascii=False,
@@ -181,6 +197,22 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(
             [[stage["value"] for stage in item["stages"]] for item in rounds],
             [[120, 20, 3, 3], [47, 19, 17, 17]],
+        )
+        self.assertEqual(
+            rounds[0]["categories"],
+            [{"label": "竞对动态", "value": 2}, {"label": "政策监管", "value": 1}],
+        )
+        self.assertEqual(
+            rounds[1]["categories"],
+            [{"label": "竞对动态", "value": 3}, {"label": "政策监管", "value": 2}],
+        )
+        self.assertEqual(
+            rounds[0]["impacts"],
+            [{"label": "收入与需求", "value": 2}, {"label": "竞争格局", "value": 1}],
+        )
+        self.assertEqual(
+            rounds[1]["impacts"],
+            [{"label": "客户与渠道", "value": 1}, {"label": "竞争格局", "value": 1}],
         )
 
     def test_strategic_news_crawl_is_visible_as_news_crawler_task(self) -> None:

@@ -46,7 +46,7 @@ NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 19
+AI_EDITOR_VERSION = 20
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
@@ -122,6 +122,49 @@ _EXCLUSION_CODES = {
     "其他明确噪音",
     "无",
 }
+_ALLOWED_NEWS_CATEGORIES = {
+    "公司动态",
+    "竞对动态",
+    "政策监管",
+    "行业动态",
+    "市场/产品类",
+    "基础设施/网络/技术类",
+    "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+}
+
+
+def _category_for_strategic_signal(signal_type: Any) -> str:
+    return {
+        "监管政策": "政策监管",
+        "市场需求": "市场/产品类",
+        "关键技术": "基础设施/网络/技术类",
+        "基础设施": "基础设施/网络/技术类",
+        "网络安全": "基础设施/网络/技术类",
+        "宏观与地缘": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+        "供应链": "行业动态",
+        "资本与并购": "行业动态",
+    }.get(_clean_text(signal_type, 20), "行业动态")
+
+
+def _normalize_decision_category(
+    category: Any,
+    *,
+    decision_path: Any,
+    signal_type: Any,
+) -> str:
+    """Keep the AI decision while preventing search-module labels from leaking."""
+    normalized = _to_simplified_chinese(category, 40)
+    route = _to_simplified_chinese(decision_path, 20)
+    signal = _to_simplified_chinese(signal_type, 20)
+    if route == "竞对直通":
+        return "竞对动态"
+    if route == "战略信号":
+        if normalized in _ALLOWED_NEWS_CATEGORIES and normalized != "竞对动态":
+            return normalized
+        return _category_for_strategic_signal(signal)
+    if normalized in _ALLOWED_NEWS_CATEGORIES:
+        return normalized
+    return _category_for_strategic_signal(signal)
 _COMPACT_SIGNAL_CODES = {
     "C": "竞对经营动作",
     "R": "监管政策",
@@ -2313,6 +2356,12 @@ def _validated_ai_copy(
     signal_type = _to_simplified_chinese(value.get("signal_type"), 20)
     business_impact = _to_simplified_chinese(value.get("business_impact"), 20)
     exclusion_code = _to_simplified_chinese(value.get("exclusion_code"), 30)
+    if require_decision_fields:
+        category = _normalize_decision_category(
+            category,
+            decision_path=decision_path,
+            signal_type=signal_type,
+        )
     if should_include:
         if category == "竞对动态":
             decision_path = "竞对直通"
@@ -2359,7 +2408,7 @@ def _validated_ai_copy(
         business_impact = business_impact or "无"
     if region not in {"香港本地", "国际/行业"}:
         raise RuntimeError("公司内部 AI 未返回有效地域")
-    if not category:
+    if category not in _ALLOWED_NEWS_CATEGORIES:
         raise RuntimeError("公司内部 AI 未返回分类")
     if should_include and not keywords:
         raise RuntimeError("公司内部 AI 未返回命中关键词")
@@ -2479,14 +2528,14 @@ def _expanded_compact_decision(
         category = "竞对动态"
     elif route == "战略信号":
         reason = f"{title}属于可验证的{signal}事件，影响{impact}。"
-        category = (
-            "政策监管"
-            if signal == "监管政策"
-            else _clean_text(source_item.get("category"), 40) or "行业动态"
-        )
+        category = _category_for_strategic_signal(signal)
     else:
         reason = f"{title}不满足纳入条件：{exclusion}。"
-        category = _clean_text(source_item.get("category"), 40) or "行业动态"
+        category = _normalize_decision_category(
+            source_item.get("category"),
+            decision_path=route,
+            signal_type=signal,
+        )
     return {
         "should_include": route != "排除",
         "region": region,
@@ -2594,15 +2643,7 @@ def _critic_review_included(
             "error_count": 0,
             "already_reviewed_count": 0,
         }
-    allowed_categories = {
-        "公司动态",
-        "竞对动态",
-        "政策监管",
-        "行业动态",
-        "市场/产品类",
-        "基础设施/网络/技术类",
-        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-    }
+    allowed_categories = _ALLOWED_NEWS_CATEGORIES
     kept: list[dict[str, Any]] = []
     resolved_count = 0
     removed_count = 0

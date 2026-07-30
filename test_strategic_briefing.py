@@ -563,31 +563,96 @@ class StrategicBriefingTests(unittest.TestCase):
         )
         self.assertEqual(result["region"], "香港本地")
 
-    def test_competitor_route_requires_competitor_category(self):
-        with self.assertRaisesRegex(RuntimeError, "竞对直通必须归为竞对动态"):
-            briefing._validated_ai_copy(
-                {
-                    "title": "T-Mobile上调2026年自由现金流预期",
-                    "summary": "T-Mobile上调全年自由现金流指引，并维持服务收入展望。",
-                    "should_include": True,
-                    "region": "国际/行业",
-                    "category": "行业动态",
-                    "keywords": "T-Mobile",
-                    "inclusion_reason": "上调现金流指引将影响资本配置判断。",
-                    "region_reason": "事件主体和受影响市场均位于美国。",
-                    "decision_path": "竞对直通",
-                    "signal_type": "竞对经营动作",
-                    "business_impact": "资本配置",
-                    "exclusion_code": "无",
-                },
-                require_review_fields=True,
-                require_decision_fields=True,
-                allowed_keywords="T-Mobile",
-                source_item={
-                    "module": "竞争对手",
-                    "source_title": "T-Mobile raises 2026 free cash flow outlook",
-                },
-            )
+    def test_competitor_route_normalizes_final_competitor_category(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "T-Mobile上调2026年自由现金流预期",
+                "summary": "T-Mobile上调全年自由现金流指引，并维持服务收入展望。",
+                "should_include": True,
+                "region": "国际/行业",
+                "category": "行业动态",
+                "keywords": "T-Mobile",
+                "inclusion_reason": "上调现金流指引将影响资本配置判断。",
+                "region_reason": "事件主体和受影响市场均位于美国。",
+                "decision_path": "竞对直通",
+                "signal_type": "竞对经营动作",
+                "business_impact": "资本配置",
+                "exclusion_code": "无",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords="T-Mobile",
+            source_item={
+                "module": "竞争对手",
+                "source_title": "T-Mobile raises 2026 free cash flow outlook",
+            },
+        )
+
+        self.assertEqual(result["category"], "竞对动态")
+
+    def test_strategic_signal_does_not_keep_upstream_competitor_module_as_category(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "三星电子公布人工智能芯片业务增长",
+                "summary": "三星电子披露人工智能存储芯片需求增长，并公布半导体业务最新经营数据。",
+                "should_include": True,
+                "region": "国际/行业",
+                "category": "竞争对手",
+                "keywords": "AI",
+                "inclusion_reason": "芯片业务数据反映人工智能基础设施需求变化。",
+                "region_reason": "事件主体和主要市场均位于香港以外。",
+                "decision_path": "战略信号",
+                "signal_type": "关键技术",
+                "business_impact": "收入与需求",
+                "exclusion_code": "无",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords="AI",
+            source_item={"module": "竞争对手"},
+        )
+
+        self.assertEqual(result["decision_path"], "战略信号")
+        self.assertEqual(result["category"], "基础设施/网络/技术类")
+
+    def test_compact_strategic_signal_maps_category_from_ai_signal_not_search_module(self):
+        result = briefing._expanded_compact_decision(
+            {
+                "route": "S",
+                "region": "I",
+                "signal": "S",
+                "impact": "C",
+                "exclude": "0",
+            },
+            source_item={
+                "title": "欣兴公布AI载板营收占比",
+                "category": "竞争对手",
+                "keywords": ["AI"],
+            },
+        )
+
+        self.assertEqual(result["decision_path"], "战略信号")
+        self.assertEqual(result["signal_type"], "供应链")
+        self.assertEqual(result["category"], "行业动态")
+
+    def test_compact_competitor_route_uses_final_competitor_category(self):
+        result = briefing._expanded_compact_decision(
+            {
+                "route": "C",
+                "region": "I",
+                "signal": "C",
+                "impact": "A",
+                "exclude": "0",
+            },
+            source_item={
+                "title": "Singtel explores dual listing for Nxera",
+                "category": "竞争对手",
+                "keywords": ["Singtel"],
+            },
+        )
+
+        self.assertEqual(result["decision_path"], "竞对直通")
+        self.assertEqual(result["category"], "竞对动态")
 
     def test_candidate_editor_receives_non_binding_search_hints(self):
         payload = briefing._candidate_editor_input(
@@ -882,7 +947,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["ai_region"], "香港本地")
-        self.assertEqual(result[0]["ai_category"], "宏观与政策")
+        self.assertEqual(result[0]["ai_category"], "政策监管")
         self.assertEqual(ai_call.call_count, 1)
 
     def test_strategic_signal_fills_missing_business_impact_without_dropping(self):

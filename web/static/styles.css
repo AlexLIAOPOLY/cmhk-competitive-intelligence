@@ -11101,6 +11101,38 @@ button.command-btn:disabled {
   font-size: 14px;
 }
 
+.daily-content-panel > header > div,
+.daily-content-legend {
+  display: flex;
+  align-items: center;
+}
+
+.daily-content-panel > header > div {
+  gap: 18px;
+}
+
+.daily-content-legend {
+  gap: 12px;
+}
+
+.daily-content-legend i {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #647b8b;
+  font-size: 12px;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.daily-content-legend i::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--legend-color);
+  content: "";
+}
+
 .daily-content-charts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -11170,6 +11202,7 @@ button.command-btn:disabled {
 }
 
 .daily-content-bar i {
+  display: flex;
   height: 10px;
   overflow: hidden;
   border-radius: 999px;
@@ -11185,10 +11218,28 @@ button.command-btn:disabled {
 }
 
 .daily-content-bar b {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 2px;
   color: #31566c;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+.daily-content-bar b .is-morning {
+  color: #178dca;
+}
+
+.daily-content-bar b .is-afternoon {
+  color: #8b6fd6;
+}
+
+.daily-content-bar b small {
+  color: #9badb9;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 @media (max-width: 1180px) and (min-width: 1051px) {
