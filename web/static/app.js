@@ -1358,7 +1358,7 @@ function renderCollectionOverview(status) {
       </section>
     `;
   };
-  const mergeRoundDistribution = (field) => {
+  const mergeRoundDistribution = (field, maxItems = 4, remainderLabel = "其他") => {
     const grouped = new Map();
     roundSeries.forEach((series) => {
       const items = Array.isArray(series.round?.[field]) ? series.round[field] : [];
@@ -1372,28 +1372,28 @@ function renderCollectionOverview(status) {
     const ranked = Array.from(grouped.values())
       .map((item) => ({ ...item, total: item.morning + item.afternoon }))
       .filter((item) => item.total > 0)
-      .sort((left, right) => right.total - left.total || left.label.localeCompare(right.label, "zh-CN"));
-    if (ranked.length <= 5) return ranked;
-    const visible = ranked.slice(0, 4);
-    const remainder = ranked.slice(4).reduce(
+      .sort((left, right) => right.total - left.total);
+    if (ranked.length <= maxItems) return ranked;
+    const visible = ranked.slice(0, maxItems - 1);
+    const remainder = ranked.slice(maxItems - 1).reduce(
       (sum, item) => ({
-        label: "其他",
+        label: remainderLabel,
         morning: sum.morning + item.morning,
         afternoon: sum.afternoon + item.afternoon,
         total: sum.total + item.total,
       }),
-      { label: "其他", morning: 0, afternoon: 0, total: 0 },
+      { label: remainderLabel, morning: 0, afternoon: 0, total: 0 },
     );
     return [...visible, remainder];
   };
   const contentCharts = [
     {
       label: "主题构成",
-      items: mergeRoundDistribution("categories"),
+      items: mergeRoundDistribution("categories", 4, "其他主题"),
     },
     {
       label: "业务影响",
-      items: mergeRoundDistribution("impacts"),
+      items: mergeRoundDistribution("impacts", 4, "其他影响"),
     },
   ];
   const roundsMarkup = renderRoundComparison();

@@ -72,8 +72,8 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("当天内容分布", app)
         self.assertIn('"主题构成"', app)
         self.assertIn('"业务影响"', app)
-        self.assertIn('mergeRoundDistribution("categories")', app)
-        self.assertIn('mergeRoundDistribution("impacts")', app)
+        self.assertIn('mergeRoundDistribution("categories", 4, "其他主题")', app)
+        self.assertIn('mergeRoundDistribution("impacts", 4, "其他影响")', app)
         self.assertIn('label: "上午"', app)
         self.assertIn('label: "下午"', app)
 
