@@ -1036,5 +1036,116 @@ class LlmCacheBypassTests(unittest.TestCase):
         self.assertNotEqual(fresh[0]["detail"], cached[0]["detail"])
 
 
+class HumanReferencePromptTests(unittest.TestCase):
+    @staticmethod
+    def _sample_payload() -> dict:
+        reports = []
+        examples = []
+        remaining = 161
+        for report_index in range(1, 10):
+            article_count = 18 if report_index < 9 else remaining
+            remaining -= article_count
+            source_file = f"人工战略内参{report_index}.pdf"
+            reports.append(
+                {
+                    "source_file": source_file,
+                    "report_date": f"2026-0{report_index}-01",
+                    "article_count": article_count,
+                }
+            )
+            for article_index in range(1, article_count + 1):
+                examples.append(
+                    {
+                        "source_file": source_file,
+                        "report_date": f"2026-0{report_index}-01",
+                        "section": "行业资讯",
+                        "subject": f"标签{report_index}",
+                        "title": f"人工标题{report_index}-{article_index}",
+                        "detail": f"人工完整正文{report_index}-{article_index}，包含重点动作、规模和进展。",
+                    }
+                )
+        return {
+            "unique_report_count": 9,
+            "reports": reports,
+            "examples": examples,
+        }
+
+    def test_prompt_contains_all_nine_reports_and_all_161_articles(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sample_path = Path(temp_dir) / "human-examples.json"
+            sample_path.write_text(
+                json.dumps(self._sample_payload(), ensure_ascii=False),
+                encoding="utf-8",
+            )
+            with patch.object(report, "WEEKLY_HUMAN_EXAMPLES", sample_path):
+                prompt = report.weekly_human_examples_prompt()
+
+        self.assertEqual(prompt.count("===== 人工完整周报"), 9)
+        self.assertEqual(prompt.count("【第"), 161)
+        self.assertIn("人工标题1-1", prompt)
+        self.assertIn("人工完整正文9-17", prompt)
+
+    def test_incomplete_reference_payload_fails_closed(self) -> None:
+        payload = self._sample_payload()
+        payload["examples"].pop()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            sample_path = Path(temp_dir) / "human-examples.json"
+            sample_path.write_text(
+                json.dumps(payload, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            with (
+                patch.object(report, "WEEKLY_HUMAN_EXAMPLES", sample_path),
+                self.assertRaisesRegex(RuntimeError, "完整包含161篇"),
+            ):
+                report.weekly_human_examples_prompt()
+
+    def test_writer_and_reviewer_requests_both_carry_full_reference_prompt(self) -> None:
+        captured_requests = []
+
+        class FakeResponse:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self):
+                return json.dumps(
+                    {"choices": [{"message": {"content": "{\"items\":[]}"}}]}
+                ).encode("utf-8")
+
+        def fake_urlopen(request, timeout):
+            del timeout
+            captured_requests.append(json.loads(request.data.decode("utf-8")))
+            return FakeResponse()
+
+        config = {
+            "api_key": "test-key",
+            "provider": "deepseek",
+            "model": "test-model",
+            "base_url": "https://example.test/v1",
+        }
+        marker = "FULL-NINE-REPORTS-161-ARTICLES"
+        with (
+            patch.object(report, "load_ai_config", return_value=config),
+            patch.object(report, "weekly_human_examples_prompt", return_value=marker),
+            patch.object(report, "wait_for_internal_ai_slot"),
+            patch.object(
+                report,
+                "urlopen_with_local_proxy_fallback",
+                side_effect=fake_urlopen,
+            ),
+        ):
+            report._call_weekly_writer_llm([])
+            report._call_weekly_quality_reviewer_llm([])
+
+        self.assertEqual(len(captured_requests), 2)
+        for body in captured_requests:
+            self.assertIn(marker, body["messages"][0]["content"])
+        self.assertIn("真正重要的变化", captured_requests[0]["messages"][0]["content"])
+        self.assertIn("主次不分", captured_requests[1]["messages"][0]["content"])
+
+
 if __name__ == "__main__":
     unittest.main()
