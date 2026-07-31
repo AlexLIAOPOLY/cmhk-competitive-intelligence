@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-07-31T09:14:30+08:00",
+  "generated_at": "2026-07-31T09:24:32+08:00",
   "items": [
+    {
+      "id": "NEWS-8C490B655CA195",
+      "title": "皇岗口岸首采“合作查验、一次放行” 港方口岸区今晚零时启用",
+      "summary": "皇岗口岸首次采用合作查验模式，港方口岸区于今晚零时正式启用，提升通关效率。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMiyAJBVV95cUxQczRzcHZGbEpieTU4Q1M4ZXREQ0VWUWxUQUFxRFhQc2lGZkgzNWhwVVZtNm5lXzhrTnFCNXhIWDJIN3VQa3hHam9OZFFyb0FHd2RKRmVhd0ptamFJSWIwcnpMc1BxbWw0WndaeGtJNUxMZWFVczhacFh1SVVORHV1TndMS2M4OTZyZms0Z1BBR2Vlcm5heXdXTk9WM2daX2tJNkpZd1hkQTduOVBaWk8ydnZkQWQ5c18tcWxqS0tsWHEtV2dxZmJGcG02U2NoSmI2RENuc1l6U3FYZnlwejFfbGUzYkZsTm8tMGdmNlJENlVVMWVOLTlEdV9pSExHdmJUSDBtZGRueFU3QlFLc1FkdXBrZkFyZl9kcWMyU0ZfakxjbE90cUVkQWdJbGZBdFdMMVhSUjhFa2VzdmlUUklmV0diblk5d0xO?oc=5",
+      "published_at": "2026-07-30T17:03:59+08:00"
+    },
     {
       "id": "NEWS-E4D59059AC6C5D",
       "title": "金管局维持基本利率4厘不变",
@@ -57,15 +65,7 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMickFVX3lxTE9DSTVwSHR2d1FENGRscEtjTms0ak96WHNPWEFLcGxqMGpNUTZGSEJTOGpteGp2a2ExWE1iX0FQN3FJc2dEdGtxWVZyYmxKWnJxQkdlQjVLTFVjRDdGdHU0aE80Y0p0bVQwNFlNSTQzN0JZZw?oc=5",
       "published_at": "2026-07-28"
-    },
-    {
-      "id": "NEWS-62446C9F276211",
-      "title": "特区政府与国家工信部签署协议推进共建制造业创新中心- 港闻",
-      "summary": "特区政府与国家工信部签署协议推进共建制造业创新中心- 港闻 点新闻",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9YT2tlbjMwMFNVV1JlcWt5c3k3NFNZajRheWpzYnRxQ1lJM1FlQkdRX3JtdzNjN2RvdlFHTzdfUldrZ1QtOWlpdEJCVnVLSVk4T3lqVUhiR3JhM2FLZ2FsTzVVazhCMjZHeGhoendkYXZoTjZLRG9vSUF3?oc=5",
-      "published_at": "2026-07-28"
     }
   ],
-  "site_version": "244611e5c308d6d20fc5a325a4e35bebae9b489de7700e3b0e50d83da380b43d"
+  "site_version": "481a694541c405c965b6cee77c4e46608d23c3f1a698af599973b9c05dc55bbb"
 }
