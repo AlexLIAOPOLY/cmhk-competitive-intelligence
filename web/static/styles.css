@@ -1115,6 +1115,25 @@ select {
   font-size: 12.5px !important;
 }
 
+.report-file-new-dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #e53935;
+  box-shadow: 0 1px 4px rgba(183, 28, 28, 0.28);
+  animation: report-library-dot-enter 180ms ease-out both;
+}
+
+.report-file-new-dot[hidden] {
+  display: none;
+}
+
+.file-row.has-new-report .file-name-cell {
+  font-weight: 650 !important;
+}
+
 .file-name-editable {
   cursor: pointer;
   border-radius: 5px;
@@ -1248,6 +1267,8 @@ select {
 }
 
 .download-icon-button {
+  display: inline-grid;
+  place-items: center;
   color: var(--blue) !important;
   background: rgba(0, 119, 200, 0.08);
   border-radius: 8px;

@@ -1778,23 +1778,24 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
   files.forEach((file) => {
     const typeInfo = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
+    const unread = isReportUnread(file);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
     const subtitleCues = file.audio && Array.isArray(file.audio.subtitleCues)
       ? JSON.stringify(file.audio.subtitleCues)
       : "";
     const audioAction = file.audio && file.audio.exists
-      ? `<button type="button" class="row-icon-button audio-play-button" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.spokenText || file.audio.summary || '')}" data-subtitle-cues="${escapeHtml(subtitleCues)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+      ? `<button type="button" class="row-icon-button audio-play-button" data-path="${safePath}" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.spokenText || file.audio.summary || '')}" data-subtitle-cues="${escapeHtml(subtitleCues)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
       : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
     html += `
-      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""}" data-path="${safePath}">
+      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${typeInfo.icon} ${file.name}</span>
+        <span class="file-name-cell file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未播放或下载" ${unread ? "" : "hidden"}></i>${file.name}</span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
           ${audioAction}
           <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
-          <a href="${file.url}" download class="row-icon-button download-icon-button" title="下载" aria-label="下载" style="text-decoration:none;display:inline-grid;place-items:center;">${iconSvg("download")}</a>
+          <a href="${file.url}" download class="row-icon-button download-icon-button" data-path="${safePath}" title="下载" aria-label="下载">${iconSvg("download")}</a>
         </span>
       </div>
     `;
@@ -1822,7 +1823,11 @@ function bindOutputTableEvents(target) {
         subtitleCues = [];
       }
       playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary, subtitleCues);
+      markReportConsumed(button.dataset.path);
     });
+  });
+  target.querySelectorAll(".download-icon-button").forEach((link) => {
+    link.addEventListener("click", () => markReportConsumed(link.dataset.path));
   });
   target.querySelectorAll(".file-checkbox").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
@@ -1869,9 +1874,33 @@ function renderFileList() {
 }
 
 const REPORT_LIBRARY_SEEN_STORAGE_KEY = "cmhk.report-library.last-seen-mtime.v1";
+const REPORT_LIBRARY_CONSUMED_STORAGE_KEY = "cmhk.report-library.consumed-files.v1";
 
 function latestReportMtime(files = state.outputs) {
   return Math.max(0, ...files.map((item) => Number(item && item.mtime || 0)));
+}
+
+function reportConsumptionKey(file) {
+  return [
+    String(file && file.path_str || ""),
+    String(Number(file && file.mtime || 0)),
+    String(Number(file && file.size || 0)),
+  ].join("::");
+}
+
+function consumedReportKeys() {
+  try {
+    const value = JSON.parse(window.localStorage.getItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY) || "[]");
+    return new Set(Array.isArray(value) ? value.map(String) : []);
+  } catch (_error) {
+    return new Set();
+  }
+}
+
+function isReportUnread(file) {
+  const baseline = Number(window.localStorage.getItem(REPORT_LIBRARY_SEEN_STORAGE_KEY) || 0);
+  return Number(file && file.mtime || 0) > baseline
+    && !consumedReportKeys().has(reportConsumptionKey(file));
 }
 
 function setReportLibraryNewDot(visible) {
@@ -1884,10 +1913,27 @@ function setReportLibraryNewDot(visible) {
   );
 }
 
-function markReportLibrarySeen() {
-  const latest = latestReportMtime();
-  if (latest > 0) window.localStorage.setItem(REPORT_LIBRARY_SEEN_STORAGE_KEY, String(latest));
-  setReportLibraryNewDot(false);
+function markReportConsumed(pathStr) {
+  const file = state.outputs.find((item) => item.path_str === pathStr);
+  if (!file || !isReportUnread(file)) return;
+  const consumed = consumedReportKeys();
+  consumed.add(reportConsumptionKey(file));
+  window.localStorage.setItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY, JSON.stringify([...consumed]));
+
+  const row = document.querySelector(`.file-row[data-path="${CSS.escape(pathStr)}"]`);
+  row?.classList.remove("has-new-report");
+  const rowDot = row?.querySelector(".report-file-new-dot");
+  if (rowDot) rowDot.hidden = true;
+
+  const remainingUnread = state.outputs.some((item) => isReportUnread(item));
+  if (!remainingUnread) {
+    const latest = latestReportMtime();
+    if (latest > 0) {
+      window.localStorage.setItem(REPORT_LIBRARY_SEEN_STORAGE_KEY, String(latest));
+    }
+    window.localStorage.removeItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY);
+  }
+  updateReportLibraryNewIndicator(state.outputs);
 }
 
 function updateReportLibraryNewIndicator(files) {
@@ -1897,15 +1943,19 @@ function updateReportLibraryNewIndicator(files) {
     state.reportLibraryBaselineReady = true;
     if (!stored && latest > 0) {
       window.localStorage.setItem(REPORT_LIBRARY_SEEN_STORAGE_KEY, String(latest));
+      window.localStorage.removeItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY);
       setReportLibraryNewDot(false);
       return;
     }
   }
-  if (document.body.classList.contains("report-library-open")) {
-    markReportLibrarySeen();
-    return;
+  const currentKeys = new Set(files.map(reportConsumptionKey));
+  const retainedConsumed = [...consumedReportKeys()].filter((key) => currentKeys.has(key));
+  if (retainedConsumed.length) {
+    window.localStorage.setItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY, JSON.stringify(retainedConsumed));
+  } else {
+    window.localStorage.removeItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY);
   }
-  setReportLibraryNewDot(latest > stored && latest > 0);
+  setReportLibraryNewDot(files.some((file) => isReportUnread(file)));
 }
 
 function renderStatus(status) {
@@ -6642,7 +6692,6 @@ els.outputTabs.forEach((button) => {
 
 function openReportLibrary() {
   if (!els.outputArea) return;
-  markReportLibrarySeen();
   els.outputArea.hidden = false;
   document.body.classList.add("report-library-open");
   window.requestAnimationFrame(() => {
