@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-07-30T18:03:37+08:00",
+  "generated_at": "2026-07-31T09:14:30+08:00",
   "items": [
     {
       "id": "NEWS-E4D59059AC6C5D",
@@ -43,7 +43,7 @@
       "published_at": "2026-07-29"
     },
     {
-      "id": "NEWS-D1FCD36EAD0013",
+      "id": "NEWS-88E92363C14ACB",
       "title": "内地企业拟利用香港专业服务支援东盟业务发展",
       "summary": "调查显示83%内地企业计划利用香港专业服务支援东盟业务，凸显香港在跨境商业服务中的枢纽价值。",
       "category": "竞争对手",
@@ -67,5 +67,5 @@
       "published_at": "2026-07-28"
     }
   ],
-  "site_version": "aa08e0d5a983991f05bd6bd619a787ab4f9b5f2d1a630761d6a6d4b223738359"
+  "site_version": "244611e5c308d6d20fc5a325a4e35bebae9b489de7700e3b0e50d83da380b43d"
 }
