@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-07-31T09:24:32+08:00",
+  "generated_at": "2026-07-31T15:17:28+08:00",
   "items": [
     {
       "id": "NEWS-8C490B655CA195",
@@ -9,6 +9,14 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMiyAJBVV95cUxQczRzcHZGbEpieTU4Q1M4ZXREQ0VWUWxUQUFxRFhQc2lGZkgzNWhwVVZtNm5lXzhrTnFCNXhIWDJIN3VQa3hHam9OZFFyb0FHd2RKRmVhd0ptamFJSWIwcnpMc1BxbWw0WndaeGtJNUxMZWFVczhacFh1SVVORHV1TndMS2M4OTZyZms0Z1BBR2Vlcm5heXdXTk9WM2daX2tJNkpZd1hkQTduOVBaWk8ydnZkQWQ5c18tcWxqS0tsWHEtV2dxZmJGcG02U2NoSmI2RENuc1l6U3FYZnlwejFfbGUzYkZsTm8tMGdmNlJENlVVMWVOLTlEdV9pSExHdmJUSDBtZGRueFU3QlFLc1FkdXBrZkFyZl9kcWMyU0ZfakxjbE90cUVkQWdJbGZBdFdMMVhSUjhFa2VzdmlUUklmV0diblk5d0xO?oc=5",
       "published_at": "2026-07-30T17:03:59+08:00"
+    },
+    {
+      "id": "NEWS-17D9D44087EABE",
+      "title": "电讯盈科公布HKT信托及HKT有限公司中期业绩",
+      "summary": "电讯盈科公布截至2026年6月30日止六个月HKT信托及HKT有限公司的中期业绩。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPSG95MXp1Mlg0dWRTWlQ4ZE0zdm1Nc2xqSXZ2MGw2enVFTWI0TzZoNnRZdXJSdDk5c1h5bUNxTDd2OXItSTZLR1I4Vkk0REJOMUZ6Vm1ubVVyeEtZZXlnQUlLWmJIbnJsaWxxQnpkNmdCbWZ6Zm91VXoxMkNEekJLa1FUOFNFaGh6QXF1VV9kejV4ckViQ2V4VU5jM3hTWGRYNElfT3daN2RlQThEdnRxWHY4c1dvbThRSHVuZENOYjNTSFkzN3VJQ2ZGekpmZU4zcFV2RUdWWkcydw?oc=5",
+      "published_at": "2026-07-30T15:29:00+08:00"
     },
     {
       "id": "NEWS-E4D59059AC6C5D",
@@ -57,15 +65,7 @@
       "category": "竞争对手",
       "source_url": "https://finance.now.com/news/post.php?id=979932",
       "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-87A3B4B37D77A9",
-      "title": "PCB行业龙头投52亿建第二工厂 东莞「全球智造中心」建设加速",
-      "summary": "PCB行业龙头投52亿建第二工厂 东莞「全球智造中心」建设加速 香港商报",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMickFVX3lxTE9DSTVwSHR2d1FENGRscEtjTms0ak96WHNPWEFLcGxqMGpNUTZGSEJTOGpteGp2a2ExWE1iX0FQN3FJc2dEdGtxWVZyYmxKWnJxQkdlQjVLTFVjRDdGdHU0aE80Y0p0bVQwNFlNSTQzN0JZZw?oc=5",
-      "published_at": "2026-07-28"
     }
   ],
-  "site_version": "481a694541c405c965b6cee77c4e46608d23c3f1a698af599973b9c05dc55bbb"
+  "site_version": "f44e4ec717edd48d4fa5e520856e3c6099869ccebc62ae2d6916332721d2b10c"
 }
