@@ -115,16 +115,20 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
     destination.mkdir(parents=True, exist_ok=True)
     html = (STATIC_DIR / "executive-dashboard-demo.html").read_text(encoding="utf-8")
     html = html.replace(
-        'href="/static/executive-dashboard-demo.css"',
-        'href="./executive-dashboard-demo.css"',
+        'href="/static/executive-dashboard-demo.css',
+        'href="./executive-dashboard-demo.css',
     )
     html = html.replace(
         'src="/static/assets/executive-dashboard/',
         'src="./assets/executive-dashboard/',
     )
     html = html.replace(
-        'src="/static/executive-dashboard-demo.js"',
-        'src="./executive-dashboard-demo.js"',
+        'src="/static/executive-dashboard-demo.js',
+        'src="./executive-dashboard-demo.js',
+    )
+    html = html.replace(
+        'src="/static/executive-dashboard-drilldown.js',
+        'src="./executive-dashboard-drilldown.js',
     )
     (destination / "index.html").write_text(html, encoding="utf-8")
     shutil.copy2(
@@ -137,6 +141,10 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
         'fetch("./strategic-briefs.json"',
     )
     (destination / "executive-dashboard-demo.js").write_text(script, encoding="utf-8")
+    shutil.copy2(
+        STATIC_DIR / "executive-dashboard-drilldown.js",
+        destination / "executive-dashboard-drilldown.js",
+    )
     shutil.copytree(
         STATIC_DIR / "assets" / "executive-dashboard",
         destination / "assets" / "executive-dashboard",

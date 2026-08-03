@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -19,6 +20,21 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_drilldown_catalog_contains_all_74_sheet_indicators(self):
+        script = (
+            Path(__file__).resolve().parent
+            / "web"
+            / "static"
+            / "executive-dashboard-drilldown.js"
+        ).read_text(encoding="utf-8")
+        metric_ids = [int(value) for value in re.findall(r"metric\((\d+),", script)]
+
+        self.assertEqual(metric_ids, list(range(1, 75)))
+        self.assertIn('index: "01"', script)
+        self.assertIn('index: "02"', script)
+        self.assertIn('index: "03"', script)
+        self.assertIn('index: "04"', script)
+
     def test_build_site_is_static_sanitized_and_stable(self):
         payload = {
             "ok": True,
@@ -57,10 +73,15 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css"', html)
+            drilldown = (first / "executive-dashboard-drilldown.js").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('href="./executive-dashboard-demo.css?v=3"', html)
             self.assertIn('src="./assets/executive-dashboard/', html)
+            self.assertIn('src="./executive-dashboard-drilldown.js?v=3"', html)
             self.assertIn('fetch("./strategic-briefs.json"', script)
             self.assertNotIn("/api/strategic-briefs", script)
+            self.assertIn("const KPI_TREE", drilldown)
             self.assertTrue((first / ".nojekyll").exists())
 
 
