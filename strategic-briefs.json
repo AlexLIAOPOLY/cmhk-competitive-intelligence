@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-03T15:07:34+08:00",
+  "generated_at": "2026-08-03T15:12:36+08:00",
   "items": [
     {
       "id": "NEWS-5EEF4D777E7D90",
@@ -9,6 +9,30 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
       "published_at": "2026-08-03T08:43:00+08:00"
+    },
+    {
+      "id": "NEWS-0CA9B2A1D2BFEB",
+      "title": "机场岛测试 揭开香港智慧出行新纪元",
+      "summary": "香港机场岛进行智慧出行测试，探索未来交通模式，推动香港智慧出行发展。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNVWdHQ1ZJa1NOWW1yeWJwRGJXRTZReXZxc09oNHYyUjBMQkJzZFQ5alFHdE5tWDJVRzdjd1FyaE9SalYzbndBLWRPMHlhOUJ2dWFONV9NZWlfN29mSDljUkRkendueGFLOUdYbHRtRzVyTlNOWlNnTlpsRVY0Ymd4WG50N1RoYU1idTRnVm5FLV9VZERCSG4tN2lNNzY4Q0FfTW8xOWlSN2VILWZub21Nc0lfenp0eFlmQW9CaVZ1UkdWaDFNYVNJYjVCQ19YaDBxak9uM2plQUU5WUpKY2pYQmlvQk5oSlZqWkliS0NyQVpOUW9fX2RhT1g4SjFYcG9FUVBheWFhT0x0X0V2ZGkyWVdaejFnN3NxSVpTbEZhUmxqMS1qem1JSGJtd3RkdmQ4TElZOUxtRGJqNmp1MlRyY3N0TEdsdmFmaklQakIwdFhTZ1ViMVoxR3kyNDE?oc=5",
+      "published_at": "2026-08-03T08:00:12+08:00"
+    },
+    {
+      "id": "NEWS-A158C76EB3E89E",
+      "title": "“算力金属”，价格狂飙",
+      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
+      "published_at": "2026-08-03T08:00:00+08:00"
+    },
+    {
+      "id": "NEWS-93E818ABE49C4B",
+      "title": "滴滴香港正筹备提交网约车平台牌照申请 本月向用户推出夏日出行礼遇",
+      "summary": "滴滴香港筹备提交网约车牌照申请，提升合规管理，并向用户推出夏日出行优惠。",
+      "category": "政策监管",
+      "source_url": "https://www.am730.com.hk/article/1045256",
+      "published_at": "2026-08-03T08:00:00+08:00"
     },
     {
       "id": "NEWS-7906A5234C6DC3",
@@ -41,31 +65,7 @@
       "category": "市场/产品类",
       "source_url": "https://en.antaranews.com/news/424833/the-third-hong-kong-shopping-festival-extends-into-asean-for-the-first-time",
       "published_at": "2026-07-31T15:30:00+08:00"
-    },
-    {
-      "id": "NEWS-8C490B655CA195",
-      "title": "皇岗口岸首采“合作查验、一次放行” 港方口岸区今晚零时启用",
-      "summary": "皇岗口岸首次采用合作查验模式，港方口岸区于今晚零时正式启用，提升通关效率。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMiyAJBVV95cUxQczRzcHZGbEpieTU4Q1M4ZXREQ0VWUWxUQUFxRFhQc2lGZkgzNWhwVVZtNm5lXzhrTnFCNXhIWDJIN3VQa3hHam9OZFFyb0FHd2RKRmVhd0ptamFJSWIwcnpMc1BxbWw0WndaeGtJNUxMZWFVczhacFh1SVVORHV1TndMS2M4OTZyZms0Z1BBR2Vlcm5heXdXTk9WM2daX2tJNkpZd1hkQTduOVBaWk8ydnZkQWQ5c18tcWxqS0tsWHEtV2dxZmJGcG02U2NoSmI2RENuc1l6U3FYZnlwejFfbGUzYkZsTm8tMGdmNlJENlVVMWVOLTlEdV9pSExHdmJUSDBtZGRueFU3QlFLc1FkdXBrZkFyZl9kcWMyU0ZfakxjbE90cUVkQWdJbGZBdFdMMVhSUjhFa2VzdmlUUklmV0diblk5d0xO?oc=5",
-      "published_at": "2026-07-30T17:03:59+08:00"
-    },
-    {
-      "id": "NEWS-17D9D44087EABE",
-      "title": "电讯盈科公布HKT信托及HKT有限公司中期业绩",
-      "summary": "电讯盈科公布截至2026年6月30日止六个月HKT信托及HKT有限公司的中期业绩。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPSG95MXp1Mlg0dWRTWlQ4ZE0zdm1Nc2xqSXZ2MGw2enVFTWI0TzZoNnRZdXJSdDk5c1h5bUNxTDd2OXItSTZLR1I4Vkk0REJOMUZ6Vm1ubVVyeEtZZXlnQUlLWmJIbnJsaWxxQnpkNmdCbWZ6Zm91VXoxMkNEekJLa1FUOFNFaGh6QXF1VV9kejV4ckViQ2V4VU5jM3hTWGRYNElfT3daN2RlQThEdnRxWHY4c1dvbThRSHVuZENOYjNTSFkzN3VJQ2ZGekpmZU4zcFV2RUdWWkcydw?oc=5",
-      "published_at": "2026-07-30T15:29:00+08:00"
-    },
-    {
-      "id": "NEWS-E4D59059AC6C5D",
-      "title": "金管局维持基本利率4厘不变",
-      "summary": "香港金管局宣布维持基本利率在4厘水平不变。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
-      "published_at": "2026-07-30"
     }
   ],
-  "site_version": "a4c6f44e36082e1a209b30a0ef8d6ab8bdae46a10f9818d6837a7164da53aa7f"
+  "site_version": "1d79a379d1f6a5f3f8415d7af225909309acc99311a18cc336de89c06177fd1c"
 }
