@@ -41,6 +41,7 @@
     selectionFocus: null,
     dragging: false,
     loading: false,
+    saving: false,
     activeEditor: null,
     cancelEditor: null,
   };
@@ -328,7 +329,13 @@
 
   async function saveChanges(changes, cells = []) {
     if (!changes.length) return true;
+    if (model.saving) {
+      setSaveStatus("上一项修改仍在保存，请稍后再试", "saving");
+      return false;
+    }
+    model.saving = true;
     cells.forEach((cell) => cell?.classList.add("is-saving"));
+    nodes.body.querySelectorAll("select").forEach((select) => { select.disabled = true; });
     setSaveStatus(`正在保存 ${changes.length} 个单元格…`, "saving");
     try {
       const response = await fetch("/api/news-review-sheet/update", {
@@ -348,7 +355,9 @@
       render();
       return false;
     } finally {
+      model.saving = false;
       cells.forEach((cell) => cell?.classList.remove("is-saving"));
+      nodes.body.querySelectorAll("select").forEach((select) => { select.disabled = false; });
     }
   }
 
@@ -401,7 +410,16 @@
         const columnIndex = columnOffset + index;
         let style = bodyStyle;
         if (columnIndex <= 2) style += "background:#f3f8fb;";
-        if ((columnIndex === 0 || columnIndex === 1) && value === "接受") style += "background:#28bd6a;font-weight:700;";
+        if (columnIndex === 0 || columnIndex === 1) {
+          if (value === "接受") style += "background:#28bd6a;color:#083b21;font-weight:700;";
+          else if (value === "不接受") style += "background:#f0a6a6;color:#5b1717;font-weight:700;";
+          else if (value === "暂缓") style += "background:#f0c36a;color:#4d3400;font-weight:700;";
+          else style += "background:#aeb6bc;color:#28333b;font-weight:700;";
+        } else if (columnIndex === 2) {
+          if (value === "已纳入") style += "background:#0f6fe8;color:#ffffff;font-weight:700;";
+          else if (value === "同步失败") style += "background:#d94b4b;color:#ffffff;font-weight:700;";
+          else style += "background:#aeb6bc;color:#28333b;font-weight:700;";
+        }
         return `<td style="${style}">${escapeHtml(value)}</td>`;
       }).join("")}</tr>`);
     });
@@ -463,6 +481,10 @@
 
   function startCellEditor(cell) {
     if (!cell || model.activeEditor) return;
+    if (model.saving) {
+      setSaveStatus("上一项修改仍在保存，请稍后再编辑", "saving");
+      return;
+    }
     const columnIndex = Number(cell.dataset.columnIndex);
     const rowIndex = Number(cell.dataset.rowIndex);
     if (!model.editableColumns.has(columnIndex) || columnIndex <= 2) return;
