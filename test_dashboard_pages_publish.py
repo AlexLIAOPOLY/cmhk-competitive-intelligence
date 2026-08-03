@@ -35,6 +35,34 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('index: "03"', script)
         self.assertIn('index: "04"', script)
 
+    def test_relationship_model_connects_all_four_carriers_to_metric_evidence(self):
+        script = (
+            Path(__file__).resolve().parent
+            / "web"
+            / "static"
+            / "executive-dashboard-relations.js"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual(len(re.findall(r"\bstory\(", script)), 8)
+        self.assertEqual(len(re.findall(r"\bdriver\(", script)), 24)
+        self.assertIn('carriers: ["CMHK", "HKT", "3香港", "SmarTone"]', script)
+        for module_key in ("network", "business", "reach", "finance"):
+            self.assertRegex(script, rf"\n\s+{module_key}: \[")
+        metric_groups = re.findall(
+            r"driver\([^\n]*?\[[^\]]*\], \[([^\]]+)\], \[",
+            script,
+        )
+        metric_ids = {
+            int(value.strip())
+            for group in metric_groups
+            for value in group.split(",")
+        }
+        self.assertTrue(metric_ids)
+        self.assertGreaterEqual(min(metric_ids), 1)
+        self.assertLessEqual(max(metric_ids), 74)
+        self.assertIn(47, metric_ids)
+        self.assertIn(73, metric_ids)
+
     def test_build_site_is_static_sanitized_and_stable(self):
         payload = {
             "ok": True,
@@ -76,12 +104,17 @@ class DashboardPagesPublishTests(unittest.TestCase):
             drilldown = (first / "executive-dashboard-drilldown.js").read_text(
                 encoding="utf-8"
             )
+            relations = (first / "executive-dashboard-relations.js").read_text(
+                encoding="utf-8"
+            )
             self.assertIn('href="./executive-dashboard-demo.css?v=3"', html)
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-drilldown.js?v=3"', html)
+            self.assertIn('src="./executive-dashboard-relations.js?v=1"', html)
+            self.assertIn('src="./executive-dashboard-drilldown.js?v=4"', html)
             self.assertIn('fetch("./strategic-briefs.json"', script)
             self.assertNotIn("/api/strategic-briefs", script)
             self.assertIn("const KPI_TREE", drilldown)
+            self.assertIn("CMHK_DASHBOARD_RELATIONS", relations)
             self.assertTrue((first / ".nojekyll").exists())
 
 

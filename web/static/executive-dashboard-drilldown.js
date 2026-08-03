@@ -183,6 +183,9 @@
     { key: "finance", selector: ".panel-finance", viewAttribute: "data-finance-view" }
   ];
   const panelStates = new WeakMap();
+  const RELATION_MODEL = window.CMHK_DASHBOARD_RELATIONS || { carriers: ["CMHK", "HKT", "3香港", "SmarTone"], modules: {} };
+  const CARRIERS = RELATION_MODEL.carriers;
+  const RELATION_STEP_LABELS = { insight: "关系洞察", evidence: "驱动证据", raw: "原始指标" };
 
   const escapeHtml = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -199,6 +202,59 @@
     const active = panel.querySelector(`[${config.viewAttribute}].is-active`);
     const key = active?.getAttribute(config.viewAttribute) || KPI_TREE[config.key].categories[0].key;
     return KPI_TREE[config.key].categories.find((item) => item.key === key) || KPI_TREE[config.key].categories[0];
+  }
+
+  function moduleMetrics(module) {
+    return module.categories.flatMap((categoryItem) => categoryItem.groups.flatMap((groupItem) => groupItem.metrics));
+  }
+
+  function metricById(metricId) {
+    for (const module of Object.values(KPI_TREE)) {
+      const metricItem = moduleMetrics(module).find((item) => item.id === metricId);
+      if (metricItem) return { module, metricItem };
+    }
+    return null;
+  }
+
+  function relationStories(moduleKey) {
+    return RELATION_MODEL.modules[moduleKey] || [];
+  }
+
+  function decimalPlaces(value) {
+    return Number.isInteger(value) ? 0 : 1;
+  }
+
+  function formatRelationValue(value) {
+    return Number(value).toLocaleString("zh-CN", {
+      minimumFractionDigits: decimalPlaces(value),
+      maximumFractionDigits: decimalPlaces(value)
+    });
+  }
+
+  function relationDelta(relationItem, carrierIndex) {
+    const value = relationItem.values[carrierIndex];
+    const ranked = relationItem.values.map((item, index) => ({ item, index })).sort((a, b) => b.item - a.item);
+    const rank = ranked.findIndex((item) => item.index === carrierIndex) + 1;
+    if (rank === 1) {
+      const delta = value - ranked[1].item;
+      return { rank, label: `领先第二名 +${formatRelationValue(delta)}`, tone: "lead" };
+    }
+    const delta = ranked[0].item - value;
+    return { rank, label: `距领先 -${formatRelationValue(delta)}`, tone: "trail" };
+  }
+
+  function syncRelationUrl(state) {
+    if (!state.relation) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("drill", [state.config.key, state.relation.id, state.relationStep, state.selectedCarrier].join("."));
+    window.history.replaceState(window.history.state, "", url);
+  }
+
+  function clearRelationUrl() {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has("drill")) return;
+    url.searchParams.delete("drill");
+    window.history.replaceState(window.history.state, "", url);
   }
 
   function findMetric(module, categoryItem, visibleName) {
@@ -246,7 +302,20 @@
       </div>
       <div class="drill-body" aria-live="polite"></div>`;
     panel.append(overlay);
-    const state = { panel, config, overlay, origin: null, level: "module", category: null, group: null, metric: null };
+    const state = {
+      panel,
+      config,
+      overlay,
+      origin: null,
+      level: "module",
+      category: null,
+      group: null,
+      metric: null,
+      relation: null,
+      relationStep: "insight",
+      selectedCarrier: 0,
+      selectedDriver: null
+    };
     panelStates.set(panel, state);
     overlay.querySelector(".drill-close").addEventListener("click", () => closeOverlay(state));
     return state;
@@ -256,8 +325,8 @@
     const entry = document.createElement("button");
     entry.className = "drill-entry";
     entry.type = "button";
-    entry.setAttribute("aria-label", `穿透查看${KPI_TREE[config.key].label}全部指标`);
-    entry.title = "指标穿透";
+    entry.setAttribute("aria-label", `查看${KPI_TREE[config.key].label}厂商关系与指标穿透`);
+    entry.title = "关系与指标穿透";
     entry.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4M9 9h6v6H9z"/></svg>`;
     panel.querySelector(".panel-heading")?.append(entry);
     entry.addEventListener("click", () => openModule(state, entry));
@@ -283,28 +352,211 @@
   }
 
   function showOverlay(state, origin) {
+    const wasHidden = state.overlay.hidden;
     state.origin = origin || state.origin;
     state.overlay.hidden = false;
     state.panel.classList.add("is-drilling");
-    state.overlay.querySelector(".drill-close").focus({ preventScroll: true });
+    if (wasHidden) {
+      state.overlay.querySelector(".drill-close").focus({ preventScroll: true });
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        window.requestAnimationFrame(() => state.panel.scrollIntoView({ block: "start", behavior: "auto" }));
+      }
+    }
   }
 
   function closeOverlay(state) {
     state.overlay.hidden = true;
     state.panel.classList.remove("is-drilling");
+    state.relation = null;
+    clearRelationUrl();
     state.origin?.focus?.({ preventScroll: true });
   }
 
-  function openModule(state, origin = null) {
+  function relationTrackRows(relationItem, selectedCarrier) {
+    const min = Math.min(...relationItem.values);
+    const max = Math.max(...relationItem.values);
+    const range = Math.max(max - min, 1);
+    const sorted = [...relationItem.values].sort((a, b) => a - b);
+    const median = (sorted[1] + sorted[2]) / 2;
+    const medianPosition = 18 + ((median - min) / range) * 76;
+    return relationItem.values.map((value, index) => {
+      const position = 18 + ((value - min) / range) * 76;
+      const delta = relationDelta(relationItem, index);
+      return `
+        <button type="button" class="relation-carrier relation-carrier-${index} ${index === selectedCarrier ? "is-selected" : ""}" data-relation-carrier="${index}" aria-pressed="${index === selectedCarrier}">
+          <span><i>${String(index + 1).padStart(2, "0")}</i>${escapeHtml(CARRIERS[index])}</span>
+          <b class="relation-track" style="--relation-position:${position}%;--relation-median:${medianPosition}%"><i></i><em></em></b>
+          <strong>${formatRelationValue(value)}<small>${escapeHtml(relationItem.unit)}</small></strong>
+          <mark class="is-${delta.tone}">${escapeHtml(delta.label)}</mark>
+        </button>`;
+    }).join("");
+  }
+
+  function driverPreview(relationItem, selectedCarrier) {
+    return relationItem.drivers.map((driverItem, index) => `
+      <button type="button" class="relation-driver-card" data-relation-driver="${escapeHtml(driverItem.id)}">
+        <span><i>0${index + 1}</i>${escapeHtml(driverItem.label)}</span>
+        <strong>+${formatRelationValue(driverItem.impact[selectedCarrier])}<small>${escapeHtml(relationItem.unit)}</small></strong>
+        <p>${escapeHtml(driverItem.relationship)}</p>
+        <em>${driverItem.chain.map((item) => escapeHtml(item)).join("　›　")}</em>
+      </button>`).join("");
+  }
+
+  function relationInsightHtml(relationItem, selectedCarrier) {
+    const delta = relationDelta(relationItem, selectedCarrier);
+    return `
+      <div class="relation-insight-grid">
+        <section class="relation-ranking" aria-label="${escapeHtml(relationItem.metricLabel)}四家厂商相对位置">
+          <div class="relation-section-title"><strong>四家厂商相对位置</strong><span>虚线为四家中位数</span></div>
+          ${relationTrackRows(relationItem, selectedCarrier)}
+        </section>
+        <aside class="relation-conclusion" aria-live="polite">
+          <span>当前选择</span>
+          <strong>${escapeHtml(CARRIERS[selectedCarrier])}</strong>
+          <b>${formatRelationValue(relationItem.values[selectedCarrier])}<small>${escapeHtml(relationItem.unit)}</small></b>
+          <em>第 ${delta.rank} 名 · ${escapeHtml(delta.label)}</em>
+          <p>${escapeHtml(relationItem.takeaway)}</p>
+        </aside>
+      </div>
+      <div class="relation-driver-preview" aria-label="关联驱动因素">
+        ${driverPreview(relationItem, selectedCarrier)}
+      </div>`;
+  }
+
+  function evidenceMetricHtml(metricId, selectedCarrier) {
+    const located = metricById(metricId);
+    if (!located) return "";
+    const values = carrierValues(located.metricItem);
+    return `
+      <button type="button" class="relation-evidence-metric" data-relation-metric="${metricId}">
+        <span><i>${located.module.index}</i>${escapeHtml(located.metricItem.name)}</span>
+        <b>${escapeHtml(values[selectedCarrier].value)}<small>${escapeHtml(located.metricItem.unit)}</small></b>
+        <em>CMHK ${escapeHtml(values[0].value)}${escapeHtml(located.metricItem.unit)}</em>
+      </button>`;
+  }
+
+  function relationEvidenceHtml(state, relationItem, selectedCarrier) {
+    const selectedDriver = relationItem.drivers.find((item) => item.id === state.selectedDriver) || relationItem.drivers[0];
+    state.selectedDriver = selectedDriver.id;
+    return `
+      <div class="relation-driver-tabs" role="tablist" aria-label="驱动因素">
+        ${relationItem.drivers.map((item) => `<button type="button" role="tab" aria-selected="${item.id === selectedDriver.id}" class="${item.id === selectedDriver.id ? "is-active" : ""}" data-relation-driver-tab="${escapeHtml(item.id)}"><span>${escapeHtml(item.label)}</span><strong>+${formatRelationValue(item.impact[selectedCarrier])}</strong></button>`).join("")}
+      </div>
+      <section class="relation-chain" aria-label="${escapeHtml(selectedDriver.label)}关系链">
+        <div class="relation-section-title"><strong>${escapeHtml(selectedDriver.label)}如何影响结果</strong><span>演示关联路径</span></div>
+        <div class="relation-chain-steps">
+          ${selectedDriver.chain.map((item, index) => `<span><i>0${index + 1}</i>${escapeHtml(item)}</span>`).join("")}
+        </div>
+        <p>${escapeHtml(selectedDriver.relationship)}</p>
+      </section>
+      <section class="relation-evidence-list">
+        <div class="relation-section-title"><strong>支撑这条关系的底层指标</strong><span>点击查看四家原始对比</span></div>
+        <div>${selectedDriver.metricIds.map((metricId) => evidenceMetricHtml(metricId, selectedCarrier)).join("")}</div>
+      </section>`;
+  }
+
+  function relationRawHtml(state, relationItem) {
+    const metricIds = [...new Set(relationItem.drivers.flatMap((item) => item.metricIds))];
+    const metrics = metricIds.map(metricById).filter(Boolean);
     const module = KPI_TREE[state.config.key];
-    state.level = "module";
+    return `
+      <div class="relation-raw-head">
+        <div><strong>关系证据指标</strong><span>${metrics.length} 项，来自${new Set(metrics.map((item) => item.module.index)).size}个一级板块</span></div>
+        <button type="button" data-open-catalog>查看本板块全部 ${moduleMetrics(module).length} 项</button>
+      </div>
+      <div class="drill-metric-list relation-raw-list">
+        ${metrics.map(({ module: sourceModule, metricItem }) => `<button type="button" data-relation-metric="${metricItem.id}"><span><i>${sourceModule.index}</i>${escapeHtml(metricItem.name)}</span><strong>${escapeHtml(metricItem.value)}<small>${escapeHtml(metricItem.unit)}</small></strong><em>›</em></button>`).join("")}
+      </div>`;
+  }
+
+  function openRelationship(state, relationItem = null, step = "insight", origin = null) {
+    const module = KPI_TREE[state.config.key];
+    const stories = relationStories(state.config.key);
+    if (!stories.length) return openCatalog(state, origin);
+    const activeRelation = relationItem || state.relation || stories[0];
+    state.level = "relationship";
     state.category = null;
     state.group = null;
     state.metric = null;
-    setCrumbs(state, [{ label: `${module.index} ${module.label}` }]);
+    state.relation = activeRelation;
+    state.relationStep = RELATION_STEP_LABELS[step] ? step : "insight";
+    state.selectedCarrier = Math.max(0, Math.min(CARRIERS.length - 1, Number(state.selectedCarrier) || 0));
+    if (!activeRelation.drivers.some((item) => item.id === state.selectedDriver)) state.selectedDriver = activeRelation.drivers[0].id;
+    setCrumbs(state, [
+      { label: `${module.index} ${module.label}` },
+      { label: RELATION_STEP_LABELS[state.relationStep] }
+    ]);
+    const body = state.overlay.querySelector(".drill-body");
+    const stageHtml = state.relationStep === "evidence"
+      ? relationEvidenceHtml(state, activeRelation, state.selectedCarrier)
+      : state.relationStep === "raw"
+        ? relationRawHtml(state, activeRelation)
+        : relationInsightHtml(activeRelation, state.selectedCarrier);
+    body.innerHTML = `
+      <div class="relation-workspace">
+        <header class="relation-head">
+          <div><span>竞争关系 · 演示推断</span><h3>${escapeHtml(activeRelation.title)}</h3></div>
+          <nav aria-label="关系主题">${stories.map((item) => `<button type="button" class="${item.id === activeRelation.id ? "is-active" : ""}" data-relation-story="${escapeHtml(item.id)}">${escapeHtml(item.label)}</button>`).join("")}</nav>
+        </header>
+        <div class="relation-step-tabs" role="tablist" aria-label="关系穿透层级">
+          ${Object.entries(RELATION_STEP_LABELS).map(([key, label], index) => `<button type="button" role="tab" aria-selected="${key === state.relationStep}" class="${key === state.relationStep ? "is-active" : ""}" data-relation-step="${key}"><i>0${index + 1}</i>${label}</button>`).join("")}
+        </div>
+        <div class="relation-stage relation-stage-${state.relationStep}">${stageHtml}</div>
+      </div>`;
+    body.querySelectorAll("[data-relation-story]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedDriver = null;
+        openRelationship(state, stories.find((item) => item.id === button.dataset.relationStory), "insight");
+      });
+    });
+    body.querySelectorAll("[data-relation-step]").forEach((button) => {
+      button.addEventListener("click", () => openRelationship(state, activeRelation, button.dataset.relationStep));
+    });
+    body.querySelectorAll("[data-relation-carrier]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedCarrier = Number(button.dataset.relationCarrier);
+        openRelationship(state, activeRelation, state.relationStep);
+      });
+    });
+    body.querySelectorAll("[data-relation-driver]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedDriver = button.dataset.relationDriver;
+        openRelationship(state, activeRelation, "evidence");
+      });
+    });
+    body.querySelectorAll("[data-relation-driver-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedDriver = button.dataset.relationDriverTab;
+        openRelationship(state, activeRelation, "evidence");
+      });
+    });
+    body.querySelectorAll("[data-relation-metric]").forEach((button) => {
+      const located = metricById(Number(button.dataset.relationMetric));
+      if (located) button.addEventListener("click", () => openMetric(state, located.metricItem, button));
+    });
+    body.querySelector("[data-open-catalog]")?.addEventListener("click", () => openCatalog(state));
+    showOverlay(state, origin);
+    syncRelationUrl(state);
+  }
+
+  function openModule(state, origin = null) {
+    openRelationship(state, relationStories(state.config.key)[0], "insight", origin);
+  }
+
+  function openCatalog(state, origin = null) {
+    const module = KPI_TREE[state.config.key];
+    state.level = "catalog";
+    state.relation = null;
+    state.category = null;
+    state.group = null;
+    state.metric = null;
+    setCrumbs(state, [
+      { label: `${module.index} ${module.label}`, action: () => openModule(state) },
+      { label: "全部指标" }
+    ]);
     const body = state.overlay.querySelector(".drill-body");
     body.innerHTML = `
-      <div class="drill-level-heading"><strong>业务域</strong><span>${module.categories.reduce((sum, item) => sum + item.groups.reduce((count, child) => count + child.metrics.length, 0), 0)} 项指标</span></div>
+      <div class="drill-level-heading"><strong>业务域</strong><span>${moduleMetrics(module).length} 项指标</span></div>
       <div class="drill-category-list">
         ${module.categories.map((item) => `<button type="button" data-drill-category="${escapeHtml(item.key)}"><span>${escapeHtml(item.label)}</span><small>${item.groups.reduce((sum, child) => sum + child.metrics.length, 0)} 项</small><i>›</i></button>`).join("")}
       </div>`;
@@ -312,6 +564,7 @@
       button.addEventListener("click", () => openCategory(state, module.categories.find((item) => item.key === button.dataset.drillCategory)));
     });
     showOverlay(state, origin);
+    clearRelationUrl();
   }
 
   function openCategory(state, categoryItem, origin = null) {
@@ -323,6 +576,7 @@
     state.metric = null;
     setCrumbs(state, [
       { label: `${module.index} ${module.label}`, action: () => openModule(state) },
+      { label: "全部指标", action: () => openCatalog(state) },
       { label: categoryItem.label }
     ]);
     const body = state.overlay.querySelector(".drill-body");
@@ -345,6 +599,7 @@
     state.metric = null;
     setCrumbs(state, [
       { label: `${module.index} ${module.label}`, action: () => openModule(state) },
+      { label: "全部指标", action: () => openCatalog(state) },
       { label: state.category.label, action: () => openCategory(state, state.category) },
       { label: groupItem.label }
     ]);
@@ -371,24 +626,44 @@
 
   function openMetric(state, metricItem, origin = null) {
     if (!metricItem) return;
-    const module = KPI_TREE[state.config.key];
-    const location = locateMetric(module, metricItem);
+    let module = KPI_TREE[state.config.key];
+    let location = locateMetric(module, metricItem);
+    if (!location && state.relation) {
+      const located = metricById(metricItem.id);
+      if (located) {
+        module = located.module;
+        location = locateMetric(module, metricItem);
+      }
+    }
     if (!location) return;
+    const relationContext = state.relation;
+    const relationStepContext = state.relationStep;
     state.level = "metric";
     state.category = location.categoryItem;
     state.group = location.groupItem;
     state.metric = metricItem;
-    setCrumbs(state, [
-      { label: `${module.index} ${module.label}`, action: () => openModule(state) },
-      { label: state.category.label, action: () => openCategory(state, state.category) },
-      { label: state.group.label, action: () => openGroup(state, state.group) },
-      { label: metricItem.name }
-    ]);
+    const relationModule = KPI_TREE[state.config.key];
+    const crumbs = [];
+    if (relationContext) {
+      crumbs.push(
+        { label: `${relationModule.index} ${relationModule.label}`, action: () => openRelationship(state, relationContext, relationStepContext) },
+        { label: RELATION_STEP_LABELS[relationStepContext], action: () => openRelationship(state, relationContext, relationStepContext) }
+      );
+    } else {
+      crumbs.push(
+        { label: `${module.index} ${module.label}`, action: () => openModule(state) },
+        { label: "全部指标", action: () => openCatalog(state) },
+        { label: state.category.label, action: () => openCategory(state, state.category) },
+        { label: state.group.label, action: () => openGroup(state, state.group) }
+      );
+    }
+    crumbs.push({ label: metricItem.name });
+    setCrumbs(state, crumbs);
     const competitors = carrierValues(metricItem);
     const body = state.overlay.querySelector(".drill-body");
     body.innerHTML = `
       <div class="drill-metric-head">
-        <div><span>${metricItem.featured ? "大屏核心指标" : "具体指标"}</span><h3>${escapeHtml(metricItem.name)}</h3></div>
+        <div><span>${relationContext ? `${module.index} ${escapeHtml(module.label)} · ` : ""}${metricItem.featured ? "大屏核心指标" : "具体指标"}</span><h3>${escapeHtml(metricItem.name)}</h3></div>
         <strong>${escapeHtml(metricItem.value)}<small>${escapeHtml(metricItem.unit)}</small></strong>
       </div>
       <div class="drill-compare" aria-label="${escapeHtml(metricItem.name)}竞对比较">
@@ -470,6 +745,19 @@
     const panel = document.querySelector(config.selector);
     if (panel) bindPanel(panel, config);
   });
+
+  const restoredDrill = new URL(window.location.href).searchParams.get("drill");
+  if (restoredDrill) {
+    const [moduleKey, relationId, step, carrierIndex] = restoredDrill.split(".");
+    const config = PANEL_CONFIGS.find((item) => item.key === moduleKey);
+    const panel = config ? document.querySelector(config.selector) : null;
+    const state = panel ? panelStates.get(panel) : null;
+    const relationItem = relationStories(moduleKey).find((item) => item.id === relationId);
+    if (state && relationItem) {
+      state.selectedCarrier = Number(carrierIndex) || 0;
+      openRelationship(state, relationItem, step);
+    }
+  }
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
