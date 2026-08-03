@@ -612,7 +612,13 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_lark_api",
-                side_effect=[RuntimeError("temporary EOF"), response, response],
+                side_effect=[
+                    RuntimeError("temporary EOF"),
+                    response,
+                    response,
+                    response,
+                    response,
+                ],
             ) as lark_api,
             mock.patch.object(briefing.time, "sleep") as sleep,
         ):
@@ -650,13 +656,26 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(message_id, "om_notification")
         self.assertEqual(repeated_message_id, "om_notification")
         self.assertEqual(identity, "bot")
-        self.assertEqual(lark_api.call_count, 3)
+        self.assertEqual(lark_api.call_count, 5)
         first_uuid = lark_api.call_args_list[0].kwargs["data"]["uuid"]
         second_uuid = lark_api.call_args_list[1].kwargs["data"]["uuid"]
         self.assertEqual(first_uuid, second_uuid)
         self.assertEqual(
             first_uuid,
-            lark_api.call_args_list[2].kwargs["data"]["uuid"],
+            lark_api.call_args_list[3].kwargs["data"]["uuid"],
+        )
+        second_chat_uuid = lark_api.call_args_list[2].kwargs["data"]["uuid"]
+        self.assertNotEqual(first_uuid, second_chat_uuid)
+        self.assertEqual(
+            second_chat_uuid,
+            lark_api.call_args_list[4].kwargs["data"]["uuid"],
+        )
+        self.assertEqual(
+            [
+                call.kwargs["data"]["receive_id"]
+                for call in lark_api.call_args_list[1:3]
+            ],
+            list(briefing.TARGET_CHAT_IDS),
         )
         self.assertNotIn("uuid", lark_api.call_args_list[0].kwargs["params"])
         self.assertRegex(

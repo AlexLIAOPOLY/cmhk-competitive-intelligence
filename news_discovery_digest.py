@@ -9,6 +9,7 @@ import os
 import re
 import ssl
 import time
+import uuid
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, time as clock_time, timedelta
@@ -1269,18 +1270,31 @@ def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
     return (today - timedelta(days=1)).replace(hour=14), now
 
 
-def _send_card(card: dict[str, Any]) -> str:
-    payload = strategic_briefing._lark_api(
-        "POST",
-        "/im/v1/messages",
-        params={"receive_id_type": "chat_id"},
-        data={
-            "receive_id": strategic_briefing.TARGET_CHAT_ID,
-            "msg_type": "interactive",
-            "content": json.dumps(card, ensure_ascii=False),
-        },
-    )
-    return str(((payload.get("data") or {}).get("message_id") or ""))
+def _send_card(card: dict[str, Any]) -> list[str]:
+    content = json.dumps(card, ensure_ascii=False)
+    content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
+    message_ids: list[str] = []
+    for chat_id in strategic_briefing.TARGET_CHAT_IDS:
+        payload = strategic_briefing._lark_api(
+            "POST",
+            "/im/v1/messages",
+            params={"receive_id_type": "chat_id"},
+            data={
+                "receive_id": chat_id,
+                "msg_type": "interactive",
+                "content": content,
+                "uuid": str(
+                    uuid.uuid5(
+                        uuid.NAMESPACE_URL,
+                        f"cmhk-news-digest:{content_hash}:{chat_id}",
+                    )
+                ),
+            },
+        )
+        message_id = str(((payload.get("data") or {}).get("message_id") or ""))
+        if message_id:
+            message_ids.append(message_id)
+    return message_ids
 
 
 def _build_cards(
@@ -1394,7 +1408,7 @@ def send_digest(now: datetime | None = None, *, morning: bool | None = None) -> 
     message_ids: list[str] = []
     if os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") == "1":
         for card in cards:
-            message_ids.append(_send_card(card))
+            message_ids.extend(_send_card(card))
             time.sleep(0.25)
     payload = {
         "generated_at": now.isoformat(timespec="seconds"),

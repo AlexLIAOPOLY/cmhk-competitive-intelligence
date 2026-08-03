@@ -14,6 +14,31 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 
 class AgenticNewsSearchTests(unittest.TestCase):
+    def test_digest_card_is_sent_to_both_report_groups(self):
+        responses = [
+            {"data": {"message_id": "om_primary"}, "_identity": "bot"},
+            {"data": {"message_id": "om_secondary"}, "_identity": "bot"},
+        ]
+        with mock.patch.object(
+            strategic_briefing,
+            "_lark_api",
+            side_effect=responses,
+        ) as lark_api:
+            message_ids = digest._send_card(
+                {
+                    "header": {"title": {"content": "晨间通报"}},
+                    "elements": [],
+                }
+            )
+
+        self.assertEqual(message_ids, ["om_primary", "om_secondary"])
+        self.assertEqual(
+            [call.kwargs["data"]["receive_id"] for call in lark_api.call_args_list],
+            list(strategic_briefing.TARGET_CHAT_IDS),
+        )
+        uuids = [call.kwargs["data"]["uuid"] for call in lark_api.call_args_list]
+        self.assertEqual(len(set(uuids)), 2)
+
     def test_agentic_planner_has_room_and_retries_for_complete_json(self):
         spec = {
             "modules": [{"name": "竞争对手", "keywords": ["HKT"], "source_urls": []}]

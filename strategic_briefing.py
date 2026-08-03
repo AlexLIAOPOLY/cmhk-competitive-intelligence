@@ -279,9 +279,25 @@ MONITOR_SHEET_ID = (os.environ.get("CMHK_STRATEGY_SHEET_ID") or "n1fzSN").strip(
 MONITOR_SHEET_URL = (
     f"https://cmhk-try.feishu.cn/sheets/{MONITOR_SHEET_TOKEN}?sheet={MONITOR_SHEET_ID}"
 )
-TARGET_CHAT_ID = (
-    os.environ.get("CMHK_STRATEGY_CHAT_ID") or "oc_22bf3c7febc4bab295fedfb0b8e6c176"
-).strip()
+DEFAULT_TARGET_CHAT_IDS = (
+    "oc_22bf3c7febc4bab295fedfb0b8e6c176",
+    "oc_f86adbf0010f3e648400c377bf26179b",
+)
+_configured_target_chat_ids = os.environ.get("CMHK_STRATEGY_CHAT_IDS", "").strip()
+if _configured_target_chat_ids:
+    TARGET_CHAT_IDS = tuple(
+        dict.fromkeys(
+            item.strip()
+            for item in _configured_target_chat_ids.split(",")
+            if item.strip()
+        )
+    ) or DEFAULT_TARGET_CHAT_IDS
+else:
+    _legacy_target_chat_id = os.environ.get("CMHK_STRATEGY_CHAT_ID", "").strip()
+    TARGET_CHAT_IDS = (
+        (_legacy_target_chat_id,) if _legacy_target_chat_id else DEFAULT_TARGET_CHAT_IDS
+    )
+TARGET_CHAT_ID = TARGET_CHAT_IDS[0]
 TARGET_CHAT_NAME = os.environ.get("CMHK_STRATEGY_CHAT_NAME") or "竞对AI项目需求沟通群"
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_STRATEGY_POLL_SECONDS", "60")))
 GROUP_CHECK_SECONDS = max(300, int(os.environ.get("CMHK_STRATEGY_GROUP_CHECK_SECONDS", "3600")))
@@ -1467,45 +1483,52 @@ def _send_scan_message(
         },
         "elements": elements,
     }
-    idempotency_key = str(
-        uuid.uuid5(
-            uuid.NAMESPACE_URL,
-            "cmhk-strategic-scan:" + (
-                notification_key
-                or f"{now:%Y-%m-%d}:{slot_label}"
-            ),
+    notification_seed = notification_key or f"{now:%Y-%m-%d}:{slot_label}"
+    message_ids: list[str] = []
+    identities: list[str] = []
+    for chat_id in TARGET_CHAT_IDS:
+        idempotency_key = str(
+            uuid.uuid5(
+                uuid.NAMESPACE_URL,
+                f"cmhk-strategic-scan:{notification_seed}:{chat_id}",
+            )
         )
-    )
-    payload: dict[str, Any] = {}
-    last_error: Exception | None = None
-    for attempt in range(3):
-        try:
-            payload = _lark_api(
-                "POST",
-                "/open-apis/im/v1/messages",
-                params={"receive_id_type": "chat_id"},
-                data={
-                    "receive_id": TARGET_CHAT_ID,
-                    "msg_type": "interactive",
-                    "content": json.dumps(card, ensure_ascii=False),
-                    "uuid": idempotency_key,
-                },
-            )
-            break
-        except Exception as exc:
-            last_error = exc
-            if attempt >= 2:
-                raise
-            logging.warning(
-                "战略快讯群通知发送失败，第 %s/3 次：%s",
-                attempt + 1,
-                _clean_text(exc, 240),
-            )
-            time.sleep(2 ** attempt)
-    if not payload and last_error is not None:
-        raise last_error
-    message_id = str(((payload.get("data") or {}).get("message_id") or ""))
-    return message_id, str(payload.get("_identity") or "")
+        payload: dict[str, Any] = {}
+        last_error: Exception | None = None
+        for attempt in range(3):
+            try:
+                payload = _lark_api(
+                    "POST",
+                    "/open-apis/im/v1/messages",
+                    params={"receive_id_type": "chat_id"},
+                    data={
+                        "receive_id": chat_id,
+                        "msg_type": "interactive",
+                        "content": json.dumps(card, ensure_ascii=False),
+                        "uuid": idempotency_key,
+                    },
+                )
+                break
+            except Exception as exc:
+                last_error = exc
+                if attempt >= 2:
+                    raise
+                logging.warning(
+                    "战略快讯群通知发送失败（群 %s），第 %s/3 次：%s",
+                    chat_id,
+                    attempt + 1,
+                    _clean_text(exc, 240),
+                )
+                time.sleep(2 ** attempt)
+        if not payload and last_error is not None:
+            raise last_error
+        message_id = str(((payload.get("data") or {}).get("message_id") or ""))
+        if message_id:
+            message_ids.append(message_id)
+        identity = str(payload.get("_identity") or "")
+        if identity and identity not in identities:
+            identities.append(identity)
+    return (message_ids[0] if message_ids else ""), ",".join(identities)
 
 
 def _pending_notification_payload(
