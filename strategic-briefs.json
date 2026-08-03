@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-03T09:24:30+08:00",
+  "generated_at": "2026-08-03T09:30:08+08:00",
   "items": [
+    {
+      "id": "NEWS-7906A5234C6DC3",
+      "title": "香港上调全年经济增长预测",
+      "summary": "财政司司长陈茂波表示，鉴于上半年GDP增长达5.1%，香港将上调全年经济增长预测。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864679-20260802.htm",
+      "published_at": "2026-08-02T16:24:00+08:00"
+    },
     {
       "id": "NEWS-D419362F00CB24",
       "title": "香港二季度GDP同比增长4.3%",
@@ -57,15 +65,7 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE0zdms4eUxCZkxpTVJwZ2d6Rkg2VnR6VnhmTXpWakREM2NBRlJLLS1nT2xaQjZDQy1pZ2t3ME1mU29kcXNPUFhMa1Bkck1pV2R2?oc=5",
       "published_at": "2026-07-29T17:16:00+08:00"
-    },
-    {
-      "id": "NEWS-42A8A8BD467BFE",
-      "title": "商汤大装置持续拓展产业生态边界 集中落地多项重磅战略合作",
-      "summary": "商汤大装置与国信数算签署全国一体化算力网试验场战略合作，联合举办AI基础设施创新发展论坛。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.leiphone.com/category/industrynews/sO1Q58AgzvWr2mFJ.html",
-      "published_at": "2026-07-29"
     }
   ],
-  "site_version": "497bed57a42816336a528389ec6cf06a717c5dcecca4f7c6f53e88eb56541bd4"
+  "site_version": "4a5c2f6a3a2d6c2428f57bbb0f49d7318f90b9b672b48ff67ed5311eac3ddc2f"
 }
