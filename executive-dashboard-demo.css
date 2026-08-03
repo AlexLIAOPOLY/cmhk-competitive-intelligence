@@ -811,6 +811,7 @@ h1 {
 .detail-item strong small { margin-left: 3px; color: #91b5c8; font-size: 9px; font-weight: 500; }
 
 .hero-metric {
+  width: max-content;
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
