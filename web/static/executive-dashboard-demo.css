@@ -404,16 +404,11 @@ h1 {
 }
 
 .panel-tabs {
-  --active-index: 0;
-  --tab-count: 4;
-  --tab-gap: 3px;
-  --tab-inset: 2px;
   min-width: 0;
-  position: relative;
   height: 34px;
   display: grid;
   align-items: stretch;
-  gap: var(--tab-gap);
+  gap: 3px;
   margin-left: auto;
   padding: 2px;
   border: 1px solid rgba(91, 190, 234, .22);
@@ -421,26 +416,8 @@ h1 {
   box-shadow: inset 0 0 14px rgba(53, 217, 255, .035);
 }
 
-.panel-tabs::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  left: var(--tab-inset);
-  bottom: var(--tab-inset);
-  width: calc((100% - (2 * var(--tab-inset)) - ((var(--tab-count) - 1) * var(--tab-gap))) / var(--tab-count));
-  height: 2px;
-  pointer-events: none;
-  background: var(--cyan);
-  opacity: .78;
-  box-shadow: 0 0 6px rgba(53, 217, 255, .45);
-  will-change: transform;
-  transform: translate3d(calc(var(--active-index) * (100% + var(--tab-gap))), 0, 0);
-  transition: transform .4s cubic-bezier(.22, 1, .36, 1), opacity .2s ease;
-}
-
 .panel-tabs button {
   position: relative;
-  z-index: 1;
   min-width: 0;
   height: 28px;
   padding: 0 9px;
@@ -453,7 +430,18 @@ h1 {
   font-weight: 600;
   letter-spacing: .02em;
   cursor: pointer;
-  transition: color .2s ease, border-color .2s ease, background .2s ease;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.panel-tabs button::after {
+  content: "";
+  position: absolute;
+  inset: auto 22% 0;
+  height: 2px;
+  background: var(--cyan);
+  opacity: 0;
+  box-shadow: 0 0 6px rgba(53, 217, 255, .45);
+  transition: opacity .2s ease;
 }
 
 .panel-tabs button:hover,
@@ -473,6 +461,8 @@ h1 {
   box-shadow: inset 0 0 12px rgba(73, 221, 255, .08), 0 0 5px rgba(42, 203, 255, .06);
 }
 
+.panel-tabs button.is-active::after { opacity: .72; }
+.motion-enabled .panel-tabs button.is-active { animation: selected-tab-breathe 6s ease-in-out infinite; }
 .network-tabs { width: min(52%, 490px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .business-tabs { width: min(36%, 245px); grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .reach-tabs { width: min(48%, 328px); grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -490,6 +480,7 @@ h1 {
 .network-content { padding: 14px 15px; }
 .panel-switch-content.is-switching {
   will-change: transform, opacity;
+  animation: content-switch .64s cubic-bezier(.22, 1, .36, 1);
 }
 
 .business-detail,
@@ -914,6 +905,10 @@ h1 {
 @keyframes news-marquee {
   to { transform: translate3d(calc(-1 * var(--news-loop-width, 1560px)), 0, 0); }
 }
+@keyframes content-switch {
+  0% { opacity: .2; transform: translate3d(10px, 0, 0) scale(.997); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
 @keyframes scene-drift { from { transform: scale(1.015) translate3d(-.3%, 0, 0); } to { transform: scale(1.06) translate3d(.5%, -.4%, 0); } }
 @keyframes grid-drift { to { background-position: 48px 48px; } }
 @keyframes heading-glow-shift { from { background-position: 0 0; } to { background-position: 100% 0; } }
@@ -921,6 +916,9 @@ h1 {
 @keyframes corner-breathe { 50% { opacity: .46; } }
 @keyframes panel-scan { to { transform: translateY(575%); } }
 @keyframes ring-breathe { 50% { box-shadow: 0 0 30px rgba(53, 217, 255, .27); } }
+@keyframes selected-tab-breathe {
+  50% { border-color: rgba(86, 202, 241, .52); box-shadow: inset 0 0 14px rgba(73, 221, 255, .1), 0 0 6px rgba(42, 203, 255, .08); }
+}
 @keyframes bracket-glow { 50% { opacity: .55; filter: brightness(1.2); } }
 @keyframes node-pulse { 50% { opacity: .46; transform: rotate(45deg) scale(.72); box-shadow: 0 0 4px rgba(var(--accent-rgb), .34); } }
 @keyframes data-beacon { 50% { opacity: .46; transform: scale(1.7); } }
@@ -931,7 +929,7 @@ h1 {
 @keyframes area-reveal { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 1450px) {
-  .panel-tabs { --tab-gap: 2px; gap: var(--tab-gap); }
+  .panel-tabs { gap: 2px; }
   .panel-tabs button { padding-inline: 5px; font-size: 9px; }
   .network-tabs { width: min(54%, 430px); }
   .business-tabs { width: min(36%, 220px); }
@@ -944,7 +942,7 @@ h1 {
   .score-ring { width: 94px; }
   .panel-heading h2 { font-size: 17px; letter-spacing: .04em; }
   .network-tabs { width: min(58%, 300px); }
-  .panel-tabs { --tab-gap: 3px; gap: var(--tab-gap); }
+  .panel-tabs { gap: 3px; }
   .panel-tabs button { height: 28px; padding-inline: 4px; font-size: 9px; }
   .business-tabs { width: min(39%, 210px); }
   .reach-tabs { width: min(56%, 280px); }
