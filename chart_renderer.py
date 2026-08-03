@@ -18,7 +18,7 @@ from matplotlib.ticker import FuncFormatter
 
 ROOT = Path(__file__).resolve().parent
 CHART_OUTPUT_DIR = ROOT / "agent_knowledge" / "generated_charts"
-CHART_RENDERER_VERSION = "2026-08-03-adaptive-bar-labels-v3"
+CHART_RENDERER_VERSION = "2026-08-03-complete-inside-bar-labels-v4"
 
 COLOR_PALETTE = [
     "#0077C8",
@@ -198,23 +198,6 @@ def _format_value_label(value: float, *, compact: bool = False) -> str:
     return f"{value:,.0f}" if float(value).is_integer() else f"{value:,.1f}"
 
 
-def _visible_bar_label_indexes(label_count: int, series_count: int) -> set[int]:
-    if label_count <= 0:
-        return set()
-    max_groups = max(2, 12 // max(series_count, 1))
-    if label_count <= max_groups:
-        return set(range(label_count))
-    step = math.ceil(label_count / max_groups)
-    indexes = list(range(0, label_count, step))
-    last = label_count - 1
-    if indexes[-1] != last:
-        if len(indexes) > 1 and last - indexes[-1] < step:
-            indexes[-1] = last
-        else:
-            indexes.append(last)
-    return set(indexes)
-
-
 def _label_bars(
     ax,
     container,
@@ -222,24 +205,25 @@ def _label_bars(
     font_prop,
     *,
     center: bool = False,
-    visible_indexes: set[int] | None = None,
     compact: bool = False,
-) -> None:
+    rotation: float = 0,
+):
     labels = [
         _format_value_label(value, compact=compact)
-        if value != 0 and (visible_indexes is None or index in visible_indexes)
+        if value != 0
         else ""
-        for index, value in enumerate(values)
+        for value in values
     ]
-    ax.bar_label(
+    return ax.bar_label(
         container,
         labels=labels,
         label_type="center" if center else "edge",
         padding=0 if center else 4,
-        fontsize=8.2,
+        fontsize=7.6 if compact else 8.2,
         color="white" if center else "#344054",
         fontweight="bold" if center else "normal",
         fontproperties=font_prop,
+        rotation=rotation,
     )
 
 
@@ -300,8 +284,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
 
     if chart_type in {"bar", "grouped_bar"}:
         count = len(spec["series"])
-        visible_indexes = _visible_bar_label_indexes(label_count, count)
-        compact_labels = label_count * count > 12
+        dense_labels = label_count * count > 12
         width = min(0.22, 0.72 / max(count, 1))
         offsets = [(index - (count - 1) / 2) * width for index in range(count)]
         for index, item in enumerate(spec["series"]):
@@ -312,14 +295,14 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
                 bars,
                 values,
                 font_prop,
-                visible_indexes=visible_indexes,
-                compact=compact_labels,
+                center=dense_labels,
+                compact=dense_labels,
+                rotation=90 if dense_labels else 0,
             )
         ax.margins(y=0.12)
     elif chart_type == "horizontal_bar":
         count = len(spec["series"])
-        visible_indexes = _visible_bar_label_indexes(label_count, count)
-        compact_labels = label_count * count > 12
+        dense_labels = label_count * count > 12
         height = min(0.24, 0.72 / max(count, 1))
         offsets = [(index - (count - 1) / 2) * height for index in range(count)]
         for index, item in enumerate(spec["series"]):
@@ -330,8 +313,8 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
                 bars,
                 values,
                 font_prop,
-                visible_indexes=visible_indexes,
-                compact=compact_labels,
+                center=dense_labels,
+                compact=dense_labels,
             )
         ax.set_yticks(x_pos, x_labels, fontproperties=font_prop)
         ax.invert_yaxis()
