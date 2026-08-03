@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
   <link rel="stylesheet" href="/static/styles.css?v=226" />
+  <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -88,6 +89,7 @@
                 <p>集中查看、播放、下载和管理已生成报告</p>
               </div>
               <div class="report-library-header-actions">
+                <button class="command-btn btn-review-sheet" id="openNewsReviewSheetButton" type="button">新闻审核表</button>
                 <button class="command-btn btn-summary" id="generatePerformanceButton" type="button">生成业绩摘要</button>
                 <button class="command-btn btn-report" id="generateButtonSecondary" type="button">生成周报</button>
                 <button class="report-library-close" id="closeReportLibraryButton" type="button" aria-label="关闭报告库">&times;</button>
@@ -136,6 +138,51 @@
               </div>
               <div class="output-table performance-table" id="performanceFileList"></div>
             </section>
+          </section>
+
+          <section class="news-review-workspace" id="newsReviewWorkspace" role="dialog" aria-modal="true" aria-labelledby="newsReviewTitle" hidden>
+            <header class="news-review-topbar">
+              <div class="news-review-brand">
+                <img src="/static/assets/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
+                <div>
+                  <strong id="newsReviewTitle">滚动新闻审核表</strong>
+                  <span id="newsReviewSyncText" role="status">连接飞书审核表</span>
+                </div>
+              </div>
+              <div class="news-review-actions">
+                <button type="button" id="newsReviewRefreshButton">刷新</button>
+                <button type="button" id="newsReviewCopyButton">复制所选</button>
+                <button type="button" id="newsReviewExportButton">导出 Excel</button>
+                <a id="newsReviewFeishuLink" href="#" target="_blank" rel="noreferrer" hidden>在飞书打开</a>
+                <button class="news-review-close" type="button" id="closeNewsReviewSheetButton" aria-label="关闭新闻审核表">&times;</button>
+              </div>
+            </header>
+            <div class="news-review-toolbar">
+              <label class="news-review-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                <input id="newsReviewSearchInput" type="search" placeholder="搜索标题、摘要、媒体或关键词" autocomplete="off" />
+              </label>
+              <span id="newsReviewCountText">-- 条记录</span>
+              <span class="news-review-selection-text" id="newsReviewSelectionText">选择单元格后可复制</span>
+              <button class="news-review-clear-filters" id="newsReviewClearFilters" type="button" hidden>清除筛选</button>
+            </div>
+            <div class="news-review-formula-bar" aria-label="当前单元格">
+              <strong id="newsReviewCellName">—</strong>
+              <span id="newsReviewCellValue">请选择单元格</span>
+            </div>
+            <div class="news-review-grid-shell" id="newsReviewGridShell">
+              <div class="news-review-loading" id="newsReviewLoading">正在读取飞书审核表…</div>
+              <table class="news-review-grid" id="newsReviewGrid" aria-label="滚动新闻审核表" hidden>
+                <colgroup id="newsReviewColgroup"></colgroup>
+                <thead id="newsReviewHead"></thead>
+                <tbody id="newsReviewBody"></tbody>
+              </table>
+            </div>
+            <footer class="news-review-statusbar">
+              <span id="newsReviewSaveStatus">实时回写飞书 · 修改后自动保存并回读</span>
+              <span>双击编辑 · ⌘/Ctrl+C 复制 · ⌘/Ctrl+V 粘贴</span>
+            </footer>
+            <div class="news-review-filter-menu" id="newsReviewFilterMenu" hidden></div>
           </section>
         </section>
       </section>
@@ -416,5 +463,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js?v=241"></script>
+    <script src="/static/news-review-sheet.js?v=1"></script>
   </body>
 </html>

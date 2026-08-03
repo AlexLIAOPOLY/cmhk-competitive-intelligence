@@ -3223,6 +3223,18 @@ class AppHandler(BaseHTTPRequestHandler):
                     status=500,
                 )
             return
+        if path == "/api/news-review-sheet":
+            try:
+                from news_review_sheet import review_sheet_snapshot
+
+                json_response(self, {"ok": True, **review_sheet_snapshot()})
+            except Exception as exc:
+                json_response(
+                    self,
+                    {"ok": False, "error": str(exc), "headers": [], "rows": []},
+                    status=503,
+                )
+            return
         if path == "/api/executive-intelligence":
             try:
                 from executive_intelligence import build_executive_intelligence_snapshot
@@ -3394,6 +3406,21 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/news-review-sheet/update":
+            try:
+                from news_review_sheet import update_review_sheet_cells
+
+                payload = read_request_json(self)
+                changes = payload.get("changes")
+                if not isinstance(changes, list):
+                    raise ValueError("changes 必须是数组")
+                result = update_review_sheet_cells(changes)
+                json_response(self, {"ok": True, **result})
+            except (ValueError, RuntimeError) as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 409)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 500)
+            return
         if parsed.path == "/api/crawl":
             if not CRAWL_PIPELINE_LOCK.acquire(blocking=False):
                 json_response(

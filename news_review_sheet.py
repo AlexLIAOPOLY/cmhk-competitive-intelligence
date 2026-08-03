@@ -1264,6 +1264,152 @@ def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
     }
 
 
+REVIEW_SHEET_EDITABLE_COLUMNS = tuple(index for index in range(len(HEADERS)) if index != 2)
+REVIEW_SHEET_STATUS_OPTIONS = ("待审核", "接受", "不接受", "暂缓")
+
+
+def _resolved_review_sheet_id(sheet_id: str | None = None) -> str:
+    if sheet_id:
+        return sheet_id
+    state = _read_json(STATE_PATH, {})
+    saved_sheet_id = _text(state.get("sheet_id"), 120) if isinstance(state, dict) else ""
+    return saved_sheet_id or ensure_sheet()
+
+
+def review_sheet_snapshot(*, sheet_id: str | None = None) -> dict[str, Any]:
+    """Return a live, browser-safe view of the Feishu review worksheet."""
+    with _LOCK:
+        resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
+        rows = _read_rows(resolved_sheet_id)
+        return {
+            "sheetId": resolved_sheet_id,
+            "sheetTitle": SHEET_TITLE,
+            "sheetUrl": _sheet_url(resolved_sheet_id),
+            "headers": list(HEADERS),
+            "editableColumns": list(REVIEW_SHEET_EDITABLE_COLUMNS),
+            "statusOptions": list(REVIEW_SHEET_STATUS_OPTIONS),
+            "updatedAt": _now_iso(),
+            "rows": [
+                {
+                    "rowNumber": row_number,
+                    "values": _comparable_sheet_row(row),
+                }
+                for row_number, row in enumerate(rows, start=2)
+                if row and any(_text(value, 80) for value in row)
+            ],
+        }
+
+
+def _column_name(index: int) -> str:
+    if index < 0 or index >= 26:
+        raise ValueError("列编号超出支持范围")
+    return chr(ord("A") + index)
+
+
+def update_review_sheet_cells(
+    changes: list[dict[str, Any]],
+    *,
+    sheet_id: str | None = None,
+) -> dict[str, Any]:
+    """Write reviewed cells to Feishu, apply decisions, and prove them by readback."""
+    if not isinstance(changes, list) or not changes:
+        raise ValueError("没有需要保存的单元格")
+    if len(changes) > 200:
+        raise ValueError("单次最多保存 200 个单元格")
+
+    with _LOCK, _review_process_lock(wait=False) as process_lock_acquired:
+        if not process_lock_acquired:
+            raise RuntimeError("审核表正在同步，请稍后重试")
+        resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
+        current_rows = _read_rows(resolved_sheet_id)
+        normalized: dict[tuple[int, int], dict[str, Any]] = {}
+        for raw_change in changes:
+            if not isinstance(raw_change, dict):
+                raise ValueError("单元格更新格式无效")
+            row_number = int(raw_change.get("rowNumber") or 0)
+            column_index = int(raw_change.get("columnIndex", -1))
+            if row_number < 2 or row_number > MAX_SHEET_ROWS:
+                raise ValueError(f"第 {row_number} 行超出审核表范围")
+            if column_index not in REVIEW_SHEET_EDITABLE_COLUMNS:
+                raise ValueError("同步状态列由系统维护，不能手工修改")
+            row_offset = row_number - 2
+            if row_offset >= len(current_rows):
+                raise ValueError(f"第 {row_number} 行不存在，已停止写入")
+            current = _comparable_sheet_row(current_rows[row_offset])[column_index]
+            expected = raw_change.get("before")
+            if expected is not None and _text(expected, 5000) != current:
+                raise RuntimeError(
+                    f"第 {row_number} 行“{HEADERS[column_index]}”已被其他用户修改，请刷新后重试"
+                )
+            value = _text(raw_change.get("value"), 5000)
+            if column_index in {0, 1}:
+                value = _normalized_status(value)
+                if value not in REVIEW_SHEET_STATUS_OPTIONS:
+                    raise ValueError(f"无效审核状态：{value}")
+            if column_index == 10 and value and not value.lower().startswith(("http://", "https://")):
+                raise ValueError("原文链接必须以 http:// 或 https:// 开头")
+            normalized[(row_number, column_index)] = {
+                "rowNumber": row_number,
+                "columnIndex": column_index,
+                "before": current,
+                "value": value,
+            }
+
+        changed = [item for item in normalized.values() if item["value"] != item["before"]]
+        if not changed:
+            snapshot = review_sheet_snapshot(sheet_id=resolved_sheet_id)
+            return {"changedCount": 0, "review": {}, **snapshot}
+
+        # Coalesce adjacent cells on the same row so rectangular Excel pastes do
+        # not produce one network request per cell.
+        by_row: dict[int, list[dict[str, Any]]] = {}
+        for item in changed:
+            by_row.setdefault(item["rowNumber"], []).append(item)
+        for row_number, row_changes in sorted(by_row.items()):
+            row_changes.sort(key=lambda item: item["columnIndex"])
+            segment: list[dict[str, Any]] = []
+            segments: list[list[dict[str, Any]]] = []
+            for item in row_changes:
+                if segment and item["columnIndex"] != segment[-1]["columnIndex"] + 1:
+                    segments.append(segment)
+                    segment = []
+                segment.append(item)
+            if segment:
+                segments.append(segment)
+            for items in segments:
+                start_column = _column_name(items[0]["columnIndex"])
+                end_column = _column_name(items[-1]["columnIndex"])
+                _write(
+                    resolved_sheet_id,
+                    f"{start_column}{row_number}:{end_column}{row_number}",
+                    [[item["value"] for item in items]],
+                )
+
+        review_result = apply_reviews(resolved_sheet_id)
+        snapshot = review_sheet_snapshot(sheet_id=resolved_sheet_id)
+        readback = {
+            (row["rowNumber"], column_index): row["values"][column_index]
+            for row in snapshot["rows"]
+            for column_index in range(len(HEADERS))
+        }
+        mismatches = [
+            item
+            for item in changed
+            if readback.get((item["rowNumber"], item["columnIndex"])) != item["value"]
+        ]
+        if mismatches:
+            first = mismatches[0]
+            raise RuntimeError(
+                f"第 {first['rowNumber']} 行“{HEADERS[first['columnIndex']]}”回读不一致，未确认保存成功"
+            )
+        return {
+            "changedCount": len(changed),
+            "readbackVerified": True,
+            "review": review_result,
+            **snapshot,
+        }
+
+
 def load_weekly_report_candidates(
     window_start: str,
     window_end: str,
