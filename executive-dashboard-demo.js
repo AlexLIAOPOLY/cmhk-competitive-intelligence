@@ -15,12 +15,103 @@ const REACH_INITIAL_OFFSET = 1800;
 const FINANCE_INITIAL_OFFSET = 2700;
 let networkRotationTimer = 0;
 
-function restartContentSwitch(content, switchKey) {
-  if (!content || content.dataset.switchKey === switchKey) return;
-  content.dataset.switchKey = switchKey;
-  content.classList.remove("is-switching");
-  void content.offsetWidth;
+const contentTransitions = new WeakMap();
+
+function clearContentStyles(content) {
+  content.style.removeProperty("opacity");
+  content.style.removeProperty("transform");
+  content.style.removeProperty("will-change");
+}
+
+function setTabSelection(tabs, activeIndex) {
+  const tabList = tabs[0]?.closest(".panel-tabs");
+  if (tabList) {
+    tabList.style.setProperty("--active-index", String(activeIndex));
+    tabList.style.setProperty("--tab-count", String(tabs.length));
+  }
+  tabs.forEach((tab, index) => {
+    const active = index === activeIndex;
+    tab.classList.toggle("is-active", active);
+    tab.setAttribute("aria-selected", String(active));
+  });
+}
+
+function transitionContent(content, switchKey, mutate) {
+  if (!content || typeof mutate !== "function") return Promise.resolve({ current: false, changed: false });
+
+  const previous = contentTransitions.get(content);
+  if (previous?.key === switchKey) return previous.promise;
+  if (content.dataset.switchKey === switchKey && !previous) {
+    return Promise.resolve({ current: true, changed: false });
+  }
+
+  if (previous) {
+    previous.cancelled = true;
+    previous.animation?.cancel();
+  }
+
+  const commit = () => {
+    mutate();
+    content.dataset.switchKey = switchKey;
+  };
+
+  if (!content.dataset.switchKey || reducedMotion.matches || typeof content.animate !== "function") {
+    commit();
+    content.classList.remove("is-switching");
+    clearContentStyles(content);
+    contentTransitions.delete(content);
+    return Promise.resolve({ current: true, changed: true });
+  }
+
+  const state = {
+    key: switchKey,
+    animation: null,
+    cancelled: false,
+    promise: null
+  };
+  const promise = (async () => {
+    const leave = content.animate(
+      [
+        { opacity: 1, transform: "translate3d(0, 0, 0)" },
+        { opacity: 0, transform: "translate3d(-6px, 0, 0)" }
+      ],
+      { duration: 180, easing: "cubic-bezier(.33, 0, .67, 1)", fill: "forwards" }
+    );
+    state.animation = leave;
+    try {
+      await leave.finished;
+    } catch {
+      return { current: false, changed: false };
+    }
+    if (state.cancelled || contentTransitions.get(content) !== state) return { current: false, changed: false };
+
+    leave.cancel();
+    commit();
+    const enter = content.animate(
+      [
+        { opacity: 0, transform: "translate3d(8px, 0, 0)" },
+        { opacity: 1, transform: "translate3d(0, 0, 0)" }
+      ],
+      { duration: 460, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" }
+    );
+    state.animation = enter;
+    try {
+      await enter.finished;
+    } catch {
+      return { current: false, changed: false };
+    }
+    if (state.cancelled || contentTransitions.get(content) !== state) return { current: false, changed: false };
+
+    enter.cancel();
+    content.classList.remove("is-switching");
+    clearContentStyles(content);
+    contentTransitions.delete(content);
+    return { current: true, changed: true };
+  })();
+  state.promise = promise;
+  contentTransitions.set(content, state);
   content.classList.add("is-switching");
+  return promise;
 }
 
 const networkViews = {
@@ -54,15 +145,8 @@ const networkViews = {
   }
 };
 
-function showNetworkView(viewName) {
-  const view = networkViews[viewName];
-  if (!view || !networkContent) return;
-
-  networkTabs.forEach((tab) => {
-    const active = tab.dataset.networkView === viewName;
-    tab.classList.toggle("is-active", active);
-    tab.setAttribute("aria-selected", String(active));
-  });
+function renderNetworkView(viewName, view) {
+  if (!networkContent) return;
 
   networkContent.querySelector("[data-network-label='hero']").textContent = view.hero[0];
   networkContent.querySelector(".hero-metric strong").textContent = view.hero[1];
@@ -106,11 +190,20 @@ function showNetworkView(viewName) {
   if (networkPair) networkPair.hidden = ![...networkPair.children].some((child) => !child.hidden);
 
   if (networkPanel) networkPanel.dataset.networkView = viewName;
-  restartContentSwitch(networkContent, viewName);
+}
+
+function showNetworkView(viewName) {
+  const view = networkViews[viewName];
+  if (!view || !networkContent) return Promise.resolve({ current: false, changed: false });
+
+  const activeIndex = networkTabs.findIndex((tab) => tab.dataset.networkView === viewName);
+  setTabSelection(networkTabs, Math.max(activeIndex, 0));
+  return transitionContent(networkContent, viewName, () => renderNetworkView(viewName, view));
 }
 
 function stopNetworkRotation() {
   window.clearTimeout(networkRotationTimer);
+  networkRotationTimer = 0;
 }
 
 function networkRotationIsPaused() {
@@ -129,18 +222,22 @@ function scheduleNetworkRotation(delay = NETWORK_ROTATE_DELAY) {
   if (networkRotationIsPaused()) return;
 
   networkRotationTimer = window.setTimeout(() => {
+    networkRotationTimer = 0;
     if (networkRotationIsPaused()) return;
     const current = networkTabs.findIndex((tab) => tab.classList.contains("is-active"));
     const next = networkTabs[(current + 1 + networkTabs.length) % networkTabs.length];
-    showNetworkView(next.dataset.networkView);
-    scheduleNetworkRotation();
+    showNetworkView(next.dataset.networkView).then((result) => {
+      if (result?.current) scheduleNetworkRotation();
+    });
   }, delay);
 }
 
 networkTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
-    showNetworkView(tab.dataset.networkView);
-    scheduleNetworkRotation();
+    stopNetworkRotation();
+    showNetworkView(tab.dataset.networkView).then((result) => {
+      if (result?.current) scheduleNetworkRotation();
+    });
   });
   tab.addEventListener("keydown", (event) => {
     if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
@@ -149,7 +246,10 @@ networkTabs.forEach((tab) => {
     const direction = event.key === "ArrowRight" ? 1 : -1;
     const next = networkTabs[(current + direction + networkTabs.length) % networkTabs.length];
     next.focus();
-    showNetworkView(next.dataset.networkView);
+    stopNetworkRotation();
+    showNetworkView(next.dataset.networkView).then((result) => {
+      if (result?.current) scheduleNetworkRotation();
+    });
   });
 });
 
@@ -239,18 +339,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
     return getGroups(views[viewName]) || [];
   }
 
-  function apply(viewIndex, groupIndex = 0) {
-    activeViewIndex = (viewIndex + viewNames.length) % viewNames.length;
-    const groups = currentGroups();
-    activeGroupIndex = groups.length ? (groupIndex + groups.length) % groups.length : 0;
-    const group = groups[activeGroupIndex] || { label: "", metrics: [] };
-
-    tabs.forEach((tab, index) => {
-      const active = index === activeViewIndex;
-      tab.classList.toggle("is-active", active);
-      tab.setAttribute("aria-selected", String(active));
-    });
-
+  function renderGroup(group, groups) {
     const label = content.querySelector(`[data-${prefix}-detail-label]`);
     const index = content.querySelector(`[data-${prefix}-detail-index]`);
     if (label) label.textContent = group.label || "";
@@ -263,15 +352,24 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
       labelNode.textContent = metric?.[0] || "";
       if (metricValues[metricIndex]) {
         const valueNode = metricValues[metricIndex];
-        if (valueNode.tagName === "I") valueNode.textContent = metric?.[1] || "";
-        else valueNode.textContent = metric?.[1] || "";
+        valueNode.textContent = metric?.[1] || "";
       }
       if (metricUnits[metricIndex]) metricUnits[metricIndex].textContent = metric?.[2] || "";
     });
 
     content.dataset.activeView = viewNames[activeViewIndex] || "";
     content.dataset.activeGroup = String(activeGroupIndex);
-    restartContentSwitch(content, `${content.dataset.activeView}:${content.dataset.activeGroup}`);
+  }
+
+  function apply(viewIndex, groupIndex = 0) {
+    activeViewIndex = (viewIndex + viewNames.length) % viewNames.length;
+    const groups = currentGroups();
+    activeGroupIndex = groups.length ? (groupIndex + groups.length) % groups.length : 0;
+    const group = groups[activeGroupIndex] || { label: "", metrics: [] };
+
+    setTabSelection(tabs, activeViewIndex);
+    const switchKey = `${viewNames[activeViewIndex] || ""}:${activeGroupIndex}`;
+    return transitionContent(content, switchKey, () => renderGroup(group, groups));
   }
 
   function paused() {
@@ -283,27 +381,33 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
     );
   }
 
-  function stop() { window.clearTimeout(timer); }
+  function stop() {
+    window.clearTimeout(timer);
+    timer = 0;
+  }
 
   function schedule(delay = NETWORK_ROTATE_DELAY) {
     stop();
     if (paused()) return;
     timer = window.setTimeout(() => {
+      timer = 0;
       if (paused()) return;
       const groups = currentGroups();
-      if (groups.length > 1 && activeGroupIndex < groups.length - 1) {
-        apply(activeViewIndex, activeGroupIndex + 1);
-      } else {
-        apply((activeViewIndex + 1) % viewNames.length, 0);
-      }
-      schedule();
+      const transition = groups.length > 1 && activeGroupIndex < groups.length - 1
+        ? apply(activeViewIndex, activeGroupIndex + 1)
+        : apply((activeViewIndex + 1) % viewNames.length, 0);
+      transition.then((result) => {
+        if (result?.current) schedule();
+      });
     }, delay);
   }
 
   tabs.forEach((tab, tabIndex) => {
     tab.addEventListener("click", () => {
-      apply(tabIndex, 0);
-      schedule();
+      stop();
+      apply(tabIndex, 0).then((result) => {
+        if (result?.current) schedule();
+      });
     });
     tab.addEventListener("keydown", (event) => {
       if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
@@ -311,7 +415,10 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
       const direction = event.key === "ArrowRight" ? 1 : -1;
       const nextIndex = (tabIndex + direction + tabs.length) % tabs.length;
       tabs[nextIndex].focus();
-      apply(nextIndex, 0);
+      stop();
+      apply(nextIndex, 0).then((result) => {
+        if (result?.current) schedule();
+      });
     });
   });
 
