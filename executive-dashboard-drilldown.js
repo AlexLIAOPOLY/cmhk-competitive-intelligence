@@ -356,7 +356,12 @@
     state.origin = origin || state.origin;
     state.overlay.hidden = false;
     state.panel.classList.add("is-drilling");
-    if (wasHidden) state.overlay.querySelector(".drill-close").focus({ preventScroll: true });
+    if (wasHidden) {
+      state.overlay.querySelector(".drill-close").focus({ preventScroll: true });
+      if (window.matchMedia("(max-width: 520px)").matches) {
+        window.requestAnimationFrame(() => state.panel.scrollIntoView({ block: "start", behavior: "auto" }));
+      }
+    }
   }
 
   function closeOverlay(state) {
@@ -637,11 +642,16 @@
     state.category = location.categoryItem;
     state.group = location.groupItem;
     state.metric = metricItem;
-    const crumbs = [{ label: `${module.index} ${module.label}`, action: () => openModule(state) }];
+    const relationModule = KPI_TREE[state.config.key];
+    const crumbs = [];
     if (relationContext) {
-      crumbs.push({ label: "关系洞察", action: () => openRelationship(state, relationContext, relationStepContext) });
+      crumbs.push(
+        { label: `${relationModule.index} ${relationModule.label}`, action: () => openRelationship(state, relationContext, relationStepContext) },
+        { label: RELATION_STEP_LABELS[relationStepContext], action: () => openRelationship(state, relationContext, relationStepContext) }
+      );
     } else {
       crumbs.push(
+        { label: `${module.index} ${module.label}`, action: () => openModule(state) },
         { label: "全部指标", action: () => openCatalog(state) },
         { label: state.category.label, action: () => openCategory(state, state.category) },
         { label: state.group.label, action: () => openGroup(state, state.group) }
@@ -653,7 +663,7 @@
     const body = state.overlay.querySelector(".drill-body");
     body.innerHTML = `
       <div class="drill-metric-head">
-        <div><span>${metricItem.featured ? "大屏核心指标" : "具体指标"}</span><h3>${escapeHtml(metricItem.name)}</h3></div>
+        <div><span>${relationContext ? `${module.index} ${escapeHtml(module.label)} · ` : ""}${metricItem.featured ? "大屏核心指标" : "具体指标"}</span><h3>${escapeHtml(metricItem.name)}</h3></div>
         <strong>${escapeHtml(metricItem.value)}<small>${escapeHtml(metricItem.unit)}</small></strong>
       </div>
       <div class="drill-compare" aria-label="${escapeHtml(metricItem.name)}竞对比较">
