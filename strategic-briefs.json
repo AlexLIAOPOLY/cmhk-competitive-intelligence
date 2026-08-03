@@ -1,71 +1,71 @@
 {
   "ok": true,
-  "generated_at": "2026-07-26T09:27:50+08:00",
+  "generated_at": "2026-08-03T14:28:27+08:00",
   "items": [
     {
-      "id": "NEWS-66B2C6FEDA7E9A",
-      "title": "中国联通在京发布5G-A大上行网络能力",
-      "summary": "中国联通在北京部署超万站5G-A基站，实现上行1Gbps峰值速率，核心城区20Mbps上行泛在速率满足度超91%。",
+      "id": "NEWS-7906A5234C6DC3",
+      "title": "香港上调全年经济增长预测",
+      "summary": "财政司司长陈茂波表示，鉴于上半年GDP增长达5.1%，香港将上调全年经济增长预测。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864679-20260802.htm",
+      "published_at": "2026-08-02T16:24:00+08:00"
+    },
+    {
+      "id": "NEWS-D419362F00CB24",
+      "title": "香港二季度GDP同比增长4.3%",
+      "summary": "香港政府公布初步统计数据显示，香港经济在四月至六月期间按年实质增长百分之四点三。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864513-20260731.htm",
+      "published_at": "2026-07-31T18:56:00+08:00"
+    },
+    {
+      "id": "NEWS-F7D1F596D345E9",
+      "title": "中国成立量子信息标准委员会推动行业标准化",
+      "summary": "中国工信部成立量子信息技术委员会，推动量子技术从研究向行业标准转化。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.msn.com/en-us/news/other/china-moves-quantum-from-research-to-rulebook-with-new-industry-standards-body/ar-AA299k6t",
+      "published_at": "2026-07-31T16:41:04+08:00"
+    },
+    {
+      "id": "NEWS-CDCCF62F2E7486",
+      "title": "第三届香港购物节首次延伸至东盟市场",
+      "summary": "香港贸易发展局举办第三届香港购物节，首次将活动延伸至东盟市场。",
+      "category": "市场/产品类",
+      "source_url": "https://en.antaranews.com/news/424833/the-third-hong-kong-shopping-festival-extends-into-asean-for-the-first-time",
+      "published_at": "2026-07-31T15:30:00+08:00"
+    },
+    {
+      "id": "NEWS-8C490B655CA195",
+      "title": "皇岗口岸首采“合作查验、一次放行” 港方口岸区今晚零时启用",
+      "summary": "皇岗口岸首次采用合作查验模式，港方口岸区于今晚零时正式启用，提升通关效率。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMiyAJBVV95cUxQczRzcHZGbEpieTU4Q1M4ZXREQ0VWUWxUQUFxRFhQc2lGZkgzNWhwVVZtNm5lXzhrTnFCNXhIWDJIN3VQa3hHam9OZFFyb0FHd2RKRmVhd0ptamFJSWIwcnpMc1BxbWw0WndaeGtJNUxMZWFVczhacFh1SVVORHV1TndMS2M4OTZyZms0Z1BBR2Vlcm5heXdXTk9WM2daX2tJNkpZd1hkQTduOVBaWk8ydnZkQWQ5c18tcWxqS0tsWHEtV2dxZmJGcG02U2NoSmI2RENuc1l6U3FYZnlwejFfbGUzYkZsTm8tMGdmNlJENlVVMWVOLTlEdV9pSExHdmJUSDBtZGRueFU3QlFLc1FkdXBrZkFyZl9kcWMyU0ZfakxjbE90cUVkQWdJbGZBdFdMMVhSUjhFa2VzdmlUUklmV0diblk5d0xO?oc=5",
+      "published_at": "2026-07-30T17:03:59+08:00"
+    },
+    {
+      "id": "NEWS-17D9D44087EABE",
+      "title": "电讯盈科公布HKT信托及HKT有限公司中期业绩",
+      "summary": "电讯盈科公布截至2026年6月30日止六个月HKT信托及HKT有限公司的中期业绩。",
       "category": "竞对动态",
-      "source_url": "https://finance.sina.com.cn/roll/2026-07-24/doc-iniivyeq9293892.shtml",
-      "published_at": "2026-07-24"
+      "source_url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPSG95MXp1Mlg0dWRTWlQ4ZE0zdm1Nc2xqSXZ2MGw2enVFTWI0TzZoNnRZdXJSdDk5c1h5bUNxTDd2OXItSTZLR1I4Vkk0REJOMUZ6Vm1ubVVyeEtZZXlnQUlLWmJIbnJsaWxxQnpkNmdCbWZ6Zm91VXoxMkNEekJLa1FUOFNFaGh6QXF1VV9kejV4ckViQ2V4VU5jM3hTWGRYNElfT3daN2RlQThEdnRxWHY4c1dvbThRSHVuZENOYjNTSFkzN3VJQ2ZGekpmZU4zcFV2RUdWWkcydw?oc=5",
+      "published_at": "2026-07-30T15:29:00+08:00"
     },
     {
-      "id": "NEWS-7D69927BB490CB",
-      "title": "AI出海打开跨境链路 中企与东南亚商贸互通",
-      "summary": "AI技术助力中企打通跨境业务链路，促进与东南亚地区的商贸互通与合作发展。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBOMDh6RVNPY2NwVG5pYnJNME5VZXNNdGx5emlBQ0ZMb1pwbU5ITjVuUEczNTJJYTRjaFVwX3BIQndRNDZSZTVUZHFmRnhCN2xEUnFnZF9FZ0NuN1dibWE3MDZ4U25TZUhFTkZhM3RQc3JPTmcwaGlzRGowSWY?oc=5",
-      "published_at": "2026-07-24"
+      "id": "NEWS-E4D59059AC6C5D",
+      "title": "金管局维持基本利率4厘不变",
+      "summary": "香港金管局宣布维持基本利率在4厘水平不变。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
+      "published_at": "2026-07-30"
     },
     {
-      "id": "NEWS-CD6219E77F4FEC",
-      "title": "创新科技及工业局局长出席APEC数字与人工智能会议",
-      "summary": "创新科技及工业局局长在成都出席亚太经合组织数字与人工智能部长级会议。",
-      "category": "政策与监管",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFAxNjBKVExZOUM2MkF4LVFOTGNKcFdkM2s1aGk4a2RHd2RfQjd4ZWdOTmNwSHBQX3dZN0pjendFUEdPSlFjcGhUTXBqOUVKREpjcUlLeHNBOEpUM2M4RjFNLWpqOW9FMDhENy1kdVBCTFpLc05F?oc=5",
-      "published_at": "2026-07-24"
-    },
-    {
-      "id": "NEWS-62ACBC3D782AE9",
-      "title": "特朗普称习主席9月24日访美将讨论人工智能议题",
-      "summary": "特朗普表示，中国国家主席习近平将于9月24日访问美国，双方将重点讨论人工智能相关议题。",
-      "category": "AI与科技",
-      "source_url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOLWVOYjRaZVp2MkdfUFVJcFVrUUo2Z3NfbWViRk96bTQ4T01GcHpjUWRIUjh6WXU0V1dwNlJsOUNzUV9ibW5tVHNRMDk5RDctdG5BM0ZHRDd2Y0tSOGFaZVVWQzloWEN6VHNVWTBPRmd4TDBlWU9QSGZsQzFWYktWamE2SExtZElJdHo4?oc=5",
-      "published_at": "2026-07-24"
-    },
-    {
-      "id": "NEWS-131670300F8F1F",
-      "title": "和记电讯香港联合海洋公园推出5G与AI融合STEAM课程",
-      "summary": "和记电讯香港与海洋公园合作推出绿色科技课程，将5G监测数据融入AI保育与再生能源教学。",
+      "id": "NEWS-ADEDCB2568C529",
+      "title": "香港电讯上半年多赚4%至21.5亿",
+      "summary": "香港电讯上半年净利润增长4%至21.5亿港元，每单位派息增加3%至34.8仙。",
       "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiogNBVV95cUxNc3hRT05fZ2JjZG1oOHJ1TFdOMlVlem5tajY2ejZuMzJqTFc2RU0tX3hCQlBhUVlJNndXcjFadmx4ODdyVGhTU2dPMDdWbWU2ZUd0ZHJPUWI4RUl2bFZVcEkzdVBHN2xidkhPUDNJRDAtZ2J4aXI2NGp5ZnRkZTZLVG9Rb09HT2NWTWp6ODl2N2trLThUejdsbzY1SGd4N1RhTFpLcThhNnFUVFB6LXNwSHRYWmpEMUJSNmJsWmlicWFQdFFiWUpvUmJyY1NqOXA1T3E1SW5YNHVyMGJZQzR4Wi02UmdvengyTG1saEJXNFVlUlAySy1oRnlOSWREZ1F2LVBkQXA0UmFsRUhYR2xrWmpxcm40NnVzMXNqV3Z0cUhRS3RhNGRTdUkzcmZkR1VkQktURGx3UUZlZ3hlTkRkdFF2ZHhSVFFRal9DaE1mN0NHLTFySUFZR3pFODdRNHQteExyd0NKdmJlcFlkcElueE1HOXlJb2hRdXlfNEphcnBYb1NwUzI3Y3U4QW5tMnZlNmpVUkg0RHV3RXB3bkl4bnZB?oc=5",
-      "published_at": "2026-07-23"
-    },
-    {
-      "id": "NEWS-D5532E0AF62836",
-      "title": "中国规划国家级零碳算力设施",
-      "summary": "中国规划建设国家级零碳算力设施，推动绿色算力基础设施发展。",
-      "category": "AI与科技",
-      "source_url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1ObUp6Ml9vMDVucm1IemZBc0oxU1VaTklpZUFFeV9kWHk0bXdZa3RFNjhIbThreTZ4R19IT2ZWTFlmSHBJSUtSSG1nY1IyWUJ40gFWQVVfeXFMTTlXdFVEMEZFUlY0bkhMbjFjZzk5Mml6eWJDQS0ydWJSSWhSWndnU1lNU3B3UmVPaHJSUkl4Vl9ZRkRFVnVDVVZrbEJLUkozZkRIelU5d0E?oc=5",
-      "published_at": "2026-07-23"
-    },
-    {
-      "id": "NEWS-F2DA8AEF5EEE9D",
-      "title": "HKT夥理大 光纖系統分析路況",
-      "summary": "HKT與香港理工大學合作，利用光纖系統技術分析路況，拓展智慧交通應用場景。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMixAJBVV95cUxOUUdFQlUzYnZYQ3VRVk0tMXBuLU9idjJpZ0xUaEwxXzFzRHFrVjJJX2FNV2VHcUtoWTRONWhqZVVGdm9leVFJMlZUYVlPZml5aEZsQ3lsTFZZMDJscHZHSXFSNXhZdVFFeDNnYVRwZmNkbGdEWkNDcGNVRFVrcHJDaGtLSlR6ZVVKTm1ETFVJVFllZmdEczBlYVlrMTUtbWJ5WnFNLUFqYVBHVXpZUHRKNjkzRE4xUThZc0VuLVVYM1VIZUZ2a2FPUEtQcFVJeTZXQUVWT25TVkdLMkVMWVV3UTk1TDY5YUhKNE0zeDhuQzVncGFWTDdLcGpfeFF3TGtuYkt6Q25NNXltWmNRbnBnVWxpeUdNai1wdTVaU3RiMEdiM3NRX0Z6b0htQjNZRW91bTlLbWpkLWZEQTJBZFJTR3REMGU?oc=5",
-      "published_at": "2026-07-22"
-    },
-    {
-      "id": "NEWS-9DDD5B7558CC7D",
-      "title": "香港電訊：43%受訪公司留預算投資AI",
-      "summary": "香港電訊發布調查顯示，43%受訪企業保留預算投資AI，反映市場對AI基礎設施的持續需求。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOM1Zpa3lPZ2JXMVdiUklBUW04SDVqc25TWFR3ejJsR1A1QVVSb1Fvb29HUTdFampmSW9CazEybEhiSklUbkVxTnA4cG04SHJrQUZfeHNMbWJIcUY3WHB6M29sZ2Y5azREUncxYUlJa2tEc1NwMDdCU0lyRUw3QmxCajdR?oc=5",
-      "published_at": "2026-07-22"
+      "source_url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE0zdms4eUxCZkxpTVJwZ2d6Rkg2VnR6VnhmTXpWakREM2NBRlJLLS1nT2xaQjZDQy1pZ2t3ME1mU29kcXNPUFhMa1Bkck1pV2R2?oc=5",
+      "published_at": "2026-07-29T17:16:00+08:00"
     }
   ],
-  "site_version": "badf447f4305d015d5f312ec91b522c1f1fc4de7b78916824dd253438bc7be36"
+  "site_version": "abe60b106be712c7b5be9e2838411affb1fba6f998aa255302071ebc188b17a5"
 }
