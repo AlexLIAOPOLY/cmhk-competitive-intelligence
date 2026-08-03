@@ -403,109 +403,67 @@ h1 {
   font-feature-settings: "tnum";
 }
 
-.network-tabs {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(112px, 1fr));
-  gap: 7px;
-  margin-left: auto;
-}
-
-.network-tabs button {
-  position: relative;
-  min-width: 0;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 0 10px;
-  border: 1px solid rgba(78, 196, 244, .45);
-  border-radius: 5px;
-  color: #b8d9e8;
-  background: linear-gradient(180deg, rgba(17, 67, 99, .54), rgba(5, 28, 48, .76));
-  box-shadow: inset 0 0 12px rgba(59, 209, 255, .06);
-  font: inherit;
-  cursor: pointer;
-  transition: color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease, transform .2s ease;
-}
-
-.network-tabs button::after {
-  content: "";
-  position: absolute;
-  inset: auto 15% -1px;
-  height: 1px;
-  background: var(--cyan);
-  opacity: 0;
-  box-shadow: 0 0 8px var(--cyan);
-  transition: opacity .2s ease;
-}
-
-.network-tabs button:hover,
-.network-tabs button:focus-visible {
-  color: #effcff;
-  border-color: rgba(91, 221, 255, .82);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.network-tabs button:focus-visible { box-shadow: 0 0 0 2px rgba(84, 219, 255, .35), inset 0 0 15px rgba(59, 209, 255, .14); }
-
-.network-tabs button.is-active {
-  color: #dff5ff;
-  border-color: rgba(86, 202, 241, .7);
-  background: linear-gradient(180deg, rgba(20, 83, 118, .7), rgba(6, 38, 62, .84));
-  box-shadow: inset 0 0 14px rgba(73, 221, 255, .13), 0 0 7px rgba(42, 203, 255, .1);
-}
-
-.motion-enabled .network-tabs button.is-active { animation: selected-tab-breathe 4.8s ease-in-out infinite; }
-
-.network-tabs button.is-active::after { opacity: .65; }
-.network-tabs i { color: #63dfff; font-size: 21px; font-style: normal; line-height: 1; text-shadow: 0 0 8px rgba(74, 218, 255, .7); }
-.network-tabs b { font-size: 11px; font-weight: 600; line-height: 1.18; text-align: left; white-space: nowrap; }
-
 .panel-tabs {
   min-width: 0;
+  height: 34px;
   display: grid;
-  gap: 4px;
+  align-items: stretch;
+  gap: 3px;
   margin-left: auto;
+  padding: 2px;
+  border: 1px solid rgba(91, 190, 234, .22);
+  background: rgba(4, 22, 37, .54);
+  box-shadow: inset 0 0 14px rgba(53, 217, 255, .035);
 }
 
 .panel-tabs button {
+  position: relative;
   min-width: 0;
-  height: 30px;
-  padding: 0 8px;
-  border: 1px solid rgba(78, 196, 244, .34);
-  border-radius: 3px;
-  color: #9fc4d4;
-  background: rgba(7, 38, 60, .55);
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: 1px;
+  color: #9ebfce;
+  background: rgba(7, 38, 60, .2);
   font: inherit;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: .02em;
   cursor: pointer;
-  transition: color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease, transform .2s ease;
+  transition: color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.panel-tabs button::after {
+  content: "";
+  position: absolute;
+  inset: auto 22% 0;
+  height: 2px;
+  background: var(--cyan);
+  opacity: 0;
+  box-shadow: 0 0 6px rgba(53, 217, 255, .45);
+  transition: opacity .2s ease;
 }
 
 .panel-tabs button:hover,
 .panel-tabs button:focus-visible {
   color: #effcff;
-  border-color: rgba(91, 221, 255, .82);
+  border-color: rgba(91, 221, 255, .48);
+  background: rgba(12, 58, 83, .4);
   outline: none;
-  transform: translateY(-1px);
 }
 
-.panel-tabs button:focus-visible { box-shadow: 0 0 0 2px rgba(84, 219, 255, .3), inset 0 0 12px rgba(59, 209, 255, .12); }
+.panel-tabs button:focus-visible { box-shadow: 0 0 0 2px rgba(84, 219, 255, .28), inset 0 0 12px rgba(59, 209, 255, .1); }
 
 .panel-tabs button.is-active {
   color: #e4faff;
-  border-color: rgba(86, 202, 241, .72);
-  background: linear-gradient(180deg, rgba(20, 83, 118, .7), rgba(6, 38, 62, .84));
-  box-shadow: inset 0 0 12px rgba(73, 221, 255, .12), 0 0 6px rgba(42, 203, 255, .1);
+  border-color: rgba(86, 202, 241, .4);
+  background: rgba(15, 67, 95, .52);
+  box-shadow: inset 0 0 12px rgba(73, 221, 255, .08), 0 0 5px rgba(42, 203, 255, .06);
 }
 
-.panel-tabs button.is-active::after { opacity: .65; }
-.motion-enabled .panel-tabs button.is-active { animation: selected-tab-breathe 4.8s ease-in-out infinite; }
+.panel-tabs button.is-active::after { opacity: .72; }
+.motion-enabled .panel-tabs button.is-active { animation: selected-tab-breathe 6s ease-in-out infinite; }
+.network-tabs { width: min(52%, 490px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .business-tabs { width: min(36%, 245px); grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .reach-tabs { width: min(48%, 328px); grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .finance-tabs { width: min(58%, 390px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -520,8 +478,9 @@ h1 {
 }
 
 .network-content { padding: 14px 15px; }
-.network-content.is-switching {
-  animation: network-drill .42s cubic-bezier(.2, .8, .2, 1);
+.panel-switch-content.is-switching {
+  will-change: transform, opacity;
+  animation: content-switch .64s cubic-bezier(.22, 1, .36, 1);
 }
 
 .business-detail,
@@ -553,10 +512,6 @@ h1 {
   bottom: 14px;
   width: min(57%, 410px);
 }
-
-.business-detail.is-switching,
-.reach-detail.is-switching,
-.finance-detail.is-switching { animation: network-drill .42s cubic-bezier(.2, .8, .2, 1); }
 
 .detail-heading {
   min-height: 25px;
@@ -950,9 +905,9 @@ h1 {
 @keyframes news-marquee {
   to { transform: translate3d(calc(-1 * var(--news-loop-width, 1560px)), 0, 0); }
 }
-@keyframes network-drill {
-  0% { opacity: .24; transform: translateX(12px); filter: blur(2px); }
-  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+@keyframes content-switch {
+  0% { opacity: .2; transform: translate3d(10px, 0, 0) scale(.997); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 @keyframes scene-drift { from { transform: scale(1.015) translate3d(-.3%, 0, 0); } to { transform: scale(1.06) translate3d(.5%, -.4%, 0); } }
 @keyframes grid-drift { to { background-position: 48px 48px; } }
@@ -962,7 +917,7 @@ h1 {
 @keyframes panel-scan { to { transform: translateY(575%); } }
 @keyframes ring-breathe { 50% { box-shadow: 0 0 30px rgba(53, 217, 255, .27); } }
 @keyframes selected-tab-breathe {
-  50% { border-color: rgba(86, 202, 241, .9); box-shadow: inset 0 0 17px rgba(73, 221, 255, .18), 0 0 10px rgba(42, 203, 255, .14); }
+  50% { border-color: rgba(86, 202, 241, .52); box-shadow: inset 0 0 14px rgba(73, 221, 255, .1), 0 0 6px rgba(42, 203, 255, .08); }
 }
 @keyframes bracket-glow { 50% { opacity: .55; filter: brightness(1.2); } }
 @keyframes node-pulse { 50% { opacity: .46; transform: rotate(45deg) scale(.72); box-shadow: 0 0 4px rgba(var(--accent-rgb), .34); } }
@@ -974,11 +929,9 @@ h1 {
 @keyframes area-reveal { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 1450px) {
-  .network-tabs { grid-template-columns: repeat(4, minmax(92px, 1fr)); gap: 5px; }
-  .network-tabs button { gap: 4px; padding-inline: 5px; }
-  .network-tabs i { font-size: 17px; }
-  .network-tabs b { font-size: 10px; }
+  .panel-tabs { gap: 2px; }
   .panel-tabs button { padding-inline: 5px; font-size: 9px; }
+  .network-tabs { width: min(54%, 430px); }
   .business-tabs { width: min(36%, 220px); }
   .reach-tabs { width: min(52%, 300px); }
   .finance-tabs { width: min(62%, 360px); }
@@ -987,8 +940,8 @@ h1 {
 @media (max-width: 1180px) {
   .reach-content { grid-template-columns: 120px 1fr; gap: 14px; }
   .score-ring { width: 94px; }
-  .panel-network .panel-heading h2 { display: none; }
-  .network-tabs { flex: 1; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .panel-heading h2 { font-size: 17px; letter-spacing: .04em; }
+  .network-tabs { width: min(58%, 300px); }
   .panel-tabs { gap: 3px; }
   .panel-tabs button { height: 28px; padding-inline: 4px; font-size: 9px; }
   .business-tabs { width: min(39%, 210px); }
@@ -1021,18 +974,29 @@ h1 {
 }
 
 @media (max-width: 520px) {
-  .panel-heading { padding-inline: 9px; gap: 7px; }
-  .network-tabs { gap: 3px; }
-  .network-tabs button { height: 38px; padding-inline: 3px; }
-  .network-tabs i { display: none; }
-  .network-tabs b { font-size: 9px; text-align: center; }
-  .panel-tabs button { height: 27px; padding-inline: 2px; font-size: 8px; }
+  .panel-heading {
+    height: 84px;
+    min-height: 84px;
+    flex-wrap: wrap;
+    align-content: center;
+    row-gap: 5px;
+    padding: 7px 9px;
+  }
+  .panel-heading h2 { flex: 1 1 auto; min-width: 0; }
+  .panel-tabs {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 30px;
+    margin-left: 0;
+    order: 3;
+  }
+  .panel-tabs button { height: 24px; padding-inline: 2px; font-size: 8px; }
   .panel-heading h2 { font-size: 16px; letter-spacing: .03em; }
-  .panel { min-height: 430px; }
+  .panel { min-height: 462px; }
   .network-content,
   .business-content,
   .reach-content,
-  .finance-content { height: 382px; }
+  .finance-content { height: 378px; }
   .network-bars { width: calc(100% - 28px); }
   .network-content > .metric-pair { left: 15px; right: auto; }
   .network-extra {
@@ -1049,13 +1013,11 @@ h1 {
   .reach-content { grid-template-columns: 1fr; grid-template-rows: auto auto auto; gap: 14px; }
   .brand-score { grid-template-columns: auto auto; justify-content: start; align-items: center; }
   .score-ring { width: 82px; }
-  .reach-extra { grid-column: 1; margin-bottom: 0; }
   .reach-detail { grid-column: 1; margin-top: 0; }
   .revenue-block { width: 58%; }
   .revenue-compare { column-gap: 4px; }
   .revenue-compare > i { width: 22px; }
   .revenue-compare b { font-size: 8px; }
-  .finance-extra { width: 54%; }
   .profit-kpis > div { min-width: 112px; }
   .profit-line { width: 55%; }
   .finance-detail { left: 15px; width: calc(100% - 30px); bottom: 14px; }
@@ -1075,7 +1037,7 @@ h1 {
   }
   .news-track,
   .scene { animation: none !important; }
-  .news-track { transform: translateX(0); }
+  .news-track { transform: translate3d(0, 0, 0); }
   .panel { opacity: 1 !important; transform: none !important; }
   .profit-line .line-primary,
   .profit-line .line-secondary { stroke-dashoffset: 0 !important; }

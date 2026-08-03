@@ -9,7 +9,19 @@ const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
 const NETWORK_ROTATE_DELAY = 9000;
+const NETWORK_INITIAL_OFFSET = 0;
+const BUSINESS_INITIAL_OFFSET = 900;
+const REACH_INITIAL_OFFSET = 1800;
+const FINANCE_INITIAL_OFFSET = 2700;
 let networkRotationTimer = 0;
+
+function restartContentSwitch(content, switchKey) {
+  if (!content || content.dataset.switchKey === switchKey) return;
+  content.dataset.switchKey = switchKey;
+  content.classList.remove("is-switching");
+  void content.offsetWidth;
+  content.classList.add("is-switching");
+}
 
 const networkViews = {
   fixed: {
@@ -93,10 +105,8 @@ function showNetworkView(viewName) {
   const networkPair = networkContent.querySelector(".metric-pair");
   if (networkPair) networkPair.hidden = ![...networkPair.children].some((child) => !child.hidden);
 
-  networkPanel.dataset.networkView = viewName;
-  networkContent.classList.remove("is-switching");
-  void networkContent.offsetWidth;
-  networkContent.classList.add("is-switching");
+  if (networkPanel) networkPanel.dataset.networkView = viewName;
+  restartContentSwitch(networkContent, viewName);
 }
 
 function stopNetworkRotation() {
@@ -114,7 +124,7 @@ function networkRotationIsPaused() {
   );
 }
 
-function scheduleNetworkRotation() {
+function scheduleNetworkRotation(delay = NETWORK_ROTATE_DELAY) {
   stopNetworkRotation();
   if (networkRotationIsPaused()) return;
 
@@ -124,7 +134,7 @@ function scheduleNetworkRotation() {
     const next = networkTabs[(current + 1 + networkTabs.length) % networkTabs.length];
     showNetworkView(next.dataset.networkView);
     scheduleNetworkRotation();
-  }, NETWORK_ROTATE_DELAY);
+  }, delay);
 }
 
 networkTabs.forEach((tab) => {
@@ -155,7 +165,7 @@ document.addEventListener("visibilitychange", () => {
 });
 reducedMotion.addEventListener("change", scheduleNetworkRotation);
 showNetworkView("mobile");
-scheduleNetworkRotation();
+scheduleNetworkRotation(NETWORK_ROTATE_DELAY + NETWORK_INITIAL_OFFSET);
 
 const businessViews = {
   toc: {
@@ -212,7 +222,7 @@ const financeViews = {
   }
 };
 
-function createMetricRotator({ panel, tabs, content, views, getGroups, prefix }) {
+function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, initialOffset = 0 }) {
   if (!panel || !content || !tabs.length) return null;
 
   let timer = 0;
@@ -261,9 +271,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix })
 
     content.dataset.activeView = viewNames[activeViewIndex] || "";
     content.dataset.activeGroup = String(activeGroupIndex);
-    content.classList.remove("is-switching");
-    void content.offsetWidth;
-    content.classList.add("is-switching");
+    restartContentSwitch(content, `${content.dataset.activeView}:${content.dataset.activeGroup}`);
   }
 
   function paused() {
@@ -277,7 +285,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix })
 
   function stop() { window.clearTimeout(timer); }
 
-  function schedule() {
+  function schedule(delay = NETWORK_ROTATE_DELAY) {
     stop();
     if (paused()) return;
     timer = window.setTimeout(() => {
@@ -289,7 +297,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix })
         apply((activeViewIndex + 1) % viewNames.length, 0);
       }
       schedule();
-    }, NETWORK_ROTATE_DELAY);
+    }, delay);
   }
 
   tabs.forEach((tab, tabIndex) => {
@@ -312,7 +320,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix })
   panel.addEventListener("focusin", stop);
   panel.addEventListener("focusout", () => window.setTimeout(schedule, 0));
   apply(0, 0);
-  schedule();
+  schedule(NETWORK_ROTATE_DELAY + initialOffset);
   return { apply, schedule, stop };
 }
 
@@ -322,7 +330,8 @@ const businessRotator = createMetricRotator({
   content: document.querySelector("#business-detail"),
   views: businessViews,
   getGroups: (view) => view?.groups,
-  prefix: "business"
+  prefix: "business",
+  initialOffset: BUSINESS_INITIAL_OFFSET
 });
 
 const reachRotator = createMetricRotator({
@@ -331,7 +340,8 @@ const reachRotator = createMetricRotator({
   content: document.querySelector("#reach-detail"),
   views: reachViews,
   getGroups: (view) => view?.groups,
-  prefix: "reach"
+  prefix: "reach",
+  initialOffset: REACH_INITIAL_OFFSET
 });
 
 const financeRotator = createMetricRotator({
@@ -340,7 +350,8 @@ const financeRotator = createMetricRotator({
   content: document.querySelector("#finance-detail"),
   views: financeViews,
   getGroups: (view) => view?.groups,
-  prefix: "finance"
+  prefix: "finance",
+  initialOffset: FINANCE_INITIAL_OFFSET
 });
 
 document.addEventListener("visibilitychange", () => {
