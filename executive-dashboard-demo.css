@@ -1607,8 +1607,12 @@ h1 {
   .panel-tabs { width: auto; flex: 1; }
   .drill-category-list,
   .drill-group-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .relation-carrier { min-height: 28px; }
-  .relation-driver-card { min-height: 72px; }
+  .panel.is-drilling { min-height: 620px; }
+  .relation-head nav button { min-height: 44px; }
+  .relation-step-tabs { height: 44px; }
+  .relation-step-tabs button { min-height: 44px; }
+  .relation-carrier { min-height: 44px; }
+  .relation-driver-card { min-height: 64px; }
 }
 
 @media (max-width: 520px) {

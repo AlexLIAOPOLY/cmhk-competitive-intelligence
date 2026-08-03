@@ -358,7 +358,7 @@
     state.panel.classList.add("is-drilling");
     if (wasHidden) {
       state.overlay.querySelector(".drill-close").focus({ preventScroll: true });
-      if (window.matchMedia("(max-width: 520px)").matches) {
+      if (window.matchMedia("(max-width: 900px)").matches) {
         window.requestAnimationFrame(() => state.panel.scrollIntoView({ block: "start", behavior: "auto" }));
       }
     }
