@@ -1,7 +1,31 @@
 {
   "ok": true,
-  "generated_at": "2026-07-31T15:17:28+08:00",
+  "generated_at": "2026-08-03T09:24:30+08:00",
   "items": [
+    {
+      "id": "NEWS-D419362F00CB24",
+      "title": "香港二季度GDP同比增长4.3%",
+      "summary": "香港政府公布初步统计数据显示，香港经济在四月至六月期间按年实质增长百分之四点三。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864513-20260731.htm",
+      "published_at": "2026-07-31T18:56:00+08:00"
+    },
+    {
+      "id": "NEWS-F7D1F596D345E9",
+      "title": "中国成立量子信息标准委员会推动行业标准化",
+      "summary": "中国工信部成立量子信息技术委员会，推动量子技术从研究向行业标准转化。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.msn.com/en-us/news/other/china-moves-quantum-from-research-to-rulebook-with-new-industry-standards-body/ar-AA299k6t",
+      "published_at": "2026-07-31T16:41:04+08:00"
+    },
+    {
+      "id": "NEWS-CDCCF62F2E7486",
+      "title": "第三届香港购物节首次延伸至东盟市场",
+      "summary": "香港贸易发展局举办第三届香港购物节，首次将活动延伸至东盟市场。",
+      "category": "市场/产品类",
+      "source_url": "https://en.antaranews.com/news/424833/the-third-hong-kong-shopping-festival-extends-into-asean-for-the-first-time",
+      "published_at": "2026-07-31T15:30:00+08:00"
+    },
     {
       "id": "NEWS-8C490B655CA195",
       "title": "皇岗口岸首采“合作查验、一次放行” 港方口岸区今晚零时启用",
@@ -41,31 +65,7 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://www.leiphone.com/category/industrynews/sO1Q58AgzvWr2mFJ.html",
       "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-FAB947EEC47797",
-      "title": "工信部等七部门：启动2026年首批工业和信息化领域创新任务揭榜挂帅工作",
-      "summary": "工信部等七部门启动2026年工业和信息化领域创新任务揭榜挂帅，布局24个专题。",
-      "category": "政策监管",
-      "source_url": "https://www.msn.cn/zh-cn/news/other/%E5%B7%A5%E4%BF%A1%E9%83%A8%E7%AD%89%E4%B8%83%E9%83%A8%E9%97%A8-%E5%90%AF%E5%8A%A82026%E5%B9%B4%E9%A6%96%E6%89%B9%E5%B7%A5%E4%B8%9A%E5%92%8C%E4%BF%A1%E6%81%AF%E5%8C%96%E9%A2%86%E5%9F%9F%E5%88%9B%E6%96%B0%E4%BB%BB%E5%8A%A1%E6%8F%AD%E6%A6%9C%E6%8C%82%E5%B8%85%E5%B7%A5%E4%BD%9C/ar-AA28WMXs",
-      "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-06E6A466DAC09B",
-      "title": "AI需求激增致内存供应预计2027年极度短缺",
-      "summary": "台湾宇瞻科技警告，AI对系统内存需求急剧增加，预计2027年通用DRAM供应将削减70%，市场将从涨价演变为极度缺货。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://unwire.hk/2026/07/29/apacer-dram-shortage-2027/fun-tech/",
-      "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-88E92363C14ACB",
-      "title": "内地企业拟利用香港专业服务支援东盟业务发展",
-      "summary": "调查显示83%内地企业计划利用香港专业服务支援东盟业务，凸显香港在跨境商业服务中的枢纽价值。",
-      "category": "竞争对手",
-      "source_url": "https://finance.now.com/news/post.php?id=979932",
-      "published_at": "2026-07-29"
     }
   ],
-  "site_version": "f44e4ec717edd48d4fa5e520856e3c6099869ccebc62ae2d6916332721d2b10c"
+  "site_version": "497bed57a42816336a528389ec6cf06a717c5dcecca4f7c6f53e88eb56541bd4"
 }
