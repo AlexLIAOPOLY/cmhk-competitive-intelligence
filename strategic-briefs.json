@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-03T14:38:47+08:00",
+  "generated_at": "2026-08-03T15:07:34+08:00",
   "items": [
+    {
+      "id": "NEWS-5EEF4D777E7D90",
+      "title": "中国移动香港荣膺Ookla Speedtest七项国际奖项",
+      "summary": "中国移动香港获得Ookla Speedtest七项网络国际权威奖项及认证。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
+      "published_at": "2026-08-03T08:43:00+08:00"
+    },
     {
       "id": "NEWS-7906A5234C6DC3",
       "title": "香港上调全年经济增长预测",
@@ -57,15 +65,7 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
       "published_at": "2026-07-30"
-    },
-    {
-      "id": "NEWS-ADEDCB2568C529",
-      "title": "香港电讯上半年多赚4%至21.5亿",
-      "summary": "香港电讯上半年净利润增长4%至21.5亿港元，每单位派息增加3%至34.8仙。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE0zdms4eUxCZkxpTVJwZ2d6Rkg2VnR6VnhmTXpWakREM2NBRlJLLS1nT2xaQjZDQy1pZ2t3ME1mU29kcXNPUFhMa1Bkck1pV2R2?oc=5",
-      "published_at": "2026-07-29T17:16:00+08:00"
     }
   ],
-  "site_version": "78665d96226ba957fc6d5ebfa58c2c1c570ac8f4676a78335545b5de67878a70"
+  "site_version": "a4c6f44e36082e1a209b30a0ef8d6ab8bdae46a10f9818d6837a7164da53aa7f"
 }
