@@ -7423,6 +7423,242 @@ document.addEventListener("keydown", (event) => {
   observer.observe(document.body, { childList: true, subtree: true });
 })();
 
+/* Four-domain executive intelligence board: data comes from the four local databases. */
+(() => {
+  const board = document.getElementById("intelligenceBoard");
+  const grid = document.getElementById("intelligenceDomainGrid");
+  const rail = document.getElementById("intelligenceRelationRail");
+  const method = document.getElementById("intelligenceMethod");
+  const backdrop = document.getElementById("intelligenceDrawerBackdrop");
+  const drawer = document.getElementById("intelligenceDrawer");
+  const drawerTitle = document.getElementById("intelligenceDrawerTitle");
+  const drawerKicker = document.getElementById("intelligenceDrawerKicker");
+  const drawerBody = document.getElementById("intelligenceDrawerBody");
+  const closeButton = document.getElementById("intelligenceDrawerClose");
+  if (!board || !grid || !rail || !backdrop || !drawer || !drawerBody) return;
+
+  const domainLabels = {
+    local: "本地竞对",
+    international: "国际竞对",
+    cloud: "云厂商",
+    macro: "宏观政策",
+  };
+  let payload = null;
+  let lastFocus = null;
+  let pushedDrawerState = false;
+
+  function safe(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function formatValue(value) {
+    if (typeof value === "number") {
+      return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(value);
+    }
+    return safe(value);
+  }
+
+  function domainById(id) {
+    return payload?.domains?.find((domain) => domain.id === id) || null;
+  }
+
+  function relatedEdges(id) {
+    return (payload?.relations || []).filter((item) => item.from === id || item.to === id);
+  }
+
+  function renderRail(relations) {
+    rail.innerHTML = relations.slice(0, 4).map((relation, index) => `
+      <button type="button" class="intelligence-relation" data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}">
+        <span>${safe(domainLabels[relation.from] || relation.from)} → ${safe(domainLabels[relation.to] || relation.to)}</span>
+        <strong>${safe(relation.title)}</strong>
+        <small>${safe(relation.kind)}</small>
+      </button>
+    `).join("");
+  }
+
+  function renderDomains(domains) {
+    grid.innerHTML = domains.map((domain) => {
+      const entities = Array.isArray(domain.entities) ? domain.entities : [];
+      const maxValue = Math.max(...entities.map((item) => Math.abs(Number(item.value) || 0)), 1);
+      const bars = entities.slice(0, 4).map((item) => {
+        const numeric = Number(item.value) || 0;
+        const width = Math.max(4, Math.abs(numeric) / maxValue * 100);
+        return `
+          <li class="${numeric < 0 ? "is-negative" : ""}">
+            <span>${safe(item.name)}</span>
+            <i><b style="--bar-width:${width.toFixed(2)}%"></b></i>
+            <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
+          </li>
+        `;
+      }).join("");
+      return `
+        <button class="intelligence-domain intelligence-domain-${safe(domain.id)}" type="button" data-intelligence-domain="${safe(domain.id)}" aria-label="查看${safe(domain.title)}详情">
+          <span class="intelligence-domain-index">${safe(domain.index)}</span>
+          <span class="intelligence-domain-heading">
+            <span>${safe(domain.kicker)}</span>
+            <strong>${safe(domain.title)}</strong>
+          </span>
+          <span class="intelligence-domain-metric">
+            <small>${safe(domain.metric?.label)}</small>
+            <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
+            <em>${safe(domain.context)}</em>
+          </span>
+          <ul class="intelligence-domain-bars" aria-label="${safe(domain.title)}主要对象">${bars}</ul>
+          <span class="intelligence-domain-insight">${safe(domain.insight)}</span>
+          <span class="intelligence-domain-action">穿透分析 <b aria-hidden="true">↗</b></span>
+        </button>
+      `;
+    }).join("");
+  }
+
+  function renderDrawer(domain) {
+    const entities = Array.isArray(domain.entities) ? domain.entities : [];
+    const maxValue = Math.max(...entities.map((item) => Math.abs(Number(item.value) || 0)), 1);
+    const entityRows = entities.map((item) => {
+      const width = Math.max(3, Math.abs(Number(item.value) || 0) / maxValue * 100);
+      const name = safe(item.name);
+      return `
+        <li>
+          <div><strong>${name}</strong><span>${safe(item.detail)}</span></div>
+          <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatValue(item.value)} ${safe(item.unit)}</strong></div>
+          ${item.source_url ? `<a href="${safe(item.source_url)}" target="_blank" rel="noreferrer" aria-label="打开${name}来源">来源</a>` : ""}
+        </li>
+      `;
+    }).join("");
+    const crossRelations = relatedEdges(domain.id).map((relation) => {
+      const peer = relation.from === domain.id ? relation.to : relation.from;
+      return `
+        <button type="button" data-intelligence-peer="${safe(peer)}">
+          <span>${safe(relation.kind)} · 关联 ${safe(domainLabels[peer] || peer)}</span>
+          <strong>${safe(relation.title)}</strong>
+          <p>${safe(relation.detail)}</p>
+        </button>
+      `;
+    }).join("");
+    const internalRelations = (domain.relations || []).map((relation) => `
+      <li><span>${safe(relation.kind)}</span><strong>${safe(relation.title)}</strong><p>${safe(relation.detail)}</p></li>
+    `).join("");
+    const sources = (domain.sources || []).map((source) => `
+      <a href="${safe(source.url)}" target="_blank" rel="noreferrer">${safe(source.label)}<span aria-hidden="true">↗</span></a>
+    `).join("");
+
+    drawerKicker.textContent = `${domain.index} · ${domain.kicker}`;
+    drawerTitle.textContent = domain.title;
+    drawerBody.innerHTML = `
+      <section class="intelligence-detail-lead">
+        <span>${safe(domain.metric?.label)}</span>
+        <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
+        <p>${safe(domain.insight)}</p>
+      </section>
+      <section class="intelligence-detail-section">
+        <h3>跨库关系</h3>
+        <div class="intelligence-cross-relations">${crossRelations || "<p>暂无跨库关系</p>"}</div>
+      </section>
+      <section class="intelligence-detail-section">
+        <h3>厂商与指标</h3>
+        <ul class="intelligence-entity-list">${entityRows}</ul>
+      </section>
+      <section class="intelligence-detail-section">
+        <h3>域内关系</h3>
+        <ul class="intelligence-internal-relations">${internalRelations}</ul>
+      </section>
+      <section class="intelligence-detail-section intelligence-source-list">
+        <h3>数据来源</h3>
+        <div>${sources}</div>
+      </section>
+    `;
+  }
+
+  function updateUrl(id, mode) {
+    const url = new URL(window.location.href);
+    if (id) url.searchParams.set("intelligence", id);
+    else url.searchParams.delete("intelligence");
+    window.history[mode]({ intelligence: id || null }, "", url);
+  }
+
+  function openDrawer(id, push = true) {
+    const domain = domainById(id);
+    if (!domain) return;
+    lastFocus = document.activeElement;
+    renderDrawer(domain);
+    backdrop.hidden = false;
+    document.body.classList.add("intelligence-drawer-open");
+    if (push) {
+      updateUrl(id, "pushState");
+      pushedDrawerState = true;
+    }
+    window.requestAnimationFrame(() => {
+      backdrop.classList.add("is-open");
+      drawer.focus();
+    });
+  }
+
+  function closeDrawer(fromHistory = false) {
+    if (backdrop.hidden) return;
+    backdrop.classList.remove("is-open");
+    document.body.classList.remove("intelligence-drawer-open");
+    window.setTimeout(() => { backdrop.hidden = true; }, 180);
+    if (!fromHistory) {
+      if (pushedDrawerState) window.history.back();
+      else updateUrl(null, "replaceState");
+    }
+    pushedDrawerState = false;
+    if (lastFocus?.focus) lastFocus.focus();
+  }
+
+  grid.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-intelligence-domain]");
+    if (trigger) openDrawer(trigger.dataset.intelligenceDomain);
+  });
+  rail.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-relation-domain]");
+    if (trigger) openDrawer(trigger.dataset.relationDomain);
+  });
+  drawerBody.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-intelligence-peer]");
+    if (!trigger) return;
+    const peer = trigger.dataset.intelligencePeer;
+    const domain = domainById(peer);
+    if (!domain) return;
+    renderDrawer(domain);
+    updateUrl(peer, "replaceState");
+    drawer.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  closeButton.addEventListener("click", () => closeDrawer());
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) closeDrawer();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !backdrop.hidden) closeDrawer();
+  });
+  window.addEventListener("popstate", () => {
+    const id = new URL(window.location.href).searchParams.get("intelligence");
+    if (id && domainById(id)) openDrawer(id, false);
+    else closeDrawer(true);
+  });
+
+  fetch("/api/executive-intelligence", { cache: "no-store" })
+    .then((response) => response.json().then((data) => ({ response, data })))
+    .then(({ response, data }) => {
+      if (!response.ok || !data.ok) throw new Error(data.error || "四库关系读取失败");
+      payload = data;
+      renderRail(data.relations || []);
+      renderDomains(data.domains || []);
+      method.textContent = data.method || "四库同口径对齐";
+      const requested = new URL(window.location.href).searchParams.get("intelligence");
+      if (requested) openDrawer(requested, false);
+    })
+    .catch((error) => {
+      grid.innerHTML = `<div class="intelligence-loading is-error"><strong>四库关系暂时无法读取</strong><span>${safe(error.message || error)}</span></div>`;
+      method.textContent = "保留最后可用数据，等待服务恢复";
+    });
+})();
+
 /* Strategic briefing ticker: only group-approved items are rendered. */
 (function initStrategicBriefingTicker() {
   const list = document.getElementById("strategyTickerList");

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
-  <link rel="stylesheet" href="/static/styles.css?v=225" />
+  <link rel="stylesheet" href="/static/styles.css?v=226" />
   </head>
   <body class="dashboard-page">
     <main class="app-shell">
@@ -31,40 +31,6 @@
       <section class="console-shell">
         <section class="operations" aria-label="战略情报驾驶舱">
           <section class="insight-board" aria-label="战略情报态势看板">
-            <article class="signal-overview" aria-labelledby="signalOverviewTitle">
-              <header class="signal-overview-header">
-                <div>
-                  <h2 id="signalOverviewTitle">近14日情报态势</h2>
-                </div>
-              </header>
-
-              <div class="signal-summary-grid" aria-label="近14日数字总结">
-                <div>
-                  <span>确认信号</span>
-                  <strong id="signalCount">--</strong>
-                </div>
-                <div>
-                  <span>竞对动态</span>
-                  <strong id="competitorSignalCount">--</strong>
-                </div>
-                <div>
-                  <span>活跃主题</span>
-                  <strong id="activeTopicCount">--</strong>
-                </div>
-              </div>
-
-              <section class="signal-chart-card" aria-labelledby="signalTrendTitle">
-                <div class="signal-chart-heading">
-                  <div>
-                    <strong id="signalTrendTitle">每日信号趋势</strong>
-                  </div>
-                  <span id="signalTrendTotal">-- 条</span>
-                </div>
-                <div class="signal-trend-chart">
-                  <canvas id="signalTrendCanvas"></canvas>
-                </div>
-              </section>
-            </article>
             <aside class="strategy-ticker" aria-label="滚动战略快讯">
               <header class="strategy-ticker-header">
                 <div>
@@ -86,18 +52,33 @@
               </footer>
             </aside>
 
-            <article class="collection-overview" aria-labelledby="collectionOverviewTitle">
-              <header class="collection-overview-header">
+            <section class="intelligence-command-board" id="intelligenceBoard" aria-labelledby="intelligenceBoardTitle">
+              <header class="intelligence-board-header">
                 <div>
-                  <h2 id="collectionOverviewTitle">今日信息资产</h2>
-                  <small class="collection-overview-updated" id="collectionOverviewUpdated">截至 --</small>
+                  <span>四库联动</span>
+                  <h2 id="intelligenceBoardTitle">竞争情报关联总览</h2>
                 </div>
+                <p id="intelligenceMethod">正在对齐本地竞对、国际竞对、云厂商与宏观政策数据</p>
               </header>
-              <div class="daily-asset-grid" id="dailyAssetGrid" aria-live="polite">
-                <div class="collection-empty">正在读取上午及下午信息资产</div>
+              <div class="intelligence-relation-rail" id="intelligenceRelationRail" aria-label="跨库关键关系"></div>
+              <div class="intelligence-domain-grid" id="intelligenceDomainGrid" aria-live="polite">
+                <div class="intelligence-loading">正在建立四库关系</div>
               </div>
-            </article>
+            </section>
           </section>
+
+          <div class="intelligence-drawer-backdrop" id="intelligenceDrawerBackdrop" hidden>
+            <aside class="intelligence-drawer" id="intelligenceDrawer" role="dialog" aria-modal="true" aria-labelledby="intelligenceDrawerTitle" tabindex="-1">
+              <header>
+                <div>
+                  <span id="intelligenceDrawerKicker">关联穿透</span>
+                  <h2 id="intelligenceDrawerTitle">情报详情</h2>
+                </div>
+                <button type="button" id="intelligenceDrawerClose" aria-label="关闭详情">×</button>
+              </header>
+              <div class="intelligence-drawer-body" id="intelligenceDrawerBody"></div>
+            </aside>
+          </div>
 
           <section class="reports-layout report-library-drawer" id="outputArea" role="dialog" aria-modal="true" aria-labelledby="reportLibraryTitle" hidden>
             <header class="report-library-header">
@@ -434,6 +415,6 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=239"></script>
+    <script src="/static/app.js?v=241"></script>
   </body>
 </html>

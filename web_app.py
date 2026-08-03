@@ -3223,6 +3223,21 @@ class AppHandler(BaseHTTPRequestHandler):
                     status=500,
                 )
             return
+        if path == "/api/executive-intelligence":
+            try:
+                from executive_intelligence import build_executive_intelligence_snapshot
+
+                json_response(
+                    self,
+                    {"ok": True, **build_executive_intelligence_snapshot()},
+                )
+            except Exception as exc:
+                json_response(
+                    self,
+                    {"ok": False, "error": str(exc), "domains": [], "relations": []},
+                    status=500,
+                )
+            return
         if path == "/api/company-metrics":
             json_response(
                 self,
