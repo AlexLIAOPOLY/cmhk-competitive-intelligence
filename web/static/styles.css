@@ -13038,10 +13038,176 @@ body.dashboard-page:has(#chatModal:not([hidden])) .chat-fab {
 .dashboard-page .skill-menu,
 .dashboard-page .database-menu,
 .dashboard-page .chat-model-menu {
-  border-color: #376171;
+  border-color: #477585;
   color: #dcecef;
-  background: #0d2936;
+  background: #0b2532;
   box-shadow: 0 18px 42px rgba(0, 7, 12, .42);
+}
+
+.dashboard-page .chat-model-button,
+.dashboard-page .chat-model-button[aria-expanded="true"] {
+  border-color: transparent;
+  color: #a9c2cb;
+  background: transparent;
+}
+
+.dashboard-page .chat-model-button:hover,
+.dashboard-page .chat-model-button:focus-visible,
+.dashboard-page .chat-model-button[aria-expanded="true"] {
+  border-color: #477585;
+  color: #eef9fb;
+  background: #173b49;
+  outline: none;
+}
+
+.dashboard-page .chat-model-options {
+  scrollbar-color: #4e7785 transparent;
+}
+
+.dashboard-page .chat-model-options::-webkit-scrollbar-thumb {
+  border-color: #0b2532;
+  background: #4e7785;
+}
+
+.dashboard-page .chat-model-option {
+  border: 1px solid transparent;
+  color: #b7ced6;
+  background: transparent;
+}
+
+.dashboard-page .chat-model-option:hover,
+.dashboard-page .chat-model-option:focus-visible {
+  border-color: rgba(102, 190, 212, .25);
+  color: #f1fafb;
+  background: #143744;
+  outline: none;
+}
+
+.dashboard-page .chat-model-option.active {
+  border-color: #4a899c;
+  color: #eaf8fa;
+  background: #194354;
+  box-shadow: inset 3px 0 #61c2d8;
+}
+
+.dashboard-page .chat-model-empty { color: #a1bac3; }
+
+.dashboard-page .composer-menu-action {
+  color: #c3d9df !important;
+  background: transparent !important;
+}
+
+.dashboard-page .composer-menu-action:hover,
+.dashboard-page .composer-menu-action:focus-visible,
+.dashboard-page .composer-menu-action.is-active {
+  color: #f1fafb !important;
+  background: #173b49 !important;
+  outline: none;
+}
+
+.dashboard-page .composer-menu-action svg {
+  color: #82d0e0;
+  background: #153847;
+  stroke: currentColor;
+}
+
+.dashboard-page .composer-menu-action span { color: inherit; }
+
+.dashboard-page .skill-option,
+.dashboard-page .database-option {
+  color: #d5e6ea;
+}
+
+.dashboard-page .skill-option:hover,
+.dashboard-page .skill-option:focus-visible,
+.dashboard-page .database-option:hover,
+.dashboard-page .database-option:focus-visible {
+  border-color: #3e6e7d;
+  color: #f1fafb;
+  background: #143744;
+  outline: none;
+}
+
+.dashboard-page .skill-option.is-active,
+.dashboard-page .database-option.is-active {
+  border-color: #4a899c;
+  color: #eaf8fa;
+  background: #194354;
+}
+
+.dashboard-page .skill-option-main strong,
+.dashboard-page .database-option-main strong { color: #e4f1f4; }
+
+.dashboard-page .skill-option-main small,
+.dashboard-page .database-option-main small,
+.dashboard-page .skill-data,
+.dashboard-page .database-data,
+.dashboard-page .skill-menu-empty,
+.dashboard-page .database-menu-empty { color: #a5bec7; }
+
+.dashboard-page .skill-option-check,
+.dashboard-page .database-option-check {
+  border-color: #466f7d;
+  color: #76c9dc;
+  background: #102f3d;
+}
+
+.dashboard-page .skill-option.is-active .skill-option-check,
+.dashboard-page .database-option.is-active .database-option-check {
+  border-color: #62b3c7;
+  color: #effbfc;
+  background: #225466;
+}
+
+.dashboard-page .skill-option-top em,
+.dashboard-page .database-option-top em,
+.dashboard-page .skill-tags b,
+.dashboard-page .database-tags b {
+  color: #a9c9d2;
+  background: #153846;
+}
+
+.dashboard-page .option-expand { color: #80ccdc; }
+.dashboard-page .option-expand:hover { background: #1c4757; }
+.dashboard-page .option-detail { border-top-color: #315b69; color: #b4ccd4; }
+.dashboard-page .option-detail-text,
+.dashboard-page .option-detail span { color: #a9c1ca; }
+.dashboard-page .option-detail b { color: #83d2e2; }
+
+.dashboard-page .database-upload-panel,
+.dashboard-page .database-upload-form,
+.dashboard-page .database-upload-form label,
+.dashboard-page .database-upload-file {
+  border-color: #386473;
+  color: #d9e9ed;
+  background: #0f2d3a;
+}
+
+.dashboard-page .database-upload-action,
+.dashboard-page .database-upload-action:hover {
+  color: #dcecef;
+  background: #143744;
+}
+
+.dashboard-page .database-upload-action strong,
+.dashboard-page .database-upload-form label > span { color: #e7f3f6; }
+.dashboard-page .database-upload-action small,
+.dashboard-page .database-upload-form em,
+.dashboard-page .database-upload-form small,
+.dashboard-page .database-upload-file span { color: #a3bdc6; }
+
+.dashboard-page .database-upload-form input,
+.dashboard-page .database-upload-form textarea,
+.dashboard-page .database-upload-form select {
+  color: #edf7f9;
+  background: #0a2230;
+  outline-color: #426f7e;
+}
+
+.dashboard-page .database-upload-file-button {
+  border-color: #477b8b;
+  color: #bee0e7;
+  background: #133644;
 }
 
 .dashboard-page .voice-mode-menu > strong,

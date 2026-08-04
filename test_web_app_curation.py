@@ -580,6 +580,14 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn("width: 36px;\n  height: 36px;", styles)
         self.assertIn(".dashboard-page .chat-fab img {\n  width: 46%;\n  height: 46%;", styles)
 
+    def test_chat_picker_menus_use_dark_high_contrast_states(self) -> None:
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn(".dashboard-page .chat-model-option.active {", styles)
+        self.assertIn("color: #eaf8fa;\n  background: #194354;", styles)
+        self.assertIn(".dashboard-page .skill-option.is-active,", styles)
+        self.assertIn(".dashboard-page .database-upload-panel,", styles)
+
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         self.assertIn('createdAt: new Date().toISOString()', app)
