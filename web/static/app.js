@@ -7520,11 +7520,11 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus) {
     if (!entity) return "";
     const source = /^https?:\/\//i.test(String(entity.source_url || ""))
-      ? `<a href="${safe(entity.source_url)}" target="_blank" rel="noreferrer">原始来源<span aria-hidden="true">↗</span></a>`
+      ? `<a href="${safe(entity.source_url)}" target="_blank" rel="noreferrer">来源<span aria-hidden="true">↗</span></a>`
       : "";
     return `
       <div class="intelligence-entity-focus">
-        <span>${safe(focus.label)} · ${safe(entity.name)}</span>
+        <span>${safe(entity.name)}</span>
         <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
         <p>${safe(entity.analysis || focus.insight || entity.detail || "暂无分析结论")}</p>
         ${source}
@@ -7708,7 +7708,6 @@ document.addEventListener("keydown", (event) => {
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
           <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
-          <em>${safe(selectedFocus.context || domain.context)}</em>
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
         <div class="intelligence-domain-focus-stage">

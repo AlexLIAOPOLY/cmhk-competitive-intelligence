@@ -1,0 +1,203 @@
+/* Balanced open-grid leadership board.
+   The board is one analytical surface: no card shadows, one-sided accents,
+   or explanatory microcopy competing with executive conclusions. */
+.intelligence-command-board {
+  grid-template-rows: 62px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.intelligence-relation-rail {
+  border-color: rgba(126, 191, 211, .18);
+  border-radius: 0;
+  background: rgba(4, 20, 32, .58);
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+}
+
+.intelligence-relation {
+  min-height: 62px;
+  padding: 9px 16px;
+}
+
+.intelligence-relation::before,
+.intelligence-relation::after { display: none; }
+.intelligence-relation span { font-size: 10.5px; }
+.intelligence-relation strong { margin-top: 3px; font-size: 13px; }
+
+.intelligence-domain-grid {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(126, 191, 211, .18);
+  background: rgba(4, 18, 29, .52);
+}
+
+.intelligence-domain,
+.intelligence-domain-local {
+  grid-template-columns: 42px minmax(138px, .72fr) minmax(190px, 1.15fr) minmax(105px, auto);
+  padding: 18px 20px 14px;
+  border: 0 !important;
+  border-radius: 0;
+  background: rgba(4, 19, 31, .44);
+  box-shadow: none;
+  backdrop-filter: none;
+  transition: background 180ms ease;
+}
+
+.intelligence-domain:nth-child(odd) { border-right: 1px solid rgba(126, 191, 211, .16) !important; }
+.intelligence-domain:nth-child(-n + 2) { border-bottom: 1px solid rgba(126, 191, 211, .16) !important; }
+
+.intelligence-domain:hover,
+.intelligence-domain:focus-within {
+  z-index: auto;
+  border-color: rgba(126, 191, 211, .16) !important;
+  background: rgba(7, 28, 42, .62);
+  box-shadow: none;
+  outline: none;
+  transform: none;
+}
+
+.intelligence-domain::before,
+.intelligence-domain::after,
+.intelligence-domain-heading strong::after { display: none !important; }
+
+.intelligence-domain-heading > span { display: none; }
+
+.intelligence-domain-heading strong,
+.intelligence-domain-local .intelligence-domain-heading strong {
+  margin-top: 0;
+  padding: 0;
+  font-size: 27px;
+}
+
+.intelligence-domain-metric {
+  min-width: 105px;
+  padding-left: 0;
+  border: 0;
+}
+
+.intelligence-domain-metric small { color: #9ab3bd; font-size: 10.5px; }
+.intelligence-domain-metric em,
+.intelligence-viz-rows li > span small,
+.intelligence-viz-disclosure li > span small,
+.intelligence-viz-kpis small { display: none; }
+
+.intelligence-focus-tabs {
+  border-color: rgba(128, 190, 211, .19);
+  background: rgba(4, 24, 37, .3);
+}
+
+.intelligence-focus-tabs button { border: 0; padding-inline: 2px; font-size: 10.5px; }
+.intelligence-focus-tabs button.is-active {
+  border: 0;
+  background: color-mix(in srgb, var(--domain-accent) 12%, rgba(8, 35, 49, .72));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--domain-accent) 52%, transparent);
+}
+
+.intelligence-domain-focus-stage {
+  grid-template-columns: minmax(0, 1.28fr) minmax(188px, .72fr);
+  gap: 16px;
+}
+
+.intelligence-entity-focus {
+  padding: 10px 8px;
+  border: 0;
+  border-block: 1px solid rgba(131, 187, 205, .15);
+  background: transparent;
+}
+
+.intelligence-entity-focus > span {
+  padding-right: 46px;
+  color: #b7ccd3;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.intelligence-entity-focus > strong { margin-top: 6px; font-size: 29px; }
+.intelligence-entity-focus > p {
+  margin-top: 7px;
+  color: #a9c0c8;
+  font-size: 12.5px;
+  line-height: 1.45;
+  -webkit-line-clamp: 2;
+}
+.intelligence-entity-focus > a { font-size: 10.5px; }
+
+.intelligence-viz-diverging li,
+.intelligence-viz-rows li,
+.intelligence-viz-ranges li,
+.intelligence-viz-trends li,
+.intelligence-viz-disclosure li,
+.intelligence-viz-kpis > div,
+.intelligence-viz-columns > div {
+  border: 0;
+  border-bottom: 1px solid rgba(126, 191, 211, .1);
+  background: transparent;
+  box-shadow: none;
+  opacity: .76;
+}
+
+.intelligence-viz-diverging li:hover,
+.intelligence-viz-diverging li:focus-visible,
+.intelligence-viz-diverging li.is-selected,
+.intelligence-viz-rows li:hover,
+.intelligence-viz-rows li:focus-visible,
+.intelligence-viz-rows li.is-selected,
+.intelligence-viz-ranges li:hover,
+.intelligence-viz-ranges li:focus-visible,
+.intelligence-viz-ranges li.is-selected,
+.intelligence-viz-trends li:hover,
+.intelligence-viz-trends li:focus-visible,
+.intelligence-viz-trends li.is-selected,
+.intelligence-viz-disclosure li:hover,
+.intelligence-viz-disclosure li:focus-visible,
+.intelligence-viz-disclosure li.is-selected,
+.intelligence-viz-kpis > div:hover,
+.intelligence-viz-kpis > div:focus-visible,
+.intelligence-viz-kpis > div.is-selected,
+.intelligence-viz-columns > div:hover,
+.intelligence-viz-columns > div:focus-visible,
+.intelligence-viz-columns > div.is-selected {
+  border: 0;
+  border-bottom: 1px solid rgba(126, 191, 211, .1);
+  background: color-mix(in srgb, var(--domain-accent) 10%, rgba(8, 34, 47, .54));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--domain-accent) 38%, transparent);
+  opacity: 1;
+  outline: none;
+}
+
+.intelligence-viz-kpis > div::before { display: none; }
+
+.intelligence-viz-rows li > span,
+.intelligence-viz-ranges li > span,
+.intelligence-viz-trends li > span,
+.intelligence-viz-diverging span,
+.intelligence-viz-disclosure li > span,
+.intelligence-viz-kpis span { font-size: 11.5px; }
+
+.intelligence-viz-rows li > strong,
+.intelligence-viz-ranges li > strong,
+.intelligence-viz-trends li > strong,
+.intelligence-viz-diverging strong,
+.intelligence-viz-kpis strong { font-size: 12.5px; }
+
+.intelligence-viz-columns span,
+.intelligence-viz-columns strong { font-size: 10.5px; }
+
+.intelligence-domain-action { color: #b6ccd4; font-size: 10.5px; opacity: .88; }
+.intelligence-domain-action b { border: 0; border-radius: 0; font-size: 14px; }
+
+@media (max-width: 1023px) {
+  .intelligence-domain:nth-child(odd) { border-right: 0 !important; }
+  .intelligence-domain:nth-child(-n + 3) { border-bottom: 1px solid rgba(126, 191, 211, .16) !important; }
+  .intelligence-domain:nth-child(4) { border-bottom: 0 !important; }
+}
+
+@media (max-width: 560px) {
+  .intelligence-domain,
+  .intelligence-domain-local {
+    grid-template-columns: 34px minmax(0, 1fr);
+    padding: 15px 14px 12px;
+  }
+  .intelligence-domain-metric { padding-top: 8px; border: 0; }
+  .intelligence-domain-focus-stage { gap: 10px; }
+}
