@@ -831,3 +831,248 @@ html[data-theme="light"] .relation-carrier.is-selected { color: #0a5e8c; backgro
   .theme-toggle,
   .theme-toggle svg { transition: none; }
 }
+
+/* Light dashboard v2: opaque enterprise surfaces and reliable contrast. */
+html[data-theme="light"] body.dashboard-page {
+  background: #e8eff3 !important;
+}
+
+html[data-theme="light"] .dashboard-page .brand-bar {
+  border-bottom-color: #b8cbd5;
+  background: #f5f8fa;
+  box-shadow: 0 1px 3px rgba(28, 61, 78, .08);
+  backdrop-filter: none;
+}
+
+html[data-theme="light"] .dashboard-page .insight-board {
+  background: #e8eff3 !important;
+}
+
+html[data-theme="light"] .dashboard-page .insight-board > .strategy-ticker {
+  border-bottom-color: #b9cdd7 !important;
+  background: #f8fafb !important;
+  box-shadow: 0 2px 5px rgba(24, 61, 79, .07) !important;
+}
+
+html[data-theme="light"] .dashboard-page .strategy-ticker-item {
+  border-color: #c5d5dd !important;
+  background: #fff !important;
+}
+
+html[data-theme="light"] .dashboard-page .strategy-ticker-item:hover,
+html[data-theme="light"] .dashboard-page .strategy-ticker-item:focus-visible {
+  background: #eef7fb !important;
+}
+
+html[data-theme="light"] .dashboard-page .strategy-ticker-header strong,
+html[data-theme="light"] .dashboard-page .strategy-ticker-item strong {
+  color: #16384a !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .dashboard-page .strategy-ticker-header small,
+html[data-theme="light"] .dashboard-page .strategy-ticker-meta,
+html[data-theme="light"] .dashboard-page .strategy-ticker-meta time,
+html[data-theme="light"] .dashboard-page .strategy-ticker-item p,
+html[data-theme="light"] .dashboard-page .strategy-ticker-footer {
+  color: #526f7e !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .dashboard-page .strategy-ticker-meta b {
+  color: #176e91 !important;
+  background: #dceff6 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-command-board {
+  background: #e8eff3 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-command-board::before {
+  display: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-command-board::after {
+  background:
+    linear-gradient(rgba(97, 137, 156, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(97, 137, 156, .055) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
+  opacity: .5;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation-rail {
+  border-color: #afc5d0 !important;
+  border-radius: 8px;
+  background: #f5f8fa !important;
+  box-shadow: 0 1px 3px rgba(31, 67, 85, .08);
+  backdrop-filter: none;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation {
+  border-right-color: #c4d4dc !important;
+  background: #f5f8fa !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation:hover,
+html[data-theme="light"] .dashboard-page .intelligence-relation:focus-visible,
+html[data-theme="light"] .dashboard-page .intelligence-relation.is-active {
+  background: #e7f3f8 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation span,
+html[data-theme="light"] .dashboard-page .intelligence-relation small {
+  color: #4f6d7c !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation strong {
+  color: #14364a !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation em {
+  color: #18799c !important;
+  opacity: 1;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain-grid {
+  background: transparent !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain,
+html[data-theme="light"] .dashboard-page .intelligence-domain-local {
+  border-color: #afc4cf !important;
+  border-radius: 8px;
+  color: #17384b;
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(28, 63, 81, .08);
+  backdrop-filter: none;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain:hover,
+html[data-theme="light"] .dashboard-page .intelligence-domain:focus-within {
+  border-color: color-mix(in srgb, var(--domain-accent) 62%, #7797a7) !important;
+  background: #fff !important;
+  box-shadow: 0 4px 12px rgba(28, 68, 89, .12);
+  transform: translateY(-1px);
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain::after {
+  opacity: .7;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain-heading span,
+html[data-theme="light"] .dashboard-page .intelligence-domain-metric small,
+html[data-theme="light"] .dashboard-page .intelligence-domain-metric em,
+html[data-theme="light"] .dashboard-page .intelligence-domain-bars span,
+html[data-theme="light"] .dashboard-page .intelligence-viz span,
+html[data-theme="light"] .dashboard-page .intelligence-viz text,
+html[data-theme="light"] .dashboard-page .intelligence-domain-insight > span,
+html[data-theme="light"] .dashboard-page .intelligence-domain-insight p {
+  color: #4e6b7a !important;
+  fill: #4e6b7a !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain-heading strong,
+html[data-theme="light"] .dashboard-page .intelligence-domain-metric > strong,
+html[data-theme="light"] .dashboard-page .intelligence-domain-bars li > strong,
+html[data-theme="light"] .dashboard-page .intelligence-viz strong,
+html[data-theme="light"] .dashboard-page .intelligence-domain-insight strong {
+  color: #14364a !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #14364a !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain-bars i,
+html[data-theme="light"] .dashboard-page .intelligence-viz-ranges i,
+html[data-theme="light"] .dashboard-page .intelligence-viz-rows i {
+  background-color: #cad8df !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs {
+  border-color: #9fb8c5 !important;
+  background: #dbe6eb !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs button {
+  border-color: #afc4ce !important;
+  color: #365b6e !important;
+  background: #e4edf1 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs button:hover,
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs button.is-active {
+  border-color: color-mix(in srgb, var(--domain-accent) 58%, #88a7b6) !important;
+  color: #0d5d80 !important;
+  background: #fff !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-viz-kpis > div,
+html[data-theme="light"] .dashboard-page .intelligence-viz-columns > div,
+html[data-theme="light"] .dashboard-page .intelligence-viz-disclosure li,
+html[data-theme="light"] .dashboard-page .intelligence-viz-rows li,
+html[data-theme="light"] .dashboard-page .intelligence-viz-ranges li,
+html[data-theme="light"] .dashboard-page .intelligence-viz-trends li {
+  border-color: #d0dee5 !important;
+  background: #f4f7f9 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain-insight {
+  border-top-color: #d3dfe5 !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .output-toolbar,
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .output-tabs {
+  border-color: #bdd2dc !important;
+  color: #17384b !important;
+  background: #e8f1f5 !important;
+}
+
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .output-tab {
+  color: #466575 !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .output-tab:hover {
+  color: #075f86 !important;
+  background: #dcecf3 !important;
+}
+
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .output-tab.is-active {
+  border-color: #73aabd !important;
+  color: #fff !important;
+  background: #197694 !important;
+}
+
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .file-row strong,
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .file-name-cell {
+  color: #24495c !important;
+}
+
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .file-row span,
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .file-type-cell,
+html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .time-cell {
+  color: #5a7584 !important;
+}
+
+@media (max-width: 560px) {
+  html[data-theme="light"] .dashboard-page .intelligence-domain-focus-stage {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(122px, auto) minmax(92px, auto) !important;
+    gap: 8px !important;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-domain-focus-stage > .intelligence-viz {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-domain-focus-stage > .intelligence-entity-focus {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-height: 92px;
+  }
+}
