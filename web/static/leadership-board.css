@@ -98,10 +98,16 @@
 }
 
 .intelligence-domain-international {
+  --domain-mask-start: .82;
+  --domain-mask-mid: .62;
   --domain-mask-end: .3;
-  --domain-mask-bottom: .3;
-  --domain-hover-mask-end: .22;
-  --domain-hover-mask-bottom: .25;
+  --domain-mask-top: .1;
+  --domain-mask-bottom: .18;
+  --domain-hover-mask-start: .78;
+  --domain-hover-mask-mid: .54;
+  --domain-hover-mask-end: .16;
+  --domain-hover-mask-top: .07;
+  --domain-hover-mask-bottom: .13;
 }
 
 .intelligence-domain:nth-child(2) { animation-delay: 80ms; }
