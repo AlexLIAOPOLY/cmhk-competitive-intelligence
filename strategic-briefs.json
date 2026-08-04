@@ -1,14 +1,14 @@
 {
   "ok": true,
-  "generated_at": "2026-08-03T18:13:39+08:00",
+  "generated_at": "2026-08-04T09:36:46+08:00",
   "items": [
     {
-      "id": "NEWS-A158C76EB3E89E",
-      "title": "“算力金属”，价格狂飙",
-      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
-      "published_at": "2026-08-03"
+      "id": "NEWS-5C8E24DA9986F4",
+      "title": "3香港推教育机构专属流动通讯服务平台",
+      "summary": "3香港与林溢欣合作推出教育机构专属流动通讯服务平台，为学生及教职员提供数据及学习内容。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMi7wJBVV95cUxPSHpjOGRiX2t2NTlxdWNMdTdsZ2FuNmdCckpJeHp6T0poLURJdHN5b0Foel96dDJWQjR4aXdPbE1jOGhteTlKaXFjRzJjUUtxdnNWQ3A3YzBfaWl3MmdFVXpMVlF0WThFMnUwZEtyU2dwbTV4dVVwa0JXWVgzeDB0ZnczQXA1MUI1Tm9oYUJyQjNFcXk0MklmVTlodjFwM1NoYU9RUnNBVVJhSWVqa3NscVAwcldRdVcyZVN0OXNJem5FUDlPcUttdEQ4bExybU1JSkhFX0tIYlBzVTUxZ0xVNXZiS0pKQ1VaSl8yUlZMbWpCbDRFdmtHUndlRGFjRHFCbzQzV19ncDBaZzB3dVRwZGVIQU42MncxWnNrRV9nWnRpajZSX2x5eHJOOGpzUE9VZ0M1dXRLb2NvSml3WmI0YjdRcWlhbFRiMVdzRnJmY3BFajE5dHJ1NkllMlhqS2RpTWJwUUdrUlhtSGJoaU5r?oc=5",
+      "published_at": "2026-08-03T18:25:37+08:00"
     },
     {
       "id": "NEWS-5EEF4D777E7D90",
@@ -16,7 +16,7 @@
       "summary": "中国移动香港获得Ookla Speedtest七项网络国际权威奖项及认证。",
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
-      "published_at": "2026-08-03"
+      "published_at": "2026-08-03T08:43:00+08:00"
     },
     {
       "id": "NEWS-0CA9B2A1D2BFEB",
@@ -24,7 +24,15 @@
       "summary": "香港机场岛进行智慧出行测试，探索未来交通模式，推动香港智慧出行发展。",
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNVWdHQ1ZJa1NOWW1yeWJwRGJXRTZReXZxc09oNHYyUjBMQkJzZFQ5alFHdE5tWDJVRzdjd1FyaE9SalYzbndBLWRPMHlhOUJ2dWFONV9NZWlfN29mSDljUkRkendueGFLOUdYbHRtRzVyTlNOWlNnTlpsRVY0Ymd4WG50N1RoYU1idTRnVm5FLV9VZERCSG4tN2lNNzY4Q0FfTW8xOWlSN2VILWZub21Nc0lfenp0eFlmQW9CaVZ1UkdWaDFNYVNJYjVCQ19YaDBxak9uM2plQUU5WUpKY2pYQmlvQk5oSlZqWkliS0NyQVpOUW9fX2RhT1g4SjFYcG9FUVBheWFhT0x0X0V2ZGkyWVdaejFnN3NxSVpTbEZhUmxqMS1qem1JSGJtd3RkdmQ4TElZOUxtRGJqNmp1MlRyY3N0TEdsdmFmaklQakIwdFhTZ1ViMVoxR3kyNDE?oc=5",
-      "published_at": "2026-08-03"
+      "published_at": "2026-08-03T08:00:12+08:00"
+    },
+    {
+      "id": "NEWS-A158C76EB3E89E",
+      "title": "“算力金属”，价格狂飙",
+      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
+      "published_at": "2026-08-03T08:00:00+08:00"
     },
     {
       "id": "NEWS-93E818ABE49C4B",
@@ -32,40 +40,32 @@
       "summary": "滴滴香港筹备提交网约车牌照申请，提升合规管理，并向用户推出夏日出行优惠。",
       "category": "政策监管",
       "source_url": "https://www.am730.com.hk/article/1045256",
-      "published_at": "2026-08-03"
+      "published_at": "2026-08-03T08:00:00+08:00"
     },
     {
-      "id": "NEWS-E4D59059AC6C5D",
-      "title": "金管局维持基本利率4厘不变",
-      "summary": "香港金管局宣布维持基本利率在4厘水平不变。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
-      "published_at": "2026-07-30"
+      "id": "NEWS-7906A5234C6DC3",
+      "title": "香港上调全年经济增长预测",
+      "summary": "财政司司长陈茂波表示，鉴于上半年GDP增长达5.1%，香港将上调全年经济增长预测。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864679-20260802.htm",
+      "published_at": "2026-08-02T16:24:00+08:00"
     },
     {
-      "id": "NEWS-42A8A8BD467BFE",
-      "title": "商汤大装置持续拓展产业生态边界 集中落地多项重磅战略合作",
-      "summary": "商汤大装置与国信数算签署全国一体化算力网试验场战略合作，联合举办AI基础设施创新发展论坛。",
+      "id": "NEWS-D419362F00CB24",
+      "title": "香港二季度GDP同比增长4.3%",
+      "summary": "香港政府公布初步统计数据显示，香港经济在四月至六月期间按年实质增长百分之四点三。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864513-20260731.htm",
+      "published_at": "2026-07-31T18:56:00+08:00"
+    },
+    {
+      "id": "NEWS-F7D1F596D345E9",
+      "title": "中国成立量子信息标准委员会推动行业标准化",
+      "summary": "中国工信部成立量子信息技术委员会，推动量子技术从研究向行业标准转化。",
       "category": "基础设施/网络/技术类",
-      "source_url": "https://www.leiphone.com/category/industrynews/sO1Q58AgzvWr2mFJ.html",
-      "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-FAB947EEC47797",
-      "title": "工信部等七部门：启动2026年首批工业和信息化领域创新任务揭榜挂帅工作",
-      "summary": "工信部等七部门启动2026年工业和信息化领域创新任务揭榜挂帅，布局24个专题。",
-      "category": "政策监管",
-      "source_url": "https://www.msn.cn/zh-cn/news/other/%E5%B7%A5%E4%BF%A1%E9%83%A8%E7%AD%89%E4%B8%83%E9%83%A8%E9%97%A8-%E5%90%AF%E5%8A%A82026%E5%B9%B4%E9%A6%96%E6%89%B9%E5%B7%A5%E4%B8%9A%E5%92%8C%E4%BF%A1%E6%81%AF%E5%8C%96%E9%A2%86%E5%9F%9F%E5%88%9B%E6%96%B0%E4%BB%BB%E5%8A%A1%E6%8F%AD%E6%A6%9C%E6%8C%82%E5%B8%85%E5%B7%A5%E4%BD%9C/ar-AA28WMXs",
-      "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-06E6A466DAC09B",
-      "title": "AI需求激增致内存供应预计2027年极度短缺",
-      "summary": "台湾宇瞻科技警告，AI对系统内存需求急剧增加，预计2027年通用DRAM供应将削减70%，市场将从涨价演变为极度缺货。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://unwire.hk/2026/07/29/apacer-dram-shortage-2027/fun-tech/",
-      "published_at": "2026-07-29"
+      "source_url": "https://www.msn.com/en-us/news/other/china-moves-quantum-from-research-to-rulebook-with-new-industry-standards-body/ar-AA299k6t",
+      "published_at": "2026-07-31T16:41:04+08:00"
     }
   ],
-  "site_version": "4af0185348ed93c7d57dca35d3ddaa1ccd545d0e391de20f5ec3927cb0a48dfa"
+  "site_version": "cfbba41b7fc19cfbc18cfcd526f703691177a4e94463952162ff088e04cbee51"
 }
