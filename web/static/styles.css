@@ -13639,6 +13639,111 @@ body.dashboard-page {
 
 /* Keep the high-contrast chat palette last so the earlier dark-theme bridge
    cannot lower text and control contrast again. */
+/* Final chart material layer: retain depth after the compact visualization rules. */
+.intelligence-viz-diverging i { height: 8px; }
+.intelligence-viz-diverging b {
+  top: 1px;
+  height: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(210, 239, 247, .14);
+  border-radius: 2px;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .24), inset 0 -2px 2px rgba(0, 16, 25, .3);
+}
+.intelligence-viz-diverging b::after { position: absolute; inset: 0 0 auto; height: 1px; background: rgba(236, 252, 255, .48); content: ""; }
+.intelligence-viz-diverging .is-positive b { background: linear-gradient(180deg, #67c9f2, #3289dc 46%, #1d5eab); box-shadow: inset 0 1px rgba(255,255,255,.24), inset 0 -2px 2px rgba(0,24,52,.28), 0 2px 7px rgba(48,137,220,.24); }
+.intelligence-viz-diverging .is-negative b { background: linear-gradient(180deg, #ef98a8, #ce5f79 46%, #8f354e); box-shadow: inset 0 1px rgba(255,255,255,.2), inset 0 -2px 2px rgba(57,5,19,.28), 0 2px 7px rgba(202,77,106,.2); }
+
+.intelligence-viz-columns i {
+  width: min(30px, 64%);
+  overflow: visible;
+  border-bottom-color: color-mix(in srgb, var(--domain-accent) 48%, transparent);
+  background: linear-gradient(180deg, transparent 12%, color-mix(in srgb, var(--domain-accent) 5%, transparent));
+  perspective: 90px;
+}
+.intelligence-viz-columns b {
+  right: 3px;
+  left: 1px;
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 60%, #173f4d);
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, rgba(238,255,255,.3), transparent 16% 76%, rgba(0,33,40,.24)), linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 82%, #dffdf7), var(--domain-accent) 34%, color-mix(in srgb, var(--domain-accent) 54%, #15493f));
+  box-shadow: inset 1px 0 rgba(255,255,255,.18), inset -2px 0 rgba(0,32,39,.18), 3px 4px 8px rgba(0,7,12,.3), 0 0 12px color-mix(in srgb, var(--domain-accent) 13%, transparent);
+}
+.intelligence-viz-columns b::before {
+  position: absolute;
+  top: -4px;
+  right: -1px;
+  left: 1px;
+  height: 4px;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 55%, #b8eef0);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--domain-accent) 58%, #e9ffff), color-mix(in srgb, var(--domain-accent) 86%, #8ed8d0));
+  content: "";
+  transform: skewX(-34deg);
+  transform-origin: bottom;
+}
+.intelligence-viz-columns b::after {
+  position: absolute;
+  top: 1px;
+  right: -4px;
+  bottom: -1px;
+  width: 4px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 54%, #85c9ca), color-mix(in srgb, var(--domain-accent) 34%, #102f36));
+  clip-path: polygon(0 0, 100% 4px, 100% 100%, 0 100%);
+  content: "";
+  opacity: .72;
+}
+.intelligence-viz-columns > div:is(.is-selected, :hover, :focus-visible) b { filter: saturate(1.12) brightness(1.08); box-shadow: inset 1px 0 rgba(255,255,255,.22), inset -2px 0 rgba(0,32,39,.18), 4px 5px 10px rgba(0,7,12,.34), 0 0 16px color-mix(in srgb, var(--domain-accent) 20%, transparent); }
+
+.intelligence-viz-trends li polyline.trend-depth { stroke: color-mix(in srgb, var(--domain-accent) 44%, #00131f); stroke-width: 5; opacity: .5; filter: none; }
+.intelligence-viz-trends li polyline.trend-line { stroke: color-mix(in srgb, var(--domain-accent) 84%, #dffbff); stroke-width: 1.8; filter: drop-shadow(0 1px 3px color-mix(in srgb, var(--domain-accent) 38%, transparent)); }
+.intelligence-viz-trends .trend-nodes circle { fill: color-mix(in srgb, var(--domain-accent) 84%, #efffff); stroke: #08202d; stroke-width: .65; vector-effect: non-scaling-stroke; opacity: .76; }
+.intelligence-viz-trends li:is(.is-selected, :hover, :focus-visible) .trend-nodes circle { opacity: 1; }
+
+.intelligence-viz-network circle { fill: color-mix(in srgb, var(--domain-accent) 16%, #071b27); stroke: color-mix(in srgb, var(--domain-accent) 82%, #c9f4fb); filter: drop-shadow(0 2px 3px rgba(0,8,13,.46)) drop-shadow(0 0 5px color-mix(in srgb, var(--domain-accent) 24%, transparent)); }
+
+.intelligence-viz-rows li > i,
+.intelligence-viz-ranges li > i {
+  height: 7px;
+  border: 1px solid rgba(119, 172, 190, .1);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(158, 210, 226, .08), transparent 42%), rgba(28, 67, 82, .24);
+  box-shadow: inset 0 1px 2px rgba(0, 7, 12, .46), 0 1px rgba(198, 232, 241, .025);
+}
+
+.intelligence-viz-rows li > i b {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 44%, transparent);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(222, 251, 255, .48) 0, rgba(222, 251, 255, .08) 28%, transparent 29%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 48%, #173c50), var(--domain-accent) 72%, color-mix(in srgb, var(--domain-accent) 68%, #d8f7fb));
+  box-shadow: inset 0 -2px 2px rgba(0, 18, 27, .26), 0 2px 5px color-mix(in srgb, var(--domain-accent) 16%, transparent);
+}
+.intelligence-viz-rows li > i b::after { position: absolute; inset: 0 0 0 auto; width: 2px; background: color-mix(in srgb, var(--domain-accent) 35%, #ecfbff); box-shadow: -2px 0 5px color-mix(in srgb, var(--domain-accent) 32%, transparent); content: ""; }
+
+.intelligence-domain-cloud .intelligence-viz-columns .is-negative b {
+  border-color: #9f5360;
+  background: linear-gradient(90deg, rgba(255, 235, 238, .2), transparent 20% 78%, rgba(48, 5, 15, .2)), linear-gradient(180deg, #d28c95, #a85263 48%, #6d303e);
+}
+.intelligence-domain-cloud .intelligence-viz-columns .is-negative b::before { border-color: #bd7781; background: linear-gradient(135deg, #e4b0b6, #bc6c79); }
+.intelligence-domain-cloud .intelligence-viz-columns .is-negative b::after { background: linear-gradient(180deg, #9d5360, #552631); }
+
+.intelligence-viz-ranges li > i b {
+  top: -2px;
+  height: 9px;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 55%, #d9f5fa);
+  background: linear-gradient(180deg, rgba(242, 255, 255, .35), transparent 34%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 58%, #244e5c), var(--domain-accent), color-mix(in srgb, var(--domain-accent) 58%, #244e5c));
+  box-shadow: inset 0 -2px 2px rgba(0, 16, 24, .24), 0 2px 7px color-mix(in srgb, var(--domain-accent) 21%, transparent);
+}
+
+.intelligence-viz-kpis > div,
+.intelligence-viz-disclosure li { box-shadow: inset 0 1px rgba(220, 246, 251, .035), inset 0 -1px rgba(0, 8, 13, .24); }
+
+@media (prefers-reduced-motion: reduce) {
+  .intelligence-viz-columns b,
+  .intelligence-viz-diverging b,
+  .intelligence-viz-rows li > i b { animation: none; transform: none; }
+}
+
 .dashboard-page .floating-chat {
   --panel: #071a25;
   --panel-soft: #0d2734;

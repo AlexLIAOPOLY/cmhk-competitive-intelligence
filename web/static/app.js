@@ -7637,9 +7637,18 @@ document.addEventListener("keydown", (event) => {
           const y = 17 - ((Number(point.value) - low) / span * 14);
           return `${x.toFixed(1)},${y.toFixed(1)}`;
         }).join(" ");
+        const nodes = points.map((point, pointIndex) => {
+          const x = points.length <= 1 ? 50 : pointIndex * (100 / (points.length - 1));
+          const y = 17 - ((Number(point.value) - low) / span * 14);
+          return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.25"></circle>`;
+        }).join("");
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
           <span>${safe(item.name)}</span>
-          <svg viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true"><polyline points="${coordinates}"></polyline></svg>
+          <svg viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+            <polyline class="trend-depth" points="${coordinates}"></polyline>
+            <polyline class="trend-line" points="${coordinates}"></polyline>
+            <g class="trend-nodes">${nodes}</g>
+          </svg>
           <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
         </li>`;
       }).join("")}</ul>`;
