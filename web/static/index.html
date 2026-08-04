@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
-  <link rel="stylesheet" href="/static/styles.css?v=227" />
+  <link rel="stylesheet" href="/static/styles.css?v=228" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
   </head>
   <body class="dashboard-page">
@@ -22,6 +22,9 @@
           </button>
           <a class="icon-button nav-link" href="/company-data.html" title="公司指标表" aria-label="公司指标表">▦</a>
           <button class="icon-button" id="logButton" type="button" title="日志" aria-label="日志">▤</button>
+          <button class="chat-fab" id="chatFab" type="button" title="打开小竞AI" aria-label="打开小竞AI">
+            <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" aria-hidden="true" />
+          </button>
         </div>
         <div class="header-runtime-status">
           <strong id="runState" role="status">准备就绪</strong>
@@ -180,10 +183,6 @@
           </section>
         </section>
       </section>
-
-      <button class="chat-fab" id="chatFab" type="button" title="打开小竞AI" aria-label="打开小竞AI">
-        <img src="/static/assets/logo/xiaojing-ai-logo-mark.png?v=2" alt="" aria-hidden="true" />
-      </button>
 
       <section class="modal-backdrop chat-backdrop" id="chatModal" hidden>
         <aside class="chat-panel floating-chat" aria-label="AI 对话">

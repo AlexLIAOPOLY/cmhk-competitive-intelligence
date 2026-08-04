@@ -60,6 +60,9 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('id="intelligenceDomainGrid"', html)
         self.assertIn('id="intelligenceRelationRail"', html)
         self.assertIn('id="intelligenceDrawer"', html)
+        header_tools = html[html.index('<div class="header-tools">'):html.index('<div class="header-runtime-status">')]
+        self.assertIn('id="chatFab"', header_tools)
+        self.assertEqual(html.count('id="chatFab"'), 1)
         self.assertNotIn('id="collectionOverviewTitle"', html)
         self.assertNotIn('id="dailyAssetGrid"', html)
         self.assertNotIn('id="signalTrendCanvas"', html)
