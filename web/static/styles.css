@@ -13969,47 +13969,46 @@ body.report-library-open::before {
 .intelligence-viz-diverging .is-negative b { background: linear-gradient(180deg, #ef98a8, #ce5f79 46%, #8f354e); box-shadow: inset 0 1px rgba(255,255,255,.2), inset 0 -2px 2px rgba(57,5,19,.28), 0 2px 7px rgba(202,77,106,.2); }
 
 .intelligence-viz-columns i {
-  width: min(30px, 64%);
-  overflow: visible;
+  width: min(28px, 60%);
+  height: calc(100% - 3px);
+  overflow: hidden;
   border-bottom-color: color-mix(in srgb, var(--domain-accent) 48%, transparent);
   background: linear-gradient(180deg, transparent 12%, color-mix(in srgb, var(--domain-accent) 5%, transparent));
   perspective: 90px;
 }
 .intelligence-viz-columns b {
-  right: 3px;
+  right: 1px;
   left: 1px;
-  overflow: visible;
-  border: 1px solid color-mix(in srgb, var(--domain-accent) 60%, #173f4d);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 42%, #173f4d);
   border-radius: 2px 2px 0 0;
-  background: linear-gradient(90deg, rgba(238,255,255,.3), transparent 16% 76%, rgba(0,33,40,.24)), linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 82%, #dffdf7), var(--domain-accent) 34%, color-mix(in srgb, var(--domain-accent) 54%, #15493f));
-  box-shadow: inset 1px 0 rgba(255,255,255,.18), inset -2px 0 rgba(0,32,39,.18), 3px 4px 8px rgba(0,7,12,.3), 0 0 12px color-mix(in srgb, var(--domain-accent) 13%, transparent);
+  background: linear-gradient(90deg, rgba(238,255,255,.2), transparent 18% 80%, rgba(0,33,40,.18)), linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 76%, #dffdf7), var(--domain-accent) 30%, color-mix(in srgb, var(--domain-accent) 58%, #15493f));
+  box-shadow: inset 1px 0 rgba(255,255,255,.12), inset -2px 0 rgba(0,32,39,.14), 1px 2px 4px rgba(0,7,12,.22);
 }
 .intelligence-viz-columns b::before {
   position: absolute;
-  top: -4px;
-  right: -1px;
-  left: 1px;
-  height: 4px;
-  border: 1px solid color-mix(in srgb, var(--domain-accent) 55%, #b8eef0);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--domain-accent) 58%, #e9ffff), color-mix(in srgb, var(--domain-accent) 86%, #8ed8d0));
+  top: 1px;
+  right: 2px;
+  left: 2px;
+  height: 1px;
+  border: 0;
+  background: color-mix(in srgb, var(--domain-accent) 42%, #efffff);
   content: "";
-  transform: skewX(-34deg);
-  transform-origin: bottom;
+  opacity: .68;
 }
 .intelligence-viz-columns b::after {
   position: absolute;
-  top: 1px;
-  right: -4px;
-  bottom: -1px;
-  width: 4px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 54%, #85c9ca), color-mix(in srgb, var(--domain-accent) 34%, #102f36));
-  clip-path: polygon(0 0, 100% 4px, 100% 100%, 0 100%);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 48%, #85c9ca), color-mix(in srgb, var(--domain-accent) 28%, #102f36));
   content: "";
-  opacity: .72;
+  opacity: .55;
 }
-.intelligence-viz-columns > div:is(.is-selected, :hover, :focus-visible) b { filter: saturate(1.12) brightness(1.08); box-shadow: inset 1px 0 rgba(255,255,255,.22), inset -2px 0 rgba(0,32,39,.18), 4px 5px 10px rgba(0,7,12,.34), 0 0 16px color-mix(in srgb, var(--domain-accent) 20%, transparent); }
+.intelligence-viz-columns > div:is(.is-selected, :hover, :focus-visible) b { filter: saturate(1.06) brightness(1.05); box-shadow: inset 1px 0 rgba(255,255,255,.16), inset -2px 0 rgba(0,32,39,.14), 1px 2px 5px rgba(0,7,12,.25), 0 0 8px color-mix(in srgb, var(--domain-accent) 12%, transparent); }
 
-.intelligence-viz-trends li polyline.trend-depth { stroke: color-mix(in srgb, var(--domain-accent) 44%, #00131f); stroke-width: 5; opacity: .5; filter: none; }
+.intelligence-viz-trends li polyline.trend-depth { stroke: color-mix(in srgb, var(--domain-accent) 38%, #00131f); stroke-width: 3; opacity: .3; filter: none; }
 .intelligence-viz-trends li polyline.trend-line { stroke: color-mix(in srgb, var(--domain-accent) 84%, #dffbff); stroke-width: 1.8; filter: drop-shadow(0 1px 3px color-mix(in srgb, var(--domain-accent) 38%, transparent)); }
 .intelligence-viz-trends .trend-nodes circle { fill: color-mix(in srgb, var(--domain-accent) 84%, #efffff); stroke: #08202d; stroke-width: .65; vector-effect: non-scaling-stroke; opacity: .76; }
 .intelligence-viz-trends li:is(.is-selected, :hover, :focus-visible) .trend-nodes circle { opacity: 1; }
