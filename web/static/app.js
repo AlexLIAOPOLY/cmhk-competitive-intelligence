@@ -7481,21 +7481,73 @@ document.addEventListener("keydown", (event) => {
     `).join("");
   }
 
-  function renderDomains(domains) {
-    grid.innerHTML = domains.map((domain) => {
-      const entities = Array.isArray(domain.entities) ? domain.entities : [];
-      const maxValue = Math.max(...entities.map((item) => Math.abs(Number(item.value) || 0)), 1);
-      const bars = entities.slice(0, 4).map((item) => {
-        const numeric = Number(item.value) || 0;
-        const width = Math.max(4, Math.abs(numeric) / maxValue * 100);
+  function renderDomainVisual(domain, entities) {
+    const items = entities.slice(0, 4);
+    const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
+    if (domain.id === "local") {
+      const points = [
+        { x: 68, y: 34 },
+        { x: 194, y: 70 },
+        { x: 326, y: 30 },
+        { x: 454, y: 66 },
+      ];
+      const links = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 3]].map(([from, to], index) => `
+        <line x1="${points[from].x}" y1="${points[from].y}" x2="${points[to].x}" y2="${points[to].y}" style="--link-index:${index}" />
+      `).join("");
+      const nodes = items.map((item, index) => {
+        const point = points[index];
+        const radius = 6 + Math.abs(Number(item.value) || 0) / maxValue * 7;
         return `
-          <li class="${numeric < 0 ? "is-negative" : ""}">
+          <g>
+            <circle cx="${point.x}" cy="${point.y}" r="${radius.toFixed(1)}" />
+            <text x="${point.x}" y="${point.y + 25}" text-anchor="middle">${safe(item.name)}</text>
+            <text class="viz-value" x="${point.x}" y="${point.y + 36}" text-anchor="middle">${formatValue(item.value)}${safe(item.unit)}</text>
+          </g>
+        `;
+      }).join("");
+      return `<div class="intelligence-viz intelligence-viz-network" aria-label="本地厂商竞争重叠关系"><svg viewBox="0 0 522 112" role="img">${links}${nodes}</svg></div>`;
+    }
+
+    if (domain.id === "international") {
+      return `<ul class="intelligence-viz intelligence-viz-diverging" aria-label="国际运营商增长正负分化">${items.map((item) => {
+        const numeric = Number(item.value) || 0;
+        const size = Math.max(3, Math.abs(numeric) / maxValue * 48);
+        return `
+          <li class="${numeric < 0 ? "is-negative" : "is-positive"}">
             <span>${safe(item.name)}</span>
-            <i><b style="--bar-width:${width.toFixed(2)}%"></b></i>
+            <i><b style="--viz-size:${size.toFixed(2)}%"></b></i>
             <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
           </li>
         `;
-      }).join("");
+      }).join("")}</ul>`;
+    }
+
+    if (domain.id === "cloud") {
+      return `<div class="intelligence-viz intelligence-viz-columns" aria-label="云厂商增长梯队">${items.map((item) => {
+        const height = Math.max(12, Math.abs(Number(item.value) || 0) / maxValue * 100);
+        return `
+          <div>
+            <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
+            <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
+            <span>${safe(item.name)}</span>
+          </div>
+        `;
+      }).join("")}</div>`;
+    }
+
+    return `<div class="intelligence-viz intelligence-viz-kpis" aria-label="宏观与政策关键指标">${items.map((item, index) => `
+      <div style="--kpi-index:${index}">
+        <span>${safe(item.name)}</span>
+        <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
+        <small>${safe(item.detail)}</small>
+      </div>
+    `).join("")}</div>`;
+  }
+
+  function renderDomains(domains) {
+    grid.innerHTML = domains.map((domain) => {
+      const entities = Array.isArray(domain.entities) ? domain.entities : [];
+      const visual = renderDomainVisual(domain, entities);
       return `
         <button class="intelligence-domain intelligence-domain-${safe(domain.id)}" type="button" data-intelligence-domain="${safe(domain.id)}" aria-label="查看${safe(domain.title)}详情">
           <span class="intelligence-domain-index">${safe(domain.index)}</span>
@@ -7508,7 +7560,7 @@ document.addEventListener("keydown", (event) => {
             <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
             <em>${safe(domain.context)}</em>
           </span>
-          <ul class="intelligence-domain-bars" aria-label="${safe(domain.title)}主要对象">${bars}</ul>
+          ${visual}
           <span class="intelligence-domain-insight">${safe(domain.insight)}</span>
           <span class="intelligence-domain-action">穿透分析 <b aria-hidden="true">↗</b></span>
         </button>
