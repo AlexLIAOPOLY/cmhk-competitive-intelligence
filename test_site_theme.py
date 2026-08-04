@@ -12,7 +12,7 @@ class SiteThemeTests(unittest.TestCase):
             markup = (STATIC / name).read_text(encoding="utf-8")
             with self.subTest(page=name):
                 self.assertIn('data-theme-toggle', markup)
-                self.assertIn('/static/theme.css?v=3', markup)
+                self.assertIn('/static/theme.css?v=4', markup)
                 self.assertIn('/static/theme.js?v=1', markup)
                 self.assertIn('cmhk-color-theme', markup)
 
