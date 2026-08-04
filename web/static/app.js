@@ -7520,7 +7520,7 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus) {
     if (!entity) return "";
     const source = /^https?:\/\//i.test(String(entity.source_url || ""))
-      ? `<a href="${safe(entity.source_url)}" target="_blank" rel="noreferrer">来源<span aria-hidden="true">↗</span></a>`
+      ? `<a href="${safe(entity.source_url)}" target="_self">来源<span aria-hidden="true">↗</span></a>`
       : "";
     return `
       <div class="intelligence-entity-focus">
@@ -7789,73 +7789,67 @@ document.addEventListener("keydown", (event) => {
       const name = safe(item.name);
       return `
         <li>
-          <div><strong>${name}</strong><span>${safe(item.detail)}</span></div>
+          <div><strong>${name}</strong></div>
           <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatValue(item.value)} ${safe(item.unit)}</strong></div>
-          ${item.source_url ? `<a href="${safe(item.source_url)}" target="_blank" rel="noreferrer" aria-label="打开${name}来源">来源</a>` : ""}
+          ${item.source_url ? `<a href="${safe(item.source_url)}" target="_self" aria-label="打开${name}来源">打开↗</a>` : ""}
         </li>
       `;
     }).join("");
-    const crossRelations = relatedEdges(domain.id).map((relation) => {
+    const domainCrossRelations = relatedEdges(domain.id);
+    const crossRelations = domainCrossRelations.map((relation) => {
       const peer = relation.from === domain.id ? relation.to : relation.from;
       return `
         <button type="button" data-intelligence-peer="${safe(peer)}">
-          <span>${safe(relation.kind)} · 关联 ${safe(domainLabels[peer] || peer)}</span>
+          <span>联动 ${safe(domainLabels[peer] || peer)}</span>
           <strong>${safe(relation.title)}</strong>
-          <p>${safe(relation.detail)}</p>
         </button>
       `;
     }).join("");
-    const internalRelations = (domain.relations || []).map((relation) => `
-      <li><span>${safe(relation.kind)}</span><strong>${safe(relation.title)}</strong><p>${safe(relation.detail)}</p></li>
-    `).join("");
     const sources = (domain.sources || []).map((source) => `
-      <a href="${safe(source.url)}" target="_blank" rel="noreferrer">${safe(source.label)}<span aria-hidden="true">↗</span></a>
-    `).join("");
-    const aiAnalysis = (domain.ai_analysis || []).map((item) => `
-      <li>
-        <span>Agent核验 · ${safe(item.metric)} · 质量 ${safe(Math.round(Number(item.quality_score || 0) * 100))}</span>
-        <strong>${safe(item.company)}</strong>
-        <p>${safe(item.analysis)}</p>
-        ${item.source_url ? `<a href="${safe(item.source_url)}" target="_blank" rel="noreferrer">核验证据↗</a>` : ""}
-      </li>
+      <a href="${safe(source.url)}" target="_self">${safe(source.label)}<span aria-hidden="true">↗</span></a>
     `).join("");
     const aiSummary = domain.ai_summary || {};
-    const aiSummaryMarkup = aiSummary.headline ? `
-      <div class="intelligence-detail-lead">
-        <span>证据受限 AI 研判</span>
-        <strong>${safe(aiSummary.headline)}</strong>
-        <p>${safe(aiSummary.analysis)}</p>
-        <small>边界：${safe(aiSummary.risk)}</small>
-      </div>
-    ` : "";
+    const internalRelations = Array.isArray(domain.relations) ? domain.relations : [];
+    const conclusionCandidates = [
+      internalRelations[0]?.title,
+      ...domainCrossRelations.map((relation) => relation.title),
+      aiSummary.headline || domain.insight,
+    ].filter(Boolean);
+    const conclusions = Array.from(new Set(conclusionCandidates)).slice(0, 3);
+    const conclusionRows = conclusions.map((text, index) => `
+      <li><span>0${index + 1}</span><strong>${safe(text)}</strong></li>
+    `).join("");
+    const verifiedCount = Array.isArray(domain.ai_analysis) ? domain.ai_analysis.length : 0;
+    const sourceCount = Array.isArray(domain.sources) ? domain.sources.length : 0;
 
-    drawerKicker.textContent = `${domain.index} · ${domain.kicker}`;
+    drawerKicker.textContent = `${domain.index} · 多源综合研判`;
     drawerTitle.textContent = domain.title;
     drawerBody.innerHTML = `
       <section class="intelligence-detail-lead">
-        <span>${safe(domain.metric?.label)}</span>
+        <span>当前关键结果 · ${safe(domain.metric?.label)}</span>
         <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
         <p>${safe(domain.insight)}</p>
       </section>
+      <div class="intelligence-summary-strip" aria-label="综合渠道覆盖">
+        <span><strong>${entities.length}</strong>个对象</span>
+        <span><strong>${domainCrossRelations.length}</strong>条跨库联动</span>
+        <span><strong>${sourceCount}</strong>个来源入口</span>
+        <span><strong>${verifiedCount}</strong>项Agent核验</span>
+      </div>
       <section class="intelligence-detail-section">
-        <h3>跨库关系</h3>
+        <h3>领导结论</h3>
+        <ol class="intelligence-decision-list">${conclusionRows}</ol>
+      </section>
+      <section class="intelligence-detail-section">
+        <h3>跨渠道联动</h3>
         <div class="intelligence-cross-relations">${crossRelations || "<p>暂无跨库关系</p>"}</div>
       </section>
       <section class="intelligence-detail-section">
-        <h3>AI 审核分析${domain.ai_updated_at ? `<small> · ${safe(domain.ai_updated_at.replace("T", " "))}</small>` : ""}</h3>
-        ${aiSummaryMarkup}
-        <ul class="intelligence-internal-relations">${aiAnalysis || "<li><p>本轮 Agent 暂无该领域通过发布门禁的新事实，继续使用四库已核验指标。</p></li>"}</ul>
-      </section>
-      <section class="intelligence-detail-section">
-        <h3>厂商与指标</h3>
+        <h3>对象对比</h3>
         <ul class="intelligence-entity-list">${entityRows}</ul>
       </section>
-      <section class="intelligence-detail-section">
-        <h3>域内关系</h3>
-        <ul class="intelligence-internal-relations">${internalRelations}</ul>
-      </section>
       <section class="intelligence-detail-section intelligence-source-list">
-        <h3>数据来源</h3>
+        <h3>来源入口</h3>
         <div>${sources}</div>
       </section>
     `;
@@ -7899,6 +7893,13 @@ document.addEventListener("keydown", (event) => {
   }
 
   grid.addEventListener("click", (event) => {
+    const sourceLink = event.target.closest(".intelligence-entity-focus > a");
+    if (sourceLink) {
+      event.preventDefault();
+      event.stopPropagation();
+      window.location.assign(sourceLink.href);
+      return;
+    }
     const focusTrigger = event.target.closest("[data-intelligence-focus]");
     if (focusTrigger) {
       selectFocus(focusTrigger.dataset.intelligenceDomainId, Number(focusTrigger.dataset.intelligenceFocus), true);
