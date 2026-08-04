@@ -62,6 +62,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('id="intelligenceDrawer"', html)
         header_tools = html[html.index('<div class="header-tools">'):html.index('<div class="header-runtime-status">')]
         self.assertIn('id="chatFab"', header_tools)
+        self.assertIn('<button class="icon-button chat-fab" id="chatFab"', html)
         self.assertEqual(html.count('id="chatFab"'), 1)
         self.assertNotIn('id="collectionOverviewTitle"', html)
         self.assertNotIn('id="dailyAssetGrid"', html)
@@ -567,7 +568,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
     def test_chat_launcher_is_icon_only_and_keeps_an_accessible_name(self) -> None:
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
-        launcher_start = markup.index('<button class="chat-fab"')
+        launcher_start = markup.index('<button class="icon-button chat-fab"')
         launcher_end = markup.index("</button>", launcher_start)
         launcher = markup[launcher_start:launcher_end]
 
@@ -575,8 +576,9 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('aria-label="打开小竞AI"', launcher)
         self.assertIn("xiaojing-ai-logo-mark.png", launcher)
         self.assertNotIn("<span>", launcher)
-        self.assertIn("width: 64px;\n  height: 64px;\n  padding: 0;", styles)
-        self.assertIn(".chat-fab img {\n  position: relative;\n  z-index: 1;\n  width: 47%;\n  height: 47%;", styles)
+        self.assertIn(".dashboard-page .chat-fab {\n  position: static;", styles)
+        self.assertIn("width: 36px;\n  height: 36px;", styles)
+        self.assertIn(".dashboard-page .chat-fab img {\n  width: 46%;\n  height: 46%;", styles)
 
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -1142,7 +1144,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('class="command-btn btn-library topbar-command" id="reportLibraryButton"', markup)
         topbar = markup[markup.index('<div class="header-tools">'):markup.index('<div class="header-runtime-status">')]
         self.assertNotIn('id="crawlButtonSecondary"', topbar)
-        self.assertIn('href="/executive-dashboard-demo.html" title="策略经营驾驶舱"', topbar)
+        self.assertIn('class="icon-button nav-link cockpit-link" href="/executive-dashboard-demo.html" title="经营驾驶舱"', topbar)
         self.assertNotIn('href="/company-data.html"', topbar)
         library_header = markup[markup.index('<header class="report-library-header">'):]
         self.assertIn('class="command-btn btn-fetch" id="crawlButtonSecondary"', library_header)
