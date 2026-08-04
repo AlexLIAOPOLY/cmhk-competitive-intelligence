@@ -62,6 +62,24 @@ def _dedupe_sources(items: list[dict[str, str] | None]) -> list[dict[str, str]]:
     return result
 
 
+def _median(values: list[float]) -> float | None:
+    ordered = sorted(values)
+    if not ordered:
+        return None
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def _focus_metric(items: list[dict[str, Any]], label: str, unit: str, mode: str = "max") -> dict[str, Any]:
+    values = [float(item["value"]) for item in items if _number(item.get("value")) is not None]
+    if not values:
+        return {"value": "-", "unit": unit, "label": label}
+    value = min(values) if mode == "min" else max(values)
+    return {"value": round(value, 2), "unit": unit, "label": label}
+
+
 def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     category_labels = {
         "business_mobile_4g": "企业移动4G",
@@ -80,27 +98,19 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         if brand:
             by_brand.setdefault(brand, []).append(row)
 
-    entities: list[dict[str, Any]] = []
     brand_profiles: dict[str, dict[str, Any]] = {}
     for brand, brand_rows in by_brand.items():
         categories = sorted({str(row.get("product_category") or "") for row in brand_rows if row.get("product_category")})
         fees = [fee for fee in (_number(row.get("average_monthly_fee_hkd")) for row in brand_rows) if fee and fee > 0]
         fee_range = (min(fees), max(fees)) if fees else None
         source_url = next((str(row.get("source_url") or "") for row in brand_rows if row.get("source_url")), "")
-        brand_profiles[brand] = {"categories": set(categories), "fee_range": fee_range}
-        fee_text = "未结构化月费"
-        if fee_range:
-            fee_text = f"平均月费 HK${fee_range[0]:.0f}–{fee_range[1]:.0f}"
-        entities.append(
-            {
-                "name": brand,
-                "value": len(brand_rows),
-                "unit": "项方案",
-                "detail": f"{len(categories)} 个产品赛道 · {fee_text}",
-                "source_url": source_url,
-            }
-        )
-    entities.sort(key=lambda item: item["value"], reverse=True)
+        brand_profiles[brand] = {
+            "rows": brand_rows,
+            "categories": set(categories),
+            "fees": fees,
+            "fee_range": fee_range,
+            "source_url": source_url,
+        }
 
     overlaps: list[dict[str, Any]] = []
     brands = sorted(brand_profiles)
@@ -126,6 +136,72 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 }
             )
     overlaps.sort(key=lambda item: item["score"], reverse=True)
+    overlaps_by_brand: dict[str, list[dict[str, Any]]] = {brand: [] for brand in brands}
+    for overlap in overlaps:
+        first, second = overlap["pair"].split(" × ", 1)
+        overlaps_by_brand[first].append({**overlap, "peer": second})
+        overlaps_by_brand[second].append({**overlap, "peer": first})
+
+    scale_items: list[dict[str, Any]] = []
+    track_items: list[dict[str, Any]] = []
+    price_items: list[dict[str, Any]] = []
+    overlap_items: list[dict[str, Any]] = []
+    for brand, profile in brand_profiles.items():
+        categories = sorted(profile["categories"])
+        labels = [category_labels.get(category, category.replace("_", " ")) for category in categories]
+        fees = profile["fees"]
+        fee_range = profile["fee_range"]
+        median_fee = _median(fees)
+        brand_overlaps = sorted(overlaps_by_brand.get(brand, []), key=lambda item: item["score"], reverse=True)
+        shared_categories = set().union(*(set(item["shared"]) for item in brand_overlaps)) if brand_overlaps else set()
+        strongest = brand_overlaps[0] if brand_overlaps else None
+        scale_items.append({
+            "name": brand,
+            "value": len(profile["rows"]),
+            "unit": "项",
+            "detail": f"覆盖 {len(categories)} 个赛道",
+            "analysis": f"在售方案量为 {len(profile['rows'])} 项；数据库内按方案数排名将在同一视图直接比较。",
+            "source_url": profile["source_url"],
+        })
+        track_items.append({
+            "name": brand,
+            "value": len(categories),
+            "unit": "个赛道",
+            "detail": "、".join(labels[:4]) or "未分类",
+            "analysis": f"覆盖 {len(categories)} 个产品赛道，重点包括{'、'.join(labels[:3]) or '未分类产品'}。",
+            "source_url": profile["source_url"],
+        })
+        price_items.append({
+            "name": brand,
+            "value": round(median_fee, 1) if median_fee is not None else None,
+            "unit": "港元/月",
+            "low": round(fee_range[0], 1) if fee_range else None,
+            "high": round(fee_range[1], 1) if fee_range else None,
+            "detail": f"月费带 HK${fee_range[0]:.0f}–{fee_range[1]:.0f}" if fee_range else "月费尚未结构化",
+            "analysis": (
+                f"结构化平均月费中位数为 HK${median_fee:.0f}，覆盖区间 HK${fee_range[0]:.0f}–{fee_range[1]:.0f}。"
+                if median_fee is not None and fee_range else "当前品牌缺少可比月费，不进行估算。"
+            ),
+            "source_url": profile["source_url"],
+        })
+        overlap_items.append({
+            "name": brand,
+            "value": len(shared_categories),
+            "unit": "个重叠赛道",
+            "peers": len(brand_overlaps),
+            "detail": f"与 {len(brand_overlaps)} 家竞对发生赛道交集",
+            "analysis": (
+                f"最强交锋对象为 {strongest['peer']}，共享 {len(strongest['shared'])} 个赛道"
+                + (f"，月费重叠 HK${strongest['fee_overlap'][0]:.0f}–{strongest['fee_overlap'][1]:.0f}。" if strongest.get("fee_overlap") else "。")
+                if strongest else "当前未发现结构化赛道交集。"
+            ),
+            "source_url": profile["source_url"],
+        })
+
+    scale_items.sort(key=lambda item: item["value"], reverse=True)
+    track_items.sort(key=lambda item: item["value"], reverse=True)
+    price_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    overlap_items.sort(key=lambda item: (item["value"], item["peers"]), reverse=True)
     lead = overlaps[0] if overlaps else None
     if lead:
         shared_label = "、".join(category_labels.get(category, category.replace("_", " ")) for category in lead["shared"][:2])
@@ -136,7 +212,38 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     else:
         insight = "本地竞对方案已按品牌、产品赛道与月费带统一对齐。"
 
-    sources = _dedupe_sources([_source(item["name"], item["source_url"]) for item in entities])
+    focuses = [
+        {
+            "id": "scale", "label": "方案规模", "visual": "columns",
+            "metric": {"value": len(rows), "unit": "项", "label": "在售资费方案"},
+            "context": f"覆盖 {len(by_brand)} 家本地竞对",
+            "insight": f"{scale_items[0]['name']}以 {scale_items[0]['value']} 项方案居首，方案数量反映当前产品陈列广度。" if scale_items else "暂无方案数据。",
+            "items": scale_items,
+        },
+        {
+            "id": "track", "label": "产品赛道", "visual": "rows",
+            "metric": _focus_metric(track_items, "单一竞对最多覆盖", "个赛道"),
+            "context": f"共识别 {len(category_labels)} 类标准赛道",
+            "insight": f"{track_items[0]['name']}覆盖 {track_items[0]['value']} 个赛道，产品广度领先。" if track_items else "暂无赛道数据。",
+            "items": track_items,
+        },
+        {
+            "id": "price", "label": "月费区间", "visual": "ranges",
+            "metric": _focus_metric(price_items, "最低月费中位数", "港元/月", mode="min"),
+            "context": "只比较已结构化平均月费",
+            "insight": "以品牌月费中位数和最低至最高区间判断价格带交锋；缺失值不估算。",
+            "items": price_items,
+        },
+        {
+            "id": "overlap", "label": "竞对重叠", "visual": "network",
+            "metric": _focus_metric(overlap_items, "最多重叠赛道", "个"),
+            "context": f"识别 {len(overlaps)} 组品牌交集",
+            "insight": insight,
+            "items": overlap_items,
+        },
+    ]
+    entities = scale_items
+    sources = _dedupe_sources([_source(item["name"], item["source_url"]) for item in scale_items])
     return {
         "id": "local",
         "index": "01",
@@ -146,6 +253,7 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "context": f"覆盖 {len(by_brand)} 家本地竞对",
         "insight": insight,
         "entities": entities,
+        "focuses": focuses,
         "relations": [
             {
                 "title": item["pair"],
@@ -169,49 +277,139 @@ def _latest_metric(rows: list[dict[str, Any]], subject_key: str, subject: str, m
     return max(candidates, key=lambda row: _period_rank(row.get(period_key)))
 
 
+def _metric_history(rows: list[dict[str, Any]], subject_key: str, subject: str, metric: str) -> list[dict[str, Any]]:
+    period_key = "period" if subject_key == "subject" else "fiscal_year"
+    candidates = [
+        row for row in rows
+        if row.get(subject_key) == subject and row.get("metric_key") == metric and _number(row.get("value")) is not None
+    ]
+    return sorted(candidates, key=lambda row: _period_rank(row.get(period_key)))
+
+
 def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     rows = payload.get("rows") or []
-    entities: list[dict[str, Any]] = []
+    growth_items: list[dict[str, Any]] = []
+    momentum_items: list[dict[str, Any]] = []
+    disclosure_items: list[dict[str, Any]] = []
     for subject in INTERNATIONAL_SUBJECTS:
         row = _latest_metric(rows, "subject", subject, "revenue_growth_yoy")
         if not row:
             continue
         value = _number(row.get("value")) or 0
-        entities.append(
-            {
-                "name": subject,
-                "value": value,
-                "unit": "%",
-                "detail": f"{row.get('period') or '最新期'}营收同比",
-                "source_url": str(row.get("official_source_url") or ""),
-            }
-        )
-    entities.sort(key=lambda item: item["value"], reverse=True)
-    leader = entities[0] if entities else {"name": "-", "value": 0}
-    positive = [item for item in entities if item["value"] >= 0]
-    negative = [item for item in entities if item["value"] < 0]
+        history = _metric_history(rows, "subject", subject, "revenue_growth_yoy")
+        previous_value = _number(history[-2].get("value")) if len(history) > 1 else None
+        change = value - previous_value if previous_value is not None else None
+        source_url = str(row.get("official_source_url") or "")
+        growth_items.append({
+            "name": subject,
+            "value": round(value, 2),
+            "unit": "%",
+            "detail": f"{row.get('period') or '最新期'}营收同比",
+            "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%，在四家同口径对标中位置由图中排序给出。",
+            "source_url": source_url,
+        })
+        momentum_items.append({
+            "name": subject,
+            "value": round(change, 2) if change is not None else None,
+            "unit": "个百分点",
+            "detail": (
+                f"较{history[-2].get('period')} {'改善' if change >= 0 else '回落'} {abs(change):.2f} 个百分点"
+                if change is not None else "缺少上一可比期"
+            ),
+            "analysis": (
+                f"营收增速由 {previous_value:+.2f}% 变为 {value:+.2f}%，动量{'转强' if change > 0 else '转弱' if change < 0 else '持平'}。"
+                if change is not None else "当前只有一个可比期，不推断增长动量。"
+            ),
+            "trend": [
+                {"label": str(item.get("period") or ""), "value": _number(item.get("value"))}
+                for item in history[-4:]
+            ],
+            "source_url": source_url,
+        })
+        subject_rows = [item for item in rows if item.get("subject") == subject and _number(item.get("value")) is not None]
+        latest_rank = max((_period_rank(item.get("period")) for item in subject_rows), default=(0, 0))
+        latest_rows = [item for item in subject_rows if _period_rank(item.get("period")) == latest_rank]
+        latest_period = str(latest_rows[0].get("period") or "-") if latest_rows else "-"
+        verified = sum(1 for item in latest_rows if str(item.get("verification_status") or "").startswith("official"))
+        disclosure_items.append({
+            "name": subject,
+            "value": len(latest_rows),
+            "unit": "项披露",
+            "detail": f"{latest_period} · {verified} 项官方匹配",
+            "analysis": f"最新期间共取得 {len(latest_rows)} 项结构化指标，其中 {verified} 项标记为官方匹配；此视图衡量披露覆盖，不代表经营优劣。",
+            "source_url": str((latest_rows[0] if latest_rows else row).get("official_source_url") or ""),
+        })
+    growth_items.sort(key=lambda item: item["value"], reverse=True)
+    momentum_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    disclosure_items.sort(key=lambda item: item["value"], reverse=True)
+    leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
+    gap_items = []
+    for item in growth_items:
+        gap = float(leader["value"]) - float(item["value"])
+        gap_items.append({
+            **item,
+            "value": round(gap, 2),
+            "unit": "个百分点",
+            "detail": "当前领先" if gap == 0 else f"较 {leader['name']} 落后 {gap:.2f} 个百分点",
+            "analysis": "当前为营收增速领先基准。" if gap == 0 else f"以同期间营收增速衡量，较领先者 {leader['name']} 存在 {gap:.2f} 个百分点差距。",
+        })
+    positive = [item for item in growth_items if item["value"] >= 0]
+    negative = [item for item in growth_items if item["value"] < 0]
     insight = f"{leader['name']}以 {leader['value']:.2f}% 领跑；{len(positive)} 家正增长、{len(negative)} 家负增长，基础设施与综合运营商节奏出现分化。"
+    focuses = [
+        {
+            "id": "growth", "label": "营收增速", "visual": "diverging",
+            "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": "最新营收增速领先值"},
+            "context": f"统一对标 {len(growth_items)} 家运营商", "insight": insight, "items": growth_items,
+        },
+        {
+            "id": "momentum", "label": "增长动量", "visual": "trends",
+            "metric": _focus_metric(momentum_items, "最佳动量变化", "个百分点"),
+            "context": "最新期相对上一可比期",
+            "insight": "增长动量比较增速的环期变化；正值代表改善，负值代表回落，不等同于绝对收入增长。",
+            "items": momentum_items,
+        },
+        {
+            "id": "gap", "label": "领先差距", "visual": "rows",
+            "metric": _focus_metric(gap_items, "最大领先差距", "个百分点"),
+            "context": f"以 {leader['name']} 为当前基准",
+            "insight": "差距统一以最新营收同比领先值为0基准，数值越大表示与领先者距离越远。",
+            "items": gap_items,
+        },
+        {
+            "id": "disclosure", "label": "原始披露", "visual": "disclosure",
+            "metric": {"value": sum(item["value"] for item in disclosure_items), "unit": "项", "label": "最新期结构化披露"},
+            "context": "仅计数据库内有数值记录",
+            "insight": "披露项数用于判断可分析深度，结论仍需结合具体口径与官方来源，不把披露多等同于经营更好。",
+            "items": disclosure_items,
+        },
+    ]
     return {
         "id": "international",
         "index": "02",
         "title": "国际竞对",
         "kicker": "经营增速与投入",
         "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": "最新营收增速领先值"},
-        "context": f"统一对标 {len(entities)} 家运营商",
+        "context": f"统一对标 {len(growth_items)} 家运营商",
         "insight": insight,
-        "entities": entities,
+        "entities": growth_items,
+        "focuses": focuses,
         "relations": [
             {"title": item["name"], "detail": f"最新营收同比 {item['value']:+.2f}%", "kind": "同口径对标"}
-            for item in entities
+            for item in growth_items
         ],
-        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in entities]),
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items]),
     }
 
 
 def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     rows = payload.get("rows") or []
     vendors = [str(vendor.get("vendor") or "") for vendor in payload.get("vendors") or []]
-    entities: list[dict[str, Any]] = []
+    growth_items: list[dict[str, Any]] = []
+    trend_items: list[dict[str, Any]] = []
+    profit_items: list[dict[str, Any]] = []
+    disclosure_items: list[dict[str, Any]] = []
+    profit_keys = ("operating_margin", "adjusted_ebita_margin", "proxy_segment_gross_margin")
     for vendor in vendors:
         row = _latest_metric(rows, "vendor", vendor, "revenue_yoy")
         if not row:
@@ -219,46 +417,154 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         value = _number(row.get("value"))
         if value is None:
             continue
-        entities.append(
-            {
-                "name": vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", ""),
-                "value": value,
-                "unit": "%",
-                "detail": f"FY{row.get('fiscal_year')} 云业务营收同比",
-                "source_url": str(row.get("primary_source_url") or ""),
-            }
-        )
-    entities.sort(key=lambda item: item["value"], reverse=True)
-    leader = entities[0] if entities else {"name": "-", "value": 0}
-    second_tier = [item for item in entities[1:] if item["value"] >= 15]
+        name = vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", "").replace(" / Cloud Computing", "")
+        source_url = str(row.get("primary_source_url") or "")
+        growth_items.append({
+            "name": name, "value": round(value, 1), "unit": "%",
+            "detail": f"FY{row.get('fiscal_year')} 云业务营收同比",
+            "analysis": f"FY{row.get('fiscal_year')}披露的云业务营收同比为 {value:+.1f}%；比较仅采用各厂商库内统一的 revenue_yoy 字段。",
+            "source_url": source_url,
+        })
+        history = _metric_history(rows, "vendor", vendor, "revenue_yoy")
+        previous = _number(history[-2].get("value")) if len(history) > 1 else None
+        change = value - previous if previous is not None else None
+        trend_items.append({
+            "name": name,
+            "value": round(change, 1) if change is not None else None,
+            "unit": "个百分点",
+            "detail": f"FY{history[-2].get('fiscal_year')}→FY{row.get('fiscal_year')}" if previous is not None else "缺少上一财年",
+            "analysis": (
+                f"营收增速由 {previous:.1f}% 变为 {value:.1f}%，同比增速{'加快' if change > 0 else '放缓' if change < 0 else '持平'} {abs(change):.1f} 个百分点。"
+                if change is not None else "缺少上一财年可比增速，不推断趋势。"
+            ),
+            "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _number(item.get("value"))} for item in history[-3:]],
+            "source_url": source_url,
+        })
+        profit_row = None
+        for key in profit_keys:
+            profit_row = _latest_metric(rows, "vendor", vendor, key)
+            if profit_row:
+                break
+        profit_value = _number(profit_row.get("value")) if profit_row else None
+        profit_label = str(profit_row.get("metric_zh") or "利润率") if profit_row else "未披露可比利润率"
+        profit_items.append({
+            "name": name,
+            "value": round(profit_value, 1) if profit_value is not None else None,
+            "unit": "%",
+            "detail": f"FY{profit_row.get('fiscal_year')} · {profit_label}" if profit_row else "保留披露缺口",
+            "analysis": (
+                f"最新披露的{profit_label}为 {profit_value:.1f}%；不同厂商可能采用经营利润率、调整后EBITA率或代理分部毛利率，需按标签理解。"
+                if profit_value is not None else "数据库未取得可比利润率，未进行估算或跨口径替代。"
+            ),
+            "source_url": str((profit_row or row).get("primary_source_url") or ""),
+        })
+        vendor_rows = [item for item in rows if item.get("vendor") == vendor and _number(item.get("value")) is not None]
+        latest_year = max((int(str(item.get("fiscal_year") or 0)) for item in vendor_rows), default=0)
+        latest_rows = [item for item in vendor_rows if int(str(item.get("fiscal_year") or 0)) == latest_year]
+        direct_count = sum(1 for item in latest_rows if str(item.get("disclosure_quality") or "").startswith("direct"))
+        quality = str((latest_rows[0] if latest_rows else row).get("disclosure_quality") or "未标注")
+        disclosure_items.append({
+            "name": name, "value": len(latest_rows), "unit": "项披露",
+            "detail": f"FY{latest_year} · {quality}",
+            "analysis": f"FY{latest_year}共有 {len(latest_rows)} 项结构化指标，直接分部口径 {direct_count} 项；披露数量用于判断分析深度，不代表经营排名。",
+            "source_url": str((latest_rows[0] if latest_rows else row).get("primary_source_url") or ""),
+        })
+    growth_items.sort(key=lambda item: item["value"], reverse=True)
+    trend_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    profit_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    disclosure_items.sort(key=lambda item: item["value"], reverse=True)
+    leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
+    second_tier = [item for item in growth_items[1:] if item["value"] >= 15]
     tier_names = "、".join(item["name"] for item in second_tier[:3])
     insight = f"{leader['name']}以 {leader['value']:.1f}% 领跑；{tier_names or '其余厂商'}构成第二增长梯队，云端竞争继续向规模与盈利并重演进。"
+    best_trend = next((item for item in trend_items if _number(item.get("value")) is not None), None)
+    best_profit = next((item for item in profit_items if _number(item.get("value")) is not None), None)
+    focuses = [
+        {
+            "id": "growth", "label": "业务增速", "visual": "columns",
+            "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": "FY2025 增速领先值"},
+            "context": f"覆盖 {len(growth_items)} 家全球云厂商", "insight": insight, "items": growth_items,
+        },
+        {
+            "id": "trend", "label": "增长趋势", "visual": "trends",
+            "metric": {"value": best_trend["value"] if best_trend else "-", "unit": "个百分点", "label": "最大增速变化"},
+            "context": "FY2025 相对 FY2024",
+            "insight": "此处比较增速变化而非增速绝对值，可区分高增长继续加速与高基数下放缓。",
+            "items": trend_items,
+        },
+        {
+            "id": "profit", "label": "盈利能力", "visual": "diverging",
+            "metric": {"value": best_profit["value"] if best_profit else "-", "unit": "%", "label": "已披露最高利润率"},
+            "context": "按各厂商披露口径标注",
+            "insight": "利润率口径并不完全相同，图中保留经营利润率、调整后EBITA率或代理分部毛利率标签，不做伪同口径结论。",
+            "items": profit_items,
+        },
+        {
+            "id": "disclosure", "label": "业绩披露", "visual": "disclosure",
+            "metric": {"value": sum(item["value"] for item in disclosure_items), "unit": "项", "label": "FY2025 结构化披露"},
+            "context": "直接分部与代理口径分别保留",
+            "insight": "披露视图展示可分析指标数量和口径质量；代理分部不冒充纯云业务数据。",
+            "items": disclosure_items,
+        },
+    ]
     return {
         "id": "cloud",
         "index": "03",
         "title": "云厂商",
         "kicker": "增长梯队与云网融合",
         "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": "FY2025 增速领先值"},
-        "context": f"覆盖 {len(entities)} 家全球云厂商",
+        "context": f"覆盖 {len(growth_items)} 家全球云厂商",
         "insight": insight,
-        "entities": entities,
+        "entities": growth_items,
+        "focuses": focuses,
         "relations": [
             {"title": item["name"], "detail": f"FY2025 营收同比 {item['value']:+.1f}%", "kind": "增长梯队"}
-            for item in entities
+            for item in growth_items
         ],
-        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in entities]),
+        "sources": _dedupe_sources([_source(item["name"], item["source_url"]) for item in growth_items]),
     }
 
 
 def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    wanted = {
-        "mobile_subscriptions": "移动用户",
-        "mobile_data_usage_total_mbytes": "移动数据总量",
-        "median_monthly_household_income": "家庭月入中位数",
-        "annual_telecom_investment": "电信业投资",
-        "telecom_consumer_complaints_total": "电讯投诉",
-        "5g_population_coverage_status": "5G人口覆盖",
-    }
+    focus_specs = [
+        {
+            "id": "market", "label": "市场规模", "title": "香港移动用户",
+            "keys": [
+                ("mobile_subscriptions", "移动用户"),
+                ("mobile_broadband_subscriptions", "移动宽带用户"),
+                ("broadband_access_lines_total", "宽带接入线"),
+                ("household_broadband_penetration_rate", "家庭宽带渗透率"),
+            ],
+        },
+        {
+            "id": "traffic", "label": "流量需求", "title": "移动数据总量",
+            "keys": [
+                ("mobile_data_usage_total_mbytes", "移动数据总量"),
+                ("mobile_data_usage_per_mobile_broadband_subscription_mbytes", "每移动宽带用户流量"),
+                ("mobile_data_usage_per_capita_mbytes", "人均移动流量"),
+                ("post_paid_sim_subscriptions", "后付费SIM"),
+            ],
+        },
+        {
+            "id": "spending", "label": "消费能力", "title": "家庭月入中位数",
+            "keys": [
+                ("median_monthly_household_income", "家庭月入中位数"),
+                ("total_retail_sales_val_rs", "零售销售额"),
+                ("private_consumption_expenditure_by_component_in_chained_dollars_pce_con", "私人消费开支"),
+                ("consumer_price_indices_a_cm_1920", "甲类消费物价指数"),
+            ],
+        },
+        {
+            "id": "governance", "label": "投入监管", "title": "电信业投资",
+            "keys": [
+                ("annual_telecom_investment", "电信业投资"),
+                ("telecom_consumer_complaints_total", "电讯投诉"),
+                ("5g_population_coverage_status", "5G人口覆盖"),
+                ("5g_spectrum_assigned_mhz", "5G相关频谱"),
+            ],
+        },
+    ]
+    wanted = {key: label for focus in focus_specs for key, label in focus["keys"]}
     latest: dict[str, dict[str, Any]] = {}
     for row in rows:
         metric = str(row.get("metric_key") or "")
@@ -268,34 +574,68 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         if not current or str(row.get("period_end") or "") > str(current.get("period_end") or ""):
             latest[metric] = row
 
-    subscriptions = _number((latest.get("mobile_subscriptions") or {}).get("value")) or 0
-    coverage = _number((latest.get("5g_population_coverage_status") or {}).get("value")) or 0
-    entities: list[dict[str, Any]] = []
-    for metric, label in wanted.items():
+    def display_metric(metric: str, label: str) -> dict[str, Any] | None:
         row = latest.get(metric)
         if not row:
-            continue
+            return None
         value = _number(row.get("value")) or 0
         unit = str(row.get("unit") or "")
+        raw_unit = unit
         display_value: float | str = value
         display_unit = unit
-        if metric == "mobile_subscriptions":
+        if metric in {"mobile_subscriptions", "mobile_broadband_subscriptions", "broadband_access_lines_total", "post_paid_sim_subscriptions"}:
             display_value, display_unit = round(value / 10_000, 1), "万"
         elif metric == "annual_telecom_investment":
             display_value, display_unit = round(value / 100, 2), "亿港元"
+            raw_unit = "百万港元"
         elif metric == "mobile_data_usage_total_mbytes":
             display_value, display_unit = round(value / 1_000_000_000, 1), "十亿MB"
+        elif metric in {"mobile_data_usage_per_mobile_broadband_subscription_mbytes", "mobile_data_usage_per_capita_mbytes"}:
+            display_value, display_unit = round(value / 1024, 1), "GB"
+        elif metric in {"total_retail_sales_val_rs", "private_consumption_expenditure_by_component_in_chained_dollars_pce_con"}:
+            display_value, display_unit = round(value / 100, 1), "亿港元"
+            raw_unit = "百万港元"
         elif unit == "percent_plus":
             display_unit = "%+"
-        entities.append(
-            {
-                "name": label,
-                "value": display_value,
-                "unit": display_unit,
-                "detail": f"截至 {row.get('period_end') or '-'}",
-                "source_url": str(row.get("official_source_url") or ""),
-            }
-        )
+        elif unit == "HKD":
+            display_unit = "港元"
+        elif unit == "complaints":
+            display_unit = "宗"
+        elif unit == "percent":
+            display_unit = "%"
+        return {
+            "name": label,
+            "value": display_value,
+            "unit": display_unit,
+            "detail": f"截至 {row.get('period_end') or '-'}",
+            "analysis": f"官方指标 {row.get('metric_name') or label} 最新值为 {display_value} {display_unit}；原始记录为 {value:g} {raw_unit}。",
+            "source_url": str(row.get("official_source_url") or ""),
+        }
+
+    focuses: list[dict[str, Any]] = []
+    all_items: list[dict[str, Any]] = []
+    for spec in focus_specs:
+        items = [item for key, label in spec["keys"] if (item := display_metric(key, label))]
+        all_items.extend(items)
+        lead = items[0] if items else {"value": "-", "unit": ""}
+        if spec["id"] == "market":
+            insight = "移动连接规模与家庭宽带渗透率共同反映市场饱和度；高渗透下应更关注存量价值而非单纯用户数。"
+        elif spec["id"] == "traffic":
+            insight = "总流量、每用户流量与后付费SIM规模共同判断网络需求和可变现流量基础。"
+        elif spec["id"] == "spending":
+            insight = "家庭收入、零售及私人消费用于判断套餐升级承受力；消费物价指数用于识别实际购买力压力。"
+        else:
+            insight = "投资、投诉、覆盖与频谱共同约束网络竞争：投入需转化为体验，投诉反映服务风险。"
+        focuses.append({
+            "id": spec["id"], "label": spec["label"], "visual": "kpis",
+            "metric": {"value": lead["value"], "unit": lead["unit"], "label": spec["title"]},
+            "context": f"{len(items)} 项最新官方指标",
+            "insight": insight,
+            "items": items,
+        })
+    entities = all_items
+    subscriptions = _number((latest.get("mobile_subscriptions") or {}).get("value")) or 0
+    coverage = _number((latest.get("5g_population_coverage_status") or {}).get("value")) or 0
     insight = f"移动连接达 {subscriptions / 10_000:.1f} 万、5G人口覆盖超过 {coverage:.0f}%；高渗透市场下，竞争重点由连接数量转向套餐价值、流量与企业服务。"
     return {
         "id": "macro",
@@ -306,6 +646,7 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "context": f"宏观与政策明细 {len(rows):,} 条",
         "insight": insight,
         "entities": entities,
+        "focuses": focuses,
         "relations": [
             {"title": item["name"], "detail": f"{item['value']} {item['unit']} · {item['detail']}", "kind": "官方指标"}
             for item in entities

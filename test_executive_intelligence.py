@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 
 from executive_intelligence import build_executive_intelligence_snapshot
@@ -27,6 +28,58 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
             self.assertTrue(domain["sources"])
             for source in domain["sources"]:
                 self.assertTrue(source["url"].startswith(("https://", "http://")))
+
+    def test_each_domain_exposes_four_distinct_data_backed_focuses(self):
+        for domain in self.snapshot["domains"]:
+            focuses = domain["focuses"]
+            self.assertEqual(len(focuses), 4, domain["id"])
+            self.assertEqual(len({focus["id"] for focus in focuses}), 4, domain["id"])
+            signatures = {
+                json.dumps(
+                    {
+                        "label": focus["metric"]["label"],
+                        "visual": focus["visual"],
+                        "items": [
+                            (item["name"], item.get("value"), item.get("unit"))
+                            for item in focus["items"]
+                        ],
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+                for focus in focuses
+            }
+            self.assertEqual(len(signatures), 4, domain["id"])
+            for focus in focuses:
+                self.assertTrue(focus["items"], f"{domain['id']}:{focus['id']}")
+                self.assertTrue(focus["insight"])
+                self.assertTrue(focus["metric"]["label"])
+                for item in focus["items"]:
+                    self.assertTrue(item["analysis"])
+                    self.assertTrue(item["source_url"].startswith(("https://", "http://")))
+
+    def test_focuses_preserve_their_real_measurement_semantics(self):
+        domains = {domain["id"]: domain for domain in self.snapshot["domains"]}
+        local = {focus["id"]: focus for focus in domains["local"]["focuses"]}
+        self.assertEqual([local[key]["visual"] for key in ("scale", "track", "price", "overlap")],
+                         ["columns", "rows", "ranges", "network"])
+        self.assertTrue(all("low" in item and "high" in item for item in local["price"]["items"]))
+
+        international = {focus["id"]: focus for focus in domains["international"]["focuses"]}
+        self.assertNotEqual(
+            [item["value"] for item in international["growth"]["items"]],
+            [item["value"] for item in international["momentum"]["items"]],
+        )
+        self.assertTrue(all("trend" in item for item in international["momentum"]["items"]))
+        self.assertEqual(min(item["value"] for item in international["gap"]["items"]), 0)
+
+        cloud = {focus["id"]: focus for focus in domains["cloud"]["focuses"]}
+        self.assertTrue(all("trend" in item for item in cloud["trend"]["items"]))
+        self.assertTrue(any(item["value"] is None for item in cloud["profit"]["items"]))
+
+        macro = {focus["id"]: focus for focus in domains["macro"]["focuses"]}
+        name_sets = {tuple(item["name"] for item in focus["items"]) for focus in macro.values()}
+        self.assertEqual(len(name_sets), 4)
 
 
 if __name__ == "__main__":
