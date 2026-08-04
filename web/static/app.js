@@ -7714,7 +7714,6 @@ document.addEventListener("keydown", (event) => {
           ${visual}
           ${renderEntityFocus(domain, selectedEntity, entityIndex, selectedFocus)}
         </div>
-        <button class="intelligence-domain-action" type="button" data-intelligence-drill="${safe(domain.id)}" aria-label="打开${safe(domain.title)}完整详情">穿透分析 <b aria-hidden="true">↗</b></button>
       </article>
     `;
   }
@@ -7791,7 +7790,7 @@ document.addEventListener("keydown", (event) => {
         <li>
           <div><strong>${name}</strong></div>
           <div class="intelligence-entity-value"><i><b style="--bar-width:${width.toFixed(2)}%"></b></i><strong>${formatValue(item.value)} ${safe(item.unit)}</strong></div>
-          ${item.source_url ? `<a href="${safe(item.source_url)}" target="_self" aria-label="打开${name}来源">打开↗</a>` : ""}
+          ${item.source_url ? `<a href="${safe(item.source_url)}" target="_self" aria-label="打开${name}来源">来源<span aria-hidden="true">↗</span></a>` : ""}
         </li>
       `;
     }).join("");
@@ -7910,8 +7909,6 @@ document.addEventListener("keydown", (event) => {
       selectEntity(entityTrigger.dataset.intelligenceDomainId, Number(entityTrigger.dataset.intelligenceEntity));
       return;
     }
-    const drillTrigger = event.target.closest("[data-intelligence-drill]");
-    if (drillTrigger) openDrawer(drillTrigger.dataset.intelligenceDrill);
   });
   grid.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
