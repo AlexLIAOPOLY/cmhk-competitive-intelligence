@@ -23,8 +23,11 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertTrue(all(item["from"] != item["to"] for item in relations))
         self.assertTrue(all(item["kind"] and item["detail"] for item in relations))
         cloud_relation = next(item for item in relations if item["from"] == "international" and item["to"] == "cloud")
-        self.assertEqual(cloud_relation["kind"], "跨期间方向参照")
-        self.assertIn("报告期间与业务口径不同", cloud_relation["detail"])
+        if cloud_relation.get("origin") == "ai":
+            self.assertTrue(cloud_relation["source_urls"])
+        else:
+            self.assertEqual(cloud_relation["kind"], "跨期间方向参照")
+            self.assertIn("报告期间与业务口径不同", cloud_relation["detail"])
 
     def test_relationship_strip_always_exposes_exactly_four_executive_discoveries(self):
         relations = self.snapshot["relations"]
@@ -100,6 +103,8 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         macro = next(domain for domain in self.snapshot["domains"] if domain["id"] == "macro")
         self.assertEqual(macro["metric"]["label"], "移动服务订户及连接")
         self.assertIn("机器类型连接", macro["insight"])
+        for domain in self.snapshot["domains"]:
+            self.assertTrue(all("ai_summary" in focus for focus in domain["focuses"]))
 
     def test_international_dashboard_prefers_official_value_over_normalized_value(self):
         common = {

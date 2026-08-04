@@ -11808,12 +11808,12 @@ body.dashboard-page {
 }
 
 .insight-board {
-  grid-template-rows: 88px auto !important;
+  grid-template-rows: 104px auto !important;
   background: #04111c !important;
 }
 
 .insight-board > .strategy-ticker {
-  height: 88px !important;
+  height: 104px !important;
   background: linear-gradient(90deg, #061725, #071b29 48%, #061725) !important;
   border-bottom-color: rgba(111, 188, 216, .16) !important;
   box-shadow: 0 10px 34px rgba(0, 8, 16, .22) !important;
@@ -11825,7 +11825,7 @@ body.dashboard-page {
   display: grid;
   grid-template-rows: 66px minmax(0, 1fr);
   gap: 12px;
-  height: calc(100vh - 148px);
+  height: calc(100vh - 164px);
   min-height: 560px;
   padding: 16px;
   overflow: hidden;
@@ -13807,13 +13807,6 @@ body.report-library-open::before {
   line-height: 1.42;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
-}
-
-.intelligence-entity-focus > small {
-  margin-top: 7px;
-  color: #7899a6;
-  font-size: 9.5px;
-  line-height: 1.35;
 }
 
 .intelligence-entity-focus.is-overview > strong {

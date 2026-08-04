@@ -204,6 +204,40 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "输入之外的来源"):
             pipeline._validate_model_summaries(summaries, evidence)
 
+    def test_model_analysis_requires_every_focus_summary(self):
+        evidence = {
+            "domains": [
+                {
+                    "id": domain,
+                    "focuses": [
+                        {"id": f"{domain}-a", "items": []},
+                        {"id": f"{domain}-b", "items": []},
+                    ],
+                    "agent_verified_facts": [],
+                }
+                for domain in ("local", "international", "cloud", "macro")
+            ]
+        }
+        summaries = [
+            {
+                "domain": domain,
+                "headline": "观察",
+                "analysis": "证据已更新。",
+                "risk": "保持口径边界。",
+                "source_urls": [],
+                "focuses": [
+                    {"id": f"{domain}-a", "analysis": "分类证据已更新。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-b", "analysis": "分类证据已更新。", "risk": "保持边界。", "source_urls": []},
+                ],
+            }
+            for domain in ("local", "international", "cloud", "macro")
+        ]
+        validated = pipeline._validate_model_summaries(summaries, evidence)
+        self.assertEqual(sum(len(item["focuses"]) for item in validated), 8)
+        summaries[0]["focuses"].pop()
+        with self.assertRaisesRegex(ValueError, "分类不完整"):
+            pipeline._validate_model_summaries(summaries, evidence)
+
     def test_model_analysis_sanitizer_drops_only_unsupported_numeric_clause(self):
         evidence = {"domains": [{"focuses": [{"items": [{"value": 10}]}]}]}
         raw = [{
@@ -338,6 +372,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             with (
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch("executive_intelligence_pipeline.generate_model_domain_summaries", side_effect=ValueError("bad model")),
+                patch("executive_intelligence_pipeline.generate_model_discoveries", side_effect=ValueError("bad model")),
             ):
                 result = pipeline.publish_model_domain_summaries(path)
         self.assertTrue(result["fallback_used"])

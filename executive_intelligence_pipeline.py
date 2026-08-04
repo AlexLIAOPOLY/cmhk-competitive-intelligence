@@ -14,6 +14,7 @@ import time
 import re
 import urllib.error
 import urllib.request
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,14 @@ STATE_PATH = STATE_DIR / "latest.json"
 AI_ANALYSIS_PATH = STATE_DIR / "ai_analysis.json"
 LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
+WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
+TASK_KIND = "executive-intelligence-refresh"
+DOMAIN_LABELS = {
+    "local": "本地竞对",
+    "international": "国际竞对",
+    "cloud": "云厂商",
+    "macro": "宏观政策",
+}
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
 INTERNATIONAL_DIR = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18"
@@ -94,6 +103,179 @@ def _append_log(message: str) -> None:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     with LOG_PATH.open("a", encoding="utf-8") as handle:
         handle.write(f"{_now()} {message}\n")
+
+
+def _task_stream_path(task_run_id: str) -> Path:
+    return ROOT / "agent_knowledge" / "crawl_run_logs" / "runs" / f"{task_run_id}.jsonl"
+
+
+def _task_event(
+    task_run_id: str,
+    phase: str,
+    detail: str,
+    *,
+    worker_pid: int = 0,
+    level: str = "info",
+) -> None:
+    """Write one human-readable task-log line and update the unified-task heartbeat."""
+    if not task_run_id:
+        return
+    from crawl_run_registry import append_crawl_run_event, heartbeat_crawl_run
+
+    heartbeat_crawl_run(
+        task_run_id,
+        phase,
+        detail,
+        worker_pid=worker_pid or os.getpid(),
+        append_log=False,
+    )
+    prefix = "预警" if level == "critical" else "后备重试" if level == "retry" else phase
+    append_crawl_run_event(
+        _task_stream_path(task_run_id),
+        {
+            "type": "log",
+            "text": f"[{datetime.now(HKT).strftime('%H:%M:%S')}] [{prefix}] {detail}",
+        },
+    )
+
+
+def _start_refresh_task(
+    *,
+    agent_run_id: str,
+    parent_crawl_run_id: str = "",
+    recovery_reason: str = "",
+) -> dict[str, Any]:
+    from crawl_run_registry import append_crawl_run_event, start_crawl_run
+
+    scope = f"Agent审核 {agent_run_id}"
+    if parent_crawl_run_id:
+        scope += f" · 父任务 {parent_crawl_run_id}"
+    if recovery_reason:
+        scope += f" · {recovery_reason}"
+    task = start_crawl_run(
+        trigger="四库与观察结论自动更新",
+        scope=scope,
+        task_kind=TASK_KIND,
+        phase="等待刷新进程",
+        progress_detail="任务已归档，正在启动本地竞对、国际竞对、云厂商和宏观政策更新。",
+    )
+    task_run_id = str(task["crawl_run_id"])
+    append_crawl_run_event(
+        task["stream_log_path"],
+        {
+            "type": "log",
+            "text": (
+                f"[{datetime.now(HKT).strftime('%H:%M:%S')}] [任务启动] "
+                f"四库更新已接收；Agent run={agent_run_id}；父任务={parent_crawl_run_id or '无'}。"
+            ),
+        },
+    )
+    return task
+
+
+def _finalize_refresh_task(
+    task_run_id: str,
+    *,
+    ok: bool,
+    detail: str,
+    result: dict[str, Any],
+    attempts: int,
+    alert: dict[str, Any] | None = None,
+) -> None:
+    if not task_run_id:
+        return
+    from crawl_run_registry import finalize_operational_crawl_run
+
+    _task_event(
+        task_run_id,
+        "任务完成" if ok else "任务失败",
+        detail,
+        level="info" if ok else "critical",
+    )
+    finalize_operational_crawl_run(
+        task_run_id,
+        ok=ok,
+        duration_ms=int(result.get("total_duration_ms") or result.get("duration_ms") or 0),
+        progress_detail=detail,
+        failure_stage="" if ok else "executive_intelligence_refresh",
+        summary={
+            "attempts": attempts,
+            "agent_run_id": result.get("agent_run_id", ""),
+            "failed_domains": result.get("failed_domains", []),
+            "status": result.get("status", ""),
+            "alert": alert or {},
+        },
+    )
+
+
+def _send_refresh_alert(
+    *,
+    title: str,
+    detail: str,
+    task_run_id: str,
+    agent_run_id: str,
+    parent_crawl_run_id: str = "",
+    severity: str = "critical",
+) -> dict[str, Any]:
+    """Send a deduplicated Feishu alert to both configured strategy groups."""
+    if os.environ.get("CMHK_INTELLIGENCE_ALERTS", "1").strip().lower() in {"0", "false", "off"}:
+        return {"ok": True, "skipped": True, "reason": "alerts_disabled", "message_ids": []}
+    import strategic_briefing
+
+    card = {
+        "config": {"wide_screen_mode": True},
+        "header": {
+            "template": "red" if severity == "critical" else "orange",
+            "title": {"tag": "plain_text", "content": title},
+        },
+        "elements": [
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "lark_md",
+                    "content": (
+                        f"**状态：** {detail}\n"
+                        f"**任务：** {task_run_id or '未建立'}\n"
+                        f"**Agent：** {agent_run_id or '未记录'}\n"
+                        f"**父任务：** {parent_crawl_run_id or '未记录'}\n"
+                        "旧数据库和最后可用观察结论已保留，请在前端任务日志查看重试过程。"
+                    ),
+                },
+            }
+        ],
+    }
+    message_ids: list[str] = []
+    errors: list[str] = []
+    for chat_id in strategic_briefing.TARGET_CHAT_IDS:
+        payload: dict[str, Any] = {}
+        for attempt in range(3):
+            try:
+                payload = strategic_briefing._lark_api(
+                    "POST",
+                    "/open-apis/im/v1/messages",
+                    params={"receive_id_type": "chat_id"},
+                    data={
+                        "receive_id": chat_id,
+                        "msg_type": "interactive",
+                        "content": json.dumps(card, ensure_ascii=False),
+                        "uuid": str(
+                            uuid.uuid5(
+                                uuid.NAMESPACE_URL,
+                                f"cmhk-intelligence-alert:{task_run_id}:{severity}:{chat_id}",
+                            )
+                        ),
+                    },
+                )
+                break
+            except Exception as exc:
+                if attempt >= 2:
+                    errors.append(f"{chat_id}: {exc}")
+                else:
+                    time.sleep(2**attempt)
+        message_id = str(((payload.get("data") or {}).get("message_id") or ""))
+        if message_id:
+            message_ids.append(message_id)
+    return {"ok": not errors, "message_ids": message_ids, "errors": errors}
 
 
 def _content_hash(payload: Any) -> str:
@@ -291,6 +473,7 @@ def _analysis_input_snapshot() -> dict[str, Any]:
         for focus in domain.get("focuses") or []:
             focuses.append(
                 {
+                    "id": focus.get("id"),
                     "label": focus.get("label"),
                     "metric": focus.get("metric"),
                     "insight": focus.get("insight"),
@@ -364,6 +547,9 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
     )
     result: list[dict[str, Any]] = []
     seen: set[str] = set()
+    evidence_by_domain = {
+        str(domain.get("id") or ""): domain for domain in evidence.get("domains") or []
+    }
     for item in raw:
         if not isinstance(item, dict):
             raise ValueError("AI分析包含非对象条目")
@@ -377,6 +563,7 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
             "analysis": str(item.get("analysis") or "").strip(),
             "risk": str(item.get("risk") or "").strip(),
             "source_urls": [str(url) for url in item.get("source_urls") or []],
+            "focuses": [],
         }
         if not summary["headline"] or not summary["analysis"] or not summary["risk"]:
             raise ValueError(f"AI分析字段不完整：{domain}")
@@ -386,6 +573,42 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
         unknown_numbers = _numeric_tokens(summary) - allowed_numbers
         if unknown_numbers:
             raise ValueError(f"AI分析出现输入之外的数字：{sorted(unknown_numbers)}")
+        expected_focuses = {
+            str(focus.get("id") or "")
+            for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
+            if str(focus.get("id") or "")
+        }
+        raw_focuses = item.get("focuses") or []
+        if expected_focuses:
+            if not isinstance(raw_focuses, list):
+                raise ValueError(f"AI分析分类总结格式非法：{domain}")
+            focus_seen: set[str] = set()
+            validated_focuses: list[dict[str, Any]] = []
+            for focus_item in raw_focuses:
+                if not isinstance(focus_item, dict):
+                    raise ValueError(f"AI分析分类总结包含非对象条目：{domain}")
+                focus_id = str(focus_item.get("id") or "")
+                if focus_id not in expected_focuses or focus_id in focus_seen:
+                    raise ValueError(f"AI分析分类非法或重复：{domain}.{focus_id}")
+                focus_seen.add(focus_id)
+                validated_focus = {
+                    "id": focus_id,
+                    "analysis": str(focus_item.get("analysis") or "").strip(),
+                    "risk": str(focus_item.get("risk") or "").strip(),
+                    "source_urls": [str(url) for url in focus_item.get("source_urls") or []],
+                }
+                if not validated_focus["analysis"] or not validated_focus["risk"]:
+                    raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
+                unknown_focus_urls = set(validated_focus["source_urls"]) - allowed_urls
+                if unknown_focus_urls:
+                    raise ValueError(f"AI分析分类引用了输入之外的来源：{sorted(unknown_focus_urls)}")
+                unknown_focus_numbers = _numeric_tokens(validated_focus) - allowed_numbers
+                if unknown_focus_numbers:
+                    raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_focus_numbers)}")
+                validated_focuses.append(validated_focus)
+            if focus_seen != expected_focuses:
+                raise ValueError(f"AI分析分类不完整：{domain}.{sorted(expected_focuses - focus_seen)}")
+            summary["focuses"] = validated_focuses
         result.append(summary)
     if seen != expected:
         raise ValueError(f"AI分析领域不完整：{sorted(expected - seen)}")
@@ -480,6 +703,27 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
                     continue
                 kept.append(clause)
             cleaned[field] = "".join(kept).strip()
+        cleaned_focuses: list[Any] = []
+        for focus in cleaned.get("focuses") or []:
+            if not isinstance(focus, dict):
+                cleaned_focuses.append(focus)
+                continue
+            cleaned_focus = dict(focus)
+            for field in ("analysis", "risk"):
+                text = str(cleaned_focus.get(field) or "")
+                clauses = re.split(r"(?<=[。；;])", text)
+                kept = []
+                for clause in clauses:
+                    if _numeric_tokens(clause) - allowed_numbers:
+                        removed += 1
+                        continue
+                    kept.append(clause)
+                cleaned_focus[field] = "".join(kept).strip()
+                if not cleaned_focus[field]:
+                    cleaned_focus[field] = str(cleaned.get(field) or "").strip()
+            cleaned_focuses.append(cleaned_focus)
+        if "focuses" in cleaned:
+            cleaned["focuses"] = cleaned_focuses
         if removed:
             cleaned["sanitized_clauses"] = removed
         sanitized.append(cleaned)
@@ -503,6 +747,20 @@ def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, 
                 "analysis": str(domain.get("deterministic_insight") or "当前仅展示已通过发布门禁的证据。"),
                 "risk": "仅基于当前已核验来源和已披露口径；缺失数据不估算，跨期间与代理口径不作因果推断。",
                 "source_urls": list(dict.fromkeys(sources))[:3],
+                "focuses": [
+                    {
+                        "id": str(focus.get("id") or ""),
+                        "analysis": str(focus.get("insight") or "当前仅展示已通过发布门禁的证据。"),
+                        "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+                        "source_urls": list(dict.fromkeys(
+                            str(item.get("source_url") or "")
+                            for item in focus.get("items") or []
+                            if str(item.get("source_url") or "").startswith(("https://", "http://"))
+                        ))[:3],
+                    }
+                    for focus in domain.get("focuses") or []
+                    if str(focus.get("id") or "")
+                ],
             }
         )
     return _validate_model_summaries(summaries, evidence)
@@ -557,13 +815,15 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
         "你是电信竞争情报分析员。只能使用输入JSON里的事实、数字、期间、口径和来源，不得补充常识数字或猜测。"
-        "每个领域给出一句headline、一段analysis和一句risk。跨期间、代理分部、披露缺口必须明确写入risk；"
+        "每个领域给出一句headline、一段analysis和一句risk，并为输入中的每个focus给出一段analysis和一句risk。"
+        "所有focus必须逐一覆盖，不能遗漏、合并或新增。跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
         "source_urls只能从输入中原样选择。只返回JSON数组。"
     )
     user_prompt = (
         "请分析 local、international、cloud、macro 四个领域。每项字段严格为"
-        "domain, headline, analysis, risk, source_urls。不要Markdown。输入：\n"
+        "domain, headline, analysis, risk, source_urls, focuses；focuses每项字段严格为"
+        "id, analysis, risk, source_urls。不要Markdown。输入：\n"
         + json.dumps(evidence, ensure_ascii=False)
     )
     messages = [
@@ -616,7 +876,74 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                     ]
                 )
     if summaries is None:
-        raise ValueError(f"AI分析连续三次未通过门禁：{last_error}")
+        # Older model deployments sometimes follow the four-domain shape but omit
+        # nested focus summaries. Retry one domain at a time so every focus can be
+        # checked explicitly without asking the model to hold all 16 views at once.
+        per_domain_summaries: list[dict[str, Any]] = []
+        for domain_evidence in evidence.get("domains") or []:
+            domain_id = str(domain_evidence.get("id") or "")
+            expected_focus_ids = {
+                str(focus.get("id") or "")
+                for focus in domain_evidence.get("focuses") or []
+                if str(focus.get("id") or "")
+            }
+            domain_messages = [
+                {"role": "system", "content": system_prompt},
+                {
+                    "role": "user",
+                    "content": (
+                        f"只分析 {domain_id} 这一个领域，返回只含一个对象的JSON数组。"
+                        "必须逐一返回输入中的全部focus id。字段协议不变。输入：\n"
+                        + json.dumps({"domains": [domain_evidence]}, ensure_ascii=False)
+                    ),
+                },
+            ]
+            domain_summary: dict[str, Any] | None = None
+            domain_error: Exception | None = None
+            for domain_attempt in range(3):
+                request = urllib.request.Request(
+                    f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
+                    data=json.dumps({**body, "messages": domain_messages}, ensure_ascii=False).encode("utf-8"),
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    method="POST",
+                )
+                wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}")
+                try:
+                    with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+                        domain_payload = json.loads(response.read().decode("utf-8"))
+                    domain_content = ((domain_payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+                    parsed = _extract_json_payload(domain_content)
+                    if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
+                        raise ValueError("必须返回单对象JSON数组")
+                    candidate = parsed[0]
+                    returned_focus_ids = {
+                        str(focus.get("id") or "")
+                        for focus in candidate.get("focuses") or []
+                        if isinstance(focus, dict)
+                    }
+                    if not expected_focus_ids.issubset(returned_focus_ids):
+                        raise ValueError(f"分类覆盖不完整：{sorted(expected_focus_ids - returned_focus_ids)}")
+                    candidate["domain"] = domain_id
+                    candidate["focuses"] = [
+                        focus for focus in candidate.get("focuses") or []
+                        if isinstance(focus, dict) and str(focus.get("id") or "") in expected_focus_ids
+                    ]
+                    domain_summary = candidate
+                    break
+                except (ValueError, json.JSONDecodeError) as exc:
+                    domain_error = exc
+                    if domain_attempt < 2:
+                        domain_messages.append({
+                            "role": "user",
+                            "content": f"上一版未通过门禁：{exc}。请完整返回全部focus，仍只返回单对象JSON数组。",
+                        })
+            if domain_summary is None:
+                raise ValueError(f"AI分析按领域重试仍未通过：{domain_id}: {domain_error}")
+            per_domain_summaries.append(domain_summary)
+        summaries = _validate_model_summaries(
+            _drop_unsupported_numeric_clauses(per_domain_summaries, evidence),
+            evidence,
+        )
     return {"generated_at_hkt": _now(), "model": body["model"], "summaries": summaries}
 
 
@@ -695,7 +1022,7 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
     previous_summaries = previous.get("summaries") or []
     previous_discoveries = previous.get("discoveries") or []
     previous_hash = str(previous.get("evidence_hash") or "")
-    if previous_summaries and previous_discoveries and previous_hash == evidence_hash:
+    if previous_summaries and previous_discoveries and previous_hash == evidence_hash and not previous.get("fallback_used"):
         try:
             validated = _validate_model_summaries(previous_summaries, evidence)
             validated_discoveries = _validate_model_discoveries(previous_discoveries, evidence)
@@ -713,7 +1040,7 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
             _atomic_write_json(path, analysis)
             return {"ok": True, **generated}
     summaries_reused = False
-    if previous_summaries and previous_hash == evidence_hash:
+    if previous_summaries and previous_hash == evidence_hash and not previous.get("fallback_used"):
         try:
             validated_summaries = _validate_model_summaries(previous_summaries, evidence)
         except ValueError:
@@ -1022,6 +1349,8 @@ def run_pipeline(
     curation_summary: dict[str, Any] | None = None,
     dry_run: bool = False,
     refresh_builders: bool = True,
+    task_run_id: str = "",
+    attempt: int = 1,
 ) -> dict[str, Any]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     lock_handle = LOCK_PATH.open("w")
@@ -1037,10 +1366,17 @@ def run_pipeline(
         "started_at_hkt": _now(),
         "agent_run_id": agent_run_id,
         "dry_run": dry_run,
+        "task_run_id": task_run_id,
+        "attempt": attempt,
         "domains": {},
     }
     _atomic_write_json(STATE_PATH, state)
     _append_log(f"start agent_run_id={agent_run_id} dry_run={dry_run}")
+    _task_event(
+        task_run_id,
+        "发布审核事实",
+        f"第 {attempt} 次执行开始，正在发布Agent已通过事实并校验本地竞对库。",
+    )
     try:
         if dry_run:
             ai_payload = build_ai_analysis(agent_run_id=agent_run_id, curation_summary=curation_summary)
@@ -1072,14 +1408,26 @@ def run_pipeline(
             "validation": validate_database("local", LOCAL_PATH),
             "note": "本地竞对数据库已由本轮 crawl.py 更新；发布桥只复核，不重复抓取。",
         }
+        local_rows = int((state["domains"]["local"].get("validation") or {}).get("rows") or 0)
+        _task_event(task_run_id, "本地竞对", f"本地竞对库校验通过，共 {local_rows} 条记录。")
         if refresh_builders:
             for domain in ("international", "cloud", "macro"):
+                label = DOMAIN_LABELS[domain]
+                _task_event(task_run_id, label, f"正在联网重建{label}数据库并执行发布门禁。")
                 try:
                     state["domains"][domain] = _refresh_builder_domain(domain, dry_run=dry_run)
                     _append_log(f"{domain} ok changed={state['domains'][domain]['changed']}")
+                    validation = state["domains"][domain].get("validation") or {}
+                    changed = "已更新" if state["domains"][domain].get("changed") else "无数据变化"
+                    _task_event(
+                        task_run_id,
+                        label,
+                        f"{label}门禁通过，{changed}；总记录 {int(validation.get('rows') or 0)} 条。",
+                    )
                 except Exception as exc:
                     state["domains"][domain] = {"ok": False, "changed": False, "promoted": False, "error": str(exc)}
                     _append_log(f"{domain} failed {exc}")
+                    _task_event(task_run_id, label, f"{label}更新失败：{exc}", level="critical")
         else:
             for domain, path in (("international", INTERNATIONAL_PATH), ("cloud", CLOUD_PATH), ("macro", MACRO_PATH)):
                 state["domains"][domain] = {
@@ -1088,9 +1436,16 @@ def run_pipeline(
                     "validation": validate_database(domain, path),
                     "note": "本次仅验证现有数据库，未执行联网重建。",
                 }
+                validation = state["domains"][domain].get("validation") or {}
+                _task_event(
+                    task_run_id,
+                    DOMAIN_LABELS[domain],
+                    f"仅校验现有数据库通过，共 {int(validation.get('rows') or 0)} 条记录。",
+                )
         if dry_run:
             state["model_analysis"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         else:
+            _task_event(task_run_id, "生成观察结论", "正在根据四库最新通过事实生成综合发现和16个关注点结论。")
             try:
                 model_analysis = publish_model_domain_summaries()
                 state["model_analysis"] = {
@@ -1101,6 +1456,8 @@ def run_pipeline(
                     "reused": bool(model_analysis.get("reused")),
                     "fallback_used": bool(model_analysis.get("fallback_used")),
                 }
+                fallback_note = "；模型未通过门禁，已使用证据规则回退" if model_analysis.get("fallback_used") else ""
+                _task_event(task_run_id, "生成观察结论", f"观察结论发布完成{fallback_note}。")
             except Exception as exc:
                 state["model_analysis"] = {
                     "ok": False,
@@ -1108,6 +1465,7 @@ def run_pipeline(
                     "fallback_preserved": True,
                 }
                 _append_log(f"model analysis failed {exc}")
+                _task_event(task_run_id, "生成观察结论", f"观察结论生成失败：{exc}", level="critical")
         failed = [key for key, value in state["domains"].items() if not value.get("ok")]
         model_ok = bool(state.get("model_analysis", {}).get("ok"))
         state.update(

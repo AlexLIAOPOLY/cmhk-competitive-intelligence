@@ -7518,14 +7518,13 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderEntityFocus(domain, entity, index, focus, items) {
-    const entityNoun = domain.id === "macro" ? "指标" : "公司";
     if (!entity) {
+      const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
       return `
         <div class="intelligence-entity-focus is-overview">
           <span>综合发现</span>
           <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
-          <p>${safe(focus.insight || domain.insight || "暂无综合结论")}</p>
-          <small>已综合 ${items.length} ${domain.id === "macro" ? "项指标" : "家公司"} · 点击任一${entityNoun}查看个体</small>
+          <p>${safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论")}</p>
         </div>
       `;
     }
@@ -7968,6 +7967,7 @@ document.addEventListener("keydown", (event) => {
         const signature = JSON.stringify({
           refresh: data.refresh?.completed_at_hkt || data.refresh?.started_at_hkt || "",
           ai: data.ai?.updated_at || "",
+          aiSummaries: (data.domains || []).map((domain) => [domain.id, domain.ai_summary, (domain.focuses || []).map((focus) => [focus.id, focus.ai_summary])]),
           discoveries: (data.relations || []).map((relation) => [relation.from, relation.to, relation.title, relation.detail]),
           metrics: (data.domains || []).map((domain) => [domain.id, domain.metric, domain.context]),
         });

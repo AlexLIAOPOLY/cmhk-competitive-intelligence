@@ -710,6 +710,13 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     for domain in domains:
         domain["ai_analysis"] = list((ai_domains or {}).get(domain["id"]) or [])
         domain["ai_summary"] = model_summaries.get(domain["id"], {})
+        focus_summaries = {
+            str(item.get("id") or ""): item
+            for item in (domain["ai_summary"].get("focuses") or [])
+            if isinstance(item, dict)
+        }
+        for focus in domain.get("focuses") or []:
+            focus["ai_summary"] = focus_summaries.get(str(focus.get("id") or ""), {})
         domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
         domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
     deterministic_relations = [
