@@ -12918,6 +12918,134 @@ body.dashboard-page {
   color: #fff;
 }
 
+/* ===== Xiaojing response tables and composer controls v4 ===== */
+.dashboard-page .markdown-body .chat-table-wrap {
+  margin: 14px 0 16px;
+  border: 1px solid #477585;
+  border-radius: 8px;
+  background: #0a222e;
+  box-shadow: inset 0 1px rgba(183, 224, 233, .04);
+}
+
+.dashboard-page .markdown-body .chat-data-table {
+  min-width: 720px;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #d7e7eb;
+  background: #0b2633;
+  font-size: 13px;
+}
+
+.dashboard-page .markdown-body .chat-data-table th,
+.dashboard-page .markdown-body .chat-data-table td {
+  padding: 10px 12px;
+  border-color: #315b6b;
+  color: inherit;
+  background: transparent;
+  line-height: 1.45;
+  vertical-align: top;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-page .markdown-body .chat-data-table thead th {
+  border-bottom-color: #568294;
+  color: #edf8fa;
+  background: #173f4e;
+  font-size: 12.5px;
+  font-weight: 750;
+  letter-spacing: .02em;
+}
+
+.dashboard-page .markdown-body .chat-data-table tbody tr,
+.dashboard-page .markdown-body .chat-data-table tbody tr:nth-child(odd),
+.dashboard-page .markdown-body .chat-data-table tbody tr:nth-child(even) {
+  color: #c9dde3;
+  background: #0b2633;
+}
+
+.dashboard-page .markdown-body .chat-data-table tbody tr:nth-child(even) {
+  background: #0e2d3a;
+}
+
+.dashboard-page .markdown-body .chat-data-table tbody tr:hover {
+  color: #edf8fa;
+  background: #153b49;
+}
+
+.dashboard-page .markdown-body .chat-data-table tbody td:first-child {
+  color: #dff3f7;
+  font-weight: 720;
+}
+
+.dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button,
+.dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle,
+.dashboard-page .chat-composer-toolbar > .database-picker .database-toggle,
+.dashboard-page .chat-composer-toolbar > .web-search-toggle {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  border: 1px solid #315d6d;
+  border-radius: 9px;
+  color: #c5dbe2;
+  background: #123340;
+  box-shadow: inset 0 1px rgba(205, 239, 245, .05);
+  transition: border-color 150ms ease, color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button:hover,
+.dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button:focus-visible,
+.dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle:hover,
+.dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle:focus-visible,
+.dashboard-page .chat-composer-toolbar > .database-picker .database-toggle:hover,
+.dashboard-page .chat-composer-toolbar > .database-picker .database-toggle:focus-visible,
+.dashboard-page .chat-composer-toolbar > .web-search-toggle:hover,
+.dashboard-page .chat-composer-toolbar > .web-search-toggle:focus-visible {
+  border-color: #5893a6;
+  color: #f0fafc;
+  background: #194352;
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button[aria-expanded="true"],
+.dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle.is-active,
+.dashboard-page .chat-composer-toolbar > .database-picker .database-toggle.is-active,
+.dashboard-page .chat-composer-toolbar > .web-search-toggle.is-active {
+  border-color: #61afc3;
+  color: #eefbfc;
+  background: #205365;
+  box-shadow: inset 0 -2px #65c3d8;
+}
+
+.dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle svg,
+.dashboard-page .chat-composer-toolbar > .database-picker .database-toggle svg,
+.dashboard-page .chat-composer-toolbar > .web-search-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.1;
+}
+
+@media (max-width: 560px) {
+  .dashboard-page .markdown-body .chat-data-table {
+    min-width: 640px;
+    font-size: 12px;
+  }
+
+  .dashboard-page .markdown-body .chat-data-table th,
+  .dashboard-page .markdown-body .chat-data-table td {
+    padding: 9px 10px;
+  }
+}
+
 /* ===== Unified dark workspace and restrained interaction v3 ===== */
 .dashboard-page .chat-fab {
   position: static;

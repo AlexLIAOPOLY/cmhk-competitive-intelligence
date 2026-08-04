@@ -588,6 +588,14 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn(".dashboard-page .skill-option.is-active,", styles)
         self.assertIn(".dashboard-page .database-upload-panel,", styles)
 
+    def test_chat_tables_and_composer_shortcuts_use_dark_contrast_surfaces(self) -> None:
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn(".dashboard-page .markdown-body .chat-data-table tbody tr:nth-child(even) {", styles)
+        self.assertIn("background: #0e2d3a;", styles)
+        self.assertIn(".dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button,", styles)
+        self.assertIn("border: 1px solid #315d6d;", styles)
+
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         self.assertIn('createdAt: new Date().toISOString()', app)
