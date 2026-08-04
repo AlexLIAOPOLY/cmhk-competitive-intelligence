@@ -291,7 +291,7 @@
     overlay.className = "drill-overlay";
     overlay.hidden = true;
     overlay.setAttribute("role", "dialog");
-    overlay.setAttribute("aria-modal", "false");
+    overlay.setAttribute("aria-modal", "true");
     overlay.setAttribute("aria-label", `${KPI_TREE[config.key].label}指标穿透`);
     overlay.innerHTML = `
       <div class="drill-toolbar">
@@ -314,10 +314,26 @@
       relation: null,
       relationStep: "insight",
       selectedCarrier: 0,
-      selectedDriver: null
+      selectedDriver: null,
+      inertRecords: null
     };
     panelStates.set(panel, state);
     overlay.querySelector(".drill-close").addEventListener("click", () => closeOverlay(state));
+    overlay.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab") return;
+      const focusable = [...overlay.querySelectorAll('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')]
+        .filter((element) => !element.hidden && element.getClientRects().length);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
     return state;
   }
 
@@ -356,17 +372,29 @@
     state.origin = origin || state.origin;
     state.overlay.hidden = false;
     state.panel.classList.add("is-drilling");
+    document.body.classList.add("has-drill-fullscreen");
+    if (!state.inertRecords) {
+      const candidates = [
+        ...document.querySelectorAll(".cockpit > :not(.dashboard-grid), .dashboard-grid > .panel:not(.is-drilling)"),
+        ...[...state.panel.children].filter((child) => child !== state.overlay)
+      ];
+      state.inertRecords = [...new Set(candidates)].map((element) => ({
+        element,
+        inert: element.inert
+      }));
+      state.inertRecords.forEach(({ element }) => { element.inert = true; });
+    }
     if (wasHidden) {
       state.overlay.querySelector(".drill-close").focus({ preventScroll: true });
-      if (window.matchMedia("(max-width: 900px)").matches) {
-        window.requestAnimationFrame(() => state.panel.scrollIntoView({ block: "start", behavior: "auto" }));
-      }
     }
   }
 
   function closeOverlay(state) {
     state.overlay.hidden = true;
     state.panel.classList.remove("is-drilling");
+    document.body.classList.remove("has-drill-fullscreen");
+    state.inertRecords?.forEach(({ element, inert }) => { element.inert = inert; });
+    state.inertRecords = null;
     state.relation = null;
     clearRelationUrl();
     state.origin?.focus?.({ preventScroll: true });

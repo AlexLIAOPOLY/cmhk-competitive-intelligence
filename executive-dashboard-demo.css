@@ -1746,6 +1746,208 @@ h1 {
   .relation-raw-list button { min-height: 52px; border-right: 0; }
 }
 
+/* Full-screen drill workspace: expanded analysis is a focused task, not an in-panel preview. */
+body.has-drill-fullscreen { overflow: hidden !important; }
+
+.panel.is-drilling {
+  z-index: 1000;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 0 !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+  border: 0;
+  border-radius: 0;
+  transform: none !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .58), inset 0 0 0 1px rgba(77, 207, 247, .24);
+}
+
+.panel.is-drilling::before,
+.panel.is-drilling::after { width: 42px; height: 42px; }
+.panel.is-drilling .panel-tabs,
+.panel.is-drilling .drill-entry { display: none; }
+.panel.is-drilling .panel-heading {
+  height: 72px;
+  min-height: 72px;
+  padding: 0 clamp(20px, 2.2vw, 42px);
+  flex-wrap: nowrap;
+  background: linear-gradient(90deg, rgba(8, 45, 70, .97), rgba(4, 22, 37, .86) 62%, rgba(7, 42, 62, .72));
+}
+.panel.is-drilling .panel-heading > span { font-size: 36px; }
+.panel.is-drilling .panel-heading h2 { font-size: clamp(22px, 1.7vw, 30px); letter-spacing: .045em; }
+.panel.is-drilling .drill-overlay {
+  inset: 72px 0 0 !important;
+  min-height: 0 !important;
+  background:
+    linear-gradient(135deg, rgba(3, 22, 38, .992), rgba(3, 17, 30, .985)),
+    radial-gradient(circle at 86% 14%, rgba(53, 217, 255, .16), transparent 38%);
+}
+.panel.is-drilling .drill-toolbar {
+  height: 48px;
+  padding: 0 clamp(20px, 2.2vw, 42px);
+  background: rgba(5, 31, 50, .76);
+}
+.panel.is-drilling .drill-breadcrumb { gap: 10px; }
+.panel.is-drilling .drill-breadcrumb > span,
+.panel.is-drilling .drill-breadcrumb button { font-size: 13px; }
+.panel.is-drilling .drill-close {
+  flex-basis: 38px;
+  width: 38px;
+  height: 38px;
+  border-color: rgba(91, 213, 248, .2);
+  background: rgba(7, 43, 63, .44);
+}
+.panel.is-drilling .drill-close svg { width: 20px; height: 20px; }
+.panel.is-drilling .drill-body {
+  height: calc(100% - 48px);
+  padding: clamp(18px, 2vw, 32px) clamp(20px, 2.6vw, 50px) clamp(22px, 2.4vw, 40px);
+}
+
+@media (min-width: 901px) {
+  .panel.is-drilling .relation-head { gap: 24px; padding-bottom: 16px; }
+  .panel.is-drilling .relation-head > div > span { font-size: 12px; letter-spacing: .1em; }
+  .panel.is-drilling .relation-head h3 {
+    margin-top: 7px;
+    font-size: clamp(21px, 1.55vw, 29px);
+    line-height: 1.28;
+  }
+  .panel.is-drilling .relation-head nav button {
+    min-width: 124px;
+    height: 46px;
+    padding: 0 20px;
+    font-size: 13px;
+  }
+  .panel.is-drilling .relation-step-tabs { height: 54px; }
+  .panel.is-drilling .relation-step-tabs button { font-size: 13px; }
+  .panel.is-drilling .relation-step-tabs button i { margin-right: 9px; font-size: 11px; }
+  .panel.is-drilling .relation-stage { padding-top: 20px; }
+  .panel.is-drilling .relation-stage-insight {
+    grid-template-columns: minmax(0, 1.7fr) minmax(340px, .72fr);
+    gap: clamp(24px, 2.5vw, 48px);
+  }
+  .panel.is-drilling .relation-stage-insight .relation-insight-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 270px);
+    gap: clamp(22px, 2vw, 38px);
+  }
+  .panel.is-drilling .relation-section-title { margin-bottom: 10px; }
+  .panel.is-drilling .relation-section-title strong { font-size: 15px; }
+  .panel.is-drilling .relation-section-title span { font-size: 11px; }
+  .panel.is-drilling .relation-carrier {
+    min-height: 64px;
+    grid-template-columns: 118px minmax(180px, 1fr) 110px 132px;
+    gap: 14px;
+    padding: 7px 10px;
+  }
+  .panel.is-drilling .relation-carrier > span { font-size: 15px; }
+  .panel.is-drilling .relation-carrier > span i { width: 32px; font-size: 11px; }
+  .panel.is-drilling .relation-track { height: 8px; }
+  .panel.is-drilling .relation-track em { width: 12px; height: 12px; }
+  .panel.is-drilling .relation-carrier > strong { font-size: 19px; }
+  .panel.is-drilling .relation-carrier > strong small { font-size: 11px; }
+  .panel.is-drilling .relation-carrier mark { font-size: 12px; }
+  .panel.is-drilling .relation-conclusion { padding: 12px 0 10px 20px; }
+  .panel.is-drilling .relation-conclusion > span { font-size: 11px; }
+  .panel.is-drilling .relation-conclusion > strong { margin-top: 7px; font-size: 22px; }
+  .panel.is-drilling .relation-conclusion > b { margin-top: 7px; font-size: 34px; }
+  .panel.is-drilling .relation-conclusion > b small { font-size: 13px; }
+  .panel.is-drilling .relation-conclusion > em { margin-top: 7px; font-size: 12px; }
+  .panel.is-drilling .relation-conclusion > p {
+    margin-top: 12px;
+    display: block;
+    font-size: 13px;
+    line-height: 1.55;
+    -webkit-line-clamp: unset;
+  }
+  .panel.is-drilling .relation-stage-insight .relation-driver-card {
+    min-height: 112px;
+    padding: 15px 18px;
+  }
+  .panel.is-drilling .relation-driver-card > span { font-size: 15px; }
+  .panel.is-drilling .relation-driver-card > span i { margin-right: 9px; font-size: 11px; }
+  .panel.is-drilling .relation-driver-card > strong { font-size: 17px; }
+  .panel.is-drilling .relation-driver-card > strong small { font-size: 10px; }
+  .panel.is-drilling .relation-driver-card > p {
+    display: block;
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: normal;
+  }
+  .panel.is-drilling .relation-driver-card > em {
+    margin-top: 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: normal;
+  }
+  .panel.is-drilling .relation-driver-tabs button { min-height: 54px; padding: 8px 18px; }
+  .panel.is-drilling .relation-driver-tabs button span { font-size: 14px; }
+  .panel.is-drilling .relation-driver-tabs button strong { font-size: 16px; }
+  .panel.is-drilling .relation-chain { margin-top: 20px; }
+  .panel.is-drilling .relation-chain-steps span { min-height: 72px; padding: 12px 28px 12px 18px; font-size: 14px; }
+  .panel.is-drilling .relation-chain-steps i { margin-right: 10px; font-size: 11px; }
+  .panel.is-drilling .relation-chain > p { margin-top: 12px; font-size: 13px; line-height: 1.55; }
+  .panel.is-drilling .relation-evidence-list { margin-top: 24px; }
+  .panel.is-drilling .relation-evidence-metric { min-height: 66px; padding: 10px 15px; }
+  .panel.is-drilling .relation-evidence-metric span { font-size: 13px; }
+  .panel.is-drilling .relation-evidence-metric span i { margin-right: 8px; font-size: 10px; }
+  .panel.is-drilling .relation-evidence-metric b { font-size: 17px; }
+  .panel.is-drilling .relation-evidence-metric b small,
+  .panel.is-drilling .relation-evidence-metric em { font-size: 11px; }
+  .panel.is-drilling .relation-raw-head { margin-bottom: 14px; }
+  .panel.is-drilling .relation-raw-head > div strong { font-size: 17px; }
+  .panel.is-drilling .relation-raw-head > div span { margin-top: 5px; font-size: 12px; }
+  .panel.is-drilling .relation-raw-head > button { min-height: 42px; padding: 0 16px; font-size: 12px; }
+  .panel.is-drilling .relation-raw-list { max-height: calc(100dvh - 330px); }
+  .panel.is-drilling .drill-metric-list button { min-height: 72px; padding: 11px 48px 11px 16px; }
+  .panel.is-drilling .drill-metric-list span { font-size: 13px; }
+  .panel.is-drilling .drill-metric-list strong { margin-top: 7px; font-size: 20px; }
+  .panel.is-drilling .drill-metric-list strong small { font-size: 12px; }
+  .panel.is-drilling .drill-level-heading { margin-bottom: 18px; }
+  .panel.is-drilling .drill-level-heading strong { font-size: 20px; }
+  .panel.is-drilling .drill-level-heading span { font-size: 13px; }
+  .panel.is-drilling .drill-category-list,
+  .panel.is-drilling .drill-group-list { gap: 12px; }
+  .panel.is-drilling .drill-category-list button,
+  .panel.is-drilling .drill-group-list button { min-height: 88px; padding: 15px 52px 14px 18px; }
+  .panel.is-drilling .drill-category-list span,
+  .panel.is-drilling .drill-group-list span { font-size: 17px; }
+  .panel.is-drilling .drill-category-list small,
+  .panel.is-drilling .drill-group-list small { margin-top: 9px; font-size: 12px; }
+  .panel.is-drilling .drill-metric-head { padding-bottom: 14px; }
+  .panel.is-drilling .drill-metric-head span { font-size: 12px; }
+  .panel.is-drilling .drill-metric-head h3 { margin-top: 6px; font-size: 24px; }
+  .panel.is-drilling .drill-metric-head > strong { font-size: 42px; }
+  .panel.is-drilling .drill-metric-head > strong small { font-size: 16px; }
+  .panel.is-drilling .drill-compare { gap: 10px; margin-top: 18px; }
+  .panel.is-drilling .drill-compare > div { grid-template-columns: 100px minmax(180px, 1fr) 130px; gap: 18px; min-height: 36px; }
+  .panel.is-drilling .drill-compare span { font-size: 14px; }
+  .panel.is-drilling .drill-compare i { height: 10px; }
+  .panel.is-drilling .drill-compare strong { font-size: 18px; }
+  .panel.is-drilling .drill-compare strong small { font-size: 12px; }
+  .panel.is-drilling .drill-meta { margin-top: 20px; }
+  .panel.is-drilling .drill-meta > div { padding: 14px 20px 15px 0; }
+  .panel.is-drilling .drill-meta dt { font-size: 12px; }
+  .panel.is-drilling .drill-meta dd { margin-top: 7px; font-size: 14px; line-height: 1.55; }
+  .panel.is-drilling .drill-siblings { gap: 9px; margin-top: 18px; }
+  .panel.is-drilling .drill-siblings button { max-width: 250px; min-height: 40px; padding: 7px 12px; font-size: 12px; }
+}
+
+@media (max-width: 900px) {
+  .panel.is-drilling .panel-heading {
+    height: 62px;
+    min-height: 62px;
+    padding: 0 14px;
+    flex-wrap: nowrap;
+  }
+  .panel.is-drilling .panel-heading > span { font-size: 27px; }
+  .panel.is-drilling .panel-heading h2 { font-size: 18px; }
+  .panel.is-drilling .drill-overlay { inset: 62px 0 0 !important; }
+  .panel.is-drilling .drill-toolbar { height: 48px; padding: 0 10px 0 14px; }
+  .panel.is-drilling .drill-body { height: calc(100% - 48px); padding: 14px 12px 20px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
