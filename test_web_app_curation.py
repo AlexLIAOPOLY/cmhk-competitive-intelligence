@@ -91,6 +91,8 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('Xiaojing AI dark neutral workspace v1', styles)
         self.assertIn('--panel: #0b1f2c;', styles)
         self.assertIn('Four-domain selectable focus stage v5', styles)
+        self.assertIn('grid-template-columns: 42px minmax(118px, .72fr) minmax(210px, 1.2fr) auto;', styles)
+        self.assertIn('grid-column: 3;', styles)
         self.assertIn('@keyframes intelligence-frame-scan', styles)
         self.assertIn('#logButton.log-glowing', styles)
         self.assertIn('@keyframes intelligence-atmosphere', styles)
