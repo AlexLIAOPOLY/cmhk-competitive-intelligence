@@ -604,7 +604,16 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn(".dashboard-page .markdown-body .chat-data-table tbody tr:nth-child(even) {", styles)
         self.assertIn("background: #0e2d3a;", styles)
         self.assertIn(".dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button,", styles)
-        self.assertIn("border: 1px solid #315d6d;", styles)
+        self.assertIn("border: 1px solid rgba(105, 169, 188, .24) !important;", styles)
+        self.assertIn("border-radius: 50% !important;\n  color: #adc7d0 !important;", styles)
+        self.assertNotIn("box-shadow: inset 0 -2px #65c3d8;", styles)
+
+    def test_ai_settings_and_starter_cards_follow_dark_flat_theme(self) -> None:
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn(".dashboard-page #aiSettingsModal .settings-modal {", styles)
+        self.assertIn("color: #e8f3f6;\n  background: #0a222e;", styles)
+        self.assertIn(".dashboard-page .chat-starter-card::before {\n  display: none !important;", styles)
 
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

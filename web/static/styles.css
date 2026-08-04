@@ -12983,15 +12983,15 @@ body.dashboard-page {
 .dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle,
 .dashboard-page .chat-composer-toolbar > .database-picker .database-toggle,
 .dashboard-page .chat-composer-toolbar > .web-search-toggle {
-  width: 34px;
-  min-width: 34px;
-  height: 34px;
-  min-height: 34px;
-  border: 1px solid #315d6d;
-  border-radius: 9px;
-  color: #c5dbe2;
-  background: #123340;
-  box-shadow: inset 0 1px rgba(205, 239, 245, .05);
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  border: 1px solid rgba(105, 169, 188, .24) !important;
+  border-radius: 50% !important;
+  color: #adc7d0 !important;
+  background: rgba(20, 55, 68, .52) !important;
+  box-shadow: none !important;
   transition: border-color 150ms ease, color 150ms ease, background 150ms ease, transform 150ms ease;
 }
 
@@ -13003,9 +13003,9 @@ body.dashboard-page {
 .dashboard-page .chat-composer-toolbar > .database-picker .database-toggle:focus-visible,
 .dashboard-page .chat-composer-toolbar > .web-search-toggle:hover,
 .dashboard-page .chat-composer-toolbar > .web-search-toggle:focus-visible {
-  border-color: #5893a6;
-  color: #f0fafc;
-  background: #194352;
+  border-color: rgba(105, 183, 204, .45) !important;
+  color: #e2f3f6 !important;
+  background: rgba(29, 71, 85, .68) !important;
   outline: none;
   transform: translateY(-1px);
 }
@@ -13014,24 +13014,113 @@ body.dashboard-page {
 .dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle.is-active,
 .dashboard-page .chat-composer-toolbar > .database-picker .database-toggle.is-active,
 .dashboard-page .chat-composer-toolbar > .web-search-toggle.is-active {
-  border-color: #61afc3;
-  color: #eefbfc;
-  background: #205365;
-  box-shadow: inset 0 -2px #65c3d8;
+  border-color: rgba(105, 183, 204, .38) !important;
+  color: #cfe7ed !important;
+  background: rgba(29, 71, 85, .58) !important;
+  box-shadow: none !important;
 }
 
 .dashboard-page .chat-composer-toolbar > .composer-plus-picker .composer-plus-button svg {
-  width: 20px;
-  height: 20px;
-  stroke-width: 2;
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.9;
 }
 
 .dashboard-page .chat-composer-toolbar > .skill-picker .skill-toggle svg,
 .dashboard-page .chat-composer-toolbar > .database-picker .database-toggle svg,
 .dashboard-page .chat-composer-toolbar > .web-search-toggle svg {
-  width: 16px;
-  height: 16px;
-  stroke-width: 2.1;
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+}
+
+.dashboard-page .chat-starter-card::before {
+  display: none !important;
+}
+
+.dashboard-page #aiSettingsModal {
+  background: rgba(1, 10, 17, .76);
+  backdrop-filter: blur(7px) saturate(.8);
+}
+
+.dashboard-page #aiSettingsModal .settings-modal {
+  border-color: #477585;
+  color: #e8f3f6;
+  background: #0a222e;
+  box-shadow: 0 24px 64px rgba(0, 5, 10, .52);
+}
+
+.dashboard-page #aiSettingsModal .settings-modal header,
+.dashboard-page #aiSettingsModal .settings-modal footer {
+  border-color: #315968;
+  background: #0d2936;
+}
+
+.dashboard-page #aiSettingsModal .settings-modal h2 { color: #eef8fa; }
+.dashboard-page #aiSettingsModal .settings-modal p,
+.dashboard-page #aiSettingsModal .field-help { color: #9fb9c3; }
+.dashboard-page #aiSettingsModal .settings-modal label { color: #bdd2d9; }
+
+.dashboard-page #aiSettingsModal .settings-modal input,
+.dashboard-page #aiSettingsModal .settings-modal select,
+.dashboard-page #aiSettingsModal .settings-modal textarea {
+  border-color: #3c6675;
+  color: #edf7f9;
+  background: #0b2633;
+}
+
+.dashboard-page #aiSettingsModal .settings-modal input[readonly] {
+  color: #c0d4db;
+  background: #0a202c;
+}
+
+.dashboard-page #aiSettingsModal .settings-modal select option {
+  color: #edf7f9;
+  background: #0b2633;
+}
+
+.dashboard-page #aiSettingsModal .settings-modal input:focus,
+.dashboard-page #aiSettingsModal .settings-modal select:focus,
+.dashboard-page #aiSettingsModal .settings-modal textarea:focus {
+  border-color: #65b4c8;
+  box-shadow: 0 0 0 2px rgba(94, 181, 202, .14);
+}
+
+.dashboard-page #aiSettingsModal .modal-status {
+  border: 1px solid #315b69;
+  border-radius: 8px;
+  color: #a9c3cc;
+  background: #102f3d;
+}
+
+.dashboard-page #aiSettingsModal .quiet-button,
+.dashboard-page #aiSettingsModal .model-fetch-button {
+  border-color: #426d7c;
+  color: #cce1e6;
+  background: #123440;
+  box-shadow: none;
+}
+
+.dashboard-page #aiSettingsModal .quiet-button:hover,
+.dashboard-page #aiSettingsModal .quiet-button:focus-visible,
+.dashboard-page #aiSettingsModal .model-fetch-button:hover,
+.dashboard-page #aiSettingsModal .model-fetch-button:focus-visible {
+  border-color: #5b9caf;
+  color: #f0f9fb;
+  background: #194351;
+}
+
+.dashboard-page #aiSettingsModal .primary-button {
+  border-color: #58a8bc;
+  color: #f4fcfd;
+  background: #2d8297;
+  box-shadow: none;
+}
+
+.dashboard-page #aiSettingsModal .close-btn { color: #a9c3cc; }
+.dashboard-page #aiSettingsModal .close-btn:hover {
+  color: #f1fafb;
+  background: #173b49;
 }
 
 @media (max-width: 560px) {
