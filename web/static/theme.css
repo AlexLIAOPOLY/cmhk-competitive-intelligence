@@ -1076,3 +1076,241 @@ html[data-theme="light"] .dashboard-page #outputArea.report-library-drawer .time
     min-height: 92px;
   }
 }
+
+html[data-theme="light"] .dashboard-page .modal-backdrop.chat-backdrop {
+  padding: 0;
+}
+
+html[data-theme="light"] .dashboard-page .floating-chat {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-starter-grid {
+  gap: 0;
+}
+
+html[data-theme="light"] .dashboard-page .chat-starter-card {
+  min-height: 104px;
+  border: 0 !important;
+  border-right: 1px solid #d2dfe5 !important;
+  border-radius: 0 !important;
+  color: #234a5e !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-starter-card:last-child {
+  border-right: 0 !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-starter-card::before {
+  display: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-starter-card:hover,
+html[data-theme="light"] .dashboard-page .chat-starter-card:focus-visible {
+  background: #eaf2f5 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+@media (max-width: 720px) {
+  html[data-theme="light"] .dashboard-page .chat-starter-card {
+    border-right: 0 !important;
+    border-bottom: 1px solid #d2dfe5 !important;
+  }
+
+  html[data-theme="light"] .dashboard-page .chat-starter-card:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+/* Light dashboard v3: one continuous canvas, no decorative outer frames. */
+html[data-theme="light"] body.dashboard-page,
+html[data-theme="light"] .dashboard-page .insight-board,
+html[data-theme="light"] .dashboard-page .intelligence-command-board {
+  background: #f1f4f6 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-command-board {
+  grid-template-rows: 62px minmax(0, 1fr);
+  gap: 0;
+  padding: 0 24px 24px;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-command-board::after,
+html[data-theme="light"] .dashboard-page .intelligence-relation-rail::after {
+  display: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation-rail {
+  margin: 0;
+  border: 0 !important;
+  border-bottom: 1px solid #cbd8de !important;
+  border-radius: 0;
+  background: #f1f4f6 !important;
+  box-shadow: none;
+  overflow: visible;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation {
+  border: 0 !important;
+  border-right: 1px solid #d5dfe4 !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation:last-child {
+  border-right: 0 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-relation:hover,
+html[data-theme="light"] .dashboard-page .intelligence-relation:focus-visible,
+html[data-theme="light"] .dashboard-page .intelligence-relation.is-active {
+  background: #e8f1f5 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain-grid {
+  gap: 0 !important;
+  overflow: hidden;
+  background: #fff !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain,
+html[data-theme="light"] .dashboard-page .intelligence-domain-local {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain:nth-child(odd) {
+  border-right: 1px solid #d4dfe4 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain:nth-child(-n + 2) {
+  border-bottom: 1px solid #d4dfe4 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain:hover,
+html[data-theme="light"] .dashboard-page .intelligence-domain:focus-within {
+  border-color: #d4dfe4 !important;
+  background: #f8fafb !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-domain::before,
+html[data-theme="light"] .dashboard-page .intelligence-domain::after {
+  display: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs {
+  border: 0 !important;
+  border-bottom: 1px solid #b9cbd4 !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs button {
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs button:hover {
+  color: #0d5d80 !important;
+  background: #edf4f7 !important;
+}
+
+html[data-theme="light"] .dashboard-page .intelligence-focus-tabs button.is-active {
+  border-bottom-color: var(--domain-accent) !important;
+  color: #0d5d80 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Xiaojing AI shares the same light canvas; controls no longer sit in a large capsule. */
+html[data-theme="light"] .dashboard-page .chat-panel,
+html[data-theme="light"] .dashboard-page .chat-workspace,
+html[data-theme="light"] .dashboard-page .chat-session,
+html[data-theme="light"] .dashboard-page .messages,
+html[data-theme="light"] .dashboard-page .chat-form {
+  background: #f5f7f8 !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-form {
+  padding: 10px 18px 14px;
+  border-top: 0 !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-composer,
+html[data-theme="light"] .dashboard-page .chat-composer:focus-within {
+  padding-inline: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="light"] .dashboard-page .chat-composer textarea {
+  padding-inline: 4px;
+}
+
+html[data-theme="light"] .dashboard-page .chat-composer-toolbar {
+  border-top: 1px solid #d4dfe4;
+  padding-top: 8px;
+}
+
+html[data-theme="light"] .dashboard-page .chat-model-button,
+html[data-theme="light"] .dashboard-page .chat-model-button[aria-expanded="true"] {
+  color: #36596b !important;
+}
+
+@media (max-width: 1023px) {
+  html[data-theme="light"] .dashboard-page .intelligence-command-board {
+    padding: 0 16px 18px;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-relation-rail {
+    margin-bottom: 0;
+    border-bottom: 1px solid #cbd8de !important;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-domain-grid {
+    gap: 0 !important;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-domain,
+  html[data-theme="light"] .dashboard-page .intelligence-domain:nth-child(odd),
+  html[data-theme="light"] .dashboard-page .intelligence-domain:nth-child(-n + 2) {
+    border-right: 0 !important;
+    border-bottom: 1px solid #d4dfe4 !important;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-domain:last-child {
+    border-bottom: 0 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  html[data-theme="light"] .dashboard-page .intelligence-command-board {
+    padding: 0 8px 12px;
+  }
+
+  html[data-theme="light"] .dashboard-page .intelligence-relation-rail {
+    border-radius: 0;
+  }
+
+  html[data-theme="light"] .dashboard-page .chat-form {
+    padding-inline: 14px;
+  }
+}
