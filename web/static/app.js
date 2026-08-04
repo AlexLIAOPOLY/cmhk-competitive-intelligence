@@ -7513,12 +7513,22 @@ document.addEventListener("keydown", (event) => {
   function selectedEntityIndex(domain, focus) {
     const items = focusItems(domain, focus);
     const selectedName = selectedEntityByDomain.get(domain?.id);
-    const selected = selectedName ? items.findIndex((item) => item.name === selectedName) : 0;
-    return selected >= 0 ? selected : 0;
+    if (!selectedName) return -1;
+    return items.findIndex((item) => item.name === selectedName);
   }
 
-  function renderEntityFocus(domain, entity, index, focus) {
-    if (!entity) return "";
+  function renderEntityFocus(domain, entity, index, focus, items) {
+    const entityNoun = domain.id === "macro" ? "指标" : "公司";
+    if (!entity) {
+      return `
+        <div class="intelligence-entity-focus is-overview">
+          <span>综合发现</span>
+          <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
+          <p>${safe(focus.insight || domain.insight || "暂无综合结论")}</p>
+          <small>已综合 ${items.length} ${domain.id === "macro" ? "项指标" : "家公司"} · 点击任一${entityNoun}查看个体</small>
+        </div>
+      `;
+    }
     const source = /^https?:\/\//i.test(String(entity.source_url || ""))
       ? `<a href="${safe(entity.source_url)}" target="_self">来源<span aria-hidden="true">↗</span></a>`
       : "";
@@ -7527,7 +7537,9 @@ document.addEventListener("keydown", (event) => {
         <span>${safe(entity.name)}</span>
         <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
         <p>${safe(entity.analysis || focus.insight || entity.detail || "暂无分析结论")}</p>
-        ${source}
+        <div class="intelligence-entity-actions">
+          ${source}
+        </div>
       </div>
     `;
   }
@@ -7560,7 +7572,9 @@ document.addEventListener("keydown", (event) => {
     const visual = focus?.visual || "rows";
     const entityAttributes = (item, index) => `
       role="button" tabindex="0" data-intelligence-entity="${index}"
-      data-intelligence-domain-id="${safe(domain.id)}" aria-label="关注 ${safe(item.name)}"`;
+      data-intelligence-domain-id="${safe(domain.id)}"
+      aria-pressed="${index === selectedIndex ? "true" : "false"}"
+      aria-label="${index === selectedIndex ? "取消选择并返回综合发现" : "查看个体分析"}：${safe(item.name)}"`;
 
     if (visual === "network") {
       const points = items.map((item, index) => ({
@@ -7712,7 +7726,7 @@ document.addEventListener("keydown", (event) => {
         ${renderFocusTabs(domain, focuses, focusIndex)}
         <div class="intelligence-domain-focus-stage">
           ${visual}
-          ${renderEntityFocus(domain, selectedEntity, entityIndex, selectedFocus)}
+          ${renderEntityFocus(domain, selectedEntity, entityIndex, selectedFocus, items)}
         </div>
       </article>
     `;
@@ -7742,7 +7756,8 @@ document.addEventListener("keydown", (event) => {
     const focus = domain ? focuses[selectedFocusIndex(domain)] : null;
     const items = focusItems(domain, focus);
     if (!domain || !items[index]) return;
-    selectedEntityByDomain.set(domainId, items[index].name);
+    if (selectedEntityByDomain.get(domainId) === items[index].name) selectedEntityByDomain.delete(domainId);
+    else selectedEntityByDomain.set(domainId, items[index].name);
     if (manual) manualFocusPauseUntil.set(domainId, Date.now() + 30000);
     replaceDomainCard(domain, restoreFocus);
   }
@@ -7752,9 +7767,7 @@ document.addEventListener("keydown", (event) => {
     const focuses = domain ? domainFocuses(domain) : [];
     if (!domain || !focuses[index]) return;
     selectedFocusByDomain.set(domainId, index);
-    const items = focusItems(domain, focuses[index]);
-    const selectedName = selectedEntityByDomain.get(domainId);
-    if (!items.some((item) => item.name === selectedName)) selectedEntityByDomain.set(domainId, items[0]?.name || "");
+    selectedEntityByDomain.delete(domainId);
     if (manual) manualFocusPauseUntil.set(domainId, Date.now() + 30000);
     replaceDomainCard(domain, restoreFocus);
   }
@@ -7892,7 +7905,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   grid.addEventListener("click", (event) => {
-    const sourceLink = event.target.closest(".intelligence-entity-focus > a");
+    const sourceLink = event.target.closest(".intelligence-entity-actions > a");
     if (sourceLink) {
       event.preventDefault();
       event.stopPropagation();

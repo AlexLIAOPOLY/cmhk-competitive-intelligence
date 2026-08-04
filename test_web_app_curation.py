@@ -627,6 +627,16 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn(".dashboard-page .chat-model-option.active {", styles)
         self.assertNotIn("box-shadow: inset 3px 0 #61c2d8;", styles)
 
+    def test_executive_domains_default_to_overview_before_entity_selection(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn("if (!selectedName) return -1;", app)
+        self.assertIn("<span>综合发现</span>", app)
+        self.assertNotIn("data-intelligence-overview", app)
+        self.assertIn("selectedEntityByDomain.delete(domainId);", app)
+        self.assertIn("selectedEntityByDomain.get(domainId) === items[index].name", app)
+        self.assertIn('aria-pressed="${index === selectedIndex ? "true" : "false"}"', app)
+
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         self.assertIn('createdAt: new Date().toISOString()', app)

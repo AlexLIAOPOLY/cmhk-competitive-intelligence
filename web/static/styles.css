@@ -13713,8 +13713,8 @@ body.report-library-open::before {
   min-width: 0;
   padding: 9px 11px 8px 13px;
   overflow: hidden;
-  border-left: 1px solid color-mix(in srgb, var(--domain-accent) 40%, transparent);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 7%, transparent), transparent 84%);
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 26%, #183847);
+  background: rgba(7, 27, 39, .62);
   align-content: center;
 }
 
@@ -13756,17 +13756,42 @@ body.report-library-open::before {
   -webkit-line-clamp: 3;
 }
 
-.intelligence-entity-focus > a {
+.intelligence-entity-focus > small {
+  margin-top: 7px;
+  color: #7899a6;
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.intelligence-entity-focus.is-overview > strong {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.intelligence-entity-actions {
   position: absolute;
   top: 8px;
   right: 8px;
-  color: color-mix(in srgb, var(--domain-accent) 78%, #d9eef4);
-  font-size: 9px;
-  text-decoration: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
-.intelligence-entity-focus > a:hover,
-.intelligence-entity-focus > a:focus-visible {
+.intelligence-entity-actions > a {
+  padding: 0;
+  border: 0;
+  color: color-mix(in srgb, var(--domain-accent) 78%, #d9eef4);
+  background: transparent;
+  font-family: inherit;
+  font-size: 9px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.intelligence-entity-actions > a:hover,
+.intelligence-entity-actions > a:focus-visible {
   color: #f1fbfc;
   outline: none;
   text-decoration: underline;
