@@ -614,6 +614,8 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn(".dashboard-page #aiSettingsModal .settings-modal {", styles)
         self.assertIn("color: #e8f3f6;\n  background: #0a222e;", styles)
         self.assertIn(".dashboard-page .chat-starter-card::before {\n  display: none !important;", styles)
+        self.assertIn(".dashboard-page .chat-model-option.active {", styles)
+        self.assertNotIn("box-shadow: inset 3px 0 #61c2d8;", styles)
 
     def test_new_chat_messages_record_created_and_completed_times(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")

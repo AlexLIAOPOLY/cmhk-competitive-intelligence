@@ -13304,7 +13304,7 @@ body.dashboard-page:has(#chatModal:not([hidden])) .chat-fab {
   border-color: #4a899c;
   color: #eaf8fa;
   background: #194354;
-  box-shadow: inset 3px 0 #61c2d8;
+  box-shadow: none;
 }
 
 .dashboard-page .chat-model-empty { color: #a1bac3; }
