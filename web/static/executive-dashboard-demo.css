@@ -543,6 +543,35 @@ h1 {
 .drill-target:focus-visible { background-color: rgba(23, 103, 138, .08); }
 .drill-group-trigger { padding-right: 24px; }
 
+.panel-heading > h2.drill-target {
+  padding-right: 18px;
+  transition: color .2s ease, text-shadow .2s ease;
+}
+.panel-heading > h2.drill-target::after { right: 1px; top: 50%; transform: translate(-3px, -50%); }
+.panel-heading > h2.drill-target:hover,
+.panel-heading > h2.drill-target:focus-visible {
+  color: #f1fcff;
+  background: transparent;
+  text-shadow: 0 0 12px rgba(66, 213, 255, .28);
+}
+.panel-heading > h2.drill-target:hover::after,
+.panel-heading > h2.drill-target:focus-visible::after { transform: translate(0, -50%); }
+
+.reach-ranking > div.drill-target,
+.revenue-compare > i.drill-target,
+.profit-line.drill-target {
+  transition: filter .2s ease, background-color .2s ease;
+}
+.reach-ranking > div.drill-target:hover,
+.reach-ranking > div.drill-target:focus-visible,
+.revenue-compare > i.drill-target:hover,
+.revenue-compare > i.drill-target:focus-visible,
+.profit-line.drill-target:hover,
+.profit-line.drill-target:focus-visible {
+  filter: brightness(1.18) drop-shadow(0 0 5px rgba(53, 217, 255, .18));
+}
+.profit-line.drill-target:focus-visible { outline: 1px solid rgba(69, 219, 255, .72); outline-offset: 3px; }
+
 .drill-overlay {
   z-index: 8;
   position: absolute;
