@@ -7559,10 +7559,13 @@ document.addEventListener("keydown", (event) => {
 
   function renderRail(relations) {
     rail.innerHTML = relations.slice(0, 4).map((relation, index) => `
-      <button type="button" class="intelligence-relation" data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}">
-        <span>${safe(domainLabels[relation.from] || relation.from)} → ${safe(domainLabels[relation.to] || relation.to)}</span>
+      <button type="button" class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
+        data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}"
+        title="${safe(relation.detail || relation.title)}" aria-label="发现${index + 1}：${safe(relation.title)}">
+        <em>${String(index + 1).padStart(2, "0")}</em>
+        <span>${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}</span>
         <strong>${safe(relation.title)}</strong>
-        <small>${safe(relation.kind)}</small>
+        <small>${safe(relation.origin === "ai" ? "AI 研判" : relation.kind)}</small>
       </button>
     `).join("");
   }
@@ -7965,6 +7968,7 @@ document.addEventListener("keydown", (event) => {
         const signature = JSON.stringify({
           refresh: data.refresh?.completed_at_hkt || data.refresh?.started_at_hkt || "",
           ai: data.ai?.updated_at || "",
+          discoveries: (data.relations || []).map((relation) => [relation.from, relation.to, relation.title, relation.detail]),
           metrics: (data.domains || []).map((domain) => [domain.id, domain.metric, domain.context]),
         });
         if (!initial && signature === payloadSignature) return;

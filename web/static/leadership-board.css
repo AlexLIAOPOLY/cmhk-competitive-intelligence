@@ -318,6 +318,16 @@
   .intelligence-domain:nth-child(4) { border-bottom: 0 !important; }
 }
 
+@media (min-width: 561px) and (max-width: 1100px) {
+  .intelligence-command-board {
+    grid-template-rows: 82px minmax(0, 1fr);
+  }
+
+  .intelligence-relation {
+    min-height: 82px;
+  }
+}
+
 @media (max-width: 560px) {
   .intelligence-domain,
   .intelligence-domain-local {

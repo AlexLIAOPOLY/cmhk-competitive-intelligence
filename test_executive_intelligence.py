@@ -26,6 +26,15 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertEqual(cloud_relation["kind"], "跨期间方向参照")
         self.assertIn("报告期间与业务口径不同", cloud_relation["detail"])
 
+    def test_relationship_strip_always_exposes_exactly_four_executive_discoveries(self):
+        relations = self.snapshot["relations"]
+        self.assertEqual(len(relations), 4)
+        self.assertEqual(len({tuple(sorted((item["from"], item["to"]))) for item in relations}), 4)
+        self.assertEqual(
+            {domain for item in relations for domain in (item["from"], item["to"])},
+            {"local", "international", "cloud", "macro"},
+        )
+
     def test_source_links_are_public_http_urls(self):
         for domain in self.snapshot["domains"]:
             self.assertTrue(domain["sources"])

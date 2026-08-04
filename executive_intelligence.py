@@ -712,7 +712,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         domain["ai_summary"] = model_summaries.get(domain["id"], {})
         domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
         domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
-    relations = [
+    deterministic_relations = [
         {
             "from": "macro",
             "to": "local",
@@ -746,6 +746,28 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "kind": "分析框架",
         },
     ]
+    model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
+    model_discoveries = [
+        item for item in (model_analysis.get("discoveries") or [])
+        if isinstance(item, dict)
+        and item.get("from") in {"local", "international", "cloud", "macro"}
+        and item.get("to") in {"local", "international", "cloud", "macro"}
+        and item.get("from") != item.get("to")
+        and str(item.get("title") or "").strip()
+        and str(item.get("detail") or "").strip()
+    ]
+    relations = [
+        {
+            "from": item["from"],
+            "to": item["to"],
+            "title": str(item["title"]).strip(),
+            "detail": str(item["detail"]).strip(),
+            "kind": str(item.get("kind") or "AI综合研判").strip(),
+            "source_urls": list(item.get("source_urls") or []),
+            "origin": "ai",
+        }
+        for item in model_discoveries[:4]
+    ] if len(model_discoveries) >= 4 else deterministic_relations
     refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
     return {
         "domains": domains,
@@ -756,7 +778,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "agent_run_id": ai_payload.get("agent_run_id", "") if isinstance(ai_payload, dict) else "",
             "updated_at": ai_payload.get("generated_at_hkt", "") if isinstance(ai_payload, dict) else "",
             "domain_counts": ai_payload.get("domain_counts", {}) if isinstance(ai_payload, dict) else {},
-            "model_analysis": ai_payload.get("model_analysis", {}) if isinstance(ai_payload, dict) else {},
+            "model_analysis": model_analysis,
+            "discoveries_generated": bool(len(model_discoveries) >= 4),
         },
         "source_record_count": sum(int(domain["metric"]["value"]) if domain["id"] == "local" else len(domain["entities"]) for domain in domains),
     }

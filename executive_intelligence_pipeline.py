@@ -392,6 +392,73 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
     return sorted(result, key=lambda item: ("local", "international", "cloud", "macro").index(item["domain"]))
 
 
+def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
+    urls: dict[str, set[str]] = {key: set() for key in ("local", "international", "cloud", "macro")}
+    for domain in evidence.get("domains") or []:
+        domain_id = str(domain.get("id") or "")
+        if domain_id not in urls:
+            continue
+        for focus in domain.get("focuses") or []:
+            for item in focus.get("items") or []:
+                source_url = str(item.get("source_url") or "")
+                if source_url.startswith(("https://", "http://")):
+                    urls[domain_id].add(source_url)
+        for item in domain.get("agent_verified_facts") or []:
+            source_url = str(item.get("source_url") or "")
+            if source_url.startswith(("https://", "http://")):
+                urls[domain_id].add(source_url)
+    return urls
+
+
+def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
+    if not isinstance(raw, list) or len(raw) != 4:
+        raise ValueError("AI跨库发现必须恰好返回四项")
+    expected_domains = {"local", "international", "cloud", "macro"}
+    allowed_numbers = _numeric_tokens(evidence)
+    urls_by_domain = _evidence_urls_by_domain(evidence)
+    allowed_urls = set().union(*urls_by_domain.values())
+    result: list[dict[str, Any]] = []
+    pairs: set[tuple[str, str]] = set()
+    covered_domains: set[str] = set()
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ValueError("AI跨库发现包含非对象条目")
+        source_domain = str(item.get("from") or "")
+        target_domain = str(item.get("to") or "")
+        if source_domain not in expected_domains or target_domain not in expected_domains or source_domain == target_domain:
+            raise ValueError(f"AI跨库发现领域非法：{source_domain}->{target_domain}")
+        pair = tuple(sorted((source_domain, target_domain)))
+        if pair in pairs:
+            raise ValueError(f"AI跨库发现重复关联：{pair}")
+        pairs.add(pair)
+        covered_domains.update(pair)
+        discovery = {
+            "from": source_domain,
+            "to": target_domain,
+            "title": str(item.get("title") or "").strip(),
+            "detail": str(item.get("detail") or "").strip(),
+            "kind": str(item.get("kind") or "AI综合研判").strip(),
+            "source_urls": list(dict.fromkeys(str(url) for url in item.get("source_urls") or [])),
+        }
+        if not discovery["title"] or not discovery["detail"]:
+            raise ValueError("AI跨库发现标题或结论为空")
+        if len(discovery["title"]) > 28 or len(discovery["detail"]) > 110 or len(discovery["kind"]) > 12:
+            raise ValueError("AI跨库发现不够精炼")
+        unknown_urls = set(discovery["source_urls"]) - allowed_urls
+        if unknown_urls:
+            raise ValueError(f"AI跨库发现引用了输入之外的来源：{sorted(unknown_urls)}")
+        for domain_id in pair:
+            if urls_by_domain[domain_id] and not (set(discovery["source_urls"]) & urls_by_domain[domain_id]):
+                raise ValueError(f"AI跨库发现缺少{domain_id}领域来源")
+        unknown_numbers = _numeric_tokens(discovery) - allowed_numbers
+        if unknown_numbers:
+            raise ValueError(f"AI跨库发现出现输入之外的数字：{sorted(unknown_numbers)}")
+        result.append(discovery)
+    if covered_domains != expected_domains:
+        raise ValueError(f"AI跨库发现领域覆盖不完整：{sorted(expected_domains - covered_domains)}")
+    return result
+
+
 def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any:
     if not isinstance(raw, list):
         return raw
@@ -439,6 +506,43 @@ def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, 
             }
         )
     return _validate_model_summaries(summaries, evidence)
+
+
+def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]:
+    urls_by_domain = _evidence_urls_by_domain(evidence)
+    relations = list(evidence.get("relations") or [])[:4]
+    fallback_pairs = (
+        ("macro", "local", "市场底盘与本地产品竞争联动", "市场底盘与本地产品供给需放在同一视图持续观察。"),
+        ("international", "cloud", "运营商与云厂商增长节奏分化", "运营商与云厂商的最新披露显示不同增长节奏，需按原始口径对照。"),
+        ("local", "cloud", "连接产品与云服务竞争面重叠", "本地连接产品与云服务正在形成可联合观察的企业市场竞争面。"),
+        ("macro", "international", "投资与增长转化共同承压", "市场投资、网络覆盖与运营商增长需联合观察转化效率。"),
+    )
+    while len(relations) < 4:
+        source_domain, target_domain, title, detail = fallback_pairs[len(relations)]
+        relations.append({
+            "from": source_domain,
+            "to": target_domain,
+            "title": title,
+            "detail": detail,
+            "kind": "证据规则回退",
+        })
+    discoveries: list[dict[str, Any]] = []
+    for relation in relations:
+        source_domain = str(relation.get("from") or "")
+        target_domain = str(relation.get("to") or "")
+        source_urls = []
+        for domain_id in (source_domain, target_domain):
+            if urls_by_domain.get(domain_id):
+                source_urls.append(sorted(urls_by_domain[domain_id])[0])
+        discoveries.append({
+            "from": source_domain,
+            "to": target_domain,
+            "title": str(relation.get("title") or ""),
+            "detail": str(relation.get("detail") or ""),
+            "kind": "证据规则回退",
+            "source_urls": source_urls,
+        })
+    return _validate_model_discoveries(discoveries, evidence)
 
 
 def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -516,16 +620,85 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
     return {"generated_at_hkt": _now(), "model": body["model"], "summaries": summaries}
 
 
+def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
+    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from ai_rate_limit import wait_for_internal_ai_slot
+    from network_utils import urlopen_with_local_proxy_fallback
+
+    evidence = evidence or _analysis_input_snapshot()
+    config = load_ai_config(include_key=True)
+    api_key = str(config.get("api_key") or "").strip()
+    if not api_key:
+        raise RuntimeError("未配置内网模型密钥")
+    system_prompt = (
+        "你是电信竞争情报分析员。从local、international、cloud、macro四库证据中提炼恰好四条跨库发现。"
+        "每条必须联系两个不同领域，四条不得重复同一领域组合，且四个领域都要被覆盖。"
+        "不要逐库摘要，不要写论文，标题是一句可决策结论，detail只补一句核心根据。"
+        "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
+        "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON数组。"
+    )
+    user_prompt = (
+        "请返回四条发现，每项字段严格为from,to,title,detail,kind,source_urls。"
+        "title不超过28字，detail不超过110字，kind统一写AI综合研判。不要Markdown。输入：\n"
+        + json.dumps(evidence, ensure_ascii=False)
+    )
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    body = {
+        "model": str(config.get("model") or "deepseek-v4"),
+        "messages": messages,
+        "temperature": 0.0,
+    }
+    discoveries: list[dict[str, Any]] | None = None
+    last_error: Exception | None = None
+    for attempt in range(3):
+        body["messages"] = messages
+        request = urllib.request.Request(
+            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
+            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        wait_for_internal_ai_slot("executive-intelligence-discoveries")
+        try:
+            with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="ignore")[:800]
+            raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
+        content = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+        try:
+            discoveries = _validate_model_discoveries(_extract_json_payload(content), evidence)
+            break
+        except (ValueError, json.JSONDecodeError) as exc:
+            last_error = exc
+            if attempt < 2:
+                messages.extend([
+                    {"role": "assistant", "content": content},
+                    {
+                        "role": "user",
+                        "content": f"上一版未通过跨库门禁：{exc}。请依据规则精简改写，仍只返回四项JSON数组。",
+                    },
+                ])
+    if discoveries is None:
+        raise ValueError(f"AI跨库发现连续三次未通过门禁：{last_error}")
+    return {"generated_at_hkt": _now(), "model": body["model"], "discoveries": discoveries}
+
+
 def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
     analysis = _read_json(path, {}) or {}
     evidence = _analysis_input_snapshot()
     evidence_hash = _content_hash(evidence)
     previous = analysis.get("model_analysis") or {}
     previous_summaries = previous.get("summaries") or []
+    previous_discoveries = previous.get("discoveries") or []
     previous_hash = str(previous.get("evidence_hash") or "")
-    if previous_summaries and (not previous_hash or previous_hash == evidence_hash):
+    if previous_summaries and previous_discoveries and previous_hash == evidence_hash:
         try:
             validated = _validate_model_summaries(previous_summaries, evidence)
+            validated_discoveries = _validate_model_discoveries(previous_discoveries, evidence)
         except ValueError:
             pass
         else:
@@ -533,21 +706,53 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
                 **previous,
                 "evidence_hash": evidence_hash,
                 "summaries": validated,
+                "discoveries": validated_discoveries,
                 "reused": True,
             }
             analysis["model_analysis"] = generated
             _atomic_write_json(path, analysis)
             return {"ok": True, **generated}
-    try:
-        generated = generate_model_domain_summaries(evidence)
-    except Exception as exc:
+    summaries_reused = False
+    if previous_summaries and previous_hash == evidence_hash:
+        try:
+            validated_summaries = _validate_model_summaries(previous_summaries, evidence)
+        except ValueError:
+            validated_summaries = []
+        else:
+            summaries_reused = True
+    if summaries_reused:
         generated = {
+            "generated_at_hkt": str(previous.get("generated_at_hkt") or _now()),
+            "model": str(previous.get("model") or "validated-previous-analysis"),
+            "summaries": validated_summaries,
+        }
+    else:
+        try:
+            generated = generate_model_domain_summaries(evidence)
+        except Exception as exc:
+            generated = {
+                "generated_at_hkt": _now(),
+                "model": "deterministic-evidence-fallback",
+                "summaries": _deterministic_domain_summaries(evidence),
+                "fallback_used": True,
+                "fallback_reason": str(exc)[:500],
+            }
+    try:
+        discovery_payload = generate_model_discoveries(evidence)
+    except Exception as exc:
+        discovery_payload = {
             "generated_at_hkt": _now(),
             "model": "deterministic-evidence-fallback",
-            "summaries": _deterministic_domain_summaries(evidence),
+            "discoveries": _deterministic_discoveries(evidence),
             "fallback_used": True,
             "fallback_reason": str(exc)[:500],
         }
+    generated["discoveries"] = discovery_payload["discoveries"]
+    generated["discovery_model"] = discovery_payload["model"]
+    generated["discovery_generated_at_hkt"] = discovery_payload["generated_at_hkt"]
+    if discovery_payload.get("fallback_used"):
+        generated["discovery_fallback_used"] = True
+        generated["discovery_fallback_reason"] = discovery_payload.get("fallback_reason", "")
     generated["evidence_hash"] = evidence_hash
     generated["reused"] = False
     analysis["model_analysis"] = generated

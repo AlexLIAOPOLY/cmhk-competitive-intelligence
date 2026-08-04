@@ -11874,8 +11874,13 @@ body.dashboard-page {
 
 .intelligence-relation {
   position: relative;
-  min-height: 66px;
-  padding: 11px 16px 10px;
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 10px;
+  min-height: 72px;
+  padding: 10px 16px 10px 14px;
   overflow: hidden;
   border-right: 1px solid rgba(122, 196, 222, .11);
   background: transparent;
@@ -11900,12 +11905,10 @@ body.dashboard-page {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #5cd8ef;
-  box-shadow: 0 0 12px rgba(92, 216, 239, .7);
+  background: #84b8c7;
+  box-shadow: 0 0 8px rgba(132, 184, 199, .34);
   content: "";
-  opacity: .5;
-  animation: intelligence-pulse 3.2s ease-in-out infinite;
-  animation-delay: calc(var(--relation-index) * 360ms);
+  opacity: .55;
 }
 
 .intelligence-relation:hover,
@@ -11921,25 +11924,53 @@ body.dashboard-page {
 }
 
 .intelligence-relation span {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
   color: #6f9eb1;
-  font-size: 9px;
-  letter-spacing: .045em;
+  font-size: 10px;
+  letter-spacing: .03em;
 }
 
 .intelligence-relation strong {
-  max-width: calc(100% - 10px);
-  margin-top: 4px;
+  grid-column: 2 / 4;
+  grid-row: 2;
+  max-width: 100%;
+  margin-top: 3px;
   overflow: hidden;
-  color: #dcebf1;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.25;
+  color: #e4f1f5;
+  font-size: 13px;
+  font-weight: 630;
+  line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .intelligence-relation small {
-  display: none;
+  grid-column: 3;
+  grid-row: 1;
+  align-self: end;
+  display: block;
+  color: #7895a0;
+  font-size: 8px;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.intelligence-relation em {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: center;
+  color: #83b7c7;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  opacity: .72;
+}
+
+.intelligence-relation.is-ai-discovery em {
+  color: #75cee0;
 }
 
 .intelligence-domain-grid {
@@ -12506,6 +12537,28 @@ body.dashboard-page {
 
   .intelligence-domain {
     min-height: 270px;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1100px) {
+  .intelligence-command-board {
+    grid-template-rows: 82px minmax(0, 1fr);
+  }
+
+  .intelligence-relation {
+    min-height: 78px;
+  }
+
+  .intelligence-relation strong {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .intelligence-relation small {
+    display: none;
   }
 }
 

@@ -222,10 +222,24 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             {"domain": domain, "headline": "观察", "analysis": "证据未变。", "risk": "保持边界。", "source_urls": []}
             for domain in ("local", "international", "cloud", "macro")
         ]
+        discoveries = [
+            {"from": source, "to": target, "title": title, "detail": "证据联合观察。", "kind": "AI综合研判", "source_urls": []}
+            for source, target, title in (
+                ("local", "international", "本地与国际联动"),
+                ("international", "cloud", "国际与云联动"),
+                ("local", "cloud", "本地与云联动"),
+                ("macro", "local", "宏观与本地联动"),
+            )
+        ]
         evidence = {"domains": [], "relations": []}
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
-            path.write_text(json.dumps({"model_analysis": {"model": "test", "summaries": summaries}}), encoding="utf-8")
+            path.write_text(json.dumps({"model_analysis": {
+                "model": "test",
+                "evidence_hash": pipeline._content_hash(evidence),
+                "summaries": summaries,
+                "discoveries": discoveries,
+            }}), encoding="utf-8")
             with (
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch("executive_intelligence_pipeline.generate_model_domain_summaries", side_effect=AssertionError("must reuse")),
@@ -233,6 +247,82 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 result = pipeline.publish_model_domain_summaries(path)
         self.assertTrue(result["reused"])
         self.assertEqual(len(result["summaries"]), 4)
+        self.assertEqual(len(result["discoveries"]), 4)
+
+    def test_model_discovery_gate_requires_unique_cross_domain_pairs_and_source_evidence(self):
+        evidence = {
+            "domains": [
+                {
+                    "id": domain,
+                    "focuses": [{"items": [{"source_url": f"https://example.com/{domain}"}]}],
+                    "agent_verified_facts": [],
+                }
+                for domain in ("local", "international", "cloud", "macro")
+            ],
+            "relations": [],
+        }
+        discoveries = [
+            {
+                "from": source,
+                "to": target,
+                "title": title,
+                "detail": "已核验数据显示需联合观察。",
+                "kind": "AI综合研判",
+                "source_urls": [f"https://example.com/{source}", f"https://example.com/{target}"],
+            }
+            for source, target, title in (
+                ("local", "international", "本地与国际联动"),
+                ("international", "cloud", "国际与云联动"),
+                ("local", "cloud", "本地与云联动"),
+                ("macro", "local", "宏观与本地联动"),
+            )
+        ]
+        validated = pipeline._validate_model_discoveries(discoveries, evidence)
+        self.assertEqual(len(validated), 4)
+        duplicate = [dict(item) for item in discoveries]
+        duplicate[3] = dict(discoveries[0])
+        with self.assertRaisesRegex(ValueError, "重复关联"):
+            pipeline._validate_model_discoveries(duplicate, evidence)
+        missing_source = [dict(item) for item in discoveries]
+        missing_source[0] = {**missing_source[0], "source_urls": ["https://example.com/local"]}
+        with self.assertRaisesRegex(ValueError, "international领域来源"):
+            pipeline._validate_model_discoveries(missing_source, evidence)
+
+    def test_changed_evidence_hash_regenerates_all_text_summaries(self):
+        evidence = {"domains": [], "relations": [], "version": "new"}
+        summaries = [
+            {"domain": domain, "headline": "新结论", "analysis": "新证据。", "risk": "保持边界。", "source_urls": []}
+            for domain in ("local", "international", "cloud", "macro")
+        ]
+        discoveries = [
+            {"from": source, "to": target, "title": title, "detail": "新证据联动。", "kind": "AI综合研判", "source_urls": []}
+            for source, target, title in (
+                ("local", "international", "本地与国际"),
+                ("international", "cloud", "国际与云"),
+                ("local", "cloud", "本地与云"),
+                ("macro", "local", "宏观与本地"),
+            )
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "analysis.json"
+            path.write_text(json.dumps({"model_analysis": {
+                "evidence_hash": "stale",
+                "summaries": summaries,
+                "discoveries": discoveries,
+            }}), encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.generate_model_domain_summaries", return_value={
+                    "generated_at_hkt": "now", "model": "test", "summaries": summaries,
+                }) as regenerate,
+                patch("executive_intelligence_pipeline.generate_model_discoveries", return_value={
+                    "generated_at_hkt": "now", "model": "test", "discoveries": discoveries,
+                }),
+            ):
+                result = pipeline.publish_model_domain_summaries(path)
+        regenerate.assert_called_once_with(evidence)
+        self.assertFalse(result["reused"])
+        self.assertEqual(result["evidence_hash"], pipeline._content_hash(evidence))
 
     def test_model_analysis_uses_evidence_only_fallback_when_model_is_invalid(self):
         evidence = {
@@ -253,6 +343,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertTrue(result["fallback_used"])
         self.assertEqual(result["model"], "deterministic-evidence-fallback")
         self.assertEqual(len(result["summaries"]), 4)
+        self.assertEqual(len(result["discoveries"]), 4)
 
     def test_scheduler_launch_failure_does_not_raise_or_change_crawl_semantics(self):
         with tempfile.TemporaryDirectory() as temp_dir:
