@@ -1119,9 +1119,13 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertNotIn('id="headerTime"', markup)
         self.assertNotIn("function setClock()", app)
         self.assertNotIn('<section class="command-strip">', markup)
-        self.assertIn('class="command-btn btn-fetch topbar-command" id="crawlButtonSecondary"', markup)
         self.assertIn('class="command-btn btn-library topbar-command" id="reportLibraryButton"', markup)
+        topbar = markup[markup.index('<div class="header-tools">'):markup.index('<div class="header-runtime-status">')]
+        self.assertNotIn('id="crawlButtonSecondary"', topbar)
+        self.assertIn('href="/executive-dashboard-demo.html" title="策略经营驾驶舱"', topbar)
+        self.assertNotIn('href="/company-data.html"', topbar)
         library_header = markup[markup.index('<header class="report-library-header">'):]
+        self.assertIn('class="command-btn btn-fetch" id="crawlButtonSecondary"', library_header)
         self.assertIn('id="generatePerformanceButton"', library_header)
         self.assertIn('id="generateButtonSecondary"', library_header)
         self.assertIn(".report-library-header-actions", styles)
