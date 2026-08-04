@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 from functools import lru_cache
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -12,14 +13,29 @@ LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans
 INTERNATIONAL_PATH = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json"
 CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json"
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
+AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
+REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
 
-DOMAIN_PATHS = (LOCAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH)
+DOMAIN_PATHS = (LOCAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
+SAFE_VERIFICATION_STATUSES = {
+    "official_match",
+    "official_only",
+    "official_derived_from_verified_rows",
+    "multi_source_or_multi_snapshot_verified",
+}
 
 
 def _read_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def _read_json_optional(path: Path, default: Any) -> Any:
+    try:
+        return _read_json(path)
+    except (OSError, json.JSONDecodeError):
+        return default
 
 
 def _number(value: Any) -> float | None:
@@ -34,6 +50,14 @@ def _number(value: Any) -> float | None:
         return float(text)
     except ValueError:
         return None
+
+
+def _verified_number(row: dict[str, Any] | None) -> float | None:
+    """Return the official value when a published row contains one."""
+    if not row:
+        return None
+    official = _number(row.get("official_value"))
+    return official if official is not None else _number(row.get("value"))
 
 
 def _period_rank(value: Any) -> tuple[int, int]:
@@ -270,7 +294,13 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _latest_metric(rows: list[dict[str, Any]], subject_key: str, subject: str, metric: str) -> dict[str, Any] | None:
-    candidates = [row for row in rows if row.get(subject_key) == subject and row.get("metric_key") == metric and _number(row.get("value")) is not None]
+    candidates = [
+        row for row in rows
+        if row.get(subject_key) == subject
+        and row.get("metric_key") == metric
+        and _verified_number(row) is not None
+        and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
+    ]
     if not candidates:
         return None
     period_key = "period" if subject_key == "subject" else "fiscal_year"
@@ -281,7 +311,10 @@ def _metric_history(rows: list[dict[str, Any]], subject_key: str, subject: str, 
     period_key = "period" if subject_key == "subject" else "fiscal_year"
     candidates = [
         row for row in rows
-        if row.get(subject_key) == subject and row.get("metric_key") == metric and _number(row.get("value")) is not None
+        if row.get(subject_key) == subject
+        and row.get("metric_key") == metric
+        and _verified_number(row) is not None
+        and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
     ]
     return sorted(candidates, key=lambda row: _period_rank(row.get(period_key)))
 
@@ -295,15 +328,16 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         row = _latest_metric(rows, "subject", subject, "revenue_growth_yoy")
         if not row:
             continue
-        value = _number(row.get("value")) or 0
+        value = _verified_number(row) or 0
         history = _metric_history(rows, "subject", subject, "revenue_growth_yoy")
-        previous_value = _number(history[-2].get("value")) if len(history) > 1 else None
+        previous_value = _verified_number(history[-2]) if len(history) > 1 else None
         change = value - previous_value if previous_value is not None else None
         source_url = str(row.get("official_source_url") or "")
         growth_items.append({
             "name": subject,
             "value": round(value, 2),
             "unit": "%",
+            "period": str(row.get("period") or ""),
             "detail": f"{row.get('period') or '最新期'}营收同比",
             "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%，在四家同口径对标中位置由图中排序给出。",
             "source_url": source_url,
@@ -321,12 +355,12 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 if change is not None else "当前只有一个可比期，不推断增长动量。"
             ),
             "trend": [
-                {"label": str(item.get("period") or ""), "value": _number(item.get("value"))}
+                {"label": str(item.get("period") or ""), "value": _verified_number(item)}
                 for item in history[-4:]
             ],
             "source_url": source_url,
         })
-        subject_rows = [item for item in rows if item.get("subject") == subject and _number(item.get("value")) is not None]
+        subject_rows = [item for item in rows if item.get("subject") == subject and _verified_number(item) is not None]
         latest_rank = max((_period_rank(item.get("period")) for item in subject_rows), default=(0, 0))
         latest_rows = [item for item in subject_rows if _period_rank(item.get("period")) == latest_rank]
         latest_period = str(latest_rows[0].get("period") or "-") if latest_rows else "-"
@@ -414,19 +448,20 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         row = _latest_metric(rows, "vendor", vendor, "revenue_yoy")
         if not row:
             continue
-        value = _number(row.get("value"))
+        value = _verified_number(row)
         if value is None:
             continue
         name = vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", "").replace(" / Cloud Computing", "")
         source_url = str(row.get("primary_source_url") or "")
         growth_items.append({
             "name": name, "value": round(value, 1), "unit": "%",
+            "period": f"FY{row.get('fiscal_year')}",
             "detail": f"FY{row.get('fiscal_year')} 云业务营收同比",
             "analysis": f"FY{row.get('fiscal_year')}披露的云业务营收同比为 {value:+.1f}%；比较仅采用各厂商库内统一的 revenue_yoy 字段。",
             "source_url": source_url,
         })
         history = _metric_history(rows, "vendor", vendor, "revenue_yoy")
-        previous = _number(history[-2].get("value")) if len(history) > 1 else None
+        previous = _verified_number(history[-2]) if len(history) > 1 else None
         change = value - previous if previous is not None else None
         trend_items.append({
             "name": name,
@@ -437,7 +472,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 f"营收增速由 {previous:.1f}% 变为 {value:.1f}%，同比增速{'加快' if change > 0 else '放缓' if change < 0 else '持平'} {abs(change):.1f} 个百分点。"
                 if change is not None else "缺少上一财年可比增速，不推断趋势。"
             ),
-            "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _number(item.get("value"))} for item in history[-3:]],
+            "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in history[-3:]],
             "source_url": source_url,
         })
         profit_row = None
@@ -445,7 +480,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             profit_row = _latest_metric(rows, "vendor", vendor, key)
             if profit_row:
                 break
-        profit_value = _number(profit_row.get("value")) if profit_row else None
+        profit_value = _verified_number(profit_row)
         profit_label = str(profit_row.get("metric_zh") or "利润率") if profit_row else "未披露可比利润率"
         profit_items.append({
             "name": name,
@@ -458,7 +493,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             ),
             "source_url": str((profit_row or row).get("primary_source_url") or ""),
         })
-        vendor_rows = [item for item in rows if item.get("vendor") == vendor and _number(item.get("value")) is not None]
+        vendor_rows = [item for item in rows if item.get("vendor") == vendor and _verified_number(item) is not None]
         latest_year = max((int(str(item.get("fiscal_year") or 0)) for item in vendor_rows), default=0)
         latest_rows = [item for item in vendor_rows if int(str(item.get("fiscal_year") or 0)) == latest_year]
         direct_count = sum(1 for item in latest_rows if str(item.get("disclosure_quality") or "").startswith("direct"))
@@ -528,9 +563,9 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
 def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     focus_specs = [
         {
-            "id": "market", "label": "市场规模", "title": "香港移动用户",
+            "id": "market", "label": "市场规模", "title": "移动服务订户及连接",
             "keys": [
-                ("mobile_subscriptions", "移动用户"),
+                ("mobile_subscriptions", "移动服务订户及连接"),
                 ("mobile_broadband_subscriptions", "移动宽带用户"),
                 ("broadband_access_lines_total", "宽带接入线"),
                 ("household_broadband_penetration_rate", "家庭宽带渗透率"),
@@ -581,10 +616,12 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         value = _number(row.get("value")) or 0
         unit = str(row.get("unit") or "")
         raw_unit = unit
+        raw_value_text = f"{value:g}"
         display_value: float | str = value
         display_unit = unit
         if metric in {"mobile_subscriptions", "mobile_broadband_subscriptions", "broadband_access_lines_total", "post_paid_sim_subscriptions"}:
             display_value, display_unit = round(value / 10_000, 1), "万"
+            raw_value_text = f"{value:,.0f}"
         elif metric == "annual_telecom_investment":
             display_value, display_unit = round(value / 100, 2), "亿港元"
             raw_unit = "百万港元"
@@ -608,7 +645,7 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "value": display_value,
             "unit": display_unit,
             "detail": f"截至 {row.get('period_end') or '-'}",
-            "analysis": f"官方指标 {row.get('metric_name') or label} 最新值为 {display_value} {display_unit}；原始记录为 {value:g} {raw_unit}。",
+            "analysis": f"官方指标 {row.get('metric_name') or label} 最新值为 {display_value} {display_unit}；原始记录为 {raw_value_text} {raw_unit}。",
             "source_url": str(row.get("official_source_url") or ""),
         }
 
@@ -636,13 +673,13 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     entities = all_items
     subscriptions = _number((latest.get("mobile_subscriptions") or {}).get("value")) or 0
     coverage = _number((latest.get("5g_population_coverage_status") or {}).get("value")) or 0
-    insight = f"移动连接达 {subscriptions / 10_000:.1f} 万、5G人口覆盖超过 {coverage:.0f}%；高渗透市场下，竞争重点由连接数量转向套餐价值、流量与企业服务。"
+    insight = f"移动服务订户及连接达 {subscriptions / 10_000:.1f} 万、5G人口覆盖超过 {coverage:.0f}%；该数包含机器类型连接，不等同于独立用户人数。"
     return {
         "id": "macro",
         "index": "04",
         "title": "宏观政策",
         "kicker": "市场底盘与监管变量",
-        "metric": {"value": f"{subscriptions / 10_000:.1f}", "unit": "万", "label": "香港移动用户"},
+        "metric": {"value": f"{subscriptions / 10_000:.1f}", "unit": "万", "label": "移动服务订户及连接"},
         "context": f"宏观与政策明细 {len(rows):,} 条",
         "insight": insight,
         "entities": entities,
@@ -663,6 +700,18 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     cloud = _cloud_domain(_read_json(CLOUD_PATH))
     macro = _macro_domain(_read_json(MACRO_PATH))
     domains = [local, international, cloud, macro]
+    ai_payload = _read_json_optional(AI_ANALYSIS_PATH, {})
+    ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
+    model_summaries = {
+        str(item.get("domain") or ""): item
+        for item in ((ai_payload.get("model_analysis") or {}).get("summaries") or [])
+        if isinstance(item, dict)
+    } if isinstance(ai_payload, dict) else {}
+    for domain in domains:
+        domain["ai_analysis"] = list((ai_domains or {}).get(domain["id"]) or [])
+        domain["ai_summary"] = model_summaries.get(domain["id"], {})
+        domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
+        domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
     relations = [
         {
             "from": "macro",
@@ -675,8 +724,12 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "from": "international",
             "to": "cloud",
             "title": "云增速显著高于运营商增速",
-            "detail": f"云厂商领先增速 {cloud['metric']['value']}%，运营商领先增速 {international['metric']['value']}%，增长重心持续向云服务偏移。",
-            "kind": "同期间对照",
+            "detail": (
+                f"云厂商 {cloud['entities'][0].get('period', '最新财年')} 领先增速 {cloud['metric']['value']}%，"
+                f"运营商 {international['entities'][0].get('period', '最新季度')} 领先增速 {international['metric']['value']}%；"
+                "报告期间与业务口径不同，只作方向性参照。"
+            ),
+            "kind": "跨期间方向参照",
         },
         {
             "from": "local",
@@ -693,14 +746,22 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "kind": "分析框架",
         },
     ]
+    refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
     return {
         "domains": domains,
         "relations": relations,
-        "method": "同字段对齐、产品集合交集、价格区间重叠及同期间增速对标；跨库结论标注推断类型。",
+        "method": "四库指标只使用通过质量门禁的记录；AI分析只使用Agent发布层accepted事实。跨期间、代理口径和战略推断均单独标注。",
+        "refresh": refresh_state if isinstance(refresh_state, dict) else {},
+        "ai": {
+            "agent_run_id": ai_payload.get("agent_run_id", "") if isinstance(ai_payload, dict) else "",
+            "updated_at": ai_payload.get("generated_at_hkt", "") if isinstance(ai_payload, dict) else "",
+            "domain_counts": ai_payload.get("domain_counts", {}) if isinstance(ai_payload, dict) else {},
+            "model_analysis": ai_payload.get("model_analysis", {}) if isinstance(ai_payload, dict) else {},
+        },
         "source_record_count": sum(int(domain["metric"]["value"]) if domain["id"] == "local" else len(domain["entities"]) for domain in domains),
     }
 
 
 def build_executive_intelligence_snapshot() -> dict[str, Any]:
-    signature = tuple(path.stat().st_mtime_ns for path in DOMAIN_PATHS)
+    signature = tuple(path.stat().st_mtime_ns if path.exists() else 0 for path in DOMAIN_PATHS)
     return _build_cached(signature)

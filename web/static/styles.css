@@ -14311,7 +14311,7 @@ body.report-library-open::before {
 
 .intelligence-viz-rows li > i,
 .intelligence-viz-ranges li > i {
-  height: 7px;
+  height: 5px;
   border: 1px solid rgba(119, 172, 190, .1);
   border-radius: 2px;
   background: linear-gradient(180deg, rgba(158, 210, 226, .08), transparent 42%), rgba(28, 67, 82, .24);
@@ -14324,7 +14324,7 @@ body.report-library-open::before {
   border: 1px solid color-mix(in srgb, var(--domain-accent) 44%, transparent);
   border-radius: 2px;
   background: linear-gradient(180deg, rgba(222, 251, 255, .48) 0, rgba(222, 251, 255, .08) 28%, transparent 29%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 48%, #173c50), var(--domain-accent) 72%, color-mix(in srgb, var(--domain-accent) 68%, #d8f7fb));
-  box-shadow: inset 0 -2px 2px rgba(0, 18, 27, .26), 0 2px 5px color-mix(in srgb, var(--domain-accent) 16%, transparent);
+  box-shadow: inset 0 -1px 1px rgba(0, 18, 27, .22), 0 1px 3px color-mix(in srgb, var(--domain-accent) 11%, transparent);
 }
 .intelligence-viz-rows li > i b::after { position: absolute; inset: 0 0 0 auto; width: 2px; background: color-mix(in srgb, var(--domain-accent) 35%, #ecfbff); box-shadow: -2px 0 5px color-mix(in srgb, var(--domain-accent) 32%, transparent); content: ""; }
 
@@ -14332,12 +14332,12 @@ body.report-library-open::before {
   border-color: #9f5360;
   background: linear-gradient(90deg, rgba(255, 235, 238, .2), transparent 20% 78%, rgba(48, 5, 15, .2)), linear-gradient(180deg, #d28c95, #a85263 48%, #6d303e);
 }
-.intelligence-domain-cloud .intelligence-viz-columns .is-negative b::before { border-color: #bd7781; background: linear-gradient(135deg, #e4b0b6, #bc6c79); }
-.intelligence-domain-cloud .intelligence-viz-columns .is-negative b::after { background: linear-gradient(180deg, #9d5360, #552631); }
+.intelligence-domain-cloud .intelligence-viz-columns .is-negative b::before { border: 0; background: #d79aa2; }
+.intelligence-domain-cloud .intelligence-viz-columns .is-negative b::after { background: linear-gradient(180deg, #95515d, #552631); }
 
 .intelligence-viz-ranges li > i b {
-  top: -2px;
-  height: 9px;
+  top: -1px;
+  height: 7px;
   border: 1px solid color-mix(in srgb, var(--domain-accent) 55%, #d9f5fa);
   background: linear-gradient(180deg, rgba(242, 255, 255, .35), transparent 34%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 58%, #244e5c), var(--domain-accent), color-mix(in srgb, var(--domain-accent) 58%, #244e5c));
   box-shadow: inset 0 -2px 2px rgba(0, 16, 24, .24), 0 2px 7px color-mix(in srgb, var(--domain-accent) 21%, transparent);

@@ -270,6 +270,58 @@ FIELD_PATTERNS: Dict[int, Dict[str, List[str]]] = {
         "失业率": ["unemployment"],
         "旅游业数据": ["tourism", "visitor"],
     },
+    52: {
+        "AWS分部收入": ["AWS sales", "AWS net sales", "AWS revenue"],
+        "AWS经营利润": ["AWS operating income", "segment operating income"],
+        "同比增速": ["year-over-year", "year over year", "increased", "growth"],
+        "资本开支": ["capital expenditures", "capital expenditure", "capex"],
+        "AI基础设施投入": ["AI infrastructure", "artificial intelligence infrastructure", "generative AI"],
+        "管理层指引": ["guidance", "outlook", "expect"],
+    },
+    53: {
+        "Intelligent Cloud收入": ["Intelligent Cloud revenue", "Intelligent Cloud"],
+        "Intelligent Cloud经营利润": ["Intelligent Cloud operating income", "operating income"],
+        "Azure及其他云服务增速": ["Azure and other cloud services", "Azure growth"],
+        "资本开支": ["capital expenditures", "capital expenditure", "capex"],
+        "AI基础设施投入": ["AI infrastructure", "cloud and AI infrastructure"],
+        "管理层指引": ["guidance", "outlook", "expect"],
+    },
+    54: {
+        "Google Cloud收入": ["Google Cloud revenues", "Google Cloud revenue"],
+        "Google Cloud经营利润": ["Google Cloud operating income", "Google Cloud operating loss"],
+        "同比增速": ["year-over-year", "year over year", "increased", "growth"],
+        "资本开支": ["capital expenditures", "capital expenditure", "capex"],
+        "AI基础设施投入": ["AI infrastructure", "technical infrastructure", "artificial intelligence"],
+        "管理层指引": ["guidance", "outlook", "expect"],
+    },
+    55: {
+        "Cloud Intelligence Group收入": ["Cloud Intelligence Group revenue", "Cloud Intelligence Group"],
+        "调整后EBITA": ["adjusted EBITA"],
+        "同比增速": ["year-over-year", "year over year", "increased", "growth"],
+        "AI相关云产品增长": ["AI-related product revenue", "AI-related cloud product", "AI products"],
+        "管理层指引": ["guidance", "outlook", "expect"],
+    },
+    56: {
+        "FinTech及企业服务收入": ["FinTech and Business Services revenues", "FinTech and Business Services revenue"],
+        "FinTech及企业服务毛利": ["FinTech and Business Services gross profit", "gross profit"],
+        "同比增速": ["year-on-year", "year on year", "increased", "growth"],
+        "云与AI业务披露": ["cloud", "AI", "artificial intelligence"],
+        "管理层指引": ["outlook", "expect", "strategy"],
+    },
+    57: {
+        "云计算收入": ["cloud computing revenue", "cloud computing"],
+        "同比变化": ["year-on-year", "year on year", "increased", "decreased", "growth"],
+        "研发投入": ["research and development", "R&D expenses", "R&D investment"],
+        "AI基础设施投入": ["AI infrastructure", "computing infrastructure", "artificial intelligence"],
+    },
+    58: {
+        "Cloud Services收入": ["cloud services revenue", "cloud services revenues"],
+        "IaaS收入及增速": ["IaaS revenue", "IaaS"],
+        "SaaS收入及增速": ["SaaS revenue", "SaaS"],
+        "Cloud and License收入": ["cloud and license revenues", "cloud and license revenue"],
+        "资本开支": ["capital expenditures", "capital expenditure", "capex"],
+        "管理层指引": ["guidance", "outlook", "expect"],
+    },
 }
 
 

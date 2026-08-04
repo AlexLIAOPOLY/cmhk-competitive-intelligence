@@ -6,6 +6,69 @@
     "tos_status must be reviewed before changing any deny entry to allow."
   ],
   "domains": {
+    "ir.aboutamazon.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "US",
+      "tos_status": "public_investor_relations",
+      "notes": "Amazon official investor-relations results and annual-report indexes; crawl at low daily volume and keep report-level evidence."
+    },
+    "www.microsoft.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "US",
+      "tos_status": "public_investor_relations",
+      "notes": "Microsoft official investor-relations earnings and annual-report pages; Azure proxy-segment boundaries must be retained."
+    },
+    "abc.xyz": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "US",
+      "tos_status": "public_investor_relations",
+      "notes": "Alphabet official investor-relations and SEC-filings indexes; use Google Cloud segment evidence only."
+    },
+    "www.alibabagroup.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "CN/HK/US",
+      "tos_status": "public_investor_relations",
+      "notes": "Alibaba Group official financial-results index; preserve fiscal-period and non-GAAP adjusted EBITA labels."
+    },
+    "www.tencent.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "CN/HK",
+      "tos_status": "public_investor_relations",
+      "notes": "Tencent official financial-reports index; FinTech and Business Services is a proxy segment and not pure cloud revenue."
+    },
+    "static.www.tencent.com": {
+      "policy": "allow",
+      "type": "company_official_report_cdn",
+      "jurisdiction": "CN/HK",
+      "tos_status": "public_investor_relations",
+      "notes": "Tencent official static host for annual, interim and quarterly investor-report PDFs discovered from the official IR index."
+    },
+    "www.huawei.com": {
+      "policy": "allow",
+      "type": "company_official_annual_report",
+      "jurisdiction": "CN",
+      "tos_status": "public_investor_relations",
+      "notes": "Huawei official annual-report index; do not estimate quarterly cloud figures when only annual disclosure exists."
+    },
+    "www-file.huawei.com": {
+      "policy": "allow",
+      "type": "company_official_report_cdn",
+      "jurisdiction": "CN",
+      "tos_status": "public_investor_relations",
+      "notes": "Huawei official file host for annual-report PDFs discovered from the official annual-report index."
+    },
+    "investor.oracle.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "US",
+      "tos_status": "public_investor_relations",
+      "notes": "Oracle official financial-results and SEC-filings indexes; distinguish cloud services product-line and cloud-and-license segment measures."
+    },
     "api.worldbank.org": {
       "policy": "allow",
       "type": "public_api",

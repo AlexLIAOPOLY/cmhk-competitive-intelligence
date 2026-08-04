@@ -11,7 +11,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 BUILD_DATE = os.environ.get("CMHK_CLOUD_METRICS_BUILD_DATE") or date.today().isoformat()
 DATASET_ID = f"cloud_vendor_metrics_{BUILD_DATE}"
-OUT_ROOT = ROOT / "agent_knowledge" / DATASET_ID
+OUT_ROOT = Path(os.environ.get("CMHK_CLOUD_METRICS_OUT_ROOT") or ROOT / "agent_knowledge" / DATASET_ID)
 
 
 SOURCES: dict[str, dict[str, str]] = {
@@ -82,7 +82,7 @@ SOURCES: dict[str, dict[str, str]] = {
     },
     "tencent_ir_financial_reports": {
         "label": "Tencent Investor Relations financial reports index",
-        "url": "https://www.tencent.com/en-us/investors/financial-reports.html",
+        "url": "https://www.tencent.com/investors/financial-reports/",
         "type": "official_ir_report_index",
     },
     "huawei_2025_annual": {

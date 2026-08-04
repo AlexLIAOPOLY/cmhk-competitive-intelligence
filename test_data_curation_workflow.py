@@ -14,6 +14,7 @@ from data_curation.workflow import (
     supervise_gap_actions,
 )
 from crawl import apply_crawl_settings, redact_sensitive
+from extractors import find_field_snippets, row_fields
 from normalize_company_metrics_ai import (
     _evidence_relevance,
     _evidence_mentions_company,
@@ -70,6 +71,27 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertFalse(_record_allowed_for_company(csl_plan, "HKT"))
         self.assertTrue(_record_allowed_for_company(one_o_one_o, "1O1O"))
         self.assertFalse(_record_allowed_for_company(one_o_one_o, "csl"))
+
+    def test_cloud_official_domains_are_bound_to_their_vendor(self) -> None:
+        microsoft_report = {"url": "https://www.microsoft.com/investor/reports/ar25/index.html"}
+        self.assertTrue(_record_allowed_for_company(microsoft_report, "Microsoft Azure"))
+        self.assertFalse(_record_allowed_for_company(microsoft_report, "AWS"))
+
+    def test_cloud_rows_define_financial_report_fields(self) -> None:
+        self.assertIn("AWS分部收入", row_fields(52))
+        self.assertIn("Azure及其他云服务增速", row_fields(53))
+        self.assertIn("Google Cloud经营利润", row_fields(54))
+        self.assertIn("调整后EBITA", row_fields(55))
+        self.assertIn("云与AI业务披露", row_fields(56))
+        self.assertIn("研发投入", row_fields(57))
+        self.assertIn("Cloud Services收入", row_fields(58))
+        extracted, missing = find_field_snippets(
+            53,
+            "Intelligent Cloud revenue was $105 billion and Azure and other cloud services grew 34%.",
+        )
+        self.assertIn("Intelligent Cloud收入", extracted)
+        self.assertIn("Azure及其他云服务增速", extracted)
+        self.assertNotIn("Intelligent Cloud收入", missing)
 
     def test_third_party_metric_window_must_name_target_company(self) -> None:
         unicom_fact = "中国联通已在超过330个城市部署5G-A。"
@@ -1245,6 +1267,50 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(fact["status"], "ok")
         self.assertEqual(fact["value"], "-48998万港元")
         self.assertEqual(fact["search_verification"]["decision"], "majority_corrected")
+
+    def test_search_verifier_does_not_rescue_unavailable_fact_from_same_basis_twice(self) -> None:
+        with (
+            patch("data_curation.workflow._public_web_search", return_value=([], "unit-empty")),
+            patch("data_curation.workflow._votes_from_source_pages", return_value=[]),
+        ):
+            result = search_verify_facts(
+                {
+                "run_id": "unit-test",
+                "search_verify_workers": 1,
+                "search_verify_online": True,
+                "search_verify_online_limit": 1,
+                "tasks": [],
+                "existing_items": {},
+                "candidates": [
+                    {
+                        "id": "azure-capex",
+                        "company": "Microsoft Azure",
+                        "metric": "资本开支",
+                        "value": "未提取到有效数据",
+                        "basis": "资本性资产购置同比增加20.1亿美元，无资本开支总额。",
+                        "status": "unavailable",
+                        "entity_supported": True,
+                        "metric_supported": True,
+                        "value_supported": False,
+                        "confidence": 0.3,
+                        "source_score": 1.0,
+                        "source_tier": "official",
+                        "row_ref": "row_53",
+                        "sources": ["https://www.microsoft.com/investor/reports/ar25/index.html"],
+                        "quality_score": 0.3,
+                        "decision": "rejected",
+                        "reasons": ["数值或事实依据不足"],
+                    }
+                ],
+                }
+            )
+        fact = result["candidates"][0]
+        self.assertEqual(fact["decision"], "rejected")
+        self.assertEqual(fact["status"], "unavailable")
+        self.assertEqual(
+            fact["search_verification"]["decision"],
+            "insufficient_independent_evidence",
+        )
 
     def test_search_verifier_rechecks_suspicious_accepted_profit_segment(self) -> None:
         with (

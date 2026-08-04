@@ -46,6 +46,9 @@ agent_knowledge/cmhk_*.xlsx
 agent_evals/
 frontend_test_results.txt
 .crawl_process.lock
+agent_knowledge/executive_intelligence_refresh/*.json
+agent_knowledge/executive_intelligence_refresh/.refresh.lock
+agent_knowledge/**/agent_verified_facts.json
 .tmp_*/
 outputs/
 scheduler_state.json

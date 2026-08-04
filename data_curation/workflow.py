@@ -96,6 +96,13 @@ OFFICIAL_HOST_TERMS = (
     "hkbn.net",
     "hgc.com.hk",
     "i-cablecomm.com",
+    "aboutamazon.com",
+    "microsoft.com",
+    "abc.xyz",
+    "alibabagroup.com",
+    "tencent.com",
+    "huawei.com",
+    "oracle.com",
 )
 COMMERCIAL_HOST_TERMS = (
     "stockanalysis.com",
@@ -1755,9 +1762,24 @@ def _search_verify_one(
     distinct_kinds = len({vote["kind"] for vote in majority})
     largest_minor_count = max((len(items) for key, items in buckets.items() if key != majority_canonical), default=0)
     has_majority = len(majority) >= 2 and len(majority) > largest_minor_count
+    independent_rescue_kinds = {
+        "web_search",
+        "source_page",
+        "previous_verified",
+        "monitoring_closure",
+        "peer_candidate",
+    }
+    can_rescue_unavailable = bool(original_vote) or any(
+        vote.get("kind") in independent_rescue_kinds for vote in majority
+    )
     decision = "unchanged"
 
-    if has_majority and majority_canonical and majority_canonical != original_canonical:
+    if (
+        has_majority
+        and majority_canonical
+        and majority_canonical != original_canonical
+        and can_rescue_unavailable
+    ):
         fact.value = _normalize_hk_financial_unit(
             fact.metric,
             clean_text(majority[0].get("normalized_value") or majority[0]["value"], 220),
@@ -1777,6 +1799,11 @@ def _search_verify_one(
         fact.reasons = []
         fact.confidence = max(fact.confidence, 0.9)
         decision = "majority_corrected"
+    elif has_majority and majority_canonical and majority_canonical != original_canonical:
+        # Candidate-basis and official-basis votes may be two renderings of the
+        # same sentence.  They are not independent evidence and must not turn
+        # an unavailable/rejected fact into a published number by themselves.
+        decision = "insufficient_independent_evidence"
     elif conflict_count and not has_majority:
         fact.decision = "review"
         fact.reasons.append("搜索验证未形成多数口径")
@@ -2390,6 +2417,12 @@ def recrawl_gaps(state: CurationState) -> dict[str, Any]:
 
 def publish_results(state: CurationState) -> dict[str, Any]:
     candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
+    for item in candidates:
+        if item.decision != "accepted":
+            continue
+        if re.search(r"无(?:明确)?资本开支(?:总额|金额)|无明确.{0,20}(?:金额|数字)", item.basis):
+            item.decision = "rejected"
+            item.reasons.append("发布前审计：依据明确否定该指标总额")
     accepted = [item for item in candidates if item.decision == "accepted"]
     rejected = [item for item in candidates if item.decision == "rejected"]
     review = [item for item in candidates if item.decision == "review"]

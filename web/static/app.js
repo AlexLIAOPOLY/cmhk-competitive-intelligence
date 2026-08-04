@@ -1248,7 +1248,7 @@ function renderCollectionOverview(status) {
       }).format(latestAssetTime)
     : "--";
   const updatedNode = document.getElementById("collectionOverviewUpdated");
-  if (updatedNode) updatedNode.textContent = `截至 ${assetTimeText}`;
+  if (updatedNode) updatedNode.textContent = assetTimeText;
 
   const assetHost = document.getElementById("dailyAssetGrid");
   if (!assetHost) return;
@@ -1411,7 +1411,6 @@ function renderCollectionOverview(status) {
                 <i style="--legend-color:${series.color}">${series.label}</i>
               `).join("")}
             </span>
-            <small>${escapeHtml(String(newsFunnel.label || "").replace(/[（）]/g, "").split(/\s+/)[0])}</small>
           </div>
         </header>
         <div class="daily-content-charts">
@@ -3722,8 +3721,17 @@ function updateSubtitles() {
   if (hasTimedCues) {
     sentences = cues.map((cue) => String(cue.text || "")).filter(Boolean);
     const currentTime = state.currentAudio.currentTime;
-    activeIndex = cues.findIndex((cue) => currentTime < Number(cue.end || 0));
-    if (activeIndex < 0) activeIndex = cues.length - 1;
+    activeIndex = cues.findIndex((cue) => {
+      const start = Number(cue.start || 0);
+      const end = Math.max(Number(cue.end || start), start + 0.05);
+      return currentTime >= start && currentTime < end;
+    });
+    if (activeIndex < 0) {
+      // During a real pause between two cues, keep the completed line active
+      // instead of highlighting the next sentence before it is spoken.
+      activeIndex = cues.findLastIndex((cue) => currentTime >= Number(cue.end || 0));
+      if (activeIndex < 0) activeIndex = 0;
+    }
     const cue = cues[activeIndex] || {};
     const start = Number(cue.start || 0);
     const end = Math.max(Number(cue.end || start), start + 0.05);
@@ -7451,6 +7459,7 @@ document.addEventListener("keydown", (event) => {
   const manualFocusPauseUntil = new Map();
   let focusRotationCursor = 0;
   let focusRotationTimer = null;
+  let payloadSignature = "";
 
   function safe(value) {
     return String(value == null ? "" : value)
@@ -7803,6 +7812,23 @@ document.addEventListener("keydown", (event) => {
     const sources = (domain.sources || []).map((source) => `
       <a href="${safe(source.url)}" target="_blank" rel="noreferrer">${safe(source.label)}<span aria-hidden="true">↗</span></a>
     `).join("");
+    const aiAnalysis = (domain.ai_analysis || []).map((item) => `
+      <li>
+        <span>Agent核验 · ${safe(item.metric)} · 质量 ${safe(Math.round(Number(item.quality_score || 0) * 100))}</span>
+        <strong>${safe(item.company)}</strong>
+        <p>${safe(item.analysis)}</p>
+        ${item.source_url ? `<a href="${safe(item.source_url)}" target="_blank" rel="noreferrer">核验证据↗</a>` : ""}
+      </li>
+    `).join("");
+    const aiSummary = domain.ai_summary || {};
+    const aiSummaryMarkup = aiSummary.headline ? `
+      <div class="intelligence-detail-lead">
+        <span>证据受限 AI 研判</span>
+        <strong>${safe(aiSummary.headline)}</strong>
+        <p>${safe(aiSummary.analysis)}</p>
+        <small>边界：${safe(aiSummary.risk)}</small>
+      </div>
+    ` : "";
 
     drawerKicker.textContent = `${domain.index} · ${domain.kicker}`;
     drawerTitle.textContent = domain.title;
@@ -7815,6 +7841,11 @@ document.addEventListener("keydown", (event) => {
       <section class="intelligence-detail-section">
         <h3>跨库关系</h3>
         <div class="intelligence-cross-relations">${crossRelations || "<p>暂无跨库关系</p>"}</div>
+      </section>
+      <section class="intelligence-detail-section">
+        <h3>AI 审核分析${domain.ai_updated_at ? `<small> · ${safe(domain.ai_updated_at.replace("T", " "))}</small>` : ""}</h3>
+        ${aiSummaryMarkup}
+        <ul class="intelligence-internal-relations">${aiAnalysis || "<li><p>本轮 Agent 暂无该领域通过发布门禁的新事实，继续使用四库已核验指标。</p></li>"}</ul>
       </section>
       <section class="intelligence-detail-section">
         <h3>厂商与指标</h3>
@@ -7916,22 +7947,41 @@ document.addEventListener("keydown", (event) => {
     else closeDrawer(true);
   });
 
-  fetch("/api/executive-intelligence", { cache: "no-store" })
-    .then((response) => response.json().then((data) => ({ response, data })))
-    .then(({ response, data }) => {
-      if (!response.ok || !data.ok) throw new Error(data.error || "四库关系读取失败");
-      payload = data;
-      renderRail(data.relations || []);
-      renderDomains(data.domains || []);
-      startFocusRotation();
-      method.textContent = data.method || "四库同口径对齐";
-      const requested = new URL(window.location.href).searchParams.get("intelligence");
-      if (requested) openDrawer(requested, false);
-    })
-    .catch((error) => {
-      grid.innerHTML = `<div class="intelligence-loading is-error"><strong>四库关系暂时无法读取</strong><span>${safe(error.message || error)}</span></div>`;
-      method.textContent = "保留最后可用数据，等待服务恢复";
-    });
+  function refreshIntelligencePayload(initial = false) {
+    fetch("/api/executive-intelligence", { cache: "no-store" })
+      .then((response) => response.json().then((data) => ({ response, data })))
+      .then(({ response, data }) => {
+        if (!response.ok || !data.ok) throw new Error(data.error || "四库关系读取失败");
+        const signature = JSON.stringify({
+          refresh: data.refresh?.completed_at_hkt || data.refresh?.started_at_hkt || "",
+          ai: data.ai?.updated_at || "",
+          metrics: (data.domains || []).map((domain) => [domain.id, domain.metric, domain.context]),
+        });
+        if (!initial && signature === payloadSignature) return;
+        payloadSignature = signature;
+        payload = data;
+        renderRail(data.relations || []);
+        renderDomains(data.domains || []);
+        startFocusRotation();
+        const refreshStatus = data.refresh?.status;
+        const refreshTime = String(data.refresh?.completed_at_hkt || data.ai?.updated_at || "").replace("T", " ").slice(0, 19);
+        method.textContent = (data.method || "四库同口径对齐")
+          + (refreshStatus ? ` · 更新：${refreshStatus}${refreshTime ? ` ${refreshTime}` : ""}` : "");
+        const requested = new URL(window.location.href).searchParams.get("intelligence");
+        if (requested) openDrawer(requested, false);
+      })
+      .catch((error) => {
+        if (payload) {
+          method.textContent = "自动更新暂时失败，继续展示最后可用数据";
+          return;
+        }
+        grid.innerHTML = `<div class="intelligence-loading is-error"><strong>四库关系暂时无法读取</strong><span>${safe(error.message || error)}</span></div>`;
+        method.textContent = "保留最后可用数据，等待服务恢复";
+      });
+  }
+
+  refreshIntelligencePayload(true);
+  window.setInterval(() => refreshIntelligencePayload(false), 60000);
 })();
 
 /* Strategic briefing ticker: only group-approved items are rendered. */
@@ -7961,14 +8011,18 @@ document.addEventListener("keydown", (event) => {
 
   function formatTime(value) {
     if (!value) return "";
-    const date = new Date(value);
+    const raw = String(value).trim();
+    const dateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (dateOnly) return `${Number(dateOnly[2])}月${Number(dateOnly[3])}日`;
+    const date = new Date(raw);
     if (Number.isNaN(date.getTime())) return String(value);
-    return new Intl.DateTimeFormat("zh-HK", {
-      month: "2-digit",
+    return new Intl.DateTimeFormat("zh-CN", {
+      month: "long",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
+      hourCycle: "h23",
       timeZone: "Asia/Hong_Kong",
     }).format(date);
   }

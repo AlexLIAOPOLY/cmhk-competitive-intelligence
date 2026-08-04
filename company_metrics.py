@@ -184,6 +184,9 @@ def _verified_fact_publish_issue(fact: dict) -> str:
     company = str(fact.get("company") or "")
     metric = str(fact.get("metric") or "")
     value = str(fact.get("value") or "")
+    basis = str(fact.get("basis") or "")
+    if re.search(r"无(?:明确)?资本开支(?:总额|金额)|无明确.{0,20}(?:金额|数字)", basis):
+        return "事实依据明确否定该指标总额"
     if "无资费信息" in value or "无家宽套餐信息" in value:
         return "来源未提供该项数据"
     if company == "iCable" and metric == "派息" and "FY2024" in value:

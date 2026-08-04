@@ -260,6 +260,13 @@ ENTITY_HINTS: Dict[str, List[str]] = {
     "中国移动": ["china mobile", "chinamobile"],
     "中国电信": ["china telecom", "chinatelecom"],
     "中国联通": ["china unicom", "chinaunicom"],
+    "AWS": ["aws", "amazon web services", "aboutamazon.com"],
+    "Microsoft Azure": ["microsoft azure", "azure", "microsoft.com/en-us/investor"],
+    "Google Cloud": ["google cloud", "alphabet", "abc.xyz/investor"],
+    "Alibaba Cloud": ["alibaba cloud", "阿里云", "alibabagroup.com"],
+    "Tencent Cloud": ["tencent cloud", "腾讯云", "tencent.com/en-us/investors"],
+    "Huawei Cloud": ["huawei cloud", "华为云", "huawei.com/en/annual-report"],
+    "Oracle Cloud": ["oracle cloud", "investor.oracle.com"],
 }
 
 
@@ -723,15 +730,21 @@ def parse_latest_sheet() -> List[Dict[str, Any]]:
 
     effective_object = ""
     effective_block = ""
+    active_project = ""
+    monitored_project = "竞争对手与行业情报监测"
     for idx, row in enumerate(values[1:], start=2):
-        if idx > 34:
-            break
         row_cells = [cell_text(c) for c in row]
         max_idx = max(col_idx.values())
         while len(row_cells) < max_idx + 1:
             row_cells.append("")
             
         if not any(c.strip() for c in row_cells[:max_idx + 1]):
+            continue
+
+        project_cell = row_cells[0].strip()
+        if project_cell:
+            active_project = project_cell
+        if active_project != monitored_project:
             continue
             
         block_cell = row_cells[col_idx["block"]].strip()
@@ -1136,6 +1149,50 @@ def extract_news_links(
     return output
 
 
+def extract_financial_report_links(
+    raw: bytes,
+    content_type: str,
+    base_url: str,
+    *,
+    limit: int = 12,
+) -> List[Dict[str, str]]:
+    """Discover report-level links from an official investor-relations index."""
+    if not raw or "pdf" in (content_type or "").lower() or raw[:4] == b"%PDF":
+        return []
+    soup = BeautifulSoup(raw.decode("utf-8", "replace"), "lxml")
+    markers = re.compile(
+        r"annual report|interim report|quarter(?:ly|[^\n]{0,24}) results?|earnings (?:release|results?)|"
+        r"financial results?|form 10-[qk]|20-f|全年业绩|季度业绩|年度报告|中期报告",
+        re.I,
+    )
+    output: List[Dict[str, str]] = []
+    seen: set[str] = set()
+    for anchor in soup.find_all("a", href=True):
+        title = normalize_text(
+            str(anchor.get("title") or "")
+            or anchor.get_text(" ", strip=True)
+            or str(anchor.get("aria-label") or "")
+        )
+        href = str(anchor.get("href") or "").strip()
+        if not markers.search(f"{title} {href}"):
+            continue
+        target = urljoin(base_url, href)
+        try:
+            parsed = urlparse(target)
+        except ValueError:
+            continue
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            continue
+        normalized = parsed._replace(fragment="").geturl()
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        output.append({"url": normalized, "title": title[:300] or "Financial report"})
+        if len(output) >= max(1, limit):
+            break
+    return output
+
+
 def extract_meta_refresh_url(raw: bytes, content_type: str, base_url: str) -> str:
     if not raw or "pdf" in (content_type or "").lower() or raw[:4] == b"%PDF":
         return ""
@@ -1194,6 +1251,7 @@ def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
     title, text = html_to_text(raw, ctype)
     meta_refresh_url = extract_meta_refresh_url(raw, ctype, str(response.url))
     discovered_news_links = extract_news_links(raw, ctype, str(response.url))
+    discovered_report_links = extract_financial_report_links(raw, ctype, str(response.url))
     return {
         "url": url,
         "final_url": str(response.url),
@@ -1204,6 +1262,7 @@ def fetch_with_httpx(client: httpx.Client, url: str) -> Dict[str, Any]:
         "text": text,
         "meta_refresh_url": meta_refresh_url,
         "discovered_news_links": discovered_news_links,
+        "discovered_report_links": discovered_report_links,
         "error": "",
     }
 
@@ -1260,6 +1319,7 @@ def fetch_with_curl(
     final_url = parts[3] if len(parts) > 3 and parts[3] else url
     meta_refresh_url = extract_meta_refresh_url(raw, ctype, final_url)
     discovered_news_links = extract_news_links(raw, ctype, final_url)
+    discovered_report_links = extract_financial_report_links(raw, ctype, final_url)
     return {
         "url": url,
         "final_url": final_url,
@@ -1270,6 +1330,7 @@ def fetch_with_curl(
         "text": text,
         "meta_refresh_url": meta_refresh_url,
         "discovered_news_links": discovered_news_links,
+        "discovered_report_links": discovered_report_links,
         "error": meta.stderr.strip(),
         "method": method_label,
     }
@@ -1644,6 +1705,7 @@ def raw_record(row: int, result: Dict[str, Any]) -> Dict[str, Any]:
         "evidence_fallback_used": bool(result.get("evidence_fallback_used")),
         "fallback_reason": result.get("fallback_reason", ""),
         "discovered_news_links": result.get("discovered_news_links", []),
+        "discovered_report_links": result.get("discovered_report_links", []),
     }
 
 
@@ -1883,6 +1945,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_text: Dict[str, str] = {entity: "" for entity in entities}
     entity_urls: Dict[str, List[str]] = {entity: [] for entity in entities}
     entity_records: Dict[str, List[Dict[str, Any]]] = {entity: [] for entity in entities}
+    report_discoveries: List[Dict[str, str]] = []
     
     with ThreadPoolExecutor(max_workers=URL_WORKERS) as executor:
         future_to_target = {
@@ -1896,6 +1959,8 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             print(f"  -> 抓取完成: {url}", flush=True)
             try:
                 result = future.result()
+                if source_row.get("block") == "云厂商":
+                    report_discoveries.extend(result.get("discovered_report_links") or [])
                 record = raw_record(row, result)
                 if is_successful_fetch(result):
                     successful_urls.append(url)
@@ -1943,6 +2008,40 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                 fetched.append(record)
             except Exception as e:
                 print(f"    [异常] {url}: {e}", flush=True)
+
+    if source_row.get("block") == "云厂商" and report_discoveries:
+        seen_report_urls = set(urls)
+        report_targets: List[str] = []
+        for item in report_discoveries:
+            report_url = str(item.get("url") or "").strip()
+            if not report_url or report_url in seen_report_urls:
+                continue
+            seen_report_urls.add(report_url)
+            report_targets.append(report_url)
+            if len(report_targets) >= 3:
+                break
+        for report_url in report_targets:
+            if time.monotonic() > deadline:
+                break
+            print(f"  -> 跟进官方财报: {report_url}", flush=True)
+            result = fetch_url(client, report_url)
+            record = raw_record(row, result)
+            if is_successful_fetch(result):
+                successful_urls.append(report_url)
+                combined_text += "\n\nSOURCE: " + report_url + "\n" + result["text"]
+                record["entity_hits"] = entities
+                for entity in entities:
+                    if report_url not in entity_urls[entity]:
+                        entity_urls[entity].append(report_url)
+                    entity_records[entity].append(record)
+                    entity_text[entity] += "\n\nSOURCE: " + report_url + "\n" + result["text"]
+            else:
+                record["entity_hits"] = []
+                print(
+                    f"    [官方财报跟进失败] 状态码: {result.get('status')} | 错误: {result.get('error')}",
+                    flush=True,
+                )
+            fetched.append(record)
 
     existing_result_path = RESULTS_DIR / f"row_{row}.json"
     if not successful_urls and existing_result_path.exists() and is_local_network_permission_failure(fetched):

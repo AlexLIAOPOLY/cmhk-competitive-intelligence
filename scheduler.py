@@ -700,6 +700,60 @@ def _run_scheduled_agent_audit(
     return True, 0, curation, trace_sync, ""
 
 
+def _launch_executive_intelligence_refresh(
+    crawl_run_id: str,
+    stream_log_path: Path,
+    curation: dict[str, object],
+) -> dict[str, object]:
+    """Launch the post-Agent database refresh without changing crawl success semantics."""
+    if (
+        ROOT != Path(__file__).resolve().parent
+        or (
+            any(name.startswith("test_") for name in sys.modules)
+            and os.environ.get("CMHK_FORCE_INTELLIGENCE_REFRESH_FOR_TESTS") != "1"
+        )
+    ):
+        return {
+            "ok": True,
+            "launched": False,
+            "skipped": True,
+            "reason": "non_production_root",
+        }
+    agent_run_id = str(curation.get("agent_run_id") or "").strip()
+    if not agent_run_id:
+        result: dict[str, object] = {
+            "ok": False,
+            "launched": False,
+            "error": "Agent 审核摘要缺少 run_id，未启动四库刷新。",
+        }
+    else:
+        try:
+            from executive_intelligence_pipeline import launch_pipeline_async
+
+            result = launch_pipeline_async(
+                agent_run_id=agent_run_id,
+                curation_summary=curation,
+            )
+        except Exception as exc:
+            result = {"ok": False, "launched": False, "error": str(exc)}
+    append_crawl_run_event(
+        stream_log_path,
+        {
+            "type": "executive_intelligence_refresh",
+            "ok": bool(result.get("ok")),
+            "launched": bool(result.get("launched")),
+            "pid": result.get("pid"),
+            "agentRunId": agent_run_id,
+            "error": result.get("error", ""),
+        },
+    )
+    if result.get("ok"):
+        logging.info("四库与AI分析后台刷新已启动：%s", result)
+    else:
+        logging.warning("四库与AI分析后台刷新未启动；不影响本轮爬虫完成状态：%s", result)
+    return result
+
+
 def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
     started_monotonic = time.time()
     now = datetime.now(HKT)
@@ -913,7 +967,16 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         )
         return False
 
-    curation = {**curation, "news_bridge": news_bridge}
+    intelligence_refresh = _launch_executive_intelligence_refresh(
+        crawl_run_id,
+        stream_log_path,
+        curation,
+    )
+    curation = {
+        **curation,
+        "news_bridge": news_bridge,
+        "executive_intelligence_refresh": intelligence_refresh,
+    }
     append_crawl_run_event(
         stream_log_path,
         {
@@ -1091,7 +1154,16 @@ def resume_pending_run(
         )
         return False
 
-    curation = {**curation, "news_bridge": news_bridge}
+    intelligence_refresh = _launch_executive_intelligence_refresh(
+        crawl_run_id,
+        stream_log_path,
+        curation,
+    )
+    curation = {
+        **curation,
+        "news_bridge": news_bridge,
+        "executive_intelligence_refresh": intelligence_refresh,
+    }
     append_crawl_run_event(
         stream_log_path,
         {

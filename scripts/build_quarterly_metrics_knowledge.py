@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 ROOT = Path(__file__).resolve().parents[1]
 BUILD_DATE = os.environ.get("CMHK_QUARTERLY_METRICS_BUILD_DATE") or date.today().isoformat()
 DATASET_ID = f"quarterly_competitor_metrics_{BUILD_DATE}"
-OUT_ROOT = ROOT / "agent_knowledge" / DATASET_ID
+OUT_ROOT = Path(os.environ.get("CMHK_QUARTERLY_METRICS_OUT_ROOT") or ROOT / "agent_knowledge" / DATASET_ID)
 SOURCE_CACHE_ROOT = ROOT / "data" / "quarterly_sources" / "http_cache"
 STOCKANALYSIS_SNAPSHOT = ROOT / "data" / "quarterly_sources" / f"stockanalysis_carriers_{BUILD_DATE}.json"
 
@@ -98,7 +98,7 @@ CLOUD_QUARTERLY_SOURCE_HINTS: dict[str, list[dict[str, str]]] = {
     "Tencent Cloud / Tencent FBS proxy": [
         {
             "label": "Tencent financial reports",
-            "url": "https://www.tencent.com/en-us/investors/financial-reports.html",
+            "url": "https://www.tencent.com/investors/financial-reports/",
             "type": "official_quarterly_results_index",
         }
     ],

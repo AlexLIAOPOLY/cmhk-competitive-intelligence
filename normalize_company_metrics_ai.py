@@ -90,6 +90,13 @@ COMPANY_SOURCE_HINTS = {
     "中国移动": ["chinamobile", "china-mobile"],
     "中国电信": ["chinatelecom", "china-telecom"],
     "中国联通": ["chinaunicom", "china-unicom"],
+    "AWS": ["amazon", "aws"],
+    "Microsoft Azure": ["microsoft", "azure"],
+    "Google Cloud": ["alphabet", "google cloud", "google"],
+    "Alibaba Cloud": ["alibaba", "cloud intelligence group"],
+    "Tencent Cloud": ["tencent", "cloud"],
+    "Huawei Cloud": ["huawei", "cloud computing"],
+    "Oracle Cloud": ["oracle", "cloud services"],
 }
 
 OFFICIAL_DOMAIN_OWNERS: dict[str, set[str]] = {
@@ -123,6 +130,13 @@ OFFICIAL_DOMAIN_OWNERS: dict[str, set[str]] = {
     "verizon.com": {"Verizon"},
     "telekom.com": {"Deutsche Telekom"},
     "report.telekom.com": {"Deutsche Telekom"},
+    "aboutamazon.com": {"AWS"},
+    "microsoft.com": {"Microsoft Azure"},
+    "abc.xyz": {"Google Cloud"},
+    "alibabagroup.com": {"Alibaba Cloud"},
+    "tencent.com": {"Tencent Cloud"},
+    "huawei.com": {"Huawei Cloud"},
+    "oracle.com": {"Oracle Cloud"},
 }
 
 OFFICIAL_URL_OWNER_OVERRIDES = {

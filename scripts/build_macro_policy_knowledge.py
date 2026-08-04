@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import calendar
 import json
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -18,9 +19,9 @@ import pdfplumber
 
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD_DATE = "2026-06-19"
+BUILD_DATE = os.environ.get("CMHK_MACRO_POLICY_BUILD_DATE") or "2026-06-19"
 DATASET_ID = f"cmhk_macro_policy_{BUILD_DATE}"
-OUT_ROOT = ROOT / "agent_knowledge" / DATASET_ID
+OUT_ROOT = Path(os.environ.get("CMHK_MACRO_POLICY_OUT_ROOT") or ROOT / "agent_knowledge" / DATASET_ID)
 
 OFCA_TELECOM_INDICATORS_URL = "https://www.ofca.gov.hk/filemanager/ofca/en/content_297/hktelecom-indicators_summary.htm"
 OFCA_INDICATORS_INDEX_URL = "https://www.ofca.gov.hk/en/news_info/data_statistics/indicators/index.html"
@@ -2454,7 +2455,11 @@ def main() -> None:
     )
     write_csv(OUT_ROOT / "historical_indicator_backlog.csv", historical_backlog)
     (OUT_ROOT / "manifest.json").write_text(json.dumps(build_manifest(rows), ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"wrote {len(rows)} rows to {OUT_ROOT.relative_to(ROOT)}")
+    try:
+        display_root = OUT_ROOT.relative_to(ROOT)
+    except ValueError:
+        display_root = OUT_ROOT
+    print(f"wrote {len(rows)} rows to {display_root}")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import unittest
 
-from executive_intelligence import build_executive_intelligence_snapshot
+from executive_intelligence import _international_domain, build_executive_intelligence_snapshot
 
 
 class ExecutiveIntelligenceTests(unittest.TestCase):
@@ -22,6 +22,9 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertGreaterEqual(len(relations), 4)
         self.assertTrue(all(item["from"] != item["to"] for item in relations))
         self.assertTrue(all(item["kind"] and item["detail"] for item in relations))
+        cloud_relation = next(item for item in relations if item["from"] == "international" and item["to"] == "cloud")
+        self.assertEqual(cloud_relation["kind"], "跨期间方向参照")
+        self.assertIn("报告期间与业务口径不同", cloud_relation["detail"])
 
     def test_source_links_are_public_http_urls(self):
         for domain in self.snapshot["domains"]:
@@ -80,6 +83,29 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         macro = {focus["id"]: focus for focus in domains["macro"]["focuses"]}
         name_sets = {tuple(item["name"] for item in focus["items"]) for focus in macro.values()}
         self.assertEqual(len(name_sets), 4)
+
+    def test_frontend_payload_exposes_ai_gate_and_refresh_status(self):
+        self.assertIn("refresh", self.snapshot)
+        self.assertIn("ai", self.snapshot)
+        self.assertTrue(all("ai_analysis" in domain for domain in self.snapshot["domains"]))
+        macro = next(domain for domain in self.snapshot["domains"] if domain["id"] == "macro")
+        self.assertEqual(macro["metric"]["label"], "移动服务订户及连接")
+        self.assertIn("机器类型连接", macro["insight"])
+
+    def test_international_dashboard_prefers_official_value_over_normalized_value(self):
+        common = {
+            "subject": "中国移动",
+            "metric_key": "revenue_growth_yoy",
+            "verification_status": "official_match",
+            "official_source_url": "https://example.com/report.pdf",
+        }
+        domain = _international_domain({"rows": [
+            {**common, "period": "Q4 2025", "value": "2.50%", "official_value": 2.4},
+            {**common, "period": "Q1 2026", "value": "1.03%", "official_value": 1.031},
+        ]})
+        self.assertEqual(domain["entities"][0]["value"], 1.03)
+        momentum = next(item for item in domain["focuses"] if item["id"] == "momentum")
+        self.assertEqual(momentum["items"][0]["value"], -1.37)
 
 
 if __name__ == "__main__":

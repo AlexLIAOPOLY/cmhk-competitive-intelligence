@@ -11,6 +11,11 @@ rsync -a \
   --exclude='agent_chat_threads/' \
   --exclude='strategy_briefing/' \
   --exclude='agent_knowledge/crawl_run_logs/' \
+  --exclude='agent_knowledge/hk_competitor_product_tariffs/' \
+  --exclude='agent_knowledge/quarterly_competitor_metrics_2026-06-18/' \
+  --exclude='agent_knowledge/cloud_vendor_metrics_2026-06-17/' \
+  --exclude='agent_knowledge/cmhk_macro_policy_2026-06-19/' \
+  --exclude='agent_knowledge/executive_intelligence_refresh/' \
   --exclude='results/' \
   --exclude='curation_data/' \
   --exclude='crawl_runs/' \
