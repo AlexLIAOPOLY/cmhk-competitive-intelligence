@@ -185,7 +185,7 @@
   const panelStates = new WeakMap();
   const RELATION_MODEL = window.CMHK_DASHBOARD_RELATIONS || { carriers: ["CMHK", "HKT", "3香港", "SmarTone"], modules: {} };
   const CARRIERS = RELATION_MODEL.carriers;
-  const RELATION_STEP_LABELS = { insight: "关系洞察", evidence: "驱动证据", raw: "原始指标" };
+  const RELATION_STEP_LABELS = { insight: "结果与差距", evidence: "驱动与证据", raw: "指标与口径" };
 
   const escapeHtml = (value) => String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -430,25 +430,57 @@
       </button>`).join("");
   }
 
+  function driverGapMatrix(relationItem, selectedCarrier) {
+    const maxImpact = Math.max(...relationItem.drivers.flatMap((item) => item.impact), 1);
+    const priority = [...relationItem.drivers]
+      .sort((a, b) => b.impact[selectedCarrier] - a.impact[selectedCarrier]);
+    return `
+      <section class="relation-gap-analysis" aria-label="驱动差距矩阵">
+        <div class="relation-gap-heading">
+          <div><strong>驱动差距矩阵</strong><span>同一关系框架横向比较四家厂商，选中厂商列已高亮</span></div>
+          <div class="relation-priority" aria-label="${escapeHtml(CARRIERS[selectedCarrier])}验证顺序">
+            <span>${escapeHtml(CARRIERS[selectedCarrier])}优先验证</span>
+            ${priority.map((item, index) => `<button type="button" data-relation-driver-open="${escapeHtml(item.id)}"><i>0${index + 1}</i>${escapeHtml(item.label)}<b>+${formatRelationValue(item.impact[selectedCarrier])}</b></button>`).join("")}
+          </div>
+        </div>
+        <div class="relation-driver-matrix" aria-label="四家厂商驱动贡献比较">
+          <div class="relation-matrix-row relation-matrix-head">
+            <span>驱动因素与业务路径</span>
+            ${CARRIERS.map((carrier, index) => `<b class="${index === selectedCarrier ? "is-selected" : ""}">${escapeHtml(carrier)}</b>`).join("")}
+          </div>
+          ${relationItem.drivers.map((item, driverIndex) => `
+            <div class="relation-matrix-row">
+              <button type="button" data-relation-driver-open="${escapeHtml(item.id)}" aria-label="查看${escapeHtml(item.label)}驱动证据">
+                <i>0${driverIndex + 1}</i><strong>${escapeHtml(item.label)}</strong><small>${item.chain.map((step) => escapeHtml(step)).join(" › ")}</small>
+              </button>
+              ${item.impact.map((value, carrierIndex) => `<span class="${carrierIndex === selectedCarrier ? "is-selected" : ""}"><em style="--impact:${Math.max(8, (value / maxImpact) * 100)}%"></em><b>+${formatRelationValue(value)}</b></span>`).join("")}
+            </div>`).join("")}
+        </div>
+      </section>`;
+  }
+
   function relationInsightHtml(relationItem, selectedCarrier) {
     const delta = relationDelta(relationItem, selectedCarrier);
     return `
-      <div class="relation-insight-grid">
-        <section class="relation-ranking" aria-label="${escapeHtml(relationItem.metricLabel)}四家厂商相对位置">
-          <div class="relation-section-title"><strong>四家厂商相对位置</strong><span>虚线为四家中位数</span></div>
-          ${relationTrackRows(relationItem, selectedCarrier)}
-        </section>
-        <aside class="relation-conclusion" aria-live="polite">
-          <span>当前选择</span>
-          <strong>${escapeHtml(CARRIERS[selectedCarrier])}</strong>
-          <b>${formatRelationValue(relationItem.values[selectedCarrier])}<small>${escapeHtml(relationItem.unit)}</small></b>
-          <em>第 ${delta.rank} 名 · ${escapeHtml(delta.label)}</em>
-          <p>${escapeHtml(relationItem.takeaway)}</p>
-        </aside>
+      <div class="relation-insight-primary">
+        <div class="relation-insight-grid">
+          <section class="relation-ranking" aria-label="${escapeHtml(relationItem.metricLabel)}四家厂商相对位置">
+            <div class="relation-section-title"><strong>四家厂商相对位置</strong><span>虚线为四家中位数</span></div>
+            ${relationTrackRows(relationItem, selectedCarrier)}
+          </section>
+          <aside class="relation-conclusion" aria-live="polite">
+            <span>当前选择</span>
+            <strong>${escapeHtml(CARRIERS[selectedCarrier])}</strong>
+            <b>${formatRelationValue(relationItem.values[selectedCarrier])}<small>${escapeHtml(relationItem.unit)}</small></b>
+            <em>第 ${delta.rank} 名 · ${escapeHtml(delta.label)}</em>
+            <p>${escapeHtml(relationItem.takeaway)}</p>
+          </aside>
+        </div>
+        <div class="relation-driver-preview" aria-label="关联驱动因素">
+          ${driverPreview(relationItem, selectedCarrier)}
+        </div>
       </div>
-      <div class="relation-driver-preview" aria-label="关联驱动因素">
-        ${driverPreview(relationItem, selectedCarrier)}
-      </div>`;
+      ${driverGapMatrix(relationItem, selectedCarrier)}`;
   }
 
   function evidenceMetricHtml(metricId, selectedCarrier) {
@@ -549,6 +581,12 @@
     body.querySelectorAll("[data-relation-driver]").forEach((button) => {
       button.addEventListener("click", () => {
         state.selectedDriver = button.dataset.relationDriver;
+        openRelationship(state, activeRelation, "evidence");
+      });
+    });
+    body.querySelectorAll("[data-relation-driver-open]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedDriver = button.dataset.relationDriverOpen;
         openRelationship(state, activeRelation, "evidence");
       });
     });
