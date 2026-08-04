@@ -292,11 +292,11 @@
     overlay.hidden = true;
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-label", `${KPI_TREE[config.key].label}指标穿透`);
+    overlay.setAttribute("aria-label", `${KPI_TREE[config.key].label}全屏关系与指标分析`);
     overlay.innerHTML = `
       <div class="drill-toolbar">
         <nav class="drill-breadcrumb" aria-label="指标层级"></nav>
-        <button class="drill-close" type="button" aria-label="关闭指标穿透">
+        <button class="drill-close" type="button" aria-label="关闭全屏分析">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
       </div>
