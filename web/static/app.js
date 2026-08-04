@@ -7478,6 +7478,33 @@ document.addEventListener("keydown", (event) => {
     return safe(value);
   }
 
+  function renderScrollingLabel(value) {
+    const label = String(value == null ? "" : value);
+    return `
+      <span class="intelligence-scroll-label" data-intelligence-scroll-label>
+        <span class="intelligence-scroll-label-static">${safe(label)}</span>
+        <span class="intelligence-scroll-label-track" aria-hidden="true">${safe(label)}</span>
+      </span>
+    `;
+  }
+
+  function measureScrollingLabels(scope = grid) {
+    window.requestAnimationFrame(() => {
+      scope.querySelectorAll("[data-intelligence-scroll-label]").forEach((label) => {
+        const track = label.querySelector(".intelligence-scroll-label-track");
+        if (!track) return;
+        label.classList.remove("is-overflowing");
+        label.style.removeProperty("--label-scroll-distance");
+        label.style.removeProperty("--label-scroll-duration");
+        const distance = Math.ceil(track.scrollWidth - label.clientWidth);
+        if (distance <= 2) return;
+        label.style.setProperty("--label-scroll-distance", `${distance}px`);
+        label.style.setProperty("--label-scroll-duration", `${Math.min(6, Math.max(1.8, distance / 32)).toFixed(2)}s`);
+        label.classList.add("is-overflowing");
+      });
+    });
+  }
+
   function domainById(id) {
     return payload?.domains?.find((domain) => domain.id === id) || null;
   }
@@ -7610,7 +7637,7 @@ document.addEventListener("keydown", (event) => {
         const size = Math.max(3, Math.abs(numeric) / maxValue * 48);
         return `
           <li ${entityAttributes(item, index)} class="intelligence-viz-entity ${numeric < 0 ? "is-negative" : "is-positive"} ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-            <span>${safe(item.name)}</span>
+            <span>${renderScrollingLabel(item.name)}</span>
             <i><b style="--viz-size:${size.toFixed(2)}%"></b></i>
             <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
           </li>
@@ -7625,7 +7652,7 @@ document.addEventListener("keydown", (event) => {
           <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${Number(item.value) < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
             <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
-            <span>${safe(item.name)}</span>
+            <span>${renderScrollingLabel(item.name)}</span>
           </div>
         `;
       }).join("")}</div>`;
@@ -7644,7 +7671,7 @@ document.addEventListener("keydown", (event) => {
         const left = hasRange ? (low - floor) / span * 100 : 0;
         const width = hasRange ? Math.max(2, (high - low) / span * 100) : 0;
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${!hasRange ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-          <span>${safe(item.name)}</span><i>${hasRange ? `<b style="--range-left:${left.toFixed(2)}%;--range-width:${width.toFixed(2)}%"></b>` : "-"}</i>
+          <span>${renderScrollingLabel(item.name)}</span><i>${hasRange ? `<b style="--range-left:${left.toFixed(2)}%;--range-width:${width.toFixed(2)}%"></b>` : "-"}</i>
           <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
         </li>`;
       }).join("")}</ul>`;
@@ -7668,7 +7695,7 @@ document.addEventListener("keydown", (event) => {
           return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.25"></circle>`;
         }).join("");
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-          <span>${safe(item.name)}</span>
+          <span>${renderScrollingLabel(item.name)}</span>
           <svg viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
             <polyline class="trend-depth" points="${coordinates}"></polyline>
             <polyline class="trend-line" points="${coordinates}"></polyline>
@@ -7682,14 +7709,14 @@ document.addEventListener("keydown", (event) => {
     if (visual === "disclosure") {
       return `<ul class="intelligence-viz intelligence-viz-disclosure" aria-label="${safe(focus.label)}明细">${items.map((item, index) => `
         <li ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
-          <span>${safe(item.name)}<small>${safe(item.detail)}</small></span>
+          <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
           <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
         </li>`).join("")}</ul>`;
     }
 
     if (visual === "kpis") return `<div class="intelligence-viz intelligence-viz-kpis" aria-label="${safe(focus.label)}关键指标">${items.map((item, index) => `
       <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}" style="--kpi-index:${index}">
-        <span>${safe(item.name)}</span>
+        <span>${renderScrollingLabel(item.name)}</span>
         <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
         <small>${safe(item.detail)}</small>
       </div>
@@ -7698,7 +7725,7 @@ document.addEventListener("keydown", (event) => {
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
       const width = Math.max(2, Math.abs(Number(item.value) || 0) / maxValue * 100);
       return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
-        <span>${safe(item.name)}<small>${safe(item.detail)}</small></span>
+        <span>${renderScrollingLabel(item.name)}<small>${safe(item.detail)}</small></span>
         <i><b style="--row-width:${width.toFixed(2)}%"></b></i>
         <strong>${formatValue(item.value)}<small>${safe(item.unit)}</small></strong>
       </li>`;
@@ -7736,6 +7763,7 @@ document.addEventListener("keydown", (event) => {
 
   function renderDomains(domains) {
     grid.innerHTML = domains.map(renderDomainCard).join("");
+    measureScrollingLabels();
   }
 
   function replaceDomainCard(domain, restoreFocus = false) {
@@ -7743,7 +7771,9 @@ document.addEventListener("keydown", (event) => {
     if (!current) return;
     const template = document.createElement("template");
     template.innerHTML = renderDomainCard(domain).trim();
-    current.replaceWith(template.content.firstElementChild);
+    const replacement = template.content.firstElementChild;
+    current.replaceWith(replacement);
+    measureScrollingLabels(replacement);
     if (restoreFocus) {
       const index = selectedFocusIndex(domain);
       window.requestAnimationFrame(() => {
@@ -7957,6 +7987,11 @@ document.addEventListener("keydown", (event) => {
     const id = new URL(window.location.href).searchParams.get("intelligence");
     if (id && domainById(id)) openDrawer(id, false);
     else closeDrawer(true);
+  });
+  let labelResizeTimer = null;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(labelResizeTimer);
+    labelResizeTimer = window.setTimeout(() => measureScrollingLabels(), 120);
   });
 
   function refreshIntelligencePayload(initial = false) {

@@ -14192,6 +14192,46 @@ body.report-library-open::before {
   white-space: nowrap;
 }
 
+.intelligence-scroll-label {
+  position: relative;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.intelligence-scroll-label-static {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: opacity 120ms ease;
+}
+
+.intelligence-scroll-label-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: max-content;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(0);
+  white-space: nowrap;
+}
+
+.intelligence-viz-entity:hover .intelligence-scroll-label.is-overflowing .intelligence-scroll-label-static,
+.intelligence-viz-entity:focus-visible .intelligence-scroll-label.is-overflowing .intelligence-scroll-label-static {
+  opacity: 0;
+}
+
+.intelligence-viz-entity:hover .intelligence-scroll-label.is-overflowing .intelligence-scroll-label-track,
+.intelligence-viz-entity:focus-visible .intelligence-scroll-label.is-overflowing .intelligence-scroll-label-track {
+  opacity: 1;
+  transform: translateX(calc(-1 * var(--label-scroll-distance)));
+  transition: transform var(--label-scroll-duration) linear 180ms, opacity 120ms ease;
+}
+
 .intelligence-viz-rows li > span small {
   display: block;
   overflow: hidden;
@@ -14510,6 +14550,9 @@ body.report-library-open::before {
   .intelligence-viz-columns b,
   .intelligence-viz-diverging b,
   .intelligence-viz-rows li > i b { animation: none; transform: none; }
+
+  .intelligence-scroll-label-track { display: none !important; }
+  .intelligence-scroll-label-static { opacity: 1 !important; transition: none !important; }
 }
 
 .dashboard-page .floating-chat {
