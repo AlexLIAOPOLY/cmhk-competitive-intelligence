@@ -3219,8 +3219,8 @@ function renderUnifiedTaskArchive(data) {
 function isImportantTaskLogLine(line) {
   const text = String(line || "");
   return (
-    /\[(?:周报局限|业绩摘要局限|任务中断)\]/.test(text)
-    || /(?:生成失败|任务失败|执行异常|语音摘要生成失败|语音摘要失败)/.test(text)
+    /\[(?:周报局限|业绩摘要局限|任务中断|预警)\]/.test(text)
+    || /(?:生成失败|更新失败|任务失败|执行异常|预警发送失败|连续\s*\d+\s*次未通过|语音摘要生成失败|语音摘要失败)/.test(text)
   );
 }
 

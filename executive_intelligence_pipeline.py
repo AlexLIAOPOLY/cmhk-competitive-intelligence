@@ -14,7 +14,6 @@ import time
 import re
 import urllib.error
 import urllib.request
-import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -180,7 +179,6 @@ def _finalize_refresh_task(
     detail: str,
     result: dict[str, Any],
     attempts: int,
-    alert: dict[str, Any] | None = None,
 ) -> None:
     if not task_run_id:
         return
@@ -203,79 +201,9 @@ def _finalize_refresh_task(
             "agent_run_id": result.get("agent_run_id", ""),
             "failed_domains": result.get("failed_domains", []),
             "status": result.get("status", ""),
-            "alert": alert or {},
+            "notification_policy": "local_log_only",
         },
     )
-
-
-def _send_refresh_alert(
-    *,
-    title: str,
-    detail: str,
-    task_run_id: str,
-    agent_run_id: str,
-    parent_crawl_run_id: str = "",
-    severity: str = "critical",
-) -> dict[str, Any]:
-    """Send a deduplicated Feishu alert to both configured strategy groups."""
-    if os.environ.get("CMHK_INTELLIGENCE_ALERTS", "1").strip().lower() in {"0", "false", "off"}:
-        return {"ok": True, "skipped": True, "reason": "alerts_disabled", "message_ids": []}
-    import strategic_briefing
-
-    card = {
-        "config": {"wide_screen_mode": True},
-        "header": {
-            "template": "red" if severity == "critical" else "orange",
-            "title": {"tag": "plain_text", "content": title},
-        },
-        "elements": [
-            {
-                "tag": "div",
-                "text": {
-                    "tag": "lark_md",
-                    "content": (
-                        f"**状态：** {detail}\n"
-                        f"**任务：** {task_run_id or '未建立'}\n"
-                        f"**Agent：** {agent_run_id or '未记录'}\n"
-                        f"**父任务：** {parent_crawl_run_id or '未记录'}\n"
-                        "旧数据库和最后可用观察结论已保留，请在前端任务日志查看重试过程。"
-                    ),
-                },
-            }
-        ],
-    }
-    message_ids: list[str] = []
-    errors: list[str] = []
-    for chat_id in strategic_briefing.TARGET_CHAT_IDS:
-        payload: dict[str, Any] = {}
-        for attempt in range(3):
-            try:
-                payload = strategic_briefing._lark_api(
-                    "POST",
-                    "/open-apis/im/v1/messages",
-                    params={"receive_id_type": "chat_id"},
-                    data={
-                        "receive_id": chat_id,
-                        "msg_type": "interactive",
-                        "content": json.dumps(card, ensure_ascii=False),
-                        "uuid": str(
-                            uuid.uuid5(
-                                uuid.NAMESPACE_URL,
-                                f"cmhk-intelligence-alert:{task_run_id}:{severity}:{chat_id}",
-                            )
-                        ),
-                    },
-                )
-                break
-            except Exception as exc:
-                if attempt >= 2:
-                    errors.append(f"{chat_id}: {exc}")
-                else:
-                    time.sleep(2**attempt)
-        message_id = str(((payload.get("data") or {}).get("message_id") or ""))
-        if message_id:
-            message_ids.append(message_id)
-    return {"ok": not errors, "message_ids": message_ids, "errors": errors}
 
 
 def _content_hash(payload: Any) -> str:
@@ -1495,32 +1423,224 @@ def run_pipeline(
     return state
 
 
-def launch_pipeline_async(*, agent_run_id: str, curation_summary: dict[str, Any] | None = None) -> dict[str, Any]:
+def _retry_delays() -> list[int]:
+    raw = os.environ.get("CMHK_INTELLIGENCE_RETRY_DELAYS", "60,300")
+    delays: list[int] = []
+    for item in raw.split(","):
+        try:
+            delays.append(max(0, int(item.strip())))
+        except ValueError:
+            continue
+    return delays or [60, 300]
+
+
+def run_pipeline_with_recovery(
+    *,
+    agent_run_id: str,
+    curation_summary: dict[str, Any] | None = None,
+    dry_run: bool = False,
+    refresh_builders: bool = True,
+    task_run_id: str = "",
+    parent_crawl_run_id: str = "",
+    max_attempts: int | None = None,
+) -> dict[str, Any]:
+    """Retry the safe refresh and keep all status reporting in the local task log."""
+    attempts_limit = max_attempts or max(1, int(os.environ.get("CMHK_INTELLIGENCE_MAX_ATTEMPTS", "3")))
+    attempts_limit = min(5, attempts_limit)
+    delays = _retry_delays()
+    overall_started = time.monotonic()
+    result: dict[str, Any] = {}
+    attempts = 0
+    for attempt in range(1, attempts_limit + 1):
+        attempts = attempt
+        result = run_pipeline(
+            agent_run_id=agent_run_id,
+            curation_summary=curation_summary,
+            dry_run=dry_run,
+            refresh_builders=refresh_builders,
+            task_run_id=task_run_id,
+            attempt=attempt,
+        )
+        if result.get("ok") or result.get("skipped"):
+            break
+        if attempt < attempts_limit:
+            delay = delays[min(attempt - 1, len(delays) - 1)]
+            failed = "、".join(DOMAIN_LABELS.get(item, item) for item in result.get("failed_domains") or [])
+            reason = failed or str(result.get("error") or result.get("status") or "未通过门禁")
+            _task_event(
+                task_run_id,
+                "后备重试",
+                f"第 {attempt} 次未完成（{reason}），{delay} 秒后执行第 {attempt + 1} 次。旧数据继续保留。",
+                level="retry",
+            )
+            time.sleep(delay)
+
+    result = dict(result)
+    result["total_duration_ms"] = round((time.monotonic() - overall_started) * 1000)
+    result["attempts"] = attempts
+    result["agent_run_id"] = agent_run_id
+    ok = bool(result.get("ok") or result.get("skipped"))
+    if ok:
+        detail = (
+            "已有另一条四库任务执行，本次已安全合并。"
+            if result.get("skipped")
+            else f"四库、观察结论和前端数据源已完成，共执行 {attempts} 次。"
+        )
+    else:
+        failed = "、".join(DOMAIN_LABELS.get(item, item) for item in result.get("failed_domains") or [])
+        detail = f"连续 {attempts} 次未通过，失败范围：{failed or result.get('error') or '观察结论'}；旧数据已保留。"
+    result["notification_policy"] = "local_log_only"
+    _finalize_refresh_task(
+        task_run_id,
+        ok=ok,
+        detail=detail,
+        result=result,
+        attempts=attempts,
+    )
+    return result
+
+
+def launch_pipeline_async(
+    *,
+    agent_run_id: str,
+    curation_summary: dict[str, Any] | None = None,
+    parent_crawl_run_id: str = "",
+    recovery_reason: str = "",
+) -> dict[str, Any]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     summary_path = STATE_DIR / f"curation-{agent_run_id}.json"
     _atomic_write_json(summary_path, curation_summary or {})
+    task = _start_refresh_task(
+        agent_run_id=agent_run_id,
+        parent_crawl_run_id=parent_crawl_run_id,
+        recovery_reason=recovery_reason,
+    )
+    task_run_id = str(task["crawl_run_id"])
     log_handle = LOG_PATH.open("a", encoding="utf-8")
     try:
-        proc = subprocess.Popen(
-            [
-                sys.executable,
-                str(Path(__file__).resolve()),
-                "--scheduled",
-                "--agent-run-id",
-                agent_run_id,
-                "--curation-summary",
-                str(summary_path),
-            ],
-            cwd=ROOT,
-            stdin=subprocess.DEVNULL,
-            stdout=log_handle,
-            stderr=subprocess.STDOUT,
-            start_new_session=True,
-            close_fds=True,
-        )
+        try:
+            proc = subprocess.Popen(
+                [
+                    sys.executable,
+                    str(Path(__file__).resolve()),
+                    "--scheduled",
+                    "--agent-run-id",
+                    agent_run_id,
+                    "--curation-summary",
+                    str(summary_path),
+                    "--task-run-id",
+                    task_run_id,
+                    "--parent-crawl-run-id",
+                    parent_crawl_run_id,
+                ],
+                cwd=ROOT,
+                stdin=subprocess.DEVNULL,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+                close_fds=True,
+            )
+        except Exception as exc:
+            failed = {"ok": False, "status": "failed", "agent_run_id": agent_run_id, "error": str(exc)}
+            _finalize_refresh_task(
+                task_run_id,
+                ok=False,
+                detail=f"刷新进程启动失败：{exc}",
+                result=failed,
+                attempts=0,
+            )
+            raise
     finally:
         log_handle.close()
-    return {"ok": True, "launched": True, "pid": proc.pid, "agent_run_id": agent_run_id}
+    _task_event(
+        task_run_id,
+        "等待刷新进程",
+        f"刷新进程已启动，PID {proc.pid}；任务日志将持续记录四库阶段。",
+        worker_pid=proc.pid,
+    )
+    return {
+        "ok": True,
+        "launched": True,
+        "pid": proc.pid,
+        "agent_run_id": agent_run_id,
+        "task_run_id": task_run_id,
+        "task_id": f"crawl:{task_run_id}",
+    }
+
+
+def _process_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
+def monitor_scheduled_refresh_health(now: datetime | None = None) -> dict[str, Any]:
+    """Recover once when a completed 03:00 crawl has no matching four-database publication."""
+    from crawl_run_registry import load_index
+
+    now = (now or datetime.now(HKT)).astimezone(HKT)
+    scheduled = next(
+        (
+            item
+            for item in load_index()
+            if item.get("trigger") == "定时爬虫"
+            and item.get("run_status") == "completed"
+            and str(item.get("completed_at_hkt") or "").startswith(now.date().isoformat())
+            and str((item.get("curation") or {}).get("agent_run_id") or "")
+        ),
+        None,
+    )
+    if not scheduled:
+        return {"ok": True, "status": "no_scheduled_crawl_today"}
+    crawl_run_id = str(scheduled.get("crawl_run_id") or "")
+    agent_run_id = str((scheduled.get("curation") or {}).get("agent_run_id") or "")
+    completed_at = datetime.fromisoformat(str(scheduled.get("completed_at_hkt"))).astimezone(HKT)
+    latest = _read_json(STATE_PATH, {}) or {}
+    if (
+        latest.get("ok")
+        and str(latest.get("agent_run_id") or "") == agent_run_id
+        and str(latest.get("completed_at_hkt") or "") >= str(scheduled.get("completed_at_hkt") or "")
+    ):
+        return {"ok": True, "status": "healthy", "crawl_run_id": crawl_run_id, "agent_run_id": agent_run_id}
+
+    tasks = [
+        item
+        for item in load_index()
+        if item.get("task_kind") == TASK_KIND and agent_run_id in str(item.get("scope") or "")
+    ]
+    running = next((item for item in tasks if item.get("run_status") == "running"), None)
+    if running and _process_alive(int(running.get("worker_pid") or 0)):
+        return {"ok": True, "status": "refresh_running", "task_run_id": running.get("crawl_run_id")}
+
+    grace_seconds = max(900, int(os.environ.get("CMHK_INTELLIGENCE_WATCHDOG_GRACE_SECONDS", "5400")))
+    if (now - completed_at).total_seconds() < grace_seconds:
+        return {"ok": True, "status": "waiting_grace_period", "crawl_run_id": crawl_run_id}
+
+    watchdog = _read_json(WATCHDOG_STATE_PATH, {}) or {}
+    recoveries = watchdog.setdefault("recoveries", {})
+    if crawl_run_id in recoveries:
+        return {"ok": True, "status": "recovery_already_launched", **recoveries[crawl_run_id]}
+
+    launch = launch_pipeline_async(
+        agent_run_id=agent_run_id,
+        curation_summary=scheduled.get("curation") or {},
+        parent_crawl_run_id=crawl_run_id,
+        recovery_reason="守护补跑",
+    )
+    recoveries[crawl_run_id] = {
+        "crawl_run_id": crawl_run_id,
+        "agent_run_id": agent_run_id,
+        "task_run_id": launch.get("task_run_id", ""),
+        "launched_at_hkt": _now(),
+        "notification_policy": "local_log_only",
+    }
+    watchdog["updated_at_hkt"] = _now()
+    _atomic_write_json(WATCHDOG_STATE_PATH, watchdog)
+    return {"ok": True, "status": "recovery_launched", **recoveries[crawl_run_id]}
 
 
 def main() -> None:
@@ -1528,18 +1648,23 @@ def main() -> None:
     parser.add_argument("--scheduled", action="store_true")
     parser.add_argument("--agent-run-id", default="manual")
     parser.add_argument("--curation-summary")
+    parser.add_argument("--task-run-id", default="")
+    parser.add_argument("--parent-crawl-run-id", default="")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--validate-only", action="store_true")
     args = parser.parse_args()
     summary = _read_json(Path(args.curation_summary), {}) if args.curation_summary else {}
-    result = run_pipeline(
+    runner = run_pipeline_with_recovery if args.scheduled else run_pipeline
+    result = runner(
         agent_run_id=args.agent_run_id,
         curation_summary=summary,
         dry_run=args.dry_run,
         refresh_builders=not args.validate_only,
+        task_run_id=args.task_run_id,
+        **({"parent_crawl_run_id": args.parent_crawl_run_id} if args.scheduled else {}),
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    if result.get("status") == "failed":
+    if not result.get("ok") and not result.get("skipped"):
         raise SystemExit(1)
 
 

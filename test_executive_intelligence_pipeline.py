@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,6 +14,66 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_scheduled_refresh_retries_then_logs_locally_and_finalizes_task(self):
+        failed = {
+            "ok": False,
+            "status": "completed_with_fallback",
+            "agent_run_id": "agent-test",
+            "failed_domains": ["cloud"],
+            "duration_ms": 10,
+        }
+        with (
+            patch("executive_intelligence_pipeline.run_pipeline", return_value=failed) as run,
+            patch("executive_intelligence_pipeline.time.sleep") as sleep,
+            patch("executive_intelligence_pipeline._task_event"),
+            patch("executive_intelligence_pipeline._finalize_refresh_task") as finalize,
+            patch.dict("os.environ", {"CMHK_INTELLIGENCE_RETRY_DELAYS": "0,0"}),
+        ):
+            result = pipeline.run_pipeline_with_recovery(
+                agent_run_id="agent-test",
+                task_run_id="refresh-test",
+                parent_crawl_run_id="crawl-test",
+                max_attempts=3,
+            )
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["attempts"], 3)
+        self.assertEqual(run.call_count, 3)
+        self.assertEqual(sleep.call_count, 2)
+        self.assertEqual(result["notification_policy"], "local_log_only")
+        self.assertFalse(finalize.call_args.kwargs["ok"])
+
+    def test_watchdog_launches_one_recovery_for_unmatched_daily_crawl(self):
+        scheduled = {
+            "crawl_run_id": "crawl-0300",
+            "trigger": "定时爬虫",
+            "run_status": "completed",
+            "completed_at_hkt": "2026-08-04T03:30:00+08:00",
+            "curation": {"agent_run_id": "agent-0300"},
+        }
+        with (
+            patch("crawl_run_registry.load_index", return_value=[scheduled]),
+            patch("executive_intelligence_pipeline._read_json", side_effect=[{}, {}]),
+            patch("executive_intelligence_pipeline.launch_pipeline_async", return_value={
+                "ok": True, "task_run_id": "refresh-recovery"
+            }) as launch,
+            patch("executive_intelligence_pipeline._atomic_write_json") as write,
+        ):
+            result = pipeline.monitor_scheduled_refresh_health(
+                datetime.fromisoformat("2026-08-04T06:00:00+08:00")
+            )
+
+        self.assertEqual(result["status"], "recovery_launched")
+        launch.assert_called_once()
+        self.assertEqual(result["notification_policy"], "local_log_only")
+        write.assert_called_once()
+
+    def test_four_database_refresh_has_no_feishu_message_sender(self):
+        source = Path(pipeline.__file__).read_text(encoding="utf-8")
+        self.assertNotIn("TARGET_CHAT_IDS", source)
+        self.assertNotIn("_lark_api", source)
+        self.assertNotIn("/im/v1/messages", source)
+
     def test_ai_analysis_rejects_fact_whose_basis_denies_metric_amount(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             facts = Path(tmp) / "facts.jsonl"

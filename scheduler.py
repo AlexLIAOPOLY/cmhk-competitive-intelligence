@@ -359,18 +359,29 @@ def _mark_rows_completed(state: dict[str, object], rows: list[int]) -> None:
 def _recover_interrupted_pending_run() -> dict[str, object]:
     if PENDING_RUN_PATH.exists():
         return _load_pending_run()
-    for record in load_crawl_run_index():
+    records = load_crawl_run_index()
+    latest_completed = max(
+        (
+            parse_datetime(record.get("completed_at_hkt") or record.get("started_at_hkt"))
+            for record in records
+            if isinstance(record, dict)
+            and record.get("trigger") == "定时爬虫"
+            and record.get("run_status") == "completed"
+        ),
+        default=None,
+    )
+    for record in records:
         if not isinstance(record, dict):
             continue
         if record.get("trigger") != "定时爬虫":
             continue
         if not record.get("interrupted"):
-            return {}
+            continue
         if str(record.get("phase") or "") != "已中断":
             continue
         started_at = parse_datetime(record.get("started_at_hkt"))
-        if started_at and datetime.now(HKT) - started_at > timedelta(days=2):
-            return {}
+        if started_at and latest_completed and latest_completed > started_at:
+            continue
         rows = _scope_rows(str(record.get("scope") or ""))
         relative = str((record.get("local_files") or {}).get("stream_log") or "")
         stream_path = ROOT / relative if relative else Path()
@@ -733,6 +744,7 @@ def _launch_executive_intelligence_refresh(
             result = launch_pipeline_async(
                 agent_run_id=agent_run_id,
                 curation_summary=curation,
+                parent_crawl_run_id=crawl_run_id,
             )
         except Exception as exc:
             result = {"ok": False, "launched": False, "error": str(exc)}
@@ -743,6 +755,8 @@ def _launch_executive_intelligence_refresh(
             "ok": bool(result.get("ok")),
             "launched": bool(result.get("launched")),
             "pid": result.get("pid"),
+            "taskRunId": result.get("task_run_id"),
+            "taskId": result.get("task_id"),
             "agentRunId": agent_run_id,
             "error": result.get("error", ""),
         },
@@ -752,6 +766,21 @@ def _launch_executive_intelligence_refresh(
     else:
         logging.warning("四库与AI分析后台刷新未启动；不影响本轮爬虫完成状态：%s", result)
     return result
+
+
+def _monitor_executive_intelligence_refresh(now: datetime) -> dict[str, object]:
+    if (
+        any(name.startswith("test_") for name in sys.modules)
+        and os.environ.get("CMHK_FORCE_INTELLIGENCE_WATCHDOG_FOR_TESTS") != "1"
+    ):
+        return {"ok": True, "skipped": True, "reason": "test_runtime"}
+    try:
+        from executive_intelligence_pipeline import monitor_scheduled_refresh_health
+
+        return monitor_scheduled_refresh_health(now)
+    except Exception as exc:
+        logging.exception("四库刷新守护检查失败")
+        return {"ok": False, "status": "watchdog_failed", "error": str(exc)}
 
 
 def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
@@ -1199,6 +1228,11 @@ def resume_pending_run(
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     now = datetime.now(HKT)
     state = load_state()
+    watchdog = (
+        {"ok": True, "skipped": True, "reason": "dry_run"}
+        if dry_run
+        else _monitor_executive_intelligence_refresh(now)
+    )
     pending = _load_pending_run()
     if not dry_run and not pending:
         pending = _recover_interrupted_pending_run()
@@ -1206,6 +1240,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
         result: dict[str, object] = {
             "checked_at_hkt": now.isoformat(timespec="seconds"),
             "timezone": "Asia/Hong_Kong",
+            "executive_intelligence_watchdog": watchdog,
             "pending_run_id": pending.get("crawl_run_id"),
             "pending_stage": pending.get("stage"),
         }
@@ -1236,6 +1271,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     result: dict[str, object] = {
         "checked_at_hkt": now.isoformat(timespec="seconds"),
         "timezone": "Asia/Hong_Kong",
+        "executive_intelligence_watchdog": watchdog,
         "due_rows": due,
         "rows": audit,
     }

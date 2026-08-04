@@ -18,6 +18,22 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_four_database_refresh_is_visible_in_unified_task_log(self) -> None:
+        task = web_app._normalize_crawl_task({
+            "crawl_run_id": "refresh-1",
+            "task_kind": "executive-intelligence-refresh",
+            "trigger": "四库与观察结论自动更新",
+            "scope": "Agent审核 agent-1",
+            "run_status": "running",
+            "stream_log": {"lines": 4, "bytes": 200},
+        })
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertEqual(task["kind_label"], "四库刷新")
+        self.assertEqual(task["kind"], "executive-intelligence-refresh")
+        self.assertIn("更新失败", app)
+        self.assertIn("预警发送失败", app)
+
     def test_status_reports_any_running_unified_task(self) -> None:
         with mock.patch.object(
             web_app,
