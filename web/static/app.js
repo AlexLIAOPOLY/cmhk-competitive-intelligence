@@ -7446,6 +7446,11 @@ document.addEventListener("keydown", (event) => {
   let payload = null;
   let lastFocus = null;
   let pushedDrawerState = false;
+  const selectedEntityByDomain = new Map();
+  const selectedFocusByDomain = new Map();
+  const manualFocusPauseUntil = new Map();
+  let focusRotationCursor = 0;
+  let focusRotationTimer = null;
 
   function safe(value) {
     return String(value == null ? "" : value)
@@ -7471,6 +7476,110 @@ document.addEventListener("keydown", (event) => {
     return (payload?.relations || []).filter((item) => item.from === id || item.to === id);
   }
 
+  function selectedEntityIndex(domain) {
+    const entities = Array.isArray(domain?.entities) ? domain.entities : [];
+    const selected = Number(selectedEntityByDomain.get(domain?.id) || 0);
+    return Math.max(0, Math.min(selected, Math.max(0, entities.length - 1)));
+  }
+
+  function domainFocuses(domain) {
+    const focuses = {
+      local: [
+        { id: "scale", label: "方案规模" },
+        { id: "track", label: "产品赛道" },
+        { id: "price", label: "月费区间" },
+        { id: "overlap", label: "竞对重叠" },
+      ],
+      international: [
+        { id: "growth", label: "营收增速" },
+        { id: "momentum", label: "增长状态" },
+        { id: "gap", label: "领先差距" },
+        { id: "source", label: "原始披露" },
+      ],
+      cloud: [
+        { id: "growth", label: "业务增速" },
+        { id: "tier", label: "增长梯队" },
+        { id: "gap", label: "领先差距" },
+        { id: "source", label: "业绩披露" },
+      ],
+      macro: [
+        { id: "market", label: "市场规模", entityIndex: 0 },
+        { id: "traffic", label: "流量需求", entityIndex: 1 },
+        { id: "spending", label: "消费能力", entityIndex: 2 },
+        { id: "governance", label: "投入监管", entityIndex: 3 },
+      ],
+    };
+    return focuses[domain.id] || [{ id: "overview", label: "重点概览" }];
+  }
+
+  function selectedFocusIndex(domain) {
+    const focuses = domainFocuses(domain);
+    const selected = Number(selectedFocusByDomain.get(domain.id) || 0);
+    return Math.max(0, Math.min(selected, Math.max(0, focuses.length - 1)));
+  }
+
+  function entityFocusNote(domain, entity, index, focusId) {
+    const entities = Array.isArray(domain.entities) ? domain.entities : [];
+    if (domain.id === "local") {
+      const relation = (domain.relations || []).find((item) => String(item.title || "").includes(entity.name));
+      if (focusId === "scale") return `方案规模位列第 ${index + 1}/${entities.length}，当前库内共 ${formatValue(entity.value)} ${entity.unit}。`;
+      if (focusId === "track") return `${entity.detail}；重点核对5G、家宽与企业方案覆盖。`;
+      if (focusId === "price") return `${entity.detail}；关注与CMHK主力套餐的价格带交叠。`;
+      return relation ? `${relation.kind} · ${relation.title}：${relation.detail}` : "暂未发现结构化月费重叠，继续关注产品赛道与企业方案交锋。";
+    }
+    if (domain.id === "international" || domain.id === "cloud") {
+      const leader = Number(entities[0]?.value) || 0;
+      const current = Number(entity.value) || 0;
+      const gap = Math.abs(leader - current).toFixed(2).replace(/\.00$/, "");
+      const status = domain.id === "international"
+        ? (current >= 0 ? "保持正增长" : "处于负增长")
+        : (current >= 15 ? "处于高增长梯队" : current >= 0 ? "处于跟进梯队" : "增速承压");
+      if (focusId === "growth") return `${entity.detail}为 ${formatValue(entity.value)}${entity.unit}，当前排名第 ${index + 1}/${entities.length}。`;
+      if (focusId === "source") return "数据取自最新公开业绩披露；可通过右下方“原始来源”继续核验口径。";
+      if (focusId === "gap") return index === 0
+        ? `当前领先；作为其余${domain.id === "cloud" ? "云厂商" : "运营商"}的同期间比较基准。`
+        : `较领先值相差 ${gap} 个百分点，排名第 ${index + 1}/${entities.length}。`;
+      return `${status}；当前排名第 ${index + 1}/${entities.length}。`;
+    }
+    const macroFocus = {
+      "移动用户": "关注连接规模、套餐价值与存量用户经营。",
+      "移动数据总量": "关注流量增长、网络承载与单位流量价值。",
+      "家庭月入中位数": "关注消费承受力、套餐定价与升级空间。",
+      "电信业投资": "关注资本效率、覆盖投入与收入转化。",
+      "电讯投诉": "关注服务质量、监管风险与客户体验。",
+      "5G人口覆盖": "关注竞争从覆盖规模转向体验与应用价值。",
+    };
+    return macroFocus[entity.name] || "官方指标 · 关注其对市场需求、监管与经营决策的影响。";
+  }
+
+  function renderEntityFocus(domain, entity, index, focus) {
+    if (!entity) return "";
+    const source = /^https?:\/\//i.test(String(entity.source_url || ""))
+      ? `<a href="${safe(entity.source_url)}" target="_blank" rel="noreferrer">原始来源<span aria-hidden="true">↗</span></a>`
+      : "";
+    return `
+      <div class="intelligence-entity-focus">
+        <span>${safe(focus.label)} · ${safe(entity.name)}</span>
+        <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
+        <p>${safe(entityFocusNote(domain, entity, index, focus.id))}</p>
+        ${source}
+      </div>
+    `;
+  }
+
+  function renderFocusTabs(domain, focuses, selectedIndex) {
+    return `
+      <div class="intelligence-focus-tabs" role="tablist" aria-label="${safe(domain.title)}关注点">
+        ${focuses.map((item, index) => `
+          <button type="button" role="tab" aria-selected="${index === selectedIndex ? "true" : "false"}"
+            class="${index === selectedIndex ? "is-active" : ""}"
+            data-intelligence-focus="${index}" data-intelligence-domain-id="${safe(domain.id)}"
+            title="切换到${safe(item.label)}">${safe(item.label)}</button>
+        `).join("")}
+      </div>
+    `;
+  }
+
   function renderRail(relations) {
     rail.innerHTML = relations.slice(0, 4).map((relation, index) => `
       <button type="button" class="intelligence-relation" data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}">
@@ -7481,24 +7590,28 @@ document.addEventListener("keydown", (event) => {
     `).join("");
   }
 
-  function renderDomainVisual(domain, entities) {
-    const items = entities.slice(0, 4);
+  function renderDomainVisual(domain, entities, selectedIndex) {
+    const items = entities;
     const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
     if (domain.id === "local") {
-      const points = [
-        { x: 68, y: 34 },
-        { x: 194, y: 70 },
-        { x: 326, y: 30 },
-        { x: 454, y: 66 },
-      ];
-      const links = [[0, 1], [0, 2], [1, 2], [1, 3], [2, 3]].map(([from, to], index) => `
+      const points = items.map((item, index) => ({
+        x: items.length <= 1 ? 261 : 42 + index * (438 / (items.length - 1)),
+        y: index % 2 ? 70 : 28,
+      }));
+      const linkPairs = items.flatMap((item, index) => [
+        index + 1 < items.length ? [index, index + 1] : null,
+        index + 2 < items.length ? [index, index + 2] : null,
+      ]).filter(Boolean);
+      const links = linkPairs.map(([from, to], index) => `
         <line x1="${points[from].x}" y1="${points[from].y}" x2="${points[to].x}" y2="${points[to].y}" style="--link-index:${index}" />
       `).join("");
       const nodes = items.map((item, index) => {
         const point = points[index];
         const radius = 6 + Math.abs(Number(item.value) || 0) / maxValue * 7;
         return `
-          <g>
+          <g class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}"
+            role="button" tabindex="0" data-intelligence-entity="${index}"
+            data-intelligence-domain-id="${safe(domain.id)}" aria-label="关注 ${safe(item.name)}">
             <circle cx="${point.x}" cy="${point.y}" r="${radius.toFixed(1)}" />
             <text x="${point.x}" y="${point.y + 25}" text-anchor="middle">${safe(item.name)}</text>
             <text class="viz-value" x="${point.x}" y="${point.y + 36}" text-anchor="middle">${formatValue(item.value)}${safe(item.unit)}</text>
@@ -7509,11 +7622,13 @@ document.addEventListener("keydown", (event) => {
     }
 
     if (domain.id === "international") {
-      return `<ul class="intelligence-viz intelligence-viz-diverging" aria-label="国际运营商增长正负分化">${items.map((item) => {
+      return `<ul class="intelligence-viz intelligence-viz-diverging" aria-label="国际运营商增长正负分化">${items.map((item, index) => {
         const numeric = Number(item.value) || 0;
         const size = Math.max(3, Math.abs(numeric) / maxValue * 48);
         return `
-          <li class="${numeric < 0 ? "is-negative" : "is-positive"}">
+          <li class="intelligence-viz-entity ${numeric < 0 ? "is-negative" : "is-positive"} ${index === selectedIndex ? "is-selected" : ""}"
+            role="button" tabindex="0" data-intelligence-entity="${index}"
+            data-intelligence-domain-id="${safe(domain.id)}" aria-label="关注 ${safe(item.name)}">
             <span>${safe(item.name)}</span>
             <i><b style="--viz-size:${size.toFixed(2)}%"></b></i>
             <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
@@ -7523,10 +7638,12 @@ document.addEventListener("keydown", (event) => {
     }
 
     if (domain.id === "cloud") {
-      return `<div class="intelligence-viz intelligence-viz-columns" aria-label="云厂商增长梯队">${items.map((item) => {
+      return `<div class="intelligence-viz intelligence-viz-columns" aria-label="云厂商增长梯队">${items.map((item, index) => {
         const height = Math.max(12, Math.abs(Number(item.value) || 0) / maxValue * 100);
         return `
-          <div>
+          <div class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}"
+            role="button" tabindex="0" data-intelligence-entity="${index}"
+            data-intelligence-domain-id="${safe(domain.id)}" aria-label="关注 ${safe(item.name)}">
             <strong>${formatValue(item.value)}${safe(item.unit)}</strong>
             <i><b style="--column-height:${height.toFixed(2)}%"></b></i>
             <span>${safe(item.name)}</span>
@@ -7536,7 +7653,10 @@ document.addEventListener("keydown", (event) => {
     }
 
     return `<div class="intelligence-viz intelligence-viz-kpis" aria-label="宏观与政策关键指标">${items.map((item, index) => `
-      <div style="--kpi-index:${index}">
+      <div class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}"
+        role="button" tabindex="0" data-intelligence-entity="${index}"
+        data-intelligence-domain-id="${safe(domain.id)}" aria-label="关注 ${safe(item.name)}"
+        style="--kpi-index:${index}">
         <span>${safe(item.name)}</span>
         <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
         <small>${safe(item.detail)}</small>
@@ -7544,28 +7664,93 @@ document.addEventListener("keydown", (event) => {
     `).join("")}</div>`;
   }
 
-  function renderDomains(domains) {
-    grid.innerHTML = domains.map((domain) => {
-      const entities = Array.isArray(domain.entities) ? domain.entities : [];
-      const visual = renderDomainVisual(domain, entities);
-      return `
-        <button class="intelligence-domain intelligence-domain-${safe(domain.id)}" type="button" data-intelligence-domain="${safe(domain.id)}" aria-label="查看${safe(domain.title)}详情">
-          <span class="intelligence-domain-index">${safe(domain.index)}</span>
-          <span class="intelligence-domain-heading">
-            <span>${safe(domain.kicker)}</span>
-            <strong>${safe(domain.title)}</strong>
-          </span>
-          <span class="intelligence-domain-metric">
-            <small>${safe(domain.metric?.label)}</small>
-            <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
-            <em>${safe(domain.context)}</em>
-          </span>
+  function renderDomainCard(domain) {
+    const entities = Array.isArray(domain.entities) ? domain.entities : [];
+    const entityIndex = selectedEntityIndex(domain);
+    const focuses = domainFocuses(domain);
+    const focusIndex = selectedFocusIndex(domain);
+    const selectedFocus = focuses[focusIndex];
+    const selectedEntity = entities[entityIndex] || null;
+    const visual = renderDomainVisual(domain, entities, entityIndex);
+    return `
+      <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
+        <span class="intelligence-domain-index">${safe(domain.index)}</span>
+        <span class="intelligence-domain-heading">
+          <span>${safe(domain.kicker)}</span>
+          <strong>${safe(domain.title)}</strong>
+        </span>
+        <span class="intelligence-domain-metric">
+          <small>${safe(domain.metric?.label)}</small>
+          <strong>${formatValue(domain.metric?.value)}<i>${safe(domain.metric?.unit)}</i></strong>
+          <em>${safe(domain.context)}</em>
+        </span>
+        ${renderFocusTabs(domain, focuses, focusIndex)}
+        <div class="intelligence-domain-focus-stage">
           ${visual}
-          <span class="intelligence-domain-insight">${safe(domain.insight)}</span>
-          <span class="intelligence-domain-action">穿透分析 <b aria-hidden="true">↗</b></span>
-        </button>
-      `;
-    }).join("");
+          ${renderEntityFocus(domain, selectedEntity, entityIndex, selectedFocus)}
+        </div>
+        <button class="intelligence-domain-action" type="button" data-intelligence-drill="${safe(domain.id)}" aria-label="打开${safe(domain.title)}完整详情">穿透分析 <b aria-hidden="true">↗</b></button>
+      </article>
+    `;
+  }
+
+  function renderDomains(domains) {
+    grid.innerHTML = domains.map(renderDomainCard).join("");
+  }
+
+  function replaceDomainCard(domain, restoreFocus = false) {
+    const current = grid.querySelector(`.intelligence-domain[data-intelligence-domain-id="${CSS.escape(domain.id)}"]`);
+    if (!current) return;
+    const template = document.createElement("template");
+    template.innerHTML = renderDomainCard(domain).trim();
+    current.replaceWith(template.content.firstElementChild);
+    if (restoreFocus) {
+      const index = selectedFocusIndex(domain);
+      window.requestAnimationFrame(() => {
+        grid.querySelector(`[data-intelligence-domain-id="${CSS.escape(domain.id)}"] [role="tab"][data-intelligence-focus="${index}"]`)?.focus();
+      });
+    }
+  }
+
+  function selectEntity(domainId, index, restoreFocus = false, manual = true) {
+    const domain = domainById(domainId);
+    if (!domain || !Array.isArray(domain.entities) || !domain.entities[index]) return;
+    selectedEntityByDomain.set(domainId, index);
+    if (manual) manualFocusPauseUntil.set(domainId, Date.now() + 30000);
+    replaceDomainCard(domain, restoreFocus);
+  }
+
+  function selectFocus(domainId, index, restoreFocus = false, manual = true) {
+    const domain = domainById(domainId);
+    const focuses = domain ? domainFocuses(domain) : [];
+    if (!domain || !focuses[index]) return;
+    selectedFocusByDomain.set(domainId, index);
+    if (Number.isInteger(focuses[index].entityIndex) && domain.entities?.[focuses[index].entityIndex]) {
+      selectedEntityByDomain.set(domainId, focuses[index].entityIndex);
+    }
+    if (manual) manualFocusPauseUntil.set(domainId, Date.now() + 30000);
+    replaceDomainCard(domain, restoreFocus);
+  }
+
+  function rotateNextFocus() {
+    const domains = Array.isArray(payload?.domains) ? payload.domains : [];
+    if (!domains.length || document.hidden) return;
+    for (let attempt = 0; attempt < domains.length; attempt += 1) {
+      const domain = domains[focusRotationCursor % domains.length];
+      focusRotationCursor = (focusRotationCursor + 1) % domains.length;
+      const focuses = domainFocuses(domain);
+      const card = grid.querySelector(`.intelligence-domain[data-intelligence-domain-id="${CSS.escape(domain.id)}"]`);
+      if (focuses.length < 2 || !card) continue;
+      if (card.matches(":hover") || card.contains(document.activeElement)) continue;
+      if ((manualFocusPauseUntil.get(domain.id) || 0) > Date.now()) continue;
+      selectFocus(domain.id, (selectedFocusIndex(domain) + 1) % focuses.length, false, false);
+      return;
+    }
+  }
+
+  function startFocusRotation() {
+    if (focusRotationTimer) window.clearInterval(focusRotationTimer);
+    focusRotationTimer = window.setInterval(rotateNextFocus, 4200);
   }
 
   function renderDrawer(domain) {
@@ -7664,8 +7849,25 @@ document.addEventListener("keydown", (event) => {
   }
 
   grid.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-intelligence-domain]");
-    if (trigger) openDrawer(trigger.dataset.intelligenceDomain);
+    const focusTrigger = event.target.closest("[data-intelligence-focus]");
+    if (focusTrigger) {
+      selectFocus(focusTrigger.dataset.intelligenceDomainId, Number(focusTrigger.dataset.intelligenceFocus), true);
+      return;
+    }
+    const entityTrigger = event.target.closest("[data-intelligence-entity]");
+    if (entityTrigger) {
+      selectEntity(entityTrigger.dataset.intelligenceDomainId, Number(entityTrigger.dataset.intelligenceEntity));
+      return;
+    }
+    const drillTrigger = event.target.closest("[data-intelligence-drill]");
+    if (drillTrigger) openDrawer(drillTrigger.dataset.intelligenceDrill);
+  });
+  grid.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const entityTrigger = event.target.closest('.intelligence-viz-entity[data-intelligence-entity]');
+    if (!entityTrigger) return;
+    event.preventDefault();
+    selectEntity(entityTrigger.dataset.intelligenceDomainId, Number(entityTrigger.dataset.intelligenceEntity), true);
   });
   rail.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-relation-domain]");
@@ -7701,6 +7903,7 @@ document.addEventListener("keydown", (event) => {
       payload = data;
       renderRail(data.relations || []);
       renderDomains(data.domains || []);
+      startFocusRotation();
       method.textContent = data.method || "四库同口径对齐";
       const requested = new URL(window.location.href).searchParams.get("intelligence");
       if (requested) openDrawer(requested, false);
