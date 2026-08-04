@@ -22,14 +22,14 @@
           group("base-stations", "基站建设", [
             metric(3, "基站总数（4G）", "6,880", "个", "在网运行的4G基站总数。", "工程建设", true, ["4G基站总数"]),
             metric(4, "基站总数（5G）", "3,700", "个", "在网运行的5G基站总数。", "工程建设", true, ["5G基站总数"]),
-            metric(5, "5G网络平均下载速率", "1.1", "Gbps", "5G网络用户侧下载速率的统计期平均值。", "无线中心"),
+            metric(5, "5G网络平均下载速率", "1.1", "Gbps", "5G网络用户侧下载速率的统计期平均值。", "无线中心", false, ["5G平均下载速率"]),
             metric(6, "4G MR覆盖率", "99.2", "%", "基于测量报告统计的4G网络覆盖达标比例。", "无线中心"),
             metric(7, "5G MR覆盖率", "98.8", "%", "基于测量报告统计的5G网络覆盖达标比例。", "无线中心")
           ]),
           group("spectrum", "频谱资源", [
-            metric(8, "3.3GHz–4.9GHz持牌总带宽", "140", "MHz", "3.3GHz至4.9GHz频段内持有牌照的频谱带宽合计。", "规划部"),
-            metric(9, "700MHz–900MHz低频总带宽", "50", "MHz", "700MHz至900MHz等强穿透性低频频段的持牌带宽合计。", "规划部"),
-            metric(10, "26GHz／28GHz高频总带宽", "1,200", "MHz", "26GHz及28GHz等高容量频段的持牌带宽合计。", "规划部")
+            metric(8, "3.3GHz–4.9GHz持牌总带宽", "140", "MHz", "3.3GHz至4.9GHz频段内持有牌照的频谱带宽合计。", "规划部", false, ["3.3-4.9GHz持牌带宽"]),
+            metric(9, "700MHz–900MHz低频总带宽", "50", "MHz", "700MHz至900MHz等强穿透性低频频段的持牌带宽合计。", "规划部", false, ["700-900MHz低频带宽"]),
+            metric(10, "26GHz／28GHz高频总带宽", "1,200", "MHz", "26GHz及28GHz等高容量频段的持牌带宽合计。", "规划部", false, ["26/28GHz高频带宽"])
           ])
         ]),
         category("cloud", "数据中心与云基础设施", [
@@ -771,13 +771,69 @@
     const module = KPI_TREE[state.config.key];
     const categoryItem = currentCategory(state.config, state.panel);
     const visibleName = metricNameFromTarget(target);
-    const metricItem = findMetric(module, categoryItem, visibleName) || findMetric(module, null, visibleName);
-    if (metricItem) openMetric(state, metricItem, target);
+    const explicitMetric = target.dataset.drillMetricId
+      ? metricById(Number(target.dataset.drillMetricId))?.metricItem
+      : null;
+    const metricItem = explicitMetric || findMetric(module, categoryItem, visibleName) || findMetric(module, null, visibleName);
+    if (metricItem) {
+      openMetric(state, metricItem, target);
+      return;
+    }
+    // Never leave a control-looking target silent when a rotating label has no
+    // exact metric match. The category catalog is the safe, useful fallback.
+    openCategory(state, categoryItem, target);
+  }
+
+  function makeInteractive(target, label, action) {
+    if (!target) return;
+    target.classList.add("drill-target");
+    target.tabIndex = 0;
+    target.setAttribute("role", "button");
+    if (label) target.setAttribute("aria-label", label);
+    const activate = (event) => {
+      if (event.type === "keydown" && !["Enter", " "].includes(event.key)) return;
+      if (event.type === "keydown") event.preventDefault();
+      event.stopPropagation();
+      action(event);
+    };
+    target.addEventListener("click", activate);
+    target.addEventListener("keydown", activate);
+  }
+
+  function bindRelationshipTargets(state) {
+    const stories = relationStories(state.config.key);
+    const bindCarrierRows = (selector, storyId) => {
+      state.panel.querySelectorAll(selector).forEach((target, index) => {
+        makeInteractive(target, `查看${CARRIERS[index]}关系与差距`, () => {
+          state.selectedCarrier = index;
+          openRelationship(state, stories.find((item) => item.id === storyId), "insight", target);
+        });
+      });
+    };
+
+    if (state.config.key === "reach") {
+      bindCarrierRows(".reach-ranking > div", "brand-conversion");
+    }
+    if (state.config.key === "finance") {
+      bindCarrierRows(".revenue-compare > i", "revenue-quality");
+      const trend = state.panel.querySelector(".profit-line");
+      makeInteractive(trend, "查看财务趋势驱动关系", () => {
+        const currentView = currentCategory(state.config, state.panel).key;
+        const storyId = currentView === "cash" ? "cash-generation" : "revenue-quality";
+        openRelationship(state, stories.find((item) => item.id === storyId), "insight", trend);
+      });
+    }
   }
 
   function bindPanel(panel, config) {
     const state = createOverlay(panel, config);
     createEntry(panel, config, state);
+
+    makeInteractive(
+      panel.querySelector(".panel-heading > h2"),
+      `查看${KPI_TREE[config.key].label}关系与指标穿透`,
+      (_, target = panel.querySelector(".panel-heading > h2")) => openModule(state, target)
+    );
 
     panel.querySelectorAll(".detail-heading").forEach((heading) => {
       heading.classList.add("drill-group-trigger");
@@ -799,12 +855,11 @@
       finance: ".revenue-block, .detail-item, .profit-kpis > div"
     };
     panel.querySelectorAll(selectors[config.key]).forEach((target) => {
-      target.classList.add("drill-target");
-      target.tabIndex = 0;
-      target.setAttribute("role", "button");
-      target.addEventListener("click", (event) => activateMetricTarget(event, state, target));
-      target.addEventListener("keydown", (event) => activateMetricTarget(event, state, target));
+      makeInteractive(target, `查看${metricNameFromTarget(target) || KPI_TREE[config.key].label}指标`, (event) => {
+        activateMetricTarget(event, state, target);
+      });
     });
+    bindRelationshipTargets(state);
   }
 
   PANEL_CONFIGS.forEach((config) => {
