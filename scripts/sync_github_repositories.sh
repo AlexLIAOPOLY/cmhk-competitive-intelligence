@@ -53,7 +53,11 @@ STAMP="$(date '+%Y%m%d-%H%M%S')"
 BACKUP_BRANCH="backup/main-before-sync-$STAMP"
 git_net -C "$TMP_DIR" push origin "$OLD_MAIN:refs/heads/$BACKUP_BRANCH"
 
-rsync -a --delete \
+# Reuse identical source inodes while the temporary snapshot lives on the same
+# filesystem. This keeps the mandatory complete snapshot viable on machines
+# with a large workspace but limited free scratch space; Git still records the
+# exact bytes in its own object database before anything is pushed.
+rsync -a --delete --link-dest="$ROOT" \
   --exclude '/.git/' \
   --exclude '/.venv*/' \
   --exclude '/venv/' \
@@ -94,7 +98,7 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
       continue
     fi
     mkdir -p "$TMP_DIR/$runtime_dir"
-    rsync -a --delete \
+    rsync -a --delete --link-dest="$RUNTIME_ROOT/$runtime_dir" \
       --exclude '__pycache__/' \
       --exclude '*.pyc' \
       --exclude '*.pyo' \
@@ -112,14 +116,14 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
   # The web report library reads root-level Word files. The persistent runtime,
   # not the development checkout, is authoritative for this generated state.
   find "$TMP_DIR" -maxdepth 1 -type f -name '*.docx' -delete
-  rsync -a \
+  rsync -a --link-dest="$RUNTIME_ROOT" \
     --include='/*.docx' \
     --exclude='/*' \
     "$RUNTIME_ROOT/" "$TMP_DIR/"
 
   # Overlay root-level generated indexes and audits without allowing an older
   # runtime copy to replace application source code.
-  rsync -a \
+  rsync -a --link-dest="$RUNTIME_ROOT" \
     --include='/carrier_performance_*.json' \
     --include='/company_metrics*.json' \
     --include='/coverage_report.tsv' \
