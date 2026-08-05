@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import importlib.util
-import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -20,49 +19,6 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
-    def test_drilldown_catalog_contains_all_74_sheet_indicators(self):
-        script = (
-            Path(__file__).resolve().parent
-            / "web"
-            / "static"
-            / "executive-dashboard-drilldown.js"
-        ).read_text(encoding="utf-8")
-        metric_ids = [int(value) for value in re.findall(r"metric\((\d+),", script)]
-
-        self.assertEqual(metric_ids, list(range(1, 75)))
-        self.assertIn('index: "01"', script)
-        self.assertIn('index: "02"', script)
-        self.assertIn('index: "03"', script)
-        self.assertIn('index: "04"', script)
-
-    def test_relationship_model_connects_all_four_carriers_to_metric_evidence(self):
-        script = (
-            Path(__file__).resolve().parent
-            / "web"
-            / "static"
-            / "executive-dashboard-relations.js"
-        ).read_text(encoding="utf-8")
-
-        self.assertEqual(len(re.findall(r"\bstory\(", script)), 8)
-        self.assertEqual(len(re.findall(r"\bdriver\(", script)), 24)
-        self.assertIn('carriers: ["CMHK", "HKT", "3香港", "SmarTone"]', script)
-        for module_key in ("network", "business", "reach", "finance"):
-            self.assertRegex(script, rf"\n\s+{module_key}: \[")
-        metric_groups = re.findall(
-            r"driver\([^\n]*?\[[^\]]*\], \[([^\]]+)\], \[",
-            script,
-        )
-        metric_ids = {
-            int(value.strip())
-            for group in metric_groups
-            for value in group.split(",")
-        }
-        self.assertTrue(metric_ids)
-        self.assertGreaterEqual(min(metric_ids), 1)
-        self.assertLessEqual(max(metric_ids), 74)
-        self.assertIn(47, metric_ids)
-        self.assertIn(73, metric_ids)
-
     def test_build_site_is_static_sanitized_and_stable(self):
         payload = {
             "ok": True,
@@ -101,36 +57,20 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            drilldown = (first / "executive-dashboard-drilldown.js").read_text(
-                encoding="utf-8"
-            )
-            relations = (first / "executive-dashboard-relations.js").read_text(
-                encoding="utf-8"
-            )
             self.assertIn('href="./executive-dashboard-demo.css?v=8"', html)
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-relations.js?v=1"', html)
-            self.assertIn('src="./executive-dashboard-drilldown.js?v=7"', html)
+            self.assertNotIn("executive-dashboard-relations.js", html)
+            self.assertNotIn("executive-dashboard-drilldown.js", html)
+            self.assertIn('data-network-view="fixed"', html)
+            self.assertIn('data-finance-view="cash"', html)
             self.assertIn('fetch("./strategic-briefs.json"', script)
             self.assertNotIn("/api/strategic-briefs", script)
-            self.assertIn("const KPI_TREE", drilldown)
-            self.assertIn('document.body.classList.add("has-drill-fullscreen")', drilldown)
-            self.assertIn('overlay.setAttribute("aria-modal", "true")', drilldown)
-            self.assertIn("driverGapMatrix", drilldown)
-            self.assertIn('insight: "结果与差距"', drilldown)
-            self.assertIn("function makeInteractive", drilldown)
-            self.assertIn("bindRelationshipTargets(state)", drilldown)
-            self.assertIn("openCategory(state, categoryItem, target)", drilldown)
-            self.assertIn('"5G平均下载速率"', drilldown)
-            self.assertIn("CMHK_DASHBOARD_RELATIONS", relations)
+            self.assertFalse((first / "executive-dashboard-relations.js").exists())
+            self.assertFalse((first / "executive-dashboard-drilldown.js").exists())
             css = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn(".relation-conclusion > p {", css)
-            self.assertIn("overflow-y: auto;", css)
-            self.assertIn("overscroll-behavior: contain;", css)
-            self.assertNotIn("-webkit-line-clamp: 4;", css)
-            self.assertNotIn("relation-conclusion-toggle", css)
+            self.assertIn(".panel-tabs button.is-active", css)
             self.assertTrue((first / ".nojekyll").exists())
 
     def test_build_site_preserves_static_intelligence_snapshot(self):
