@@ -133,6 +133,28 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertNotIn("relation-conclusion-toggle", css)
             self.assertTrue((first / ".nojekyll").exists())
 
+    def test_build_site_preserves_static_intelligence_snapshot(self):
+        with tempfile.TemporaryDirectory() as temp:
+            snapshot = Path(temp) / "snapshot"
+            snapshot.mkdir()
+            (snapshot / "index.html").write_text(
+                "<title>四库竞争情报驾驶舱</title>",
+                encoding="utf-8",
+            )
+            payload = {"ok": True, "generated_at": "", "items": []}
+            with mock.patch.object(publisher, "INTELLIGENCE_STATIC_DIR", snapshot), mock.patch.object(
+                publisher,
+                "_public_news_payload",
+                return_value=payload,
+            ):
+                destination = Path(temp) / "site"
+                publisher._build_site(destination)
+
+            self.assertEqual(
+                (destination / "intelligence" / "index.html").read_text(encoding="utf-8"),
+                "<title>四库竞争情报驾驶舱</title>",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

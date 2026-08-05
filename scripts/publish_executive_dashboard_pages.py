@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 STATIC_DIR = ROOT / "web" / "static"
+INTELLIGENCE_STATIC_DIR = STATIC_DIR / "intelligence-public"
 DATA_DIR = ROOT / "strategy_briefing"
 STATE_PATH = DATA_DIR / "dashboard_pages_publish_state.json"
 LOCK_PATH = DATA_DIR / "dashboard_pages_publish.lock"
@@ -157,6 +158,11 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
         STATIC_DIR / "assets" / "executive-dashboard",
         destination / "assets" / "executive-dashboard",
     )
+    if INTELLIGENCE_STATIC_DIR.is_dir():
+        shutil.copytree(
+            INTELLIGENCE_STATIC_DIR,
+            destination / "intelligence",
+        )
     (destination / ".nojekyll").touch()
 
     payload = dict(_public_news_payload())
