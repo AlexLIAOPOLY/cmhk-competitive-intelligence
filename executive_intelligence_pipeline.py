@@ -412,6 +412,9 @@ def _analysis_input_snapshot() -> dict[str, Any]:
                             "unit": item.get("unit"),
                             "detail": item.get("detail"),
                             "analysis": item.get("analysis"),
+                            "components": item.get("components") or [],
+                            "component_count": item.get("component_count"),
+                            "record_count": item.get("record_count"),
                             "source_url": item.get("source_url"),
                         }
                         for item in (focus.get("items") or [])[:8]
@@ -483,6 +486,7 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
     evidence_by_domain = {
         str(domain.get("id") or ""): domain for domain in evidence.get("domains") or []
     }
+    filler_phrases = ("按排名", "图中排序", "同一视图", "便于比较", "数据库内", "此视图", "不代表经营排名")
     for item in raw:
         if not isinstance(item, dict):
             raise ValueError("AI分析包含非对象条目")
@@ -529,6 +533,7 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
                     "analysis": str(focus_item.get("analysis") or "").strip(),
                     "risk": str(focus_item.get("risk") or "").strip(),
                     "source_urls": [str(url) for url in focus_item.get("source_urls") or []],
+                    "entities": [],
                 }
                 if not validated_focus["analysis"] or not validated_focus["risk"]:
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
@@ -538,6 +543,64 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
                 unknown_focus_numbers = _numeric_tokens(validated_focus) - allowed_numbers
                 if unknown_focus_numbers:
                     raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_focus_numbers)}")
+                evidence_focus = next(
+                    focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
+                    if str(focus.get("id") or "") == focus_id
+                )
+                evidence_entities = {
+                    str(entity.get("name") or ""): entity
+                    for entity in evidence_focus.get("items") or []
+                    if str(entity.get("name") or "")
+                }
+                raw_entities = focus_item.get("entities") or []
+                if not isinstance(raw_entities, list):
+                    raise ValueError(f"AI分析实体总结格式非法：{domain}.{focus_id}")
+                entity_seen: set[str] = set()
+                for raw_entity in raw_entities:
+                    if not isinstance(raw_entity, dict):
+                        raise ValueError(f"AI分析实体总结包含非对象条目：{domain}.{focus_id}")
+                    name = str(raw_entity.get("name") or "").strip()
+                    if name not in evidence_entities or name in entity_seen:
+                        raise ValueError(f"AI分析实体非法或重复：{domain}.{focus_id}.{name}")
+                    entity_seen.add(name)
+                    entity_summary = {
+                        "name": name,
+                        "headline": str(raw_entity.get("headline") or "").strip(),
+                        "analysis": str(raw_entity.get("analysis") or "").strip(),
+                        "risk": str(raw_entity.get("risk") or "").strip(),
+                        "evidence_labels": [str(label) for label in raw_entity.get("evidence_labels") or []],
+                        "source_urls": [str(url) for url in raw_entity.get("source_urls") or []],
+                    }
+                    if not entity_summary["headline"] or not entity_summary["analysis"] or not entity_summary["risk"]:
+                        raise ValueError(f"AI分析实体字段不完整：{domain}.{focus_id}.{name}")
+                    if any(phrase in entity_summary["analysis"] for phrase in filler_phrases):
+                        raise ValueError(f"AI分析实体仍含界面废话：{domain}.{focus_id}.{name}")
+                    allowed_labels = {
+                        str(component.get("label") or "")
+                        for component in evidence_entities[name].get("components") or []
+                        if str(component.get("label") or "")
+                    }
+                    if allowed_labels and not entity_summary["evidence_labels"]:
+                        raise ValueError(f"AI分析实体未引用组成明细：{domain}.{focus_id}.{name}")
+                    unknown_labels = set(entity_summary["evidence_labels"]) - allowed_labels
+                    if unknown_labels:
+                        raise ValueError(f"AI分析实体引用未知明细：{domain}.{focus_id}.{name}.{sorted(unknown_labels)}")
+                    entity_allowed_urls = {
+                        str(evidence_entities[name].get("source_url") or "")
+                    } - {""}
+                    unknown_entity_urls = set(entity_summary["source_urls"]) - entity_allowed_urls
+                    if unknown_entity_urls:
+                        raise ValueError(f"AI分析实体引用了输入之外的来源：{sorted(unknown_entity_urls)}")
+                    unknown_entity_numbers = _numeric_tokens(entity_summary) - _numeric_tokens(evidence_entities[name])
+                    if unknown_entity_numbers:
+                        raise ValueError(
+                            f"AI分析实体出现输入之外的数字：{domain}.{focus_id}.{name}.{sorted(unknown_entity_numbers)}"
+                        )
+                    validated_focus["entities"].append(entity_summary)
+                if entity_seen != set(evidence_entities):
+                    raise ValueError(
+                        f"AI分析实体不完整：{domain}.{focus_id}.{sorted(set(evidence_entities) - entity_seen)}"
+                    )
                 validated_focuses.append(validated_focus)
             if focus_seen != expected_focuses:
                 raise ValueError(f"AI分析分类不完整：{domain}.{sorted(expected_focuses - focus_seen)}")
@@ -619,12 +682,38 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
     if not isinstance(raw, list):
         return raw
     allowed_numbers = _numeric_tokens(evidence)
+    allowed_urls = {
+        str(item.get("source_url") or "")
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+        for item in focus.get("items") or []
+        if str(item.get("source_url") or "").startswith(("https://", "http://"))
+    }
+    allowed_urls.update(
+        str(item.get("source_url") or "")
+        for domain in evidence.get("domains") or []
+        for item in domain.get("agent_verified_facts") or []
+        if str(item.get("source_url") or "").startswith(("https://", "http://"))
+    )
+    evidence_entities = {
+        (
+            str(domain.get("id") or ""),
+            str(focus.get("id") or ""),
+            str(entity.get("name") or ""),
+        ): entity
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+        for entity in focus.get("items") or []
+    }
     sanitized: list[Any] = []
     for item in raw:
         if not isinstance(item, dict):
             sanitized.append(item)
             continue
         cleaned = dict(item)
+        cleaned["source_urls"] = [
+            str(url) for url in cleaned.get("source_urls") or [] if str(url) in allowed_urls
+        ]
         removed = 0
         for field in ("headline", "analysis", "risk"):
             text = str(cleaned.get(field) or "")
@@ -642,6 +731,9 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
                 cleaned_focuses.append(focus)
                 continue
             cleaned_focus = dict(focus)
+            cleaned_focus["source_urls"] = [
+                str(url) for url in cleaned_focus.get("source_urls") or [] if str(url) in allowed_urls
+            ]
             for field in ("analysis", "risk"):
                 text = str(cleaned_focus.get(field) or "")
                 clauses = re.split(r"(?<=[。；;])", text)
@@ -654,6 +746,48 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
                 cleaned_focus[field] = "".join(kept).strip()
                 if not cleaned_focus[field]:
                     cleaned_focus[field] = str(cleaned.get(field) or "").strip()
+            cleaned_entities: list[Any] = []
+            for entity in cleaned_focus.get("entities") or []:
+                if not isinstance(entity, dict):
+                    cleaned_entities.append(entity)
+                    continue
+                cleaned_entity = dict(entity)
+                entity_evidence = evidence_entities.get((
+                    str(cleaned.get("domain") or ""),
+                    str(cleaned_focus.get("id") or ""),
+                    str(cleaned_entity.get("name") or ""),
+                ), {})
+                entity_allowed_urls = {str(entity_evidence.get("source_url") or "")} - {""}
+                cleaned_entity["source_urls"] = [
+                    str(url)
+                    for url in cleaned_entity.get("source_urls") or []
+                    if str(url) in entity_allowed_urls
+                ]
+                for field in ("headline", "analysis", "risk"):
+                    text = str(cleaned_entity.get(field) or "")
+                    clauses = re.split(r"(?<=[。；;])", text)
+                    kept = []
+                    entity_allowed_numbers = _numeric_tokens(entity_evidence)
+                    for clause in clauses:
+                        if _numeric_tokens(clause) - entity_allowed_numbers:
+                            removed += 1
+                            continue
+                        kept.append(clause)
+                    cleaned_entity[field] = "".join(kept).strip()
+                cleaned_entity["analysis"] = re.sub(
+                    r"(?i)components\s*具体包含[:：]?", "具体包含：", cleaned_entity["analysis"]
+                )
+                if not cleaned_entity["headline"]:
+                    cleaned_entity["headline"] = f"{cleaned_entity.get('name') or '该对象'}结构已更新"
+                if not cleaned_entity["analysis"]:
+                    cleaned_entity["analysis"] = str(
+                        entity_evidence.get("analysis") or entity_evidence.get("detail") or "当前没有足够明细形成判断。"
+                    )
+                if not cleaned_entity["risk"]:
+                    cleaned_entity["risk"] = "缺失、重复或异口径记录不作推算。"
+                cleaned_entities.append(cleaned_entity)
+            if "entities" in cleaned_focus:
+                cleaned_focus["entities"] = cleaned_entities
             cleaned_focuses.append(cleaned_focus)
         if "focuses" in cleaned:
             cleaned["focuses"] = cleaned_focuses
@@ -690,6 +824,23 @@ def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, 
                             for item in focus.get("items") or []
                             if str(item.get("source_url") or "").startswith(("https://", "http://"))
                         ))[:3],
+                        "entities": [
+                            {
+                                "name": str(entity.get("name") or ""),
+                                "headline": f"{entity.get('name') or '该对象'}明细已核验",
+                                "analysis": str(entity.get("analysis") or entity.get("detail") or "当前没有足够明细形成判断。"),
+                                "risk": "仅基于当前结构化明细；缺失、重复或异口径记录不作推算。",
+                                "evidence_labels": [
+                                    str(component.get("label") or "")
+                                    for component in entity.get("components") or []
+                                    if str(component.get("label") or "")
+                                ][:6],
+                                "source_urls": [str(entity.get("source_url") or "")]
+                                if str(entity.get("source_url") or "").startswith(("https://", "http://")) else [],
+                            }
+                            for entity in focus.get("items") or []
+                            if str(entity.get("name") or "")
+                        ],
                     }
                     for focus in domain.get("focuses") or []
                     if str(focus.get("id") or "")
@@ -748,15 +899,20 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
         "你是电信竞争情报分析员。只能使用输入JSON里的事实、数字、期间、口径和来源，不得补充常识数字或猜测。"
-        "每个领域给出一句headline、一段analysis和一句risk，并为输入中的每个focus给出一段analysis和一句risk。"
-        "所有focus必须逐一覆盖，不能遗漏、合并或新增。跨期间、代理分部、披露缺口必须明确写入risk；"
+        "每个领域给出一句headline、一段analysis和一句risk；为每个focus给出analysis、risk；"
+        "并为每个focus中的每个实体逐一给出headline、analysis、risk、evidence_labels和source_urls。"
+        "实体analysis必须先说清具体包含哪些组成明细，再指出结构、集中度、变化或差距及其业务含义；"
+        "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
+        "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
+        "跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
         "source_urls只能从输入中原样选择。只返回JSON数组。"
     )
     user_prompt = (
         "请分析 local、international、cloud、macro 四个领域。每项字段严格为"
         "domain, headline, analysis, risk, source_urls, focuses；focuses每项字段严格为"
-        "id, analysis, risk, source_urls。不要Markdown。输入：\n"
+        "id, analysis, risk, source_urls, entities；entities每项字段严格为"
+        "name, headline, analysis, risk, evidence_labels, source_urls。不要Markdown。输入：\n"
         + json.dumps(evidence, ensure_ascii=False)
     )
     messages = [
@@ -767,10 +923,21 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         "model": str(config.get("model") or "deepseek-v4"),
         "messages": messages,
         "temperature": 0.0,
+        "max_tokens": 16000,
+        "chat_template_kwargs": {"enable_thinking": False},
     }
     summaries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
-    for attempt in range(3):
+    used_models: set[str] = set()
+    entity_count = sum(
+        len(focus.get("items") or [])
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+    )
+    # Large all-domain payloads can exceed the internal gateway response window.
+    # Split them by domain immediately; each response remains independently gated.
+    primary_attempts = 0 if entity_count > 40 else 3
+    for attempt in range(primary_attempts):
         body["messages"] = messages
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
@@ -785,17 +952,19 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
-        content = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+        message = (payload.get("choices") or [{}])[0].get("message") or {}
+        content = message.get("content") or message.get("reasoning_content") or ""
         try:
             raw_summaries = _extract_json_payload(content)
             summaries = _validate_model_summaries(
                 _drop_unsupported_numeric_clauses(raw_summaries, evidence),
                 evidence,
             )
+            used_models.add(str(body["model"]))
             break
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = exc
-            if attempt < 2:
+            if attempt + 1 < primary_attempts:
                 messages.extend(
                     [
                         {"role": "assistant", "content": content},
@@ -803,7 +972,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                             "role": "user",
                             "content": (
                                 f"上一版未通过事实门禁：{exc}。请删除或改写所有未获输入支持的数字/来源，"
-                                "保持四个领域完整并重新只返回JSON数组。"
+                                "保持四个领域、全部focus和全部实体完整并重新只返回JSON数组。"
                             ),
                         },
                     ]
@@ -826,7 +995,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                     "role": "user",
                     "content": (
                         f"只分析 {domain_id} 这一个领域，返回只含一个对象的JSON数组。"
-                        "必须逐一返回输入中的全部focus id。字段协议不变。输入：\n"
+                        "必须逐一返回输入中的全部focus id及其全部实体。字段协议不变。输入：\n"
                         + json.dumps({"domains": [domain_evidence]}, ensure_ascii=False)
                     ),
                 },
@@ -844,7 +1013,8 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                 try:
                     with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
                         domain_payload = json.loads(response.read().decode("utf-8"))
-                    domain_content = ((domain_payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+                    domain_message = (domain_payload.get("choices") or [{}])[0].get("message") or {}
+                    domain_content = domain_message.get("content") or domain_message.get("reasoning_content") or ""
                     parsed = _extract_json_payload(domain_content)
                     if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
                         raise ValueError("必须返回单对象JSON数组")
@@ -856,28 +1026,132 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                     }
                     if not expected_focus_ids.issubset(returned_focus_ids):
                         raise ValueError(f"分类覆盖不完整：{sorted(expected_focus_ids - returned_focus_ids)}")
+                    returned_by_focus = {
+                        str(focus.get("id") or ""): {
+                            str(entity.get("name") or "") for entity in focus.get("entities") or []
+                            if isinstance(entity, dict) and str(entity.get("name") or "")
+                        }
+                        for focus in candidate.get("focuses") or [] if isinstance(focus, dict)
+                    }
+                    for evidence_focus in domain_evidence.get("focuses") or []:
+                        focus_id = str(evidence_focus.get("id") or "")
+                        expected_names = {
+                            str(entity.get("name") or "") for entity in evidence_focus.get("items") or []
+                            if str(entity.get("name") or "")
+                        }
+                        if returned_by_focus.get(focus_id, set()) != expected_names:
+                            raise ValueError(f"实体覆盖不完整：{focus_id}")
                     candidate["domain"] = domain_id
                     candidate["focuses"] = [
                         focus for focus in candidate.get("focuses") or []
                         if isinstance(focus, dict) and str(focus.get("id") or "") in expected_focus_ids
                     ]
                     domain_summary = candidate
+                    used_models.add(str(body["model"]))
                     break
                 except (ValueError, json.JSONDecodeError) as exc:
                     domain_error = exc
                     if domain_attempt < 2:
                         domain_messages.append({
                             "role": "user",
-                            "content": f"上一版未通过门禁：{exc}。请完整返回全部focus，仍只返回单对象JSON数组。",
+                            "content": f"上一版未通过门禁：{exc}。请完整返回全部focus和全部实体，仍只返回单对象JSON数组。",
                         })
             if domain_summary is None:
-                raise ValueError(f"AI分析按领域重试仍未通过：{domain_id}: {domain_error}")
+                focus_parts: list[dict[str, Any]] = []
+                domain_fields: dict[str, Any] | None = None
+                for focus_evidence in domain_evidence.get("focuses") or []:
+                    focus_id = str(focus_evidence.get("id") or "")
+                    expected_names = {
+                        str(entity.get("name") or "") for entity in focus_evidence.get("items") or []
+                        if str(entity.get("name") or "")
+                    }
+                    focus_messages = [
+                        {
+                            "role": "system",
+                            "content": (
+                                "你是电信竞争情报分析员。只返回合法JSON数组，不要解释。只能使用输入证据。"
+                                "逐一覆盖items中的全部实体，name必须原样；每个实体先说明components具体包含什么，"
+                                "再写结构、变化或差距及业务含义。evidence_labels只能原样选自该实体components.label。"
+                                "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图等界面说明。"
+                            ),
+                        },
+                        {
+                            "role": "user",
+                            "content": (
+                                f"只分析 {domain_id}.{focus_id} 这一个分类，返回只含一个领域对象、一个focus的JSON数组。"
+                                f"实体name必须完整且原样等于：{json.dumps(sorted(expected_names), ensure_ascii=False)}。"
+                                "固定结构为：[{domain,headline,analysis,risk,source_urls,focuses:[{id,analysis,risk,"
+                                "source_urls,entities:[{name,headline,analysis,risk,evidence_labels,source_urls}]}]}]。输入：\n"
+                                + json.dumps({"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}, ensure_ascii=False)
+                            ),
+                        },
+                    ]
+                    focus_candidate: dict[str, Any] | None = None
+                    focus_error: Exception | None = None
+                    configured_model = str(body["model"])
+                    focus_models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
+                    for focus_attempt, focus_model in enumerate(focus_models):
+                        request = urllib.request.Request(
+                            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
+                            data=json.dumps({**body, "model": focus_model, "messages": focus_messages}, ensure_ascii=False).encode("utf-8"),
+                            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                            method="POST",
+                        )
+                        wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}-{focus_id}")
+                        try:
+                            with urlopen_with_local_proxy_fallback(request, timeout=180) as response:
+                                focus_payload = json.loads(response.read().decode("utf-8"))
+                            focus_message = (focus_payload.get("choices") or [{}])[0].get("message") or {}
+                            focus_content = focus_message.get("content") or focus_message.get("reasoning_content") or ""
+                            parsed = _extract_json_payload(focus_content)
+                            if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
+                                raise ValueError("必须返回单对象JSON数组")
+                            candidate = parsed[0]
+                            returned_focuses = [
+                                focus for focus in candidate.get("focuses") or []
+                                if isinstance(focus, dict) and str(focus.get("id") or "") == focus_id
+                            ]
+                            if len(returned_focuses) != 1:
+                                raise ValueError(f"必须只返回分类 {focus_id}")
+                            returned_names = {
+                                str(entity.get("name") or "") for entity in returned_focuses[0].get("entities") or []
+                                if isinstance(entity, dict) and str(entity.get("name") or "")
+                            }
+                            if returned_names != expected_names:
+                                raise ValueError(f"实体覆盖不完整：{sorted(expected_names - returned_names)}")
+                            focus_candidate = candidate
+                            focus_candidate["domain"] = domain_id
+                            focus_candidate["focuses"] = returned_focuses
+                            used_models.add(focus_model)
+                            break
+                        except (ValueError, json.JSONDecodeError) as exc:
+                            focus_error = exc
+                            if focus_attempt + 1 < len(focus_models):
+                                focus_messages.append({
+                                    "role": "user",
+                                    "content": f"上一版未通过门禁：{exc}。请只返回该focus及全部实体的合法JSON数组。",
+                                })
+                    if focus_candidate is None:
+                        raise ValueError(
+                            f"AI分析按分类重试仍未通过：{domain_id}.{focus_id}: {focus_error}; 领域错误：{domain_error}"
+                        )
+                    if domain_fields is None:
+                        domain_fields = {
+                            key: focus_candidate.get(key)
+                            for key in ("domain", "headline", "analysis", "risk", "source_urls")
+                        }
+                    focus_parts.extend(focus_candidate["focuses"])
+                domain_summary = {**(domain_fields or {"domain": domain_id}), "focuses": focus_parts}
             per_domain_summaries.append(domain_summary)
         summaries = _validate_model_summaries(
             _drop_unsupported_numeric_clauses(per_domain_summaries, evidence),
             evidence,
         )
-    return {"generated_at_hkt": _now(), "model": body["model"], "summaries": summaries}
+    return {
+        "generated_at_hkt": _now(),
+        "model": "+".join(sorted(used_models)) if used_models else str(body["model"]),
+        "summaries": summaries,
+    }
 
 
 def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -928,7 +1202,8 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
-        content = ((payload.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
+        message = (payload.get("choices") or [{}])[0].get("message") or {}
+        content = message.get("content") or message.get("reasoning_content") or ""
         try:
             discoveries = _validate_model_discoveries(_extract_json_payload(content), evidence)
             break

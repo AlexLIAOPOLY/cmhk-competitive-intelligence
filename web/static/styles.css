@@ -13763,12 +13763,13 @@ body.report-library-open::before {
 .intelligence-entity-focus {
   position: relative;
   display: grid;
+  grid-template-rows: auto auto minmax(44px, 1fr);
   min-width: 0;
   padding: 9px 11px 8px 13px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--domain-accent) 26%, #183847);
   background: rgba(7, 27, 39, .62);
-  align-content: center;
+  align-content: stretch;
 }
 
 .intelligence-entity-focus > span {
@@ -13807,6 +13808,87 @@ body.report-library-open::before {
   line-height: 1.42;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+.intelligence-entity-detail-body {
+  position: relative;
+  min-height: 44px;
+  max-height: 88px;
+  margin-top: 6px;
+  padding-right: 3px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: color-mix(in srgb, var(--domain-accent) 45%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+.intelligence-entity-detail-body > p {
+  margin: 7px 0 20px;
+  color: #a6c0ca;
+  font-size: 11.5px;
+  line-height: 1.48;
+}
+
+.intelligence-entity-components {
+  border-top: 1px solid color-mix(in srgb, var(--domain-accent) 20%, transparent);
+  padding-top: 6px;
+}
+
+.intelligence-entity-components > header,
+.intelligence-entity-components li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.intelligence-entity-components > header span {
+  color: color-mix(in srgb, var(--domain-accent) 78%, #dbeef3);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+}
+
+.intelligence-entity-components > header small {
+  color: #7796a2;
+  font-size: 9px;
+}
+
+.intelligence-entity-components ul {
+  display: grid;
+  gap: 3px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.intelligence-entity-components li {
+  min-width: 0;
+  color: #a9c2cb;
+  font-size: 9.5px;
+  line-height: 1.3;
+}
+
+.intelligence-entity-components li > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intelligence-entity-components li > strong {
+  flex: none;
+  color: #d7e9ed;
+  font-size: 9.5px;
+  font-weight: 650;
+}
+
+.intelligence-entity-components li > strong i {
+  margin-left: 2px;
+  color: #7f9eaa;
+  font-size: 8px;
+  font-style: normal;
 }
 
 .intelligence-entity-focus.is-overview > strong {

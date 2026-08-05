@@ -102,8 +102,8 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('measureScrollingLabels(replacement)', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=242"', html)
-        self.assertIn('src="/static/app.js?v=247"', html)
+        self.assertIn('href="/static/styles.css?v=249"', html)
+        self.assertIn('src="/static/app.js?v=250"', html)
         self.assertIn('class="intelligence-focus-tabs"', app)
         self.assertIn('class="intelligence-entity-focus"', app)
         self.assertIn('href="/static/leadership-board.css?v=3"', html)
@@ -3459,6 +3459,19 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
 
         self.assertTrue(result["ok"])
         self.assertEqual(run.call_args.kwargs["timeout"], 900)
+
+
+class IntelligenceEntityScrollTests(unittest.TestCase):
+    def test_entity_details_use_local_scroll_without_disclosure_button(self) -> None:
+        app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (Path(__file__).parent / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('entity.ai_summary?.analysis || entity.analysis', app)
+        self.assertIn('class="intelligence-entity-components"', app)
+        self.assertNotIn('data-intelligence-disclosure', app)
+        self.assertIn('grid-template-rows: auto auto minmax(44px, 1fr);', styles)
+        self.assertIn('overflow-y: auto;', styles)
+        self.assertIn('overscroll-behavior: contain;', styles)
 
 
 if __name__ == "__main__":

@@ -7544,25 +7544,54 @@ document.addEventListener("keydown", (event) => {
     return items.findIndex((item) => item.name === selectedName);
   }
 
+  function renderEntityComponents(entity) {
+    const components = Array.isArray(entity?.components) ? entity.components : [];
+    if (!components.length) return "";
+    const total = Number(entity.component_count) || components.length;
+    const recordCount = Number(entity.record_count) || 0;
+    const countLabel = recordCount && recordCount !== total
+      ? `${total} 个唯一项 · ${recordCount} 条记录`
+      : `${total} 项`;
+    return `
+      <section class="intelligence-entity-components" aria-label="具体包含">
+        <header><span>具体包含</span><small>${safe(countLabel)}</small></header>
+        <ul>${components.slice(0, 10).map((component) => `
+          <li>
+            <span>${safe(component.label)}</span>
+            ${component.value == null ? "" : `<strong>${formatValue(component.value)}<i>${safe(component.unit)}</i></strong>`}
+          </li>
+        `).join("")}</ul>
+      </section>
+    `;
+  }
+
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
+      const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-overview`.replace(/[^a-zA-Z0-9_-]/g, "-");
       return `
         <div class="intelligence-entity-focus is-overview">
           <span>综合发现</span>
           <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
-          <p>${safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论")}</p>
+          <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
+            <p>${safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论")}</p>
+          </div>
         </div>
       `;
     }
     const source = /^https?:\/\//i.test(String(entity.source_url || ""))
       ? `<a href="${safe(entity.source_url)}" target="_self">来源<span aria-hidden="true">↗</span></a>`
       : "";
+    const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-${index}`.replace(/[^a-zA-Z0-9_-]/g, "-");
+    const entityAnalysis = entity.ai_summary?.analysis || entity.analysis || focus.insight || entity.detail || "暂无分析结论";
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
         <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
-        <p>${safe(entity.analysis || focus.insight || entity.detail || "暂无分析结论")}</p>
+        <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
+          ${renderEntityComponents(entity)}
+          <p>${safe(entityAnalysis)}</p>
+        </div>
         <div class="intelligence-entity-actions">
           ${source}
         </div>

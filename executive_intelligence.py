@@ -104,6 +104,29 @@ def _focus_metric(items: list[dict[str, Any]], label: str, unit: str, mode: str 
     return {"value": round(value, 2), "unit": unit, "label": label}
 
 
+def _component(label: Any, value: Any = None, unit: Any = "", detail: Any = "") -> dict[str, Any]:
+    item = {"label": str(label or "").strip()}
+    if value is not None:
+        item["value"] = value
+    if str(unit or "").strip():
+        item["unit"] = str(unit).strip()
+    if str(detail or "").strip():
+        item["detail"] = str(detail).strip()
+    return item
+
+
+def _dedupe_components(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: set[str] = set()
+    result: list[dict[str, Any]] = []
+    for item in items:
+        label = str(item.get("label") or "").strip()
+        if not label or label in seen:
+            continue
+        seen.add(label)
+        result.append(item)
+    return result
+
+
 def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     category_labels = {
         "business_mobile_4g": "企业移动4G",
@@ -125,7 +148,12 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     brand_profiles: dict[str, dict[str, Any]] = {}
     for brand, brand_rows in by_brand.items():
         categories = sorted({str(row.get("product_category") or "") for row in brand_rows if row.get("product_category")})
-        fees = [fee for fee in (_number(row.get("average_monthly_fee_hkd")) for row in brand_rows) if fee and fee > 0]
+        fees = [
+            fee for fee in (
+                _number(row.get("average_monthly_fee_hkd")) or _number(row.get("monthly_fee_hkd"))
+                for row in brand_rows
+            ) if fee and fee > 0
+        ]
         fee_range = (min(fees), max(fees)) if fees else None
         source_url = next((str(row.get("source_url") or "") for row in brand_rows if row.get("source_url")), "")
         brand_profiles[brand] = {
@@ -179,12 +207,33 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         brand_overlaps = sorted(overlaps_by_brand.get(brand, []), key=lambda item: item["score"], reverse=True)
         shared_categories = set().union(*(set(item["shared"]) for item in brand_overlaps)) if brand_overlaps else set()
         strongest = brand_overlaps[0] if brand_overlaps else None
+        plan_components = _dedupe_components([
+            _component(
+                row.get("plan_name") or row.get("plan_family") or "未命名方案",
+                _number(row.get("average_monthly_fee_hkd")) or _number(row.get("monthly_fee_hkd")),
+                "港元/月",
+                category_labels.get(str(row.get("product_category") or ""), str(row.get("product_category") or "")),
+            )
+            for row in profile["rows"]
+        ])
+        duplicate_records = max(0, len(profile["rows"]) - len(plan_components))
+        fee_text = (
+            f"月费 HK${fee_range[0]:.0f}–{fee_range[1]:.0f}"
+            if fee_range else "月费未完整结构化"
+        )
+        duplicate_text = f"；另有 {duplicate_records} 条重复记录需在总量判断前去重" if duplicate_records else ""
         scale_items.append({
             "name": brand,
             "value": len(profile["rows"]),
             "unit": "项",
             "detail": f"覆盖 {len(categories)} 个赛道",
-            "analysis": f"在售方案量为 {len(profile['rows'])} 项；数据库内按方案数排名将在同一视图直接比较。",
+            "analysis": (
+                f"{len(profile['rows'])} 条在售记录对应 {len(plan_components)} 个唯一方案，"
+                f"集中于{'、'.join(labels) or '未分类产品'}，{fee_text}{duplicate_text}。"
+            ),
+            "components": plan_components,
+            "component_count": len(plan_components),
+            "record_count": len(profile["rows"]),
             "source_url": profile["source_url"],
         })
         track_items.append({
@@ -193,6 +242,8 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "unit": "个赛道",
             "detail": "、".join(labels[:4]) or "未分类",
             "analysis": f"覆盖 {len(categories)} 个产品赛道，重点包括{'、'.join(labels[:3]) or '未分类产品'}。",
+            "components": [_component(label) for label in labels],
+            "component_count": len(labels),
             "source_url": profile["source_url"],
         })
         price_items.append({
@@ -206,6 +257,8 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 f"结构化平均月费中位数为 HK${median_fee:.0f}，覆盖区间 HK${fee_range[0]:.0f}–{fee_range[1]:.0f}。"
                 if median_fee is not None and fee_range else "当前品牌缺少可比月费，不进行估算。"
             ),
+            "components": plan_components,
+            "component_count": len(plan_components),
             "source_url": profile["source_url"],
         })
         overlap_items.append({
@@ -219,6 +272,16 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 + (f"，月费重叠 HK${strongest['fee_overlap'][0]:.0f}–{strongest['fee_overlap'][1]:.0f}。" if strongest.get("fee_overlap") else "。")
                 if strongest else "当前未发现结构化赛道交集。"
             ),
+            "components": [
+                _component(
+                    item["peer"],
+                    len(item["shared"]),
+                    "个重叠赛道",
+                    "、".join(category_labels.get(category, category.replace("_", " ")) for category in item["shared"]),
+                )
+                for item in brand_overlaps
+            ],
+            "component_count": len(brand_overlaps),
             "source_url": profile["source_url"],
         })
 
@@ -339,7 +402,9 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "unit": "%",
             "period": str(row.get("period") or ""),
             "detail": f"{row.get('period') or '最新期'}营收同比",
-            "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%，在四家同口径对标中位置由图中排序给出。",
+            "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%；该值反映最新披露期的收入扩张或收缩速度。",
+            "components": [_component(row.get("period") or "最新期", round(value, 2), "%", row.get("metric_zh") or "营收同比")],
+            "component_count": 1,
             "source_url": source_url,
         })
         momentum_items.append({
@@ -358,6 +423,11 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 {"label": str(item.get("period") or ""), "value": _verified_number(item)}
                 for item in history[-4:]
             ],
+            "components": [
+                _component(item.get("period") or "未标期间", _verified_number(item), "%", item.get("metric_zh") or "营收同比")
+                for item in history[-4:]
+            ],
+            "component_count": len(history[-4:]),
             "source_url": source_url,
         })
         subject_rows = [item for item in rows if item.get("subject") == subject and _verified_number(item) is not None]
@@ -370,7 +440,20 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "value": len(latest_rows),
             "unit": "项披露",
             "detail": f"{latest_period} · {verified} 项官方匹配",
-            "analysis": f"最新期间共取得 {len(latest_rows)} 项结构化指标，其中 {verified} 项标记为官方匹配；此视图衡量披露覆盖，不代表经营优劣。",
+            "analysis": (
+                f"{latest_period}包含 {len(latest_rows)} 项可核验指标，{verified} 项为官方匹配；"
+                f"指标组合包括{'、'.join(str(item.get('metric_zh') or item.get('metric_key') or '') for item in latest_rows[:4])}。"
+            ),
+            "components": _dedupe_components([
+                _component(
+                    item.get("metric_zh") or item.get("metric_key") or "未命名指标",
+                    _verified_number(item),
+                    item.get("official_unit") or item.get("unit") or "",
+                    item.get("period") or latest_period,
+                )
+                for item in latest_rows
+            ]),
+            "component_count": len(latest_rows),
             "source_url": str((latest_rows[0] if latest_rows else row).get("official_source_url") or ""),
         })
     growth_items.sort(key=lambda item: item["value"], reverse=True)
@@ -386,6 +469,11 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "unit": "个百分点",
             "detail": "当前领先" if gap == 0 else f"较 {leader['name']} 落后 {gap:.2f} 个百分点",
             "analysis": "当前为营收增速领先基准。" if gap == 0 else f"以同期间营收增速衡量，较领先者 {leader['name']} 存在 {gap:.2f} 个百分点差距。",
+            "components": [
+                _component(item["name"], item["value"], "%", item.get("period") or "最新期"),
+                _component(leader["name"], leader["value"], "%", leader.get("period") or "最新期"),
+            ],
+            "component_count": 2,
         })
     positive = [item for item in growth_items if item["value"] >= 0]
     negative = [item for item in growth_items if item["value"] < 0]
@@ -457,7 +545,9 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "name": name, "value": round(value, 1), "unit": "%",
             "period": f"FY{row.get('fiscal_year')}",
             "detail": f"FY{row.get('fiscal_year')} 云业务营收同比",
-            "analysis": f"FY{row.get('fiscal_year')}披露的云业务营收同比为 {value:+.1f}%；比较仅采用各厂商库内统一的 revenue_yoy 字段。",
+            "analysis": f"FY{row.get('fiscal_year')}云业务营收同比为 {value:+.1f}%，反映该披露口径下的最新业务扩张速度。",
+            "components": [_component(f"FY{row.get('fiscal_year')}云业务营收同比", round(value, 1), "%")],
+            "component_count": 1,
             "source_url": source_url,
         })
         history = _metric_history(rows, "vendor", vendor, "revenue_yoy")
@@ -473,6 +563,11 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 if change is not None else "缺少上一财年可比增速，不推断趋势。"
             ),
             "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in history[-3:]],
+            "components": [
+                _component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", item.get("metric_zh") or "云业务营收同比")
+                for item in history[-3:]
+            ],
+            "component_count": len(history[-3:]),
             "source_url": source_url,
         })
         profit_row = None
@@ -491,6 +586,11 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 f"最新披露的{profit_label}为 {profit_value:.1f}%；不同厂商可能采用经营利润率、调整后EBITA率或代理分部毛利率，需按标签理解。"
                 if profit_value is not None else "数据库未取得可比利润率，未进行估算或跨口径替代。"
             ),
+            "components": (
+                [_component(profit_label, round(profit_value, 1), "%", f"FY{profit_row.get('fiscal_year')}")]
+                if profit_value is not None and profit_row else [_component("未取得可比利润率", detail="不跨口径估算")]
+            ),
+            "component_count": 1,
             "source_url": str((profit_row or row).get("primary_source_url") or ""),
         })
         vendor_rows = [item for item in rows if item.get("vendor") == vendor and _verified_number(item) is not None]
@@ -501,7 +601,20 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         disclosure_items.append({
             "name": name, "value": len(latest_rows), "unit": "项披露",
             "detail": f"FY{latest_year} · {quality}",
-            "analysis": f"FY{latest_year}共有 {len(latest_rows)} 项结构化指标，直接分部口径 {direct_count} 项；披露数量用于判断分析深度，不代表经营排名。",
+            "analysis": (
+                f"FY{latest_year}包含 {len(latest_rows)} 项指标，其中 {direct_count} 项为直接分部口径；"
+                f"具体覆盖{'、'.join(str(item.get('metric_zh') or item.get('metric_key') or '') for item in latest_rows[:4])}。"
+            ),
+            "components": _dedupe_components([
+                _component(
+                    item.get("metric_zh") or item.get("metric_key") or "未命名指标",
+                    _verified_number(item),
+                    item.get("unit") or "",
+                    f"FY{latest_year} · {item.get('disclosure_quality') or '未标口径'}",
+                )
+                for item in latest_rows
+            ]),
+            "component_count": len(latest_rows),
             "source_url": str((latest_rows[0] if latest_rows else row).get("primary_source_url") or ""),
         })
     growth_items.sort(key=lambda item: item["value"], reverse=True)
@@ -646,6 +759,10 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "unit": display_unit,
             "detail": f"截至 {row.get('period_end') or '-'}",
             "analysis": f"官方指标 {row.get('metric_name') or label} 最新值为 {display_value} {display_unit}；原始记录为 {raw_value_text} {raw_unit}。",
+            "components": [
+                _component(row.get("metric_name") or label, display_value, display_unit, f"截至 {row.get('period_end') or '-'}")
+            ],
+            "component_count": 1,
             "source_url": str(row.get("official_source_url") or ""),
         }
 
@@ -716,7 +833,15 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             if isinstance(item, dict)
         }
         for focus in domain.get("focuses") or []:
-            focus["ai_summary"] = focus_summaries.get(str(focus.get("id") or ""), {})
+            focus_summary = focus_summaries.get(str(focus.get("id") or ""), {})
+            focus["ai_summary"] = focus_summary
+            entity_summaries = {
+                str(item.get("name") or ""): item
+                for item in (focus_summary.get("entities") or [])
+                if isinstance(item, dict)
+            }
+            for entity in focus.get("items") or []:
+                entity["ai_summary"] = entity_summaries.get(str(entity.get("name") or ""), {})
         domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
         domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
     deterministic_relations = [

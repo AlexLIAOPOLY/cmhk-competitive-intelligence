@@ -318,6 +318,76 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "分类不完整"):
             pipeline._validate_model_summaries(summaries, evidence)
 
+    def test_model_analysis_requires_every_entity_and_known_component_labels(self):
+        evidence = {
+            "domains": [
+                {
+                    "id": domain,
+                    "focuses": [{
+                        "id": f"{domain}-focus",
+                        "items": [{
+                            "name": f"{domain}-entity",
+                            "value": 10,
+                            "components": [{"label": "具体项目", "value": 10}],
+                            "source_url": "https://example.com/source",
+                        }],
+                    }],
+                    "agent_verified_facts": [],
+                }
+                for domain in ("local", "international", "cloud", "macro")
+            ]
+        }
+        summaries = [
+            {
+                "domain": domain,
+                "headline": "明细已更新",
+                "analysis": "具体结构发生变化。",
+                "risk": "保持口径边界。",
+                "source_urls": ["https://example.com/source"],
+                "focuses": [{
+                    "id": f"{domain}-focus",
+                    "analysis": "分类证据已更新。",
+                    "risk": "保持边界。",
+                    "source_urls": ["https://example.com/source"],
+                    "entities": [{
+                        "name": f"{domain}-entity",
+                        "headline": "组成清晰",
+                        "analysis": "具体项目包含10项，结构集中。",
+                        "risk": "保持边界。",
+                        "evidence_labels": ["具体项目"],
+                        "source_urls": ["https://example.com/source"],
+                    }],
+                }],
+            }
+            for domain in ("local", "international", "cloud", "macro")
+        ]
+        validated = pipeline._validate_model_summaries(summaries, evidence)
+        self.assertEqual(sum(len(focus["entities"]) for item in validated for focus in item["focuses"]), 4)
+        summaries[0]["focuses"][0]["entities"][0]["evidence_labels"] = ["未知项目"]
+        with self.assertRaisesRegex(ValueError, "未知明细"):
+            pipeline._validate_model_summaries(summaries, evidence)
+
+    def test_model_analysis_rejects_entity_ui_filler(self):
+        evidence = {
+            "domains": [{
+                "id": domain,
+                "focuses": [{"id": "focus", "items": [{"name": "实体", "components": [{"label": "项目"}]}]}],
+                "agent_verified_facts": [],
+            } for domain in ("local", "international", "cloud", "macro")]
+        }
+        summaries = [{
+            "domain": domain, "headline": "观察", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": [],
+            "focuses": [{
+                "id": "focus", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": [],
+                "entities": [{
+                    "name": "实体", "headline": "观察", "analysis": "数据库内按排名展示。", "risk": "谨慎。",
+                    "evidence_labels": ["项目"], "source_urls": [],
+                }],
+            }],
+        } for domain in ("local", "international", "cloud", "macro")]
+        with self.assertRaisesRegex(ValueError, "界面废话"):
+            pipeline._validate_model_summaries(summaries, evidence)
+
     def test_model_analysis_sanitizer_drops_only_unsupported_numeric_clause(self):
         evidence = {"domains": [{"focuses": [{"items": [{"value": 10}]}]}]}
         raw = [{

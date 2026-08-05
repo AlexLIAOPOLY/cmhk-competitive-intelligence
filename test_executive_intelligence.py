@@ -106,6 +106,26 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         for domain in self.snapshot["domains"]:
             self.assertTrue(all("ai_summary" in focus for focus in domain["focuses"]))
 
+    def test_every_clickable_entity_exposes_concrete_components(self):
+        for domain in self.snapshot["domains"]:
+            for focus in domain["focuses"]:
+                for item in focus["items"]:
+                    self.assertTrue(item.get("components"), f"{domain['id']}:{focus['id']}:{item['name']}")
+                    self.assertTrue(all(component.get("label") for component in item["components"]))
+
+    def test_icable_scale_lists_unique_plans_and_duplicate_record_risk(self):
+        local = next(domain for domain in self.snapshot["domains"] if domain["id"] == "local")
+        scale = next(focus for focus in local["focuses"] if focus["id"] == "scale")
+        icable = next(item for item in scale["items"] if item["name"] == "i-CABLE")
+        self.assertEqual(icable["record_count"], 10)
+        self.assertEqual(icable["component_count"], 8)
+        self.assertIn("2 条重复记录", icable["analysis"])
+        self.assertIn("月费 HK$58–118", icable["analysis"])
+        self.assertIn(
+            "i-CABLE Broadband 公屋居屋 1000M HK$68",
+            {component["label"] for component in icable["components"]},
+        )
+
     def test_international_dashboard_prefers_official_value_over_normalized_value(self):
         common = {
             "subject": "中国移动",
