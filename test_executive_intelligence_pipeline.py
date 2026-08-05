@@ -14,6 +14,25 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_analysis_evidence_excludes_rendered_ai_relations(self):
+        rendered = {
+            "domains": [],
+            "relations": [{
+                "from": "local",
+                "to": "cloud",
+                "title": "上一轮AI发现",
+                "detail": "不得反馈进下一轮证据哈希。",
+                "origin": "ai",
+            }],
+        }
+        with patch(
+            "executive_intelligence.build_executive_intelligence_snapshot",
+            return_value=rendered,
+        ):
+            evidence = pipeline._analysis_input_snapshot()
+
+        self.assertEqual(evidence, {"domains": [], "relations": []})
+
     def test_scheduled_refresh_retries_then_logs_locally_and_finalizes_task(self):
         failed = {
             "ok": False,

@@ -428,7 +428,12 @@ def _analysis_input_snapshot() -> dict[str, Any]:
                 "agent_verified_facts": (domain.get("ai_analysis") or [])[:8],
             }
         )
-    return {"domains": domains, "relations": snapshot.get("relations") or []}
+    # Rendered relations may come from the previous model_analysis payload.
+    # Feeding them back into the next evidence hash makes the hash change after
+    # every successful publish even when the four source databases are stable.
+    # Cross-domain discoveries are generated from the source-backed domains;
+    # deterministic fallback pairs are constructed separately below.
+    return {"domains": domains, "relations": []}
 
 
 def _extract_json_payload(text: str) -> Any:
