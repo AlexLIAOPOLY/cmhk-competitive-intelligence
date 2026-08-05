@@ -1136,10 +1136,10 @@ h1 {
   .panel.is-drilling .relation-driver-card > em { font-size: 8px; }
   .relation-stage-insight .relation-conclusion { padding-left: 8px; }
   .relation-stage-insight .relation-conclusion > p {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-line-clamp: unset;
   }
 }
 
@@ -2009,6 +2009,8 @@ body.has-drill-fullscreen { overflow: hidden !important; }
     max-height: clamp(96px, 15vh, 156px);
     margin-top: 12px;
     display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
     font-size: 13px;
     line-height: 1.55;
     -webkit-line-clamp: unset;

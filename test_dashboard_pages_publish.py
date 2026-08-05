@@ -107,7 +107,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             relations = (first / "executive-dashboard-relations.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=7"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=8"', html)
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('src="./executive-dashboard-relations.js?v=1"', html)
             self.assertIn('src="./executive-dashboard-drilldown.js?v=7"', html)
@@ -129,6 +129,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn(".relation-conclusion > p {", css)
             self.assertIn("overflow-y: auto;", css)
             self.assertIn("overscroll-behavior: contain;", css)
+            self.assertNotIn("-webkit-line-clamp: 4;", css)
             self.assertNotIn("relation-conclusion-toggle", css)
             self.assertTrue((first / ".nojekyll").exists())
 
