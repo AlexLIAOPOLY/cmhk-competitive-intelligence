@@ -1,0 +1,19 @@
+/* Keep the overview board readable on compact desktop widths. */
+@media (min-width: 761px) and (max-width: 1180px) {
+  .intelligence-command-board {
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .intelligence-domain-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    gap: 12px;
+  }
+
+  .intelligence-domain {
+    min-height: 350px;
+  }
+}
