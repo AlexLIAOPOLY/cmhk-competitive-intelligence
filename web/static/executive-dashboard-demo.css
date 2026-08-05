@@ -957,7 +957,19 @@ h1 {
 .relation-conclusion > b { display: block; margin-top: 2px; color: #eefbff; font-size: 18px; font-weight: 580; font-variant-numeric: tabular-nums; }
 .relation-conclusion > b small { margin-left: 3px; color: #84aebd; font-size: 8px; font-weight: 500; }
 .relation-conclusion > em { display: block; margin-top: 2px; color: #49dcb2; font-size: 7px; font-style: normal; }
-.relation-conclusion > p { margin: 5px 0 0; color: #9bc1cf; font-size: 7px; line-height: 1.35; }
+.relation-conclusion > p {
+  max-height: 44px;
+  margin: 5px 0 0;
+  padding-right: 5px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: #9bc1cf;
+  font-size: 7px;
+  line-height: 1.35;
+  scrollbar-color: rgba(72, 220, 255, .36) transparent;
+  scrollbar-width: thin;
+}
 
 .relation-driver-preview {
   display: grid;
@@ -1994,6 +2006,7 @@ body.has-drill-fullscreen { overflow: hidden !important; }
   .panel.is-drilling .relation-conclusion > b small { font-size: 13px; }
   .panel.is-drilling .relation-conclusion > em { margin-top: 7px; font-size: 12px; }
   .panel.is-drilling .relation-conclusion > p {
+    max-height: clamp(96px, 15vh, 156px);
     margin-top: 12px;
     display: block;
     font-size: 13px;

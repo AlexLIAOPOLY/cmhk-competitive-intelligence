@@ -107,7 +107,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             relations = (first / "executive-dashboard-relations.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=6"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=7"', html)
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('src="./executive-dashboard-relations.js?v=1"', html)
             self.assertIn('src="./executive-dashboard-drilldown.js?v=7"', html)
@@ -123,6 +123,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("openCategory(state, categoryItem, target)", drilldown)
             self.assertIn('"5G平均下载速率"', drilldown)
             self.assertIn("CMHK_DASHBOARD_RELATIONS", relations)
+            css = (first / "executive-dashboard-demo.css").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn(".relation-conclusion > p {", css)
+            self.assertIn("overflow-y: auto;", css)
+            self.assertIn("overscroll-behavior: contain;", css)
+            self.assertNotIn("relation-conclusion-toggle", css)
             self.assertTrue((first / ".nojekyll").exists())
 
 
