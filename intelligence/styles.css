@@ -14888,11 +14888,8 @@ body.dashboard-page { overflow-x: hidden; }
 .strategy-ticker { min-height: 104px; }
 .strategy-ticker-list { min-height: 104px; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
-.static-snapshot [role="button"], .static-snapshot button, .static-snapshot a {
-  cursor: default !important;
-  pointer-events: none !important;
-}
-.static-snapshot .intelligence-scroll-label-track { animation-play-state: paused !important; }
+.static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
+.static-snapshot .header-tools button { cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
