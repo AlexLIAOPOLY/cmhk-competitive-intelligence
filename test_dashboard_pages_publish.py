@@ -95,6 +95,21 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 "<title>四库竞争情报驾驶舱</title>",
             )
 
+    def test_static_intelligence_snapshot_keeps_frontend_interactions_without_api(self):
+        static_dir = Path(__file__).resolve().parent / "web" / "static" / "intelligence-public"
+        html = (static_dir / "index.html").read_text(encoding="utf-8")
+        script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
+
+        self.assertIn('<script src="./intelligence.js"></script>', html)
+        self.assertIn('id="intelligenceDrawerBackdrop"', html)
+        self.assertIn('data-intelligence-focus', script)
+        self.assertIn('function selectFocus', script)
+        self.assertIn('function selectEntity', script)
+        self.assertIn('function openDrawer', script)
+        self.assertIn('strategy-ticker-track', script)
+        self.assertNotIn("/api/", script)
+        self.assertNotRegex(script, r"127\.0\.0\.1|localhost|10\.0\.|192\.168\.")
+
 
 if __name__ == "__main__":
     unittest.main()

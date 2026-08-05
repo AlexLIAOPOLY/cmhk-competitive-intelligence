@@ -24,6 +24,7 @@ function cleanDirectory(directory) {
   fs.rmSync(directory, { recursive: true, force: true });
   fs.mkdirSync(path.join(directory, "assets"), { recursive: true });
   fs.mkdirSync(path.join(directory, "assets", "logo"), { recursive: true });
+  fs.mkdirSync(path.join(directory, "assets", "executive-dashboard"), { recursive: true });
 }
 
 function staticOverrides() {
@@ -35,11 +36,8 @@ body.dashboard-page { overflow-x: hidden; }
 .strategy-ticker { min-height: 104px; }
 .strategy-ticker-list { min-height: 104px; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
-.static-snapshot [role="button"], .static-snapshot button, .static-snapshot a {
-  cursor: default !important;
-  pointer-events: none !important;
-}
-.static-snapshot .intelligence-scroll-label-track { animation-play-state: paused !important; }
+.static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
+.static-snapshot .header-tools button { cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -84,22 +82,38 @@ async function main() {
     }
     await page.waitForTimeout(250);
 
+    const intelligenceResponse = await context.request.get(
+      new URL("/api/executive-intelligence", SOURCE_URL).toString(),
+    );
+    if (!intelligenceResponse.ok()) {
+      throw new Error(`Intelligence payload request failed: ${intelligenceResponse.status()}`);
+    }
+    const intelligencePayload = await intelligenceResponse.json();
+    const payloadText = JSON.stringify(intelligencePayload);
+    if (/127\.0\.0\.1|localhost|10\.0\.|192\.168\.|file:\/\//i.test(payloadText)) {
+      throw new Error("Refusing to publish an intelligence payload with internal addresses");
+    }
+
     const fragments = await page.evaluate(() => {
       const clone = (selector) => {
         const node = document.querySelector(selector);
         if (!node) throw new Error(`Missing snapshot element: ${selector}`);
         const copy = node.cloneNode(true);
-        copy.querySelectorAll("script, [hidden]").forEach((item) => item.remove());
-        copy.querySelectorAll("a").forEach((item) => item.removeAttribute("href"));
+        copy.querySelectorAll("script").forEach((item) => item.remove());
+        copy.querySelectorAll("a").forEach((item) => {
+          const href = item.getAttribute("href") || "";
+          if (!/^https?:\/\//i.test(href)) item.removeAttribute("href");
+        });
         copy.querySelectorAll("[tabindex]").forEach((item) => item.removeAttribute("tabindex"));
-        copy.querySelectorAll('[role="button"]').forEach((item) => item.setAttribute("aria-disabled", "true"));
         return copy.outerHTML;
       };
       return {
         header: clone(".brand-bar"),
         ticker: clone(".strategy-ticker"),
         board: clone("#intelligenceBoard"),
+        drawer: clone("#intelligenceDrawerBackdrop"),
         styleHref: document.querySelector('link[href*="styles.css"]')?.href || "",
+        leadershipStyleHref: document.querySelector('link[href*="leadership-board.css"]')?.href || "",
       };
     });
     if (!fragments.styleHref) throw new Error("Unable to resolve runtime stylesheet");
@@ -110,6 +124,63 @@ async function main() {
       .replaceAll('url("/static/assets/', 'url("./assets/')
       .replaceAll("url('/static/assets/", "url('./assets/");
     fs.writeFileSync(path.join(OUTPUT_DIR, "styles.css"), `${css}\n${staticOverrides()}\n`);
+    if (fragments.leadershipStyleHref) {
+      const leadershipResponse = await context.request.get(fragments.leadershipStyleHref);
+      if (!leadershipResponse.ok()) throw new Error(`Leadership stylesheet request failed: ${leadershipResponse.status()}`);
+      const leadershipCss = (await leadershipResponse.text())
+        .replaceAll('url("/static/assets/', 'url("./assets/')
+        .replaceAll("url('/static/assets/", "url('./assets/");
+      fs.writeFileSync(path.join(OUTPUT_DIR, "leadership-board.css"), `${leadershipCss}\n${staticOverrides()}\n`);
+    }
+
+    const appSource = fs.readFileSync(path.join(ROOT, "web", "static", "app.js"), "utf8");
+    const boardStart = appSource.indexOf("/* Four-domain executive intelligence board:");
+    const boardEnd = appSource.indexOf("/* Strategic briefing ticker:", boardStart);
+    if (boardStart < 0 || boardEnd < 0) throw new Error("Unable to isolate intelligence interaction module");
+    let boardScript = appSource.slice(boardStart, boardEnd);
+    const runtimeFetch = 'fetch("/api/executive-intelligence", { cache: "no-store" })';
+    const staticFetch = 'Promise.resolve({ ok: true, json: () => Promise.resolve(window.CMHK_STATIC_INTELLIGENCE) })';
+    if (!boardScript.includes(runtimeFetch)) throw new Error("Intelligence API call shape changed; snapshot build stopped");
+    boardScript = boardScript.replace(runtimeFetch, staticFetch);
+    boardScript = boardScript.replace(
+      "window.setInterval(() => refreshIntelligencePayload(false), 60000);",
+      "window.setInterval(() => {}, 60000);",
+    );
+    const staticPayload = JSON.stringify(intelligencePayload)
+      .replaceAll("<", "\\u003c")
+      .replaceAll(">", "\\u003e")
+      .replaceAll("&", "\\u0026");
+    const tickerScript = `
+(() => {
+  const list = document.getElementById("strategyTickerList");
+  const track = list?.querySelector(".strategy-ticker-track");
+  if (!list || !track) return;
+  let paused = false;
+  let offset = 0;
+  let last = performance.now();
+  const speed = 42;
+  const firstSet = Array.from(track.children).filter((item) => !item.classList.contains("strategy-ticker-clone"));
+  const loopWidth = () => firstSet.reduce((total, item) => total + item.getBoundingClientRect().width, 0);
+  const tick = (now) => {
+    const elapsed = Math.min(48, now - last);
+    last = now;
+    if (!paused) {
+      offset -= speed * elapsed / 1000;
+      const width = loopWidth();
+      if (width > 0 && -offset >= width) offset += width;
+      track.style.transform = \`translate3d(\${offset}px, 0, 0)\`;
+    }
+    requestAnimationFrame(tick);
+  };
+  ["pointerenter", "focusin", "touchstart"].forEach((eventName) => list.addEventListener(eventName, () => { paused = true; }));
+  ["pointerleave", "focusout", "touchend"].forEach((eventName) => list.addEventListener(eventName, () => { paused = false; }));
+  requestAnimationFrame(tick);
+})();
+`;
+    fs.writeFileSync(
+      path.join(OUTPUT_DIR, "intelligence.js"),
+      `window.CMHK_STATIC_INTELLIGENCE = ${staticPayload};\n${boardScript}\n${tickerScript}`,
+    );
 
     const assets = [
       ["china-mobile-blue-logo.png", "china-mobile-blue-logo.png"],
@@ -117,12 +188,16 @@ async function main() {
       ["mobile-intelligence-bg.png", "mobile-intelligence-bg.png"],
       ["mobile-blue-network-banner.png", "mobile-blue-network-banner.png"],
       ["logo/xiaojing-ai-logo-mark.png", "logo/xiaojing-ai-logo-mark.png"],
+      ["executive-dashboard/network-hong-kong.webp", "executive-dashboard/network-hong-kong.webp"],
+      ["executive-dashboard/enterprise-cloud.webp", "executive-dashboard/enterprise-cloud.webp"],
+      ["executive-dashboard/financial-technology-grid.webp", "executive-dashboard/financial-technology-grid.webp"],
     ];
     for (const [sourceName, targetName] of assets) {
       const url = new URL(`/static/assets/${sourceName}`, SOURCE_URL).toString();
       await fetchAsset(context, url, path.join(OUTPUT_DIR, "assets", targetName));
     }
 
+    const localizeAssets = (value) => value.replaceAll("/static/assets/", "./assets/");
     const content = `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -133,19 +208,22 @@ async function main() {
   <title>中国移动香港｜四库竞争情报驾驶舱</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./leadership-board.css">
 </head>
 <body class="dashboard-page static-snapshot">
   <main class="app-shell">
-    ${fragments.header.replaceAll('/static/assets/', './assets/')}
+    ${localizeAssets(fragments.header)}
     <section class="console-shell">
       <section class="operations" aria-label="四库竞争情报驾驶舱">
         <section class="insight-board" aria-label="四库竞争情报态势看板">
-          ${fragments.ticker}
-          ${fragments.board}
+          ${localizeAssets(fragments.ticker)}
+          ${localizeAssets(fragments.board)}
+          ${localizeAssets(fragments.drawer)}
         </section>
       </section>
     </section>
   </main>
+  <script src="./intelligence.js"></script>
 </body>
 </html>\n`;
     fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content);
