@@ -91,6 +91,20 @@ h1 {
     0 0 15px rgba(53, 217, 255, .17);
 }
 
+.cockpit-title {
+  display: grid;
+  gap: 7px;
+  justify-items: center;
+}
+
+.cockpit-title > span {
+  color: rgba(132, 201, 224, .62);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .26em;
+}
+
 .news-rail {
   position: relative;
   overflow: hidden;
