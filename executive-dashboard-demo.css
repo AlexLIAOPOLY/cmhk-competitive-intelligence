@@ -320,16 +320,31 @@ h1 {
   gap: 3px;
   animation: benchmark-chart-enter 180ms cubic-bezier(0, 0, .38, .9);
 }
-.benchmark-native-chart h3 {
+.benchmark-metric-filter {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 5px;
   margin: 0 0 2px;
   color: #bfe7f1;
-  font-size: 9px;
+  font-size: 7px;
   font-weight: 620;
 }
-.benchmark-native-chart h3 small { color: #688c9b; font-size: 6px; font-weight: 520; }
+.benchmark-metric-filter > span { flex: 0 0 auto; color: #6f97a7; }
+.benchmark-metric-filter select {
+  min-width: 0;
+  height: 18px;
+  flex: 1;
+  padding: 0 17px 0 5px;
+  border: 1px solid rgba(91, 190, 234, .25);
+  border-radius: 0;
+  color: #d8f4fa;
+  background: rgba(4, 27, 42, .88);
+  font: inherit;
+  font-size: 8px;
+  outline: none;
+}
+.benchmark-metric-filter select:focus-visible { border-color: rgba(53, 217, 255, .72); }
+.benchmark-metric-filter small { flex: 0 0 auto; color: #688c9b; font-size: 6px; font-weight: 520; }
 .benchmark-chart-row {
   --company-color: #66e6ff;
   display: grid;
@@ -369,6 +384,65 @@ h1 {
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
+.benchmark-native-chart.is-lollipop .benchmark-chart-row > i { overflow: visible; height: 2px !important; }
+.benchmark-native-chart.is-lollipop .benchmark-chart-row > i > b {
+  position: relative !important;
+  height: 2px;
+  box-shadow: none;
+}
+.benchmark-native-chart.is-lollipop .benchmark-chart-row > i > b::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(255, 255, 255, .5);
+  border-radius: 50%;
+  background: var(--company-color);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--company-color) 48%, transparent);
+  transform: translateY(-50%);
+}
+.benchmark-native-chart.is-columns {
+  height: 100%;
+  grid-template-columns: repeat(var(--benchmark-company-count, 5), minmax(0, 1fr));
+  grid-template-rows: 20px minmax(0, 1fr);
+  align-items: end;
+  gap: 2px 4px;
+}
+.benchmark-native-chart.is-columns .benchmark-metric-filter { grid-column: 1 / -1; align-self: start; }
+.benchmark-native-chart.is-columns .benchmark-chart-row {
+  height: 49px;
+  display: grid;
+  grid-template: minmax(22px, 1fr) 9px 9px / 1fr;
+  gap: 1px;
+}
+.benchmark-native-chart.is-columns .benchmark-chart-row > i {
+  grid-row: 1;
+  width: 11px !important;
+  height: 100% !important;
+  display: flex;
+  align-items: flex-end;
+  justify-self: center;
+  overflow: hidden;
+}
+.benchmark-native-chart.is-columns .benchmark-chart-row > i > b {
+  width: 100% !important;
+  height: var(--benchmark-height);
+  background: linear-gradient(180deg, var(--company-color), color-mix(in srgb, var(--company-color) 38%, #12333f));
+  transform-origin: bottom;
+  animation-name: benchmark-column-enter;
+}
+.benchmark-native-chart.is-columns .benchmark-chart-row > strong {
+  grid-row: 2;
+  justify-content: center;
+  font-size: 7px;
+}
+.benchmark-native-chart.is-columns .benchmark-chart-row > span {
+  grid-row: 3;
+  text-align: center;
+  font-size: 6px;
+}
 .business-detail.has-benchmark-native-chart { min-height: 82px; padding: 5px 8px; }
 .reach-ranking.has-benchmark-native-chart { gap: 0; }
 .revenue-compare.has-benchmark-native-chart {
@@ -384,6 +458,10 @@ h1 {
 @keyframes benchmark-bar-enter {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
+}
+@keyframes benchmark-column-enter {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
 }
 
 .motion-enabled .panel {

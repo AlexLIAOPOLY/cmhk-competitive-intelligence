@@ -7,6 +7,7 @@ let newsResizeFrame = 0;
 let newsResumeTimer = 0;
 var benchmarkPayload = null;
 const selectedBenchmarkCompanyIds = new Set();
+const benchmarkMetricSelections = new Map();
 const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
@@ -573,6 +574,67 @@ function benchmarkNumericValue(record) {
   return Number.isFinite(value) ? value : null;
 }
 
+function benchmarkMetricUnit(value, explicitUnit = "") {
+  if (explicitUnit) return explicitUnit;
+  const text = String(value || "");
+  const numeric = text.match(/-?\d+(?:\.\d+)?/);
+  return numeric ? text.replace(numeric[0], "").trim() : "";
+}
+
+function uniqueBenchmarkMetrics(items) {
+  const seen = new Set();
+  return items.filter((item) => {
+    if (!item?.label || benchmarkNumericValue({ value: item.value }) === null || seen.has(item.label)) return false;
+    seen.add(item.label);
+    item.unit = benchmarkMetricUnit(item.value, item.unit);
+    return true;
+  });
+}
+
+function benchmarkMetricCatalog(panelIndex) {
+  if (panelIndex === 0) {
+    const items = [];
+    Object.values(networkViews).forEach((view) => {
+      items.push({ label: view.hero?.[0], value: view.hero?.[1], unit: benchmarkMetricUnit(view.hero?.[1]) });
+      [...(view.bars || []), ...(view.extras || []), ...(view.pair || [])].forEach(([label, value, unit]) => {
+        items.push({ label, value, unit });
+      });
+    });
+    return uniqueBenchmarkMetrics(items);
+  }
+
+  const sourceViews = panelIndex === 1 ? businessViews : panelIndex === 2 ? reachViews : financeViews;
+  const items = [];
+  Object.values(sourceViews).forEach((view) => {
+    (view.groups || []).forEach((group) => {
+      (group.metrics || []).forEach(([label, value, unit]) => items.push({ label, value, unit }));
+    });
+  });
+  if (panelIndex === 2) {
+    items.unshift(
+      { label: "品牌认知度", value: "91.6", unit: "%" },
+      { label: "品牌综合指数", value: "88.7", unit: "分" }
+    );
+  }
+  if (panelIndex === 3) {
+    items.unshift(
+      { label: "营运收入", value: "96.8", unit: "亿港元" },
+      { label: "EBITDA", value: "34.8", unit: "亿港元" },
+      { label: "EBITDA率", value: "35.9", unit: "%" },
+      { label: "净利润", value: "12.4", unit: "亿港元" },
+      { label: "净利润率", value: "12.8", unit: "%" }
+    );
+  }
+  return uniqueBenchmarkMetrics(items);
+}
+
+function benchmarkChartKind(panelIndex, metric) {
+  const descriptor = `${metric.label}${metric.unit}`;
+  if (/%|率|覆盖|满意|认知|指数|份额|时效/.test(descriptor)) return "lollipop";
+  if (panelIndex === 3) return "columns";
+  return "bars";
+}
+
 function clearBenchmarkCharts() {
   document.querySelectorAll(".benchmark-native-chart, .benchmark-panel-company").forEach((item) => item.remove());
   document.querySelectorAll(".has-benchmark-native-chart").forEach((target) => {
@@ -592,9 +654,9 @@ function renderBenchmarkCharts() {
 
   const targetSelectors = [".network-bars", ".business-detail", ".reach-ranking", ".revenue-compare"];
   panels.forEach((panel, panelIndex) => {
-    const metric = visibleDetailMetrics(panel)
-      .filter((metric) => benchmarkNumericValue(benchmarkRecord("cmhk", metric)) !== null)
-      .at(0);
+    const catalog = benchmarkMetricCatalog(panelIndex);
+    const selectedLabel = benchmarkMetricSelections.get(panelIndex);
+    const metric = catalog.find((item) => item.label === selectedLabel) || catalog.at(0);
     const target = panel.querySelector(targetSelectors[panelIndex]);
     if (!metric || !target) return;
 
@@ -607,7 +669,8 @@ function renderBenchmarkCharts() {
     }
 
     const chart = document.createElement("section");
-    chart.className = "benchmark-native-chart";
+    chart.className = `benchmark-native-chart is-${benchmarkChartKind(panelIndex, metric)}`;
+    chart.style.setProperty("--benchmark-company-count", String(companyIds.length));
     chart.setAttribute("aria-label", `${heading?.textContent || "当前板块"}多企业指标对比`);
 
     const records = companyIds.map((companyId) => ({
@@ -616,12 +679,27 @@ function renderBenchmarkCharts() {
       record: benchmarkRecord(companyId, metric)
     }));
     const maximum = Math.max(1, ...records.map(({ record }) => Math.abs(benchmarkNumericValue(record) || 0)));
-    const title = document.createElement("h3");
-    title.textContent = metric.label;
+    const filter = document.createElement("label");
+    filter.className = "benchmark-metric-filter";
+    const filterText = document.createElement("span");
+    filterText.textContent = "比较指标";
+    const select = document.createElement("select");
+    select.setAttribute("aria-label", `${heading?.textContent || "当前板块"}比较指标`);
+    catalog.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.label;
+      option.textContent = item.label;
+      option.selected = item.label === metric.label;
+      select.append(option);
+    });
+    select.addEventListener("change", () => {
+      benchmarkMetricSelections.set(panelIndex, select.value);
+      renderBenchmarkCharts();
+    });
     const unit = document.createElement("small");
     unit.textContent = records.find(({ record }) => record?.unit)?.record?.unit || metric.unit || "";
-    title.append(unit);
-    chart.append(title);
+    filter.append(filterText, select, unit);
+    chart.append(filter);
 
     records.forEach(({ companyId, company, record }) => {
       const numericValue = benchmarkNumericValue(record);
@@ -633,7 +711,9 @@ function renderBenchmarkCharts() {
       label.textContent = company?.label || companyId;
       const track = document.createElement("i");
       const bar = document.createElement("b");
-      bar.style.setProperty("--benchmark-value", `${numericValue === null ? 0 : Math.max(3, Math.abs(numericValue) / maximum * 100)}%`);
+      const percentage = numericValue === null ? 0 : Math.max(3, Math.abs(numericValue) / maximum * 100);
+      bar.style.setProperty("--benchmark-value", `${percentage}%`);
+      bar.style.setProperty("--benchmark-height", `${percentage}%`);
       track.append(bar);
       const value = document.createElement("strong");
       value.textContent = numericValue === null ? "—" : formatBenchmarkValue(record.value);

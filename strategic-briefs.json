@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-06T16:27:58+08:00",
+  "generated_at": "2026-08-06T16:32:59+08:00",
   "items": [
     {
       "id": "NEWS-BC20B8FF064970",
@@ -17,14 +17,6 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBGbHdjY21maHl2cGVjQzR5bDJPbVc1ZjFCN1ZwN3VQZnJtQ0tWbUkxNWx0Ni12aW1DSXJqQTR2OVpONWEwQmJWV210R2tHNWRiS2pTd2VyT3lhOWVObDNFNklMWHhlX0dIWU9oQVFPUVFUYkJr?oc=5",
       "published_at": "2026-08-06T10:15:00+08:00"
-    },
-    {
-      "id": "NEWS-66CD37E28FEA58",
-      "title": "Silicon Labs推出低功耗蓝牙SoC BG2B",
-      "summary": "Silicon Labs推出基于第二代无线开发平台的BG2B低功耗蓝牙SoC，旨在提供业界领先的功耗效率与安全性，协助开发物联网设备。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://n.yam.com/Article/20260806800392",
-      "published_at": "2026-08-06T08:01:00+08:00"
     },
     {
       "id": "NEWS-B7CCA6CBA2F01E",
@@ -65,7 +57,15 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
       "published_at": "2026-08-03T08:00:00+08:00"
+    },
+    {
+      "id": "NEWS-93E818ABE49C4B",
+      "title": "滴滴香港正筹备提交网约车平台牌照申请 本月向用户推出夏日出行礼遇",
+      "summary": "滴滴香港筹备提交网约车牌照申请，提升合规管理，并向用户推出夏日出行优惠。",
+      "category": "政策监管",
+      "source_url": "https://www.am730.com.hk/article/1045256",
+      "published_at": "2026-08-03T08:00:00+08:00"
     }
   ],
-  "site_version": "699f4caa00373fd2e6d15a7768ede37d06824e7ebd150f79c8ae0d43b0cb2ed9"
+  "site_version": "f9655c17eee4d0239afb05df38e4d983e21ef59abe845458470a654a0574718d"
 }
