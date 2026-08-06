@@ -607,7 +607,7 @@ function renderBenchmarkCharts() {
     const title = document.createElement("strong");
     title.textContent = "同指标企业对比";
     const note = document.createElement("span");
-    note.textContent = "CMHK基准 · 同一指标横向比较";
+    note.textContent = "CMHK基准 · 公开值优先 · 缺项采用估算";
     chartHead.append(title, note);
     chart.append(chartHead);
 
