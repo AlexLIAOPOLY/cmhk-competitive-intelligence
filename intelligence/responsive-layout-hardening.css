@@ -86,7 +86,7 @@
   }
 
   body.dashboard-page .app-shell {
-    --fit-scale: min(1, calc((100vh - 8px) / 1090));
+    --fit-scale: min(1, calc((100vh - 8px) / 1090px));
     transform: scale(var(--fit-scale));
     transform-origin: top left;
     width: calc(100% / var(--fit-scale));
