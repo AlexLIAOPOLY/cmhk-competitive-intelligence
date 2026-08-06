@@ -59,6 +59,7 @@ const networkViews = {
 function showNetworkView(viewName) {
   const view = networkViews[viewName];
   if (!view || !networkContent) return;
+  clearBenchmarkCharts();
 
   networkTabs.forEach((tab) => {
     const active = tab.dataset.networkView === viewName;
