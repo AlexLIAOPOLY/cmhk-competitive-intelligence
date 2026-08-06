@@ -164,7 +164,7 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
                 intelligence_html = intelligence_html.replace(
                     '<link rel="stylesheet" href="./leadership-board.css">',
                     '<link rel="stylesheet" href="./leadership-board.css">\n'
-                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=1">',
+                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=2">',
                 )
                 intelligence_index.write_text(intelligence_html, encoding="utf-8")
         shutil.copy2(

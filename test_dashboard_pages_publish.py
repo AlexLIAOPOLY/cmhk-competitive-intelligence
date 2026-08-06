@@ -59,7 +59,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('href="./executive-dashboard-demo.css?v=8"', html)
             self.assertIn(
-                'href="./executive-responsive-hardening.css?v=1"',
+                'href="./executive-responsive-hardening.css?v=2"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
@@ -80,7 +80,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn(
-                'href="./responsive-layout-hardening.css?v=1"',
+                'href="./responsive-layout-hardening.css?v=2"',
                 intelligence_html,
             )
             self.assertTrue(
