@@ -8137,6 +8137,33 @@ details[data-raw-log-pinned="true"] > summary::after {
   font-size: 11px;
 }
 
+.task-analysis-status {
+  margin-top: 12px;
+  border: 1px solid #c9d8e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.task-analysis-status .task-audit-stats {
+  border: 0;
+}
+
+.task-analysis-status p {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid #d5e1eb;
+  color: #526c80;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.task-analysis-status p strong { color: #153c58; }
+.task-analysis-status p span { overflow-wrap: anywhere; }
+.task-analysis-status p.is-warning strong { color: #a14337; }
+
 .task-run-process {
   margin: 18px 0 0;
   border: 1px solid #c9d8e6;
@@ -13207,6 +13234,15 @@ body.dashboard-page {
 .dashboard-page #logModal .task-audit-stats span { border-color: #294d5b; }
 .dashboard-page #logModal .task-audit-stats b { color: #e4f1f4; }
 .dashboard-page #logModal .task-audit-stats small { color: #89a5af; }
+
+.dashboard-page #logModal .task-analysis-status { border-color: #294d5b; }
+.dashboard-page #logModal .task-analysis-status p {
+  border-color: #294d5b;
+  color: #a9c2ca;
+  background: #0a222e;
+}
+.dashboard-page #logModal .task-analysis-status p strong { color: #dcecef; }
+.dashboard-page #logModal .task-analysis-status p.is-warning strong { color: #ffaaa3; }
 
 .dashboard-page #logModal .task-lifecycle-monitor {
   border-color: #294d5b;
