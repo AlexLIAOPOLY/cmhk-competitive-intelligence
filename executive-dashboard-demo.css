@@ -311,58 +311,32 @@ h1 {
   white-space: nowrap;
 }
 
-.is-benchmark-chart > .network-content,
-.is-benchmark-chart > .business-content,
-.is-benchmark-chart > .reach-content,
-.is-benchmark-chart > .finance-content { display: none; }
-
-.benchmark-comparison-chart {
-  z-index: 4;
-  position: absolute;
-  inset: 52px 0 0;
-  display: grid;
-  grid-template-rows: 34px minmax(0, 1fr);
-  min-height: 0;
-  padding: 0 15px 12px;
-  overflow: hidden;
-  background: linear-gradient(90deg, rgba(2, 15, 25, .91), rgba(3, 24, 37, .72));
-  animation: benchmark-chart-enter 200ms cubic-bezier(0, 0, .38, .9);
-}
-
-.benchmark-comparison-chart > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid rgba(91, 190, 234, .14);
-}
-.benchmark-comparison-chart > header strong { color: #dff8fc; font-size: 10px; font-weight: 650; }
-.benchmark-comparison-chart > header span { color: #698d9c; font-size: 7px; }
-.benchmark-chart-groups {
+.has-benchmark-native-chart > :not(.benchmark-native-chart) { display: none !important; }
+.benchmark-native-chart {
+  width: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-  padding-top: 10px;
+  align-content: center;
+  gap: 3px;
+  animation: benchmark-chart-enter 180ms cubic-bezier(0, 0, .38, .9);
 }
-.benchmark-chart-group { min-width: 0; display: grid; align-content: center; gap: 5px; }
-.benchmark-chart-group h3 {
+.benchmark-native-chart h3 {
   display: flex;
   align-items: baseline;
   gap: 5px;
-  margin: 0 0 3px;
-  color: #e5f7fb;
-  font-size: 11px;
+  margin: 0 0 2px;
+  color: #bfe7f1;
+  font-size: 9px;
   font-weight: 620;
 }
-.benchmark-chart-group h3 small { color: #688c9b; font-size: 7px; font-weight: 520; }
+.benchmark-native-chart h3 small { color: #688c9b; font-size: 6px; font-weight: 520; }
 .benchmark-chart-row {
   --company-color: #66e6ff;
   display: grid;
-  grid-template-columns: 58px minmax(40px, 1fr) 70px;
+  grid-template-columns: 48px minmax(34px, 1fr) 52px;
   align-items: center;
-  gap: 7px;
-  min-height: 24px;
+  gap: 5px;
+  min-height: 13px;
 }
 .benchmark-chart-row[data-company="hkt"] { --company-color: #67deb5; }
 .benchmark-chart-row[data-company="three"] { --company-color: #f1bd68; }
@@ -371,17 +345,18 @@ h1 {
 .benchmark-chart-row > span {
   overflow: hidden;
   color: #aac7d1;
-  font-size: 9px;
+  font-size: 7px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.benchmark-chart-row > i { height: 7px; overflow: hidden; background: rgba(74, 142, 166, .13); }
+.benchmark-chart-row > i { width: 100% !important; height: 5px !important; overflow: hidden; background: rgba(74, 142, 166, .13) !important; box-shadow: none !important; }
 .benchmark-chart-row > i > b {
   width: var(--benchmark-value);
   height: 100%;
   display: block;
   background: linear-gradient(90deg, color-mix(in srgb, var(--company-color) 56%, #163c4b), var(--company-color));
-  box-shadow: 0 0 8px color-mix(in srgb, var(--company-color) 28%, transparent);
+  position: static !important;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--company-color) 24%, transparent);
   transform-origin: left;
   animation: benchmark-bar-enter 260ms cubic-bezier(0, 0, .38, .9) both;
 }
@@ -389,11 +364,18 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 3px;
   color: var(--company-color);
-  font-size: 11px;
+  font-size: 8px;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
+}
+.business-detail.has-benchmark-native-chart { min-height: 82px; padding: 5px 8px; }
+.reach-ranking.has-benchmark-native-chart { gap: 0; }
+.revenue-compare.has-benchmark-native-chart {
+  display: block;
+  height: 74px;
+  padding: 2px 0 0;
+  border-bottom: 0;
 }
 @keyframes benchmark-chart-enter {
   from { opacity: 0; transform: translateY(4px); }
@@ -1842,12 +1824,7 @@ h1 {
   .benchmark-company-selector { gap: 2px; }
   .benchmark-company-selector button { min-width: 0; padding-inline: 5px; font-size: 7px; }
   .benchmark-panel-company { font-size: 7px; }
-  .benchmark-comparison-chart { inset: 84px 0 0; padding: 0 9px 10px; }
-  .benchmark-comparison-chart > header span { display: none; }
-  .benchmark-chart-groups { grid-template-columns: 1fr; gap: 7px; padding-top: 6px; }
-  .benchmark-chart-group { gap: 3px; }
-  .benchmark-chart-group h3 { margin-bottom: 1px; font-size: 9px; }
-  .benchmark-chart-row { grid-template-columns: 50px minmax(40px, 1fr) 62px; min-height: 19px; gap: 5px; }
+  .benchmark-chart-row { grid-template-columns: 46px minmax(38px, 1fr) 54px; min-height: 14px; gap: 5px; }
   .benchmark-chart-row > span { font-size: 8px; }
   .benchmark-chart-row > strong { font-size: 9px; }
   .panel-heading {
