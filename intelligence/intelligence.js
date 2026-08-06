@@ -139,7 +139,13 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-overview`.replace(/[^a-zA-Z0-9_-]/g, "-");
       return `
         <div class="intelligence-entity-focus is-overview">
-          <span>综合发现</span>
+          <span class="ai-insight-label">
+            <svg class="ai-insight-mark" viewBox="0 0 18 18" aria-hidden="true">
+              <path d="M8.2 1.6c.35 3.48 2.72 5.85 6.2 6.2-3.48.35-5.85 2.72-6.2 6.2C7.85 10.52 5.48 8.15 2 7.8c3.48-.35 5.85-2.72 6.2-6.2Z"></path>
+              <path d="M14.5 1.7v3.2M12.9 3.3h3.2"></path>
+            </svg>
+            AI 洞察
+          </span>
           <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
             <p>${safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论")}</p>
@@ -254,7 +260,7 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       role="button" tabindex="0" data-intelligence-entity="${index}"
       data-intelligence-domain-id="${safe(domain.id)}"
       aria-pressed="${index === selectedIndex ? "true" : "false"}"
-      aria-label="${index === selectedIndex ? "取消选择并返回综合发现" : "查看个体分析"}：${safe(item.name)}"`;
+      aria-label="${index === selectedIndex ? "取消选择并返回AI洞察" : "查看个体分析"}：${safe(item.name)}"`;
 
     if (visual === "network") {
       const points = items.map((item, index) => ({
@@ -436,6 +442,9 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
     const current = grid.querySelector(`.intelligence-domain[data-intelligence-domain-id="${CSS.escape(domain.id)}"]`);
     if (!current) return;
     const updated = patchIntelligenceNode(current, elementFromMarkup(renderDomainCard(domain)));
+    updated.classList.remove("is-content-switching");
+    void updated.offsetWidth;
+    updated.classList.add("is-content-switching");
     measureScrollingLabels(updated);
     if (restoreFocus) {
       const index = selectedFocusIndex(domain);
@@ -529,7 +538,7 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
     const verifiedCount = Array.isArray(domain.ai_analysis) ? domain.ai_analysis.length : 0;
     const sourceCount = Array.isArray(domain.sources) ? domain.sources.length : 0;
 
-    drawerKicker.textContent = `${domain.index} · 多源综合研判`;
+    drawerKicker.textContent = `${domain.index} · AI 洞察`;
     drawerTitle.textContent = domain.title;
     drawerBody.innerHTML = `
       <section class="intelligence-detail-lead">

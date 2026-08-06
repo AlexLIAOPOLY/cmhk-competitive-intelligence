@@ -80,7 +80,7 @@ button { font: inherit; }
 h1 {
   margin: 0;
   text-align: center;
-  font-size: clamp(28px, 2.05vw, 36px);
+  font-size: clamp(25px, 1.7vw, 31px);
   font-weight: 600;
   line-height: 1;
   letter-spacing: .13em;
@@ -1169,7 +1169,7 @@ h1 {
 .network-content { padding: 14px 15px; }
 .panel-switch-content.is-switching {
   will-change: transform, opacity;
-  animation: content-switch .64s cubic-bezier(.22, 1, .36, 1);
+  animation: content-switch 280ms cubic-bezier(0, 0, .38, .9);
 }
 
 .business-detail,
@@ -1596,8 +1596,8 @@ h1 {
   to { transform: translate3d(calc(-1 * var(--news-loop-width, 1560px)), 0, 0); }
 }
 @keyframes content-switch {
-  0% { opacity: .2; transform: translate3d(10px, 0, 0) scale(.997); }
-  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  0% { opacity: .38; transform: translate3d(6px, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 @keyframes scene-drift { from { transform: scale(1.015) translate3d(-.3%, 0, 0); } to { transform: scale(1.06) translate3d(.5%, -.4%, 0); } }
 @keyframes grid-drift { to { background-position: 48px 48px; } }
