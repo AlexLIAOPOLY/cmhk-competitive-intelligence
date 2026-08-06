@@ -566,7 +566,9 @@ function formatBenchmarkValue(value) {
 }
 
 function benchmarkNumericValue(record) {
-  const value = Number(String(record?.value ?? "").replace(/,/g, ""));
+  const match = String(record?.value ?? "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const value = Number(match[0]);
   return Number.isFinite(value) ? value : null;
 }
 
@@ -605,7 +607,7 @@ function renderBenchmarkCharts() {
     const title = document.createElement("strong");
     title.textContent = "同指标企业对比";
     const note = document.createElement("span");
-    note.textContent = "CMHK基准 · 公开值优先 · SIM为模拟";
+    note.textContent = "CMHK基准 · 同一指标横向比较";
     chartHead.append(title, note);
     chart.append(chartHead);
 
@@ -644,11 +646,6 @@ function renderBenchmarkCharts() {
         track.append(bar);
         const value = document.createElement("strong");
         value.textContent = numericValue === null ? "—" : formatBenchmarkValue(record.value);
-        if (record?.simulated) {
-          const simulationTag = document.createElement("em");
-          simulationTag.textContent = "SIM";
-          value.append(simulationTag);
-        }
         row.append(label, track, value);
         group.append(row);
       });

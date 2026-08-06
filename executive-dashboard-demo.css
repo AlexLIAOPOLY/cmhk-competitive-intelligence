@@ -395,15 +395,6 @@ h1 {
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
-.benchmark-chart-row > strong em {
-  padding: 1px 2px;
-  border: 1px solid rgba(241, 189, 104, .34);
-  color: #eec57d;
-  font-size: 5px;
-  font-style: normal;
-  font-weight: 700;
-}
-
 @keyframes benchmark-chart-enter {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
