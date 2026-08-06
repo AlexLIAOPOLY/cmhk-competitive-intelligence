@@ -30,12 +30,17 @@
 
 /* Fit the complete 2x2 cockpit into compact desktop viewports without changing its proportions. */
 @media (min-width: 901px) and (max-width: 1536px) and (max-height: 900px) {
+  html {
+    overflow: hidden;
+  }
+
   body {
     overflow: hidden;
   }
 
   .cockpit {
-    --fit-scale: clamp(.80, calc(100vh / 892px), 1);
+    /* Do not stop at .80: browser chrome can leave a 600–650px viewport on a 13-inch screen. */
+    --fit-scale: clamp(.44, calc(100vh / 892px), 1);
     transform: scale(var(--fit-scale));
     transform-origin: top left;
     width: calc(100% / var(--fit-scale));

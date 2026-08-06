@@ -59,7 +59,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('href="./executive-dashboard-demo.css?v=8"', html)
             self.assertIn(
-                'href="./executive-responsive-hardening.css?v=2"',
+                'href="./executive-responsive-hardening.css?v=3"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
