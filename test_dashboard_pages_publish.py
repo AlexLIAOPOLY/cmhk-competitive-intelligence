@@ -118,21 +118,23 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=11"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=13"', html)
+            self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=3"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('data-benchmark-url="./executive-company-benchmarks.json"', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=3"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=4"', html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
             self.assertIn('data-network-view="fixed"', html)
             self.assertIn('data-finance-view="cash"', html)
             self.assertIn('fetch("./strategic-briefs.json"', script)
             self.assertIn("simulatedBenchmarkRecord", script)
-            self.assertIn("benchmark-mode", script)
+            self.assertIn("renderInlineBenchmark", script)
+            self.assertNotIn("company-benchmark-overlay", script)
             self.assertIn("SIM", script)
             self.assertNotIn("/api/strategic-briefs", script)
             self.assertFalse((first / "executive-dashboard-relations.js").exists())

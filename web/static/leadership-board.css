@@ -49,23 +49,23 @@
 }
 
 .intelligence-domain-local {
-  --domain-image: url("/static/assets/executive-dashboard/network-hong-kong.webp");
-  --domain-image-position: 48% 56%;
+  --domain-image: url("/static/assets/competitive-intelligence-radar-v3.webp");
+  --domain-image-position: 18% 40%;
 }
 
 .intelligence-domain-international {
-  --domain-image: url("/static/assets/executive-intelligence-bg-v2.webp");
-  --domain-image-position: 58% 68%;
+  --domain-image: url("/static/assets/competitive-intelligence-radar-v3.webp");
+  --domain-image-position: 82% 65%;
 }
 
 .intelligence-domain-cloud {
-  --domain-image: url("/static/assets/executive-dashboard/enterprise-cloud.webp");
-  --domain-image-position: 66% 54%;
+  --domain-image: url("/static/assets/competitive-intelligence-radar-v3.webp");
+  --domain-image-position: 28% 82%;
 }
 
 .intelligence-domain-macro {
-  --domain-image: url("/static/assets/executive-dashboard/financial-technology-grid.webp");
-  --domain-image-position: 70% 52%;
+  --domain-image: url("/static/assets/competitive-intelligence-radar-v3.webp");
+  --domain-image-position: 72% 35%;
 }
 
 .intelligence-domain,

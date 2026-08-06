@@ -11864,8 +11864,8 @@ body.dashboard-page {
   z-index: -2;
   inset: -2.5%;
   content: "";
-  background: url("/static/assets/executive-intelligence-bg-v2.webp") center bottom / cover no-repeat;
-  opacity: .52;
+  background: url("/static/assets/competitive-intelligence-radar-v3.webp") center / cover no-repeat;
+  opacity: .58;
   transform: scale(1.025);
   animation: intelligence-atmosphere 28s ease-in-out infinite alternate;
 }

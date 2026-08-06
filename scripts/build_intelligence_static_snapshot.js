@@ -195,6 +195,7 @@ async function main() {
     const assets = [
       ["china-mobile-blue-logo.png", "china-mobile-blue-logo.png"],
       ["executive-intelligence-bg-v2.webp", "executive-intelligence-bg-v2.webp"],
+      ["competitive-intelligence-radar-v3.webp", "competitive-intelligence-radar-v3.webp"],
       ["mobile-intelligence-bg.png", "mobile-intelligence-bg.png"],
       ["mobile-blue-network-banner.png", "mobile-blue-network-banner.png"],
       ["logo/xiaojing-ai-logo-mark.png", "logo/xiaojing-ai-logo-mark.png"],
