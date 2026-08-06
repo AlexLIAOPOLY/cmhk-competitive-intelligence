@@ -451,6 +451,27 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         unchanged = pipeline._repair_focus_numeric_anchors(filler, evidence)
         self.assertNotIn("3428.5", unchanged[0]["focuses"][0]["analysis"])
 
+    def test_focus_insight_is_repaired_to_one_short_grounded_sentence(self):
+        evidence = {"domains": [{
+            "id": "macro",
+            "focuses": [{
+                "id": "market",
+                "metric": {"label": "移动连接", "value": 3428.5, "unit": "万"},
+                "items": [],
+            }],
+        }]}
+        raw = [{"domain": "macro", "focuses": [{
+            "id": "market",
+            "analysis": "移动连接达到3428.5万，市场饱和压力上升。新增空间收窄。经营上应转向存量价值提升。",
+        }]}]
+
+        repaired = pipeline._repair_focus_conciseness(raw, evidence)
+        analysis = repaired[0]["focuses"][0]["analysis"]
+        self.assertLessEqual(len(analysis), pipeline.MAX_FOCUS_INSIGHT_CHARS)
+        self.assertEqual(sum(analysis.count(mark) for mark in "。！？!?"), 1)
+        self.assertIn("3428.5", analysis)
+        self.assertTrue(pipeline._has_business_judgement(analysis))
+
     def test_entity_label_repair_maps_only_to_exact_input_evidence(self):
         evidence = {"domains": [{"id": "local", "focuses": [{"id": "price", "items": [{
             "name": "HKBN",

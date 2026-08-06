@@ -30,6 +30,8 @@ LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
+INSIGHT_FORMAT_VERSION = "single_sentence_v1"
+MAX_FOCUS_INSIGHT_CHARS = 88
 TASK_KIND = "executive-intelligence-refresh"
 DOMAIN_LABELS = {
     "local": "本地竞对",
@@ -469,6 +471,11 @@ def _has_business_judgement(value: Any) -> bool:
 
 
 def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus: dict[str, Any]) -> str:
+    terminal_marks = re.findall(r"[。！？!?]", analysis)
+    if len(analysis) > MAX_FOCUS_INSIGHT_CHARS or len(terminal_marks) > 1 or (
+        terminal_marks and not re.search(r"[。！？!?]$", analysis)
+    ):
+        return f"AI分析分类必须精炼为一句话：{domain}.{focus_id}；内容：{analysis[:180]}"
     focus_numbers = _focus_value_tokens(evidence_focus)
     analysis_numbers = _numeric_tokens(analysis)
     if focus_numbers and not (focus_numbers & analysis_numbers):
@@ -602,10 +609,52 @@ def _repair_focus_business_implications(raw: Any, evidence: dict[str, Any]) -> A
     return repaired
 
 
+def _repair_focus_conciseness(raw: Any, evidence: dict[str, Any]) -> Any:
+    """Collapse each visible focus insight to one grounded decision sentence."""
+    if not isinstance(raw, list):
+        return raw
+    evidence_by_focus = {
+        (str(domain.get("id") or ""), str(focus.get("id") or "")): focus
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+    }
+    repaired = json.loads(json.dumps(raw, ensure_ascii=False))
+    for domain in repaired:
+        if not isinstance(domain, dict):
+            continue
+        domain_id = str(domain.get("domain") or "")
+        for focus in domain.get("focuses") or []:
+            if not isinstance(focus, dict):
+                continue
+            focus_id = str(focus.get("id") or "")
+            evidence_focus = evidence_by_focus.get((domain_id, focus_id)) or {}
+            original = str(focus.get("analysis") or "").strip()
+            clauses = [item.strip(" ；;。！？!?") for item in re.split(r"[。！？!?\n]+", original) if item.strip()]
+            numeric_clause = next(
+                (item for item in clauses if _numeric_tokens(item) & _focus_value_tokens(evidence_focus)),
+                "",
+            )
+            business_clause = next((item for item in clauses if _has_business_judgement(item)), "")
+            merged = numeric_clause
+            if business_clause and business_clause != numeric_clause:
+                merged = f"{numeric_clause}；{business_clause}" if numeric_clause else business_clause
+            candidate = merged.rstrip("；;。！？!?") + "。" if merged else ""
+            if not _focus_gate_error(domain_id, focus_id, candidate, evidence_focus):
+                focus["analysis"] = candidate
+            else:
+                focus["analysis"] = _compact_grounded_focus_analysis(domain_id, evidence_focus)
+            if focus["analysis"] != original:
+                focus["single_sentence_repaired"] = True
+    return repaired
+
+
 def _repair_model_summaries(raw: Any, evidence: dict[str, Any]) -> Any:
-    repaired = _repair_entity_evidence_labels(
-        _repair_focus_business_implications(
-            _repair_focus_numeric_anchors(raw, evidence),
+    repaired = _repair_focus_conciseness(
+        _repair_entity_evidence_labels(
+            _repair_focus_business_implications(
+                _repair_focus_numeric_anchors(raw, evidence),
+                evidence,
+            ),
             evidence,
         ),
         evidence,
@@ -981,46 +1030,60 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
 
 
 _FOCUS_BUSINESS_IMPLICATIONS = {
-    ("local", "scale"): "方案规模差异反映产品陈列广度，业务上应优先检查高数量能否转化为有效覆盖与获客。",
-    ("local", "track"): "赛道覆盖差距反映产品组合广度，竞争上应优先补齐高价值场景而非只增加方案数。",
-    ("local", "price"): "价格梯度会直接影响获客入口与价值升级，定价上应同时守住低价入口和主产品价值。",
-    ("local", "overlap"): "重叠赛道越集中，正面竞争与价格压力越高，应优先做差异化权益和渠道转化。",
-    ("international", "growth"): "增长分化反映运营质量差距，应优先跟踪领先者的收入结构与可复制增长来源。",
-    ("international", "momentum"): "动量回落意味着增长改善尚未形成，经营上应优先判断收入修复是否可持续。",
-    ("international", "gap"): "与领先者的增速差距越大，竞争位置修复压力越高，应优先锁定可缩短差距的业务板块。",
-    ("international", "disclosure"): "披露深度差异会影响判断可靠性，分析上应优先使用可交叉验证的收入、利润与投入指标。",
-    ("cloud", "growth"): "增长梯队分化反映云业务扩张效率，竞争上应同时评估规模增长和收入质量。",
-    ("cloud", "trend"): "增速变化显示厂商加速或放缓，业务上应优先识别增长动量能否转化为份额与客户黏性。",
-    ("cloud", "profit"): "利润率差距反映规模变现与成本效率，经营上应避免用异口径数字直接判定绝对领先。",
-    ("cloud", "disclosure"): "披露深度差异影响可比性，分析上应优先区分纯云收入、代理分部与综合业务口径。",
-    ("macro", "market"): "连接规模与宽带渗透反映市场饱和压力，经营上应把重点从新增用户转向存量价值提升。",
-    ("macro", "traffic"): "流量规模与人均使用差异反映网络需求和变现空间，应优先评估体验投入与套餐升级转化。",
-    ("macro", "spending"): "收入与消费指标差异反映套餐升级承受力，定价上应兼顾购买力压力与价值提升。",
-    ("macro", "governance"): "投资、投诉与覆盖差异共同约束网络竞争，应优先把投入转化为体验改善并降低服务风险。",
+    ("local", "scale"): "方案差异扩大，需优先验证产品广度能否转化为获客。",
+    ("local", "track"): "赛道覆盖分化，竞争上应优先补齐高价值场景。",
+    ("local", "price"): "价格梯度明显，定价应兼顾低价获客与主产品价值。",
+    ("local", "overlap"): "赛道重叠集中，应以差异化权益降低价格压力。",
+    ("international", "growth"): "增长分化，需优先复制领先者的有效收入结构。",
+    ("international", "momentum"): "动量回落，经营上应验证收入修复能否持续。",
+    ("international", "gap"): "增速差距扩大，应优先锁定可修复竞争位置的业务。",
+    ("international", "disclosure"): "披露深度分化，应优先采用可交叉验证指标。",
+    ("cloud", "growth"): "增长梯队分化，竞争上应兼顾规模与收入质量。",
+    ("cloud", "trend"): "增速变化分化，应验证动量能否转化为份额与黏性。",
+    ("cloud", "profit"): "利润率差距扩大，经营上应同时校验规模变现与口径。",
+    ("cloud", "disclosure"): "披露深度分化，应区分纯云、代理分部与综合口径。",
+    ("macro", "market"): "市场趋于饱和，经营上应转向存量客户价值提升。",
+    ("macro", "traffic"): "流量需求分化，应优先评估体验投入的套餐转化。",
+    ("macro", "spending"): "消费能力分化，定价应兼顾购买力与价值提升。",
+    ("macro", "governance"): "投资与体验约束并存，应优先降低服务风险。",
 }
+
+
+def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
+    focus_id = str(focus.get("id") or "")
+    implication = _FOCUS_BUSINESS_IMPLICATIONS.get(
+        (domain, focus_id),
+        "竞争位置出现变化，业务上应优先评估收入与客户影响。",
+    )
+    if (domain, focus_id) == ("local", "price"):
+        ranked: list[tuple[float, str, Any]] = []
+        for item in focus.get("items") or []:
+            try:
+                numeric = float(item.get("value"))
+            except (TypeError, ValueError):
+                continue
+            ranked.append((numeric, str(item.get("name") or "品牌"), item.get("value")))
+        if ranked:
+            low = min(ranked)
+            high = max(ranked)
+            gap = high[0] - low[0]
+            gap_text = str(int(gap)) if gap.is_integer() else f"{gap:g}"
+            unit = str((focus.get("metric") or {}).get("unit") or "港元/月")
+            return f"{low[1]}最低{low[2]}{unit}、{high[1]}最高{high[2]}{unit}，相差{gap_text}{unit}；定价应兼顾低价获客与主产品价值。"
+    metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
+    value = metric.get("value")
+    label = str(metric.get("label") or focus.get("title") or "最新指标")
+    unit = str(metric.get("unit") or "")
+    if value not in (None, ""):
+        return f"{label}{value}{unit}；{implication.rstrip('。')}。"
+    numbers = sorted(_focus_value_tokens(focus), key=lambda item: float(item))
+    anchor = numbers[0] if numbers else ""
+    return f"当前值{anchor}；{implication.rstrip('。')}。" if anchor else implication
 
 
 def _deterministic_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
     """Produce a numerically grounded fallback that must pass the same 16-focus gate."""
-    analysis = str(focus.get("insight") or "").strip()
-    metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
-    metric_value = metric.get("value")
-    metric_label = str(metric.get("label") or focus.get("title") or "最新指标")
-    metric_unit = str(metric.get("unit") or "")
-    focus_numbers = _focus_value_tokens(focus)
-    if focus_numbers and not (_numeric_tokens(analysis) & focus_numbers):
-        if metric_value not in (None, ""):
-            analysis = f"{metric_label}为{metric_value}{metric_unit}；{analysis}" if analysis else f"{metric_label}为{metric_value}{metric_unit}。"
-        else:
-            first_number = sorted(focus_numbers, key=lambda value: float(value))[0]
-            analysis = f"当前已核验数值为{first_number}；{analysis}" if analysis else f"当前已核验数值为{first_number}。"
-    if not _has_business_judgement(analysis):
-        implication = _FOCUS_BUSINESS_IMPLICATIONS.get(
-            (domain, str(focus.get("id") or "")),
-            "数值差异反映竞争位置变化，业务上应优先评估其对收入转化、客户体验与资源投入的影响。",
-        )
-        analysis = f"{analysis.rstrip('。')}；{implication}" if analysis else implication
-    return analysis
+    return _compact_grounded_focus_analysis(domain, focus)
 
 
 def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1133,7 +1196,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         "实体analysis必须先说清具体包含哪些组成明细，再指出结构、集中度、变化或差距及其业务含义；"
         "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
         "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
-        "每个focus的analysis必须至少引用一个输入中的具体数值，并说明差距、梯度、集中度或变化带来的业务判断；"
+        "每个focus的analysis必须压缩为不超过88个字符的一句话，只引用至少一个输入具体数值，并说明差距、梯度、集中度或变化带来的业务判断；"
         "上述数值与业务判断要求适用于全部16个focus，任何focus只写指标定义、展示方法或事实罗列都不合格；"
         "每个focus必须同时写出可量化的比较/变化结论，以及它对收入、客户、产品、网络、竞争或资源投入的含义。"
         "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
@@ -1311,8 +1374,8 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                             "role": "user",
                             "content": (
                                 f"上一版未通过门禁：{exc}。请完整返回全部focus和全部实体。"
-                                "每个focus.analysis用两句：第一句引用输入原值并写比较/变化，第二句明确对收入、客户、产品、"
-                                "网络、竞争或资源投入的业务含义；不要只解释指标用途。仍只返回单对象JSON数组。"
+                                "每个focus.analysis只用一句话：引用输入原值、写比较/变化并明确对收入、客户、产品、"
+                                "网络、竞争或资源投入的业务含义，总长不超过88个字符；不要只解释指标用途。仍只返回单对象JSON数组。"
                             ),
                         })
             if domain_summary is None:
@@ -1331,7 +1394,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                                 "你是电信竞争情报分析员。只返回合法JSON数组，不要解释。只能使用输入证据。"
                                 "逐一覆盖items中的全部实体，name必须原样；每个实体先说明components具体包含什么，"
                                 "再写结构、变化或差距及业务含义。evidence_labels只能原样选自该实体components.label。"
-                                "focus.analysis必须引用输入中的具体数值，写明比较或变化，并解释对经营决策的影响。"
+                                "focus.analysis必须用不超过88个字符的一句话引用输入具体数值、写明比较或变化并解释经营影响。"
                                 "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图等界面说明。"
                             ),
                         },
@@ -1406,8 +1469,8 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                                     "role": "user",
                                     "content": (
                                         f"上一版未通过门禁：{exc}。请只返回该focus及全部实体。"
-                                        "focus.analysis必须引用输入原值，写出比较或变化，并明确对收入、客户、产品、网络、"
-                                        "竞争或资源投入的业务含义，不能写成指标定义。只返回合法JSON数组。"
+                                        "focus.analysis必须用不超过88个字符的一句话引用输入原值、写比较或变化，并明确收入、客户、"
+                                        "产品、网络、竞争或资源投入含义，不能写成指标定义。只返回合法JSON数组。"
                                     ),
                                 })
                     if focus_candidate is None:
@@ -1555,7 +1618,10 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
     previous_hash = str(previous.get("evidence_hash") or "")
     if previous_summaries and previous_discoveries and previous_hash == evidence_hash and not previous.get("fallback_used"):
         try:
-            validated = _validate_model_summaries(previous_summaries, evidence)
+            validated = _validate_model_summaries(
+                _repair_model_summaries(previous_summaries, evidence),
+                evidence,
+            )
             validated_discoveries = _validate_model_discoveries(previous_discoveries, evidence)
         except ValueError:
             pass
@@ -1563,6 +1629,7 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
             generated = {
                 **previous,
                 "evidence_hash": evidence_hash,
+                "insight_format": INSIGHT_FORMAT_VERSION,
                 "summaries": validated,
                 "discoveries": validated_discoveries,
                 "reused": True,
@@ -1573,7 +1640,10 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
     summaries_reused = False
     if previous_summaries and previous_hash == evidence_hash and not previous.get("fallback_used"):
         try:
-            validated_summaries = _validate_model_summaries(previous_summaries, evidence)
+            validated_summaries = _validate_model_summaries(
+                _repair_model_summaries(previous_summaries, evidence),
+                evidence,
+            )
         except ValueError:
             validated_summaries = []
         else:
@@ -1612,6 +1682,7 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
         generated["discovery_fallback_used"] = True
         generated["discovery_fallback_reason"] = discovery_payload.get("fallback_reason", "")
     generated["evidence_hash"] = evidence_hash
+    generated["insight_format"] = INSIGHT_FORMAT_VERSION
     generated["reused"] = False
     analysis["model_analysis"] = generated
     _atomic_write_json(path, analysis)
