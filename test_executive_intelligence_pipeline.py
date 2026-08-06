@@ -307,8 +307,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "risk": "保持口径边界。",
                 "source_urls": [],
                 "focuses": [
-                    {"id": f"{domain}-a", "analysis": "竞争位置出现变化，业务上应优先评估收入风险。", "risk": "保持边界。", "source_urls": []},
-                    {"id": f"{domain}-b", "analysis": "竞争位置出现差距，业务上应优先评估客户影响。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-a", "analysis": "竞争位置变化表明收入结构分层主要来自客户组合差异。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-b", "analysis": "竞争差距扩大说明客户结构差异并非同步变化。", "risk": "保持边界。", "source_urls": []},
                 ],
             }
             for domain in ("local", "international", "cloud", "macro")
@@ -347,7 +347,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "source_urls": ["https://example.com/source"],
                 "focuses": [{
                     "id": f"{domain}-focus",
-                    "analysis": "10项证据显示结构集中，业务上应优先评估产品风险。",
+                    "analysis": "10项证据高度集中，表明产品结构差异主要来自少数核心项目。",
                     "risk": "保持边界。",
                     "source_urls": ["https://example.com/source"],
                     "entities": [{
@@ -379,7 +379,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         summaries = [{
             "domain": domain, "headline": "观察", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": [],
             "focuses": [{
-                "id": "focus", "analysis": "竞争位置出现变化，业务上应优先评估收入风险。", "risk": "谨慎。", "source_urls": [],
+                "id": "focus", "analysis": "竞争位置变化表明收入结构分层主要来自客户组合差异。", "risk": "谨慎。", "source_urls": [],
                 "entities": [{
                     "name": "实体", "headline": "观察", "analysis": "数据库内按排名展示。", "risk": "谨慎。",
                     "evidence_labels": ["项目"], "source_urls": [],
@@ -389,7 +389,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "界面废话"):
             pipeline._validate_model_summaries(summaries, evidence)
 
-    def test_all_sixteen_focuses_require_numbers_and_business_judgement(self):
+    def test_all_sixteen_focuses_require_numbers_and_deep_interpretation(self):
         focus_ids = ("scale", "track", "price", "overlap")
         evidence = {
             "domains": [
@@ -414,7 +414,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "focuses": [
                     {
                         "id": focus_id,
-                        "analysis": f"{index + 1}项证据显示竞争差距，业务上应优先评估收入与客户影响。",
+                        "analysis": f"{index + 1}项证据显示竞争差距主要来自收入与客户结构分层。",
                         "risk": "保持口径边界。",
                         "source_urls": [],
                         "entities": [],
@@ -431,6 +431,42 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "cloud.track"):
             pipeline._validate_model_summaries(summaries, evidence)
 
+    def test_focus_gate_allows_two_sentences_but_rejects_action_advice(self):
+        evidence_focus = {"id": "market", "metric": {"value": 3428.5}, "items": []}
+        analysis = "移动连接3428.5万已接近饱和。该水平表明增长受渗透结构约束。"
+        self.assertEqual(pipeline._focus_gate_error("macro", "market", analysis, evidence_focus), "")
+
+        advised = "移动连接3428.5万已接近饱和，建议优先关注存量客户。"
+        self.assertIn("行动建议", pipeline._focus_gate_error("macro", "market", advised, evidence_focus))
+
+        subtle_advice = "移动连接3428.5万反映市场趋于饱和，应更关注存量价值。"
+        self.assertIn("行动建议", pipeline._focus_gate_error("macro", "market", subtle_advice, evidence_focus))
+
+        shallow = "移动连接3428.5万显示用户规模领先，市场分化明显。"
+        self.assertIn("结构、驱动或可比性", pipeline._focus_gate_error("macro", "market", shallow, evidence_focus))
+
+    def test_scoped_model_identity_is_restored_before_evidence_repair(self):
+        raw = [{"domain": "", "focuses": [{"id": "", "analysis": "内容"}]}]
+        pinned = pipeline._pin_scoped_model_identity(raw, "local", "scale")
+        self.assertEqual(pinned[0]["domain"], "local")
+        self.assertEqual(pinned[0]["focuses"][0]["id"], "scale")
+        self.assertEqual(raw[0]["domain"], "")
+
+    def test_current_fallbacks_are_deep_conclusions_without_advice(self):
+        evidence = pipeline._analysis_input_snapshot()
+        checked = 0
+        for domain in evidence["domains"]:
+            for focus in domain["focuses"]:
+                analysis = pipeline._compact_grounded_focus_analysis(domain["id"], focus)
+                self.assertEqual(
+                    pipeline._focus_gate_error(domain["id"], focus["id"], analysis, focus),
+                    "",
+                    f"{domain['id']}.{focus['id']}: {analysis}",
+                )
+                self.assertFalse(pipeline._contains_action_advice(analysis))
+                checked += 1
+        self.assertEqual(checked, 16)
+
     def test_numeric_anchor_repair_keeps_ai_judgement_but_does_not_rescue_filler(self):
         evidence = {"domains": [{
             "id": "macro",
@@ -441,7 +477,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         }]}
         raw = [{"domain": "macro", "focuses": [{
             "id": "market",
-            "analysis": "市场饱和压力加大，经营上应转向存量客户价值提升。",
+            "analysis": "市场饱和压力表明连接增长已受结构约束。",
         }]}]
         repaired = pipeline._repair_focus_numeric_anchors(raw, evidence)
         self.assertIn("3428.5万", repaired[0]["focuses"][0]["analysis"])
@@ -462,7 +498,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         }]}
         raw = [{"domain": "macro", "focuses": [{
             "id": "market",
-            "analysis": "移动连接达到3428.5万，市场饱和压力上升。新增空间收窄。经营上应转向存量价值提升。",
+            "analysis": "移动连接达到3428.5万，市场饱和压力上升。新增空间收窄。该指标值得关注。",
         }]}]
 
         repaired = pipeline._repair_focus_conciseness(raw, evidence)
@@ -470,7 +506,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertLessEqual(len(analysis), pipeline.MAX_FOCUS_INSIGHT_CHARS)
         self.assertEqual(sum(analysis.count(mark) for mark in "。！？!?"), 1)
         self.assertIn("3428.5", analysis)
-        self.assertTrue(pipeline._has_business_judgement(analysis))
+        self.assertTrue(pipeline._has_deep_interpretation(analysis))
+        self.assertFalse(any(term in analysis for term in ("建议", "应优先", "需优先", "值得关注")))
 
     def test_entity_label_repair_maps_only_to_exact_input_evidence(self):
         evidence = {"domains": [{"id": "local", "focuses": [{"id": "price", "items": [{
@@ -493,7 +530,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "id": "market", "metric": {"value": 3428.5, "unit": "万", "label": "移动连接"}, "items": [],
         }]}]}
         raw = [{"domain": "macro", "focuses": [{
-            "id": "market", "analysis": "3428.5万连接显示市场饱和压力，经营上应优先提升存量客户价值。",
+            "id": "market", "analysis": "3428.5万连接显示市场饱和压力，表明增量空间受渗透结构约束。",
             "risk": "保持口径边界。", "source_urls": [], "entities": [],
         }]}]
         repaired = pipeline._repair_model_summaries(raw, evidence)
@@ -501,7 +538,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("3428.5万", repaired[0]["analysis"])
         self.assertTrue(repaired[0]["risk"])
 
-    def test_business_implication_repair_requires_numeric_analytical_prose(self):
+    def test_deep_interpretation_repair_requires_numeric_analytical_prose(self):
         evidence = {"domains": [{"id": "international", "focuses": [{
             "id": "momentum", "metric": {"value": -0.27, "unit": "个百分点"},
         }]}]}
@@ -510,14 +547,15 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         }]}]
         repaired = pipeline._repair_focus_business_implications(raw, evidence)
         focus = repaired[0]["focuses"][0]
-        self.assertTrue(focus["business_implication_repaired"])
-        self.assertIn("经营上应", focus["analysis"])
+        self.assertTrue(focus["deep_interpretation_repaired"])
+        self.assertTrue(pipeline._has_deep_interpretation(focus["analysis"]))
+        self.assertNotIn("应", focus["analysis"])
 
         filler = [{"domain": "international", "focuses": [{
             "id": "momentum", "analysis": "该指标用于展示增长动量。",
         }]}]
         unchanged = pipeline._repair_focus_business_implications(filler, evidence)
-        self.assertNotIn("business_implication_repaired", unchanged[0]["focuses"][0])
+        self.assertNotIn("deep_interpretation_repaired", unchanged[0]["focuses"][0])
 
     def test_model_analysis_sanitizer_drops_only_unsupported_numeric_clause(self):
         evidence = {"domains": [{"focuses": [{"items": [{"value": 10}]}]}]}
@@ -552,6 +590,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             path.write_text(json.dumps({"model_analysis": {
                 "model": "test",
                 "evidence_hash": pipeline._content_hash(evidence),
+                "insight_format": pipeline.INSIGHT_FORMAT_VERSION,
                 "summaries": summaries,
                 "discoveries": discoveries,
             }}), encoding="utf-8")
@@ -564,12 +603,50 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(len(result["summaries"]), 4)
         self.assertEqual(len(result["discoveries"]), 4)
 
+    def test_old_insight_format_is_regenerated_even_when_evidence_is_unchanged(self):
+        evidence = {"domains": [], "relations": []}
+        summaries = [
+            {"domain": domain, "headline": "观察", "analysis": "证据未变。", "risk": "保持边界。", "source_urls": []}
+            for domain in ("local", "international", "cloud", "macro")
+        ]
+        discoveries = [
+            {"from": source, "to": target, "title": title, "detail": "证据联合观察。", "kind": "AI综合研判", "source_urls": []}
+            for source, target, title in (
+                ("local", "international", "本地与国际联动"),
+                ("international", "cloud", "国际与云联动"),
+                ("local", "cloud", "本地与云联动"),
+                ("macro", "local", "宏观与本地联动"),
+            )
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "analysis.json"
+            path.write_text(json.dumps({"model_analysis": {
+                "model": "old",
+                "evidence_hash": pipeline._content_hash(evidence),
+                "insight_format": "single_sentence_v1",
+                "summaries": summaries,
+                "discoveries": discoveries,
+            }}), encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.generate_model_domain_summaries", return_value={
+                    "generated_at_hkt": "now", "model": "new", "summaries": summaries,
+                }) as generate_summaries,
+                patch("executive_intelligence_pipeline.generate_model_discoveries", return_value={
+                    "generated_at_hkt": "now", "model": "new", "discoveries": discoveries,
+                }),
+            ):
+                result = pipeline.publish_model_domain_summaries(path)
+        generate_summaries.assert_called_once()
+        self.assertFalse(result["reused"])
+        self.assertEqual(result["insight_format"], pipeline.INSIGHT_FORMAT_VERSION)
+
     def test_model_discovery_gate_requires_unique_cross_domain_pairs_and_source_evidence(self):
         evidence = {
             "domains": [
                 {
                     "id": domain,
-                    "focuses": [{"items": [{"source_url": f"https://example.com/{domain}"}]}],
+                    "focuses": [{"items": [{"value": 10, "source_url": f"https://example.com/{domain}"}]}],
                     "agent_verified_facts": [],
                 }
                 for domain in ("local", "international", "cloud", "macro")
@@ -581,7 +658,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "from": source,
                 "to": target,
                 "title": title,
-                "detail": "已核验数据显示需联合观察。",
+                "detail": "两域均为10项，说明增长结构同步，差异并非来自证据数量。",
                 "kind": "AI综合研判",
                 "source_urls": [f"https://example.com/{source}", f"https://example.com/{target}"],
             }
@@ -602,6 +679,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         missing_source[0] = {**missing_source[0], "source_urls": ["https://example.com/local"]}
         with self.assertRaisesRegex(ValueError, "international领域来源"):
             pipeline._validate_model_discoveries(missing_source, evidence)
+
+        advised = [dict(item) for item in discoveries]
+        advised[0] = {**advised[0], "detail": "两域均为10项，建议优先关注增长差异。"}
+        with self.assertRaisesRegex(ValueError, "行动建议"):
+            pipeline._validate_model_discoveries(advised, evidence)
+
+        shallow = [dict(item) for item in discoveries]
+        shallow[0] = {**shallow[0], "detail": "两域均为10项，数据显示存在差异。"}
+        with self.assertRaisesRegex(ValueError, "结构、驱动或跨领域关系"):
+            pipeline._validate_model_discoveries(shallow, evidence)
 
     def test_discovery_generation_rotates_model_after_timeout(self):
         evidence = {
