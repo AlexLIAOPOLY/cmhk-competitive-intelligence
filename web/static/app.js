@@ -7571,7 +7571,13 @@ document.addEventListener("keydown", (event) => {
       const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-overview`.replace(/[^a-zA-Z0-9_-]/g, "-");
       return `
         <div class="intelligence-entity-focus is-overview">
-          <span>综合发现</span>
+          <span class="ai-insight-label">
+            <svg class="ai-insight-mark" viewBox="0 0 18 18" aria-hidden="true">
+              <path d="M8.2 1.6c.35 3.48 2.72 5.85 6.2 6.2-3.48.35-5.85 2.72-6.2 6.2C7.85 10.52 5.48 8.15 2 7.8c3.48-.35 5.85-2.72 6.2-6.2Z"></path>
+              <path d="M14.5 1.7v3.2M12.9 3.3h3.2"></path>
+            </svg>
+            AI 洞察
+          </span>
           <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
             <p>${safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论")}</p>
@@ -7612,8 +7618,61 @@ document.addEventListener("keydown", (event) => {
     `;
   }
 
+  function patchIntelligenceNode(current, next) {
+    if (current.isEqualNode(next)) return current;
+    if (current.nodeType !== next.nodeType || current.nodeName !== next.nodeName) {
+      const replacement = next.cloneNode(true);
+      current.replaceWith(replacement);
+      return replacement;
+    }
+    if (current.nodeType === Node.TEXT_NODE || current.nodeType === Node.COMMENT_NODE) {
+      if (current.nodeValue !== next.nodeValue) current.nodeValue = next.nodeValue;
+      return current;
+    }
+
+    Array.from(current.attributes).forEach((attribute) => {
+      if (!next.hasAttribute(attribute.name)) current.removeAttribute(attribute.name);
+    });
+    Array.from(next.attributes).forEach((attribute) => {
+      if (current.getAttribute(attribute.name) !== attribute.value) {
+        current.setAttribute(attribute.name, attribute.value);
+      }
+    });
+
+    const currentChildren = Array.from(current.childNodes);
+    const nextChildren = Array.from(next.childNodes);
+    nextChildren.forEach((nextChild, index) => {
+      const currentChild = currentChildren[index];
+      if (currentChild) patchIntelligenceNode(currentChild, nextChild);
+      else current.appendChild(nextChild.cloneNode(true));
+    });
+    while (current.childNodes.length > nextChildren.length) {
+      current.lastChild.remove();
+    }
+    return current;
+  }
+
+  function elementFromMarkup(markup) {
+    const template = document.createElement("template");
+    template.innerHTML = markup.trim();
+    return template.content.firstElementChild;
+  }
+
+  function patchElementList(container, markup) {
+    const template = document.createElement("template");
+    template.innerHTML = markup;
+    const nextElements = Array.from(template.content.children);
+    const currentElements = Array.from(container.children);
+    nextElements.forEach((nextElement, index) => {
+      const currentElement = currentElements[index];
+      if (currentElement) patchIntelligenceNode(currentElement, nextElement);
+      else container.appendChild(nextElement.cloneNode(true));
+    });
+    Array.from(container.children).slice(nextElements.length).forEach((element) => element.remove());
+  }
+
   function renderRail(relations) {
-    rail.innerHTML = relations.slice(0, 4).map((relation, index) => `
+    const markup = relations.slice(0, 4).map((relation, index) => `
       <button type="button" class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
         data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}"
         title="${safe(relation.detail || relation.title)}" aria-label="发现${index + 1}：${safe(relation.title)}">
@@ -7623,6 +7682,7 @@ document.addEventListener("keydown", (event) => {
         <small>${safe(relation.origin === "ai" ? "AI 研判" : relation.kind)}</small>
       </button>
     `).join("");
+    patchElementList(rail, markup);
   }
 
   function renderDomainVisual(domain, items, selectedIndex, focus) {
@@ -7632,7 +7692,7 @@ document.addEventListener("keydown", (event) => {
       role="button" tabindex="0" data-intelligence-entity="${index}"
       data-intelligence-domain-id="${safe(domain.id)}"
       aria-pressed="${index === selectedIndex ? "true" : "false"}"
-      aria-label="${index === selectedIndex ? "取消选择并返回综合发现" : "查看个体分析"}：${safe(item.name)}"`;
+      aria-label="${index === selectedIndex ? "取消选择并返回AI洞察" : "查看个体分析"}：${safe(item.name)}"`;
 
     if (visual === "network") {
       const points = items.map((item, index) => ({
@@ -7791,18 +7851,33 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderDomains(domains) {
-    grid.innerHTML = domains.map(renderDomainCard).join("");
-    measureScrollingLabels();
+    const expectedIds = new Set(domains.map((domain) => String(domain.id)));
+    domains.forEach((domain, index) => {
+      const selector = `.intelligence-domain[data-intelligence-domain-id="${CSS.escape(domain.id)}"]`;
+      let current = grid.querySelector(selector);
+      const next = elementFromMarkup(renderDomainCard(domain));
+      if (current) current = patchIntelligenceNode(current, next);
+      else current = next;
+      const position = grid.children[index] || null;
+      if (current !== position) grid.insertBefore(current, position);
+      measureScrollingLabels(current);
+    });
+    Array.from(grid.querySelectorAll(".intelligence-domain")).forEach((card) => {
+      if (!expectedIds.has(String(card.dataset.intelligenceDomainId || ""))) card.remove();
+    });
+    Array.from(grid.children).forEach((child) => {
+      if (!child.matches(".intelligence-domain")) child.remove();
+    });
   }
 
   function replaceDomainCard(domain, restoreFocus = false) {
     const current = grid.querySelector(`.intelligence-domain[data-intelligence-domain-id="${CSS.escape(domain.id)}"]`);
     if (!current) return;
-    const template = document.createElement("template");
-    template.innerHTML = renderDomainCard(domain).trim();
-    const replacement = template.content.firstElementChild;
-    current.replaceWith(replacement);
-    measureScrollingLabels(replacement);
+    const updated = patchIntelligenceNode(current, elementFromMarkup(renderDomainCard(domain)));
+    updated.classList.remove("is-content-switching");
+    void updated.offsetWidth;
+    updated.classList.add("is-content-switching");
+    measureScrollingLabels(updated);
     if (restoreFocus) {
       const index = selectedFocusIndex(domain);
       window.requestAnimationFrame(() => {
@@ -7895,7 +7970,7 @@ document.addEventListener("keydown", (event) => {
     const verifiedCount = Array.isArray(domain.ai_analysis) ? domain.ai_analysis.length : 0;
     const sourceCount = Array.isArray(domain.sources) ? domain.sources.length : 0;
 
-    drawerKicker.textContent = `${domain.index} · 多源综合研判`;
+    drawerKicker.textContent = `${domain.index} · AI 洞察`;
     drawerTitle.textContent = domain.title;
     drawerBody.innerHTML = `
       <section class="intelligence-detail-lead">
@@ -8040,7 +8115,7 @@ document.addEventListener("keydown", (event) => {
         payload = data;
         renderRail(data.relations || []);
         renderDomains(data.domains || []);
-        startFocusRotation();
+        if (!focusRotationTimer) startFocusRotation();
         const refreshStatus = data.refresh?.status;
         const refreshTime = String(data.refresh?.completed_at_hkt || data.ai?.updated_at || "").replace("T", " ").slice(0, 19);
         method.textContent = (data.method || "四库同口径对齐")

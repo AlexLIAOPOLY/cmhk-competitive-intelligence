@@ -108,7 +108,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=9"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=10"', html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=3"',
                 html,
@@ -167,8 +167,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
         html = (static_dir / "index.html").read_text(encoding="utf-8")
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
 
-        self.assertIn('<script src="./intelligence.js"></script>', html)
+        self.assertIn('<script src="./intelligence.js?v=2"></script>', html)
         self.assertIn("竞争情报 · 证据研判", html)
+        self.assertIn("AI 洞察", html)
+        self.assertIn('class="ai-insight-mark"', html)
         self.assertIn('id="intelligenceDrawerBackdrop"', html)
         self.assertIn('data-intelligence-focus', script)
         self.assertIn('function selectFocus', script)

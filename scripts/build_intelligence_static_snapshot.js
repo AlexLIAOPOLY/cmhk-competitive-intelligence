@@ -208,7 +208,7 @@ async function main() {
   <title>中国移动香港｜四库竞争情报驾驶舱</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./leadership-board.css">
+  <link rel="stylesheet" href="./leadership-board.css?v=5">
 </head>
 <body class="dashboard-page static-snapshot">
   <main class="app-shell">
@@ -223,7 +223,7 @@ async function main() {
       </section>
     </section>
   </main>
-  <script src="./intelligence.js"></script>
+  <script src="./intelligence.js?v=2"></script>
 </body>
 </html>\n`;
     fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content);
