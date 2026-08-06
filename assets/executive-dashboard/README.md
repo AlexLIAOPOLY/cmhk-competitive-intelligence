@@ -2,6 +2,8 @@
 
 Generated with the built-in IMAGE2 path on 2026-07-28. UI labels, values and charts remain code-native.
 
+The 2026-08-06 cockpit refresh uses `strategy-command-grid-v2.webp`, a seamless four-zone command-table background: network infrastructure, customer segments, omnichannel paths and financial trajectories. It intentionally contains no city skyline so the operating cockpit is visually distinct from the competitive-intelligence radar page.
+
 - `network-hong-kong.webp`: Hong Kong mobile-network digital twin with mapped base-station links.
 - `enterprise-cloud.webp`: enterprise office, data-centre and edge-cloud connectivity.
 - `omnichannel-city.webp`: retail, mobile app and service-centre touchpoints.
