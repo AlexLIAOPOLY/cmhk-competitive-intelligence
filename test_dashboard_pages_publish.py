@@ -152,11 +152,19 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn(
-                'href="./responsive-layout-hardening.css?v=4"',
+                'href="./responsive-layout-hardening.css?v=5"',
                 intelligence_html,
             )
             self.assertTrue(
                 (first / "intelligence" / "responsive-layout-hardening.css").exists()
+            )
+            hardening_css = (
+                first / "intelligence" / "responsive-layout-hardening.css"
+            ).read_text(encoding="utf-8")
+            self.assertIn("(max-height: 1000px)", hardening_css)
+            self.assertIn(
+                "height: calc((100vh - 8px) / var(--fit-scale) - 164px)",
+                hardening_css,
             )
             self.assertTrue((first / ".nojekyll").exists())
 
