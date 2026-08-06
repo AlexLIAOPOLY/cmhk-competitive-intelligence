@@ -13,6 +13,11 @@ SCRIPT_PATH = (
     / "scripts"
     / "publish_executive_dashboard_pages.py"
 )
+INTELLIGENCE_BUILDER_PATH = (
+    Path(__file__).resolve().parent
+    / "scripts"
+    / "build_intelligence_static_snapshot.js"
+)
 SPEC = importlib.util.spec_from_file_location("dashboard_pages_publish", SCRIPT_PATH)
 assert SPEC and SPEC.loader
 publisher = importlib.util.module_from_spec(SPEC)
@@ -20,6 +25,11 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_intelligence_snapshot_removes_runtime_source_metadata(self):
+        source = INTELLIGENCE_BUILDER_PATH.read_text(encoding="utf-8")
+        self.assertIn("delete value.intelligence_source_url", source)
+        self.assertIn("scrubRuntimeAddresses(intelligencePayload)", source)
+
     def test_public_verification_uses_system_https_without_proxy(self):
         expected_version = "site-v2"
         with mock.patch.object(

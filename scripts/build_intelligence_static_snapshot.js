@@ -89,6 +89,16 @@ async function main() {
       throw new Error(`Intelligence payload request failed: ${intelligenceResponse.status()}`);
     }
     const intelligencePayload = await intelligenceResponse.json();
+    const scrubRuntimeAddresses = (value) => {
+      if (Array.isArray(value)) {
+        value.forEach(scrubRuntimeAddresses);
+        return;
+      }
+      if (!value || typeof value !== "object") return;
+      delete value.intelligence_source_url;
+      Object.values(value).forEach(scrubRuntimeAddresses);
+    };
+    scrubRuntimeAddresses(intelligencePayload);
     const payloadText = JSON.stringify(intelligencePayload);
     if (/127\.0\.0\.1|localhost|10\.0\.|192\.168\.|file:\/\//i.test(payloadText)) {
       throw new Error("Refusing to publish an intelligence payload with internal addresses");
