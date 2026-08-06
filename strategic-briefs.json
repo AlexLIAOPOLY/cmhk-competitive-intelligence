@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-08-06T15:07:20+08:00",
+  "generated_at": "2026-08-06T15:17:23+08:00",
   "items": [
+    {
+      "id": "NEWS-BC20B8FF064970",
+      "title": "香港加快无人驾驶应用发展",
+      "summary": "香港政府加快无人驾驶技术应用，以满足市民生活需要，推动智慧交通发展。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBhck1waV95cExtWlQzaE90dm5zRjdVR0dzcHBMeUJuVkE1a0RtRW9iVFFneWVnR2MyR0hEb05NT2M5elgtN0pUWldNa3dvYlp2VW54bGNMeXNVZFlncWJSZi1zUFJkTXdnU3dNTmNicEV6dnFWYk5KRjMxQU0?oc=5",
+      "published_at": "2026-08-06T11:19:26+08:00"
+    },
+    {
+      "id": "NEWS-43470AD7B13C17",
+      "title": "香港重视创新吸引新加坡名校合作",
+      "summary": "香港特区政府重视创新，吸引新加坡名校来港合作，推动本地创新生态发展。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBGbHdjY21maHl2cGVjQzR5bDJPbVc1ZjFCN1ZwN3VQZnJtQ0tWbUkxNWx0Ni12aW1DSXJqQTR2OVpONWEwQmJWV210R2tHNWRiS2pTd2VyT3lhOWVObDNFNklMWHhlX0dIWU9oQVFPUVFUYkJr?oc=5",
+      "published_at": "2026-08-06T10:15:00+08:00"
+    },
     {
       "id": "NEWS-B7CCA6CBA2F01E",
       "title": "香港6月零售额升4.6% 增长延续14个月",
@@ -49,23 +65,7 @@
       "category": "政策监管",
       "source_url": "https://www.am730.com.hk/article/1045256",
       "published_at": "2026-08-03T08:00:00+08:00"
-    },
-    {
-      "id": "NEWS-7906A5234C6DC3",
-      "title": "香港上调全年经济增长预测",
-      "summary": "财政司司长陈茂波表示，鉴于上半年GDP增长达5.1%，香港将上调全年经济增长预测。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864679-20260802.htm",
-      "published_at": "2026-08-02T16:24:00+08:00"
-    },
-    {
-      "id": "NEWS-D419362F00CB24",
-      "title": "香港二季度GDP同比增长4.3%",
-      "summary": "香港政府公布初步统计数据显示，香港经济在四月至六月期间按年实质增长百分之四点三。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://news.rthk.hk/rthk/en/component/k2/1864513-20260731.htm",
-      "published_at": "2026-07-31T18:56:00+08:00"
     }
   ],
-  "site_version": "8cda08028440ee257ef227ee14c72376b34e328b4d8cbf8fc4478d2550a23e20"
+  "site_version": "f067f3a9f5a9faf9c8fd5656c14ae909ec529c1342ce96b7ab5cab8a7e625445"
 }
