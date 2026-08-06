@@ -6,7 +6,7 @@ const newsSourceSet = newsTrack?.querySelector(".news-set");
 let newsResizeFrame = 0;
 let newsResumeTimer = 0;
 var benchmarkPayload = null;
-var activeBenchmarkCompanyId = "cmhk";
+const selectedBenchmarkCompanyIds = new Set();
 const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
@@ -109,7 +109,7 @@ function showNetworkView(viewName) {
 
   if (networkPanel) networkPanel.dataset.networkView = viewName;
   restartContentSwitch(networkContent, viewName);
-  renderInlineBenchmark();
+  renderBenchmarkCharts();
 }
 
 function stopNetworkRotation() {
@@ -278,7 +278,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
     content.dataset.activeView = viewNames[activeViewIndex] || "";
     content.dataset.activeGroup = String(activeGroupIndex);
     restartContentSwitch(content, `${content.dataset.activeView}:${content.dataset.activeGroup}`);
-    renderInlineBenchmark();
+    renderBenchmarkCharts();
   }
 
   function paused() {
@@ -565,54 +565,95 @@ function formatBenchmarkValue(value) {
   return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(numeric);
 }
 
-function clearInlineBenchmark() {
-  document.querySelectorAll(".benchmark-inline-value, .benchmark-panel-company").forEach((item) => item.remove());
-  document.querySelectorAll(".has-inline-benchmark").forEach((item) => item.classList.remove("has-inline-benchmark"));
-  document.body.removeAttribute("data-benchmark-company");
+function benchmarkNumericValue(record) {
+  const match = String(record?.value ?? "").replace(/,/g, "").match(/-?\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const value = Number(match[0]);
+  return Number.isFinite(value) ? value : null;
 }
 
-function renderInlineBenchmark() {
-  clearInlineBenchmark();
-  if (!benchmarkPayload || activeBenchmarkCompanyId === "cmhk") return;
-  const company = benchmarkPayload.companies.find((item) => item.id === activeBenchmarkCompanyId);
-  if (!company) return;
-  document.body.dataset.benchmarkCompany = company.id;
+function clearBenchmarkCharts() {
+  document.querySelectorAll(".benchmark-comparison-chart, .benchmark-panel-company").forEach((item) => item.remove());
+  panels.forEach((panel) => panel.classList.remove("is-benchmark-chart"));
+  document.body.removeAttribute("data-benchmark-companies");
+}
+
+function renderBenchmarkCharts() {
+  clearBenchmarkCharts();
+  if (!benchmarkPayload || !selectedBenchmarkCompanyIds.size) return;
+
+  const companyIds = ["cmhk", ...selectedBenchmarkCompanyIds];
+  document.body.dataset.benchmarkCompanies = companyIds.join(",");
 
   panels.forEach((panel) => {
+    const metrics = visibleDetailMetrics(panel)
+      .filter((metric) => benchmarkNumericValue(benchmarkRecord("cmhk", metric)) !== null)
+      .slice(0, 2);
+    if (!metrics.length) return;
+
     const heading = panel.querySelector(".panel-heading h2");
     if (heading) {
       const badge = document.createElement("span");
       badge.className = "benchmark-panel-company";
-      badge.dataset.company = company.id;
-      badge.textContent = `对标 ${company.label}`;
+      badge.textContent = `${companyIds.length}企同图`;
       heading.after(badge);
     }
 
-    visibleDetailMetrics(panel).forEach((metric) => {
-      if (!metric.host) return;
-      const record = benchmarkRecord(company.id, metric);
-      const peer = document.createElement("span");
-      peer.className = "benchmark-inline-value";
-      peer.dataset.company = company.id;
-      peer.classList.toggle("is-simulated", Boolean(record?.simulated));
-      peer.title = record
-        ? [record.period, record.period_end, record.source_label].filter(Boolean).join(" · ")
-        : "暂无同口径公开数据";
-      const label = document.createElement("b");
-      label.textContent = company.label;
-      const value = document.createElement("strong");
-      value.textContent = record ? formatBenchmarkValue(record.value) : "—";
+    const chart = document.createElement("section");
+    chart.className = "benchmark-comparison-chart";
+    chart.setAttribute("aria-label", `${heading?.textContent || "当前板块"}多企业指标对比`);
+
+    const chartHead = document.createElement("header");
+    const title = document.createElement("strong");
+    title.textContent = "同指标企业对比";
+    const note = document.createElement("span");
+    note.textContent = "CMHK基准 · 公开值优先 · 缺项采用估算";
+    chartHead.append(title, note);
+    chart.append(chartHead);
+
+    const groups = document.createElement("div");
+    groups.className = "benchmark-chart-groups";
+
+    metrics.forEach((metric) => {
+      const records = companyIds.map((companyId) => ({
+        companyId,
+        company: benchmarkPayload.companies.find((item) => item.id === companyId),
+        record: benchmarkRecord(companyId, metric)
+      }));
+      const maximum = Math.max(1, ...records.map(({ record }) => Math.abs(benchmarkNumericValue(record) || 0)));
+      const group = document.createElement("section");
+      group.className = "benchmark-chart-group";
+
+      const groupTitle = document.createElement("h3");
+      groupTitle.textContent = metric.label;
       const unit = document.createElement("small");
-      unit.textContent = record?.unit || "";
-      peer.append(label, value, unit);
-      if (record?.simulated) {
-        const simulationTag = document.createElement("i");
-        simulationTag.textContent = "SIM";
-        peer.append(simulationTag);
-      }
-      metric.host.classList.add("has-inline-benchmark");
-      metric.host.append(peer);
+      unit.textContent = records.find(({ record }) => record?.unit)?.record?.unit || metric.unit || "";
+      groupTitle.append(unit);
+      group.append(groupTitle);
+
+      records.forEach(({ companyId, company, record }) => {
+        const numericValue = benchmarkNumericValue(record);
+        const row = document.createElement("div");
+        row.className = "benchmark-chart-row";
+        row.dataset.company = companyId;
+        row.title = [record?.period, record?.period_end, record?.source_label].filter(Boolean).join(" · ");
+
+        const label = document.createElement("span");
+        label.textContent = company?.label || companyId;
+        const track = document.createElement("i");
+        const bar = document.createElement("b");
+        bar.style.setProperty("--benchmark-value", `${numericValue === null ? 0 : Math.max(3, Math.abs(numericValue) / maximum * 100)}%`);
+        track.append(bar);
+        const value = document.createElement("strong");
+        value.textContent = numericValue === null ? "—" : formatBenchmarkValue(record.value);
+        row.append(label, track, value);
+        group.append(row);
+      });
+      groups.append(group);
     });
+    chart.append(groups);
+    panel.append(chart);
+    panel.classList.add("is-benchmark-chart");
   });
 }
 
@@ -621,23 +662,29 @@ function renderBenchmarkCompanySelector() {
   const fragment = document.createDocumentFragment();
   benchmarkPayload.companies.forEach((company) => {
     const button = document.createElement("button");
-    const selected = activeBenchmarkCompanyId === company.id;
+    const selected = company.id === "cmhk"
+      ? selectedBenchmarkCompanyIds.size === 0
+      : selectedBenchmarkCompanyIds.has(company.id);
     button.type = "button";
     button.dataset.company = company.id;
     button.className = selected ? "is-selected" : "";
     button.setAttribute("aria-pressed", String(selected));
     button.textContent = company.label;
     button.classList.toggle("is-primary", company.id === "cmhk");
-    button.title = company.id === "cmhk" ? "恢复CMHK原始视图" : `在原图表内查看${company.label}对标值`;
+    button.title = company.id === "cmhk" ? "清除竞对并恢复CMHK原始视图" : `在原图表中${selected ? "移除" : "加入"}${company.label}`;
     button.addEventListener("click", () => {
-      activeBenchmarkCompanyId = company.id;
+      if (company.id === "cmhk") selectedBenchmarkCompanyIds.clear();
+      else if (selectedBenchmarkCompanyIds.has(company.id)) selectedBenchmarkCompanyIds.delete(company.id);
+      else selectedBenchmarkCompanyIds.add(company.id);
       renderBenchmarkCompanySelector();
-      renderInlineBenchmark();
+      renderBenchmarkCharts();
     });
     fragment.append(button);
   });
   benchmarkCompanySelector.replaceChildren(fragment);
-  if (benchmarkCount) benchmarkCount.textContent = activeBenchmarkCompanyId === "cmhk" ? "原始视图" : companyLabel(activeBenchmarkCompanyId);
+  if (benchmarkCount) benchmarkCount.textContent = selectedBenchmarkCompanyIds.size
+    ? `已选 ${selectedBenchmarkCompanyIds.size} 家竞对`
+    : "原始视图";
 }
 
 function companyLabel(companyId) {
@@ -654,7 +701,7 @@ fetch(document.body.dataset.benchmarkUrl || "/api/executive-company-benchmarks",
     benchmarkPayload = payload;
     document.body.classList.add("benchmark-data-ready");
     renderBenchmarkCompanySelector();
-    renderInlineBenchmark();
+    renderBenchmarkCharts();
   })
   .catch(() => {
     if (benchmarkCount) benchmarkCount.textContent = "数据未就绪";
