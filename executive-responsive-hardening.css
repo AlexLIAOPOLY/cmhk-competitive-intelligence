@@ -28,6 +28,21 @@
   }
 }
 
+/* Fit the complete 2x2 cockpit into compact desktop viewports without changing its proportions. */
+@media (min-width: 901px) and (max-width: 1536px) and (max-height: 900px) {
+  body {
+    overflow: hidden;
+  }
+
+  .cockpit {
+    --fit-scale: clamp(.80, calc(100vh / 892px), 1);
+    transform: scale(var(--fit-scale));
+    transform-origin: top left;
+    width: calc(100% / var(--fit-scale));
+    min-height: calc(100vh / var(--fit-scale));
+  }
+}
+
 /* Keep the stacked business panel from clipping its third comparison row on narrow screens. */
 @media (max-width: 900px) {
   .panel-business {
