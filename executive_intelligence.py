@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from functools import lru_cache
 from datetime import datetime
@@ -102,6 +103,66 @@ def _focus_metric(items: list[dict[str, Any]], label: str, unit: str, mode: str 
         return {"value": "-", "unit": unit, "label": label}
     value = min(values) if mode == "min" else max(values)
     return {"value": round(value, 2), "unit": unit, "label": label}
+
+
+def _format_price(value: Any) -> str:
+    number = _number(value)
+    if number is None:
+        return "-"
+    return f"{number:.0f}" if number.is_integer() else f"{number:.1f}"
+
+
+def _local_price_insight(items: list[dict[str, Any]]) -> str:
+    """Turn the current price distribution into a decision-ready judgement."""
+    comparable = [item for item in items if _number(item.get("value")) is not None]
+    if not comparable:
+        return "当前没有可用于价格判断的品牌月费中位数。"
+
+    ordered = sorted(comparable, key=lambda item: float(item["value"]))
+    lowest = ordered[0]
+    highest = ordered[-1]
+    lowest_value = float(lowest["value"])
+    highest_value = float(highest["value"])
+    spread = highest_value - lowest_value
+    spread_rate = (spread / highest_value * 100) if highest_value else 0
+    ladder = "、".join(
+        f"{item['name']}{_format_price(item['value'])}"
+        for item in ordered
+    )
+
+    category_ranges: dict[str, list[float]] = {}
+    for component in lowest.get("components") or []:
+        category = str(component.get("detail") or "").strip()
+        value = _number(component.get("value"))
+        if category and value is not None:
+            category_ranges.setdefault(category, []).append(value)
+    category_note = ""
+    if len(category_ranges) > 1:
+        category_parts = []
+        for category, values in category_ranges.items():
+            low_value = min(values)
+            high_value = max(values)
+            range_text = (
+                _format_price(low_value)
+                if low_value == high_value
+                else f"{_format_price(low_value)}–{_format_price(high_value)}"
+            )
+            category_parts.append(
+                f"{category}{range_text}"
+            )
+        category_note = (
+            f"其中{lowest['name']}的最低值来自"
+            + "、".join(category_parts)
+            + "，低价入口与主产品不是同一类，不能直接等同为主产品最低价。"
+        )
+
+    return (
+        f"按品牌月费中位数，{lowest['name']}最低为{_format_price(lowest_value)}港元/月，"
+        f"{highest['name']}最高为{_format_price(highest_value)}港元/月，"
+        f"价差{_format_price(spread)}港元（约{spread_rate:.0f}%）；"
+        f"当前价格梯度为{ladder}港元/月。"
+        f"{category_note}"
+    )
 
 
 def _component(label: Any, value: Any = None, unit: Any = "", detail: Any = "") -> dict[str, Any]:
@@ -318,7 +379,7 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "id": "price", "label": "月费区间", "visual": "ranges",
             "metric": _focus_metric(price_items, "最低月费中位数", "港元/月", mode="min"),
             "context": "只比较已结构化平均月费",
-            "insight": "以品牌月费中位数和最低至最高区间判断价格带交锋；缺失值不估算。",
+            "insight": _local_price_insight(price_items),
             "items": price_items,
         },
         {
@@ -809,6 +870,52 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _analysis_evidence_snapshot(domains: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build the exact source-backed payload used to generate model summaries."""
+    evidence_domains: list[dict[str, Any]] = []
+    for domain in domains:
+        focuses = []
+        for focus in domain.get("focuses") or []:
+            focuses.append(
+                {
+                    "id": focus.get("id"),
+                    "label": focus.get("label"),
+                    "metric": focus.get("metric"),
+                    "insight": focus.get("insight"),
+                    "items": [
+                        {
+                            "name": item.get("name"),
+                            "value": item.get("value"),
+                            "unit": item.get("unit"),
+                            "detail": item.get("detail"),
+                            "analysis": item.get("analysis"),
+                            "components": item.get("components") or [],
+                            "component_count": item.get("component_count"),
+                            "record_count": item.get("record_count"),
+                            "source_url": item.get("source_url"),
+                        }
+                        for item in (focus.get("items") or [])[:8]
+                    ],
+                }
+            )
+        evidence_domains.append(
+            {
+                "id": domain.get("id"),
+                "title": domain.get("title"),
+                "metric": domain.get("metric"),
+                "deterministic_insight": domain.get("insight"),
+                "focuses": focuses,
+                "agent_verified_facts": (domain.get("ai_analysis") or [])[:8],
+            }
+        )
+    return {"domains": evidence_domains, "relations": []}
+
+
+def _content_hash(payload: Any) -> str:
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
 @lru_cache(maxsize=4)
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
@@ -819,13 +926,21 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     domains = [local, international, cloud, macro]
     ai_payload = _read_json_optional(AI_ANALYSIS_PATH, {})
     ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
-    model_summaries = {
-        str(item.get("domain") or ""): item
-        for item in ((ai_payload.get("model_analysis") or {}).get("summaries") or [])
-        if isinstance(item, dict)
-    } if isinstance(ai_payload, dict) else {}
     for domain in domains:
         domain["ai_analysis"] = list((ai_domains or {}).get(domain["id"]) or [])
+    evidence = _analysis_evidence_snapshot(domains)
+    evidence_hash = _content_hash(evidence)
+    model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
+    model_analysis_fresh = bool(
+        str(model_analysis.get("evidence_hash") or "")
+        and str(model_analysis.get("evidence_hash") or "") == evidence_hash
+    )
+    model_summaries = {
+        str(item.get("domain") or ""): item
+        for item in (model_analysis.get("summaries") or [])
+        if isinstance(item, dict)
+    } if model_analysis_fresh else {}
+    for domain in domains:
         domain["ai_summary"] = model_summaries.get(domain["id"], {})
         focus_summaries = {
             str(item.get("id") or ""): item
@@ -878,7 +993,6 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "kind": "分析框架",
         },
     ]
-    model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
     model_discoveries = [
         item for item in (model_analysis.get("discoveries") or [])
         if isinstance(item, dict)
@@ -887,7 +1001,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         and item.get("from") != item.get("to")
         and str(item.get("title") or "").strip()
         and str(item.get("detail") or "").strip()
-    ]
+    ] if model_analysis_fresh else []
     relations = [
         {
             "from": item["from"],
@@ -911,6 +1025,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "updated_at": ai_payload.get("generated_at_hkt", "") if isinstance(ai_payload, dict) else "",
             "domain_counts": ai_payload.get("domain_counts", {}) if isinstance(ai_payload, dict) else {},
             "model_analysis": model_analysis,
+            "evidence_hash": evidence_hash,
+            "model_analysis_fresh": model_analysis_fresh,
             "discoveries_generated": bool(len(model_discoveries) >= 4),
         },
         "source_record_count": sum(int(domain["metric"]["value"]) if domain["id"] == "local" else len(domain["entities"]) for domain in domains),
@@ -920,3 +1036,9 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
 def build_executive_intelligence_snapshot() -> dict[str, Any]:
     signature = tuple(path.stat().st_mtime_ns if path.exists() else 0 for path in DOMAIN_PATHS)
     return _build_cached(signature)
+
+
+def build_executive_intelligence_evidence_snapshot() -> dict[str, Any]:
+    """Expose the source-only evidence pack used for AI freshness checks."""
+    snapshot = build_executive_intelligence_snapshot()
+    return _analysis_evidence_snapshot(snapshot.get("domains") or [])

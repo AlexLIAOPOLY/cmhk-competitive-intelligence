@@ -11,7 +11,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -22,6 +21,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 STATIC_DIR = ROOT / "web" / "static"
 INTELLIGENCE_STATIC_DIR = STATIC_DIR / "intelligence-public"
+INTELLIGENCE_SNAPSHOT_SCRIPT = ROOT / "scripts" / "build_intelligence_static_snapshot.js"
 RESPONSIVE_LAYOUT_HARDENING = STATIC_DIR / "responsive-layout-hardening.css"
 EXECUTIVE_RESPONSIVE_HARDENING = STATIC_DIR / "executive-responsive-hardening.css"
 DATA_DIR = ROOT / "strategy_briefing"
@@ -30,6 +30,7 @@ LOCK_PATH = DATA_DIR / "dashboard_pages_publish.lock"
 HKT = ZoneInfo("Asia/Hong_Kong")
 DEFAULT_REPOSITORY = "https://github.com/AlexLIAOPOLY/cmhk-competitive-intelligence.git"
 DEFAULT_PUBLIC_URL = "https://alexliaopoly.github.io/cmhk-competitive-intelligence/"
+DEFAULT_INTELLIGENCE_SOURCE_URL = "http://127.0.0.1:8765/"
 
 
 def _run(
@@ -37,6 +38,7 @@ def _run(
     *,
     cwd: Path | None = None,
     check: bool = True,
+    environment_overrides: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
     for name in (
@@ -48,6 +50,8 @@ def _run(
         "all_proxy",
     ):
         environment.pop(name, None)
+    if environment_overrides:
+        environment.update(environment_overrides)
     return subprocess.run(
         command,
         cwd=str(cwd) if cwd else None,
@@ -114,7 +118,39 @@ def _public_news_payload() -> dict[str, Any]:
     return {"ok": True, "generated_at": generated_at, "items": items}
 
 
-def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
+def _build_fresh_intelligence_snapshot(destination: Path) -> dict[str, str]:
+    if not INTELLIGENCE_SNAPSHOT_SCRIPT.is_file():
+        raise RuntimeError(f"missing intelligence snapshot builder: {INTELLIGENCE_SNAPSHOT_SCRIPT}")
+    source_url = os.environ.get(
+        "CMHK_INTELLIGENCE_SOURCE_URL",
+        DEFAULT_INTELLIGENCE_SOURCE_URL,
+    ).strip()
+    if not source_url.startswith(("http://127.0.0.1:", "http://localhost:")):
+        raise RuntimeError("intelligence snapshot source must be a local runtime URL")
+    result = _run(
+        ["node", str(INTELLIGENCE_SNAPSHOT_SCRIPT)],
+        cwd=ROOT,
+        environment_overrides={
+            "CMHK_INTELLIGENCE_SOURCE_URL": source_url,
+            "CMHK_INTELLIGENCE_SNAPSHOT_DIR": str(destination),
+        },
+    )
+    required = (destination / "index.html", destination / "intelligence.js")
+    missing = [str(path) for path in required if not path.is_file()]
+    if missing:
+        raise RuntimeError(f"intelligence snapshot builder omitted required files: {missing}")
+    return {
+        "source_url": source_url,
+        "output_dir": str(destination),
+        "builder_output": (result.stdout or "").strip()[-1000:],
+    }
+
+
+def _build_site(
+    destination: Path,
+    *,
+    intelligence_static_dir: Path | None = None,
+) -> tuple[str, dict[str, Any]]:
     destination.mkdir(parents=True, exist_ok=True)
     html = (STATIC_DIR / "executive-dashboard-demo.html").read_text(encoding="utf-8")
     html = html.replace(
@@ -152,9 +188,10 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
         STATIC_DIR / "assets" / "executive-dashboard",
         destination / "assets" / "executive-dashboard",
     )
-    if INTELLIGENCE_STATIC_DIR.is_dir():
+    intelligence_source_dir = intelligence_static_dir or INTELLIGENCE_STATIC_DIR
+    if intelligence_source_dir.is_dir():
         shutil.copytree(
-            INTELLIGENCE_STATIC_DIR,
+            intelligence_source_dir,
             destination / "intelligence",
         )
         intelligence_index = destination / "intelligence" / "index.html"
@@ -202,18 +239,26 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
 
 
 def _verify(public_url: str, site_version: str) -> None:
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     target = public_url.rstrip("/") + "/strategic-briefs.json"
     last_error = ""
     for _ in range(24):
         try:
-            request = urllib.request.Request(
-                target,
-                headers={"User-Agent": "CMHK dashboard publisher"},
+            response = _run(
+                [
+                    "curl",
+                    "--fail",
+                    "--location",
+                    "--silent",
+                    "--show-error",
+                    "--max-time",
+                    "20",
+                    "--header",
+                    "User-Agent: CMHK dashboard publisher",
+                    target,
+                ]
             )
-            with opener.open(request, timeout=20) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-            if response.status == 200 and payload.get("site_version") == site_version:
+            payload = json.loads(response.stdout)
+            if payload.get("site_version") == site_version:
                 return
             last_error = "deployed snapshot has not reached the expected version"
         except Exception as exc:
@@ -247,13 +292,20 @@ def publish(*, force: bool = False, dry_run: bool = False) -> dict[str, Any]:
             with tempfile.TemporaryDirectory(prefix="cmhk-dashboard-pages-") as temp:
                 temp_root = Path(temp)
                 generated = temp_root / "generated"
-                site_version, payload = _build_site(generated)
+                intelligence_snapshot = _build_fresh_intelligence_snapshot(
+                    temp_root / "intelligence-snapshot"
+                )
+                site_version, payload = _build_site(
+                    generated,
+                    intelligence_static_dir=temp_root / "intelligence-snapshot",
+                )
                 if not force and site_version == state.get("last_site_version"):
                     return {
                         "status": "unchanged",
                         "site_version": site_version,
                         "item_count": len(payload["items"]),
                         "public_url": public_url,
+                        "intelligence_source_url": intelligence_snapshot["source_url"],
                     }
                 if dry_run:
                     return {
@@ -261,6 +313,7 @@ def publish(*, force: bool = False, dry_run: bool = False) -> dict[str, Any]:
                         "site_version": site_version,
                         "item_count": len(payload["items"]),
                         "public_url": public_url,
+                        "intelligence_source_url": intelligence_snapshot["source_url"],
                     }
 
                 checkout = temp_root / "checkout"
@@ -319,6 +372,7 @@ def publish(*, force: bool = False, dry_run: bool = False) -> dict[str, Any]:
                     "item_count": len(payload["items"]),
                     "public_url": public_url,
                     "commit": commit,
+                    "intelligence_source_url": intelligence_snapshot["source_url"],
                 }
                 _write_state(
                     {

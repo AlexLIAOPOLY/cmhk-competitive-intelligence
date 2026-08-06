@@ -392,51 +392,11 @@ def publish_domain_fact_sidecars(
 
 
 def _analysis_input_snapshot() -> dict[str, Any]:
-    from executive_intelligence import build_executive_intelligence_snapshot
+    from executive_intelligence import build_executive_intelligence_evidence_snapshot
 
-    snapshot = build_executive_intelligence_snapshot()
-    domains: list[dict[str, Any]] = []
-    for domain in snapshot.get("domains") or []:
-        focuses = []
-        for focus in domain.get("focuses") or []:
-            focuses.append(
-                {
-                    "id": focus.get("id"),
-                    "label": focus.get("label"),
-                    "metric": focus.get("metric"),
-                    "insight": focus.get("insight"),
-                    "items": [
-                        {
-                            "name": item.get("name"),
-                            "value": item.get("value"),
-                            "unit": item.get("unit"),
-                            "detail": item.get("detail"),
-                            "analysis": item.get("analysis"),
-                            "components": item.get("components") or [],
-                            "component_count": item.get("component_count"),
-                            "record_count": item.get("record_count"),
-                            "source_url": item.get("source_url"),
-                        }
-                        for item in (focus.get("items") or [])[:8]
-                    ],
-                }
-            )
-        domains.append(
-            {
-                "id": domain.get("id"),
-                "title": domain.get("title"),
-                "metric": domain.get("metric"),
-                "deterministic_insight": domain.get("insight"),
-                "focuses": focuses,
-                "agent_verified_facts": (domain.get("ai_analysis") or [])[:8],
-            }
-        )
-    # Rendered relations may come from the previous model_analysis payload.
-    # Feeding them back into the next evidence hash makes the hash change after
-    # every successful publish even when the four source databases are stable.
-    # Cross-domain discoveries are generated from the source-backed domains;
-    # deterministic fallback pairs are constructed separately below.
-    return {"domains": domains, "relations": []}
+    # Rendered relations are intentionally excluded. The hash must move only
+    # when source-backed facts or the deterministic evidence pack changes.
+    return build_executive_intelligence_evidence_snapshot()
 
 
 def _extract_json_payload(text: str) -> Any:
@@ -547,6 +507,16 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
                     focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
                     if str(focus.get("id") or "") == focus_id
                 )
+                if domain == "local" and focus_id == "price":
+                    focus_numbers = _numeric_tokens(evidence_focus)
+                    analysis_numbers = _numeric_tokens(validated_focus["analysis"])
+                    if focus_numbers and not (focus_numbers & analysis_numbers):
+                        raise ValueError("AI分析分类缺少具体数值判断：local.price")
+                    if any(
+                        phrase in validated_focus["analysis"]
+                        for phrase in ("缺失值不估算", "缺失数据不估算", "只比较已结构化", "仅比较已结构化")
+                    ):
+                        raise ValueError("AI分析分类仍以限制条件代替价格判断：local.price")
                 evidence_entities = {
                     str(entity.get("name") or ""): entity
                     for entity in evidence_focus.get("items") or []
@@ -904,6 +874,8 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         "实体analysis必须先说清具体包含哪些组成明细，再指出结构、集中度、变化或差距及其业务含义；"
         "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
         "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
+        "每个focus的analysis必须至少引用一个输入中的具体数值，并说明差距、梯度、集中度或变化带来的业务判断；"
+        "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
         "跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
         "source_urls只能从输入中原样选择。只返回JSON数组。"

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -19,6 +20,56 @@ SPEC.loader.exec_module(publisher)
 
 
 class DashboardPagesPublishTests(unittest.TestCase):
+    def test_public_verification_uses_system_https_without_proxy(self):
+        expected_version = "site-v2"
+        with mock.patch.object(
+            publisher,
+            "_run",
+            return_value=mock.Mock(
+                stdout=json.dumps({"site_version": expected_version})
+            ),
+        ) as run:
+            publisher._verify("https://example.github.io/project/", expected_version)
+
+        command = run.call_args.args[0]
+        self.assertEqual(command[0], "curl")
+        self.assertIn("--fail", command)
+        self.assertEqual(
+            command[-1],
+            "https://example.github.io/project/strategic-briefs.json",
+        )
+
+    def test_fresh_intelligence_snapshot_is_built_from_local_runtime(self):
+        with tempfile.TemporaryDirectory() as temp:
+            destination = Path(temp) / "intelligence"
+
+            def fake_run(command, **kwargs):
+                self.assertEqual(command, ["node", str(publisher.INTELLIGENCE_SNAPSHOT_SCRIPT)])
+                self.assertEqual(kwargs["cwd"], publisher.ROOT)
+                environment = kwargs["environment_overrides"]
+                self.assertEqual(
+                    environment["CMHK_INTELLIGENCE_SOURCE_URL"],
+                    "http://127.0.0.1:9876/",
+                )
+                self.assertEqual(
+                    environment["CMHK_INTELLIGENCE_SNAPSHOT_DIR"],
+                    str(destination),
+                )
+                destination.mkdir(parents=True)
+                (destination / "index.html").write_text("<title>fresh</title>", encoding="utf-8")
+                (destination / "intelligence.js").write_text("window.DATA = {};", encoding="utf-8")
+                return mock.Mock(stdout='{"status":"built"}\n')
+
+            with mock.patch.dict(
+                publisher.os.environ,
+                {"CMHK_INTELLIGENCE_SOURCE_URL": "http://127.0.0.1:9876/"},
+            ), mock.patch.object(publisher, "_run", side_effect=fake_run):
+                result = publisher._build_fresh_intelligence_snapshot(destination)
+
+            self.assertEqual(result["source_url"], "http://127.0.0.1:9876/")
+            self.assertTrue((destination / "index.html").is_file())
+            self.assertTrue((destination / "intelligence.js").is_file())
+
     def test_build_site_is_static_sanitized_and_stable(self):
         payload = {
             "ok": True,

@@ -79,6 +79,16 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertEqual([local[key]["visual"] for key in ("scale", "track", "price", "overlap")],
                          ["columns", "rows", "ranges", "network"])
         self.assertTrue(all("low" in item and "high" in item for item in local["price"]["items"]))
+        price_insight = local["price"]["insight"]
+        price_items = [item for item in local["price"]["items"] if item.get("value") is not None]
+        lowest = min(price_items, key=lambda item: item["value"])
+        highest = max(price_items, key=lambda item: item["value"])
+        self.assertIn(lowest["name"], price_insight)
+        self.assertIn(highest["name"], price_insight)
+        self.assertIn(str(int(lowest["value"])), price_insight)
+        self.assertIn(str(int(highest["value"])), price_insight)
+        self.assertIn("价差", price_insight)
+        self.assertNotIn("缺失值不估算", price_insight)
 
         international = {focus["id"]: focus for focus in domains["international"]["focuses"]}
         self.assertNotEqual(
