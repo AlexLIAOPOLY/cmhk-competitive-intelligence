@@ -116,7 +116,6 @@ h1 {
   transform: translateY(-50%);
 }
 
-.benchmark-toggle,
 .benchmark-company-selector button {
   height: 28px;
   border: 1px solid rgba(91, 190, 234, .23);
@@ -125,27 +124,23 @@ h1 {
   cursor: pointer;
 }
 
-.benchmark-toggle {
+.benchmark-context {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  height: 28px;
   padding: 0 10px;
+  border: 1px solid rgba(91, 190, 234, .18);
+  color: #8cacb9;
+  background: rgba(5, 25, 39, .46);
 }
 
-.benchmark-toggle span { font-size: 10px; font-weight: 650; }
-.benchmark-toggle b {
+.benchmark-context { font-size: 9px; font-weight: 650; }
+.benchmark-context b {
   color: var(--cyan);
   font-size: 9px;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
-}
-
-.benchmark-toggle:disabled { opacity: .42; cursor: wait; }
-.benchmark-toggle[aria-pressed="true"] {
-  border-color: rgba(53, 217, 255, .66);
-  color: #effcff;
-  background: rgba(13, 70, 91, .88);
-  box-shadow: inset 0 -2px 0 var(--cyan), 0 0 14px rgba(53, 217, 255, .1);
 }
 
 .benchmark-company-selector { display: flex; align-items: center; gap: 3px; }
@@ -163,10 +158,8 @@ h1 {
 .benchmark-company-selector button.is-primary {
   border-color: rgba(53, 217, 255, .68);
   color: #a8f1ff;
-  cursor: default;
 }
-.benchmark-company-selector button:focus-visible,
-.benchmark-toggle:focus-visible { outline: 1px solid var(--cyan); outline-offset: 2px; }
+.benchmark-company-selector button:focus-visible { outline: 1px solid var(--cyan); outline-offset: 2px; }
 
 .news-rail {
   position: relative;
@@ -430,6 +423,57 @@ h1 {
   white-space: nowrap;
 }
 .company-benchmark-overlay > footer b { color: #f1c878; font-weight: 700; }
+
+.panel-heading > .benchmark-panel-company {
+  flex: 0 0 auto;
+  padding: 2px 5px;
+  border-left: 1px solid currentColor;
+  color: var(--benchmark-color, #67deb5);
+  font-family: inherit;
+  font-size: 8px !important;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.has-inline-benchmark { position: relative; }
+.benchmark-inline-value {
+  --benchmark-color: #67deb5;
+  z-index: 4;
+  position: absolute;
+  display: inline-flex !important;
+  align-items: baseline;
+  gap: 3px;
+  padding: 2px 4px;
+  border: 1px solid color-mix(in srgb, var(--benchmark-color) 30%, transparent);
+  color: var(--benchmark-color) !important;
+  background: rgba(2, 17, 27, .82);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .16);
+  font-size: 7px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  animation: benchmark-inline-enter 180ms cubic-bezier(0, 0, .38, .9);
+}
+.benchmark-inline-value[data-company="three"],
+.benchmark-panel-company[data-company="three"] { --benchmark-color: #f1bd68; }
+.benchmark-inline-value[data-company="smartone"],
+.benchmark-panel-company[data-company="smartone"] { --benchmark-color: #e88aaa; }
+.benchmark-inline-value[data-company="hkbn"],
+.benchmark-panel-company[data-company="hkbn"] { --benchmark-color: #a6b7ff; }
+.benchmark-inline-value > b { position: static !important; left: auto !important; top: auto !important; transform: none !important; color: inherit !important; font-size: 7px !important; font-weight: 650; }
+.benchmark-inline-value strong { display: inline !important; margin: 0 !important; color: inherit !important; font-size: 10px !important; font-weight: 650; line-height: 1 !important; }
+.benchmark-inline-value small { margin: 0 !important; color: inherit !important; font-size: 6px !important; opacity: .72; }
+.benchmark-inline-value > i { position: static !important; width: auto !important; height: auto !important; display: inline !important; padding: 1px 2px; border: 1px solid rgba(241, 185, 95, .34); color: #f1c878; background: none !important; box-shadow: none !important; font-size: 5px; font-style: normal; }
+.hero-metric > .benchmark-inline-value { left: calc(100% + 10px); bottom: 5px; }
+.network-bars > div > .benchmark-inline-value { left: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.detail-item > .benchmark-inline-value { right: 5px; top: 4px; }
+.revenue-block > .benchmark-inline-value { right: 4px; top: 4px; }
+.profit-kpis > div > .benchmark-inline-value { right: 4px; bottom: 3px; }
+
+@keyframes benchmark-inline-enter {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .motion-enabled .panel {
   opacity: 0;
@@ -1865,7 +1909,7 @@ h1 {
 }
 
 @media (max-width: 520px) {
-  .benchmark-toggle span { font-size: 9px; }
+  .benchmark-context { display: none; }
   .benchmark-company-selector { gap: 2px; }
   .benchmark-company-selector button { min-width: 0; padding-inline: 5px; font-size: 7px; }
   .company-benchmark-overlay { inset: 84px 0 0; grid-template-rows: 52px minmax(0, 1fr) 28px; }
@@ -1879,6 +1923,9 @@ h1 {
   .company-benchmark-row > a { padding-inline: 3px; }
   .company-benchmark-row b { font-size: 10px; }
   .company-benchmark-row small { display: none; }
+  .hero-metric > .benchmark-inline-value { left: auto; right: -96px; }
+  .network-bars > div > .benchmark-inline-value { left: auto; right: 0; top: -9px; transform: none; }
+  .benchmark-panel-company { font-size: 7px; }
   .panel-heading {
     height: 84px;
     min-height: 84px;
