@@ -39,6 +39,11 @@ POLL_SECONDS = max(60, int(os.environ.get("CMHK_NEWS_REVIEW_POLL_SECONDS", "300"
 MAX_SHEET_ROWS = max(500, int(os.environ.get("CMHK_NEWS_REVIEW_MAX_ROWS", "3000")))
 SHEET_SOURCE = "feishu_review_sheet"
 FORMAT_VERSION = 9
+LARK_READ_MAX_ATTEMPTS = 3
+LARK_TRANSIENT_ERROR_CODES = {2200}
+SUCCESSFUL_CYCLE_RESULTS_STATE_KEY = "successful_cycle_results"
+PENDING_CYCLE_STATE_KEY = "pending_cycle"
+MAX_SUCCESSFUL_CYCLE_RESULTS = 32
 
 HEADERS = [
     "是否纳入滚动",
@@ -165,7 +170,36 @@ def _cell_link(value: Any, limit: int = 1800) -> str:
     return _text(value, limit)
 
 
-def _lark(*parts: str, timeout: int = 120) -> dict[str, Any]:
+def _lark_error_code(payload: dict[str, Any]) -> int:
+    error = payload.get("error")
+    if not isinstance(error, dict):
+        return 0
+    try:
+        return int(error.get("code") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _lark_error_message(
+    payload: dict[str, Any],
+    *,
+    stderr: str = "",
+    output: str = "",
+) -> str:
+    return str(
+        payload.get("message")
+        or payload.get("msg")
+        or stderr.strip()
+        or output
+        or "飞书命令执行失败"
+    )
+
+
+def _lark(
+    *parts: str,
+    timeout: int = 120,
+    retry_transient: bool = False,
+) -> dict[str, Any]:
     environment = os.environ.copy()
     for name in (
         "HTTP_PROXY",
@@ -177,27 +211,61 @@ def _lark(*parts: str, timeout: int = 120) -> dict[str, Any]:
     ):
         environment.pop(name, None)
     environment["LARK_CLI_NO_PROXY"] = "1"
-    process = subprocess.run(
-        [LARK_CLI, *parts, "--as", "user"],
-        cwd=str(ROOT),
-        env=environment,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        check=False,
-    )
-    output = process.stdout.strip()
-    try:
-        payload = json.loads(output) if output else {}
-    except json.JSONDecodeError as exc:
+    attempts = LARK_READ_MAX_ATTEMPTS if retry_transient else 1
+    for attempt in range(1, attempts + 1):
+        try:
+            process = subprocess.run(
+                [LARK_CLI, *parts, "--as", "user"],
+                cwd=str(ROOT),
+                env=environment,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            if attempt >= attempts:
+                raise RuntimeError(
+                    f"飞书只读接口超时，已尝试 {attempt} 次"
+                ) from exc
+            logging.warning(
+                "飞书只读接口超时，第 %s/%s 次失败，准备重试",
+                attempt,
+                attempts,
+            )
+            time.sleep(2 ** (attempt - 1))
+            continue
+        output = process.stdout.strip()
+        try:
+            payload = json.loads(output) if output else {}
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                process.stderr.strip() or output or "飞书命令未返回 JSON"
+            ) from exc
+        if process.returncode == 0 and payload.get("ok") is not False:
+            return payload
+        error_code = _lark_error_code(payload)
+        if (
+            retry_transient
+            and error_code in LARK_TRANSIENT_ERROR_CODES
+            and attempt < attempts
+        ):
+            logging.warning(
+                "飞书只读接口返回瞬时错误 %s，第 %s/%s 次失败，准备重试",
+                error_code,
+                attempt,
+                attempts,
+            )
+            time.sleep(2 ** (attempt - 1))
+            continue
         raise RuntimeError(
-            process.stderr.strip() or output or "飞书命令未返回 JSON"
-        ) from exc
-    if process.returncode != 0 or payload.get("ok") is False:
-        raise RuntimeError(
-            str(payload.get("message") or payload.get("msg") or process.stderr.strip() or output)
+            _lark_error_message(
+                payload,
+                stderr=process.stderr,
+                output=output,
+            )
         )
-    return payload
+    raise RuntimeError("飞书只读接口重试流程异常结束")
 
 
 def _walk_for_key(value: Any, key: str) -> Any:
@@ -229,6 +297,7 @@ def _spreadsheet_info() -> dict[str, Any]:
         "+info",
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
+        retry_transient=True,
     )
 
 
@@ -621,6 +690,7 @@ def _read_rows(
         f"A2:{end_column}{MAX_SHEET_ROWS}",
         "--value-render-option",
         "ToString",
+        retry_transient=True,
     )
     values = _walk_for_key(payload, "values")
     rows = [
@@ -2052,6 +2122,7 @@ def run_cycle(
     *,
     force: bool = False,
     schedule_dashboard_publish: bool = True,
+    idempotency_key: str = "",
 ) -> dict[str, Any]:
     with _LOCK, _review_process_lock(wait=force) as process_lock_acquired:
         if not process_lock_acquired:
@@ -2063,7 +2134,44 @@ def run_cycle(
         now_epoch = time.time()
         if not force and now_epoch - float(state.get("last_poll_epoch") or 0) < POLL_SECONDS:
             return {"status": "throttled", "sheet_url": state.get("sheet_url") or ""}
+        cycle_key = _text(idempotency_key, 120)
+        successful_cycles = state.get(SUCCESSFUL_CYCLE_RESULTS_STATE_KEY)
+        if not isinstance(successful_cycles, dict):
+            successful_cycles = {}
+        cached_cycle = successful_cycles.get(cycle_key) if cycle_key else None
+        if (
+            isinstance(cached_cycle, dict)
+            and cached_cycle.get("status") == "ok"
+            and cached_cycle.get("readback_verified") is True
+        ):
+            return {
+                **cached_cycle,
+                "status": "ok",
+                "source_unchanged": True,
+                "reused_verified_result": True,
+                "dashboard_publish": {
+                    "status": "deferred_reused_verified_result"
+                },
+            }
         source_generated_at = _current_source_generated_at()
+        pending_cycle = state.get(PENDING_CYCLE_STATE_KEY)
+        if not isinstance(pending_cycle, dict):
+            pending_cycle = {}
+        if cycle_key:
+            pending_cycle = {
+                "key": cycle_key,
+                "source_generated_at": source_generated_at,
+                "recorded_at": _now_iso(),
+            }
+            state[PENDING_CYCLE_STATE_KEY] = pending_cycle
+            _write_json(STATE_PATH, state)
+        elif (
+            _text(pending_cycle.get("key"), 120)
+            and source_generated_at
+            and source_generated_at
+            == _text(pending_cycle.get("source_generated_at"), 60)
+        ):
+            cycle_key = _text(pending_cycle.get("key"), 120)
         source_unchanged = (
             not force
             and bool(source_generated_at)
@@ -2119,7 +2227,7 @@ def run_cycle(
             if schedule_dashboard_publish
             else {"status": "deferred_until_periodic_cycle"}
         )
-        return {
+        cycle_result = {
             "status": "ok",
             "source_unchanged": source_unchanged,
             "dashboard_publish": dashboard_publish,
@@ -2129,6 +2237,29 @@ def run_cycle(
             "source_candidate_count": int(latest.get("candidate_count") or 0),
             "sheet_candidate_count": int(sync_result.get("candidate_count") or 0),
         }
+        if cycle_key and cycle_result.get("readback_verified") is True:
+            state = _read_json(STATE_PATH, {})
+            successful_cycles = state.get(SUCCESSFUL_CYCLE_RESULTS_STATE_KEY)
+            if not isinstance(successful_cycles, dict):
+                successful_cycles = {}
+            successful_cycles[cycle_key] = {
+                **cycle_result,
+                "dashboard_publish": {
+                    "status": "deferred_cached_result"
+                },
+                "verified_at": _now_iso(),
+            }
+            state[SUCCESSFUL_CYCLE_RESULTS_STATE_KEY] = dict(
+                list(successful_cycles.items())[-MAX_SUCCESSFUL_CYCLE_RESULTS:]
+            )
+            pending_cycle = state.get(PENDING_CYCLE_STATE_KEY)
+            if (
+                isinstance(pending_cycle, dict)
+                and _text(pending_cycle.get("key"), 120) == cycle_key
+            ):
+                state.pop(PENDING_CYCLE_STATE_KEY, None)
+            _write_json(STATE_PATH, state)
+        return cycle_result
 
 
 def build_notice_cards(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:

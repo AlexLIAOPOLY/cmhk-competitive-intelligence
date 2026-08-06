@@ -1,3 +1,5 @@
+import json
+import subprocess
 import unittest
 from unittest import mock
 
@@ -6,6 +8,108 @@ import strategic_briefing
 
 
 class NewsReviewSheetSyncTests(unittest.TestCase):
+    @staticmethod
+    def _lark_result(payload, returncode=0):
+        return subprocess.CompletedProcess(
+            args=["lark-cli"],
+            returncode=returncode,
+            stdout=json.dumps(payload, ensure_ascii=False),
+            stderr="",
+        )
+
+    def test_lark_read_retries_transient_2200_then_succeeds(self):
+        transient = self._lark_result(
+            {"ok": False, "error": {"code": 2200, "message": "Internal Error"}},
+            returncode=1,
+        )
+        success = self._lark_result({"ok": True, "data": {"values": []}})
+        with (
+            mock.patch.object(
+                review_sheet.subprocess,
+                "run",
+                side_effect=[transient, success],
+            ) as run,
+            mock.patch.object(review_sheet.time, "sleep") as sleep,
+        ):
+            result = review_sheet._lark(
+                "sheets",
+                "+read",
+                retry_transient=True,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(1)
+
+    def test_lark_read_stops_after_three_transient_failures(self):
+        transient = self._lark_result(
+            {"ok": False, "error": {"code": 2200, "message": "Internal Error"}},
+            returncode=1,
+        )
+        with (
+            mock.patch.object(
+                review_sheet.subprocess,
+                "run",
+                side_effect=[transient, transient, transient],
+            ) as run,
+            mock.patch.object(review_sheet.time, "sleep") as sleep,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "2200"):
+                review_sheet._lark(
+                    "sheets",
+                    "+read",
+                    retry_transient=True,
+                )
+
+        self.assertEqual(run.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [1, 2])
+
+    def test_lark_read_retries_timeout_then_succeeds(self):
+        success = self._lark_result({"ok": True, "data": {"values": []}})
+        with (
+            mock.patch.object(
+                review_sheet.subprocess,
+                "run",
+                side_effect=[
+                    subprocess.TimeoutExpired(cmd=["lark-cli"], timeout=120),
+                    success,
+                ],
+            ) as run,
+            mock.patch.object(review_sheet.time, "sleep") as sleep,
+        ):
+            result = review_sheet._lark(
+                "sheets",
+                "+read",
+                retry_transient=True,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(1)
+
+    def test_lark_read_does_not_retry_permission_error(self):
+        forbidden = self._lark_result(
+            {"ok": False, "error": {"code": 403, "message": "Forbidden"}},
+            returncode=1,
+        )
+        with (
+            mock.patch.object(
+                review_sheet.subprocess,
+                "run",
+                return_value=forbidden,
+            ) as run,
+            mock.patch.object(review_sheet.time, "sleep") as sleep,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "403"):
+                review_sheet._lark(
+                    "sheets",
+                    "+read",
+                    retry_transient=True,
+                )
+
+        run.assert_called_once()
+        sleep.assert_not_called()
+
     def test_canonical_news_url_preserves_article_identity_query(self):
         first = (
             "https://hkcna.hk/docDetail.jsp?id=101381240&channel=4372"
@@ -454,6 +558,100 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(result["sheet_candidate_count"], 277)
         self.assertFalse(
             write_json.call_args.args[1]["group_notifications_paused"]
+        )
+
+    def test_run_cycle_reuses_verified_result_for_same_scheduled_slot(self):
+        cached = {
+            "status": "ok",
+            "readback_verified": True,
+            "new_count": 3,
+            "new_items": [{"title": "cached"}],
+            "sheet_candidate_count": 471,
+        }
+        state = {
+            review_sheet.SUCCESSFUL_CYCLE_RESULTS_STATE_KEY: {
+                "2026-08-06@09:00": cached,
+            }
+        }
+        load_latest = mock.Mock()
+        sync = mock.Mock()
+        apply_reviews = mock.Mock()
+        with (
+            mock.patch.object(review_sheet, "_read_json", return_value=state),
+            mock.patch.object(review_sheet, "_load_curated_latest", load_latest),
+            mock.patch.object(review_sheet, "sync_candidates", sync),
+            mock.patch.object(review_sheet, "apply_reviews", apply_reviews),
+        ):
+            result = review_sheet.run_cycle(
+                force=True,
+                schedule_dashboard_publish=False,
+                idempotency_key="2026-08-06@09:00",
+            )
+
+        self.assertTrue(result["reused_verified_result"])
+        self.assertTrue(result["readback_verified"])
+        self.assertEqual(result["new_count"], 3)
+        load_latest.assert_not_called()
+        sync.assert_not_called()
+        apply_reviews.assert_not_called()
+
+    def test_background_cycle_completes_pending_scheduled_slot_receipt(self):
+        state_holder = {
+            "value": {
+                "last_poll_epoch": 0,
+                review_sheet.PENDING_CYCLE_STATE_KEY: {
+                    "key": "2026-08-06@09:00",
+                    "source_generated_at": "2026-08-06T09:00:41+08:00",
+                },
+            }
+        }
+
+        def read_state(_path, _default):
+            return dict(state_holder["value"])
+
+        def write_state(_path, payload):
+            state_holder["value"] = dict(payload)
+
+        with (
+            mock.patch.object(review_sheet, "_read_json", side_effect=read_state),
+            mock.patch.object(review_sheet, "_write_json", side_effect=write_state),
+            mock.patch.object(
+                review_sheet,
+                "_current_source_generated_at",
+                return_value="2026-08-06T09:00:41+08:00",
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_load_curated_latest",
+                return_value=([], {"generated_at": "2026-08-06T09:00:41+08:00", "candidate_count": 3}),
+            ),
+            mock.patch.object(
+                review_sheet,
+                "sync_candidates",
+                return_value={
+                    "sheet_id": "sheet",
+                    "candidate_count": 471,
+                    "readback_verified": True,
+                    "new_count": 3,
+                    "new_items": [{"title": "new"}],
+                },
+            ),
+            mock.patch.object(
+                review_sheet,
+                "apply_reviews",
+                return_value={"changed_rows": 0},
+            ),
+        ):
+            result = review_sheet.run_cycle(schedule_dashboard_publish=False)
+
+        self.assertTrue(result["readback_verified"])
+        receipts = state_holder["value"][
+            review_sheet.SUCCESSFUL_CYCLE_RESULTS_STATE_KEY
+        ]
+        self.assertTrue(receipts["2026-08-06@09:00"]["readback_verified"])
+        self.assertNotIn(
+            review_sheet.PENDING_CYCLE_STATE_KEY,
+            state_holder["value"],
         )
 
     def test_legacy_notice_builder_does_not_sync_candidates_twice(self):

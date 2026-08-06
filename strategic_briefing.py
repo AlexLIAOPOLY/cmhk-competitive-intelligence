@@ -2020,6 +2020,7 @@ def _run_scan_impl(
         review_result = news_review_sheet.run_cycle(
             force=True,
             schedule_dashboard_publish=False,
+            idempotency_key=slot_key,
         )
     except Exception as exc:
         review_result = {"error": _clean_text(exc, 300)}

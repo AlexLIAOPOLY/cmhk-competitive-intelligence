@@ -159,6 +159,7 @@ class StrategicBriefingTests(unittest.TestCase):
             order.append("review")
             self.assertTrue(kwargs["force"])
             self.assertFalse(kwargs["schedule_dashboard_publish"])
+            self.assertEqual(kwargs["idempotency_key"], "2026-07-29@15:00-test")
             return review_result
 
         def record_notification(**_kwargs):
