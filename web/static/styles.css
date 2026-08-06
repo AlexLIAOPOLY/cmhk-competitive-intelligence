@@ -8137,6 +8137,33 @@ details[data-raw-log-pinned="true"] > summary::after {
   font-size: 11px;
 }
 
+.task-analysis-status {
+  margin-top: 12px;
+  border: 1px solid #c9d8e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.task-analysis-status .task-audit-stats {
+  border: 0;
+}
+
+.task-analysis-status p {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid #d5e1eb;
+  color: #526c80;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.task-analysis-status p strong { color: #153c58; }
+.task-analysis-status p span { overflow-wrap: anywhere; }
+.task-analysis-status p.is-warning strong { color: #a14337; }
+
 .task-run-process {
   margin: 18px 0 0;
   border: 1px solid #c9d8e6;
@@ -13089,6 +13116,165 @@ body.dashboard-page {
 
 .dashboard-page .chat-starter-card::before {
   display: none !important;
+}
+
+.dashboard-page #logModal {
+  background: rgba(1, 10, 17, .8);
+  backdrop-filter: blur(8px) saturate(.82);
+}
+
+.dashboard-page #logModal .log-modal {
+  border-color: #3c6979;
+  color: #dcecef;
+  background: #071b25;
+  box-shadow: 0 24px 70px rgba(0, 4, 9, .58), 0 0 0 1px rgba(87, 166, 187, .08);
+}
+
+.dashboard-page #logModal .log-modal > header {
+  border-color: #294e5d;
+  background: #0c2835;
+}
+
+.dashboard-page #logModal .log-modal h2 { color: #eff9fa; }
+.dashboard-page #logModal .log-modal > header > div:first-child span { color: #93b0ba; }
+
+.dashboard-page #logModal .quiet-button {
+  border-color: #365f6e;
+  color: #c9dde3;
+  background: #102f3c;
+  box-shadow: none;
+}
+
+.dashboard-page #logModal .quiet-button:hover,
+.dashboard-page #logModal .quiet-button:focus-visible {
+  border-color: #5795a7;
+  color: #f0fafb;
+  background: #173f4d;
+}
+
+.dashboard-page #logModal .close-btn { color: #9db8c1; }
+.dashboard-page #logModal .close-btn:hover {
+  color: #f2fbfc;
+  background: #173b49;
+}
+
+.dashboard-page #logModal .log-history-layout { background: #071b25; }
+
+.dashboard-page #logModal .crawl-run-sidebar {
+  border-color: #294c59;
+  background: #09222e;
+}
+
+.dashboard-page #logModal .crawl-run-sidebar > strong { color: #dcecef; }
+
+.dashboard-page #logModal .crawl-run-item {
+  border-color: transparent;
+  color: #cfe2e7;
+  background: transparent;
+}
+
+.dashboard-page #logModal .crawl-run-item:hover {
+  border-color: #315c6c;
+  background: #0d2d3a;
+}
+
+.dashboard-page #logModal .crawl-run-item.is-active {
+  border-color: #4b8fa4;
+  color: #edf8fa;
+  background: #103442;
+  box-shadow: inset 3px 0 0 #52bed7;
+}
+
+.dashboard-page #logModal .crawl-run-item time,
+.dashboard-page #logModal .crawl-run-item small { color: #8ba8b2; }
+.dashboard-page #logModal .crawl-run-item .status-running { color: #f2bd5b; }
+.dashboard-page #logModal .crawl-run-item .status-failed { color: #f08078; }
+.dashboard-page #logModal .crawl-run-item .status-completed { color: #5ed09e; }
+
+.dashboard-page #logModal .log-viewer,
+.dashboard-page #logModal .log-history-layout .log-box {
+  color: #c8dde3;
+  background: #071b25;
+}
+
+.dashboard-page #logModal .crawl-audit-overview {
+  border-color: #294d5b;
+  background: #0a2430;
+}
+
+.dashboard-page #logModal .crawl-audit-heading strong { color: #eef8fa; }
+.dashboard-page #logModal .crawl-audit-heading time,
+.dashboard-page #logModal .crawl-audit-heading > div > span:last-child { color: #94afb9; }
+
+.dashboard-page #logModal .run-status.status-running {
+  color: #ffd27b;
+  background: rgba(151, 94, 12, .28);
+}
+
+.dashboard-page #logModal .run-status.status-completed {
+  color: #72ddb0;
+  background: rgba(25, 119, 81, .26);
+}
+
+.dashboard-page #logModal .run-status.status-failed {
+  color: #ff958d;
+  background: rgba(151, 48, 48, .25);
+}
+
+.dashboard-page #logModal .task-kind-label {
+  border-color: #3b7081;
+  color: #83c8d9;
+  background: #0d303e;
+}
+
+.dashboard-page #logModal .task-audit-stats {
+  border-color: #294d5b;
+}
+
+.dashboard-page #logModal .task-audit-stats span { border-color: #294d5b; }
+.dashboard-page #logModal .task-audit-stats b { color: #e4f1f4; }
+.dashboard-page #logModal .task-audit-stats small { color: #89a5af; }
+
+.dashboard-page #logModal .task-analysis-status { border-color: #294d5b; }
+.dashboard-page #logModal .task-analysis-status p {
+  border-color: #294d5b;
+  color: #a9c2ca;
+  background: #0a222e;
+}
+.dashboard-page #logModal .task-analysis-status p strong { color: #dcecef; }
+.dashboard-page #logModal .task-analysis-status p.is-warning strong { color: #ffaaa3; }
+
+.dashboard-page #logModal .task-lifecycle-monitor {
+  border-color: #294d5b;
+  color: #96b1ba;
+  background: #0a222e;
+}
+
+.dashboard-page #logModal .task-lifecycle-monitor strong { color: #dcecef; }
+.dashboard-page #logModal .task-lifecycle-monitor p { color: #a9c2ca; }
+
+.dashboard-page #logModal .task-run-process {
+  border-color: #315968;
+  background: #081f2a;
+}
+
+.dashboard-page #logModal .task-run-process > header {
+  border-color: #315968;
+  background: #0d2936;
+}
+
+.dashboard-page #logModal .task-run-process > header strong { color: #70c4d7; }
+.dashboard-page #logModal .task-run-process > header span { color: #8faab4; }
+
+.dashboard-page #logModal .task-run-process > pre {
+  color: #bcd4dc;
+  background: #061923;
+}
+
+.dashboard-page #logModal .task-log-line.is-critical {
+  border-color: #db6158;
+  color: #ffaaa3;
+  background: rgba(131, 38, 38, .22);
 }
 
 .dashboard-page #aiSettingsModal {

@@ -78,3 +78,18 @@
     min-height: 350px;
   }
 }
+
+/* Remove the 4-10px bottom crop seen on 1080p desktop displays. */
+@media (min-width: 1537px) and (max-height: 1100px) {
+  body.dashboard-page {
+    overflow: hidden;
+  }
+
+  body.dashboard-page .app-shell {
+    --fit-scale: min(1, calc((100vh - 8px) / 1090px));
+    transform: scale(var(--fit-scale));
+    transform-origin: top left;
+    width: calc(100% / var(--fit-scale));
+    min-height: calc(100vh / var(--fit-scale));
+  }
+}

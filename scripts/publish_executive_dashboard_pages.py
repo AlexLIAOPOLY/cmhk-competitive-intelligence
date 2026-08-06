@@ -202,7 +202,7 @@ def _build_site(
                 intelligence_html = intelligence_html.replace(
                     leadership_link,
                     leadership_link + '\n'
-                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=2">',
+                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=4">',
                 )
                 intelligence_index.write_text(intelligence_html, encoding="utf-8")
         shutil.copy2(

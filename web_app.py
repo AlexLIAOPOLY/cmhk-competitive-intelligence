@@ -2821,6 +2821,9 @@ def _normalize_crawl_task(run: dict) -> dict:
         "executive-intelligence-refresh": "四库刷新",
         "crawl": "爬虫",
     }
+    operational_summary = run.get("operational_summary") if isinstance(run.get("operational_summary"), dict) else {}
+    model_analysis = operational_summary.get("model_analysis") if isinstance(operational_summary.get("model_analysis"), dict) else {}
+    pages_publish = operational_summary.get("pages_publish") if isinstance(operational_summary.get("pages_publish"), dict) else {}
     return {
         "task_id": "crawl:" + crawl_id,
         "task_run_id": crawl_id,
@@ -2841,6 +2844,15 @@ def _normalize_crawl_task(run: dict) -> dict:
         "phase": str(run.get("phase") or ""),
         "progress_detail": str(run.get("progress_detail") or ""),
         "heartbeat_at_hkt": str(run.get("heartbeat_at_hkt") or ""),
+        "analysis_model": str(model_analysis.get("model") or ""),
+        "analysis_fallback_used": bool(model_analysis.get("fallback_used")),
+        "analysis_fallback_reason": str(model_analysis.get("fallback_reason") or ""),
+        "evidence_hash": str(model_analysis.get("evidence_hash") or ""),
+        "pages_publish_ok": bool(pages_publish.get("ok")),
+        "pages_publish_status": str(pages_publish.get("status") or ""),
+        "pages_public_url": str(pages_publish.get("public_url") or ""),
+        "pages_site_version": str(pages_publish.get("site_version") or ""),
+        "pages_publish_error": str(pages_publish.get("error") or ""),
         "source": "crawl-archive",
     }
 

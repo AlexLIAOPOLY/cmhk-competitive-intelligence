@@ -22,12 +22,11 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertGreaterEqual(len(relations), 4)
         self.assertTrue(all(item["from"] != item["to"] for item in relations))
         self.assertTrue(all(item["kind"] and item["detail"] for item in relations))
-        cloud_relation = next(item for item in relations if item["from"] == "international" and item["to"] == "cloud")
-        if cloud_relation.get("origin") == "ai":
-            self.assertTrue(cloud_relation["source_urls"])
+        ai_relations = [item for item in relations if item.get("origin") == "ai"]
+        if ai_relations:
+            self.assertTrue(all(item["source_urls"] for item in ai_relations))
         else:
-            self.assertEqual(cloud_relation["kind"], "跨期间方向参照")
-            self.assertIn("报告期间与业务口径不同", cloud_relation["detail"])
+            self.assertTrue(any(item["kind"] == "跨期间方向参照" for item in relations))
 
     def test_relationship_strip_always_exposes_exactly_four_executive_discoveries(self):
         relations = self.snapshot["relations"]

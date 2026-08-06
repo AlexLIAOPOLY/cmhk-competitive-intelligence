@@ -3176,6 +3176,27 @@ function unifiedTaskKindLabel(task) {
   return "后台任务";
 }
 
+function taskAnalysisStatusMarkup(task) {
+  if (task.kind !== "executive-intelligence-refresh") return "";
+  const model = String(task.analysis_model || "等待模型结果");
+  const evidenceHash = String(task.evidence_hash || "");
+  const fallbackReason = String(task.analysis_fallback_reason || "");
+  const fallbackLabel = task.analysis_fallback_used ? "已触发" : (model === "等待模型结果" ? "等待结果" : "未触发");
+  const pagesLabel = task.pages_publish_ok
+    ? (String(task.pages_publish_status || "已验证"))
+    : (task.pages_publish_error ? "验证失败" : "等待发布");
+  return '<section class="task-analysis-status" aria-label="AI洞察与公开发布状态">'
+    + '<div class="task-audit-stats">'
+      + '<span><b title="' + escapeHtml(model) + '">' + escapeHtml(model) + '</b><small>当前模型</small></span>'
+      + '<span><b title="' + escapeHtml(evidenceHash) + '">' + escapeHtml(evidenceHash ? evidenceHash.slice(0, 16) : "等待生成") + '</b><small>证据哈希</small></span>'
+      + '<span><b>' + escapeHtml(fallbackLabel) + '</b><small>模型回退</small></span>'
+      + '<span><b>' + escapeHtml(pagesLabel) + '</b><small>GitHub.io</small></span>'
+    + '</div>'
+    + (fallbackReason ? '<p><strong>回退原因</strong><span>' + escapeHtml(fallbackReason) + '</span></p>' : '')
+    + (task.pages_publish_error ? '<p class="is-warning"><strong>发布异常</strong><span>' + escapeHtml(task.pages_publish_error) + '</span></p>' : '')
+    + '</section>';
+}
+
 function renderUnifiedTaskArchive(data) {
   const task = data.task || {};
   if (task.kind === "crawl") {
@@ -3206,6 +3227,7 @@ function renderUnifiedTaskArchive(data) {
         + '<span><b>' + escapeHtml(status) + '</b><small>当前状态</small></span>'
       + '</div>'
     + '</section>'
+    + taskAnalysisStatusMarkup(task)
     + taskLifecycleMarkup(task);
   const process = document.createElement("section");
   process.className = "task-run-process";
@@ -3284,7 +3306,10 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
   const taskId = unifiedTaskId(crawlRunId);
   state.activeCrawlRunId = taskId;
   renderCrawlRunList();
-  if (!silent) els.logBox.textContent = "正在读取任务日志...";
+  if (!silent) {
+    delete els.logBox.dataset.renderSignature;
+    els.logBox.textContent = "正在读取任务日志...";
+  }
   const previousScrollTop = els.logBox.scrollTop;
   const wasNearBottom = els.logBox.scrollHeight - els.logBox.scrollTop - els.logBox.clientHeight < 80;
   try {

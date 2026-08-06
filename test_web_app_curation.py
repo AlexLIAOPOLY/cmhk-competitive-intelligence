@@ -26,11 +26,32 @@ class ReportFileNameTests(unittest.TestCase):
             "scope": "Agent审核 agent-1",
             "run_status": "running",
             "stream_log": {"lines": 4, "bytes": 200},
+            "operational_summary": {
+                "model_analysis": {
+                    "model": "deepseek-v4",
+                    "fallback_used": True,
+                    "fallback_reason": "门禁失败",
+                    "evidence_hash": "abc123",
+                },
+                "pages_publish": {
+                    "ok": True,
+                    "status": "verified",
+                    "site_version": "site-123",
+                    "public_url": "https://example.github.io/project/",
+                },
+            },
         })
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
 
         self.assertEqual(task["kind_label"], "四库刷新")
         self.assertEqual(task["kind"], "executive-intelligence-refresh")
+        self.assertEqual(task["analysis_model"], "deepseek-v4")
+        self.assertEqual(task["analysis_fallback_reason"], "门禁失败")
+        self.assertEqual(task["evidence_hash"], "abc123")
+        self.assertTrue(task["pages_publish_ok"])
+        self.assertIn("taskAnalysisStatusMarkup", app)
+        self.assertIn("证据哈希", app)
+        self.assertIn("delete els.logBox.dataset.renderSignature", app)
         self.assertIn("更新失败", app)
         self.assertIn("预警发送失败", app)
 
@@ -104,8 +125,8 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('grid.innerHTML = domains.map(renderDomainCard).join("")', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=249"', html)
-        self.assertIn('src="/static/app.js?v=251"', html)
+        self.assertIn('href="/static/styles.css?v=250"', html)
+        self.assertIn('src="/static/app.js?v=253"', html)
         self.assertIn('class="intelligence-focus-tabs"', app)
         self.assertIn('class="intelligence-entity-focus"', app)
         self.assertIn('entity.ai_summary?.analysis || entity.analysis', app)

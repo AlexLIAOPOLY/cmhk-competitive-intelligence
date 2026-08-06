@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
+from unittest import mock
 from unittest.mock import patch
 
 import executive_intelligence_pipeline as pipeline
@@ -306,8 +307,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "risk": "保持口径边界。",
                 "source_urls": [],
                 "focuses": [
-                    {"id": f"{domain}-a", "analysis": "分类证据已更新。", "risk": "保持边界。", "source_urls": []},
-                    {"id": f"{domain}-b", "analysis": "分类证据已更新。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-a", "analysis": "竞争位置出现变化，业务上应优先评估收入风险。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-b", "analysis": "竞争位置出现差距，业务上应优先评估客户影响。", "risk": "保持边界。", "source_urls": []},
                 ],
             }
             for domain in ("local", "international", "cloud", "macro")
@@ -346,7 +347,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "source_urls": ["https://example.com/source"],
                 "focuses": [{
                     "id": f"{domain}-focus",
-                    "analysis": "分类证据已更新。",
+                    "analysis": "10项证据显示结构集中，业务上应优先评估产品风险。",
                     "risk": "保持边界。",
                     "source_urls": ["https://example.com/source"],
                     "entities": [{
@@ -378,7 +379,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         summaries = [{
             "domain": domain, "headline": "观察", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": [],
             "focuses": [{
-                "id": "focus", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": [],
+                "id": "focus", "analysis": "竞争位置出现变化，业务上应优先评估收入风险。", "risk": "谨慎。", "source_urls": [],
                 "entities": [{
                     "name": "实体", "headline": "观察", "analysis": "数据库内按排名展示。", "risk": "谨慎。",
                     "evidence_labels": ["项目"], "source_urls": [],
@@ -387,6 +388,115 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         } for domain in ("local", "international", "cloud", "macro")]
         with self.assertRaisesRegex(ValueError, "界面废话"):
             pipeline._validate_model_summaries(summaries, evidence)
+
+    def test_all_sixteen_focuses_require_numbers_and_business_judgement(self):
+        focus_ids = ("scale", "track", "price", "overlap")
+        evidence = {
+            "domains": [
+                {
+                    "id": domain,
+                    "focuses": [
+                        {"id": focus_id, "metric": {"value": index + 1}, "items": []}
+                        for index, focus_id in enumerate(focus_ids)
+                    ],
+                    "agent_verified_facts": [],
+                }
+                for domain in ("local", "international", "cloud", "macro")
+            ]
+        }
+        summaries = [
+            {
+                "domain": domain,
+                "headline": "竞争位置变化",
+                "analysis": "四项证据显示竞争位置变化。",
+                "risk": "保持口径边界。",
+                "source_urls": [],
+                "focuses": [
+                    {
+                        "id": focus_id,
+                        "analysis": f"{index + 1}项证据显示竞争差距，业务上应优先评估收入与客户影响。",
+                        "risk": "保持口径边界。",
+                        "source_urls": [],
+                        "entities": [],
+                    }
+                    for index, focus_id in enumerate(focus_ids)
+                ],
+            }
+            for domain in ("local", "international", "cloud", "macro")
+        ]
+
+        validated = pipeline._validate_model_summaries(summaries, evidence)
+        self.assertEqual(sum(len(item["focuses"]) for item in validated), 16)
+        summaries[2]["focuses"][1]["analysis"] = "该指标用于展示变化。"
+        with self.assertRaisesRegex(ValueError, "cloud.track"):
+            pipeline._validate_model_summaries(summaries, evidence)
+
+    def test_numeric_anchor_repair_keeps_ai_judgement_but_does_not_rescue_filler(self):
+        evidence = {"domains": [{
+            "id": "macro",
+            "focuses": [{
+                "id": "market",
+                "metric": {"label": "移动服务订户及连接", "value": 3428.5, "unit": "万"},
+            }],
+        }]}
+        raw = [{"domain": "macro", "focuses": [{
+            "id": "market",
+            "analysis": "市场饱和压力加大，经营上应转向存量客户价值提升。",
+        }]}]
+        repaired = pipeline._repair_focus_numeric_anchors(raw, evidence)
+        self.assertIn("3428.5万", repaired[0]["focuses"][0]["analysis"])
+        self.assertTrue(repaired[0]["focuses"][0]["numeric_anchor_repaired"])
+
+        filler = [{"domain": "macro", "focuses": [{"id": "market", "analysis": "该指标用于展示市场情况。"}]}]
+        unchanged = pipeline._repair_focus_numeric_anchors(filler, evidence)
+        self.assertNotIn("3428.5", unchanged[0]["focuses"][0]["analysis"])
+
+    def test_entity_label_repair_maps_only_to_exact_input_evidence(self):
+        evidence = {"domains": [{"id": "local", "focuses": [{"id": "price", "items": [{
+            "name": "HKBN",
+            "source_url": "https://example.com/hkbn",
+            "components": [{"label": "HKBN 2.5Gbps Router Plan"}],
+        }]}]}]}
+        raw = [{"domain": "local", "focuses": [{"id": "price", "entities": [{
+            "name": "HKBN",
+            "evidence_labels": ["HKBN 2.5G Router Plan", "完全无关标签"],
+            "source_urls": ["https://example.com/hkbn", "https://invented.example.com"],
+        }]}]}]
+        repaired = pipeline._repair_entity_evidence_labels(raw, evidence)
+        entity = repaired[0]["focuses"][0]["entities"][0]
+        self.assertEqual(entity["evidence_labels"], ["HKBN 2.5Gbps Router Plan"])
+        self.assertEqual(entity["source_urls"], ["https://example.com/hkbn"])
+
+    def test_model_repair_builds_missing_domain_shell_from_valid_focus_ai(self):
+        evidence = {"domains": [{"id": "macro", "title": "宏观政策", "focuses": [{
+            "id": "market", "metric": {"value": 3428.5, "unit": "万", "label": "移动连接"}, "items": [],
+        }]}]}
+        raw = [{"domain": "macro", "focuses": [{
+            "id": "market", "analysis": "3428.5万连接显示市场饱和压力，经营上应优先提升存量客户价值。",
+            "risk": "保持口径边界。", "source_urls": [], "entities": [],
+        }]}]
+        repaired = pipeline._repair_model_summaries(raw, evidence)
+        self.assertIn("宏观政策", repaired[0]["headline"])
+        self.assertIn("3428.5万", repaired[0]["analysis"])
+        self.assertTrue(repaired[0]["risk"])
+
+    def test_business_implication_repair_requires_numeric_analytical_prose(self):
+        evidence = {"domains": [{"id": "international", "focuses": [{
+            "id": "momentum", "metric": {"value": -0.27, "unit": "个百分点"},
+        }]}]}
+        raw = [{"domain": "international", "focuses": [{
+            "id": "momentum", "analysis": "最佳动量变化为-0.27个百分点，负值代表回落。",
+        }]}]
+        repaired = pipeline._repair_focus_business_implications(raw, evidence)
+        focus = repaired[0]["focuses"][0]
+        self.assertTrue(focus["business_implication_repaired"])
+        self.assertIn("经营上应", focus["analysis"])
+
+        filler = [{"domain": "international", "focuses": [{
+            "id": "momentum", "analysis": "该指标用于展示增长动量。",
+        }]}]
+        unchanged = pipeline._repair_focus_business_implications(filler, evidence)
+        self.assertNotIn("business_implication_repaired", unchanged[0]["focuses"][0])
 
     def test_model_analysis_sanitizer_drops_only_unsupported_numeric_clause(self):
         evidence = {"domains": [{"focuses": [{"items": [{"value": 10}]}]}]}
@@ -472,6 +582,60 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "international领域来源"):
             pipeline._validate_model_discoveries(missing_source, evidence)
 
+    def test_discovery_generation_rotates_model_after_timeout(self):
+        evidence = {
+            "domains": [{"id": domain, "focuses": [], "agent_verified_facts": []}
+                        for domain in ("local", "international", "cloud", "macro")],
+            "relations": [],
+        }
+        discoveries = [
+            {"from": source, "to": target, "title": title, "detail": "跨库证据支持联合经营研判。",
+             "kind": "AI综合研判", "source_urls": []}
+            for source, target, title in (
+                ("local", "international", "本地与国际联动"),
+                ("international", "cloud", "国际与云联动"),
+                ("local", "cloud", "本地与云联动"),
+                ("macro", "local", "宏观与本地联动"),
+            )
+        ]
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            "choices": [{"message": {"content": json.dumps(discoveries, ensure_ascii=False)}}]
+        }, ensure_ascii=False).encode("utf-8")
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=[TimeoutError("slow"), response]) as open_url,
+        ):
+            result = pipeline.generate_model_discoveries(evidence)
+
+        self.assertEqual(result["model"], "GLM")
+        self.assertEqual(len(result["discoveries"]), 4)
+        self.assertEqual(open_url.call_count, 2)
+
+    def test_discovery_prompt_uses_compact_metrics_without_entity_components(self):
+        evidence = {"domains": [{
+            "id": "cloud", "title": "云厂商", "deterministic_insight": "增长分化。",
+            "focuses": [{
+                "id": "growth", "title": "增长", "metric": {"value": 35.8, "unit": "%"},
+                "insight": "Google Cloud领先。",
+                "items": [{
+                    "name": "Google Cloud", "value": 35.8, "unit": "%",
+                    "source_url": "https://example.com/cloud",
+                    "components": [{"label": "FY2025", "value": 35.8}] * 20,
+                    "analysis": "很长的实体分析" * 100,
+                }],
+            }],
+        }], "relations": []}
+        compact = pipeline._compact_discovery_evidence(evidence)
+        item = compact["domains"][0]["focuses"][0]["items"][0]
+        self.assertEqual(item["value"], 35.8)
+        self.assertNotIn("components", item)
+        self.assertNotIn("analysis", item)
+        self.assertLess(len(json.dumps(compact, ensure_ascii=False)), 1000)
+
     def test_changed_evidence_hash_regenerates_all_text_summaries(self):
         evidence = {"domains": [], "relations": [], "version": "new"}
         summaries = [
@@ -529,6 +693,83 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["model"], "deterministic-evidence-fallback")
         self.assertEqual(len(result["summaries"]), 4)
         self.assertEqual(len(result["discoveries"]), 4)
+
+    def test_pages_publisher_requires_verified_public_result(self):
+        completed = mock.Mock(
+            returncode=0,
+            stdout=json.dumps({
+                "status": "published",
+                "site_version": "site-123",
+                "public_url": "https://example.github.io/project/",
+                "commit": "abc123",
+            }),
+            stderr="",
+        )
+        with patch("executive_intelligence_pipeline.subprocess.run", return_value=completed) as run:
+            result = pipeline._publish_and_verify_github_pages()
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["site_version"], "site-123")
+        self.assertIn("--force", run.call_args.args[0])
+
+    def test_pages_publisher_waits_for_concurrent_publish_and_reverifies(self):
+        busy = mock.Mock(returncode=0, stdout=json.dumps({"status": "busy"}), stderr="")
+        verified = mock.Mock(
+            returncode=0,
+            stdout=json.dumps({
+                "status": "verified",
+                "site_version": "site-after-busy",
+                "public_url": "https://example.github.io/project/",
+            }),
+            stderr="",
+        )
+        with (
+            patch("executive_intelligence_pipeline.subprocess.run", side_effect=[busy, verified]) as run,
+            patch("executive_intelligence_pipeline.time.sleep") as sleep,
+        ):
+            result = pipeline._publish_and_verify_github_pages()
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["attempts"], 2)
+        self.assertEqual(run.call_count, 2)
+        sleep.assert_called_once_with(5)
+
+    def test_four_database_success_triggers_pages_publish_after_ai_gate(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            model_result = {
+                "generated_at_hkt": "2026-08-06T04:00:00+08:00",
+                "model": "deepseek-v4",
+                "summaries": [{"domain": item} for item in ("local", "international", "cloud", "macro")],
+                "evidence_hash": "evidence-hash",
+                "fallback_used": False,
+            }
+            with (
+                patch.object(pipeline, "STATE_DIR", root),
+                patch.object(pipeline, "STATE_PATH", root / "latest.json"),
+                patch.object(pipeline, "LOCK_PATH", root / "refresh.lock"),
+                patch.object(pipeline, "LOG_PATH", root / "refresh.log"),
+                patch("executive_intelligence_pipeline.publish_ai_analysis", return_value={
+                    "changed": True, "domain_counts": {}, "path": str(root / "analysis.json")
+                }),
+                patch("executive_intelligence_pipeline.publish_domain_fact_sidecars", return_value={}),
+                patch("executive_intelligence_pipeline.validate_database", return_value={"rows": 1}),
+                patch("executive_intelligence_pipeline.publish_model_domain_summaries", return_value=model_result),
+                patch("executive_intelligence_pipeline._publish_and_verify_github_pages", return_value={
+                    "ok": True, "status": "verified", "site_version": "site-123",
+                    "public_url": "https://example.github.io/project/",
+                }) as publish_pages,
+                patch("executive_intelligence_pipeline._task_event"),
+            ):
+                result = pipeline.run_pipeline(
+                    agent_run_id="agent-test",
+                    refresh_builders=False,
+                    task_run_id="task-test",
+                )
+
+        self.assertTrue(result["ok"])
+        self.assertTrue(result["pages_publish"]["ok"])
+        publish_pages.assert_called_once_with()
 
     def test_scheduler_launch_failure_does_not_raise_or_change_crawl_semantics(self):
         with tempfile.TemporaryDirectory() as temp_dir:

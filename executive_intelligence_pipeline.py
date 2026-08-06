@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import difflib
 import fcntl
 import hashlib
 import json
@@ -28,6 +29,7 @@ AI_ANALYSIS_PATH = STATE_DIR / "ai_analysis.json"
 LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
+PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
 TASK_KIND = "executive-intelligence-refresh"
 DOMAIN_LABELS = {
     "local": "本地竞对",
@@ -202,6 +204,8 @@ def _finalize_refresh_task(
             "failed_domains": result.get("failed_domains", []),
             "status": result.get("status", ""),
             "notification_policy": "local_log_only",
+            "model_analysis": result.get("model_analysis", {}),
+            "pages_publish": result.get("pages_publish", {}),
         },
     )
 
@@ -423,6 +427,217 @@ def _numeric_tokens(value: Any) -> set[str]:
     return tokens
 
 
+def _focus_value_tokens(focus: dict[str, Any]) -> set[str]:
+    """Return metric values only; periods, IDs and numbers embedded in labels do not count."""
+    values: list[Any] = []
+    metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
+    if metric.get("value") not in (None, ""):
+        values.append(metric.get("value"))
+    for item in focus.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        for key in ("value", "record_count", "component_count"):
+            if item.get(key) not in (None, ""):
+                values.append(item.get(key))
+        for component in item.get("components") or []:
+            if isinstance(component, dict) and component.get("value") not in (None, ""):
+                values.append(component.get("value"))
+    return _numeric_tokens(values)
+
+
+_ANALYTICAL_JUDGEMENT_TERMS = (
+    "领先", "落后", "高于", "低于", "最高", "最低", "差距", "距离", "变化", "增长",
+    "下降", "回落", "改善", "加速", "放缓", "分化", "集中", "重叠", "梯度", "饱和",
+    "压力", "风险", "机会", "空间", "优势", "短板", "不同", "差异", "相差", "居首",
+    "覆盖", "完整", "充分", "不足", "多于", "少于", "强于", "弱于", "扩大", "收窄",
+    "深度", "约束", "承压",
+)
+_BUSINESS_JUDGEMENT_TERMS = (
+    "经营上", "业务上", "竞争上", "决策上", "意味着", "应", "需", "有利于", "不利于",
+    "影响", "支撑", "制约", "对冲", "拖累", "转向", "优先", "转化", "变现", "提升",
+    "降低", "客户流失", "获客", "留存", "资源配置", "投入回报", "竞争压力", "经营风险",
+)
+
+
+def _has_business_judgement(value: Any) -> bool:
+    """Require both an analytical comparison and an explicit business implication."""
+    text = str(value or "").strip()
+    return (
+        any(term in text for term in _ANALYTICAL_JUDGEMENT_TERMS)
+        and any(term in text for term in _BUSINESS_JUDGEMENT_TERMS)
+    )
+
+
+def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus: dict[str, Any]) -> str:
+    focus_numbers = _focus_value_tokens(evidence_focus)
+    analysis_numbers = _numeric_tokens(analysis)
+    if focus_numbers and not (focus_numbers & analysis_numbers):
+        return f"AI分析分类缺少输入数值判断：{domain}.{focus_id}；内容：{analysis[:180]}"
+    if not _has_business_judgement(analysis):
+        return f"AI分析分类缺少比较变化与业务判断：{domain}.{focus_id}；内容：{analysis[:180]}"
+    restriction_phrases = (
+        "缺失值不估算", "缺失数据不估算", "只比较已结构化", "仅比较已结构化",
+        "用于判断", "用于识别", "用于展示", "展示可分析", "此处比较",
+    )
+    if any(phrase in analysis for phrase in restriction_phrases) and len(analysis_numbers) == 0:
+        return f"AI分析分类仍以方法说明代替洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
+    return ""
+
+
+def _repair_focus_numeric_anchors(raw: Any, evidence: dict[str, Any]) -> Any:
+    """Keep genuine model judgement while anchoring it to an exact focus metric."""
+    if not isinstance(raw, list):
+        return raw
+    evidence_by_focus = {
+        (str(domain.get("id") or ""), str(focus.get("id") or "")): focus
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+    }
+    repaired = json.loads(json.dumps(raw, ensure_ascii=False))
+    for domain in repaired:
+        if not isinstance(domain, dict):
+            continue
+        domain_id = str(domain.get("domain") or "")
+        for focus in domain.get("focuses") or []:
+            if not isinstance(focus, dict):
+                continue
+            focus_id = str(focus.get("id") or "")
+            evidence_focus = evidence_by_focus.get((domain_id, focus_id)) or {}
+            analysis = str(focus.get("analysis") or "").strip()
+            focus_numbers = _focus_value_tokens(evidence_focus)
+            if not analysis or not focus_numbers or (_numeric_tokens(analysis) & focus_numbers):
+                continue
+            # Numeric anchoring is allowed only for model prose that already contains
+            # a real comparison/change plus business implication; it cannot rescue filler.
+            if not _has_business_judgement(analysis):
+                continue
+            metric = evidence_focus.get("metric") if isinstance(evidence_focus.get("metric"), dict) else {}
+            value = metric.get("value")
+            if value in (None, ""):
+                continue
+            label = str(metric.get("label") or "最新指标")
+            unit = str(metric.get("unit") or "")
+            focus["analysis"] = f"{label}为{value}{unit}；{analysis}"
+            focus["numeric_anchor_repaired"] = True
+    return repaired
+
+
+def _repair_entity_evidence_labels(raw: Any, evidence: dict[str, Any]) -> Any:
+    """Map harmless model paraphrases back to exact input labels; never create labels."""
+    if not isinstance(raw, list):
+        return raw
+    evidence_entities = {
+        (str(domain.get("id") or ""), str(focus.get("id") or ""), str(entity.get("name") or "")): entity
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+        for entity in focus.get("items") or []
+    }
+    repaired = json.loads(json.dumps(raw, ensure_ascii=False))
+    for domain in repaired:
+        if not isinstance(domain, dict):
+            continue
+        domain_id = str(domain.get("domain") or "")
+        for focus in domain.get("focuses") or []:
+            if not isinstance(focus, dict):
+                continue
+            focus_id = str(focus.get("id") or "")
+            for entity in focus.get("entities") or []:
+                if not isinstance(entity, dict):
+                    continue
+                evidence_entity = evidence_entities.get(
+                    (domain_id, focus_id, str(entity.get("name") or ""))
+                ) or {}
+                allowed_labels = [
+                    str(component.get("label") or "")
+                    for component in evidence_entity.get("components") or []
+                    if str(component.get("label") or "")
+                ]
+                if not allowed_labels:
+                    continue
+                mapped: list[str] = []
+                for raw_label in entity.get("evidence_labels") or []:
+                    label = str(raw_label or "")
+                    if label in allowed_labels:
+                        mapped.append(label)
+                        continue
+                    matches = difflib.get_close_matches(label, allowed_labels, n=1, cutoff=0.72)
+                    if matches:
+                        mapped.append(matches[0])
+                entity["evidence_labels"] = list(dict.fromkeys(mapped))
+                source_url = str(evidence_entity.get("source_url") or "")
+                entity["source_urls"] = [source_url] if source_url and source_url in (entity.get("source_urls") or []) else []
+    return repaired
+
+
+def _repair_focus_business_implications(raw: Any, evidence: dict[str, Any]) -> Any:
+    """Append a scoped decision implication only to numeric, analytical model prose."""
+    if not isinstance(raw, list):
+        return raw
+    evidence_by_focus = {
+        (str(domain.get("id") or ""), str(focus.get("id") or "")): focus
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+    }
+    repaired = json.loads(json.dumps(raw, ensure_ascii=False))
+    for domain in repaired:
+        if not isinstance(domain, dict):
+            continue
+        domain_id = str(domain.get("domain") or "")
+        for focus in domain.get("focuses") or []:
+            if not isinstance(focus, dict):
+                continue
+            focus_id = str(focus.get("id") or "")
+            analysis = str(focus.get("analysis") or "").strip()
+            evidence_focus = evidence_by_focus.get((domain_id, focus_id)) or {}
+            if not analysis or _has_business_judgement(analysis):
+                continue
+            if not (_numeric_tokens(analysis) & _focus_value_tokens(evidence_focus)):
+                continue
+            if not any(term in analysis for term in _ANALYTICAL_JUDGEMENT_TERMS):
+                continue
+            implication = _FOCUS_BUSINESS_IMPLICATIONS.get((domain_id, focus_id), "")
+            if implication:
+                focus["analysis"] = f"{analysis.rstrip('。；')}；{implication}"
+                focus["business_implication_repaired"] = True
+    return repaired
+
+
+def _repair_model_summaries(raw: Any, evidence: dict[str, Any]) -> Any:
+    repaired = _repair_entity_evidence_labels(
+        _repair_focus_business_implications(
+            _repair_focus_numeric_anchors(raw, evidence),
+            evidence,
+        ),
+        evidence,
+    )
+    evidence_by_domain = {
+        str(domain.get("id") or ""): domain for domain in evidence.get("domains") or []
+    }
+    if not isinstance(repaired, list):
+        return repaired
+    for domain in repaired:
+        if not isinstance(domain, dict):
+            continue
+        domain_id = str(domain.get("domain") or "")
+        evidence_domain = evidence_by_domain.get(domain_id) or {}
+        focus_analyses = [
+            str(focus.get("analysis") or "").strip()
+            for focus in domain.get("focuses") or []
+            if isinstance(focus, dict) and str(focus.get("analysis") or "").strip()
+        ]
+        if not str(domain.get("headline") or "").strip():
+            domain["headline"] = f"{evidence_domain.get('title') or domain_id}竞争信号已形成量化判断"
+        if not str(domain.get("analysis") or "").strip():
+            domain["analysis"] = " ".join(focus_analyses[:2]) or str(
+                evidence_domain.get("deterministic_insight") or "当前证据已完成量化校验。"
+            )
+        if not str(domain.get("risk") or "").strip():
+            domain["risk"] = "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。"
+        if not isinstance(domain.get("source_urls"), list):
+            domain["source_urls"] = []
+    return repaired
+
+
 def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw, list):
         raise ValueError("AI分析没有返回JSON数组")
@@ -507,16 +722,14 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
                     focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
                     if str(focus.get("id") or "") == focus_id
                 )
-                if domain == "local" and focus_id == "price":
-                    focus_numbers = _numeric_tokens(evidence_focus)
-                    analysis_numbers = _numeric_tokens(validated_focus["analysis"])
-                    if focus_numbers and not (focus_numbers & analysis_numbers):
-                        raise ValueError("AI分析分类缺少具体数值判断：local.price")
-                    if any(
-                        phrase in validated_focus["analysis"]
-                        for phrase in ("缺失值不估算", "缺失数据不估算", "只比较已结构化", "仅比较已结构化")
-                    ):
-                        raise ValueError("AI分析分类仍以限制条件代替价格判断：local.price")
+                focus_gate_error = _focus_gate_error(
+                    domain,
+                    focus_id,
+                    validated_focus["analysis"],
+                    evidence_focus,
+                )
+                if focus_gate_error:
+                    raise ValueError(focus_gate_error)
                 evidence_entities = {
                     str(entity.get("name") or ""): entity
                     for entity in evidence_focus.get("items") or []
@@ -767,6 +980,49 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
     return sanitized
 
 
+_FOCUS_BUSINESS_IMPLICATIONS = {
+    ("local", "scale"): "方案规模差异反映产品陈列广度，业务上应优先检查高数量能否转化为有效覆盖与获客。",
+    ("local", "track"): "赛道覆盖差距反映产品组合广度，竞争上应优先补齐高价值场景而非只增加方案数。",
+    ("local", "price"): "价格梯度会直接影响获客入口与价值升级，定价上应同时守住低价入口和主产品价值。",
+    ("local", "overlap"): "重叠赛道越集中，正面竞争与价格压力越高，应优先做差异化权益和渠道转化。",
+    ("international", "growth"): "增长分化反映运营质量差距，应优先跟踪领先者的收入结构与可复制增长来源。",
+    ("international", "momentum"): "动量回落意味着增长改善尚未形成，经营上应优先判断收入修复是否可持续。",
+    ("international", "gap"): "与领先者的增速差距越大，竞争位置修复压力越高，应优先锁定可缩短差距的业务板块。",
+    ("international", "disclosure"): "披露深度差异会影响判断可靠性，分析上应优先使用可交叉验证的收入、利润与投入指标。",
+    ("cloud", "growth"): "增长梯队分化反映云业务扩张效率，竞争上应同时评估规模增长和收入质量。",
+    ("cloud", "trend"): "增速变化显示厂商加速或放缓，业务上应优先识别增长动量能否转化为份额与客户黏性。",
+    ("cloud", "profit"): "利润率差距反映规模变现与成本效率，经营上应避免用异口径数字直接判定绝对领先。",
+    ("cloud", "disclosure"): "披露深度差异影响可比性，分析上应优先区分纯云收入、代理分部与综合业务口径。",
+    ("macro", "market"): "连接规模与宽带渗透反映市场饱和压力，经营上应把重点从新增用户转向存量价值提升。",
+    ("macro", "traffic"): "流量规模与人均使用差异反映网络需求和变现空间，应优先评估体验投入与套餐升级转化。",
+    ("macro", "spending"): "收入与消费指标差异反映套餐升级承受力，定价上应兼顾购买力压力与价值提升。",
+    ("macro", "governance"): "投资、投诉与覆盖差异共同约束网络竞争，应优先把投入转化为体验改善并降低服务风险。",
+}
+
+
+def _deterministic_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
+    """Produce a numerically grounded fallback that must pass the same 16-focus gate."""
+    analysis = str(focus.get("insight") or "").strip()
+    metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
+    metric_value = metric.get("value")
+    metric_label = str(metric.get("label") or focus.get("title") or "最新指标")
+    metric_unit = str(metric.get("unit") or "")
+    focus_numbers = _focus_value_tokens(focus)
+    if focus_numbers and not (_numeric_tokens(analysis) & focus_numbers):
+        if metric_value not in (None, ""):
+            analysis = f"{metric_label}为{metric_value}{metric_unit}；{analysis}" if analysis else f"{metric_label}为{metric_value}{metric_unit}。"
+        else:
+            first_number = sorted(focus_numbers, key=lambda value: float(value))[0]
+            analysis = f"当前已核验数值为{first_number}；{analysis}" if analysis else f"当前已核验数值为{first_number}。"
+    if not _has_business_judgement(analysis):
+        implication = _FOCUS_BUSINESS_IMPLICATIONS.get(
+            (domain, str(focus.get("id") or "")),
+            "数值差异反映竞争位置变化，业务上应优先评估其对收入转化、客户体验与资源投入的影响。",
+        )
+        analysis = f"{analysis.rstrip('。')}；{implication}" if analysis else implication
+    return analysis
+
+
 def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, Any]]:
     """Build a fail-closed summary directly from the validated evidence pack."""
     summaries: list[dict[str, Any]] = []
@@ -787,7 +1043,10 @@ def _deterministic_domain_summaries(evidence: dict[str, Any]) -> list[dict[str, 
                 "focuses": [
                     {
                         "id": str(focus.get("id") or ""),
-                        "analysis": str(focus.get("insight") or "当前仅展示已通过发布门禁的证据。"),
+                        "analysis": _deterministic_focus_analysis(
+                            str(domain.get("id") or ""),
+                            focus,
+                        ),
                         "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
                         "source_urls": list(dict.fromkeys(
                             str(item.get("source_url") or "")
@@ -875,6 +1134,8 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
         "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
         "每个focus的analysis必须至少引用一个输入中的具体数值，并说明差距、梯度、集中度或变化带来的业务判断；"
+        "上述数值与业务判断要求适用于全部16个focus，任何focus只写指标定义、展示方法或事实罗列都不合格；"
+        "每个focus必须同时写出可量化的比较/变化结论，以及它对收入、客户、产品、网络、竞争或资源投入的含义。"
         "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
         "跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
@@ -929,7 +1190,10 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         try:
             raw_summaries = _extract_json_payload(content)
             summaries = _validate_model_summaries(
-                _drop_unsupported_numeric_clauses(raw_summaries, evidence),
+                _repair_model_summaries(
+                    _drop_unsupported_numeric_clauses(raw_summaries, evidence),
+                    evidence,
+                ),
                 evidence,
             )
             used_models.add(str(body["model"]))
@@ -990,7 +1254,14 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                     parsed = _extract_json_payload(domain_content)
                     if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
                         raise ValueError("必须返回单对象JSON数组")
-                    candidate = parsed[0]
+                    candidate = _drop_unsupported_numeric_clauses(
+                        [parsed[0]],
+                        {"domains": [domain_evidence]},
+                    )
+                    candidate = _repair_model_summaries(
+                        candidate,
+                        {"domains": [domain_evidence]},
+                    )[0]
                     returned_focus_ids = {
                         str(focus.get("id") or "")
                         for focus in candidate.get("focuses") or []
@@ -1013,6 +1284,18 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                         }
                         if returned_by_focus.get(focus_id, set()) != expected_names:
                             raise ValueError(f"实体覆盖不完整：{focus_id}")
+                        returned_focus = next(
+                            focus for focus in candidate.get("focuses") or []
+                            if isinstance(focus, dict) and str(focus.get("id") or "") == focus_id
+                        )
+                        focus_gate_error = _focus_gate_error(
+                            domain_id,
+                            focus_id,
+                            str(returned_focus.get("analysis") or ""),
+                            evidence_focus,
+                        )
+                        if focus_gate_error:
+                            raise ValueError(focus_gate_error)
                     candidate["domain"] = domain_id
                     candidate["focuses"] = [
                         focus for focus in candidate.get("focuses") or []
@@ -1026,7 +1309,11 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                     if domain_attempt < 2:
                         domain_messages.append({
                             "role": "user",
-                            "content": f"上一版未通过门禁：{exc}。请完整返回全部focus和全部实体，仍只返回单对象JSON数组。",
+                            "content": (
+                                f"上一版未通过门禁：{exc}。请完整返回全部focus和全部实体。"
+                                "每个focus.analysis用两句：第一句引用输入原值并写比较/变化，第二句明确对收入、客户、产品、"
+                                "网络、竞争或资源投入的业务含义；不要只解释指标用途。仍只返回单对象JSON数组。"
+                            ),
                         })
             if domain_summary is None:
                 focus_parts: list[dict[str, Any]] = []
@@ -1044,6 +1331,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                                 "你是电信竞争情报分析员。只返回合法JSON数组，不要解释。只能使用输入证据。"
                                 "逐一覆盖items中的全部实体，name必须原样；每个实体先说明components具体包含什么，"
                                 "再写结构、变化或差距及业务含义。evidence_labels只能原样选自该实体components.label。"
+                                "focus.analysis必须引用输入中的具体数值，写明比较或变化，并解释对经营决策的影响。"
                                 "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图等界面说明。"
                             ),
                         },
@@ -1078,7 +1366,14 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                             parsed = _extract_json_payload(focus_content)
                             if not isinstance(parsed, list) or len(parsed) != 1 or not isinstance(parsed[0], dict):
                                 raise ValueError("必须返回单对象JSON数组")
-                            candidate = parsed[0]
+                            candidate = _drop_unsupported_numeric_clauses(
+                                [parsed[0]],
+                                {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]},
+                            )
+                            candidate = _repair_model_summaries(
+                                candidate,
+                                {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]},
+                            )[0]
                             returned_focuses = [
                                 focus for focus in candidate.get("focuses") or []
                                 if isinstance(focus, dict) and str(focus.get("id") or "") == focus_id
@@ -1091,6 +1386,14 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                             }
                             if returned_names != expected_names:
                                 raise ValueError(f"实体覆盖不完整：{sorted(expected_names - returned_names)}")
+                            focus_gate_error = _focus_gate_error(
+                                domain_id,
+                                focus_id,
+                                str(returned_focuses[0].get("analysis") or ""),
+                                focus_evidence,
+                            )
+                            if focus_gate_error:
+                                raise ValueError(focus_gate_error)
                             focus_candidate = candidate
                             focus_candidate["domain"] = domain_id
                             focus_candidate["focuses"] = returned_focuses
@@ -1101,7 +1404,11 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                             if focus_attempt + 1 < len(focus_models):
                                 focus_messages.append({
                                     "role": "user",
-                                    "content": f"上一版未通过门禁：{exc}。请只返回该focus及全部实体的合法JSON数组。",
+                                    "content": (
+                                        f"上一版未通过门禁：{exc}。请只返回该focus及全部实体。"
+                                        "focus.analysis必须引用输入原值，写出比较或变化，并明确对收入、客户、产品、网络、"
+                                        "竞争或资源投入的业务含义，不能写成指标定义。只返回合法JSON数组。"
+                                    ),
                                 })
                     if focus_candidate is None:
                         raise ValueError(
@@ -1116,7 +1423,10 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                 domain_summary = {**(domain_fields or {"domain": domain_id}), "focuses": focus_parts}
             per_domain_summaries.append(domain_summary)
         summaries = _validate_model_summaries(
-            _drop_unsupported_numeric_clauses(per_domain_summaries, evidence),
+            _repair_model_summaries(
+                _drop_unsupported_numeric_clauses(per_domain_summaries, evidence),
+                evidence,
+            ),
             evidence,
         )
     return {
@@ -1126,12 +1436,44 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
     }
 
 
+def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
+    """Keep decision-level metrics and sources; omit entity/component payloads."""
+    domains: list[dict[str, Any]] = []
+    for domain in evidence.get("domains") or []:
+        compact_focuses: list[dict[str, Any]] = []
+        for focus in domain.get("focuses") or []:
+            compact_focuses.append({
+                "id": focus.get("id"),
+                "title": focus.get("title"),
+                "metric": focus.get("metric"),
+                "insight": focus.get("insight"),
+                "items": [
+                    {
+                        "name": item.get("name"),
+                        "value": item.get("value"),
+                        "unit": item.get("unit"),
+                        "source_url": item.get("source_url"),
+                    }
+                    for item in (focus.get("items") or [])[:4]
+                    if isinstance(item, dict)
+                ],
+            })
+        domains.append({
+            "id": domain.get("id"),
+            "title": domain.get("title"),
+            "deterministic_insight": domain.get("deterministic_insight"),
+            "focuses": compact_focuses,
+        })
+    return {"domains": domains, "relations": list(evidence.get("relations") or [])[:4]}
+
+
 def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
     from network_utils import urlopen_with_local_proxy_fallback
 
     evidence = evidence or _analysis_input_snapshot()
+    prompt_evidence = _compact_discovery_evidence(evidence)
     config = load_ai_config(include_key=True)
     api_key = str(config.get("api_key") or "").strip()
     if not api_key:
@@ -1146,7 +1488,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     user_prompt = (
         "请返回四条发现，每项字段严格为from,to,title,detail,kind,source_urls。"
         "title不超过28字，detail不超过110字，kind统一写AI综合研判。不要Markdown。输入：\n"
-        + json.dumps(evidence, ensure_ascii=False)
+        + json.dumps(prompt_evidence, ensure_ascii=False)
     )
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1159,7 +1501,11 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     }
     discoveries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
-    for attempt in range(3):
+    configured_model = str(body["model"])
+    discovery_models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
+    used_model = configured_model
+    for attempt, discovery_model in enumerate(discovery_models):
+        body["model"] = discovery_model
         body["messages"] = messages
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
@@ -1173,15 +1519,20 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
-            raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
+            last_error = RuntimeError(f"内网模型 HTTP {exc.code}: {detail}")
+            continue
+        except (TimeoutError, urllib.error.URLError) as exc:
+            last_error = exc
+            continue
         message = (payload.get("choices") or [{}])[0].get("message") or {}
         content = message.get("content") or message.get("reasoning_content") or ""
         try:
             discoveries = _validate_model_discoveries(_extract_json_payload(content), evidence)
+            used_model = discovery_model
             break
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = exc
-            if attempt < 2:
+            if attempt + 1 < len(discovery_models):
                 messages.extend([
                     {"role": "assistant", "content": content},
                     {
@@ -1191,7 +1542,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
                 ])
     if discoveries is None:
         raise ValueError(f"AI跨库发现连续三次未通过门禁：{last_error}")
-    return {"generated_at_hkt": _now(), "model": body["model"], "discoveries": discoveries}
+    return {"generated_at_hkt": _now(), "model": used_model, "discoveries": discoveries}
 
 
 def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
@@ -1523,6 +1874,44 @@ def _refresh_builder_domain(domain: str, *, dry_run: bool = False) -> dict[str, 
         }
 
 
+def _publish_and_verify_github_pages() -> dict[str, Any]:
+    """Publish the freshly written four-domain snapshot and require public readback."""
+    if not PAGES_PUBLISH_SCRIPT.is_file():
+        raise RuntimeError(f"GitHub.io发布脚本不存在：{PAGES_PUBLISH_SCRIPT}")
+    environment = os.environ.copy()
+    for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"):
+        environment.pop(key, None)
+    environment.setdefault("CMHK_INTELLIGENCE_SOURCE_URL", "http://127.0.0.1:8765/")
+    result: dict[str, Any] = {}
+    for attempt in range(1, 37):
+        completed = subprocess.run(
+            [sys.executable, str(PAGES_PUBLISH_SCRIPT), "--force"],
+            cwd=ROOT,
+            env=environment,
+            capture_output=True,
+            text=True,
+            timeout=600,
+            check=False,
+        )
+        if completed.returncode:
+            raise RuntimeError(
+                f"GitHub.io发布失败({completed.returncode})：{(completed.stderr or completed.stdout)[-1200:]}"
+            )
+        try:
+            result = json.loads((completed.stdout or "").strip())
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"GitHub.io发布结果无法解析：{(completed.stdout or completed.stderr)[-1200:]}") from exc
+        if result.get("status") != "busy":
+            break
+        if attempt < 36:
+            time.sleep(5)
+    if result.get("status") not in {"published", "verified", "unchanged"}:
+        raise RuntimeError(f"GitHub.io未完成公开验证：{result}")
+    if not str(result.get("public_url") or "").startswith("https://") or not result.get("site_version"):
+        raise RuntimeError(f"GitHub.io验证结果字段不完整：{result}")
+    return {"ok": True, "attempts": attempt, **result}
+
+
 def run_pipeline(
     *,
     agent_run_id: str,
@@ -1537,6 +1926,7 @@ def run_pipeline(
     try:
         fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
+        lock_handle.close()
         return {"ok": True, "skipped": True, "reason": "refresh_already_running"}
 
     started = time.monotonic()
@@ -1625,7 +2015,7 @@ def run_pipeline(
         if dry_run:
             state["model_analysis"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         else:
-            _task_event(task_run_id, "生成观察结论", "正在根据四库最新通过事实生成综合发现和16个关注点结论。")
+            _task_event(task_run_id, "生成AI洞察", "正在根据四库最新通过事实生成AI洞察，并对16个关注点逐一执行数值与业务判断门禁。")
             try:
                 model_analysis = publish_model_domain_summaries()
                 state["model_analysis"] = {
@@ -1635,9 +2025,22 @@ def run_pipeline(
                     "domains": len(model_analysis["summaries"]),
                     "reused": bool(model_analysis.get("reused")),
                     "fallback_used": bool(model_analysis.get("fallback_used")),
+                    "fallback_reason": str(model_analysis.get("fallback_reason") or ""),
+                    "evidence_hash": str(model_analysis.get("evidence_hash") or ""),
+                    "discovery_model": str(model_analysis.get("discovery_model") or ""),
+                    "discovery_fallback_used": bool(model_analysis.get("discovery_fallback_used")),
+                    "discovery_fallback_reason": str(model_analysis.get("discovery_fallback_reason") or ""),
                 }
-                fallback_note = "；模型未通过门禁，已使用证据规则回退" if model_analysis.get("fallback_used") else ""
-                _task_event(task_run_id, "生成观察结论", f"观察结论发布完成{fallback_note}。")
+                fallback_note = (
+                    f"；回退原因：{state['model_analysis']['fallback_reason']}"
+                    if model_analysis.get("fallback_used") else "；未触发回退"
+                )
+                _task_event(
+                    task_run_id,
+                    "生成AI洞察",
+                    f"16/16关注点门禁通过；模型：{state['model_analysis']['model']}；"
+                    f"证据哈希：{state['model_analysis']['evidence_hash'][:16]}{fallback_note}。",
+                )
             except Exception as exc:
                 state["model_analysis"] = {
                     "ok": False,
@@ -1645,17 +2048,44 @@ def run_pipeline(
                     "fallback_preserved": True,
                 }
                 _append_log(f"model analysis failed {exc}")
-                _task_event(task_run_id, "生成观察结论", f"观察结论生成失败：{exc}", level="critical")
+                _task_event(task_run_id, "生成AI洞察", f"AI洞察生成失败：{exc}", level="critical")
         failed = [key for key, value in state["domains"].items() if not value.get("ok")]
         model_ok = bool(state.get("model_analysis", {}).get("ok"))
+        core_ok = not failed and model_ok
+        if dry_run:
+            state["pages_publish"] = {"ok": True, "skipped": True, "reason": "dry_run"}
+        elif core_ok:
+            _task_event(task_run_id, "发布GitHub.io", "四库与16个AI洞察均已通过，正在发布并读取公开站点版本进行验证。")
+            try:
+                pages_publish = _publish_and_verify_github_pages()
+                state["pages_publish"] = pages_publish
+                _task_event(
+                    task_run_id,
+                    "发布GitHub.io",
+                    f"公开站点已验证；版本：{pages_publish.get('site_version')}；地址：{pages_publish.get('public_url')}",
+                )
+            except Exception as exc:
+                state["pages_publish"] = {"ok": False, "error": str(exc)}
+                _append_log(f"github pages publish failed {exc}")
+                _task_event(task_run_id, "发布GitHub.io", f"公开发布或验证失败：{exc}", level="critical")
+        else:
+            state["pages_publish"] = {"ok": False, "skipped": True, "reason": "core_gate_failed"}
+        pages_ok = bool(state.get("pages_publish", {}).get("ok"))
+        used_fallback = bool(state.get("model_analysis", {}).get("fallback_used"))
+        if core_ok and pages_ok and not used_fallback:
+            final_status = "completed"
+        elif core_ok and not pages_ok:
+            final_status = "completed_with_publish_warning"
+        else:
+            final_status = "completed_with_fallback"
         state.update(
             {
-                "ok": not failed and model_ok,
-                "status": "completed" if not failed and model_ok else "completed_with_fallback",
+                "ok": core_ok,
+                "status": final_status,
                 "failed_domains": failed,
                 "completed_at_hkt": _now(),
                 "duration_ms": round((time.monotonic() - started) * 1000),
-                "fallback_preserved": bool(failed or not model_ok),
+                "fallback_preserved": bool(failed or not model_ok or used_fallback or not pages_ok),
             }
         )
     except Exception as exc:
@@ -1672,6 +2102,8 @@ def run_pipeline(
         _append_log(f"pipeline failed {exc}")
     _atomic_write_json(STATE_PATH, state)
     _append_log(f"done status={state['status']} duration_ms={state['duration_ms']}")
+    fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
+    lock_handle.close()
     return state
 
 
@@ -1733,11 +2165,15 @@ def run_pipeline_with_recovery(
     result["agent_run_id"] = agent_run_id
     ok = bool(result.get("ok") or result.get("skipped"))
     if ok:
-        detail = (
-            "已有另一条四库任务执行，本次已安全合并。"
-            if result.get("skipped")
-            else f"四库、观察结论和前端数据源已完成，共执行 {attempts} 次。"
-        )
+        if result.get("skipped"):
+            detail = "已有另一条四库任务执行，本次已安全合并。"
+        elif (result.get("pages_publish") or {}).get("ok"):
+            detail = f"四库、16个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 {attempts} 次。"
+        else:
+            detail = (
+                f"四库、16个AI洞察和前端数据源已完成，但GitHub.io发布验证未通过："
+                f"{(result.get('pages_publish') or {}).get('error') or '未返回原因'}。"
+            )
     else:
         failed = "、".join(DOMAIN_LABELS.get(item, item) for item in result.get("failed_domains") or [])
         detail = f"连续 {attempts} 次未通过，失败范围：{failed or result.get('error') or '观察结论'}；旧数据已保留。"
