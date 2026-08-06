@@ -1,0 +1,50 @@
+/* Give compact desktop and 13-inch scaled views enough vertical room for every panel. */
+@media (min-width: 901px) and (max-width: 1536px) {
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .cockpit {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    grid-template-rows: 72px 64px auto;
+    overflow: visible;
+  }
+
+  .dashboard-grid {
+    min-height: 720px;
+    grid-template-rows: repeat(2, minmax(360px, auto));
+  }
+
+  .panel {
+    min-height: 360px;
+  }
+}
+
+/* Keep the stacked business panel from clipping its third comparison row on narrow screens. */
+@media (max-width: 900px) {
+  .panel-business {
+    min-height: 450px;
+  }
+
+  .panel-business .business-content {
+    height: 410px;
+  }
+}
+
+@media (max-width: 520px) {
+  .panel-business {
+    min-height: 540px;
+  }
+
+  .panel-business .business-content {
+    height: 450px;
+  }
+}

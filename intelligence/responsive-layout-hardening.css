@@ -1,0 +1,56 @@
+/* Let compact desktop views scroll vertically without changing the board proportions. */
+@media (min-width: 761px) and (max-width: 1536px) {
+  .intelligence-command-board {
+    display: block;
+    height: auto;
+    min-height: 0;
+    padding: 12px;
+    overflow: hidden;
+  }
+
+  .dashboard-page .console-shell,
+  .dashboard-page .operations,
+  .dashboard-page .insight-board {
+    height: auto;
+    min-height: 0;
+  }
+
+  .dashboard-page .console-shell,
+  .dashboard-page .insight-board {
+    overflow: hidden;
+  }
+
+  .dashboard-page .insight-board {
+    display: block;
+  }
+
+  .intelligence-relation-rail {
+    margin-bottom: 12px;
+  }
+}
+
+/* Keep the narrowest desktop cards readable when two columns cannot fit their content. */
+@media (min-width: 761px) and (max-width: 1180px) {
+  .intelligence-domain-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    gap: 12px;
+  }
+
+  .intelligence-domain {
+    min-height: 350px;
+  }
+}
+
+/* Preserve the four-card 2x2 composition on 13-inch scaled desktop views. */
+@media (min-width: 1181px) and (max-width: 1536px) {
+  .intelligence-domain-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(350px, auto));
+    gap: 12px;
+  }
+
+  .intelligence-domain {
+    min-height: clamp(350px, 24vw, 420px);
+  }
+}
