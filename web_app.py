@@ -34,6 +34,7 @@ from crawl_run_registry import (
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
 from ai_rate_limit import wait_for_internal_ai_slot
 from company_metrics import build_company_metrics_payload
+from executive_company_benchmarks import build_company_benchmarks
 from extractors import row_fields
 from rag_llm import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
 from agent import available_agent_skills, stream_agent
@@ -3264,6 +3265,16 @@ class AppHandler(BaseHTTPRequestHandler):
                 json_response(
                     self,
                     {"ok": False, "error": str(exc), "domains": [], "relations": []},
+                    status=500,
+                )
+            return
+        if path == "/api/executive-company-benchmarks":
+            try:
+                json_response(self, build_company_benchmarks())
+            except Exception as exc:
+                json_response(
+                    self,
+                    {"ok": False, "error": str(exc), "companies": [], "metrics": {}, "values": {}},
                     status=500,
                 )
             return

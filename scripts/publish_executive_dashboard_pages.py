@@ -151,6 +151,8 @@ def _build_site(
     *,
     intelligence_static_dir: Path | None = None,
 ) -> tuple[str, dict[str, Any]]:
+    from executive_company_benchmarks import build_company_benchmarks
+
     destination.mkdir(parents=True, exist_ok=True)
     html = (STATIC_DIR / "executive-dashboard-demo.html").read_text(encoding="utf-8")
     html = html.replace(
@@ -169,6 +171,10 @@ def _build_site(
         'src="/static/executive-dashboard-demo.js',
         'src="./executive-dashboard-demo.js',
     )
+    html = html.replace(
+        'data-benchmark-url="/api/executive-company-benchmarks"',
+        'data-benchmark-url="./executive-company-benchmarks.json"',
+    )
     (destination / "index.html").write_text(html, encoding="utf-8")
     shutil.copy2(
         STATIC_DIR / "executive-dashboard-demo.css",
@@ -184,6 +190,10 @@ def _build_site(
         'fetch("./strategic-briefs.json"',
     )
     (destination / "executive-dashboard-demo.js").write_text(script, encoding="utf-8")
+    (destination / "executive-company-benchmarks.json").write_text(
+        json.dumps(build_company_benchmarks(), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     shutil.copytree(
         STATIC_DIR / "assets" / "executive-dashboard",
         destination / "assets" / "executive-dashboard",

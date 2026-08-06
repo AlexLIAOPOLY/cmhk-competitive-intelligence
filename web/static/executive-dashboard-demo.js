@@ -5,6 +5,8 @@ const newsTrack = document.querySelector(".news-track");
 const newsSourceSet = newsTrack?.querySelector(".news-set");
 let newsResizeFrame = 0;
 let newsResumeTimer = 0;
+var benchmarkPayload = null;
+var selectedBenchmarkCompanies = new Set(["cmhk", "hkt", "three", "smartone", "hkbn"]);
 const networkPanel = document.querySelector(".panel-network");
 const networkContent = document.querySelector("#network-detail");
 const networkTabs = [...document.querySelectorAll("[data-network-view]")];
@@ -107,6 +109,7 @@ function showNetworkView(viewName) {
 
   if (networkPanel) networkPanel.dataset.networkView = viewName;
   restartContentSwitch(networkContent, viewName);
+  renderBenchmarkOverlays();
 }
 
 function stopNetworkRotation() {
@@ -117,6 +120,7 @@ function networkRotationIsPaused() {
   return (
     !networkPanel ||
     networkTabs.length < 2 ||
+    document.body.classList.contains("benchmark-mode") ||
     reducedMotion.matches ||
     document.hidden ||
     networkPanel.matches(":hover") ||
@@ -275,11 +279,13 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
     content.dataset.activeView = viewNames[activeViewIndex] || "";
     content.dataset.activeGroup = String(activeGroupIndex);
     restartContentSwitch(content, `${content.dataset.activeView}:${content.dataset.activeGroup}`);
+    renderBenchmarkOverlays();
   }
 
   function paused() {
     return (
       reducedMotion.matches ||
+      document.body.classList.contains("benchmark-mode") ||
       document.hidden ||
       panel.matches(":hover") ||
       panel.contains(document.activeElement)
@@ -443,6 +449,281 @@ fetch("/api/strategic-briefs", { cache: "no-store" })
   })
   .then((payload) => renderNewsRail(payload.items))
   .catch(() => {});
+
+const benchmarkToggle = document.querySelector("#benchmarkToggle");
+const benchmarkCount = document.querySelector("#benchmarkCount");
+const benchmarkCompanySelector = document.querySelector("#benchmarkCompanySelector");
+const BENCHMARK_METRIC_IDS = {
+  "营运收入": "revenue",
+  "EBITDA": "ebitda",
+  "EBITDA率": "ebitda_margin",
+  "净利润": "net_profit",
+  "净利润率": "net_margin",
+  "资本支出": "capital_expenditure",
+  "现金及现金等值": "cash",
+  "自由现金流": "free_cash_flow"
+};
+const BENCHMARK_SIMULATION_BASE = { hkt: 1.08, three: .82, smartone: .76, hkbn: .69 };
+
+function visibleDetailMetrics(panel) {
+  if (!panel) return [];
+  const metrics = [];
+  const add = (label, value, unit = "") => {
+    const cleanLabel = String(label || "").trim();
+    const cleanValue = String(value || "").trim();
+    if (!cleanLabel || !cleanValue || metrics.some((item) => item.label === cleanLabel)) return;
+    metrics.push({ label: cleanLabel, value: cleanValue, unit: String(unit || "").trim() });
+  };
+
+  if (panel.classList.contains("panel-network")) {
+    add(
+      panel.querySelector("[data-network-label='hero']")?.textContent,
+      panel.querySelector(".hero-metric strong")?.textContent,
+      ""
+    );
+    panel.querySelectorAll(".network-bars > div:not([hidden])").forEach((item) => {
+      add(item.querySelector("span")?.textContent, item.querySelector("b")?.textContent, "");
+    });
+    return metrics.slice(0, 5);
+  }
+
+  panel.querySelectorAll(".detail-item:not([hidden])").forEach((item) => {
+    const label = item.querySelector("span")?.textContent;
+    const valueNode = item.querySelector("[data-business-metric-value], [data-reach-metric-value], [data-finance-metric-value]");
+    const unitNode = item.querySelector("[data-business-metric-unit], [data-reach-metric-unit], [data-finance-metric-unit]");
+    add(label, valueNode?.textContent, unitNode?.textContent);
+  });
+
+  if (panel.classList.contains("panel-finance")) {
+    const activeView = panel.querySelector("#finance-detail")?.dataset.activeView;
+    if (activeView === "income") {
+      metrics.unshift({ label: "营运收入", value: panel.querySelector("[data-key='cmhkRevenue']")?.textContent || "", unit: "亿港元" });
+    } else if (activeView === "margin") {
+      metrics.unshift(
+        { label: "EBITDA率", value: panel.querySelector("[data-key='ebitdaMargin']")?.textContent || "", unit: "%" },
+        { label: "EBITDA", value: panel.querySelector("[data-key='ebitda']")?.textContent || "", unit: "亿港元" },
+        { label: "净利润", value: panel.querySelector("[data-key='netProfit']")?.textContent || "", unit: "亿港元" }
+      );
+    }
+  }
+  return metrics.filter((item) => item.value).slice(0, 5);
+}
+
+function benchmarkRecord(companyId, metric) {
+  if (companyId === "cmhk") {
+    return { value: metric.value, unit: metric.unit, period: "驾驶舱当前口径", source_url: "" };
+  }
+  const metricId = BENCHMARK_METRIC_IDS[metric.label];
+  const record = metricId ? benchmarkPayload?.values?.[companyId]?.[metricId] : null;
+  if (record) {
+    return {
+      ...record,
+      unit: benchmarkPayload?.metrics?.[metricId]?.unit || metric.unit,
+      simulated: false
+    };
+  }
+  return simulatedBenchmarkRecord(companyId, metric);
+}
+
+function simulatedBenchmarkRecord(companyId, metric) {
+  const company = benchmarkPayload?.companies?.find((item) => item.id === companyId);
+  const raw = String(metric.value || "").replace(/,/g, "").trim();
+  const numericMatch = raw.match(/-?\d+(?:\.\d+)?/);
+  if (!numericMatch) {
+    return {
+      value: company?.label || "模拟值",
+      unit: metric.unit,
+      period: "模拟估算",
+      source_label: "基于CMHK当前值的界面模拟",
+      source_url: "",
+      simulated: true
+    };
+  }
+  let hash = 0;
+  `${metric.label}:${companyId}`.split("").forEach((character) => {
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  });
+  const jitter = ((hash % 17) - 8) / 100;
+  const ratio = (BENCHMARK_SIMULATION_BASE[companyId] || .72) + jitter;
+  const sourceValue = Number(numericMatch[0]);
+  let value = sourceValue * ratio;
+  const unit = metric.unit || raw.replace(numericMatch[0], "").trim();
+  if (unit.includes("%")) value = Math.min(99.9, Math.max(-99.9, value));
+  const decimals = Math.abs(sourceValue) >= 100 ? 0 : (Math.abs(sourceValue) >= 10 ? 1 : 2);
+  return {
+    value: Number(value.toFixed(decimals)),
+    unit,
+    period: "模拟估算",
+    source_label: "基于CMHK当前值与企业规模系数的界面模拟",
+    source_url: "",
+    simulated: true
+  };
+}
+
+function formatBenchmarkValue(value) {
+  const numeric = Number(String(value).replace(/,/g, ""));
+  if (!Number.isFinite(numeric)) return String(value || "—");
+  return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(numeric);
+}
+
+function ensureBenchmarkOverlays() {
+  panels.forEach((panel) => {
+    if (panel.querySelector(".company-benchmark-overlay")) return;
+    const overlay = document.createElement("section");
+    overlay.className = "company-benchmark-overlay";
+    overlay.setAttribute("aria-label", `${panel.querySelector("h2")?.textContent || "指标"}企业对标`);
+    overlay.innerHTML = '<header><div><strong></strong><span></span></div><em></em></header><div class="company-benchmark-table"></div><footer><b>SIM</b> 为基于CMHK当前值的界面模拟，并非企业公开披露；官方值可悬停查看期间与来源。</footer>';
+    panel.append(overlay);
+  });
+}
+
+function renderBenchmarkOverlays() {
+  if (!benchmarkPayload) return;
+  ensureBenchmarkOverlays();
+  const companies = benchmarkPayload.companies.filter((item) => selectedBenchmarkCompanies.has(item.id));
+
+  panels.forEach((panel) => {
+    const overlay = panel.querySelector(".company-benchmark-overlay");
+    if (!overlay) return;
+    const metrics = visibleDetailMetrics(panel);
+    const table = overlay.querySelector(".company-benchmark-table");
+    const title = panel.querySelector("h2")?.textContent || "指标";
+    const tableFragment = document.createDocumentFragment();
+    let verifiedPeerCells = 0;
+    let simulatedPeerCells = 0;
+    let totalPeerCells = 0;
+
+    const heading = document.createElement("div");
+    heading.className = "company-benchmark-row company-benchmark-head";
+    heading.style.setProperty("--benchmark-companies", String(companies.length));
+    const metricHeading = document.createElement("span");
+    metricHeading.textContent = "当前指标";
+    heading.append(metricHeading);
+    companies.forEach((company) => {
+      const companyHeading = document.createElement("strong");
+      companyHeading.dataset.company = company.id;
+      companyHeading.textContent = company.label;
+      heading.append(companyHeading);
+    });
+    tableFragment.append(heading);
+
+    metrics.forEach((metric) => {
+      const row = document.createElement("div");
+      row.className = "company-benchmark-row";
+      row.style.setProperty("--benchmark-companies", String(companies.length));
+      const label = document.createElement("span");
+      label.textContent = metric.label;
+      row.append(label);
+
+      companies.forEach((company) => {
+        const record = benchmarkRecord(company.id, metric);
+        if (company.id !== "cmhk") {
+          totalPeerCells += 1;
+          if (record?.simulated) simulatedPeerCells += 1;
+          else if (record) verifiedPeerCells += 1;
+        }
+        const cell = record?.source_url ? document.createElement("a") : document.createElement("strong");
+        cell.dataset.company = company.id;
+        cell.classList.toggle("is-simulated", Boolean(record?.simulated));
+        if (record?.source_url) {
+          cell.href = record.source_url;
+          cell.target = "_blank";
+          cell.rel = "noopener noreferrer";
+        }
+        cell.title = record
+          ? [record.period, record.period_end, record.source_label].filter(Boolean).join(" · ")
+          : "暂无同口径公开数据";
+        const value = document.createElement("b");
+        value.textContent = record ? formatBenchmarkValue(record.value) : "—";
+        const unit = document.createElement("small");
+        unit.textContent = record ? (record.unit || "") : "";
+        cell.append(value, unit);
+        if (record?.simulated) {
+          const simulationTag = document.createElement("i");
+          simulationTag.textContent = "SIM";
+          cell.append(simulationTag);
+        }
+        row.append(cell);
+      });
+      tableFragment.append(row);
+    });
+
+    table.replaceChildren(tableFragment);
+    overlay.querySelector("header strong").textContent = `${title} · 企业横向对标`;
+    overlay.querySelector("header span").textContent = benchmarkPayload.comparison_basis;
+    overlay.querySelector("header em").textContent = totalPeerCells
+      ? `真实 ${verifiedPeerCells} · 模拟 ${simulatedPeerCells}`
+      : "等待同行数据";
+  });
+}
+
+function renderBenchmarkCompanySelector() {
+  if (!benchmarkCompanySelector || !benchmarkPayload) return;
+  const fragment = document.createDocumentFragment();
+  benchmarkPayload.companies.forEach((company) => {
+    const button = document.createElement("button");
+    const selected = selectedBenchmarkCompanies.has(company.id);
+    button.type = "button";
+    button.dataset.company = company.id;
+    button.className = selected ? "is-selected" : "";
+    button.setAttribute("aria-pressed", String(selected));
+    button.textContent = company.label;
+    if (company.id === "cmhk") {
+      button.classList.add("is-primary");
+      button.setAttribute("aria-disabled", "true");
+      button.title = "CMHK固定为主对标企业";
+    } else {
+      button.addEventListener("click", () => {
+        if (selectedBenchmarkCompanies.has(company.id)) {
+          if (selectedBenchmarkCompanies.size <= 2) return;
+          selectedBenchmarkCompanies.delete(company.id);
+        } else {
+          selectedBenchmarkCompanies.add(company.id);
+        }
+        renderBenchmarkCompanySelector();
+        renderBenchmarkOverlays();
+      });
+    }
+    fragment.append(button);
+  });
+  benchmarkCompanySelector.replaceChildren(fragment);
+  if (benchmarkCount) benchmarkCount.textContent = `${selectedBenchmarkCompanies.size}家`;
+}
+
+benchmarkToggle?.addEventListener("click", () => {
+  if (!benchmarkPayload) return;
+  const active = !document.body.classList.contains("benchmark-mode");
+  document.body.classList.toggle("benchmark-mode", active);
+  benchmarkToggle.setAttribute("aria-pressed", String(active));
+  benchmarkToggle.querySelector("span").textContent = active ? "返回经营视图" : "企业对标";
+  if (active) {
+    stopNetworkRotation();
+    [businessRotator, reachRotator, financeRotator].forEach((rotator) => rotator?.stop());
+    renderBenchmarkOverlays();
+  } else {
+    scheduleNetworkRotation();
+    [businessRotator, reachRotator, financeRotator].forEach((rotator) => rotator?.schedule());
+  }
+});
+
+if (benchmarkToggle) benchmarkToggle.disabled = true;
+fetch(document.body.dataset.benchmarkUrl || "/api/executive-company-benchmarks", { cache: "no-store" })
+  .then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
+  .then((payload) => {
+    if (!payload.ok || !Array.isArray(payload.companies)) throw new Error(payload.error || "对标数据不可用");
+    benchmarkPayload = payload;
+    document.body.classList.add("benchmark-data-ready");
+    if (benchmarkToggle) benchmarkToggle.disabled = false;
+    renderBenchmarkCompanySelector();
+    renderBenchmarkOverlays();
+  })
+  .catch(() => {
+    if (benchmarkCount) benchmarkCount.textContent = "数据未就绪";
+    document.body.classList.add("benchmark-data-error");
+  });
 
 function pauseNewsRail() {
   window.clearTimeout(newsResumeTimer);
