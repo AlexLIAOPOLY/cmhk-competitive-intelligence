@@ -465,7 +465,7 @@ h1 {
 .benchmark-inline-value small { margin: 0 !important; color: inherit !important; font-size: 6px !important; opacity: .72; }
 .benchmark-inline-value > i { position: static !important; width: auto !important; height: auto !important; display: inline !important; padding: 1px 2px; border: 1px solid rgba(241, 185, 95, .34); color: #f1c878; background: none !important; box-shadow: none !important; font-size: 5px; font-style: normal; }
 .hero-metric > .benchmark-inline-value { left: calc(100% + 10px); bottom: 5px; }
-.network-bars > div > .benchmark-inline-value { left: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.network-bars > div > .benchmark-inline-value { left: calc(100% + 52px); top: 50%; transform: translateY(-50%); }
 .detail-item > .benchmark-inline-value { right: 5px; top: 4px; }
 .revenue-block > .benchmark-inline-value { right: 4px; top: 4px; }
 .profit-kpis > div > .benchmark-inline-value { right: 4px; bottom: 3px; }
