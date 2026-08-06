@@ -118,7 +118,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=16"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=17"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=3"',
@@ -126,7 +126,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('data-benchmark-url="./executive-company-benchmarks.json"', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=7"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=8"', html)
+            self.assertNotIn("企业数据", html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
             self.assertIn('data-network-view="fixed"', html)

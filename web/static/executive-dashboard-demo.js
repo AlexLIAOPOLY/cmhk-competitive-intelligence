@@ -682,7 +682,7 @@ function renderBenchmarkCharts() {
     const filter = document.createElement("label");
     filter.className = "benchmark-metric-filter";
     const filterText = document.createElement("span");
-    filterText.textContent = "比较指标";
+    filterText.textContent = "指标";
     const select = document.createElement("select");
     select.setAttribute("aria-label", `${heading?.textContent || "当前板块"}比较指标`);
     catalog.forEach((item) => {
