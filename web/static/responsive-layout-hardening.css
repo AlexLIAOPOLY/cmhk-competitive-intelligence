@@ -1,10 +1,31 @@
-/* Keep the overview board readable on compact desktop widths. */
-@media (min-width: 761px) and (max-width: 1180px) {
+/* Keep the overview board readable on compact desktop widths, including 13-inch scaled views. */
+@media (min-width: 761px) and (max-width: 1536px) {
   .intelligence-command-board {
     display: block;
     height: auto;
     min-height: 0;
     padding: 12px;
+    overflow: hidden;
+  }
+
+  .dashboard-page .console-shell,
+  .dashboard-page .operations,
+  .dashboard-page .insight-board {
+    height: auto;
+    min-height: 0;
+  }
+
+  .dashboard-page .console-shell,
+  .dashboard-page .insight-board {
+    overflow: hidden;
+  }
+
+  .dashboard-page .insight-board {
+    display: block;
+  }
+
+  .intelligence-relation-rail {
+    margin-bottom: 12px;
   }
 
   .intelligence-domain-grid {
