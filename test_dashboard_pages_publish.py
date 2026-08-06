@@ -58,6 +58,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn('href="./executive-dashboard-demo.css?v=8"', html)
+            self.assertIn(
+                'href="./executive-responsive-hardening.css?v=1"',
+                html,
+            )
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
@@ -71,6 +75,17 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn(".panel-tabs button.is-active", css)
+            self.assertTrue((first / "executive-responsive-hardening.css").exists())
+            intelligence_html = (first / "intelligence" / "index.html").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn(
+                'href="./responsive-layout-hardening.css?v=1"',
+                intelligence_html,
+            )
+            self.assertTrue(
+                (first / "intelligence" / "responsive-layout-hardening.css").exists()
+            )
             self.assertTrue((first / ".nojekyll").exists())
 
     def test_build_site_preserves_static_intelligence_snapshot(self):

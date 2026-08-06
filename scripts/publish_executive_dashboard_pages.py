@@ -22,6 +22,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 STATIC_DIR = ROOT / "web" / "static"
 INTELLIGENCE_STATIC_DIR = STATIC_DIR / "intelligence-public"
+RESPONSIVE_LAYOUT_HARDENING = STATIC_DIR / "responsive-layout-hardening.css"
+EXECUTIVE_RESPONSIVE_HARDENING = STATIC_DIR / "executive-responsive-hardening.css"
 DATA_DIR = ROOT / "strategy_briefing"
 STATE_PATH = DATA_DIR / "dashboard_pages_publish_state.json"
 LOCK_PATH = DATA_DIR / "dashboard_pages_publish.lock"
@@ -120,6 +122,10 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
         'href="./executive-dashboard-demo.css',
     )
     html = html.replace(
+        'href="/static/executive-responsive-hardening.css',
+        'href="./executive-responsive-hardening.css',
+    )
+    html = html.replace(
         'src="/static/assets/executive-dashboard/',
         'src="./assets/executive-dashboard/',
     )
@@ -131,6 +137,10 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
     shutil.copy2(
         STATIC_DIR / "executive-dashboard-demo.css",
         destination / "executive-dashboard-demo.css",
+    )
+    shutil.copy2(
+        EXECUTIVE_RESPONSIVE_HARDENING,
+        destination / "executive-responsive-hardening.css",
     )
     script = (STATIC_DIR / "executive-dashboard-demo.js").read_text(encoding="utf-8")
     script = script.replace(
@@ -146,6 +156,20 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
         shutil.copytree(
             INTELLIGENCE_STATIC_DIR,
             destination / "intelligence",
+        )
+        intelligence_index = destination / "intelligence" / "index.html"
+        if intelligence_index.is_file():
+            intelligence_html = intelligence_index.read_text(encoding="utf-8")
+            if "responsive-layout-hardening.css" not in intelligence_html:
+                intelligence_html = intelligence_html.replace(
+                    '<link rel="stylesheet" href="./leadership-board.css">',
+                    '<link rel="stylesheet" href="./leadership-board.css">\n'
+                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=1">',
+                )
+                intelligence_index.write_text(intelligence_html, encoding="utf-8")
+        shutil.copy2(
+            RESPONSIVE_LAYOUT_HARDENING,
+            destination / "intelligence" / "responsive-layout-hardening.css",
         )
     (destination / ".nojekyll").touch()
 
