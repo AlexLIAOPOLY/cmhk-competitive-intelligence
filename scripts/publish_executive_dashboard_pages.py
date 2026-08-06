@@ -161,9 +161,10 @@ def _build_site(destination: Path) -> tuple[str, dict[str, Any]]:
         if intelligence_index.is_file():
             intelligence_html = intelligence_index.read_text(encoding="utf-8")
             if "responsive-layout-hardening.css" not in intelligence_html:
+                leadership_link = '<link rel="stylesheet" href="./leadership-board.css?v=4">'
                 intelligence_html = intelligence_html.replace(
-                    '<link rel="stylesheet" href="./leadership-board.css">',
-                    '<link rel="stylesheet" href="./leadership-board.css">\n'
+                    leadership_link,
+                    leadership_link + '\n'
                     '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=2">',
                 )
                 intelligence_index.write_text(intelligence_html, encoding="utf-8")

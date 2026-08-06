@@ -57,7 +57,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=8"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=9"', html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=3"',
                 html,
@@ -75,6 +75,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn(".panel-tabs button.is-active", css)
+            self.assertIn("EXECUTIVE COMMAND · KPI MONITORING", html)
             self.assertTrue((first / "executive-responsive-hardening.css").exists())
             intelligence_html = (first / "intelligence" / "index.html").read_text(
                 encoding="utf-8"
@@ -116,6 +117,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
 
         self.assertIn('<script src="./intelligence.js"></script>', html)
+        self.assertIn("竞争情报 · 证据研判", html)
         self.assertIn('id="intelligenceDrawerBackdrop"', html)
         self.assertIn('data-intelligence-focus', script)
         self.assertIn('function selectFocus', script)
