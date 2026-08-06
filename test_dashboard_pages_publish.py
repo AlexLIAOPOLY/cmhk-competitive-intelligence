@@ -118,7 +118,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=14"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=15"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=3"',
@@ -126,7 +126,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
             self.assertIn('data-benchmark-url="./executive-company-benchmarks.json"', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=5"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=6"', html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
             self.assertIn('data-network-view="fixed"', html)
@@ -135,8 +135,9 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("simulatedBenchmarkRecord", script)
             self.assertIn("selectedBenchmarkCompanyIds", script)
             self.assertIn("renderBenchmarkCharts", script)
-            self.assertIn("benchmark-comparison-chart", script)
+            self.assertIn("benchmark-native-chart", script)
             self.assertNotIn("company-benchmark-overlay", script)
+            self.assertNotIn("is-benchmark-chart", script)
             self.assertNotIn("benchmark-inline-value", script)
             self.assertNotIn('textContent = "SIM"', script)
             self.assertNotIn("/api/strategic-briefs", script)

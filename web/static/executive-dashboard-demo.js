@@ -59,6 +59,7 @@ const networkViews = {
 function showNetworkView(viewName) {
   const view = networkViews[viewName];
   if (!view || !networkContent) return;
+  clearBenchmarkCharts();
 
   networkTabs.forEach((tab) => {
     const active = tab.dataset.networkView === viewName;
@@ -573,8 +574,12 @@ function benchmarkNumericValue(record) {
 }
 
 function clearBenchmarkCharts() {
-  document.querySelectorAll(".benchmark-comparison-chart, .benchmark-panel-company").forEach((item) => item.remove());
-  panels.forEach((panel) => panel.classList.remove("is-benchmark-chart"));
+  document.querySelectorAll(".benchmark-native-chart, .benchmark-panel-company").forEach((item) => item.remove());
+  document.querySelectorAll(".has-benchmark-native-chart").forEach((target) => {
+    target.classList.remove("has-benchmark-native-chart");
+    if (target.dataset.benchmarkWasHidden === "true") target.hidden = true;
+    delete target.dataset.benchmarkWasHidden;
+  });
   document.body.removeAttribute("data-benchmark-companies");
 }
 
@@ -585,11 +590,13 @@ function renderBenchmarkCharts() {
   const companyIds = ["cmhk", ...selectedBenchmarkCompanyIds];
   document.body.dataset.benchmarkCompanies = companyIds.join(",");
 
-  panels.forEach((panel) => {
-    const metrics = visibleDetailMetrics(panel)
+  const targetSelectors = [".network-bars", ".business-detail", ".reach-ranking", ".revenue-compare"];
+  panels.forEach((panel, panelIndex) => {
+    const metric = visibleDetailMetrics(panel)
       .filter((metric) => benchmarkNumericValue(benchmarkRecord("cmhk", metric)) !== null)
-      .slice(0, 2);
-    if (!metrics.length) return;
+      .at(0);
+    const target = panel.querySelector(targetSelectors[panelIndex]);
+    if (!metric || !target) return;
 
     const heading = panel.querySelector(".panel-heading h2");
     if (heading) {
@@ -600,60 +607,44 @@ function renderBenchmarkCharts() {
     }
 
     const chart = document.createElement("section");
-    chart.className = "benchmark-comparison-chart";
+    chart.className = "benchmark-native-chart";
     chart.setAttribute("aria-label", `${heading?.textContent || "当前板块"}多企业指标对比`);
 
-    const chartHead = document.createElement("header");
-    const title = document.createElement("strong");
-    title.textContent = "同指标企业对比";
-    const note = document.createElement("span");
-    note.textContent = "CMHK基准 · 公开值优先 · 缺项采用估算";
-    chartHead.append(title, note);
-    chart.append(chartHead);
+    const records = companyIds.map((companyId) => ({
+      companyId,
+      company: benchmarkPayload.companies.find((item) => item.id === companyId),
+      record: benchmarkRecord(companyId, metric)
+    }));
+    const maximum = Math.max(1, ...records.map(({ record }) => Math.abs(benchmarkNumericValue(record) || 0)));
+    const title = document.createElement("h3");
+    title.textContent = metric.label;
+    const unit = document.createElement("small");
+    unit.textContent = records.find(({ record }) => record?.unit)?.record?.unit || metric.unit || "";
+    title.append(unit);
+    chart.append(title);
 
-    const groups = document.createElement("div");
-    groups.className = "benchmark-chart-groups";
-
-    metrics.forEach((metric) => {
-      const records = companyIds.map((companyId) => ({
-        companyId,
-        company: benchmarkPayload.companies.find((item) => item.id === companyId),
-        record: benchmarkRecord(companyId, metric)
-      }));
-      const maximum = Math.max(1, ...records.map(({ record }) => Math.abs(benchmarkNumericValue(record) || 0)));
-      const group = document.createElement("section");
-      group.className = "benchmark-chart-group";
-
-      const groupTitle = document.createElement("h3");
-      groupTitle.textContent = metric.label;
-      const unit = document.createElement("small");
-      unit.textContent = records.find(({ record }) => record?.unit)?.record?.unit || metric.unit || "";
-      groupTitle.append(unit);
-      group.append(groupTitle);
-
-      records.forEach(({ companyId, company, record }) => {
-        const numericValue = benchmarkNumericValue(record);
-        const row = document.createElement("div");
-        row.className = "benchmark-chart-row";
-        row.dataset.company = companyId;
-        row.title = [record?.period, record?.period_end, record?.source_label].filter(Boolean).join(" · ");
-
-        const label = document.createElement("span");
-        label.textContent = company?.label || companyId;
-        const track = document.createElement("i");
-        const bar = document.createElement("b");
-        bar.style.setProperty("--benchmark-value", `${numericValue === null ? 0 : Math.max(3, Math.abs(numericValue) / maximum * 100)}%`);
-        track.append(bar);
-        const value = document.createElement("strong");
-        value.textContent = numericValue === null ? "—" : formatBenchmarkValue(record.value);
-        row.append(label, track, value);
-        group.append(row);
-      });
-      groups.append(group);
+    records.forEach(({ companyId, company, record }) => {
+      const numericValue = benchmarkNumericValue(record);
+      const row = document.createElement("div");
+      row.className = "benchmark-chart-row";
+      row.dataset.company = companyId;
+      row.title = [record?.period, record?.period_end, record?.source_label].filter(Boolean).join(" · ");
+      const label = document.createElement("span");
+      label.textContent = company?.label || companyId;
+      const track = document.createElement("i");
+      const bar = document.createElement("b");
+      bar.style.setProperty("--benchmark-value", `${numericValue === null ? 0 : Math.max(3, Math.abs(numericValue) / maximum * 100)}%`);
+      track.append(bar);
+      const value = document.createElement("strong");
+      value.textContent = numericValue === null ? "—" : formatBenchmarkValue(record.value);
+      row.append(label, track, value);
+      chart.append(row);
     });
-    chart.append(groups);
-    panel.append(chart);
-    panel.classList.add("is-benchmark-chart");
+
+    target.dataset.benchmarkWasHidden = String(target.hidden);
+    target.hidden = false;
+    target.classList.add("has-benchmark-native-chart");
+    target.append(chart);
   });
 }
 
