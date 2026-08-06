@@ -1,31 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-08-06T16:32:59+08:00",
+  "generated_at": "2026-08-04T10:25:13+08:00",
   "items": [
-    {
-      "id": "NEWS-BC20B8FF064970",
-      "title": "香港加快无人驾驶应用发展",
-      "summary": "香港政府加快无人驾驶技术应用，以满足市民生活需要，推动智慧交通发展。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBhck1waV95cExtWlQzaE90dm5zRjdVR0dzcHBMeUJuVkE1a0RtRW9iVFFneWVnR2MyR0hEb05NT2M5elgtN0pUWldNa3dvYlp2VW54bGNMeXNVZFlncWJSZi1zUFJkTXdnU3dNTmNicEV6dnFWYk5KRjMxQU0?oc=5",
-      "published_at": "2026-08-06T11:19:26+08:00"
-    },
-    {
-      "id": "NEWS-43470AD7B13C17",
-      "title": "香港重视创新吸引新加坡名校合作",
-      "summary": "香港特区政府重视创新，吸引新加坡名校来港合作，推动本地创新生态发展。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBGbHdjY21maHl2cGVjQzR5bDJPbVc1ZjFCN1ZwN3VQZnJtQ0tWbUkxNWx0Ni12aW1DSXJqQTR2OVpONWEwQmJWV210R2tHNWRiS2pTd2VyT3lhOWVObDNFNklMWHhlX0dIWU9oQVFPUVFUYkJr?oc=5",
-      "published_at": "2026-08-06T10:15:00+08:00"
-    },
-    {
-      "id": "NEWS-B7CCA6CBA2F01E",
-      "title": "香港6月零售额升4.6% 增长延续14个月",
-      "summary": "香港6月零售额按年上升4.6%，连续14个月录得增长，反映经济持续扩张及访港旅客稳步增加。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3362917/hong-kong-retail-sales-rise-46-june-growth-streak-extends-14-months",
-      "published_at": "2026-08-04T18:21:00+08:00"
-    },
     {
       "id": "NEWS-5C8E24DA9986F4",
       "title": "3香港推教育机构专属流动通讯服务平台",
@@ -35,12 +11,20 @@
       "published_at": "2026-08-03T18:25:37+08:00"
     },
     {
+      "id": "NEWS-A158C76EB3E89E",
+      "title": "“算力金属”，价格狂飙",
+      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
+      "published_at": "2026-08-03"
+    },
+    {
       "id": "NEWS-5EEF4D777E7D90",
       "title": "中国移动香港荣膺Ookla Speedtest七项国际奖项",
       "summary": "中国移动香港获得Ookla Speedtest七项网络国际权威奖项及认证。",
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
-      "published_at": "2026-08-03T08:43:00+08:00"
+      "published_at": "2026-08-03"
     },
     {
       "id": "NEWS-0CA9B2A1D2BFEB",
@@ -48,15 +32,7 @@
       "summary": "香港机场岛进行智慧出行测试，探索未来交通模式，推动香港智慧出行发展。",
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNVWdHQ1ZJa1NOWW1yeWJwRGJXRTZReXZxc09oNHYyUjBMQkJzZFQ5alFHdE5tWDJVRzdjd1FyaE9SalYzbndBLWRPMHlhOUJ2dWFONV9NZWlfN29mSDljUkRkendueGFLOUdYbHRtRzVyTlNOWlNnTlpsRVY0Ymd4WG50N1RoYU1idTRnVm5FLV9VZERCSG4tN2lNNzY4Q0FfTW8xOWlSN2VILWZub21Nc0lfenp0eFlmQW9CaVZ1UkdWaDFNYVNJYjVCQ19YaDBxak9uM2plQUU5WUpKY2pYQmlvQk5oSlZqWkliS0NyQVpOUW9fX2RhT1g4SjFYcG9FUVBheWFhT0x0X0V2ZGkyWVdaejFnN3NxSVpTbEZhUmxqMS1qem1JSGJtd3RkdmQ4TElZOUxtRGJqNmp1MlRyY3N0TEdsdmFmaklQakIwdFhTZ1ViMVoxR3kyNDE?oc=5",
-      "published_at": "2026-08-03T08:00:12+08:00"
-    },
-    {
-      "id": "NEWS-A158C76EB3E89E",
-      "title": "“算力金属”，价格狂飙",
-      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
-      "published_at": "2026-08-03T08:00:00+08:00"
+      "published_at": "2026-08-03"
     },
     {
       "id": "NEWS-93E818ABE49C4B",
@@ -64,8 +40,32 @@
       "summary": "滴滴香港筹备提交网约车牌照申请，提升合规管理，并向用户推出夏日出行优惠。",
       "category": "政策监管",
       "source_url": "https://www.am730.com.hk/article/1045256",
-      "published_at": "2026-08-03T08:00:00+08:00"
+      "published_at": "2026-08-03"
+    },
+    {
+      "id": "NEWS-E4D59059AC6C5D",
+      "title": "金管局维持基本利率4厘不变",
+      "summary": "香港金管局宣布维持基本利率在4厘水平不变。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
+      "published_at": "2026-07-30"
+    },
+    {
+      "id": "NEWS-42A8A8BD467BFE",
+      "title": "商汤大装置持续拓展产业生态边界 集中落地多项重磅战略合作",
+      "summary": "商汤大装置与国信数算签署全国一体化算力网试验场战略合作，联合举办AI基础设施创新发展论坛。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.leiphone.com/category/industrynews/sO1Q58AgzvWr2mFJ.html",
+      "published_at": "2026-07-29"
+    },
+    {
+      "id": "NEWS-FAB947EEC47797",
+      "title": "工信部等七部门：启动2026年首批工业和信息化领域创新任务揭榜挂帅工作",
+      "summary": "工信部等七部门启动2026年工业和信息化领域创新任务揭榜挂帅，布局24个专题。",
+      "category": "政策监管",
+      "source_url": "https://www.msn.cn/zh-cn/news/other/%E5%B7%A5%E4%BF%A1%E9%83%A8%E7%AD%89%E4%B8%83%E9%83%A8%E9%97%A8-%E5%90%AF%E5%8A%A82026%E5%B9%B4%E9%A6%96%E6%89%B9%E5%B7%A5%E4%B8%9A%E5%92%8C%E4%BF%A1%E6%81%AF%E5%8C%96%E9%A2%86%E5%9F%9F%E5%88%9B%E6%96%B0%E4%BB%BB%E5%8A%A1%E6%8F%AD%E6%A6%9C%E6%8C%82%E5%B8%85%E5%B7%A5%E4%BD%9C/ar-AA28WMXs",
+      "published_at": "2026-07-29"
     }
   ],
-  "site_version": "f9655c17eee4d0239afb05df38e4d983e21ef59abe845458470a654a0574718d"
+  "site_version": "9a5b3b016bffd8e672edbefdb5d1990bc99959a9346e5f70f81d67a6113d575d"
 }
