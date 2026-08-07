@@ -6665,6 +6665,13 @@ els.outputTabs.forEach((button) => {
 
 function openReportLibrary() {
   if (!els.outputArea) return;
+  // The fitted dashboard shell is transformed on desktop, which creates a
+  // stacking context below the page backdrop. Mount the drawer at the body
+  // level so it remains a true viewport overlay instead of being blurred with
+  // the dashboard behind it.
+  if (els.outputArea.parentElement !== document.body) {
+    document.body.appendChild(els.outputArea);
+  }
   els.outputArea.hidden = false;
   document.body.classList.add("report-library-open");
   window.requestAnimationFrame(() => {
