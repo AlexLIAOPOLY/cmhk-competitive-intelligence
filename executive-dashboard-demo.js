@@ -662,15 +662,16 @@ function createBenchmarkMetricPicker(panelIndex, catalog, metric, headingText) {
   const trigger = document.createElement("button");
   trigger.type = "button";
   trigger.className = "benchmark-metric-trigger";
-  trigger.setAttribute("aria-label", `${headingText}比较指标：${metric.label}`);
+  trigger.setAttribute("aria-label", `选择${headingText}比较指标，当前为${metric.label}`);
   trigger.setAttribute("aria-haspopup", "listbox");
   trigger.setAttribute("aria-expanded", "false");
 
   const current = document.createElement("span");
+  current.className = "benchmark-metric-current";
   current.textContent = metric.label;
   const chevron = document.createElement("i");
   chevron.setAttribute("aria-hidden", "true");
-  trigger.append(current, chevron);
+  trigger.append(chevron);
 
   const menu = document.createElement("div");
   menu.className = "benchmark-metric-menu";
@@ -721,7 +722,7 @@ function createBenchmarkMetricPicker(panelIndex, catalog, metric, headingText) {
     options[nextIndex]?.focus();
   });
 
-  picker.append(trigger, menu);
+  picker.append(current, trigger, menu);
   return picker;
 }
 
