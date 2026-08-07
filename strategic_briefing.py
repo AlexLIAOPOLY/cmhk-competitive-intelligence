@@ -1250,11 +1250,11 @@ def _send_scan_message(
         (item for item in new_items if isinstance(item, dict)),
         key=display_priority,
     )[:5]
-    period_name = "晨间" if "晨间" in slot_label else "午后"
+    period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
     title = (
-        f"{period_name}竞争情报｜{candidate_count}条新增动态待审核"
+        f"{period_name}｜{candidate_count}条新增"
         if candidate_count
-        else f"{period_name}竞争情报｜本轮无新增动态"
+        else f"{period_name}｜本轮无新增"
     )
     window_start = (
         (now - timedelta(days=1)).replace(hour=14, minute=0, second=0, microsecond=0)

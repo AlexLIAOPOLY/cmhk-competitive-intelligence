@@ -736,7 +736,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
         card = json.loads(lark_api.call_args.kwargs["data"]["content"])
         rendered = json.dumps(card, ensure_ascii=False)
-        self.assertIn("晨间竞争情报｜6条新增动态待审核", rendered)
+        self.assertIn("CMHK战略早茶｜6条新增", rendered)
         self.assertIn("香港竞对动态5", rendered)
         self.assertNotIn("香港竞对动态6", rendered)
         self.assertIn("另有 1 条候选", rendered)
