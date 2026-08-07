@@ -597,7 +597,6 @@ function benchmarkMetricCatalog(panelIndex) {
 function benchmarkChartKind(panelIndex, metric) {
   const descriptor = `${metric.label}${metric.unit}`;
   if (/%|率|覆盖|满意|认知|指数|份额|时效/.test(descriptor)) return "lollipop";
-  if (panelIndex === 3) return "columns";
   return "bars";
 }
 
@@ -733,6 +732,8 @@ function renderBenchmarkCharts() {
 
     const chart = document.createElement("section");
     chart.className = `benchmark-native-chart benchmark-panel-view is-${benchmarkChartKind(panelIndex, metric)}`;
+    chart.classList.toggle("is-sparse", companyIds.length <= 2);
+    chart.classList.toggle("is-dense", companyIds.length >= 4);
     chart.style.setProperty("--benchmark-company-count", String(companyIds.length));
     chart.setAttribute("aria-label", `${heading?.textContent || "当前板块"}多企业指标对比`);
 
