@@ -13444,6 +13444,261 @@ body.dashboard-page {
   background: rgba(131, 38, 38, .22);
 }
 
+/* Log and audit surfaces: complete dark-theme coverage v252 */
+.dashboard-page #logModal {
+  --log-surface-0: #061923;
+  --log-surface-1: #071f2a;
+  --log-surface-2: #0a2632;
+  --log-surface-3: #0d303e;
+  --log-surface-hover: #123847;
+  --log-border: #294f5e;
+  --log-border-strong: #3b7081;
+  --log-text: #dcecef;
+  --log-text-strong: #edf8fa;
+  --log-text-muted: #91adb7;
+  --log-accent: #70c4d7;
+  color-scheme: dark;
+}
+
+.dashboard-page #logModal .agent-audit-list-heading,
+.dashboard-page #logModal .log-history-layout .agent-trace-card,
+.dashboard-page #logModal .log-history-layout .agent-trace-card.audit-status-running,
+.dashboard-page #logModal .agent-audit-timeline,
+.dashboard-page #logModal .agent-quality-details,
+.dashboard-page #logModal .agent-quality-loading,
+.dashboard-page #logModal .agent-quality-empty,
+.dashboard-page #logModal .agent-quality-records,
+.dashboard-page #logModal .agent-quality-row,
+.dashboard-page #logModal .crawl-raw-log > .agent-audit-data,
+.dashboard-page #logModal .agent-audit-empty,
+.dashboard-page #logModal .task-tracking-placeholder {
+  color: var(--log-text);
+  background: var(--log-surface-1);
+}
+
+.dashboard-page #logModal .agent-audit-list-heading,
+.dashboard-page #logModal .log-history-layout .agent-trace-card,
+.dashboard-page #logModal .agent-audit-grid,
+.dashboard-page #logModal .agent-audit-grid > section + section,
+.dashboard-page #logModal .agent-audit-event,
+.dashboard-page #logModal .agent-quality-overview,
+.dashboard-page #logModal .agent-quality-overview > div,
+.dashboard-page #logModal .agent-quality-toolbar,
+.dashboard-page #logModal .agent-quality-table-head,
+.dashboard-page #logModal .agent-quality-row,
+.dashboard-page #logModal .agent-quality-row-body,
+.dashboard-page #logModal .agent-audit-empty {
+  border-color: var(--log-border);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-card::before {
+  border-color: var(--log-surface-1);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-card::after {
+  background: var(--log-border-strong);
+}
+
+.dashboard-page #logModal .agent-audit-list-heading strong,
+.dashboard-page #logModal .log-history-layout .agent-trace-title strong,
+.dashboard-page #logModal .agent-audit-event strong,
+.dashboard-page #logModal .agent-audit-kv dd,
+.dashboard-page #logModal .agent-audit-sample dd,
+.dashboard-page #logModal .agent-audit-sample header strong,
+.dashboard-page #logModal .agent-quality-overview strong,
+.dashboard-page #logModal .agent-quality-context strong,
+.dashboard-page #logModal .agent-quality-cell--identity strong,
+.dashboard-page #logModal .agent-quality-cell--source strong,
+.dashboard-page #logModal .agent-quality-row-body p,
+.dashboard-page #logModal .agent-quality-row-body ul,
+.dashboard-page #logModal .agent-quality-metrics dd,
+.dashboard-page #logModal .task-tracking-placeholder strong {
+  color: var(--log-text-strong);
+}
+
+.dashboard-page #logModal .agent-audit-list-heading span,
+.dashboard-page #logModal .agent-audit-list-heading em,
+.dashboard-page #logModal .log-history-layout .agent-trace-title time,
+.dashboard-page #logModal .agent-audit-label,
+.dashboard-page #logModal .log-history-layout .agent-trace-metrics span,
+.dashboard-page #logModal .agent-audit-event > time,
+.dashboard-page #logModal .agent-audit-kv dt,
+.dashboard-page #logModal .agent-audit-sample dt,
+.dashboard-page #logModal .agent-audit-sample header span,
+.dashboard-page #logModal .audit-empty,
+.dashboard-page #logModal .audit-more,
+.dashboard-page #logModal .agent-quality-details > summary > span:last-child,
+.dashboard-page #logModal .agent-quality-overview span,
+.dashboard-page #logModal .agent-quality-context span,
+.dashboard-page #logModal .agent-quality-toolbar label,
+.dashboard-page #logModal .agent-quality-visible,
+.dashboard-page #logModal .agent-quality-table-head,
+.dashboard-page #logModal .agent-quality-cell--identity span,
+.dashboard-page #logModal .agent-quality-cell--source span,
+.dashboard-page #logModal .agent-quality-cell--score span,
+.dashboard-page #logModal .agent-quality-row-body h5,
+.dashboard-page #logModal .agent-quality-note,
+.dashboard-page #logModal .agent-quality-metrics dt,
+.dashboard-page #logModal .task-tracking-placeholder p {
+  color: var(--log-text-muted) !important;
+}
+
+.dashboard-page #logModal .agent-audit-grid p,
+.dashboard-page #logModal .log-history-layout .agent-trace-message,
+.dashboard-page #logModal .agent-audit-data,
+.dashboard-page #logModal .agent-quality-cell--value {
+  color: var(--log-text);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-step,
+.dashboard-page #logModal .log-history-layout .agent-trace-metrics b,
+.dashboard-page #logModal .agent-audit-event-heading > span,
+.dashboard-page #logModal .agent-audit-tool,
+.dashboard-page #logModal .agent-quality-details > summary,
+.dashboard-page #logModal .agent-quality-source {
+  color: var(--log-accent);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-details details,
+.dashboard-page #logModal .crawl-raw-log,
+.dashboard-page #logModal .agent-quality-details {
+  border-color: var(--log-border-strong);
+  background: var(--log-surface-2);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-details summary,
+.dashboard-page #logModal .crawl-raw-log summary,
+.dashboard-page #logModal .agent-quality-details > summary {
+  color: var(--log-accent);
+  background: var(--log-surface-3);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-details summary:hover,
+.dashboard-page #logModal .crawl-raw-log summary:hover,
+.dashboard-page #logModal .agent-quality-details > summary:hover,
+.dashboard-page #logModal .agent-quality-row-summary:hover {
+  background: var(--log-surface-hover);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-details summary small,
+.dashboard-page #logModal .crawl-raw-log summary small {
+  color: var(--log-text-muted);
+}
+
+.dashboard-page #logModal .agent-audit-timeline,
+.dashboard-page #logModal .agent-quality-row[open],
+.dashboard-page #logModal .agent-quality-row-body {
+  background: var(--log-surface-2);
+}
+
+.dashboard-page #logModal .agent-audit-sample,
+.dashboard-page #logModal .agent-quality-overview,
+.dashboard-page #logModal .agent-quality-table-head,
+.dashboard-page #logModal .agent-quality-metrics div,
+.dashboard-page #logModal .agent-quality-next {
+  background: var(--log-surface-3);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-technical-details pre,
+.dashboard-page #logModal .crawl-raw-log pre {
+  border-color: var(--log-border);
+  color: #b9d2da;
+  background: var(--log-surface-0);
+}
+
+.dashboard-page #logModal .agent-quality-toolbar input,
+.dashboard-page #logModal .agent-quality-toolbar select {
+  border-color: var(--log-border-strong);
+  color: var(--log-text-strong);
+  background: var(--log-surface-0);
+}
+
+.dashboard-page #logModal .agent-quality-toolbar input::placeholder {
+  color: #7897a3;
+}
+
+.dashboard-page #logModal .agent-quality-toolbar select option {
+  color: var(--log-text-strong);
+  background: var(--log-surface-1);
+}
+
+.dashboard-page #logModal .agent-quality-source {
+  background: rgba(48, 145, 172, .2);
+}
+
+.dashboard-page #logModal .agent-quality-source.is-missing {
+  color: #ffaaa3;
+  background: rgba(151, 48, 48, .25);
+}
+
+.dashboard-page #logModal .agent-quality-check.is-pass,
+.dashboard-page #logModal .agent-quality-decision--accepted {
+  color: #72ddb0;
+  background: rgba(25, 119, 81, .26);
+}
+
+.dashboard-page #logModal .agent-quality-check.is-fail,
+.dashboard-page #logModal .agent-quality-decision--rejected {
+  color: #ff958d;
+  background: rgba(151, 48, 48, .25);
+}
+
+.dashboard-page #logModal .agent-quality-decision--review {
+  color: #ffd27b;
+  background: rgba(151, 94, 12, .28);
+}
+
+.dashboard-page #logModal .agent-quality-decision--unknown {
+  color: #b5cbd2;
+  background: #183846;
+}
+
+.dashboard-page #logModal .agent-quality-score { color: #72ddb0; }
+.dashboard-page #logModal .agent-quality-score--review { color: #ffd27b; }
+.dashboard-page #logModal .agent-quality-score--rejected { color: #ff958d; }
+.dashboard-page #logModal .agent-quality-score--unknown { color: #91adb7; }
+
+.dashboard-page #logModal .log-history-layout .agent-trace-badge.audit-status-running {
+  color: #ffd27b;
+  background: rgba(151, 94, 12, .28);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-badge.audit-status-done {
+  color: #72ddb0;
+  background: rgba(25, 119, 81, .26);
+}
+
+.dashboard-page #logModal .log-history-layout .agent-trace-badge.audit-status-attention {
+  color: #ff958d;
+  background: rgba(151, 48, 48, .25);
+}
+
+.dashboard-page #logModal .agent-audit-sample header {
+  background: transparent;
+}
+
+.dashboard-page #logModal .log-viewer,
+.dashboard-page #logModal .log-box,
+.dashboard-page #logModal .agent-quality-records,
+.dashboard-page #logModal pre {
+  scrollbar-color: #3d7182 var(--log-surface-0);
+}
+
+.dashboard-page #logModal ::-webkit-scrollbar-track {
+  background: var(--log-surface-0);
+}
+
+.dashboard-page #logModal ::-webkit-scrollbar-thumb {
+  border: 2px solid var(--log-surface-0);
+  background: #3d7182;
+}
+
+@media (max-width: 980px) {
+  .dashboard-page #logModal .agent-audit-grid > section + section {
+    border-top-color: var(--log-border);
+  }
+}
+
 .dashboard-page #aiSettingsModal {
   background: rgba(1, 10, 17, .76);
   backdrop-filter: blur(7px) saturate(.8);
