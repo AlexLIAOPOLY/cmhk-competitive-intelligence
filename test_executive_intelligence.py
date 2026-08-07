@@ -104,6 +104,11 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         macro = {focus["id"]: focus for focus in domains["macro"]["focuses"]}
         name_sets = {tuple(item["name"] for item in focus["items"]) for focus in macro.values()}
         self.assertEqual(len(name_sets), 4)
+        self.assertEqual(macro["governance"]["visual"], "governance")
+        self.assertEqual(
+            [item["name"] for item in macro["governance"]["items"]],
+            ["电信业投资", "电讯投诉", "5G人口覆盖", "5G相关频谱"],
+        )
 
     def test_frontend_payload_exposes_ai_gate_and_refresh_status(self):
         self.assertIn("refresh", self.snapshot)

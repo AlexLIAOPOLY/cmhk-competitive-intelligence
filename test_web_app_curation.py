@@ -125,8 +125,8 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('grid.innerHTML = domains.map(renderDomainCard).join("")', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=250"', html)
-        self.assertIn('src="/static/app.js?v=253"', html)
+        self.assertIn('href="/static/styles.css?v=251"', html)
+        self.assertIn('src="/static/app.js?v=254"', html)
         self.assertIn('class="intelligence-focus-tabs"', app)
         self.assertIn('class="intelligence-entity-focus"', app)
         self.assertIn('entity.ai_summary?.analysis || entity.analysis', app)
@@ -3504,6 +3504,19 @@ class IntelligenceEntityScrollTests(unittest.TestCase):
         self.assertIn('grid-template-rows: auto auto minmax(44px, 1fr);', styles)
         self.assertIn('overflow-y: auto;', styles)
         self.assertIn('overscroll-behavior: contain;', styles)
+
+    def test_macro_governance_uses_mixed_unit_visual_encodings(self) -> None:
+        app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (Path(__file__).parent / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('if (visual === "governance")', app)
+        self.assertIn('class="intelligence-viz intelligence-viz-governance"', app)
+        self.assertIn('每格代表 10 亿港元', app)
+        self.assertIn('每格代表 100 宗投诉', app)
+        self.assertIn('人口覆盖程度', app)
+        self.assertIn('每格代表 1,000 MHz', app)
+        self.assertIn('.intelligence-viz-governance {', styles)
+        self.assertIn('background: conic-gradient(', styles)
 
 
 if __name__ == "__main__":

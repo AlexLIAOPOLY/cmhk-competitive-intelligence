@@ -7828,6 +7828,39 @@ document.addEventListener("keydown", (event) => {
         </li>`).join("")}</ul>`;
     }
 
+    if (visual === "governance") {
+      const profiles = {
+        "电信业投资": { kind: "investment", step: 10, caption: "每格代表 10 亿港元" },
+        "电讯投诉": { kind: "complaints", step: 100, caption: "每格代表 100 宗投诉" },
+        "5G人口覆盖": { kind: "coverage", caption: "人口覆盖程度" },
+        "5G相关频谱": { kind: "spectrum", step: 1000, caption: "每格代表 1,000 MHz" },
+      };
+      return `<div class="intelligence-viz intelligence-viz-governance" aria-label="${safe(focus.label)}监管态势图">${items.map((item, index) => {
+        const numeric = Math.max(0, Number(item.value) || 0);
+        const profile = profiles[item.name] || { kind: "metric", step: Math.max(numeric, 1), caption: safe(item.detail) };
+        let graphic = "";
+        if (profile.kind === "coverage") {
+          const progress = Math.min(100, numeric);
+          graphic = `<span class="governance-ring" style="--governance-progress:${progress.toFixed(1)}" aria-hidden="true"><i></i><b>${formatValue(item.value)}<small>${safe(item.unit)}</small></b></span>`;
+        } else {
+          const step = Number(profile.step) || 1;
+          const segmentCount = Math.max(1, Math.min(10, Math.ceil(numeric / step)));
+          const segments = Array.from({ length: segmentCount }, (_, segmentIndex) => {
+            const remaining = numeric - segmentIndex * step;
+            const fill = Math.max(0, Math.min(100, remaining / step * 100));
+            return `<i style="--segment-fill:${fill.toFixed(1)}%"></i>`;
+          }).join("");
+          graphic = `<span class="governance-segments governance-segments-${safe(profile.kind)}" aria-hidden="true">${segments}</span>`;
+        }
+        return `<div ${entityAttributes(item, index)} class="intelligence-viz-entity governance-indicator governance-indicator-${safe(profile.kind)} ${index === selectedIndex ? "is-selected" : ""}">
+          <span class="governance-indicator-label">${safe(item.name)}</span>
+          <strong>${formatValue(item.value)}<i>${safe(item.unit)}</i></strong>
+          <div class="governance-indicator-graphic">${graphic}</div>
+          <small>${safe(profile.caption)}</small>
+        </div>`;
+      }).join("")}</div>`;
+    }
+
     if (visual === "kpis") return `<div class="intelligence-viz intelligence-viz-kpis" aria-label="${safe(focus.label)}关键指标">${items.map((item, index) => `
       <div ${entityAttributes(item, index)} class="intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}" style="--kpi-index:${index}">
         <span>${renderScrollingLabel(item.name)}</span>

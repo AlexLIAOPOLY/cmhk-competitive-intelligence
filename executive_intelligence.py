@@ -842,7 +842,8 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         else:
             insight = "投资、投诉、覆盖与频谱共同约束网络竞争：投入需转化为体验，投诉反映服务风险。"
         focuses.append({
-            "id": spec["id"], "label": spec["label"], "visual": "kpis",
+            "id": spec["id"], "label": spec["label"],
+            "visual": "governance" if spec["id"] == "governance" else "kpis",
             "metric": {"value": lead["value"], "unit": lead["unit"], "label": spec["title"]},
             "context": f"{len(items)} 项最新官方指标",
             "insight": insight,
