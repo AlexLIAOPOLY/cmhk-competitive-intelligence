@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-07T15:17:23+08:00",
+  "generated_at": "2026-08-07T15:22:25+08:00",
   "items": [
     {
       "id": "NEWS-6AF945884F17BD",
@@ -9,6 +9,14 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxPbmJ0U0RqUWc3MXpZd2VLNV9sQW5EUy1iWlpNVFEyMmpZR0o2MVhMSDVnUVdhaHVpNXRnQlp3Ylotc0ZXZjdSRGFkSjM1VEpOcUFGcFl5V3dJTm04VEs3dU9zcVJPY1ZxS250ZE1tX0JSc3RmQXpKSEVhZzRKbkNhWVE3OElaMTdVY1RaWVlENEs0bHFUU1M4QTNSQ1FoN3czRWNvekFPeDh0QXRoQmppUmllRURRbkYwMWhYSWhZbVNiSU9zT1hiNzhQT0tvMkpuMW1oQW5pNTVtQXpwX3MwS25ubExidjRDS2FZcVluaGZmUzdhUU9PWVN2d3Bhb3ROc2o1QXFGVktxZzZQZlM5WFBhV1ByYTBjc2E4WTdOUjFVSFVzYTNpTU5MTWlfTWxJTjltWFVnRjBtaGZpZW1sVHpZNl9BYlF3YmdTeUVBSDV6aDRJNzRUcHB1bUdraWk1WkloQ05xdDUxSGdRNjRaS0F3Sm1zb3JPTDZvZjR1TlRIaHJqSUNaVnVmc0VBU0JBOURId2oxb1lWZ1pD?oc=5",
       "published_at": "2026-08-07T13:00:24+08:00"
+    },
+    {
+      "id": "NEWS-224C4A67BC9494",
+      "title": "疫情后旅客消费模式转变 姚柏良倡湾区协作打造一程多站旅游路线",
+      "summary": "姚柏良建议香港加强与大湾区协作，打造一程多站旅游路线以吸引旅客延长停留。",
+      "category": "竞对动态",
+      "source_url": "https://www.am730.com.hk/article/1046156",
+      "published_at": "2026-08-07T08:01:00+08:00"
     },
     {
       "id": "NEWS-7611603AFDB42E",
@@ -57,15 +65,7 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
       "published_at": "2026-08-03T08:43:00+08:00"
-    },
-    {
-      "id": "NEWS-0CA9B2A1D2BFEB",
-      "title": "机场岛测试 揭开香港智慧出行新纪元",
-      "summary": "香港机场岛进行智慧出行测试，探索未来交通模式，推动香港智慧出行发展。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNVWdHQ1ZJa1NOWW1yeWJwRGJXRTZReXZxc09oNHYyUjBMQkJzZFQ5alFHdE5tWDJVRzdjd1FyaE9SalYzbndBLWRPMHlhOUJ2dWFONV9NZWlfN29mSDljUkRkendueGFLOUdYbHRtRzVyTlNOWlNnTlpsRVY0Ymd4WG50N1RoYU1idTRnVm5FLV9VZERCSG4tN2lNNzY4Q0FfTW8xOWlSN2VILWZub21Nc0lfenp0eFlmQW9CaVZ1UkdWaDFNYVNJYjVCQ19YaDBxak9uM2plQUU5WUpKY2pYQmlvQk5oSlZqWkliS0NyQVpOUW9fX2RhT1g4SjFYcG9FUVBheWFhT0x0X0V2ZGkyWVdaejFnN3NxSVpTbEZhUmxqMS1qem1JSGJtd3RkdmQ4TElZOUxtRGJqNmp1MlRyY3N0TEdsdmFmaklQakIwdFhTZ1ViMVoxR3kyNDE?oc=5",
-      "published_at": "2026-08-03T08:00:12+08:00"
     }
   ],
-  "site_version": "f908433613913e47f548eb8c16c48e2aa91cc900c7d5df1b5522dde022629c09"
+  "site_version": "1acc887856c86e681cae10a59a0947d60442c956960b943bbae535651c146f37"
 }
