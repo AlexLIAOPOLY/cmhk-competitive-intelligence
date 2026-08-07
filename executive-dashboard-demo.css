@@ -216,7 +216,7 @@ h1 {
   border-radius: 2px;
   color: #55dfff;
   background: rgba(38, 175, 220, .1);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
 }
 .news-item:nth-child(2n) > div span { color: var(--mint); background: rgba(86, 227, 178, .08); }
@@ -1953,9 +1953,9 @@ h1 {
   .benchmark-company-selector { gap: 2px; }
   .benchmark-company-selector button { min-width: 0; padding-inline: 5px; font-size: 7px; }
   .benchmark-panel-company { font-size: 7px; }
-  .benchmark-chart-row { grid-template-columns: 46px minmax(38px, 1fr) 54px; min-height: 14px; gap: 5px; }
-  .benchmark-chart-row > span { font-size: 8px; }
-  .benchmark-chart-row > strong { font-size: 9px; }
+  .benchmark-chart-row { grid-template-columns: 54px minmax(38px, 1fr) 56px; min-height: 16px; gap: 5px; }
+  .benchmark-chart-row > span { font-size: 9px; }
+  .benchmark-chart-row > strong { font-size: 10px; }
   .panel-heading {
     height: 84px;
     min-height: 84px;
