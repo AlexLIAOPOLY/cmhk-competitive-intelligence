@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>战略竞对情报驾驶舱</title>
-  <link rel="stylesheet" href="/static/styles.css?v=252" />
+  <link rel="stylesheet" href="/static/styles.css?v=253" />
   <link rel="stylesheet" href="/static/responsive-layout-hardening.css?v=5" />
   <link rel="stylesheet" href="/static/leadership-board.css?v=5" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
@@ -296,32 +296,9 @@
                 </div>
                 <div class="voice-input-control">
                   <span class="voice-input-status" id="voiceInputStatus" aria-live="polite" hidden></span>
-                  <div class="voice-input-split">
-                    <button class="voice-input-button" id="voiceInputButton" type="button" aria-label="语音输入" aria-pressed="false" title="语音输入">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
-                    </button>
-                    <button class="voice-mode-button" id="voiceModeButton" type="button" aria-label="选择语音识别方式" aria-haspopup="menu" aria-expanded="false" title="选择语音识别方式">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
-                    </button>
-                    <div class="voice-mode-menu" id="voiceModeMenu" role="menu" aria-label="语音识别后" hidden>
-                      <strong>语音识别后</strong>
-                      <button type="button" role="menuitemradio" data-voice-mode="transcribe" aria-checked="true">
-                        <span class="voice-mode-check" aria-hidden="true">✓</span>
-                        <span><b>仅转成文字</b><small>先检查或修改，再手动发送</small></span>
-                      </button>
-                      <button type="button" role="menuitemradio" data-voice-mode="send" aria-checked="false">
-                        <span class="voice-mode-check" aria-hidden="true"></span>
-                        <span><b>识别后直接发送</b><small>转写完成后立即提问</small></span>
-                      </button>
-                      <div class="voice-device-picker">
-                        <label for="voiceDeviceSelect">收音设备</label>
-                        <select id="voiceDeviceSelect" aria-label="选择收音设备">
-                          <option value="">自动选择（系统默认）</option>
-                        </select>
-                        <small id="voiceDeviceStatus" aria-live="polite">每次录音前跟随系统默认设备</small>
-                      </div>
-                    </div>
-                  </div>
+                  <button class="voice-input-button" id="voiceInputButton" type="button" aria-label="语音输入" aria-pressed="false" title="语音输入">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
+                  </button>
                 </div>
                 <button id="chatSubmitButton" type="submit" aria-label="发送" title="发送" disabled>
                   <svg viewBox="0 0 24 24" aria-hidden="true" class="chat-submit-icon"><path d="M12 19V5"></path><path d="m6.5 10.5 5.5-5.5 5.5 5.5"></path></svg>
@@ -467,7 +444,7 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=254"></script>
+    <script src="/static/app.js?v=255"></script>
     <script src="/static/news-review-sheet.js?v=1"></script>
   </body>
 </html>

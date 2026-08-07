@@ -55,11 +55,9 @@ const state = {
   voiceState: "idle",
   voiceStopTimer: null,
   voiceStartedAt: 0,
-  voiceMode: "transcribe",
-  voiceDeviceId: "",
-  voiceDevices: [],
-  voiceActiveDeviceLabel: "",
-  voiceDeviceNotice: "",
+  voiceRecognition: null,
+  voiceTranscriptBase: "",
+  voiceLiveTranscript: "",
   chatAutoScroll: true,
   crawlRuns: [],
   activeCrawlRunId: null,
@@ -167,10 +165,6 @@ const els = {
   webSearchToggle: document.querySelector("#webSearchToggle"),
   voiceInputButton: document.querySelector("#voiceInputButton"),
   voiceInputStatus: document.querySelector("#voiceInputStatus"),
-  voiceModeButton: document.querySelector("#voiceModeButton"),
-  voiceModeMenu: document.querySelector("#voiceModeMenu"),
-  voiceDeviceSelect: document.querySelector("#voiceDeviceSelect"),
-  voiceDeviceStatus: document.querySelector("#voiceDeviceStatus"),
   chatSubmitButton: document.querySelector("#chatSubmitButton"),
   runState: document.querySelector("#runState"),
   qualityScore: document.querySelector("#qualityScore"),
@@ -5697,128 +5691,63 @@ function renderVoiceInputState() {
   button.classList.toggle("is-recording", recording);
   button.classList.toggle("is-busy", requesting || transcribing);
   button.disabled = requesting || transcribing;
-  if (els.voiceModeButton) els.voiceModeButton.disabled = requesting || transcribing || recording;
   button.setAttribute("aria-pressed", recording ? "true" : "false");
   button.setAttribute("aria-busy", requesting || transcribing ? "true" : "false");
-  const modeLabel = state.voiceMode === "send" ? "识别后直接发送" : "仅转成文字";
-  button.setAttribute("aria-label", recording ? "停止录音并识别" : transcribing ? "正在识别语音" : `语音输入，${modeLabel}`);
-  button.title = recording ? "点击停止录音并识别" : transcribing ? "正在使用公司语音模型识别" : `语音输入（${modeLabel}）`;
+  button.setAttribute("aria-label", recording ? "停止语音输入" : transcribing ? "正在完成语音识别" : "语音输入");
+  button.title = recording ? "停止语音输入" : transcribing ? "正在完成语音识别" : "语音输入";
   if (els.voiceInputStatus) {
-    const device = state.voiceActiveDeviceLabel ? `（${state.voiceActiveDeviceLabel}）` : "";
-    const label = recording ? `正在聆听${device}，点击停止` : requesting ? "正在检测麦克风…" : transcribing ? "正在识别…" : "";
+    const label = recording ? "正在聆听" : requesting ? "正在启动" : transcribing ? "正在完成识别" : "";
     els.voiceInputStatus.textContent = label;
     els.voiceInputStatus.hidden = !label;
   }
 }
 
-function loadVoiceInputMode() {
-  try {
-    const saved = localStorage.getItem("cmhkVoiceInputMode");
-    state.voiceMode = saved === "send" ? "send" : "transcribe";
-  } catch (_error) {
-    state.voiceMode = "transcribe";
-  }
+function renderVoiceTranscript(transcript) {
+  const base = String(state.voiceTranscriptBase || "").trim();
+  const spoken = String(transcript || "").trim();
+  els.chatInput.value = base && spoken ? `${base} ${spoken}` : base || spoken;
+  resizeChatInput();
+  renderChatSubmitState();
 }
 
-function setVoiceInputMode(mode) {
-  state.voiceMode = mode === "send" ? "send" : "transcribe";
-  try {
-    localStorage.setItem("cmhkVoiceInputMode", state.voiceMode);
-  } catch (_error) {
-    // Private browsing may disable storage; the current choice still applies.
-  }
-  if (els.voiceModeMenu) {
-    els.voiceModeMenu.querySelectorAll("[data-voice-mode]").forEach((option) => {
-      const active = option.dataset.voiceMode === state.voiceMode;
-      option.setAttribute("aria-checked", active ? "true" : "false");
-      const check = option.querySelector(".voice-mode-check");
-      if (check) check.textContent = active ? "✓" : "";
-    });
-  }
-  renderVoiceInputState();
+function isIgnorableVoiceTranscript(transcript) {
+  const normalized = String(transcript || "")
+    .trim()
+    .replace(/[。！？!?，,、\s]/g, "");
+  return !normalized || /^[嗯呃啊唔额哦噢诶欸哎哈呣]+$/.test(normalized);
 }
 
-function loadVoiceInputDevice() {
-  try {
-    state.voiceDeviceId = localStorage.getItem("cmhkVoiceInputDeviceId") || "";
-  } catch (_error) {
-    state.voiceDeviceId = "";
-  }
-}
-
-function storeVoiceInputDevice() {
-  try {
-    if (state.voiceDeviceId) localStorage.setItem("cmhkVoiceInputDeviceId", state.voiceDeviceId);
-    else localStorage.removeItem("cmhkVoiceInputDeviceId");
-  } catch (_error) {
-    // The current choice still applies when storage is unavailable.
-  }
-}
-
-function renderVoiceDeviceOptions() {
-  if (!els.voiceDeviceSelect) return;
-  const selectable = state.voiceDevices.filter((device) => !["default", "communications"].includes(device.deviceId));
-  const current = state.voiceDeviceId;
-  els.voiceDeviceSelect.replaceChildren();
-  const automatic = document.createElement("option");
-  automatic.value = "";
-  automatic.textContent = "自动选择（系统默认）";
-  els.voiceDeviceSelect.appendChild(automatic);
-  selectable.forEach((device, index) => {
-    const option = document.createElement("option");
-    option.value = device.deviceId;
-    option.textContent = device.label || `麦克风 ${index + 1}`;
-    els.voiceDeviceSelect.appendChild(option);
-  });
-  els.voiceDeviceSelect.value = selectable.some((device) => device.deviceId === current) ? current : "";
-  if (els.voiceDeviceStatus) {
-    const selected = selectable.find((device) => device.deviceId === state.voiceDeviceId);
-    els.voiceDeviceStatus.textContent = state.voiceDeviceNotice
-      || (state.voiceActiveDeviceLabel ? `当前使用：${state.voiceActiveDeviceLabel}`
-        : selected?.label ? `已指定：${selected.label}`
-          : "每次录音前跟随系统默认设备");
-  }
-}
-
-async function refreshVoiceInputDevices() {
-  if (!navigator.mediaDevices?.enumerateDevices) {
-    renderVoiceDeviceOptions();
-    return;
-  }
-  try {
-    state.voiceDevices = (await navigator.mediaDevices.enumerateDevices())
-      .filter((device) => device.kind === "audioinput");
-    if (
-      state.voiceDeviceId
-      && !state.voiceDevices.some((device) => device.deviceId === state.voiceDeviceId)
-    ) {
-      state.voiceDeviceId = "";
-      state.voiceDeviceNotice = "原设备已断开，已切换为系统默认";
-      storeVoiceInputDevice();
+function startLiveVoiceRecognition() {
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) return false;
+  const recognition = new Recognition();
+  recognition.lang = "zh-CN";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.addEventListener("result", (event) => {
+    let finalText = "";
+    let interimText = "";
+    for (let index = 0; index < event.results.length; index += 1) {
+      const text = String(event.results[index]?.[0]?.transcript || "");
+      if (event.results[index].isFinal) finalText += text;
+      else interimText += text;
     }
-  } catch (_error) {
-    state.voiceDevices = [];
-  }
-  renderVoiceDeviceOptions();
-}
-
-function setVoiceInputDevice(deviceId) {
-  state.voiceDeviceId = String(deviceId || "");
-  state.voiceActiveDeviceLabel = "";
-  state.voiceDeviceNotice = "";
-  storeVoiceInputDevice();
-  renderVoiceDeviceOptions();
-  renderVoiceInputState();
-}
-
-function rememberActiveVoiceDevice(stream) {
-  const track = stream?.getAudioTracks?.()[0];
-  if (!track) return;
-  const settings = track.getSettings?.() || {};
-  const known = state.voiceDevices.find((device) => device.deviceId === settings.deviceId);
-  state.voiceActiveDeviceLabel = track.label || known?.label || "系统默认麦克风";
-  state.voiceDeviceNotice = "";
-  renderVoiceDeviceOptions();
+    const liveTranscript = `${finalText}${interimText}`.trim();
+    state.voiceLiveTranscript = isIgnorableVoiceTranscript(liveTranscript) ? "" : liveTranscript;
+    renderVoiceTranscript(state.voiceLiveTranscript);
+  });
+  recognition.addEventListener("error", (event) => {
+    if (!["aborted", "no-speech"].includes(event.error)) {
+      showTaskOperationNotice("实时语音识别暂时不可用，停止后仍会完成文字识别");
+    }
+  });
+  recognition.addEventListener("end", () => {
+    if (state.voiceRecognition === recognition) state.voiceRecognition = null;
+  });
+  recognition.start();
+  state.voiceRecognition = recognition;
+  return true;
 }
 
 function preferredVoiceMimeType() {
@@ -5846,6 +5775,14 @@ function releaseVoiceStream() {
     state.voiceStopTimer = null;
   }
   if (state.voiceStream) state.voiceStream.getTracks().forEach((track) => track.stop());
+  if (state.voiceRecognition) {
+    try {
+      state.voiceRecognition.abort();
+    } catch (_error) {
+      // Recognition may already have ended after the user stopped speaking.
+    }
+  }
+  state.voiceRecognition = null;
   state.voiceStream = null;
   state.voiceRecorder = null;
 }
@@ -5866,22 +5803,36 @@ async function transcribeVoice(blob, durationMs) {
     const payload = await response.json();
     if (!response.ok || !payload.ok) throw new Error(payload.error || "语音识别失败");
     const transcript = String(payload.text || "").trim();
-    if (!transcript) throw new Error("没有识别出文字，请重试");
-    const existing = els.chatInput.value.trim();
-    els.chatInput.value = existing ? `${existing} ${transcript}` : transcript;
-    resizeChatInput();
-    renderChatSubmitState();
+    if (isIgnorableVoiceTranscript(transcript)) {
+      state.voiceLiveTranscript = "";
+      renderVoiceTranscript("");
+      state.voiceState = "idle";
+      renderVoiceInputState();
+      els.chatInput.focus();
+      return;
+    }
+    state.voiceLiveTranscript = transcript;
+    renderVoiceTranscript(transcript);
     state.voiceState = "idle";
     renderVoiceInputState();
-    if (state.voiceMode === "send") {
-      els.chatForm.requestSubmit();
-    } else {
-      els.chatInput.focus();
-    }
+    els.chatInput.focus();
   } catch (error) {
     state.voiceState = "idle";
     renderVoiceInputState();
-    showTaskOperationNotice(error.message || "语音识别失败，请重试");
+    const message = String(error?.message || "");
+    const ignorableNoSpeech = [
+      "录音时间太短",
+      "没有录到可识别的语音",
+      "没有识别出文字",
+      "只识别到很短的语气词",
+    ].some((hint) => message.includes(hint));
+    if (ignorableNoSpeech) {
+      state.voiceLiveTranscript = "";
+      renderVoiceTranscript("");
+    }
+    if (!state.voiceLiveTranscript && !ignorableNoSpeech) {
+      showTaskOperationNotice(message || "语音识别失败，请重试");
+    }
     els.chatInput.focus();
   }
 }
@@ -5893,30 +5844,12 @@ async function requestVoiceStream() {
     noiseSuppression: { ideal: true },
     autoGainControl: { ideal: true },
   };
-  const requestedDeviceId = state.voiceDeviceId;
-  const preferredConstraints = {
-    ...baseConstraints,
-    deviceId: requestedDeviceId ? { exact: requestedDeviceId } : { ideal: "default" },
-  };
+  const preferredConstraints = { ...baseConstraints, deviceId: { ideal: "default" } };
   try {
     return await navigator.mediaDevices.getUserMedia({ audio: preferredConstraints });
   } catch (error) {
     const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
     if (denied) throw error;
-    if (requestedDeviceId) {
-      state.voiceDeviceId = "";
-      state.voiceDeviceNotice = "指定设备不可用，已切换为系统默认";
-      storeVoiceInputDevice();
-      renderVoiceDeviceOptions();
-      try {
-        return await navigator.mediaDevices.getUserMedia({
-          audio: { ...baseConstraints, deviceId: { ideal: "default" } },
-        });
-      } catch (fallbackError) {
-        const fallbackDenied = fallbackError?.name === "NotAllowedError" || fallbackError?.name === "SecurityError";
-        if (fallbackDenied) throw fallbackError;
-      }
-    }
     return navigator.mediaDevices.getUserMedia({ audio: true });
   }
 }
@@ -5930,10 +5863,7 @@ async function startVoiceInput() {
   state.voiceState = "requesting";
   renderVoiceInputState();
   try {
-    await refreshVoiceInputDevices();
     const stream = await requestVoiceStream();
-    rememberActiveVoiceDevice(stream);
-    await refreshVoiceInputDevices();
     const mimeType = preferredVoiceMimeType();
     const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
     state.voiceStream = stream;
@@ -5957,6 +5887,9 @@ async function startVoiceInput() {
       showTaskOperationNotice("录音中断，请重试");
     }, { once: true });
     recorder.start();
+    state.voiceTranscriptBase = els.chatInput.value;
+    state.voiceLiveTranscript = "";
+    startLiveVoiceRecognition();
     state.voiceStartedAt = performance.now();
     state.voiceState = "recording";
     renderVoiceInputState();
@@ -5974,6 +5907,13 @@ function stopVoiceInput() {
   if (state.voiceRecorder?.state === "recording") {
     state.voiceState = "transcribing";
     renderVoiceInputState();
+    if (state.voiceRecognition) {
+      try {
+        state.voiceRecognition.stop();
+      } catch (_error) {
+        // The recorder remains the final recognition fallback.
+      }
+    }
     state.voiceRecorder.stop();
   }
 }
@@ -6873,51 +6813,10 @@ if (els.chatThreadSearchInput) {
 }
 
 if (els.voiceInputButton) {
-  loadVoiceInputMode();
-  loadVoiceInputDevice();
-  setVoiceInputMode(state.voiceMode);
-  renderVoiceDeviceOptions();
-  refreshVoiceInputDevices();
   renderVoiceInputState();
   els.voiceInputButton.addEventListener("click", () => {
     if (state.voiceState === "recording") stopVoiceInput();
     else if (state.voiceState === "idle") startVoiceInput();
-  });
-}
-
-if (els.voiceModeButton && els.voiceModeMenu) {
-  els.voiceModeButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const willOpen = els.voiceModeMenu.hidden;
-    els.voiceModeMenu.hidden = !willOpen;
-    els.voiceModeButton.setAttribute("aria-expanded", String(willOpen));
-    if (willOpen) {
-      if (els.chatModelMenu) els.chatModelMenu.hidden = true;
-      els.chatModelButton?.setAttribute("aria-expanded", "false");
-      refreshVoiceInputDevices();
-      requestAnimationFrame(() => els.voiceModeMenu.querySelector('[aria-checked="true"]')?.focus());
-    }
-  });
-  els.voiceModeMenu.addEventListener("click", (event) => {
-    const option = event.target.closest("[data-voice-mode]");
-    if (!option) return;
-    setVoiceInputMode(option.dataset.voiceMode);
-    els.voiceModeMenu.hidden = true;
-    els.voiceModeButton.setAttribute("aria-expanded", "false");
-    els.voiceInputButton?.focus();
-  });
-}
-
-if (els.voiceDeviceSelect) {
-  els.voiceDeviceSelect.addEventListener("change", () => {
-    setVoiceInputDevice(els.voiceDeviceSelect.value);
-  });
-}
-
-if (navigator.mediaDevices?.addEventListener) {
-  navigator.mediaDevices.addEventListener("devicechange", () => {
-    state.voiceActiveDeviceLabel = "";
-    refreshVoiceInputDevices();
   });
 }
 
@@ -7174,13 +7073,6 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".chat-model-picker")) return;
   els.chatModelMenu.hidden = true;
   els.chatModelButton?.setAttribute("aria-expanded", "false");
-});
-
-document.addEventListener("click", (event) => {
-  if (!els.voiceModeMenu || els.voiceModeMenu.hidden) return;
-  if (event.target.closest(".voice-input-split")) return;
-  els.voiceModeMenu.hidden = true;
-  els.voiceModeButton?.setAttribute("aria-expanded", "false");
 });
 
 if (els.skillMenu) {
