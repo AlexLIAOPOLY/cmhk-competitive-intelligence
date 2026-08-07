@@ -465,7 +465,6 @@ const BENCHMARK_METRIC_IDS = {
   "现金及现金等值": "cash",
   "自由现金流": "free_cash_flow"
 };
-const BENCHMARK_SIMULATION_BASE = { hkt: 1.08, three: .82, smartone: .76, hkbn: .69 };
 
 function visibleDetailMetrics(panel) {
   if (!panel) return [];
@@ -525,42 +524,7 @@ function benchmarkRecord(companyId, metric) {
       simulated: false
     };
   }
-  return simulatedBenchmarkRecord(companyId, metric);
-}
-
-function simulatedBenchmarkRecord(companyId, metric) {
-  const company = benchmarkPayload?.companies?.find((item) => item.id === companyId);
-  const raw = String(metric.value || "").replace(/,/g, "").trim();
-  const numericMatch = raw.match(/-?\d+(?:\.\d+)?/);
-  if (!numericMatch) {
-    return {
-      value: company?.label || "模拟值",
-      unit: metric.unit,
-      period: "模拟估算",
-      source_label: "基于CMHK当前值的界面模拟",
-      source_url: "",
-      simulated: true
-    };
-  }
-  let hash = 0;
-  `${metric.label}:${companyId}`.split("").forEach((character) => {
-    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
-  });
-  const jitter = ((hash % 17) - 8) / 100;
-  const ratio = (BENCHMARK_SIMULATION_BASE[companyId] || .72) + jitter;
-  const sourceValue = Number(numericMatch[0]);
-  let value = sourceValue * ratio;
-  const unit = metric.unit || raw.replace(numericMatch[0], "").trim();
-  if (unit.includes("%")) value = Math.min(99.9, Math.max(-99.9, value));
-  const decimals = Math.abs(sourceValue) >= 100 ? 0 : (Math.abs(sourceValue) >= 10 ? 1 : 2);
-  return {
-    value: Number(value.toFixed(decimals)),
-    unit,
-    period: "模拟估算",
-    source_label: "基于CMHK当前值与企业规模系数的界面模拟",
-    source_url: "",
-    simulated: true
-  };
+  return null;
 }
 
 function formatBenchmarkValue(value) {
@@ -594,6 +558,15 @@ function uniqueBenchmarkMetrics(items) {
 }
 
 function benchmarkMetricCatalog(panelIndex) {
+  if (panelIndex === 3 && benchmarkPayload?.metrics && benchmarkPayload?.values?.cmhk) {
+    return Object.entries(benchmarkPayload.metrics).map(([metricId, definition]) => ({
+      id: metricId,
+      label: definition.label,
+      value: benchmarkPayload.values.cmhk[metricId]?.value,
+      unit: definition.unit
+    }));
+  }
+
   if (panelIndex === 0) {
     const items = [];
     Object.values(networkViews).forEach((view) => {
@@ -618,15 +591,6 @@ function benchmarkMetricCatalog(panelIndex) {
       { label: "品牌综合指数", value: "88.7", unit: "分" }
     );
   }
-  if (panelIndex === 3) {
-    items.unshift(
-      { label: "营运收入", value: "96.8", unit: "亿港元" },
-      { label: "EBITDA", value: "34.8", unit: "亿港元" },
-      { label: "EBITDA率", value: "35.9", unit: "%" },
-      { label: "净利润", value: "12.4", unit: "亿港元" },
-      { label: "净利润率", value: "12.8", unit: "%" }
-    );
-  }
   return uniqueBenchmarkMetrics(items);
 }
 
@@ -645,6 +609,17 @@ function clearBenchmarkCharts() {
     delete target.dataset.benchmarkWasHidden;
   });
   document.body.removeAttribute("data-benchmark-companies");
+}
+
+function benchmarkComparisonNote(records) {
+  const missing = records.filter(({ companyId, record }) => (
+    companyId !== "cmhk" && benchmarkNumericValue(record) === null
+  ));
+  if (missing.length) {
+    const labels = missing.map(({ company }) => company?.label).filter(Boolean).join("、");
+    return `${labels}暂无同口径披露`;
+  }
+  return "最新可核验披露 · 各公司期间可能不同";
 }
 
 function closeBenchmarkMetricMenus(except = null) {
@@ -737,7 +712,7 @@ function renderBenchmarkCharts() {
   const companyIds = ["cmhk", ...selectedBenchmarkCompanyIds];
   document.body.dataset.benchmarkCompanies = companyIds.join(",");
 
-  const targetSelectors = [".network-bars", ".business-detail", ".reach-ranking", ".revenue-compare"];
+  const targetSelectors = ["#network-detail", ".business-content", ".reach-content", ".finance-content"];
   panels.forEach((panel, panelIndex) => {
     const catalog = benchmarkMetricCatalog(panelIndex);
     const selectedLabel = benchmarkMetricSelections.get(panelIndex);
@@ -757,7 +732,7 @@ function renderBenchmarkCharts() {
     }
 
     const chart = document.createElement("section");
-    chart.className = `benchmark-native-chart is-${benchmarkChartKind(panelIndex, metric)}`;
+    chart.className = `benchmark-native-chart benchmark-panel-view is-${benchmarkChartKind(panelIndex, metric)}`;
     chart.style.setProperty("--benchmark-company-count", String(companyIds.length));
     chart.setAttribute("aria-label", `${heading?.textContent || "当前板块"}多企业指标对比`);
 
@@ -782,6 +757,7 @@ function renderBenchmarkCharts() {
       const row = document.createElement("div");
       row.className = "benchmark-chart-row";
       row.dataset.company = companyId;
+      row.classList.toggle("is-missing", numericValue === null);
       row.title = [record?.period, record?.period_end, record?.source_label].filter(Boolean).join(" · ");
       const label = document.createElement("span");
       label.textContent = company?.label || companyId;
@@ -792,10 +768,15 @@ function renderBenchmarkCharts() {
       bar.style.setProperty("--benchmark-height", `${percentage}%`);
       track.append(bar);
       const value = document.createElement("strong");
-      value.textContent = numericValue === null ? "—" : formatBenchmarkValue(record.value);
+      value.textContent = numericValue === null ? "暂无" : formatBenchmarkValue(record.value);
       row.append(label, track, value);
       chart.append(row);
     });
+
+    const note = document.createElement("p");
+    note.className = "benchmark-comparison-note";
+    note.textContent = benchmarkComparisonNote(records);
+    chart.append(note);
 
     target.dataset.benchmarkWasHidden = String(target.hidden);
     target.hidden = false;
