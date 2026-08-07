@@ -122,6 +122,7 @@ function networkRotationIsPaused() {
   return (
     !networkPanel ||
     networkTabs.length < 2 ||
+    selectedBenchmarkCompanyIds.size > 0 ||
     reducedMotion.matches ||
     document.hidden ||
     networkPanel.matches(":hover") ||
@@ -285,6 +286,7 @@ function createMetricRotator({ panel, tabs, content, views, getGroups, prefix, i
 
   function paused() {
     return (
+      selectedBenchmarkCompanyIds.size > 0 ||
       reducedMotion.matches ||
       document.hidden ||
       panel.matches(":hover") ||
@@ -645,6 +647,88 @@ function clearBenchmarkCharts() {
   document.body.removeAttribute("data-benchmark-companies");
 }
 
+function closeBenchmarkMetricMenus(except = null) {
+  document.querySelectorAll(".benchmark-metric-picker.is-open").forEach((picker) => {
+    if (picker === except) return;
+    picker.classList.remove("is-open");
+    picker.querySelector(".benchmark-metric-trigger")?.setAttribute("aria-expanded", "false");
+  });
+}
+
+function createBenchmarkMetricPicker(panelIndex, catalog, metric, headingText) {
+  const picker = document.createElement("div");
+  picker.className = "benchmark-metric-picker";
+
+  const trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.className = "benchmark-metric-trigger";
+  trigger.setAttribute("aria-label", `${headingText}比较指标：${metric.label}`);
+  trigger.setAttribute("aria-haspopup", "listbox");
+  trigger.setAttribute("aria-expanded", "false");
+
+  const current = document.createElement("span");
+  current.textContent = metric.label;
+  const chevron = document.createElement("i");
+  chevron.setAttribute("aria-hidden", "true");
+  trigger.append(current, chevron);
+
+  const menu = document.createElement("div");
+  menu.className = "benchmark-metric-menu";
+  menu.setAttribute("role", "listbox");
+  menu.setAttribute("aria-label", `${headingText}可比较指标`);
+
+  catalog.forEach((item) => {
+    const option = document.createElement("button");
+    option.type = "button";
+    option.className = "benchmark-metric-option";
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", String(item.label === metric.label));
+    option.textContent = item.label;
+    option.addEventListener("click", () => {
+      benchmarkMetricSelections.set(panelIndex, item.label);
+      closeBenchmarkMetricMenus();
+      renderBenchmarkCharts();
+      window.requestAnimationFrame(() => {
+        document.querySelectorAll(".benchmark-metric-trigger")[panelIndex]?.focus();
+      });
+    });
+    menu.append(option);
+  });
+
+  trigger.addEventListener("click", () => {
+    const willOpen = !picker.classList.contains("is-open");
+    closeBenchmarkMetricMenus(picker);
+    picker.classList.toggle("is-open", willOpen);
+    trigger.setAttribute("aria-expanded", String(willOpen));
+    if (willOpen) {
+      window.requestAnimationFrame(() => {
+        menu.querySelector('[aria-selected="true"]')?.focus();
+      });
+    }
+  });
+  picker.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeBenchmarkMetricMenus();
+      trigger.focus();
+      return;
+    }
+    if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+    const options = [...menu.querySelectorAll(".benchmark-metric-option")];
+    const currentIndex = options.indexOf(document.activeElement);
+    const direction = event.key === "ArrowDown" ? 1 : -1;
+    const nextIndex = currentIndex < 0 ? 0 : (currentIndex + direction + options.length) % options.length;
+    event.preventDefault();
+    options[nextIndex]?.focus();
+  });
+
+  picker.append(trigger, menu);
+  return picker;
+}
+
+document.addEventListener("pointerdown", (event) => {
+  if (!event.target.closest(".benchmark-metric-picker")) closeBenchmarkMetricMenus();
+});
+
 function renderBenchmarkCharts() {
   clearBenchmarkCharts();
   if (!benchmarkPayload || !selectedBenchmarkCompanyIds.size) return;
@@ -664,7 +748,10 @@ function renderBenchmarkCharts() {
     if (heading) {
       const badge = document.createElement("span");
       badge.className = "benchmark-panel-company";
-      badge.textContent = `${companyIds.length}企同图`;
+      const comparedCompanies = companyIds.map(companyLabel).join(" · ");
+      badge.textContent = comparedCompanies;
+      badge.title = `当前对比：${comparedCompanies}`;
+      badge.setAttribute("aria-label", `当前对比公司：${comparedCompanies}`);
       heading.after(badge);
     }
 
@@ -683,22 +770,10 @@ function renderBenchmarkCharts() {
     filter.className = "benchmark-metric-filter";
     const filterText = document.createElement("span");
     filterText.textContent = "指标";
-    const select = document.createElement("select");
-    select.setAttribute("aria-label", `${heading?.textContent || "当前板块"}比较指标`);
-    catalog.forEach((item) => {
-      const option = document.createElement("option");
-      option.value = item.label;
-      option.textContent = item.label;
-      option.selected = item.label === metric.label;
-      select.append(option);
-    });
-    select.addEventListener("change", () => {
-      benchmarkMetricSelections.set(panelIndex, select.value);
-      renderBenchmarkCharts();
-    });
+    const picker = createBenchmarkMetricPicker(panelIndex, catalog, metric, heading?.textContent || "当前板块");
     const unit = document.createElement("small");
     unit.textContent = records.find(({ record }) => record?.unit)?.record?.unit || metric.unit || "";
-    filter.append(filterText, select, unit);
+    filter.append(filterText, picker, unit);
     chart.append(filter);
 
     records.forEach(({ companyId, company, record }) => {
@@ -748,6 +823,7 @@ function renderBenchmarkCompanySelector() {
       else if (selectedBenchmarkCompanyIds.has(company.id)) selectedBenchmarkCompanyIds.delete(company.id);
       else selectedBenchmarkCompanyIds.add(company.id);
       renderBenchmarkCompanySelector();
+      syncBenchmarkRotationState();
       renderBenchmarkCharts();
     });
     fragment.append(button);
@@ -760,6 +836,17 @@ function renderBenchmarkCompanySelector() {
 
 function companyLabel(companyId) {
   return benchmarkPayload?.companies?.find((item) => item.id === companyId)?.label || companyId;
+}
+
+function syncBenchmarkRotationState() {
+  const rotators = [businessRotator, reachRotator, financeRotator];
+  if (selectedBenchmarkCompanyIds.size) {
+    stopNetworkRotation();
+    rotators.forEach((rotator) => rotator?.stop());
+    return;
+  }
+  scheduleNetworkRotation();
+  rotators.forEach((rotator) => rotator?.schedule());
 }
 
 fetch(document.body.dataset.benchmarkUrl || "/api/executive-company-benchmarks", { cache: "no-store" })

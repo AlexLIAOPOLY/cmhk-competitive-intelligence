@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-07T09:17:20+08:00",
+  "generated_at": "2026-08-07T09:22:22+08:00",
   "items": [
+    {
+      "id": "NEWS-7611603AFDB42E",
+      "title": "SmarTone推出SmarT Pass出机快证，优先抢购iPhone及送手机礼券",
+      "summary": "SmarTone推出SmarT Pass出机快证服务，用户可优先抢购iPhone 18及折叠屏手机，并享最高2500港元手机礼券。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxQZHg0X2hBUEJEQS1VRUtjOWtocjN5c0tSb2lkdlkwNFJnNnlCOVl2VjFQVV9DMjNRT1FKU1VINnpmUVZXcEQxN0lEQUtFNXVXb1ZxWWpldDRiNXJfbHZwaGt2Y3ViVXpQWVprQjRtaDV6Ni1oVFBfWnNRMVNZcS1keW8wbTM0aXNDTjRGTW1MNVl6TDVZZ3EtcUc4X29lWFNGT05JdGJ1b29RaHBXYW5RZXg1U05JQ3FiQTAyWkc1QzVPMnNvMFRhSkMyNjZoSHBPMklyeV93cHB6QXFJSGV4cDlpbnZVY0ZuUnpMQlEtcnphS0tKQVRsbHpGUVBtdHN0X3RvdHRuQ0lYb1J0ODlqN3UxUGl2X1JGUUJZWTVpNkZfV3Fka2huN3l5UWM1VTdOV2U0eUNVYjZMNkhGZHdVU3JWNG5YM3l0THZHMkRadG4ycWNINEVrcjdyV1ZNQVpFbEhPY0lhamRiLWlTZGVrUk43X1JKZ2twVFFSSzFYeVRNSlI5eFZVU19ST3doeGRYQkk0MEFqcXg3WExN?oc=5",
+      "published_at": "2026-08-06T19:03:00+08:00"
+    },
     {
       "id": "NEWS-BC20B8FF064970",
       "title": "香港加快无人驾驶应用发展",
@@ -57,15 +65,7 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
       "published_at": "2026-08-03T08:00:00+08:00"
-    },
-    {
-      "id": "NEWS-93E818ABE49C4B",
-      "title": "滴滴香港正筹备提交网约车平台牌照申请 本月向用户推出夏日出行礼遇",
-      "summary": "滴滴香港筹备提交网约车牌照申请，提升合规管理，并向用户推出夏日出行优惠。",
-      "category": "政策监管",
-      "source_url": "https://www.am730.com.hk/article/1045256",
-      "published_at": "2026-08-03T08:00:00+08:00"
     }
   ],
-  "site_version": "7eb000f56eb159e3aba134acb32e7edb3c648f7f139cb66f72852d926c131873"
+  "site_version": "bcbdc51829124f2f179b7f465be2a5492775d1d7b7194b3eeca1f9e52bf97bbc"
 }
