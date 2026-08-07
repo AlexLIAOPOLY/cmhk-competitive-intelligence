@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-07T10:35:27+08:00",
+  "generated_at": "2026-08-07T15:17:23+08:00",
   "items": [
+    {
+      "id": "NEWS-6AF945884F17BD",
+      "title": "来稿｜构建香港特色跨境协同创科金融体系 让初创走出「死亡谷」",
+      "summary": "文章探讨构建香港特色跨境协同创科金融体系，助力初创企业发展的政策与金融建议。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxPbmJ0U0RqUWc3MXpZd2VLNV9sQW5EUy1iWlpNVFEyMmpZR0o2MVhMSDVnUVdhaHVpNXRnQlp3Ylotc0ZXZjdSRGFkSjM1VEpOcUFGcFl5V3dJTm04VEs3dU9zcVJPY1ZxS250ZE1tX0JSc3RmQXpKSEVhZzRKbkNhWVE3OElaMTdVY1RaWVlENEs0bHFUU1M4QTNSQ1FoN3czRWNvekFPeDh0QXRoQmppUmllRURRbkYwMWhYSWhZbVNiSU9zT1hiNzhQT0tvMkpuMW1oQW5pNTVtQXpwX3MwS25ubExidjRDS2FZcVluaGZmUzdhUU9PWVN2d3Bhb3ROc2o1QXFGVktxZzZQZlM5WFBhV1ByYTBjc2E4WTdOUjFVSFVzYTNpTU5MTWlfTWxJTjltWFVnRjBtaGZpZW1sVHpZNl9BYlF3YmdTeUVBSDV6aDRJNzRUcHB1bUdraWk1WkloQ05xdDUxSGdRNjRaS0F3Sm1zb3JPTDZvZjR1TlRIaHJqSUNaVnVmc0VBU0JBOURId2oxb1lWZ1pD?oc=5",
+      "published_at": "2026-08-07T13:00:24+08:00"
+    },
     {
       "id": "NEWS-7611603AFDB42E",
       "title": "SmarTone推出SmarT Pass出机快证，优先抢购iPhone及送手机礼券",
@@ -57,15 +65,7 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNVWdHQ1ZJa1NOWW1yeWJwRGJXRTZReXZxc09oNHYyUjBMQkJzZFQ5alFHdE5tWDJVRzdjd1FyaE9SalYzbndBLWRPMHlhOUJ2dWFONV9NZWlfN29mSDljUkRkendueGFLOUdYbHRtRzVyTlNOWlNnTlpsRVY0Ymd4WG50N1RoYU1idTRnVm5FLV9VZERCSG4tN2lNNzY4Q0FfTW8xOWlSN2VILWZub21Nc0lfenp0eFlmQW9CaVZ1UkdWaDFNYVNJYjVCQ19YaDBxak9uM2plQUU5WUpKY2pYQmlvQk5oSlZqWkliS0NyQVpOUW9fX2RhT1g4SjFYcG9FUVBheWFhT0x0X0V2ZGkyWVdaejFnN3NxSVpTbEZhUmxqMS1qem1JSGJtd3RkdmQ4TElZOUxtRGJqNmp1MlRyY3N0TEdsdmFmaklQakIwdFhTZ1ViMVoxR3kyNDE?oc=5",
       "published_at": "2026-08-03T08:00:12+08:00"
-    },
-    {
-      "id": "NEWS-A158C76EB3E89E",
-      "title": "“算力金属”，价格狂飙",
-      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
-      "published_at": "2026-08-03T08:00:00+08:00"
     }
   ],
-  "site_version": "0d7cc0735cdca372325311437549764e3d2c29cbd16a0d2ad38086877fd6cf07"
+  "site_version": "f908433613913e47f548eb8c16c48e2aa91cc900c7d5df1b5522dde022629c09"
 }
