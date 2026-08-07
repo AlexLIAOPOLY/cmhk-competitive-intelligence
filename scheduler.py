@@ -996,15 +996,9 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         )
         return False
 
-    intelligence_refresh = _launch_executive_intelligence_refresh(
-        crawl_run_id,
-        stream_log_path,
-        curation,
-    )
     curation = {
         **curation,
         "news_bridge": news_bridge,
-        "executive_intelligence_refresh": intelligence_refresh,
     }
     append_crawl_run_event(
         stream_log_path,
@@ -1019,6 +1013,26 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
 
     _mark_rows_completed(state, rows)
     append_crawl_run_event(stream_log_path, {"type": "done", "ok": True, "returnCode": 0})
+    register_crawl_run(
+        crawl_return_code=0,
+        duration_ms=round((time.time() - started_monotonic) * 1000),
+        trigger="定时爬虫",
+        scope=env["CMHK_CRAWL_SCOPE"],
+        crawl_run_id=crawl_run_id,
+        started_at_hkt=now.isoformat(timespec="seconds"),
+        stream_log_path=stream_log_path,
+        curation_summary=curation,
+        trace_sync=trace_sync,
+    )
+    intelligence_refresh = _launch_executive_intelligence_refresh(
+        crawl_run_id,
+        stream_log_path,
+        curation,
+    )
+    curation = {
+        **curation,
+        "executive_intelligence_refresh": intelligence_refresh,
+    }
     register_crawl_run(
         crawl_return_code=0,
         duration_ms=round((time.time() - started_monotonic) * 1000),
@@ -1183,15 +1197,9 @@ def resume_pending_run(
         )
         return False
 
-    intelligence_refresh = _launch_executive_intelligence_refresh(
-        crawl_run_id,
-        stream_log_path,
-        curation,
-    )
     curation = {
         **curation,
         "news_bridge": news_bridge,
-        "executive_intelligence_refresh": intelligence_refresh,
     }
     append_crawl_run_event(
         stream_log_path,
@@ -1209,6 +1217,27 @@ def resume_pending_run(
         stream_log_path,
         {"type": "done", "ok": True, "returnCode": 0, "resumed": True},
     )
+    register_crawl_run(
+        crawl_return_code=0,
+        duration_ms=elapsed_ms(started_at_hkt),
+        trigger="定时爬虫",
+        scope=scope,
+        crawl_run_id=crawl_run_id,
+        started_at_hkt=started_at_hkt,
+        stream_log_path=stream_log_path,
+        curation_summary=curation,
+        trace_sync=trace_sync,
+        progress_detail="服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
+    )
+    intelligence_refresh = _launch_executive_intelligence_refresh(
+        crawl_run_id,
+        stream_log_path,
+        curation,
+    )
+    curation = {
+        **curation,
+        "executive_intelligence_refresh": intelligence_refresh,
+    }
     register_crawl_run(
         crawl_return_code=0,
         duration_ms=elapsed_ms(started_at_hkt),

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import multiprocessing
 import subprocess
 import tempfile
 import unittest
@@ -10,6 +11,30 @@ from unittest import mock
 import daily_crawl_and_write
 import crawl_run_registry
 import scheduler
+
+
+def _save_registry_record_in_process(
+    registry_dir_text: str,
+    crawl_run_id: str,
+    ready: multiprocessing.Queue,
+    start: multiprocessing.Event,
+) -> None:
+    registry_dir = Path(registry_dir_text)
+    crawl_run_registry.REGISTRY_DIR = registry_dir
+    crawl_run_registry.RUNS_DIR = registry_dir / "runs"
+    crawl_run_registry.INDEX_JSON = registry_dir / "index.json"
+    crawl_run_registry.LATEST_JSON = registry_dir / "latest.json"
+    crawl_run_registry.INDEX_MD = registry_dir / "index.md"
+    crawl_run_registry.LOCK_FILE = registry_dir / ".registry.lock"
+    ready.put(crawl_run_id)
+    start.wait(timeout=5)
+    crawl_run_registry._save_run_record(
+        {
+            "crawl_run_id": crawl_run_id,
+            "run_status": "completed",
+            "completed_at_hkt": "2026-08-07T03:27:09+08:00",
+        }
+    )
 
 
 class FeishuCliEnvironmentTests(unittest.TestCase):
@@ -34,6 +59,76 @@ class FeishuCliEnvironmentTests(unittest.TestCase):
 
 
 class CrawlRunReconciliationTests(unittest.TestCase):
+    def test_index_uses_authoritative_terminal_run_record(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            registry_dir = Path(temp_dir)
+            runs_dir = registry_dir / "runs"
+            runs_dir.mkdir()
+            (registry_dir / "index.json").write_text(
+                json.dumps([{"crawl_run_id": "crawl-1", "run_status": "running"}]),
+                encoding="utf-8",
+            )
+            (runs_dir / "crawl-1.json").write_text(
+                json.dumps({"crawl_run_id": "crawl-1", "run_status": "completed"}),
+                encoding="utf-8",
+            )
+            with (
+                mock.patch.object(crawl_run_registry, "INDEX_JSON", registry_dir / "index.json"),
+                mock.patch.object(crawl_run_registry, "RUNS_DIR", runs_dir),
+            ):
+                index = crawl_run_registry.load_index()
+
+        self.assertEqual(index[0]["run_status"], "completed")
+
+    def test_delayed_heartbeat_cannot_reopen_completed_run(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            registry_dir = Path(temp_dir)
+            runs_dir = registry_dir / "runs"
+            runs_dir.mkdir()
+            completed = {"crawl_run_id": "crawl-1", "run_status": "completed"}
+            (runs_dir / "crawl-1.json").write_text(json.dumps(completed), encoding="utf-8")
+            (registry_dir / "index.json").write_text(json.dumps([completed]), encoding="utf-8")
+            patches = (
+                mock.patch.object(crawl_run_registry, "REGISTRY_DIR", registry_dir),
+                mock.patch.object(crawl_run_registry, "RUNS_DIR", runs_dir),
+                mock.patch.object(crawl_run_registry, "INDEX_JSON", registry_dir / "index.json"),
+                mock.patch.object(crawl_run_registry, "LATEST_JSON", registry_dir / "latest.json"),
+                mock.patch.object(crawl_run_registry, "INDEX_MD", registry_dir / "index.md"),
+                mock.patch.object(crawl_run_registry, "LOCK_FILE", registry_dir / ".registry.lock"),
+            )
+            with patches[0], patches[1], patches[2], patches[3], patches[4], patches[5]:
+                saved = crawl_run_registry._save_run_record(
+                    {"crawl_run_id": "crawl-1", "run_status": "running"}
+                )
+
+        self.assertEqual(saved["run_status"], "completed")
+
+    def test_concurrent_process_writes_do_not_lose_index_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            context = multiprocessing.get_context("fork")
+            ready = context.Queue()
+            start = context.Event()
+            processes = [
+                context.Process(
+                    target=_save_registry_record_in_process,
+                    args=(temp_dir, crawl_run_id, ready, start),
+                )
+                for crawl_run_id in ("crawl-parent", "crawl-child")
+            ]
+            for process in processes:
+                process.start()
+            self.assertEqual({ready.get(timeout=5), ready.get(timeout=5)}, {"crawl-parent", "crawl-child"})
+            start.set()
+            for process in processes:
+                process.join(timeout=10)
+                self.assertEqual(process.exitcode, 0)
+            index = json.loads((Path(temp_dir) / "index.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(
+            {item["crawl_run_id"] for item in index},
+            {"crawl-parent", "crawl-child"},
+        )
+
     def test_live_external_scheduler_is_not_marked_interrupted(self) -> None:
         record = {
             "crawl_run_id": "crawl-live-external",
@@ -165,6 +260,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 "page_count": 12,
                 "signal_count": 2,
             }
+            call_order: list[str] = []
             with (
                 mock.patch.object(scheduler, "save_state"),
                 mock.patch.object(scheduler, "_write_pending_run"),
@@ -195,7 +291,16 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                     "read_live_schedule",
                     return_value=[{"row": 3, "frequency": "每天 03:00"}],
                 ),
-                mock.patch.object(scheduler, "register_crawl_run") as register,
+                mock.patch.object(
+                    scheduler,
+                    "register_crawl_run",
+                    side_effect=lambda **kwargs: call_order.append("register") or kwargs,
+                ) as register,
+                mock.patch.object(
+                    scheduler,
+                    "_launch_executive_intelligence_refresh",
+                    side_effect=lambda *args: call_order.append("launch") or {"ok": True, "launched": True},
+                ),
             ):
                 state = {}
                 ok = scheduler.run_due_rows([3], state)
@@ -208,6 +313,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
             register.call_args.kwargs["curation_summary"]["news_bridge"],
             bridge,
         )
+        self.assertEqual(call_order, ["register", "launch", "register"])
         self.assertTrue(
             any(
                 call.args[1].get("type") == "news_bridge"

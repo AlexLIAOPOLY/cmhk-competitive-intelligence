@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import csv
+import fcntl
 import json
 import os
 import re
 import threading
+import uuid
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -21,6 +24,7 @@ LATEST_JSON = REGISTRY_DIR / "latest.json"
 INDEX_MD = REGISTRY_DIR / "index.md"
 MANIFEST_JSON = REGISTRY_DIR / "manifest.json"
 README_MD = REGISTRY_DIR / "README.md"
+LOCK_FILE = REGISTRY_DIR / ".registry.lock"
 REGISTRY_LOCK = threading.RLock()
 
 
@@ -33,7 +37,37 @@ def _read_json(path: Path, default: Any) -> Any:
 
 def _write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    _write_text_atomic(path, json.dumps(payload, ensure_ascii=False, indent=2))
+
+
+def _write_text_atomic(path: Path, content: str) -> None:
+    """Replace one registry file atomically so readers never observe partial JSON."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    try:
+        with temporary.open("w", encoding="utf-8") as fh:
+            fh.write(content)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(temporary, path)
+    finally:
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass
+
+
+@contextmanager
+def _registry_write_lock():
+    """Serialize registry read-modify-write cycles across scheduler/web workers."""
+    with REGISTRY_LOCK:
+        REGISTRY_DIR.mkdir(parents=True, exist_ok=True)
+        with LOCK_FILE.open("a+", encoding="utf-8") as lock_fh:
+            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(lock_fh.fileno(), fcntl.LOCK_UN)
 
 
 def _safe_id(value: str) -> str:
@@ -185,21 +219,38 @@ def render_index_markdown(runs: list[dict[str, Any]]) -> str:
 
 def load_index() -> list[dict[str, Any]]:
     data = _read_json(INDEX_JSON, [])
-    return data if isinstance(data, list) else []
+    if not isinstance(data, list):
+        return []
+    resolved: list[dict[str, Any]] = []
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        crawl_run_id = str(item.get("crawl_run_id") or "")
+        detail = _read_json(RUNS_DIR / f"{_safe_id(crawl_run_id)}.json", {}) if crawl_run_id else {}
+        # The per-run record is the authoritative state.  It is written before
+        # the shared index and survives a competing writer's stale index update.
+        resolved.append(detail if isinstance(detail, dict) and detail else item)
+    return resolved
 
 
 def _save_run_record(record: dict[str, Any]) -> dict[str, Any]:
-    with REGISTRY_LOCK:
+    with _registry_write_lock():
         crawl_run_id = str(record.get("crawl_run_id") or "")
         if not crawl_run_id:
             raise ValueError("crawl_run_id is required")
+        current = _read_json(RUNS_DIR / f"{crawl_run_id}.json", {})
+        current_terminal = isinstance(current, dict) and current.get("run_status") in {"completed", "failed"}
+        incoming_running = record.get("run_status") == "running"
+        if current_terminal and incoming_running and not record.get("resumed_at_hkt"):
+            # A delayed heartbeat must never reopen an already finalized task.
+            record = current
         _write_json(RUNS_DIR / f"{crawl_run_id}.json", record)
         runs = [item for item in load_index() if item.get("crawl_run_id") != crawl_run_id]
         runs.insert(0, record)
         runs = runs[:50]
         _write_json(INDEX_JSON, runs)
         _write_json(LATEST_JSON, record)
-        INDEX_MD.write_text(render_index_markdown(runs), encoding="utf-8")
+        _write_text_atomic(INDEX_MD, render_index_markdown(runs))
         return record
 
 
