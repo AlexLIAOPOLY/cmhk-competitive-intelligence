@@ -45,6 +45,7 @@ PUBLISHED_PATH = DATA_DIR / "published.json"
 NEWS_DISCOVERY_FULL_PATH = DATA_DIR / "news_discovery_full.json"
 AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
+AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 AI_EDITOR_VERSION = 20
 AI_EDITOR_CRITIC_ENABLED = (
@@ -58,6 +59,22 @@ AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", 
 AI_EDITOR_SINGLE_RETRY_LIMIT = max(
     0,
     int(os.environ.get("CMHK_STRATEGY_AI_SINGLE_RETRY_LIMIT", "12")),
+)
+AI_EDITOR_DEFERRED_MAX_ATTEMPTS = max(
+    2,
+    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_ATTEMPTS", "4")),
+)
+AI_EDITOR_DEFERRED_MAX_AGE_HOURS = max(
+    6,
+    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_AGE_HOURS", "36")),
+)
+AI_EDITOR_DEFERRED_RETRY_MINUTES = max(
+    5,
+    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_RETRY_MINUTES", "30")),
+)
+AI_EDITOR_DEFERRED_MAX_ITEMS = max(
+    100,
+    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_ITEMS", "600")),
 )
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
@@ -2414,6 +2431,185 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
     ).hexdigest()
 
 
+def _queue_datetime(value: Any) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(str(value or "").replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=HKT)
+    return parsed.astimezone(HKT)
+
+
+def _queue_nonnegative_int(value: Any) -> int | None:
+    try:
+        return max(0, int(value or 0))
+    except (TypeError, ValueError):
+        return None
+
+
+def _prepare_deferred_ai_candidates(
+    source_items: list[dict[str, Any]],
+    *,
+    now: datetime | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], dict[str, int]]:
+    current = (now or datetime.now(HKT)).astimezone(HKT)
+    payload = _read_json(AI_EDITOR_DEFERRED_PATH, {"items": []})
+    raw_records = payload.get("items") if isinstance(payload, dict) else []
+    if not isinstance(raw_records, list):
+        raw_records = []
+    records: dict[str, dict[str, Any]] = {}
+    expired_count = 0
+    exhausted_count = 0
+    invalid_count = 0
+    for raw_record in raw_records:
+        if not isinstance(raw_record, dict) or not isinstance(raw_record.get("item"), dict):
+            invalid_count += 1
+            continue
+        item = dict(raw_record["item"])
+        editor_version = _queue_nonnegative_int(raw_record.get("editor_version"))
+        attempts = _queue_nonnegative_int(raw_record.get("attempts"))
+        if editor_version != AI_EDITOR_VERSION or attempts is None:
+            invalid_count += 1
+            continue
+        key = _candidate_editor_key(item)
+        queued_at = _queue_datetime(raw_record.get("queued_at"))
+        if not queued_at:
+            invalid_count += 1
+            continue
+        if current - queued_at > timedelta(hours=AI_EDITOR_DEFERRED_MAX_AGE_HOURS):
+            expired_count += 1
+            continue
+        if attempts >= AI_EDITOR_DEFERRED_MAX_ATTEMPTS:
+            exhausted_count += 1
+            continue
+        records[key] = {
+            **raw_record,
+            "key": key,
+            "attempts": attempts,
+            "item": item,
+        }
+
+    combined: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    cooldown_count = 0
+    retry_loaded_count = 0
+    cooldown = timedelta(minutes=AI_EDITOR_DEFERRED_RETRY_MINUTES)
+    for source_item in source_items:
+        if not isinstance(source_item, dict):
+            continue
+        item = dict(source_item)
+        key = _candidate_editor_key(item)
+        if key in seen:
+            continue
+        seen.add(key)
+        existing = records.get(key)
+        if existing is not None:
+            existing["item"] = item
+            last_attempt_at = _queue_datetime(existing.get("last_attempt_at"))
+            if last_attempt_at and current - last_attempt_at < cooldown:
+                cooldown_count += 1
+                continue
+            retry_loaded_count += 1
+        combined.append(item)
+
+    for key, record in records.items():
+        if key in seen:
+            continue
+        last_attempt_at = _queue_datetime(record.get("last_attempt_at"))
+        if last_attempt_at and current - last_attempt_at < cooldown:
+            cooldown_count += 1
+            continue
+        seen.add(key)
+        combined.append(dict(record["item"]))
+        retry_loaded_count += 1
+    return combined, records, {
+        "source_input_count": len(source_items),
+        "loaded_count": len(raw_records),
+        "eligible_count": len(records),
+        "retry_loaded_count": retry_loaded_count,
+        "cooldown_count": cooldown_count,
+        "expired_count": expired_count,
+        "exhausted_count": exhausted_count,
+        "invalid_count": invalid_count,
+    }
+
+
+def _persist_deferred_ai_candidates(
+    records: dict[str, dict[str, Any]],
+    processed_items: list[dict[str, Any]],
+    deferred_reviews: list[dict[str, str]],
+    *,
+    now: datetime | None = None,
+) -> dict[str, int]:
+    current = (now or datetime.now(HKT)).astimezone(HKT)
+    now_text = _now_iso(current)
+    deferred_by_key = {
+        str(entry.get("key") or ""): entry
+        for entry in deferred_reviews
+        if str(entry.get("key") or "")
+    }
+    added_count = 0
+    resolved_removed_count = 0
+    exhausted_removed_count = 0
+    for item in processed_items:
+        key = _candidate_editor_key(item)
+        deferred = deferred_by_key.get(key)
+        previous = records.get(key)
+        if not deferred:
+            if previous is not None:
+                records.pop(key, None)
+                resolved_removed_count += 1
+            continue
+        previous_attempts = _queue_nonnegative_int((previous or {}).get("attempts"))
+        attempts = (previous_attempts or 0) + 1
+        if attempts >= AI_EDITOR_DEFERRED_MAX_ATTEMPTS:
+            records.pop(key, None)
+            exhausted_removed_count += 1
+            continue
+        if previous is None:
+            added_count += 1
+        records[key] = {
+            "key": key,
+            "editor_version": AI_EDITOR_VERSION,
+            "queued_at": str((previous or {}).get("queued_at") or now_text),
+            "last_attempt_at": now_text,
+            "attempts": attempts,
+            "last_error": _clean_text(deferred.get("error"), 300),
+            "item": dict(item),
+        }
+    ordered = sorted(
+        records.values(),
+        key=lambda record: (
+            str(record.get("queued_at") or ""),
+            str(record.get("key") or ""),
+        ),
+    )[:AI_EDITOR_DEFERRED_MAX_ITEMS]
+    capped_count = max(0, len(records) - len(ordered))
+    _atomic_write_json(
+        AI_EDITOR_DEFERRED_PATH,
+        {
+            "version": 1,
+            "editor_version": AI_EDITOR_VERSION,
+            "updated_at": now_text,
+            "policy": {
+                "max_attempts": AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
+                "max_age_hours": AI_EDITOR_DEFERRED_MAX_AGE_HOURS,
+                "retry_minutes": AI_EDITOR_DEFERRED_RETRY_MINUTES,
+                "max_items": AI_EDITOR_DEFERRED_MAX_ITEMS,
+            },
+            "items": ordered,
+        },
+    )
+    return {
+        "queued_count": len(ordered),
+        "added_count": added_count,
+        "resolved_removed_count": resolved_removed_count,
+        "exhausted_removed_count": exhausted_removed_count,
+        "capped_count": capped_count,
+    }
+
+
 def _validated_ai_copy(
     value: dict[str, Any], *, require_review_fields: bool = False,
     require_decision_fields: bool = False, allowed_keywords: Any = None,
@@ -2904,7 +3100,16 @@ def _critic_review_included(
 
 def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Create the final Chinese title and concise copy before human review."""
+    items, deferred_queue_records, deferred_queue_load = (
+        _prepare_deferred_ai_candidates(items)
+    )
     if not items:
+        if deferred_queue_load["loaded_count"]:
+            _persist_deferred_ai_candidates(
+                deferred_queue_records,
+                [],
+                [],
+            )
         return []
     cache_payload = _read_json(AI_EDITOR_CACHE_PATH, {"items": {}})
     cache = cache_payload.get("items") if isinstance(cache_payload, dict) else {}
@@ -3186,6 +3391,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     error = _clean_text(batch_validation_error, 240)
                     deferred_reviews.append(
                         {
+                            "key": key,
                             "id": source["id"],
                             "title": source["title"],
                             "error": (
@@ -3310,6 +3516,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                                     )
                                     deferred_reviews.append(
                                         {
+                                            "key": key,
                                             "id": source["id"],
                                             "title": source["title"],
                                             "error": error,
@@ -3325,6 +3532,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                             )
                             deferred_reviews.append(
                                 {
+                                    "key": key,
                                     "id": source["id"],
                                     "title": source["title"],
                                     "error": error,
@@ -3362,6 +3570,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         )
                         deferred_reviews.append(
                             {
+                                "key": key,
                                 "id": source["id"],
                                 "title": source["title"],
                                 "error": error,
@@ -3424,6 +3633,11 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     polished_items, critic_audit = _critic_review_included(polished_items)
     deferred_count = len(deferred_reviews)
     deferred_ratio = deferred_count / len(items)
+    deferred_queue_update = _persist_deferred_ai_candidates(
+        deferred_queue_records,
+        items,
+        deferred_reviews,
+    )
     decision_path_counts = Counter(
         str(item.get("ai_decision_path") or "未分类")
         for item in polished_items
@@ -3445,6 +3659,10 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         ),
         "deferred_count": deferred_count,
         "deferred_ratio": round(deferred_ratio, 6),
+        "deferred_queue": {
+            **deferred_queue_load,
+            **deferred_queue_update,
+        },
         "continued_with_partial_results": bool(deferred_reviews),
         "write_blocked": False,
         "single_retry_limit": AI_EDITOR_SINGLE_RETRY_LIMIT,

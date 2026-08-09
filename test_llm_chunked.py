@@ -64,11 +64,16 @@ def process_batch(batch_dict):
         print("Batch error:", e)
         return {}
 
-items = list(companies_with_data.items())
-batch_size = 5
-batches = [dict(items[i:i + batch_size]) for i in range(0, len(items), batch_size)]
+def main():
+    items = list(companies_with_data.items())
+    batch_size = 5
+    batches = [dict(items[i:i + batch_size]) for i in range(0, len(items), batch_size)]
+    print(f"Total batches: {len(batches)}")
+    if not batches:
+        return
+    res = process_batch(batches[0])
+    print(json.dumps(res, ensure_ascii=False, indent=2))
 
-print(f"Total batches: {len(batches)}")
-# test first batch
-res = process_batch(batches[0])
-print(json.dumps(res, ensure_ascii=False, indent=2))
+
+if __name__ == "__main__":
+    main()

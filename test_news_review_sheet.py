@@ -495,6 +495,25 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "AI review deferred"):
                 review_sheet._load_curated_latest()
 
+    def test_load_curated_latest_retries_queue_when_current_source_is_empty(self):
+        queued = self._new_item()
+        queued["title"] = "延期候选已恢复"
+        with (
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(
+                strategic_briefing,
+                "polish_candidates_before_review",
+                return_value=[queued],
+            ) as polish,
+        ):
+            items, metadata = review_sheet._load_curated_latest()
+
+        polish.assert_called_once_with([])
+        self.assertEqual(items, [queued])
+        self.assertEqual(metadata["input_count"], 0)
+        self.assertEqual(metadata["candidate_count"], 1)
+        self.assertEqual(metadata["filtered_count"], 0)
+
     def test_run_cycle_records_failed_ai_review_without_syncing_sheet(self):
         sync = mock.Mock()
         with (

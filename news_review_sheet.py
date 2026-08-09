@@ -2048,49 +2048,46 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
         source_paths.append(path_key)
         if not generated_at:
             generated_at = _text(payload.get("generated_at"), 60)
-    if combined:
-        curated, reasons = curate_news_items(combined)
-        from strategic_briefing import polish_candidates_before_review
+    curated, reasons = curate_news_items(combined) if combined else ([], Counter())
+    current_urls = {
+        _canonical_news_url(item.get("url"))
+        for item in curated
+        if _canonical_news_url(item.get("url"))
+    }
+    from strategic_briefing import polish_candidates_before_review
 
-        try:
-            curated = polish_candidates_before_review(curated)
-        except Exception as exc:
-            logging.exception("公司内部 AI 候选审核失败，本轮禁止写表并等待重试: %s", exc)
-            raise
-        category_counts = Counter(
-            _text(item.get("category") or "未分类", 80) for item in curated
-        )
-        region_counts = Counter(
-            _text(item.get("region") or "未分类", 80) for item in curated
-        )
-        sources = {
-            _text(item.get("source") or item.get("source_domain"), 160)
-            for item in curated
-            if _text(item.get("source") or item.get("source_domain"), 160)
-        }
-        return curated, {
-            "generated_at": generated_at or _now_iso(),
-            "slot_label": "战略新闻搜索池",
-            "input_count": len(combined),
-            "candidate_count": len(curated),
-            "filtered_count": len(combined) - len(curated),
-            "filtered_reasons": dict(reasons),
-            "category_counts": dict(category_counts),
-            "region_counts": dict(region_counts),
-            "source_count": len(sources),
-            "source_path": ", ".join(source_paths),
-            "group_notifications_paused": _group_notifications_paused(),
-        }
-    return [], {
-        "generated_at": _now_iso(),
+    try:
+        curated = polish_candidates_before_review(curated)
+    except Exception as exc:
+        logging.exception("公司内部 AI 候选审核失败，本轮禁止写表并等待重试: %s", exc)
+        raise
+    current_result_count = sum(
+        1
+        for item in curated
+        if _canonical_news_url(item.get("url")) in current_urls
+    )
+    category_counts = Counter(
+        _text(item.get("category") or "未分类", 80) for item in curated
+    )
+    region_counts = Counter(
+        _text(item.get("region") or "未分类", 80) for item in curated
+    )
+    sources = {
+        _text(item.get("source") or item.get("source_domain"), 160)
+        for item in curated
+        if _text(item.get("source") or item.get("source_domain"), 160)
+    }
+    return curated, {
+        "generated_at": generated_at or _now_iso(),
         "slot_label": "战略新闻搜索池",
-        "input_count": 0,
-        "candidate_count": 0,
-        "filtered_count": 0,
-        "filtered_reasons": {},
-        "category_counts": {},
-        "region_counts": {},
-        "source_count": 0,
+        "input_count": len(combined),
+        "candidate_count": len(curated),
+        "filtered_count": max(0, len(combined) - current_result_count),
+        "filtered_reasons": dict(reasons),
+        "category_counts": dict(category_counts),
+        "region_counts": dict(region_counts),
+        "source_count": len(sources),
+        "source_path": ", ".join(source_paths),
         "group_notifications_paused": _group_notifications_paused(),
     }
 

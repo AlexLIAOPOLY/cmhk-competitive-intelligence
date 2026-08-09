@@ -2,7 +2,7 @@ import json
 import tempfile
 import time
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from unittest import mock
 
@@ -1948,6 +1948,118 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertTrue(audit["continued_with_partial_results"])
         self.assertFalse(audit["write_blocked"])
         self.assertFalse(audit["policy"]["batch_blocking"])
+        queue = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_DEFERRED_PATH
+        )
+        self.assertEqual(queue["items"][0]["attempts"], 1)
+        self.assertEqual(queue["items"][0]["item"]["url"], item["url"])
+        self.assertEqual(audit["deferred_queue"]["queued_count"], 1)
+
+    def test_deferred_queue_honors_cooldown_then_removes_resolved_item(self):
+        item = {
+            "module": "竞争对手",
+            "category": "竞对动态",
+            "title": "KDDI发布网络升级计划",
+            "snippet": "KDDI announced a network upgrade.",
+            "source": "Example News",
+            "url": "https://example.com/news/kddi-network-upgrade",
+        }
+        key = briefing._candidate_editor_key(item)
+        first_attempt = datetime(2026, 8, 9, 9, 0, tzinfo=briefing.HKT)
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            briefing,
+            "AI_EDITOR_DEFERRED_PATH",
+            Path(directory) / "deferred.json",
+        ):
+            initial = briefing._persist_deferred_ai_candidates(
+                {},
+                [item],
+                [{"key": key, "error": "rate limited"}],
+                now=first_attempt,
+            )
+            cooled_items, cooled_records, cooled_stats = (
+                briefing._prepare_deferred_ai_candidates(
+                    [item],
+                    now=first_attempt + timedelta(minutes=10),
+                )
+            )
+            retry_items, retry_records, retry_stats = (
+                briefing._prepare_deferred_ai_candidates(
+                    [],
+                    now=first_attempt
+                    + timedelta(minutes=briefing.AI_EDITOR_DEFERRED_RETRY_MINUTES + 1),
+                )
+            )
+            source_retry_items, _, source_retry_stats = (
+                briefing._prepare_deferred_ai_candidates(
+                    [item, item],
+                    now=first_attempt
+                    + timedelta(minutes=briefing.AI_EDITOR_DEFERRED_RETRY_MINUTES + 1),
+                )
+            )
+            resolved = briefing._persist_deferred_ai_candidates(
+                retry_records,
+                retry_items,
+                [],
+                now=first_attempt + timedelta(hours=1),
+            )
+            saved = briefing._read_json(briefing.AI_EDITOR_DEFERRED_PATH, {})
+
+        self.assertEqual(initial["queued_count"], 1)
+        self.assertEqual(cooled_items, [])
+        self.assertEqual(cooled_stats["cooldown_count"], 1)
+        self.assertIn(key, cooled_records)
+        self.assertEqual(retry_items, [item])
+        self.assertEqual(retry_stats["retry_loaded_count"], 1)
+        self.assertEqual(source_retry_items, [item])
+        self.assertEqual(source_retry_stats["retry_loaded_count"], 1)
+        self.assertEqual(resolved["resolved_removed_count"], 1)
+        self.assertEqual(saved["items"], [])
+
+    def test_deferred_queue_prunes_invalid_expired_and_exhausted_records(self):
+        now = datetime(2026, 8, 9, 12, 0, tzinfo=briefing.HKT)
+        base_item = {
+            "category": "行业动态",
+            "title": "AI基础设施投资增加",
+            "snippet": "Operators increased AI infrastructure investment.",
+            "source": "Example",
+            "url": "https://example.com/news/ai-infrastructure",
+        }
+        invalid = {"editor_version": briefing.AI_EDITOR_VERSION, "attempts": "bad", "item": base_item}
+        expired_item = {**base_item, "url": "https://example.com/news/expired"}
+        exhausted_item = {**base_item, "url": "https://example.com/news/exhausted"}
+        payload = {
+            "items": [
+                invalid,
+                {
+                    "editor_version": briefing.AI_EDITOR_VERSION,
+                    "attempts": 1,
+                    "queued_at": (now - timedelta(hours=briefing.AI_EDITOR_DEFERRED_MAX_AGE_HOURS + 1)).isoformat(),
+                    "item": expired_item,
+                },
+                {
+                    "editor_version": briefing.AI_EDITOR_VERSION,
+                    "attempts": briefing.AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
+                    "queued_at": now.isoformat(),
+                    "item": exhausted_item,
+                },
+            ]
+        }
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            briefing,
+            "AI_EDITOR_DEFERRED_PATH",
+            Path(directory) / "deferred.json",
+        ):
+            briefing._atomic_write_json(briefing.AI_EDITOR_DEFERRED_PATH, payload)
+            items, records, stats = briefing._prepare_deferred_ai_candidates([], now=now)
+
+        self.assertEqual(items, [])
+        self.assertEqual(records, {})
+        self.assertEqual(stats["invalid_count"], 1)
+        self.assertEqual(stats["expired_count"], 1)
+        self.assertEqual(stats["exhausted_count"], 1)
 
     def test_editor_isolates_one_failed_item_and_continues_resolved_items(self):
         items = []
