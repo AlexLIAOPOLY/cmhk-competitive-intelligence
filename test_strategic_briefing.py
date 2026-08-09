@@ -541,6 +541,32 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(pending["slot_label"], "午后扫描")
         self.assertEqual(pending["review_result"]["new_count"], 2)
 
+    def test_archive_recovery_uses_reviewed_new_count_for_monitoring(self):
+        slot_key = "2026-07-30@15:00"
+        archived = {
+            "slot": slot_key,
+            "status": "completed",
+            "notification_status": "sent",
+            "message_id": "om_reviewed",
+            "candidate_count": 0,
+            "completed_at": "2026-07-30T15:08:00+08:00",
+            "review_sheet": {"new_count": 2},
+        }
+        state = {
+            "last_scan_at": "2026-07-30T09:08:00+08:00",
+            "last_scan_candidate_count": 0,
+        }
+
+        briefing._recover_completed_scan_slot(state, slot_key, archived)
+
+        self.assertEqual(state["scan_slots"][slot_key]["candidate_count"], 2)
+        self.assertEqual(state["last_scan_candidate_count"], 2)
+        self.assertEqual(state["last_scan_slot"], slot_key)
+
+    def test_reviewed_candidate_count_falls_back_for_legacy_results(self):
+        self.assertEqual(briefing._reviewed_candidate_count({}, 3), 3)
+        self.assertEqual(briefing._reviewed_candidate_count({"new_count": None}, 3), 0)
+
     def test_replayed_notification_marks_archive_as_sent(self):
         slot_key = "2026-07-30@15:00"
         archived = {

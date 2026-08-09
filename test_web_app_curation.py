@@ -18,6 +18,62 @@ import web_app
 
 
 class ReportFileNameTests(unittest.TestCase):
+    def test_report_audio_metadata_does_not_read_transcript_sidecars(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            audio = Path(tmp) / "report.wav"
+            audio.write_bytes(b"audio")
+            with mock.patch.object(web_app, "audio_paths_for_report", return_value=[audio]):
+                metadata = web_app.report_audio_metadata(Path(tmp) / "report.docx")
+
+        self.assertTrue(metadata["exists"])
+        self.assertRegex(metadata["url"], r"^/audio/report\.wav\?v=\d+$")
+        self.assertNotIn("subtitleCues", metadata)
+
+    def test_status_defers_heavy_audio_transcript_until_playback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            report = root / "8月9日周报.docx"
+            report.write_bytes(b"docx")
+            with (
+                mock.patch.object(web_app, "ROOT", root),
+                mock.patch.object(web_app, "REPORT_METADATA_PATH", root / "metadata.json"),
+                mock.patch.object(
+                    web_app,
+                    "report_audio_metadata",
+                    return_value={
+                        "exists": True,
+                        "url": "/audio/report.wav",
+                    },
+                ) as audio_metadata,
+            ):
+                payload = web_app.file_info(report)
+
+        self.assertEqual(payload["audio"], {"exists": True, "url": "/audio/report.wav"})
+        audio_metadata.assert_called_once_with(report)
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn("/api/report-audio?path=", app)
+        self.assertNotIn("data-subtitle-cues=", app)
+
+    def test_json_response_ignores_disconnected_client(self) -> None:
+        class DisconnectedHandler:
+            def send_response(self, _status: int) -> None:
+                pass
+
+            def send_header(self, _name: str, _value: str) -> None:
+                pass
+
+            def end_headers(self) -> None:
+                pass
+
+            class Writer:
+                @staticmethod
+                def write(_body: bytes) -> None:
+                    raise BrokenPipeError("client stopped polling")
+
+            wfile = Writer()
+
+        web_app.json_response(DisconnectedHandler(), {"ok": True})
+
     def test_four_database_refresh_is_visible_in_unified_task_log(self) -> None:
         task = web_app._normalize_crawl_task({
             "crawl_run_id": "refresh-1",
@@ -130,7 +186,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=256"', html)
+        self.assertIn('src="/static/app.js?v=257"', html)
         self.assertIn('if (els.outputArea.parentElement !== document.body)', app)
         self.assertIn('document.body.appendChild(els.outputArea);', app)
         self.assertIn('class="intelligence-focus-tabs"', app)

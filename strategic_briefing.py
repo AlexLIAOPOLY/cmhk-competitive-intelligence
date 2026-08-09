@@ -389,6 +389,12 @@ def _completed_scan_archive(slot_key: str) -> dict[str, Any]:
     return payload
 
 
+def _reviewed_candidate_count(review: dict[str, Any], fallback: int = 0) -> int:
+    if "new_count" in review:
+        return int(review.get("new_count") or 0)
+    return int(fallback or 0)
+
+
 def _recover_completed_scan_slot(
     state: dict[str, Any],
     slot_key: str,
@@ -397,15 +403,25 @@ def _recover_completed_scan_slot(
     review = archive.get("review_sheet")
     if not isinstance(review, dict):
         review = {}
+    candidate_count = _reviewed_candidate_count(
+        review,
+        int(archive.get("candidate_count") or 0),
+    )
+    completed_at = str(archive.get("completed_at") or archive.get("scanned_at") or "")
     message_id = str(archive.get("message_id") or "")
     scan_slots = state.setdefault("scan_slots", {})
     scan_slots[slot_key] = {
         "status": "completed",
-        "at": str(archive.get("completed_at") or archive.get("scanned_at") or ""),
-        "candidate_count": int(archive.get("candidate_count") or 0),
+        "at": completed_at,
+        "candidate_count": candidate_count,
         "message_id": message_id,
         "recovered_from_archive": True,
     }
+    if completed_at >= str(state.get("last_scan_at") or ""):
+        state["last_scan_at"] = completed_at
+        state["last_scan_slot"] = slot_key
+        state["last_scan_candidate_count"] = candidate_count
+        state["last_scan_error"] = ""
     if message_id:
         outbound = list(state.get("outbound_message_ids") or [])
         if message_id not in outbound:
@@ -1189,7 +1205,7 @@ def _send_scan_message(
         for name, count in category_counts.items()
         if _clean_text(name, 80) and int(count or 0) > 0
     }
-    candidate_count = int(review.get("new_count") if has_new_metrics else len(candidates))
+    candidate_count = _reviewed_candidate_count(review, len(candidates))
     region_counts = (
         review.get("new_region_counts")
         if has_new_metrics
@@ -2060,12 +2076,13 @@ def _run_scan_impl(
         ),
     )
     _save_candidates(_load_candidates() + ranked)
+    candidate_count = _reviewed_candidate_count(review_result, len(ranked))
     state["seen_urls"] = (
         list(state.get("seen_urls") or []) + [item["url"] for item in ranked]
     )[-1200:]
     state["last_scan_at"] = _now_iso(now)
     state["last_scan_slot"] = slot_key
-    state["last_scan_candidate_count"] = len(ranked)
+    state["last_scan_candidate_count"] = candidate_count
     state["last_spec_hash"] = spec["spec_hash"]
     state["last_scan_error"] = ""
     bridge_commit = commit_signal_attempts(
@@ -2089,7 +2106,8 @@ def _run_scan_impl(
         "gate_candidate_count": len(gated_items),
         "gate_filtered_count": len(full_items) - len(gated_items),
         "gate_filtered_reasons": dict(gate_reasons),
-        "candidate_count": len(ranked),
+        "candidate_count": candidate_count,
+        "direct_candidate_count": len(ranked),
         "scheduled_crawl_bridge": {
             "pending_signal_count": int(bridge_stats.get("signal_count") or 0),
             "query_count": int(bridge_stats.get("query_count") or 0),
@@ -2119,7 +2137,7 @@ def _run_scan_impl(
         {
             "type": "scan_pipeline_completed",
             "slot": slot_key,
-            "candidate_count": len(ranked),
+            "candidate_count": candidate_count,
             "review_sheet": {
                 "status": review_result.get("status"),
                 "new_count": review_result.get("new_count"),

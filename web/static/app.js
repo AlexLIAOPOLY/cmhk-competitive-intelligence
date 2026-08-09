@@ -1773,11 +1773,8 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     const safePath = escapeHtml(file.path_str);
     const unread = isReportUnread(file);
     const checked = state.selectedFiles.has(file.path_str) ? "checked" : "";
-    const subtitleCues = file.audio && Array.isArray(file.audio.subtitleCues)
-      ? JSON.stringify(file.audio.subtitleCues)
-      : "";
     const audioAction = file.audio && file.audio.exists
-      ? `<button type="button" class="row-icon-button audio-play-button" data-path="${safePath}" data-audio="${escapeHtml(file.audio.url)}" data-name="${escapeHtml(file.name)}" data-summary="${escapeHtml(file.audio.spokenText || file.audio.summary || '')}" data-subtitle-cues="${escapeHtml(subtitleCues)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
+      ? `<button type="button" class="row-icon-button audio-play-button" data-path="${safePath}" data-name="${escapeHtml(file.name)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
       : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
@@ -1808,15 +1805,31 @@ function bindOutputTableEvents(target) {
     button.addEventListener("click", () => generateAudio(button.dataset.path, button));
   });
   target.querySelectorAll(".audio-play-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      let subtitleCues = [];
+    button.addEventListener("click", async () => {
+      button.disabled = true;
       try {
-        subtitleCues = JSON.parse(button.dataset.subtitleCues || "[]");
-      } catch (_error) {
-        subtitleCues = [];
+        const response = await fetch(`/api/report-audio?path=${encodeURIComponent(button.dataset.path || "")}`, {
+          cache: "no-store",
+        });
+        const data = await response.json();
+        if (!data.ok || !data.audio?.exists) {
+          throw new Error(data.error || "音频摘要不存在");
+        }
+        const file = state.outputs.find((item) => item.path_str === button.dataset.path);
+        if (file) file.audio = { ...(file.audio || {}), ...data.audio };
+        playAudio(
+          data.audio.url,
+          button,
+          button.dataset.name,
+          data.audio.spokenText || data.audio.summary || "",
+          Array.isArray(data.audio.subtitleCues) ? data.audio.subtitleCues : [],
+        );
+        markReportConsumed(button.dataset.path);
+      } catch (error) {
+        setLog(`音频加载失败：${error.message}`);
+      } finally {
+        button.disabled = false;
       }
-      playAudio(button.dataset.audio, button, button.dataset.name, button.dataset.summary, subtitleCues);
-      markReportConsumed(button.dataset.path);
     });
   });
   target.querySelectorAll(".download-icon-button").forEach((link) => {

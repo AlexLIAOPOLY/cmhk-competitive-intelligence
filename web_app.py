@@ -44,6 +44,7 @@ from chart_renderer import generated_chart_path
 from tts_service import (
     AUDIO_DIR,
     audio_info_for_report,
+    audio_paths_for_report,
     delete_audio_for_report,
     rename_audio_for_report,
     synthesize_report_audio,
@@ -801,13 +802,19 @@ def build_settings_payload() -> dict:
 
 
 def json_response(handler: BaseHTTPRequestHandler, payload: dict, status: int = 200) -> None:
-    body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
-    handler.send_response(status)
-    handler.send_header("Content-Type", "application/json; charset=utf-8")
-    handler.send_header("Content-Length", str(len(body)))
-    handler.send_header("Cache-Control", "no-store")
-    handler.end_headers()
-    handler.wfile.write(body)
+    body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    try:
+        handler.send_response(status)
+        handler.send_header("Content-Type", "application/json; charset=utf-8")
+        handler.send_header("Content-Length", str(len(body)))
+        handler.send_header("Cache-Control", "no-store")
+        handler.end_headers()
+        handler.wfile.write(body)
+    except (BrokenPipeError, ConnectionResetError, OSError):
+        # Status polling and stopped browser requests can disconnect while a
+        # response is being written.  The request is already over, so avoid
+        # turning a harmless client disconnect into a server traceback.
+        return
 
 
 def load_curation_status() -> dict:
@@ -1199,10 +1206,25 @@ def quality_sidecar_for_report(path: Path) -> Path:
     return Path(str(path) + ".quality.json")
 
 
+def report_audio_metadata(report_path: Path) -> dict:
+    audio_path = next(
+        (path for path in audio_paths_for_report(report_path) if path.exists()),
+        None,
+    )
+    if not audio_path:
+        return {"exists": False}
+    audio_stat = audio_path.stat()
+    return {
+        "exists": True,
+        "url": f"/audio/{quote(audio_path.name)}?v={audio_stat.st_mtime_ns}",
+    }
+
+
 def file_info(path: Path, url: str = None) -> dict:
     stat = path.stat()
     rel_path = str(path.relative_to(ROOT))
     metadata = load_report_metadata().get(rel_path, {})
+    compact_audio = report_audio_metadata(path)
     return {
         "name": path.name,
         "size": stat.st_size,
@@ -1212,7 +1234,10 @@ def file_info(path: Path, url: str = None) -> dict:
         "path_str": rel_path,
         "note": metadata.get("note", "") if isinstance(metadata, dict) else "",
         "reportType": "carrier-performance" if "业绩摘要" in path.name else "weekly",
-        "audio": audio_info_for_report(path),
+        # Full subtitle cues and spoken text are loaded only when the user
+        # plays one report.  Embedding every historical transcript made the
+        # ten-second status poll grow to megabytes.
+        "audio": compact_audio,
     }
 
 
@@ -3225,6 +3250,14 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
+            return
+        if path == "/api/report-audio":
+            path_str = (parse_qs(parsed.query).get("path") or [""])[0]
+            target = report_target_from_rel(path_str)
+            if not target:
+                json_response(self, {"ok": False, "error": "report file not found"}, 404)
+                return
+            json_response(self, {"ok": True, "audio": audio_info_for_report(target)})
             return
         if path == "/api/chat-starters":
             json_response(self, {"ok": True, "starters": sample_chat_starters()})
