@@ -47,7 +47,7 @@ AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 20
+AI_EDITOR_VERSION = 21
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
@@ -275,6 +275,11 @@ _SOFT_PRIORITY_GUIDANCE = (
     "可作为较低优先级国际/行业候选保留；若只是名称偶然出现或没有具体事件才排除。"
     "category只能从公司动态、竞对动态、政策监管、行业动态、市场/产品类、基础设施/网络/技术类、"
     "宏观经济&国际形势&地缘政治&其他国际性质关注词汇中选择，不得照抄‘竞争对手’等上游模块名。"
+)
+_TEMPORAL_FIDELITY_GUIDANCE = (
+    "必须保持原文在新闻发布时间当刻的事件状态：‘将、拟、预计、计划、尚未、正在’"
+    "不得改写成‘已、已经、完成’，也不得因当前审核时间晚于新闻发布时间而自行推断事件已经发生；"
+    "只有输入明确说明状态已经完成，才可以使用完成时。"
 )
 EVENTS_PATH = DATA_DIR / "events.jsonl"
 PROCESS_LOCK_PATH = DATA_DIR / "monitor.lock"
@@ -2425,6 +2430,10 @@ def _candidate_editor_key(item: dict[str, Any]) -> str:
         "keywords": _clean_text(item.get("keywords"), 800),
         "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
         "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+        "published_at": _clean_text(
+            item.get("published_at") or item.get("source_date") or item.get("search_date"),
+            80,
+        ),
     }
     return hashlib.sha256(
         json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
@@ -2462,6 +2471,7 @@ def _prepare_deferred_ai_candidates(
     expired_count = 0
     exhausted_count = 0
     invalid_count = 0
+    migrated_count = 0
     for raw_record in raw_records:
         if not isinstance(raw_record, dict) or not isinstance(raw_record.get("item"), dict):
             invalid_count += 1
@@ -2469,7 +2479,7 @@ def _prepare_deferred_ai_candidates(
         item = dict(raw_record["item"])
         editor_version = _queue_nonnegative_int(raw_record.get("editor_version"))
         attempts = _queue_nonnegative_int(raw_record.get("attempts"))
-        if editor_version != AI_EDITOR_VERSION or attempts is None:
+        if editor_version is None or attempts is None:
             invalid_count += 1
             continue
         key = _candidate_editor_key(item)
@@ -2483,9 +2493,12 @@ def _prepare_deferred_ai_candidates(
         if attempts >= AI_EDITOR_DEFERRED_MAX_ATTEMPTS:
             exhausted_count += 1
             continue
+        if editor_version != AI_EDITOR_VERSION:
+            migrated_count += 1
         records[key] = {
             **raw_record,
             "key": key,
+            "editor_version": AI_EDITOR_VERSION,
             "attempts": attempts,
             "item": item,
         }
@@ -2532,6 +2545,7 @@ def _prepare_deferred_ai_candidates(
         "expired_count": expired_count,
         "exhausted_count": exhausted_count,
         "invalid_count": invalid_count,
+        "migrated_count": migrated_count,
     }
 
 
@@ -2610,6 +2624,75 @@ def _persist_deferred_ai_candidates(
     }
 
 
+_TEMPORAL_ACTIONS = (
+    "结束",
+    "完成",
+    "公布",
+    "发布",
+    "发表",
+    "实施",
+    "生效",
+    "启动",
+    "举行",
+    "推出",
+    "提交",
+    "开放",
+    "关闭",
+    "启用",
+    "落成",
+    "签署",
+    "签订",
+    "上线",
+    "发售",
+    "交付",
+    "投产",
+    "开通",
+    "颁布",
+)
+_TEMPORAL_FUTURE_PREFIX = re.compile(
+    r"(?:将(?:于|在)?|预计|拟(?:于)?|计划(?:于)?|定于|订于|目标于|预期|有望|"
+    r"争取|力争|本周|下周|下月|明年)[^，。；！？]{0,24}$"
+)
+_TEMPORAL_PENDING_PREFIX = re.compile(
+    r"(?:尚未|还未|仍未|未)[^，。；！？]{0,8}$"
+)
+_TEMPORAL_COMPLETED_PREFIX = re.compile(
+    r"(?:已经|现已|业已|已)[^，。；！？]{0,8}$"
+)
+
+
+def _temporal_action_states(value: Any) -> dict[str, set[str]]:
+    text = _SIMPLIFIED_CHINESE_CONVERTER.convert(str(value or ""))
+    states: dict[str, set[str]] = {}
+    for action in _TEMPORAL_ACTIONS:
+        for match in re.finditer(re.escape(action), text):
+            prefix = text[max(0, match.start() - 32) : match.start()]
+            action_states = states.setdefault(action, set())
+            if _TEMPORAL_PENDING_PREFIX.search(prefix):
+                action_states.add("pending")
+            elif _TEMPORAL_FUTURE_PREFIX.search(prefix):
+                action_states.add("future")
+            elif _TEMPORAL_COMPLETED_PREFIX.search(prefix):
+                action_states.add("completed")
+    return states
+
+
+def _validate_temporal_fidelity(source_text: Any, authored_summary: Any) -> None:
+    """Reject a completed-state rewrite when the source is future or pending."""
+    source_states = _temporal_action_states(source_text)
+    summary_states = _temporal_action_states(authored_summary)
+    for action, states in source_states.items():
+        if not states.intersection({"future", "pending"}):
+            continue
+        authored_states = summary_states.get(action, set())
+        if "completed" in authored_states and not authored_states.intersection(
+            {"future", "pending"}
+        ):
+            raise RuntimeError(
+                f"公司内部 AI 将原文尚未发生的‘{action}’误写为已完成"
+            )
+
+
 def _validated_ai_copy(
     value: dict[str, Any], *, require_review_fields: bool = False,
     require_decision_fields: bool = False, allowed_keywords: Any = None,
@@ -2639,6 +2722,16 @@ def _validated_ai_copy(
         raise RuntimeError("公司内部 AI 未返回有效中文内容简介")
     if _META_SUMMARY_PREFIX.search(summary):
         raise RuntimeError("公司内部 AI 内容简介仍使用元话术，未直接陈述内容")
+    if isinstance(source_item, dict):
+        source_summary = _clean_text(
+            source_item.get("source_summary")
+            or source_item.get("snippet")
+            or source_item.get("summary")
+            or source_item.get("description")
+            or source_item.get("why"),
+            1800,
+        )
+        _validate_temporal_fidelity(source_summary, summary)
     result = {"title": title, "summary": summary}
     if not require_review_fields:
         return result
@@ -2895,6 +2988,7 @@ def _plain_text_rescue_review(
             "G=宏观、0=无；impact R=收入、C=成本、U=客户、P=产品、O=运营、L=合规、"
             "A=资本、S=供应、G=竞争、0=无；纳入exclude=0，排除exclude=1至8。"
             "只依据输入事实，不得补写输入没有的年份、数字或主体。"
+            f"{_TEMPORAL_FIDELITY_GUIDANCE}"
         ),
         json.dumps(_candidate_editor_input(_candidate_editor_key(source_item), source_item), ensure_ascii=False),
         max_tokens=900,
@@ -2947,6 +3041,11 @@ def _candidate_editor_input(key: str, item: dict[str, Any]) -> dict[str, Any]:
         ),
         "source": _clean_text(item.get("source") or item.get("source_domain"), 160),
         "source_url": _normalize_url(item.get("source_url") or item.get("url") or ""),
+        "published_at_hkt": _clean_text(
+            item.get("published_at") or item.get("source_date") or item.get("search_date"),
+            80,
+        ),
+        "reviewed_at_hkt": _now_iso(),
         "matched_keywords": _clean_text(item.get("keywords"), 800),
         "configured_competitor_hint": _clean_text(
             item.get("canonical_competitor"), 120
@@ -3233,6 +3332,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                     f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                     f"{_STRATEGIC_INCLUSION_GUIDANCE}"
                     f"{_SOFT_PRIORITY_GUIDANCE}"
+                    f"{_TEMPORAL_FIDELITY_GUIDANCE}"
                     "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
                     "inclusion_reason必须写明‘具体事件事实→具体业务影响’，不得只写有或无战略价值。"
@@ -3303,6 +3403,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         "体育娱乐生活噪音或偶然提词外不得排除；其他内容只要命中matched_keywords并"
                         "存在可验证的新动作、数据或变化就选S，影响较间接也不能因此选X。"
                         f"{_SOFT_PRIORITY_GUIDANCE}"
+                        f"{_TEMPORAL_FIDELITY_GUIDANCE}"
                         "纯评论、观点、形势讨论和没有新变化的分析选X。"
                         "只依据输入事实，不要Markdown。"
                     ),
@@ -3432,6 +3533,7 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                         f"{_CATEGORY_CLASSIFICATION_GUIDANCE}"
                         f"{_STRATEGIC_INCLUSION_GUIDANCE}"
                         f"{_SOFT_PRIORITY_GUIDANCE}"
+                        f"{_TEMPORAL_FIDELITY_GUIDANCE}"
                         "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
                         "并用顿号分隔；inclusion_reason必须写明具体事件事实到具体业务影响；"
                         "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"

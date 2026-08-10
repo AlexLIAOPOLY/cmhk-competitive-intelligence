@@ -1674,6 +1674,74 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["category"], "竞对动态")
         self.assertEqual(result["region"], "国际/行业")
 
+    def test_candidate_editor_input_includes_publication_and_review_time(self):
+        item = {
+            "title": "李家超：冀9月公布首份五年规划",
+            "snippet": "五年规划咨询将于本周五结束。",
+            "published_at": "2026-08-09T09:00:00+08:00",
+        }
+        with mock.patch.object(
+            briefing, "_now_iso", return_value="2026-08-10T10:30:00+08:00"
+        ):
+            payload = briefing._candidate_editor_input("item-key", item)
+
+        self.assertEqual(payload["published_at_hkt"], "2026-08-09T09:00:00+08:00")
+        self.assertEqual(payload["reviewed_at_hkt"], "2026-08-10T10:30:00+08:00")
+
+    def test_candidate_editor_key_changes_when_publication_time_changes(self):
+        item = {
+            "title": "同一标题",
+            "snippet": "同一摘要内容。",
+            "published_at": "2026-08-09T09:00:00+08:00",
+        }
+        changed = {**item, "published_at": "2026-08-10T09:00:00+08:00"}
+
+        self.assertNotEqual(
+            briefing._candidate_editor_key(item),
+            briefing._candidate_editor_key(changed),
+        )
+
+    def test_ai_copy_rejects_future_event_rewritten_as_completed(self):
+        with self.assertRaisesRegex(RuntimeError, "尚未发生.*结束"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "香港首份五年规划咨询结束",
+                    "summary": "香港首份五年规划咨询已结束，政府正整理分析意见。",
+                },
+                source_item={
+                    "source_summary": (
+                        "行政长官表示，五年规划咨询将于在本周五结束，"
+                        "政府正不停蹄整理及分析意见。"
+                    )
+                },
+            )
+
+    def test_ai_copy_accepts_future_event_when_tense_is_preserved(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "香港首份五年规划咨询将结束",
+                "summary": "香港首份五年规划咨询将于本周五结束，政府正整理分析意见。",
+            },
+            source_item={
+                "source_summary": "五年规划咨询将于在本周五结束，政府正整理分析意见。"
+            },
+        )
+
+        self.assertIn("将于本周五结束", result["summary"])
+
+    def test_ai_copy_accepts_completed_event_when_source_is_completed(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "香港首份五年规划咨询结束",
+                "summary": "香港首份五年规划咨询已结束，政府开始整理分析意见。",
+            },
+            source_item={
+                "source_summary": "五年规划咨询已结束，政府开始整理分析意见。"
+            },
+        )
+
+        self.assertIn("已结束", result["summary"])
+
     def test_single_item_retry_budget_defers_without_unbounded_calls(self):
         items = [
             {
@@ -2060,6 +2128,41 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(stats["invalid_count"], 1)
         self.assertEqual(stats["expired_count"], 1)
         self.assertEqual(stats["exhausted_count"], 1)
+
+    def test_deferred_queue_migrates_previous_editor_version(self):
+        now = datetime(2026, 8, 10, 10, 0, tzinfo=briefing.HKT)
+        item = {
+            "category": "政策监管",
+            "title": "香港公布监管咨询安排",
+            "snippet": "监管咨询将于本周五结束。",
+            "published_at": "2026-08-09T09:00:00+08:00",
+            "source": "Example",
+            "url": "https://example.com/news/consultation",
+        }
+        payload = {
+            "items": [
+                {
+                    "editor_version": briefing.AI_EDITOR_VERSION - 1,
+                    "attempts": 1,
+                    "queued_at": (now - timedelta(hours=1)).isoformat(),
+                    "last_attempt_at": (now - timedelta(hours=1)).isoformat(),
+                    "item": item,
+                }
+            ]
+        }
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            briefing,
+            "AI_EDITOR_DEFERRED_PATH",
+            Path(directory) / "deferred.json",
+        ):
+            briefing._atomic_write_json(briefing.AI_EDITOR_DEFERRED_PATH, payload)
+            items, records, stats = briefing._prepare_deferred_ai_candidates([], now=now)
+
+        key = briefing._candidate_editor_key(item)
+        self.assertEqual(items, [item])
+        self.assertEqual(records[key]["editor_version"], briefing.AI_EDITOR_VERSION)
+        self.assertEqual(stats["migrated_count"], 1)
+        self.assertEqual(stats["invalid_count"], 0)
 
     def test_editor_isolates_one_failed_item_and_continues_resolved_items(self):
         items = []
