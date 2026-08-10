@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-10T09:23:06+08:00",
+  "generated_at": "2026-08-10T17:50:08+08:00",
   "items": [
+    {
+      "id": "NEWS-AB3DB8101B8137",
+      "title": "大型活动带动上半年访港消费达58亿港元",
+      "summary": "财政司司长陈茂波表示，上半年逾130场大型活动吸引逾175万人次参与，带动访港消费达58亿港元，彰显香港作为活动之都的吸引力。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3363432/mega-events-drive-hk58-billion-visitor-spend-first-half-year-paul-chan",
+      "published_at": "2026-08-09T20:20:00+08:00"
+    },
     {
       "id": "NEWS-EBBDE75E47F316",
       "title": "李家超：冀9月公布首份五年规划",
@@ -57,15 +65,7 @@
       "category": "政策监管",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBGbHdjY21maHl2cGVjQzR5bDJPbVc1ZjFCN1ZwN3VQZnJtQ0tWbUkxNWx0Ni12aW1DSXJqQTR2OVpONWEwQmJWV210R2tHNWRiS2pTd2VyT3lhOWVObDNFNklMWHhlX0dIWU9oQVFPUVFUYkJr?oc=5",
       "published_at": "2026-08-06T10:15:00+08:00"
-    },
-    {
-      "id": "NEWS-B7CCA6CBA2F01E",
-      "title": "香港6月零售额升4.6% 增长延续14个月",
-      "summary": "香港6月零售额按年上升4.6%，连续14个月录得增长，反映经济持续扩张及访港旅客稳步增加。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3362917/hong-kong-retail-sales-rise-46-june-growth-streak-extends-14-months",
-      "published_at": "2026-08-04T18:21:00+08:00"
     }
   ],
-  "site_version": "5b3b90b9617dd096f384ca9b6c30d67c10d0f728e3c118be1e31d91ec9fc64c9"
+  "site_version": "5c2844b1bfa156ae9e829ea54c1b054b949f3884323da1d92459fa8829557828"
 }
