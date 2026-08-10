@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-08-10T03:43:18+08:00",
+  "generated_at": "2026-08-10T09:17:33+08:00",
   "items": [
+    {
+      "id": "NEWS-EBBDE75E47F316",
+      "title": "李家超：冀9月公布首份五年规划",
+      "summary": "行政长官李家超表示，香港首份五年规划咨询已结束，政府正整理分析逾13,800份相关意见，目标于9月内发表规划。",
+      "category": "政策监管",
+      "source_url": "https://www.am730.com.hk/article/1046392",
+      "published_at": "2026-08-09T08:07:00+08:00"
+    },
+    {
+      "id": "NEWS-2AF0C9FD353D45",
+      "title": "内蒙建成全球最大AI数据中心 百万P级算力同创纪录",
+      "summary": "远景科技在内蒙建成全球最大AI算力基地，提供百万P级算力容量，刷新全球AI基础设施密度纪录。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.am730.com.hk/article/1046152",
+      "published_at": "2026-08-08T08:00:00+08:00"
+    },
     {
       "id": "NEWS-6AF945884F17BD",
       "title": "来稿｜构建香港特色跨境协同创科金融体系 让初创走出「死亡谷」",
@@ -49,23 +65,7 @@
       "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
       "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3362917/hong-kong-retail-sales-rise-46-june-growth-streak-extends-14-months",
       "published_at": "2026-08-04T18:21:00+08:00"
-    },
-    {
-      "id": "NEWS-5C8E24DA9986F4",
-      "title": "3香港推教育机构专属流动通讯服务平台",
-      "summary": "3香港与林溢欣合作推出教育机构专属流动通讯服务平台，为学生及教职员提供数据及学习内容。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi7wJBVV95cUxPSHpjOGRiX2t2NTlxdWNMdTdsZ2FuNmdCckpJeHp6T0poLURJdHN5b0Foel96dDJWQjR4aXdPbE1jOGhteTlKaXFjRzJjUUtxdnNWQ3A3YzBfaWl3MmdFVXpMVlF0WThFMnUwZEtyU2dwbTV4dVVwa0JXWVgzeDB0ZnczQXA1MUI1Tm9oYUJyQjNFcXk0MklmVTlodjFwM1NoYU9RUnNBVVJhSWVqa3NscVAwcldRdVcyZVN0OXNJem5FUDlPcUttdEQ4bExybU1JSkhFX0tIYlBzVTUxZ0xVNXZiS0pKQ1VaSl8yUlZMbWpCbDRFdmtHUndlRGFjRHFCbzQzV19ncDBaZzB3dVRwZGVIQU42MncxWnNrRV9nWnRpajZSX2x5eHJOOGpzUE9VZ0M1dXRLb2NvSml3WmI0YjdRcWlhbFRiMVdzRnJmY3BFajE5dHJ1NkllMlhqS2RpTWJwUUdrUlhtSGJoaU5r?oc=5",
-      "published_at": "2026-08-03T18:25:37+08:00"
-    },
-    {
-      "id": "NEWS-5EEF4D777E7D90",
-      "title": "中国移动香港荣膺Ookla Speedtest七项国际奖项",
-      "summary": "中国移动香港获得Ookla Speedtest七项网络国际权威奖项及认证。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
-      "published_at": "2026-08-03T08:43:00+08:00"
     }
   ],
-  "site_version": "8a519f4818d606b483b8a60635ccaebd274dcc95a6168d81b74ca3cd8110ee8e"
+  "site_version": "646aba05667aed8ef958c9a803baf74c3fbc0b5599430285ce8ae847a7015d7a"
 }
