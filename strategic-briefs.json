@@ -1,11 +1,11 @@
 {
   "ok": true,
-  "generated_at": "2026-08-10T09:17:33+08:00",
+  "generated_at": "2026-08-10T09:23:06+08:00",
   "items": [
     {
       "id": "NEWS-EBBDE75E47F316",
       "title": "李家超：冀9月公布首份五年规划",
-      "summary": "行政长官李家超表示，香港首份五年规划咨询已结束，政府正整理分析逾13,800份相关意见，目标于9月内发表规划。",
+      "summary": "行政长官李家超表示，香港首份五年规划咨询将于本周五结束；政府正整理分析约13,800份相关意见，目标于9月内发表规划。",
       "category": "政策监管",
       "source_url": "https://www.am730.com.hk/article/1046392",
       "published_at": "2026-08-09T08:07:00+08:00"
@@ -67,5 +67,5 @@
       "published_at": "2026-08-04T18:21:00+08:00"
     }
   ],
-  "site_version": "646aba05667aed8ef958c9a803baf74c3fbc0b5599430285ce8ae847a7015d7a"
+  "site_version": "5b3b90b9617dd096f384ca9b6c30d67c10d0f728e3c118be1e31d91ec9fc64c9"
 }
