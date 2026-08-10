@@ -4895,7 +4895,11 @@ function addMessage(role, content, markdown = false) {
   } else {
     const logo = document.createElement("img");
     logo.src = "/static/assets/logo/xiaojing-ai-logo-mark.png?v=2";
-    logo.alt = "";
+    logo.alt = "小竞 AI";
+    logo.addEventListener("error", () => {
+      avatar.classList.add("is-logo-fallback");
+      logo.remove();
+    }, { once: true });
     avatar.appendChild(logo);
   }
   const body = document.createElement("div");
