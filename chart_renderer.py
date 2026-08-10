@@ -18,7 +18,14 @@ from matplotlib.ticker import FuncFormatter
 
 ROOT = Path(__file__).resolve().parent
 CHART_OUTPUT_DIR = ROOT / "agent_knowledge" / "generated_charts"
-CHART_RENDERER_VERSION = "2026-08-03-complete-inside-bar-labels-v4"
+CHART_RENDERER_VERSION = "2026-08-10-dark-gray-readable-category-labels-v5"
+
+CHART_BG = "#202A33"
+PLOT_BG = "#202A33"
+TEXT_PRIMARY = "#E6EDF3"
+TEXT_SECONDARY = "#AAB7C4"
+GRID_COLOR = "#3A4651"
+SPINE_COLOR = "#52606D"
 
 COLOR_PALETTE = [
     "#0077C8",
@@ -220,7 +227,7 @@ def _label_bars(
         label_type="center" if center else "edge",
         padding=0 if center else 4,
         fontsize=7.6 if compact else 8.2,
-        color="white" if center else "#344054",
+        color="white" if center else TEXT_PRIMARY,
         fontweight="bold" if center else "normal",
         fontproperties=font_prop,
         rotation=rotation,
@@ -228,17 +235,37 @@ def _label_bars(
 
 
 def _style_cartesian_axis(ax, unit: str, font_prop) -> None:
-    ax.set_facecolor("white")
+    ax.set_facecolor(PLOT_BG)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_color("#D8E3EE")
-    ax.spines["bottom"].set_color("#D8E3EE")
-    ax.grid(axis="y", color="#E6EEF6", linewidth=1.0)
+    ax.spines["left"].set_color(SPINE_COLOR)
+    ax.spines["bottom"].set_color(SPINE_COLOR)
+    ax.grid(axis="y", color=GRID_COLOR, linewidth=0.8)
     ax.set_axisbelow(True)
     ax.yaxis.set_major_formatter(_value_formatter(unit))
     for tick in ax.get_yticklabels():
         tick.set_fontproperties(font_prop)
-    ax.tick_params(axis="both", colors="#66758A", labelsize=8.8)
+    ax.tick_params(axis="both", colors=TEXT_SECONDARY, labelsize=8.8)
+
+
+def _wrap_category_label(label: str, *, width: int = 11, max_lines: int = 2) -> str:
+    """Keep long CJK/category labels readable without letting them fill the chart."""
+    clean = re.sub(r"\s+", " ", str(label or "")).strip()
+    if len(clean) <= width:
+        return clean
+
+    date_match = re.match(r"^(\d{4}(?:[-/.]\d{1,2})?)\s+(.+)$", clean)
+    if date_match:
+        first, remainder = date_match.groups()
+        available = width * max(1, max_lines - 1)
+        second = remainder if len(remainder) <= available else remainder[: max(1, available - 1)].rstrip() + "…"
+        return f"{first}\n{second}"
+
+    lines = [clean[index:index + width] for index in range(0, len(clean), width)]
+    if len(lines) > max_lines:
+        lines = lines[:max_lines]
+        lines[-1] = lines[-1][:-1].rstrip() + "…"
+    return "\n".join(lines)
 
 
 def _set_category_ticks(ax, x_labels: list[str], font_prop) -> int:
@@ -248,11 +275,18 @@ def _set_category_ticks(ax, x_labels: list[str], font_prop) -> int:
     if x_pos and tick_positions[-1] != x_pos[-1]:
         tick_positions.append(x_pos[-1])
     labels = [x_labels[index] for index in tick_positions]
+    has_long_labels = any(len(re.sub(r"\s+", "", label)) > 12 for label in labels)
+    if has_long_labels:
+        wrap_width = 9 if len(labels) >= 7 else 11
+        labels = [_wrap_category_label(label, width=wrap_width) for label in labels]
     ax.set_xticks(tick_positions, labels, fontproperties=font_prop)
-    rotation = 0 if len(labels) <= 10 else 35
+    rotation = 0 if has_long_labels or len(labels) <= 10 else 35
     for tick in ax.get_xticklabels():
         tick.set_rotation(rotation)
         tick.set_ha("right" if rotation else "center")
+        tick.set_linespacing(1.15)
+        if has_long_labels:
+            tick.set_fontsize(7.8)
     return rotation
 
 
@@ -277,7 +311,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
     fig_width = min(13.5, max(7.2, 0.38 * label_count + 4.0))
     subplot_kw = {"projection": "polar"} if chart_type == "radar" else {}
     fig, ax = plt.subplots(figsize=(fig_width, 4.6), dpi=160, subplot_kw=subplot_kw)
-    fig.patch.set_facecolor("white")
+    fig.patch.set_facecolor(CHART_BG)
     cartesian = chart_type not in {"pie", "donut", "radar", "heatmap"}
     if cartesian:
         _style_cartesian_axis(ax, spec["unit"], font_prop)
@@ -299,6 +333,10 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
                 compact=dense_labels,
                 rotation=90 if dense_labels else 0,
             )
+        plotted_values = [value for item in spec["series"] for value in _category_values(item, label_count)]
+        if plotted_values and min(plotted_values) >= 0 and max(plotted_values) <= 1:
+            ax.set_ylim(0, 1.15)
+            ax.set_yticks([0, 1])
         ax.margins(y=0.12)
     elif chart_type == "horizontal_bar":
         count = len(spec["series"])
@@ -318,7 +356,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             )
         ax.set_yticks(x_pos, x_labels, fontproperties=font_prop)
         ax.invert_yaxis()
-        ax.grid(axis="x", color="#E6EEF6", linewidth=1.0)
+        ax.grid(axis="x", color=GRID_COLOR, linewidth=0.8)
         ax.grid(axis="y", visible=False)
         ax.xaxis.set_major_formatter(_value_formatter(spec["unit"]))
         ax.margins(x=0.12)
@@ -358,8 +396,8 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             pctdistance=0.78 if chart_type == "donut" else 0.65,
             startangle=90,
             counterclock=False,
-            wedgeprops={"width": 0.42 if chart_type == "donut" else 1.0, "edgecolor": "white", "linewidth": 1.5},
-            textprops={"fontproperties": font_prop, "color": "#344054", "fontsize": 8.8},
+            wedgeprops={"width": 0.42 if chart_type == "donut" else 1.0, "edgecolor": CHART_BG, "linewidth": 1.5},
+            textprops={"fontproperties": font_prop, "color": TEXT_PRIMARY, "fontsize": 8.8},
         )
         for text in autotexts:
             text.set_color("white")
@@ -378,7 +416,7 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
                 marker_sizes = [40 + 380 * abs(value) / scale_max if math.isfinite(values[i]) else 0 for i, value in enumerate(raw_sizes)]
             else:
                 marker_sizes = 54
-            ax.scatter(plot_x, values, s=marker_sizes, label=item["name"], color=item["color"], alpha=0.72, edgecolors="white", linewidths=0.7)
+            ax.scatter(plot_x, values, s=marker_sizes, label=item["name"], color=item["color"], alpha=0.82, edgecolors=CHART_BG, linewidths=0.7)
         if plot_x == x_pos:
             _set_category_ticks(ax, x_labels, font_prop)
     elif chart_type == "radar":
@@ -391,9 +429,11 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             closed_values = values + values[:1]
             ax.plot(closed_angles, closed_values, label=item["name"], color=item["color"], linewidth=2.0)
             ax.fill(closed_angles, closed_values, color=item["color"], alpha=0.12)
-        ax.set_xticks(angles, x_labels, fontproperties=font_prop, color="#344054", fontsize=8.8)
+        ax.set_facecolor(PLOT_BG)
+        ax.set_xticks(angles, [_wrap_category_label(label) for label in x_labels], fontproperties=font_prop, color=TEXT_PRIMARY, fontsize=8.8)
         ax.set_rlabel_position(15)
-        ax.grid(color="#D8E3EE")
+        ax.tick_params(axis="y", colors=TEXT_SECONDARY)
+        ax.grid(color=GRID_COLOR)
     elif chart_type == "heatmap":
         matrix = [_category_values(item, label_count, float("nan")) for item in spec["series"]]
         image = ax.imshow(matrix, aspect="auto", cmap="Blues")
@@ -405,14 +445,15 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
             for row_index, row in enumerate(matrix):
                 for column_index, value in enumerate(row):
                     if math.isfinite(value):
-                        ax.text(column_index, row_index, f"{value:,.0f}", ha="center", va="center", fontsize=7.8, color="white" if value > midpoint else "#172033", fontproperties=font_prop)
+                        ax.text(column_index, row_index, f"{value:,.0f}", ha="center", va="center", fontsize=7.8, color="white" if value > midpoint else "#111820", fontproperties=font_prop)
         colorbar = fig.colorbar(image, ax=ax, fraction=0.025, pad=0.025)
         colorbar.ax.yaxis.set_major_formatter(_value_formatter(spec["unit"]))
+        colorbar.ax.tick_params(colors=TEXT_SECONDARY)
     elif chart_type == "histogram":
         for item in spec["series"]:
             values = [float(value) for value in item["data"] if value is not None]
             ax.hist(values, bins=spec["bins"], label=item["name"], color=item["color"], alpha=0.58, edgecolor="white")
-        ax.set_ylabel("频数", fontproperties=font_prop, color="#66758A")
+        ax.set_ylabel("频数", fontproperties=font_prop, color=TEXT_SECONDARY)
     elif chart_type == "box":
         samples = [[float(value) for value in item["data"] if value is not None] for item in spec["series"]]
         labels = [item["name"] for item in spec["series"]]
@@ -435,18 +476,18 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
         for item in spec["series"]:
             ax.plot(x_pos, _category_values(item, label_count, float("nan")), label=item["name"], color=item["color"], linewidth=2.0, marker="o", markersize=4.2)
 
-    ax.set_title(spec["title"], loc="center", fontsize=13.5, fontweight="bold", color="#172033", pad=14, fontproperties=font_prop)
+    ax.set_title(spec["title"], loc="center", fontsize=13.5, fontweight="bold", color=TEXT_PRIMARY, pad=14, fontproperties=font_prop)
     if spec["unit"] and chart_type not in {"pie", "donut"}:
-        ax.text(-0.03, 1.015, spec["unit"], transform=ax.transAxes, ha="center", va="bottom", fontsize=9.5, color="#66758A", fontproperties=font_prop)
+        ax.text(-0.03, 1.015, spec["unit"], transform=ax.transAxes, ha="center", va="bottom", fontsize=9.5, color=TEXT_SECONDARY, fontproperties=font_prop)
     rotation = 0
     if chart_type in {"line", "bar", "grouped_bar", "stacked_bar", "area", "stacked_area", "combo"}:
         rotation = _set_category_ticks(ax, x_labels, font_prop)
     if chart_type not in {"pie", "donut", "heatmap"}:
         handles, labels = ax.get_legend_handles_labels()
-        if handles:
+        if handles and len(spec["series"]) > 1:
             legend = ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=min(4, max(1, len(labels))), frameon=False, prop=font_prop, fontsize=8.8, handlelength=1.8)
             for text in legend.get_texts():
-                text.set_color("#344054")
+                text.set_color(TEXT_PRIMARY)
     if cartesian and chart_type != "horizontal_bar":
         ax.margins(x=0.04)
 
@@ -459,6 +500,6 @@ def render_chart(raw_spec: dict[str, Any]) -> dict[str, str]:
     digest = hashlib.sha256(json.dumps(digest_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()[:16]
     filename = f"chart_{digest}.png"
     path = CHART_OUTPUT_DIR / filename
-    fig.savefig(path, bbox_inches="tight", facecolor="white")
+    fig.savefig(path, bbox_inches="tight", facecolor=CHART_BG)
     plt.close(fig)
     return {"filename": filename, "path": str(path), "url": f"/generated-charts/{filename}", "font": font_name}
