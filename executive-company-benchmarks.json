@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-11T03:28:28",
+  "generated_at": "2026-08-04T11:49:47",
   "comparison_basis": "各公司最新可核验半年度披露；期间不同，不用于直接合计。",
   "companies": [
     {
@@ -124,7 +124,7 @@
         "period_end": "Dec '25 Dec 31, 2025",
         "source_label": "HKT 2025 Annual Results Announcement",
         "source_url": "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
-        "verification_status": "official_only"
+        "verification_status": "official_conflict"
       },
       "cash": {
         "value": 19.57,
@@ -140,7 +140,7 @@
         "period_end": "Dec '25 Dec 31, 2025",
         "source_label": "HKT 2025 Annual Report and Annual Results Announcement",
         "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
-        "verification_status": "official_only"
+        "verification_status": "official_conflict"
       },
       "ebitda_margin": {
         "value": 40.8,
