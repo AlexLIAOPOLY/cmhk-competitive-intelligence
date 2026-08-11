@@ -55,3 +55,55 @@ No actionable P0, P1, or P2 differences remain. The selected-row background is a
 None required.
 
 final result: passed
+
+---
+
+# AI Logo Background Design QA
+
+- Source visual truth: `/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/codex-clipboard-fd3c49b1-8025-48df-84bd-e33e5604fea5.png`
+- User clarification for stroke weight: `/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/codex-clipboard-0cd921d0-85a2-460c-9b1c-d5266b02bd1b.png`
+- Implementation full screenshot: `artifacts/design-qa/ai-panel-full.png`
+- Implementation focused screenshot: `artifacts/design-qa/ai-logo-background-implemented.png`
+- Side-by-side comparison: `artifacts/design-qa/ai-logo-background-comparison.jpg`
+- Browser viewport: 1280 × 720 CSS px, density 1
+- Source pixels: 86 × 90
+- Implementation empty-state mark: 48 × 48 CSS px before responsive page scaling
+- State: 小竞AI panel open on the empty conversation view
+
+## Full-view comparison
+
+The new dark rounded-square base sits quietly above the empty-state heading and does not compete with the surrounding content. The same treatment is shared by assistant-message avatars at their smaller size.
+
+## Focused comparison
+
+The reference contributes only the base treatment: a dark navy surface, fine cyan outline, rounded corners, and restrained inner depth. The central artwork remains the existing CMHK 小竞AI logo asset. Its original stroke is expanded by sub-pixel same-color shadows so the mark remains legible on the dark base without becoming a glow.
+
+## Required fidelity surfaces
+
+- Shape: rounded square with 14 px radius on the 48 px empty-state mark.
+- Border: 1 px cyan outline at 58% opacity.
+- Surface: solid `#0a202a` with subtle inset depth and no light fill.
+- Brand asset: unchanged `/static/assets/logo/xiaojing-ai-logo-mark.png?v=2`.
+- Stroke treatment: approximately 1 px visual thickening at the empty-state size and a reduced expansion for chat avatars.
+
+## Findings and comparison history
+
+1. First dark-base pass preserved the original logo but left its dark blue stroke too faint.
+   - Fix: raised brightness and contrast while keeping the source asset unchanged.
+2. User feedback showed the logo line was still too thin at the responsive rendered size.
+   - Fix: added balanced 0.55 px same-color expansion on the empty-state mark and 0.4 px on assistant avatars.
+3. Final focused comparison confirms the original mark is recognizable, the stroke is visibly heavier, and the base stays visually restrained.
+
+## Interaction and console verification
+
+- Open 小竞AI panel: passed.
+- Empty-state logo uses the original asset path: passed.
+- Computed dark base, border, inset shadow, and thickened-line filter: passed.
+- Browser console errors/warnings: 0.
+- Automated targeted regression: 165 tests passed.
+
+## Follow-up polish
+
+None required.
+
+final result: passed
