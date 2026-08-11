@@ -15,6 +15,41 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_fast_focus_generation_retries_a_duplicate_with_another_model(self):
+        focus = {
+            "id": "scale",
+            "label": "方案规模",
+            "metric": {"value": 161, "unit": "项"},
+            "insight": "HKBN59项高于HGC7项，结构差异表明方案供给集中于头部，而非各品牌同步扩张。",
+            "items": [
+                {"name": "HKBN", "value": 59, "unit": "项"},
+                {"name": "HGC", "value": 7, "unit": "项"},
+            ],
+        }
+        duplicate = json.dumps({"analysis": focus["insight"]}, ensure_ascii=False)
+        replacement = json.dumps({
+            "analysis": "59项与7项形成明显断层，说明竞争结构受制于头部集中，并非各品牌同步扩张。"
+        }, ensure_ascii=False)
+        responses = []
+        for content in (duplicate, replacement):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": content}}]
+            }).encode("utf-8")
+            responses.append(response)
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("local", focus)
+
+        self.assertEqual(request.call_count, 2)
+        self.assertEqual(result["model"], "GLM")
+        self.assertNotEqual(result["focus"]["analysis"], focus["insight"])
+
     def test_focus_regeneration_merges_one_validated_insight(self):
         evidence = pipeline._analysis_input_snapshot()
         domain = next(item for item in evidence["domains"] if item["id"] == "international")
@@ -34,9 +69,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             path.write_text("{}", encoding="utf-8")
             with (
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
-                patch("executive_intelligence_pipeline.generate_model_domain_summaries", return_value={
+                patch("executive_intelligence_pipeline.generate_model_focus_insight", return_value={
                     "model": "test-model",
-                    "summaries": [scoped_summary],
+                    "focus": scoped_summary["focuses"][0],
                 }) as generate,
             ):
                 progress = []
@@ -50,7 +85,6 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             self.assertEqual(saved["manual_focus_regeneration"]["focus"], "investment")
             self.assertEqual(len(saved["summaries"]), 4)
             self.assertEqual(generate.call_args.kwargs["temperature"], 0.25)
-            self.assertTrue(generate.call_args.kwargs["allow_partial_domains"])
             self.assertEqual(progress[0], "正在读取当前证据")
             self.assertEqual(progress[-1], "证据校验通过，正在返回洞察")
 

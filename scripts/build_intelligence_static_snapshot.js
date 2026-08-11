@@ -38,7 +38,7 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
-.static-snapshot .intelligence-ai-refresh { display: none !important; }
+.static-snapshot .ai-insight-label { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -232,7 +232,7 @@ async function main() {
   <title>中国移动香港｜四库竞争情报驾驶舱</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./leadership-board.css?v=8">
+  <link rel="stylesheet" href="./leadership-board.css?v=10">
 </head>
 <body class="dashboard-page static-snapshot">
   <main class="app-shell">

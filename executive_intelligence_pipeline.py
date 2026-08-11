@@ -1376,6 +1376,129 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
     return _validate_model_discoveries(discoveries, evidence)
 
 
+def generate_model_focus_insight(
+    domain_id: str,
+    focus: dict[str, Any],
+    *,
+    temperature: float = 0.25,
+) -> dict[str, Any]:
+    """Generate only the current overview judgement, without repeating entity summaries."""
+    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from ai_rate_limit import wait_for_internal_ai_slot
+    from network_utils import urlopen_with_local_proxy_fallback
+
+    config = load_ai_config(include_key=True)
+    api_key = str(config.get("api_key") or "").strip()
+    if not api_key:
+        raise RuntimeError("未配置内网模型密钥")
+    focus_id = str(focus.get("id") or "")
+    compact_focus = {
+        "id": focus_id,
+        "label": focus.get("label"),
+        "metric": focus.get("metric"),
+        "context": focus.get("context"),
+        "current_insight": focus.get("insight"),
+        "items": [
+            {
+                "name": item.get("name"),
+                "value": item.get("value"),
+                "unit": item.get("unit"),
+                "detail": item.get("detail"),
+                "source_url": item.get("source_url"),
+            }
+            for item in focus.get("items") or []
+            if isinstance(item, dict)
+        ],
+    }
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "你是电信竞争情报分析员。只返回JSON对象{analysis:string}。只能使用输入数字和事实。"
+                "analysis必须一至两句、120字内，引用输入具体数值，给出结构、驱动、集中度、"
+                "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
+                "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value，"
+                "禁止自行加总、计算占比或创造衍生数字。结论必须使用表明、说明、意味着、主要来自、"
+                "并非、而非或不能等同中的至少一个连接词。"
+            ),
+        },
+        {
+            "role": "user",
+            "content": f"只重新生成{domain_id}.{focus_id}当前洞察：\n"
+            + json.dumps(compact_focus, ensure_ascii=False),
+        },
+    ]
+    model = str(config.get("model") or "deepseek-v4")
+    attempt_models = list(dict.fromkeys([model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
+    previous_insight = re.sub(r"\s+", "", str(focus.get("insight") or ""))
+    last_error: ValueError | None = None
+    for attempt, attempt_model in enumerate(attempt_models):
+        attempt_messages = list(messages)
+        if attempt:
+            attempt_messages.append({
+                "role": "user",
+                "content": (
+                    f"上一版未通过新洞察门禁：{last_error}。必须换一个分析角度和句式，"
+                    "不得复用current_insight；仍只能使用输入原值，只返回JSON对象。"
+                ),
+            })
+        request = urllib.request.Request(
+            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
+            data=json.dumps({
+                "model": attempt_model,
+                "messages": attempt_messages,
+                "temperature": temperature if attempt == 0 else max(0.55, temperature),
+                "max_tokens": 480,
+                "chat_template_kwargs": {"enable_thinking": False},
+            }, ensure_ascii=False).encode("utf-8"),
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")
+        try:
+            with urlopen_with_local_proxy_fallback(request, timeout=90) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="ignore")[:800]
+            raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
+        try:
+            message = (payload.get("choices") or [{}])[0].get("message") or {}
+            parsed = _extract_json_payload(message.get("content") or message.get("reasoning_content") or "")
+            if isinstance(parsed, list) and len(parsed) == 1:
+                parsed = parsed[0]
+            if not isinstance(parsed, dict):
+                raise ValueError("模型未返回单项洞察对象")
+            analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
+            if analysis and not re.search(r"[。！？!?]$", analysis):
+                analysis += "。"
+            gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
+            if gate_error:
+                raise ValueError(gate_error)
+            unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(focus)
+            if unknown_numbers:
+                raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_numbers)}")
+            normalized_analysis = re.sub(r"\s+", "", analysis)
+            similarity = difflib.SequenceMatcher(None, previous_insight, normalized_analysis).ratio()
+            if previous_insight and similarity >= 0.86:
+                raise ValueError(f"新洞察与当前洞察过于相似：{similarity:.0%}")
+        except (ValueError, json.JSONDecodeError) as exc:
+            last_error = ValueError(str(exc))
+            if attempt + 1 < len(attempt_models):
+                continue
+            raise last_error
+        return {
+            "generated_at_hkt": _now(),
+            "model": attempt_model,
+            "focus": {
+                "id": focus_id,
+                "analysis": analysis,
+                "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+                "source_urls": [],
+            },
+        }
+    raise last_error or ValueError("AI洞察生成失败")
+
+
 def generate_model_domain_summaries(
     evidence: dict[str, Any] | None = None,
     *,
@@ -1935,28 +2058,6 @@ def regenerate_model_focus_summary(
     if not focus_evidence:
         raise ValueError(f"未知竞争情报关注点：{domain_id}.{focus_id}")
 
-    report("正在生成新的数据判断")
-    scoped_evidence = {
-        "domains": [{**domain_evidence, "focuses": [focus_evidence]}],
-        "relations": [],
-    }
-    scoped = generate_model_domain_summaries(
-        scoped_evidence,
-        temperature=0.25,
-        allow_partial_domains=True,
-    )
-    scoped_domain = next(
-        (item for item in scoped.get("summaries") or [] if str(item.get("domain") or "") == domain_id),
-        None,
-    )
-    scoped_focus = next(
-        (item for item in (scoped_domain or {}).get("focuses") or [] if str(item.get("id") or "") == focus_id),
-        None,
-    )
-    if not scoped_domain or not scoped_focus:
-        raise ValueError(f"模型未返回当前洞察：{domain_id}.{focus_id}")
-
-    report("正在校验数字与来源")
     analysis = _read_json(path, {}) or {}
     previous = analysis.get("model_analysis") or {}
     previous_is_current = bool(
@@ -1964,6 +2065,24 @@ def regenerate_model_focus_summary(
         and str(previous.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
         and previous.get("summaries")
     )
+    previous_focus = next((
+        focus
+        for summary in previous.get("summaries") or []
+        if str(summary.get("domain") or "") == domain_id
+        for focus in summary.get("focuses") or []
+        if str(focus.get("id") or "") == focus_id
+    ), None) if previous_is_current else None
+    generation_focus = {
+        **focus_evidence,
+        "insight": str((previous_focus or {}).get("analysis") or focus_evidence.get("insight") or ""),
+    }
+    report("正在生成新的数据判断")
+    scoped = generate_model_focus_insight(domain_id, generation_focus, temperature=0.25)
+    scoped_focus = scoped.get("focus")
+    if not isinstance(scoped_focus, dict):
+        raise ValueError(f"模型未返回当前洞察：{domain_id}.{focus_id}")
+
+    report("正在校验数字与来源")
     if previous_is_current:
         summaries = json.loads(json.dumps(previous.get("summaries") or [], ensure_ascii=False))
         discoveries = json.loads(json.dumps(previous.get("discoveries") or [], ensure_ascii=False))
@@ -1973,7 +2092,7 @@ def regenerate_model_focus_summary(
 
     target_domain = next(item for item in summaries if str(item.get("domain") or "") == domain_id)
     target_domain["focuses"] = [
-        scoped_focus if str(item.get("id") or "") == focus_id else item
+        {**item, **scoped_focus} if str(item.get("id") or "") == focus_id else item
         for item in target_domain.get("focuses") or []
     ]
     validated_summaries = _validate_model_summaries(

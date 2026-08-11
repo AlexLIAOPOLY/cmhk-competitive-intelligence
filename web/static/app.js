@@ -7507,44 +7507,33 @@ document.addEventListener("keydown", (event) => {
     `;
   }
 
-  function renderInsightRefreshButton(domain, focus) {
-    const key = `${domain.id}:${focus.id}`;
-    const state = insightRefreshState.get(key) || { status: "idle" };
-    const label = state.status === "loading" || state.status === "streaming"
-      ? `正在重新生成${domain.title}${focus.label}AI洞察`
-      : state.status === "error"
-        ? `${domain.title}${focus.label}AI洞察生成失败，点击重试`
-        : `重新生成${domain.title}${focus.label}AI洞察`;
-    return `
-      <button type="button" class="intelligence-ai-refresh ${state.status === "loading" || state.status === "streaming" ? "is-loading" : ""} ${state.status === "error" ? "is-error" : ""}"
-        data-intelligence-insight-refresh data-intelligence-domain-id="${safe(domain.id)}" data-intelligence-focus-id="${safe(focus.id)}"
-        aria-label="${safe(label)}" title="${safe(label)}" ${state.status === "loading" || state.status === "streaming" ? "disabled aria-busy=\"true\"" : ""}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8a7.5 7.5 0 1 0 .2 7.6"></path><path d="M19 3v5h-5"></path></svg>
-      </button>
-    `;
-  }
-
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
+      const refreshLabel = isGenerating
+        ? `正在重新生成${domain.title}${focus.label}AI洞察`
+        : refreshState?.status === "error"
+          ? `${domain.title}${focus.label}AI洞察生成失败，点击重试`
+          : `点击重新生成${domain.title}${focus.label}AI洞察`;
       const insightContent = isGenerating
         ? refreshState.text
           ? `<span class="intelligence-ai-stream-text">${safe(refreshState.text)}</span><i class="intelligence-ai-stream-cursor" aria-hidden="true"></i>`
-          : `<span class="intelligence-ai-stream-status"><i aria-hidden="true"><b></b><b></b><b></b></i>${safe(refreshState.message || "正在生成新的数据判断")}</span>`
+          : `<span class="intelligence-ai-paragraph-skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sr-only">${safe(refreshState.message || "正在生成新的数据判断")}</span>`
         : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
       const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-overview`.replace(/[^a-zA-Z0-9_-]/g, "-");
       return `
         <div class="intelligence-entity-focus is-overview">
-          <span class="ai-insight-label">
+          <button type="button" class="ai-insight-label ${isGenerating ? "is-loading" : ""} ${refreshState?.status === "error" ? "is-error" : ""}"
+            data-intelligence-insight-refresh data-intelligence-domain-id="${safe(domain.id)}" data-intelligence-focus-id="${safe(focus.id)}"
+            aria-label="${safe(refreshLabel)}" title="${safe(refreshLabel)}" ${isGenerating ? "disabled aria-busy=\"true\"" : ""}>
             <svg class="ai-insight-mark" viewBox="0 0 18 18" aria-hidden="true">
               <path d="M8.2 1.6c.35 3.48 2.72 5.85 6.2 6.2-3.48.35-5.85 2.72-6.2 6.2C7.85 10.52 5.48 8.15 2 7.8c3.48-.35 5.85-2.72 6.2-6.2Z"></path>
               <path d="M14.5 1.7v3.2M12.9 3.3h3.2"></path>
             </svg>
             <span>AI 洞察</span>
-            ${renderInsightRefreshButton(domain, focus)}
-          </span>
+          </button>
           <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body ${isGenerating ? "is-generating" : ""}" data-intelligence-detail-body>
             <p role="status" aria-live="polite" aria-atomic="false" aria-busy="${isGenerating ? "true" : "false"}">${insightContent}</p>

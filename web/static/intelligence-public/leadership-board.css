@@ -1,6 +1,6 @@
 /* Layered technology cockpit panels for the leadership board. */
 .intelligence-command-board {
-  grid-template-rows: 62px minmax(0, 1fr);
+  grid-template-rows: 84px minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -32,8 +32,8 @@
 }
 
 .intelligence-relation {
-  min-height: 62px;
-  padding: 9px 16px;
+  min-height: 84px;
+  padding: 10px 16px;
 }
 
 .intelligence-relation::before,
@@ -561,7 +561,16 @@
 /* Readability pass: keep decision-critical labels legible without changing the
    four-panel information hierarchy. */
 .intelligence-relation span { font-size: 13.5px; }
-.intelligence-relation strong { font-size: 16px; line-height: 1.32; }
+.intelligence-relation strong {
+  display: -webkit-box;
+  font-size: 16px;
+  line-height: 1.32;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
 .intelligence-page-identity span { font-size: 11px; }
 .intelligence-page-identity strong { font-size: 24px; }
 
@@ -607,64 +616,48 @@
 .intelligence-entity-list li > a,
 .intelligence-source-list a { font-size: 12.5px; }
 
-.intelligence-ai-refresh {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
-  margin-left: 2px;
-  padding: 0;
+.intelligence-entity-focus > .ai-insight-label {
+  padding: 2px 0;
   border: 0;
   border-radius: 0;
-  color: rgba(177, 194, 201, .62);
   background: transparent;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  font: inherit;
+  transition: color 160ms ease, opacity 160ms ease;
 }
-.intelligence-ai-refresh svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.intelligence-ai-refresh:hover,
-.intelligence-ai-refresh:focus-visible {
-  color: rgba(218, 230, 234, .9);
+.intelligence-entity-focus > .ai-insight-label:hover,
+.intelligence-entity-focus > .ai-insight-label:focus-visible {
+  color: color-mix(in srgb, var(--domain-accent) 90%, #e6f8fc);
   background: transparent;
   outline: none;
-  transform: translateY(-1px);
 }
-.intelligence-ai-refresh:focus-visible {
-  box-shadow: 0 0 0 2px rgba(177, 194, 201, .22);
+.intelligence-entity-focus > .ai-insight-label:focus-visible {
+  box-shadow: 0 1px 0 rgba(177, 194, 201, .42);
 }
-.intelligence-ai-refresh.is-loading { cursor: wait; }
-.intelligence-ai-refresh.is-loading svg { animation: intelligence-refresh-spin 800ms linear infinite; }
-.intelligence-ai-refresh.is-error {
+.intelligence-entity-focus > .ai-insight-label.is-loading { cursor: wait; opacity: .68; }
+.intelligence-entity-focus > .ai-insight-label.is-error {
   color: #ffb1ae;
-  background: transparent;
 }
-@keyframes intelligence-refresh-spin { to { transform: rotate(360deg); } }
 
-.intelligence-ai-stream-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #91aab4;
+.intelligence-ai-paragraph-skeleton {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  padding-block: 3px;
 }
-.intelligence-ai-stream-status > i { display: inline-flex; gap: 4px; }
-.intelligence-ai-stream-status b {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
-  animation: intelligence-stream-pulse 1.1s ease-in-out infinite;
+.intelligence-ai-paragraph-skeleton i {
+  display: block;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(70, 146, 163, .24);
+  transform-origin: left center;
+  animation: intelligence-skeleton-pulse 1.35s ease-in-out infinite;
 }
-.intelligence-ai-stream-status b:nth-child(2) { animation-delay: 140ms; }
-.intelligence-ai-stream-status b:nth-child(3) { animation-delay: 280ms; }
+.intelligence-ai-paragraph-skeleton i:nth-child(2) { width: 90%; animation-delay: 100ms; }
+.intelligence-ai-paragraph-skeleton i:nth-child(3) { width: 82%; animation-delay: 200ms; }
+.intelligence-ai-paragraph-skeleton i:nth-child(4) { width: 68%; animation-delay: 300ms; }
 .intelligence-ai-stream-cursor {
   display: inline-block;
   width: 2px;
@@ -674,7 +667,10 @@
   background: currentColor;
   animation: intelligence-stream-cursor 820ms steps(1) infinite;
 }
-@keyframes intelligence-stream-pulse { 0%, 70%, 100% { opacity: .25; } 35% { opacity: 1; } }
+@keyframes intelligence-skeleton-pulse {
+  0%, 100% { opacity: .32; transform: scaleX(.96); }
+  50% { opacity: .82; transform: scaleX(1); }
+}
 @keyframes intelligence-stream-cursor { 50% { opacity: 0; } }
 
 .intelligence-viz-rows li,
@@ -753,8 +749,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intelligence-ai-refresh.is-loading svg,
-  .intelligence-ai-stream-status b,
+  .intelligence-ai-paragraph-skeleton i,
   .intelligence-ai-stream-cursor { animation: none; }
 }
 html, body { width: 100%; min-width: 0; min-height: 100%; margin: 0; background: #061724; }
@@ -766,7 +761,7 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
-.static-snapshot .intelligence-ai-refresh { display: none !important; }
+.static-snapshot .ai-insight-label { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
