@@ -479,7 +479,8 @@ _INTERPRETIVE_DIMENSIONS = (
 _DEEP_RELATION_MARKERS = (
     "主要来自", "源于", "驱动", "并非", "而非", "不等同", "不等价", "不能", "不可",
     "受制", "约束", "转为", "集中于", "断层", "同步", "脱钩", "结构性差异", "口径放大",
-    "接近饱和", "趋于饱和", "未形成", "不再来自", "共同拉开",
+    "接近饱和", "趋于饱和", "未形成", "不再来自", "共同拉开", "梯队分布",
+    "分层竞争", "头部主导", "偏态分布",
 )
 _ACTION_ADVICE_PHRASES = (
     "建议", "值得关注", "后续关注", "应优先", "需优先", "优先关注", "优先评估", "优先验证",
@@ -813,6 +814,7 @@ def _validate_model_summaries(
                 focus_seen.add(focus_id)
                 validated_focus = {
                     "id": focus_id,
+                    "headline": str(focus_item.get("headline") or "").strip(),
                     "analysis": str(focus_item.get("analysis") or "").strip(),
                     "risk": str(focus_item.get("risk") or "").strip(),
                     "source_urls": [str(url) for url in focus_item.get("source_urls") or []],
@@ -1421,6 +1423,28 @@ def generate_model_focus_insight(
         (domain_id, focus_id),
         "只分析当前focus标签、metric和items直接表达的同一指标维度，不得借用其他页面维度。",
     )
+    recent_insights = list(dict.fromkeys(
+        str(value or "").strip()
+        for value in [focus.get("insight"), *(focus.get("recent_insights") or [])]
+        if str(value or "").strip()
+    ))[-5:]
+    recent_headlines = list(dict.fromkeys(
+        str(value or "").strip()
+        for value in [focus.get("headline"), *(focus.get("recent_headlines") or [])]
+        if str(value or "").strip()
+    ))[-5:]
+    angle_options = (
+        "从头部与尾部的数量断层切入",
+        "从相邻厂商形成的梯队层次切入",
+        "从整体分布是否均衡切入",
+        "从哪些厂商构成主要集中部分切入",
+        "从尾部厂商与主流供给的分化切入",
+    )
+    regeneration_index = max(1, int(focus.get("regeneration_index") or len(recent_insights) or 1))
+    angle_instruction = angle_options[(regeneration_index - 1) % len(angle_options)]
+    request_nonce = hashlib.sha256(
+        f"{time.time_ns()}-{os.urandom(16).hex()}".encode("utf-8")
+    ).hexdigest()[:20]
     include_item_detail = (domain_id, focus_id) != ("local", "scale")
     compact_focus = {
         "id": focus_id,
@@ -1428,7 +1452,11 @@ def generate_model_focus_insight(
         "metric": focus.get("metric"),
         "context": focus.get("context"),
         "current_insight": focus.get("insight"),
+        "current_headline": focus.get("headline"),
+        "recent_insights_to_avoid": recent_insights,
+        "recent_headlines_to_avoid": recent_headlines,
         "scope": focus_contract,
+        "required_angle": angle_instruction,
         "items": [
             {
                 "name": item.get("name"),
@@ -1445,7 +1473,9 @@ def generate_model_focus_insight(
         {
             "role": "system",
             "content": (
-                "你是电信竞争情报分析员。只返回JSON对象{analysis:string}。只能使用输入数字和事实。"
+                "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
+                "headline是随本次判断重新生成的4至18字结论标题，不含数字、单位、标点或行动建议，"
+                "不得复用recent_headlines_to_avoid。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、驱动、集中度、"
                 "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
                 "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value，"
@@ -1456,22 +1486,29 @@ def generate_model_focus_insight(
         },
         {
             "role": "user",
-            "content": f"只重新生成{domain_id}.{focus_id}当前洞察：\n"
+            "content": (
+                f"请求唯一标识（仅用于避免服务端缓存，不得写入答案）：{request_nonce}\n"
+                f"只重新生成{domain_id}.{focus_id}当前洞察，必须采用required_angle，"
+                "不得复用recent_insights_to_avoid的核心判断或句式：\n"
+            )
             + json.dumps(compact_focus, ensure_ascii=False),
         },
     ]
     model = str(config.get("model") or "deepseek-v4")
     attempt_models = list(dict.fromkeys([model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
-    previous_insight = re.sub(r"\s+", "", str(focus.get("insight") or ""))
+    previous_insights = [re.sub(r"\s+", "", value) for value in recent_insights]
     last_error: ValueError | None = None
     for attempt, attempt_model in enumerate(attempt_models):
         attempt_messages = list(messages)
         if attempt:
+            retry_angle = angle_options[(regeneration_index - 1 + attempt) % len(angle_options)]
             attempt_messages.append({
                 "role": "user",
                 "content": (
                     f"上一版未通过新洞察门禁：{last_error}。必须换一个分析角度和句式，"
-                    "不得复用current_insight；仍只能使用输入原值，只返回JSON对象。"
+                    "不得复用current_insight或既有标题；若错误涉及衍生数字，只并列输入原值，"
+                    f"不得输出相减、相加或换算结果；本次改用‘{retry_angle}’，该角度覆盖上一条"
+                    "required_angle；仍只能使用输入原值，只返回JSON对象。"
                 ),
             })
         request = urllib.request.Request(
@@ -1500,7 +1537,26 @@ def generate_model_focus_insight(
                 parsed = parsed[0]
             if not isinstance(parsed, dict):
                 raise ValueError("模型未返回单项洞察对象")
+            headline = re.sub(r"\s+", " ", str(parsed.get("headline") or "")).strip()
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
+            if not (4 <= len(headline) <= 18) or re.search(
+                r"[\d％%。，,；;：:！？!?]|百分点|港元|亿元|万元|万户|万项|项$",
+                headline,
+            ):
+                raise ValueError(f"AI洞察标题必须为4至18字且不含数字、单位或标点：{headline[:40]}")
+            if _contains_action_advice(headline):
+                raise ValueError(f"AI洞察标题含行动建议：{headline[:40]}")
+            forbidden_headline_terms = {
+                ("local", "scale"): ("赛道", "月费", "资费", "重叠", "交集"),
+            }.get((domain_id, focus_id), ())
+            if any(term in headline for term in forbidden_headline_terms):
+                raise ValueError(f"AI洞察标题混入其他页维度：{headline}")
+            headline_similarities = [
+                difflib.SequenceMatcher(None, previous, headline).ratio()
+                for previous in recent_headlines
+            ]
+            if max(headline_similarities, default=0.0) >= 0.86:
+                raise ValueError("AI洞察标题与最近标题过于相似")
             if analysis and not re.search(r"[。！？!?]$", analysis):
                 analysis += "。"
             gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
@@ -1508,13 +1564,22 @@ def generate_model_focus_insight(
                 raise ValueError(gate_error)
             # Validate against exactly what the model was allowed to see. Hidden
             # cross-focus details must never make their numbers look admissible.
-            unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(compact_focus)
+            allowed_numeric_evidence = {
+                "metric": compact_focus.get("metric"),
+                "items": compact_focus.get("items"),
+            }
+            unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(allowed_numeric_evidence)
             if unknown_numbers:
                 raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_numbers)}")
             normalized_analysis = re.sub(r"\s+", "", analysis)
-            similarity = difflib.SequenceMatcher(None, previous_insight, normalized_analysis).ratio()
-            if previous_insight and similarity >= 0.86:
-                raise ValueError(f"新洞察与当前洞察过于相似：{similarity:.0%}")
+            similarities = [
+                difflib.SequenceMatcher(None, previous_insight, normalized_analysis).ratio()
+                for previous_insight in previous_insights
+                if previous_insight
+            ]
+            similarity = max(similarities, default=0.0)
+            if similarity >= 0.84:
+                raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = ValueError(str(exc))
             if attempt + 1 < len(attempt_models):
@@ -1525,6 +1590,7 @@ def generate_model_focus_insight(
             "model": attempt_model,
             "focus": {
                 "id": focus_id,
+                "headline": headline,
                 "analysis": analysis,
                 "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
                 "source_urls": [],
@@ -2106,9 +2172,30 @@ def regenerate_model_focus_summary(
         for focus in summary.get("focuses") or []
         if str(focus.get("id") or "") == focus_id
     ), None) if previous_is_current else None
+    history_key = f"{domain_id}.{focus_id}"
+    previous_history = previous.get("manual_focus_regeneration_history") or {}
+    recent_insights = (
+        previous_history.get(history_key) or []
+        if isinstance(previous_history, dict)
+        else []
+    )
+    previous_title_history = previous.get("manual_focus_regeneration_title_history") or {}
+    if not isinstance(previous_title_history, dict):
+        previous_title_history = {}
+    recent_headlines = previous_title_history.get(history_key) or []
+    if not isinstance(recent_headlines, list):
+        recent_headlines = []
+    previous_counts = previous.get("manual_focus_regeneration_counts") or {}
+    if not isinstance(previous_counts, dict):
+        previous_counts = {}
+    regeneration_index = int(previous_counts.get(history_key) or 0) + 1
     generation_focus = {
         **focus_evidence,
         "insight": str((previous_focus or {}).get("analysis") or focus_evidence.get("insight") or ""),
+        "headline": str((previous_focus or {}).get("headline") or ""),
+        "recent_insights": recent_insights,
+        "recent_headlines": recent_headlines,
+        "regeneration_index": regeneration_index,
     }
     report("正在生成新的数据判断")
     scoped = generate_model_focus_insight(domain_id, generation_focus, temperature=0.25)
@@ -2143,6 +2230,21 @@ def regenerate_model_focus_summary(
         validated_discoveries = discoveries
 
     generated_at = _now()
+    updated_history = json.loads(json.dumps(previous_history, ensure_ascii=False)) \
+        if isinstance(previous_history, dict) else {}
+    updated_history[history_key] = list(dict.fromkeys([
+        *[str(value or "").strip() for value in recent_insights if str(value or "").strip()],
+        str((previous_focus or {}).get("analysis") or "").strip(),
+        str(scoped_focus.get("analysis") or "").strip(),
+    ]))[-5:]
+    updated_counts = json.loads(json.dumps(previous_counts, ensure_ascii=False))
+    updated_counts[history_key] = regeneration_index
+    updated_title_history = json.loads(json.dumps(previous_title_history, ensure_ascii=False))
+    updated_title_history[history_key] = list(dict.fromkeys([
+        *[str(value or "").strip() for value in recent_headlines if str(value or "").strip()],
+        str((previous_focus or {}).get("headline") or "").strip(),
+        str(scoped_focus.get("headline") or "").strip(),
+    ]))[-5:]
     generated = {
         **previous,
         "generated_at_hkt": generated_at,
@@ -2152,6 +2254,9 @@ def regenerate_model_focus_summary(
         "evidence_hash": evidence_hash,
         "insight_format": INSIGHT_FORMAT_VERSION,
         "reused": False,
+        "manual_focus_regeneration_history": updated_history,
+        "manual_focus_regeneration_counts": updated_counts,
+        "manual_focus_regeneration_title_history": updated_title_history,
         "manual_focus_regeneration": {"domain": domain_id, "focus": focus_id, "generated_at_hkt": generated_at},
     }
     if not previous_is_current:
@@ -2163,6 +2268,7 @@ def regenerate_model_focus_summary(
         "ok": True,
         "domain": domain_id,
         "focus": focus_id,
+        "headline": str(scoped_focus.get("headline") or ""),
         "analysis": str(scoped_focus.get("analysis") or ""),
         "model": generated["model"],
         "generated_at_hkt": generated_at,

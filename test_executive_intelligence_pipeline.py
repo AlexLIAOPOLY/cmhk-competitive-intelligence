@@ -15,6 +15,45 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_focus_generation_changes_cache_busting_prompt_each_time(self):
+        focus = {
+            "id": "scale",
+            "label": "方案规模",
+            "metric": {"value": 161, "unit": "项"},
+            "items": [
+                {"name": "HKBN", "value": 59, "unit": "项"},
+                {"name": "HGC", "value": 7, "unit": "项"},
+            ],
+        }
+        content = json.dumps({
+            "headline": "头部供给形成断层",
+            "analysis": "HKBN 59项与HGC 7项形成断层，表明供给集中度主要由头部厂商形成，并非均衡分布。"
+        }, ensure_ascii=False)
+
+        def response(*_args, **_kwargs):
+            result = mock.MagicMock()
+            result.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": content}}]
+            }).encode("utf-8")
+            return result
+
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=response) as request,
+        ):
+            pipeline.generate_model_focus_insight("local", focus)
+            pipeline.generate_model_focus_insight("local", focus)
+
+        prompts = [
+            json.loads(call.args[0].data.decode("utf-8"))["messages"][1]["content"]
+            for call in request.call_args_list
+        ]
+        self.assertEqual(len(prompts), 2)
+        self.assertNotEqual(prompts[0], prompts[1])
+
     def test_local_scale_regeneration_excludes_track_details_and_retries_scope_leak(self):
         focus = {
             "id": "scale",
@@ -27,9 +66,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             ],
         }
         leaked = json.dumps({
+            "headline": "赛道广度决定规模",
             "analysis": "HKBN 59项覆盖4个赛道，说明方案规模与赛道广度相关。"
         }, ensure_ascii=False)
         replacement = json.dumps({
+            "headline": "方案供给头部集中",
             "analysis": "HKBN 59项与HGC 7项形成数量断层，表明在售方案供给集中于头部厂商。"
         }, ensure_ascii=False)
         responses = []
@@ -52,6 +93,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         first_prompt = first_payload["messages"][1]["content"]
         self.assertNotIn("覆盖4个赛道", first_prompt)
         self.assertIn("不得讨论产品赛道", first_prompt)
+        self.assertIn("请求唯一标识", first_prompt)
+        self.assertIn("required_angle", first_prompt)
         self.assertEqual(request.call_count, 2)
         self.assertNotIn("赛道", result["focus"]["analysis"])
 
@@ -66,8 +109,12 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 {"name": "HGC", "value": 7, "unit": "项"},
             ],
         }
-        duplicate = json.dumps({"analysis": focus["insight"]}, ensure_ascii=False)
+        duplicate = json.dumps({
+            "headline": "方案供给头部集中",
+            "analysis": focus["insight"],
+        }, ensure_ascii=False)
         replacement = json.dumps({
+            "headline": "头尾方案形成断层",
             "analysis": "59项与7项形成明显断层，说明竞争结构受制于头部集中，并非各品牌同步扩张。"
         }, ensure_ascii=False)
         responses = []
@@ -104,6 +151,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         scoped_summary["focuses"][0]["analysis"] = pipeline._compact_grounded_focus_analysis(
             "international", focus
         )
+        scoped_summary["focuses"][0]["headline"] = "投入梯队重新分化"
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
             path.write_text("{}", encoding="utf-8")
@@ -123,6 +171,17 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             self.assertTrue(result["ok"])
             self.assertEqual(result["focus"], "investment")
             self.assertEqual(saved["manual_focus_regeneration"]["focus"], "investment")
+            self.assertEqual(
+                saved["manual_focus_regeneration_history"]["international.investment"][-1],
+                scoped_summary["focuses"][0]["analysis"],
+            )
+            self.assertEqual(saved["manual_focus_regeneration_counts"]["international.investment"], 1)
+            saved_focus = next(
+                item for item in next(
+                    summary for summary in saved["summaries"] if summary["domain"] == "international"
+                )["focuses"] if item["id"] == "investment"
+            )
+            self.assertEqual(saved_focus["headline"], "投入梯队重新分化")
             self.assertEqual(len(saved["summaries"]), 4)
             self.assertEqual(generate.call_args.kwargs["temperature"], 0.25)
             self.assertEqual(progress[0], "正在读取当前证据")

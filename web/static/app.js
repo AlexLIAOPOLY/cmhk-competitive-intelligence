@@ -7510,6 +7510,7 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
+      const aiHeadline = focus.ai_summary?.headline || focus.metric?.label || domain.metric?.label || domain.title;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
       const refreshLabel = isGenerating
@@ -7534,7 +7535,7 @@ document.addEventListener("keydown", (event) => {
             </svg>
             <span>AI 洞察</span>
           </button>
-          <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
+          <strong>${safe(aiHeadline)}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body ${isGenerating ? "is-generating" : ""}" data-intelligence-detail-body>
             <p role="status" aria-live="polite" aria-atomic="false" aria-busy="${isGenerating ? "true" : "false"}">${insightContent}</p>
           </div>
