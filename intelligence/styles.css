@@ -13212,6 +13212,18 @@ body.dashboard-page {
   outline: none;
 }
 
+.dashboard-page .message.assistant .avatar,
+.dashboard-page .chat-empty-mark {
+  border-color: #3f7181;
+  background: linear-gradient(145deg, #153b49 0%, #0d2936 100%);
+  box-shadow: 0 5px 16px rgba(0, 8, 13, .28);
+}
+
+.dashboard-page select.sr-only {
+  background: var(--chat-surface-inset);
+  color: var(--chat-surface-text);
+}
+
 /* ===== Xiaojing response tables and composer controls v4 ===== */
 .dashboard-page .markdown-body .chat-table-wrap {
   margin: 14px 0 16px;
