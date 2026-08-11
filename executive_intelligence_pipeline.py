@@ -17,7 +17,7 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from zoneinfo import ZoneInfo
 
 
@@ -731,10 +731,15 @@ def _repair_model_summaries(raw: Any, evidence: dict[str, Any]) -> Any:
     return repaired
 
 
-def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
+def _validate_model_summaries(
+    raw: Any,
+    evidence: dict[str, Any],
+    *,
+    expected_domains: set[str] | None = None,
+) -> list[dict[str, Any]]:
     if not isinstance(raw, list):
         raise ValueError("AI分析没有返回JSON数组")
-    expected = {"local", "international", "cloud", "macro"}
+    expected = expected_domains or {"local", "international", "cloud", "macro"}
     allowed_numbers = _numeric_tokens(evidence)
     allowed_urls = {
         str(item.get("source_url") or "")
@@ -884,7 +889,11 @@ def _validate_model_summaries(raw: Any, evidence: dict[str, Any]) -> list[dict[s
         result.append(summary)
     if seen != expected:
         raise ValueError(f"AI分析领域不完整：{sorted(expected - seen)}")
-    return sorted(result, key=lambda item: ("local", "international", "cloud", "macro").index(item["domain"]))
+    domain_order = {
+        domain_id: index
+        for index, domain_id in enumerate(("local", "international", "cloud", "macro"))
+    }
+    return sorted(result, key=lambda item: domain_order.get(item["domain"], len(domain_order)))
 
 
 def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
@@ -1154,11 +1163,14 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
             f"四家动量全部为负，介于{_display_number(high.get('value'))}至{_display_number(low.get('value'))}个百分点，"
             "说明本期并非个别公司波动，而是行业增长同步降速。"
         )
-    if (domain, focus_id) == ("international", "gap"):
-        return (
-            f"最大领先差距达{metric_value}{metric_unit}，差距由领先者保持正增长与末位者转负共同驱动，"
-            "并非单一公司的加速所致。"
-        )
+    if (domain, focus_id) == ("international", "investment") and items:
+        comparable = items
+        if comparable:
+            high, low = comparable[0], comparable[-1]
+            return (
+                f"资本开支占营收从{_display_number(high.get('value'))}%到{_display_number(low.get('value'))}%，"
+                "按同期收入归一后仍呈结构性差异，且不能直接等同投资回报高低。"
+            )
     if (domain, focus_id) == ("international", "disclosure") and items:
         high, low = items[0], items[-1]
         return (
@@ -1364,7 +1376,12 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
     return _validate_model_discoveries(discoveries, evidence)
 
 
-def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
+def generate_model_domain_summaries(
+    evidence: dict[str, Any] | None = None,
+    *,
+    temperature: float = 0.0,
+    allow_partial_domains: bool = False,
+) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
     from network_utils import urlopen_with_local_proxy_fallback
@@ -1390,8 +1407,10 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
         "source_urls只能从输入中原样选择。只返回JSON数组。"
     )
+    requested_domain_ids = [str(domain.get("id") or "") for domain in evidence.get("domains") or []]
+    validation_domains = set(requested_domain_ids) if allow_partial_domains else None
     user_prompt = (
-        "请分析 local、international、cloud、macro 四个领域。每项字段严格为"
+        f"请分析输入中的领域：{', '.join(requested_domain_ids)}。每项字段严格为"
         "domain, headline, analysis, risk, source_urls, focuses；focuses每项字段严格为"
         "id, analysis, risk, source_urls, entities；entities每项字段严格为"
         "name, headline, analysis, risk, evidence_labels, source_urls。不要Markdown。输入：\n"
@@ -1404,7 +1423,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
     body = {
         "model": str(config.get("model") or "deepseek-v4"),
         "messages": messages,
-        "temperature": 0.0,
+        "temperature": temperature,
         "max_tokens": 16000,
         "chat_template_kwargs": {"enable_thinking": False},
     }
@@ -1444,6 +1463,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                     evidence,
                 ),
                 evidence,
+                expected_domains=validation_domains,
             )
             used_models.add(str(body["model"]))
             break
@@ -1680,6 +1700,7 @@ def generate_model_domain_summaries(evidence: dict[str, Any] | None = None) -> d
                 evidence,
             ),
             evidence,
+            expected_domains=validation_domains,
         )
     return {
         "generated_at_hkt": _now(),
@@ -1884,6 +1905,116 @@ def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, A
     analysis["model_analysis"] = generated
     _atomic_write_json(path, analysis)
     return {"ok": True, **generated}
+
+
+def regenerate_model_focus_summary(
+    domain_id: str,
+    focus_id: str,
+    *,
+    path: Path = AI_ANALYSIS_PATH,
+    progress: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
+    """Regenerate one visible insight against the current evidence and merge it atomically."""
+    def report(message: str) -> None:
+        if progress:
+            progress(message)
+
+    report("正在读取当前证据")
+    evidence = _analysis_input_snapshot()
+    evidence_hash = _content_hash(evidence)
+    domain_evidence = next(
+        (domain for domain in evidence.get("domains") or [] if str(domain.get("id") or "") == domain_id),
+        None,
+    )
+    if not domain_evidence:
+        raise ValueError(f"未知竞争情报领域：{domain_id}")
+    focus_evidence = next(
+        (focus for focus in domain_evidence.get("focuses") or [] if str(focus.get("id") or "") == focus_id),
+        None,
+    )
+    if not focus_evidence:
+        raise ValueError(f"未知竞争情报关注点：{domain_id}.{focus_id}")
+
+    report("正在生成新的数据判断")
+    scoped_evidence = {
+        "domains": [{**domain_evidence, "focuses": [focus_evidence]}],
+        "relations": [],
+    }
+    scoped = generate_model_domain_summaries(
+        scoped_evidence,
+        temperature=0.25,
+        allow_partial_domains=True,
+    )
+    scoped_domain = next(
+        (item for item in scoped.get("summaries") or [] if str(item.get("domain") or "") == domain_id),
+        None,
+    )
+    scoped_focus = next(
+        (item for item in (scoped_domain or {}).get("focuses") or [] if str(item.get("id") or "") == focus_id),
+        None,
+    )
+    if not scoped_domain or not scoped_focus:
+        raise ValueError(f"模型未返回当前洞察：{domain_id}.{focus_id}")
+
+    report("正在校验数字与来源")
+    analysis = _read_json(path, {}) or {}
+    previous = analysis.get("model_analysis") or {}
+    previous_is_current = bool(
+        str(previous.get("evidence_hash") or "") == evidence_hash
+        and str(previous.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
+        and previous.get("summaries")
+    )
+    if previous_is_current:
+        summaries = json.loads(json.dumps(previous.get("summaries") or [], ensure_ascii=False))
+        discoveries = json.loads(json.dumps(previous.get("discoveries") or [], ensure_ascii=False))
+    else:
+        summaries = _deterministic_domain_summaries(evidence)
+        discoveries = _deterministic_discoveries(evidence)
+
+    target_domain = next(item for item in summaries if str(item.get("domain") or "") == domain_id)
+    target_domain["focuses"] = [
+        scoped_focus if str(item.get("id") or "") == focus_id else item
+        for item in target_domain.get("focuses") or []
+    ]
+    validated_summaries = _validate_model_summaries(
+        _repair_model_summaries(summaries, evidence),
+        evidence,
+    )
+    report("证据校验通过，正在返回洞察")
+    if previous_is_current:
+        try:
+            validated_discoveries = _validate_model_discoveries(discoveries, evidence)
+        except ValueError:
+            validated_discoveries = _deterministic_discoveries(evidence)
+    else:
+        validated_discoveries = discoveries
+
+    generated_at = _now()
+    generated = {
+        **previous,
+        "generated_at_hkt": generated_at,
+        "model": str(scoped.get("model") or previous.get("model") or "internal-ai"),
+        "summaries": validated_summaries,
+        "discoveries": validated_discoveries,
+        "evidence_hash": evidence_hash,
+        "insight_format": INSIGHT_FORMAT_VERSION,
+        "reused": False,
+        "manual_focus_regeneration": {"domain": domain_id, "focus": focus_id, "generated_at_hkt": generated_at},
+    }
+    if not previous_is_current:
+        generated["fallback_used"] = True
+        generated["fallback_reason"] = "仅当前洞察由AI重新生成，其他洞察使用当前证据回退。"
+    analysis["model_analysis"] = generated
+    _atomic_write_json(path, analysis)
+    return {
+        "ok": True,
+        "domain": domain_id,
+        "focus": focus_id,
+        "analysis": str(scoped_focus.get("analysis") or ""),
+        "model": generated["model"],
+        "generated_at_hkt": generated_at,
+        "evidence_hash": evidence_hash,
+    }
 
 
 def _period_rank(value: Any) -> tuple[int, int, int]:

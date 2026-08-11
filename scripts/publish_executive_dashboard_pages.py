@@ -208,11 +208,9 @@ def _build_site(
         if intelligence_index.is_file():
             intelligence_html = intelligence_index.read_text(encoding="utf-8")
             if "responsive-layout-hardening.css" not in intelligence_html:
-                leadership_link = '<link rel="stylesheet" href="./leadership-board.css?v=5">'
                 intelligence_html = intelligence_html.replace(
-                    leadership_link,
-                    leadership_link + '\n'
-                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=5">',
+                    "</head>",
+                    '  <link rel="stylesheet" href="./responsive-layout-hardening.css?v=5">\n</head>',
                 )
                 intelligence_index.write_text(intelligence_html, encoding="utf-8")
         shutil.copy2(

@@ -15,6 +15,45 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_focus_regeneration_merges_one_validated_insight(self):
+        evidence = pipeline._analysis_input_snapshot()
+        domain = next(item for item in evidence["domains"] if item["id"] == "international")
+        focus = next(item for item in domain["focuses"] if item["id"] == "investment")
+        scoped_summary = next(
+            item for item in pipeline._deterministic_domain_summaries(evidence)
+            if item["domain"] == "international"
+        )
+        scoped_summary["focuses"] = [
+            item for item in scoped_summary["focuses"] if item["id"] == "investment"
+        ]
+        scoped_summary["focuses"][0]["analysis"] = pipeline._compact_grounded_focus_analysis(
+            "international", focus
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "analysis.json"
+            path.write_text("{}", encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.generate_model_domain_summaries", return_value={
+                    "model": "test-model",
+                    "summaries": [scoped_summary],
+                }) as generate,
+            ):
+                progress = []
+                result = pipeline.regenerate_model_focus_summary(
+                    "international", "investment", path=path, progress=progress.append
+                )
+
+            saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
+            self.assertTrue(result["ok"])
+            self.assertEqual(result["focus"], "investment")
+            self.assertEqual(saved["manual_focus_regeneration"]["focus"], "investment")
+            self.assertEqual(len(saved["summaries"]), 4)
+            self.assertEqual(generate.call_args.kwargs["temperature"], 0.25)
+            self.assertTrue(generate.call_args.kwargs["allow_partial_domains"])
+            self.assertEqual(progress[0], "正在读取当前证据")
+            self.assertEqual(progress[-1], "证据校验通过，正在返回洞察")
+
     def test_analysis_evidence_excludes_rendered_ai_relations(self):
         rendered = {
             "domains": [],

@@ -15,7 +15,7 @@ const CHROME_PATH = process.env.CMHK_CHROME_PATH
 
 const TARGET_TABS = [
   ["local", "月费区间"],
-  ["international", "领先差距"],
+  ["international", "投入强度"],
   ["cloud", "增长趋势"],
   ["macro", "流量需求"],
 ];
@@ -38,6 +38,7 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
+.static-snapshot .intelligence-ai-refresh { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -133,14 +134,20 @@ async function main() {
     const css = (await styleResponse.text())
       .replaceAll('url("/static/assets/', 'url("./assets/')
       .replaceAll("url('/static/assets/", "url('./assets/");
-    fs.writeFileSync(path.join(OUTPUT_DIR, "styles.css"), `${css}\n${staticOverrides()}\n`);
+    fs.writeFileSync(
+      path.join(OUTPUT_DIR, "styles.css"),
+      `${css.trimEnd()}\n${staticOverrides().trim()}\n`,
+    );
     if (fragments.leadershipStyleHref) {
       const leadershipResponse = await context.request.get(fragments.leadershipStyleHref);
       if (!leadershipResponse.ok()) throw new Error(`Leadership stylesheet request failed: ${leadershipResponse.status()}`);
       const leadershipCss = (await leadershipResponse.text())
         .replaceAll('url("/static/assets/', 'url("./assets/')
         .replaceAll("url('/static/assets/", "url('./assets/");
-      fs.writeFileSync(path.join(OUTPUT_DIR, "leadership-board.css"), `${leadershipCss}\n${staticOverrides()}\n`);
+      fs.writeFileSync(
+        path.join(OUTPUT_DIR, "leadership-board.css"),
+        `${leadershipCss.trimEnd()}\n${staticOverrides().trim()}\n`,
+      );
     }
 
     const appSource = fs.readFileSync(path.join(ROOT, "web", "static", "app.js"), "utf8");
@@ -152,6 +159,12 @@ async function main() {
     const staticFetch = 'Promise.resolve({ ok: true, json: () => Promise.resolve(window.CMHK_STATIC_INTELLIGENCE) })';
     if (!boardScript.includes(runtimeFetch)) throw new Error("Intelligence API call shape changed; snapshot build stopped");
     boardScript = boardScript.replace(runtimeFetch, staticFetch);
+    const refreshStart = boardScript.indexOf("  async function refreshFocusInsight(");
+    const refreshEnd = boardScript.indexOf("\n  function renderDrawer(", refreshStart);
+    if (refreshStart < 0 || refreshEnd < 0) throw new Error("Unable to isolate runtime-only insight refresh");
+    boardScript = boardScript.slice(0, refreshStart)
+      + "  function refreshFocusInsight() {}\n"
+      + boardScript.slice(refreshEnd);
     boardScript = boardScript.replace(
       "window.setInterval(() => refreshIntelligencePayload(false), 60000);",
       "window.setInterval(() => {}, 60000);",
@@ -219,7 +232,7 @@ async function main() {
   <title>中国移动香港｜四库竞争情报驾驶舱</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./leadership-board.css?v=5">
+  <link rel="stylesheet" href="./leadership-board.css?v=8">
 </head>
 <body class="dashboard-page static-snapshot">
   <main class="app-shell">
@@ -237,7 +250,7 @@ async function main() {
   <script src="./intelligence.js?v=2"></script>
 </body>
 </html>\n`;
-    fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content);
+    fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content.replace(/[ \t]+$/gm, ""));
     fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "");
 
     if (errors.length) {

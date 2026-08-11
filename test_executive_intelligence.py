@@ -95,7 +95,15 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
             [item["value"] for item in international["momentum"]["items"]],
         )
         self.assertTrue(all("trend" in item for item in international["momentum"]["items"]))
-        self.assertEqual(min(item["value"] for item in international["gap"]["items"]), 0)
+        self.assertNotIn("gap", international)
+        self.assertEqual(international["investment"]["label"], "投入强度")
+        self.assertTrue(
+            all(
+                item["value"] is None or "资本开支占营收" in item["detail"]
+                for item in international["investment"]["items"]
+            )
+        )
+        self.assertIn("资本开支/营收", international["investment"]["metric"]["label"])
 
         cloud = {focus["id"]: focus for focus in domains["cloud"]["focuses"]}
         self.assertTrue(all("trend" in item for item in cloud["trend"]["items"]))
@@ -154,6 +162,36 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertEqual(domain["entities"][0]["value"], 1.03)
         momentum = next(item for item in domain["focuses"] if item["id"] == "momentum")
         self.assertEqual(momentum["items"][0]["value"], -1.37)
+
+    def test_international_investment_intensity_uses_same_period_official_values(self):
+        rows = []
+        for subject, capex, revenue in (
+            ("中国移动", -30_000, 250_000),
+            ("中国电信", -15_000, 125_000),
+            ("中国联通", -12_000, 100_000),
+        ):
+            common = {
+                "subject": subject,
+                "period": "Q1 2026",
+                "verification_status": "official_match",
+                "official_unit": "millions CNY",
+                "official_source_url": "https://example.com/report.pdf",
+            }
+            rows.extend([
+                {**common, "metric_key": "revenue_growth_yoy", "official_value": 1.0},
+                {**common, "metric_key": "capital_expenditures", "official_value": capex},
+                {**common, "metric_key": "revenue", "official_value": revenue},
+            ])
+        domain = _international_domain({"rows": rows})
+        investment = next(focus for focus in domain["focuses"] if focus["id"] == "investment")
+        self.assertEqual([item["value"] for item in investment["items"][:3]], [12.0, 12.0, 12.0])
+        self.assertTrue(all(item["component_count"] == 2 for item in investment["items"][:3]))
+        self.assertIn("三家最大相差0.00个百分点", investment["insight"])
+        self.assertNotIn("用于比较", investment["insight"])
+        momentum = next(focus for focus in domain["focuses"] if focus["id"] == "momentum")
+        self.assertNotIn("正值代表", momentum["insight"])
+        disclosure = next(focus for focus in domain["focuses"] if focus["id"] == "disclosure")
+        self.assertNotIn("用于判断", disclosure["insight"])
 
 
 if __name__ == "__main__":

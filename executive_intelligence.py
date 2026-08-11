@@ -370,21 +370,30 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         },
         {
             "id": "track", "label": "产品赛道", "visual": "rows",
-            "metric": _focus_metric(track_items, "单一竞对最多覆盖", "个赛道"),
+            "metric": {
+                **_focus_metric(track_items, "覆盖赛道", "个赛道"),
+                "label": f"{track_items[0]['name']}覆盖赛道" if track_items else "覆盖赛道",
+            },
             "context": f"共识别 {len(category_labels)} 类标准赛道",
             "insight": f"{track_items[0]['name']}覆盖 {track_items[0]['value']} 个赛道，产品广度领先。" if track_items else "暂无赛道数据。",
             "items": track_items,
         },
         {
             "id": "price", "label": "月费区间", "visual": "ranges",
-            "metric": _focus_metric(price_items, "最低月费中位数", "港元/月", mode="min"),
+            "metric": {
+                **_focus_metric(price_items, "月费中位数", "港元/月", mode="min"),
+                "label": f"{price_items[-1]['name']}月费中位数" if price_items else "月费中位数",
+            },
             "context": "只比较已结构化平均月费",
             "insight": _local_price_insight(price_items),
             "items": price_items,
         },
         {
             "id": "overlap", "label": "竞对重叠", "visual": "network",
-            "metric": _focus_metric(overlap_items, "最多重叠赛道", "个"),
+            "metric": {
+                **_focus_metric(overlap_items, "重叠赛道", "个"),
+                "label": f"{overlap_items[0]['name']}重叠赛道" if overlap_items else "重叠赛道",
+            },
             "context": f"识别 {len(overlaps)} 组品牌交集",
             "insight": insight,
             "items": overlap_items,
@@ -447,6 +456,7 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     rows = payload.get("rows") or []
     growth_items: list[dict[str, Any]] = []
     momentum_items: list[dict[str, Any]] = []
+    investment_items: list[dict[str, Any]] = []
     disclosure_items: list[dict[str, Any]] = []
     for subject in INTERNATIONAL_SUBJECTS:
         row = _latest_metric(rows, "subject", subject, "revenue_growth_yoy")
@@ -491,6 +501,42 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "component_count": len(history[-4:]),
             "source_url": source_url,
         })
+        capex_row = _latest_metric(rows, "subject", subject, "capital_expenditures")
+        revenue_row = _latest_metric(rows, "subject", subject, "revenue")
+        capex_value = _verified_number(capex_row)
+        revenue_value = _verified_number(revenue_row)
+        capex_period = str((capex_row or {}).get("period") or "")
+        revenue_period = str((revenue_row or {}).get("period") or "")
+        periods_match = bool(capex_period and capex_period == revenue_period)
+        intensity = (
+            abs(capex_value) / revenue_value * 100
+            if capex_value is not None and revenue_value not in (None, 0) and periods_match
+            else None
+        )
+        investment_items.append({
+            "name": subject,
+            "value": round(intensity, 2) if intensity is not None else None,
+            "unit": "%",
+            "period": capex_period or revenue_period,
+            "detail": (
+                f"{capex_period}资本开支占营收"
+                if intensity is not None else "缺少同期间官方资本开支或营收"
+            ),
+            "analysis": (
+                f"{capex_period}资本开支为人民币{abs(capex_value) / 100:.1f}亿元，"
+                f"占同期营收{intensity:.2f}%；该比例用于比较投入强度，不直接等同于投资回报。"
+                if intensity is not None else "当前缺少同期间、同币种的官方资本开支与营收，不计算投入强度。"
+            ),
+            "components": (
+                [
+                    _component("资本开支", round(abs(capex_value) / 100, 1), "亿元人民币", capex_period),
+                    _component("同期营收", round(revenue_value / 100, 1), "亿元人民币", revenue_period),
+                ]
+                if intensity is not None else [_component("投入强度", detail="缺少同期间官方数据")]
+            ),
+            "component_count": 2 if intensity is not None else 1,
+            "source_url": str((capex_row or revenue_row or row).get("official_source_url") or ""),
+        })
         subject_rows = [item for item in rows if item.get("subject") == subject and _verified_number(item) is not None]
         latest_rank = max((_period_rank(item.get("period")) for item in subject_rows), default=(0, 0))
         latest_rows = [item for item in subject_rows if _period_rank(item.get("period")) == latest_rank]
@@ -519,51 +565,82 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         })
     growth_items.sort(key=lambda item: item["value"], reverse=True)
     momentum_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
+    investment_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
     disclosure_items.sort(key=lambda item: item["value"], reverse=True)
     leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
-    gap_items = []
-    for item in growth_items:
-        gap = float(leader["value"]) - float(item["value"])
-        gap_items.append({
-            **item,
-            "value": round(gap, 2),
-            "unit": "个百分点",
-            "detail": "当前领先" if gap == 0 else f"较 {leader['name']} 落后 {gap:.2f} 个百分点",
-            "analysis": "当前为营收增速领先基准。" if gap == 0 else f"以同期间营收增速衡量，较领先者 {leader['name']} 存在 {gap:.2f} 个百分点差距。",
-            "components": [
-                _component(item["name"], item["value"], "%", item.get("period") or "最新期"),
-                _component(leader["name"], leader["value"], "%", leader.get("period") or "最新期"),
-            ],
-            "component_count": 2,
-        })
+    momentum_leader = next((item for item in momentum_items if _number(item.get("value")) is not None), None)
+    investment_leader = next((item for item in investment_items if _number(item.get("value")) is not None), None)
+    investment_comparable = [item for item in investment_items if _number(item.get("value")) is not None]
+    if len(investment_comparable) >= 2:
+        investment_low = investment_comparable[-1]
+        investment_gap = float(investment_leader["value"]) - float(investment_low["value"])
+        investment_period = str(investment_leader.get("period") or "最新期")
+        investment_peers = "、".join(
+            f"{item['name']}{float(item['value']):.2f}%"
+            for item in investment_comparable[1:]
+        )
+        investment_insight = (
+            f"{investment_period}{investment_leader['name']}资本开支/营收为{investment_leader['value']:.2f}%，"
+            f"高于{investment_peers}；"
+            f"三家最大相差{investment_gap:.2f}个百分点，投入力度总体接近，不能直接等同投资回报高低。"
+        )
+    else:
+        investment_insight = "当前同期间资本开支与营收不足两家，不作投入强度横向判断。"
     positive = [item for item in growth_items if item["value"] >= 0]
     negative = [item for item in growth_items if item["value"] < 0]
+    momentum_comparable = [item for item in momentum_items if _number(item.get("value")) is not None]
+    if momentum_comparable:
+        improving = [item for item in momentum_comparable if float(item["value"]) > 0]
+        slowing = [item for item in momentum_comparable if float(item["value"]) < 0]
+        momentum_insight = (
+            f"{momentum_comparable[0]['name']}增速较上一可比期变化{float(momentum_comparable[0]['value']):+.2f}个百分点；"
+            f"{len(improving)}家改善、{len(slowing)}家放缓，增长节奏并未同步。"
+        )
+    else:
+        momentum_insight = "当前缺少两个可比期间的营收增速，不作增长节奏判断。"
+    if disclosure_items:
+        disclosure_leader = disclosure_items[0]
+        disclosure_laggard = disclosure_items[-1]
+        disclosure_insight = (
+            f"{disclosure_leader['name']}最新期有{disclosure_leader['value']}项可核验披露，"
+            f"{disclosure_laggard['name']}为{disclosure_laggard['value']}项；后者可支持的横向判断更有限。"
+        )
+    else:
+        disclosure_insight = "当前没有可核验的结构化披露，不作横向判断。"
     insight = f"{leader['name']}以 {leader['value']:.2f}% 领跑；{len(positive)} 家正增长、{len(negative)} 家负增长，基础设施与综合运营商节奏出现分化。"
     focuses = [
         {
             "id": "growth", "label": "营收增速", "visual": "diverging",
-            "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": "最新营收增速领先值"},
+            "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": f"{leader['name']}最新营收增速"},
             "context": f"统一对标 {len(growth_items)} 家运营商", "insight": insight, "items": growth_items,
         },
         {
             "id": "momentum", "label": "增长动量", "visual": "trends",
-            "metric": _focus_metric(momentum_items, "最佳动量变化", "个百分点"),
+            "metric": {
+                "value": momentum_leader["value"] if momentum_leader else "-",
+                "unit": "个百分点",
+                "label": f"{momentum_leader['name']}增速变化" if momentum_leader else "增速变化",
+            },
             "context": "最新期相对上一可比期",
-            "insight": "增长动量比较增速的环期变化；正值代表改善，负值代表回落，不等同于绝对收入增长。",
+            "insight": momentum_insight,
             "items": momentum_items,
         },
         {
-            "id": "gap", "label": "领先差距", "visual": "rows",
-            "metric": _focus_metric(gap_items, "最大领先差距", "个百分点"),
-            "context": f"以 {leader['name']} 为当前基准",
-            "insight": "差距统一以最新营收同比领先值为0基准，数值越大表示与领先者距离越远。",
-            "items": gap_items,
+            "id": "investment", "label": "投入强度", "visual": "rows",
+            "metric": {
+                "value": investment_leader["value"] if investment_leader else "-",
+                "unit": "%",
+                "label": f"{investment_leader['name']}资本开支/营收" if investment_leader else "资本开支/营收",
+            },
+            "context": "同期间资本开支占营收比例",
+            "insight": investment_insight,
+            "items": investment_items,
         },
         {
             "id": "disclosure", "label": "原始披露", "visual": "disclosure",
             "metric": {"value": sum(item["value"] for item in disclosure_items), "unit": "项", "label": "最新期结构化披露"},
             "context": "仅计数据库内有数值记录",
-            "insight": "披露项数用于判断可分析深度，结论仍需结合具体口径与官方来源，不把披露多等同于经营更好。",
+            "insight": disclosure_insight,
             "items": disclosure_items,
         },
     ]
@@ -572,7 +649,7 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         "index": "02",
         "title": "国际竞对",
         "kicker": "经营增速与投入",
-        "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": "最新营收增速领先值"},
+        "metric": {"value": f"{leader['value']:.2f}", "unit": "%", "label": f"{leader['name']}最新营收增速"},
         "context": f"统一对标 {len(growth_items)} 家运营商",
         "insight": insight,
         "entities": growth_items,
@@ -687,23 +764,30 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     tier_names = "、".join(item["name"] for item in second_tier[:3])
     insight = f"{leader['name']}以 {leader['value']:.1f}% 领跑；{tier_names or '其余厂商'}构成第二增长梯队，云端竞争继续向规模与盈利并重演进。"
     best_trend = next((item for item in trend_items if _number(item.get("value")) is not None), None)
-    best_profit = next((item for item in profit_items if _number(item.get("value")) is not None), None)
     focuses = [
         {
             "id": "growth", "label": "业务增速", "visual": "columns",
-            "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": "FY2025 增速领先值"},
+            "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": f"{leader['name']} FY2025增速"},
             "context": f"覆盖 {len(growth_items)} 家全球云厂商", "insight": insight, "items": growth_items,
         },
         {
             "id": "trend", "label": "增长趋势", "visual": "trends",
-            "metric": {"value": best_trend["value"] if best_trend else "-", "unit": "个百分点", "label": "最大增速变化"},
+            "metric": {
+                "value": best_trend["value"] if best_trend else "-",
+                "unit": "个百分点",
+                "label": f"{best_trend['name']}增速变化" if best_trend else "增速变化",
+            },
             "context": "FY2025 相对 FY2024",
             "insight": "此处比较增速变化而非增速绝对值，可区分高增长继续加速与高基数下放缓。",
             "items": trend_items,
         },
         {
             "id": "profit", "label": "盈利能力", "visual": "diverging",
-            "metric": {"value": best_profit["value"] if best_profit else "-", "unit": "%", "label": "已披露最高利润率"},
+            "metric": {
+                "value": sum(1 for item in profit_items if _number(item.get("value")) is not None),
+                "unit": "家",
+                "label": "有利润率披露的厂商",
+            },
             "context": "按各厂商披露口径标注",
             "insight": "利润率口径并不完全相同，图中保留经营利润率、调整后EBITA率或代理分部毛利率标签，不做伪同口径结论。",
             "items": profit_items,
@@ -721,7 +805,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         "index": "03",
         "title": "云厂商",
         "kicker": "增长梯队与云网融合",
-        "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": "FY2025 增速领先值"},
+        "metric": {"value": f"{leader['value']:.1f}", "unit": "%", "label": f"{leader['name']} FY2025增速"},
         "context": f"覆盖 {len(growth_items)} 家全球云厂商",
         "insight": insight,
         "entities": growth_items,

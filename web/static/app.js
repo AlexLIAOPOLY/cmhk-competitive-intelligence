@@ -7398,6 +7398,7 @@ document.addEventListener("keydown", (event) => {
   const selectedEntityByDomain = new Map();
   const selectedFocusByDomain = new Map();
   const manualFocusPauseUntil = new Map();
+  const insightRefreshState = new Map();
   let focusRotationCursor = 0;
   let focusRotationTimer = null;
   let payloadSignature = "";
@@ -7506,9 +7507,33 @@ document.addEventListener("keydown", (event) => {
     `;
   }
 
+  function renderInsightRefreshButton(domain, focus) {
+    const key = `${domain.id}:${focus.id}`;
+    const state = insightRefreshState.get(key) || { status: "idle" };
+    const label = state.status === "loading" || state.status === "streaming"
+      ? `正在重新生成${domain.title}${focus.label}AI洞察`
+      : state.status === "error"
+        ? `${domain.title}${focus.label}AI洞察生成失败，点击重试`
+        : `重新生成${domain.title}${focus.label}AI洞察`;
+    return `
+      <button type="button" class="intelligence-ai-refresh ${state.status === "loading" || state.status === "streaming" ? "is-loading" : ""} ${state.status === "error" ? "is-error" : ""}"
+        data-intelligence-insight-refresh data-intelligence-domain-id="${safe(domain.id)}" data-intelligence-focus-id="${safe(focus.id)}"
+        aria-label="${safe(label)}" title="${safe(label)}" ${state.status === "loading" || state.status === "streaming" ? "disabled aria-busy=\"true\"" : ""}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 8a7.5 7.5 0 1 0 .2 7.6"></path><path d="M19 3v5h-5"></path></svg>
+      </button>
+    `;
+  }
+
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
+      const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
+      const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
+      const insightContent = isGenerating
+        ? refreshState.text
+          ? `<span class="intelligence-ai-stream-text">${safe(refreshState.text)}</span><i class="intelligence-ai-stream-cursor" aria-hidden="true"></i>`
+          : `<span class="intelligence-ai-stream-status"><i aria-hidden="true"><b></b><b></b><b></b></i>${safe(refreshState.message || "正在生成新的数据判断")}</span>`
+        : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
       const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-overview`.replace(/[^a-zA-Z0-9_-]/g, "-");
       return `
         <div class="intelligence-entity-focus is-overview">
@@ -7517,11 +7542,12 @@ document.addEventListener("keydown", (event) => {
               <path d="M8.2 1.6c.35 3.48 2.72 5.85 6.2 6.2-3.48.35-5.85 2.72-6.2 6.2C7.85 10.52 5.48 8.15 2 7.8c3.48-.35 5.85-2.72 6.2-6.2Z"></path>
               <path d="M14.5 1.7v3.2M12.9 3.3h3.2"></path>
             </svg>
-            AI 洞察
+            <span>AI 洞察</span>
+            ${renderInsightRefreshButton(domain, focus)}
           </span>
           <strong>${safe(focus.metric?.label || domain.metric?.label || domain.title)}</strong>
-          <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
-            <p>${safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论")}</p>
+          <div id="${safe(detailId)}" class="intelligence-entity-detail-body ${isGenerating ? "is-generating" : ""}" data-intelligence-detail-body>
+            <p role="status" aria-live="polite" aria-atomic="false" aria-busy="${isGenerating ? "true" : "false"}">${insightContent}</p>
           </div>
         </div>
       `;
@@ -7903,6 +7929,66 @@ document.addEventListener("keydown", (event) => {
     focusRotationTimer = window.setInterval(rotateNextFocus, 4200);
   }
 
+  async function refreshFocusInsight(domainId, focusId) {
+    const key = `${domainId}:${focusId}`;
+    if (["loading", "streaming"].includes(insightRefreshState.get(key)?.status)) return;
+    const domain = domainById(domainId);
+    if (!domain) return;
+    insightRefreshState.set(key, { status: "loading", text: "", message: "正在连接洞察服务" });
+    manualFocusPauseUntil.set(domainId, Date.now() + 30000);
+    replaceDomainCard(domain);
+    try {
+      const response = await fetch("/api/executive-intelligence/regenerate-insight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: domainId, focus: focusId, stream: true }),
+      });
+      if (!response.ok || !response.body) {
+        const data = await response.json();
+        throw new Error(data.error || "AI洞察生成失败");
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let pending = "";
+      let completed = false;
+      while (true) {
+        const { value, done } = await reader.read();
+        pending += decoder.decode(value || new Uint8Array(), { stream: !done });
+        const lines = pending.split("\n");
+        pending = lines.pop() || "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const event = JSON.parse(line);
+          if (event.type === "error") throw new Error(event.message || "AI洞察生成失败");
+          const current = insightRefreshState.get(key) || { status: "loading", text: "" };
+          if (event.type === "status") {
+            insightRefreshState.set(key, { ...current, status: "loading", message: event.message });
+          } else if (event.type === "delta") {
+            insightRefreshState.set(key, { ...current, status: "streaming", text: `${current.text || ""}${event.text || ""}` });
+          } else if (event.type === "complete") {
+            completed = true;
+          }
+          replaceDomainCard(domain);
+        }
+        if (done) break;
+      }
+      if (!completed) throw new Error("AI洞察流意外中断");
+      await refreshIntelligencePayload(true);
+      insightRefreshState.delete(key);
+      const latestDomain = domainById(domainId);
+      if (latestDomain) replaceDomainCard(latestDomain);
+    } catch (error) {
+      insightRefreshState.set(key, { status: "error" });
+      replaceDomainCard(domain);
+      window.setTimeout(() => {
+        if (insightRefreshState.get(key)?.status !== "error") return;
+        insightRefreshState.delete(key);
+        const latestDomain = domainById(domainId);
+        if (latestDomain) replaceDomainCard(latestDomain);
+      }, 5000);
+    }
+  }
+
   function renderDrawer(domain) {
     const entities = Array.isArray(domain.entities) ? domain.entities : [];
     const maxValue = Math.max(...entities.map((item) => Math.abs(Number(item.value) || 0)), 1);
@@ -8015,6 +8101,13 @@ document.addEventListener("keydown", (event) => {
   }
 
   grid.addEventListener("click", (event) => {
+    const insightRefresh = event.target.closest("[data-intelligence-insight-refresh]");
+    if (insightRefresh) {
+      event.preventDefault();
+      event.stopPropagation();
+      refreshFocusInsight(insightRefresh.dataset.intelligenceDomainId, insightRefresh.dataset.intelligenceFocusId);
+      return;
+    }
     const sourceLink = event.target.closest(".intelligence-entity-actions > a");
     if (sourceLink) {
       event.preventDefault();
@@ -8073,7 +8166,7 @@ document.addEventListener("keydown", (event) => {
   });
 
   function refreshIntelligencePayload(initial = false) {
-    fetch("/api/executive-intelligence", { cache: "no-store" })
+    return fetch("/api/executive-intelligence", { cache: "no-store" })
       .then((response) => response.json().then((data) => ({ response, data })))
       .then(({ response, data }) => {
         if (!response.ok || !data.ok) throw new Error(data.error || "四库关系读取失败");

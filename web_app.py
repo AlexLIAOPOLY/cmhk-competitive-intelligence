@@ -54,6 +54,7 @@ from tts_service import (
 ROOT = Path(__file__).resolve().parent
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
+INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
 TASK_HEARTBEAT_INTERVAL_SECONDS = 10
 STATIC_DIR = ROOT / "web" / "static"
 RESULTS_DIR = ROOT / "results"
@@ -815,6 +816,21 @@ def json_response(handler: BaseHTTPRequestHandler, payload: dict, status: int = 
         # response is being written.  The request is already over, so avoid
         # turning a harmless client disconnect into a server traceback.
         return
+
+
+def start_ndjson_response(handler: BaseHTTPRequestHandler) -> None:
+    handler.send_response(200)
+    handler.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+    handler.send_header("Cache-Control", "no-store, no-transform")
+    handler.send_header("X-Accel-Buffering", "no")
+    handler.send_header("Connection", "close")
+    handler.end_headers()
+
+
+def write_ndjson_event(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+    body = (json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8")
+    handler.wfile.write(body)
+    handler.wfile.flush()
 
 
 def load_curation_status() -> dict:
@@ -3467,6 +3483,46 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/executive-intelligence/regenerate-insight":
+            if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(blocking=False):
+                json_response(self, {"ok": False, "error": "已有AI洞察正在生成，请稍候。"}, 409)
+                return
+            try:
+                from executive_intelligence_pipeline import regenerate_model_focus_summary
+
+                payload = read_request_json(self)
+                domain_id = str(payload.get("domain") or "").strip()
+                focus_id = str(payload.get("focus") or "").strip()
+                if not domain_id or not focus_id:
+                    raise ValueError("domain和focus不能为空")
+                if payload.get("stream"):
+                    start_ndjson_response(self)
+                    try:
+                        result = regenerate_model_focus_summary(
+                            domain_id,
+                            focus_id,
+                            progress=lambda message: write_ndjson_event(
+                                self, {"type": "status", "message": message}
+                            ),
+                        )
+                        for chunk in re.findall(r"[^，。；！？]+[，。；！？]?", result.get("analysis") or ""):
+                            write_ndjson_event(self, {"type": "delta", "text": chunk})
+                        write_ndjson_event(self, {
+                            "type": "complete",
+                            **{key: value for key, value in result.items() if key != "analysis"},
+                        })
+                    except Exception as exc:
+                        write_ndjson_event(self, {"type": "error", "message": str(exc)})
+                    self.close_connection = True
+                else:
+                    json_response(self, regenerate_model_focus_summary(domain_id, focus_id))
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 500)
+            finally:
+                INTELLIGENCE_INSIGHT_REFRESH_LOCK.release()
+            return
         if parsed.path == "/api/news-review-sheet/update":
             try:
                 from news_review_sheet import update_review_sheet_cells
