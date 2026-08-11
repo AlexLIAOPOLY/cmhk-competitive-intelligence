@@ -2955,7 +2955,8 @@ select {
 .chart-result-block img.chat-inline-image {
   width: min(100%, 720px);
   max-height: 480px;
-  padding: 4px;
+  padding: 0;
+  border-width: 1px;
 }
 .message-body hr {
   height: 1px;
@@ -13038,6 +13039,14 @@ body.dashboard-page {
 .dashboard-page .chart-result-block img.chat-inline-image {
   border-color: #4a7180;
   box-shadow: 0 12px 30px rgba(0, 7, 12, .28);
+}
+
+.dashboard-page .message-body img.chat-inline-image[src^="/generated-charts/"],
+.dashboard-page .chart-result-block img.chat-inline-image {
+  padding: 0;
+  border: 1px solid rgba(239, 249, 251, .78);
+  border-radius: 6px;
+  background: transparent;
 }
 
 .dashboard-page .queued-message-item,
