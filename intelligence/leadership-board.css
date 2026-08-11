@@ -1,6 +1,6 @@
 /* Layered technology cockpit panels for the leadership board. */
 .intelligence-command-board {
-  grid-template-rows: 62px minmax(0, 1fr);
+  grid-template-rows: 84px minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -32,8 +32,8 @@
 }
 
 .intelligence-relation {
-  min-height: 62px;
-  padding: 9px 16px;
+  min-height: 84px;
+  padding: 10px 16px;
 }
 
 .intelligence-relation::before,
@@ -561,7 +561,16 @@
 /* Readability pass: keep decision-critical labels legible without changing the
    four-panel information hierarchy. */
 .intelligence-relation span { font-size: 13.5px; }
-.intelligence-relation strong { font-size: 16px; line-height: 1.32; }
+.intelligence-relation strong {
+  display: -webkit-box;
+  font-size: 16px;
+  line-height: 1.32;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
 .intelligence-page-identity span { font-size: 11px; }
 .intelligence-page-identity strong { font-size: 24px; }
 
@@ -607,47 +616,28 @@
 .intelligence-entity-list li > a,
 .intelligence-source-list a { font-size: 12.5px; }
 
-.intelligence-ai-refresh {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
-  margin-left: 2px;
-  padding: 0;
+.intelligence-entity-focus > .ai-insight-label {
+  padding: 2px 0;
   border: 0;
   border-radius: 0;
-  color: rgba(177, 194, 201, .62);
   background: transparent;
   cursor: pointer;
-  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  font: inherit;
+  transition: color 160ms ease, opacity 160ms ease;
 }
-.intelligence-ai-refresh svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.intelligence-ai-refresh:hover,
-.intelligence-ai-refresh:focus-visible {
-  color: rgba(218, 230, 234, .9);
+.intelligence-entity-focus > .ai-insight-label:hover,
+.intelligence-entity-focus > .ai-insight-label:focus-visible {
+  color: color-mix(in srgb, var(--domain-accent) 90%, #e6f8fc);
   background: transparent;
   outline: none;
-  transform: translateY(-1px);
 }
-.intelligence-ai-refresh:focus-visible {
-  box-shadow: 0 0 0 2px rgba(177, 194, 201, .22);
+.intelligence-entity-focus > .ai-insight-label:focus-visible {
+  box-shadow: 0 1px 0 rgba(177, 194, 201, .42);
 }
-.intelligence-ai-refresh.is-loading { cursor: wait; }
-.intelligence-ai-refresh.is-loading svg { animation: intelligence-refresh-spin 800ms linear infinite; }
-.intelligence-ai-refresh.is-error {
+.intelligence-entity-focus > .ai-insight-label.is-loading { cursor: wait; opacity: .68; }
+.intelligence-entity-focus > .ai-insight-label.is-error {
   color: #ffb1ae;
-  background: transparent;
 }
-@keyframes intelligence-refresh-spin { to { transform: rotate(360deg); } }
 
 .intelligence-ai-paragraph-skeleton {
   display: grid;
@@ -759,7 +749,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intelligence-ai-refresh.is-loading svg,
   .intelligence-ai-paragraph-skeleton i,
   .intelligence-ai-stream-cursor { animation: none; }
 }
