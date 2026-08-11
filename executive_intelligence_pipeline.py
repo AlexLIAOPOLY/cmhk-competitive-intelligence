@@ -541,6 +541,16 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     )
     if any(phrase in analysis for phrase in restriction_phrases):
         return f"AI分析分类仍以方法说明代替洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
+    forbidden_by_focus = {
+        ("local", "scale"): ("赛道", "月费", "资费区间", "重叠", "交集"),
+    }
+    forbidden_terms = forbidden_by_focus.get((domain, focus_id), ())
+    leaked_terms = [term for term in forbidden_terms if term in analysis]
+    if leaked_terms:
+        return (
+            f"AI分析分类混入其他页维度{leaked_terms}：{domain}.{focus_id}；"
+            f"内容：{analysis[:180]}"
+        )
     return ""
 
 
@@ -1392,18 +1402,39 @@ def generate_model_focus_insight(
     if not api_key:
         raise RuntimeError("未配置内网模型密钥")
     focus_id = str(focus.get("id") or "")
+    focus_contracts = {
+        ("local", "scale"): (
+            "只分析各厂商在售方案数量、数量分布、头尾差距或集中程度；"
+            "不得讨论产品赛道、覆盖范围、月费、资费区间、竞对重叠或交集。"
+        ),
+        ("local", "track"): (
+            "只分析各厂商覆盖的产品赛道数量及广度差异；不得讨论月费、资费区间或竞对重叠。"
+        ),
+        ("local", "price"): (
+            "只分析各厂商月费中位数及价格梯度；不得讨论赛道覆盖或竞对重叠。"
+        ),
+        ("local", "overlap"): (
+            "只分析品牌之间的产品重叠或交集；不得讨论月费或资费区间。"
+        ),
+    }
+    focus_contract = focus_contracts.get(
+        (domain_id, focus_id),
+        "只分析当前focus标签、metric和items直接表达的同一指标维度，不得借用其他页面维度。",
+    )
+    include_item_detail = (domain_id, focus_id) != ("local", "scale")
     compact_focus = {
         "id": focus_id,
         "label": focus.get("label"),
         "metric": focus.get("metric"),
         "context": focus.get("context"),
         "current_insight": focus.get("insight"),
+        "scope": focus_contract,
         "items": [
             {
                 "name": item.get("name"),
                 "value": item.get("value"),
                 "unit": item.get("unit"),
-                "detail": item.get("detail"),
+                **({"detail": item.get("detail")} if include_item_detail else {}),
                 "source_url": item.get("source_url"),
             }
             for item in focus.get("items") or []
@@ -1419,7 +1450,8 @@ def generate_model_focus_insight(
                 "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
                 "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value，"
                 "禁止自行加总、计算占比或创造衍生数字。结论必须使用表明、说明、意味着、主要来自、"
-                "并非、而非或不能等同中的至少一个连接词。"
+                "并非、而非或不能等同中的至少一个连接词。必须严格遵守输入scope，只能总结当前页，"
+                "不得把相邻页或item附带信息扩展为当前页结论。"
             ),
         },
         {
@@ -1474,7 +1506,9 @@ def generate_model_focus_insight(
             gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
             if gate_error:
                 raise ValueError(gate_error)
-            unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(focus)
+            # Validate against exactly what the model was allowed to see. Hidden
+            # cross-focus details must never make their numbers look admissible.
+            unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(compact_focus)
             if unknown_numbers:
                 raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_numbers)}")
             normalized_analysis = re.sub(r"\s+", "", analysis)

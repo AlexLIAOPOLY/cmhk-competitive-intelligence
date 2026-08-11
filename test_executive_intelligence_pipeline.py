@@ -15,6 +15,46 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_local_scale_regeneration_excludes_track_details_and_retries_scope_leak(self):
+        focus = {
+            "id": "scale",
+            "label": "方案规模",
+            "metric": {"value": 161, "unit": "项"},
+            "insight": "59项与7项的差距表明方案数量集中于头部厂商。",
+            "items": [
+                {"name": "HKBN", "value": 59, "unit": "项", "detail": "覆盖4个赛道"},
+                {"name": "HGC", "value": 7, "unit": "项", "detail": "覆盖1个赛道"},
+            ],
+        }
+        leaked = json.dumps({
+            "analysis": "HKBN 59项覆盖4个赛道，说明方案规模与赛道广度相关。"
+        }, ensure_ascii=False)
+        replacement = json.dumps({
+            "analysis": "HKBN 59项与HGC 7项形成数量断层，表明在售方案供给集中于头部厂商。"
+        }, ensure_ascii=False)
+        responses = []
+        for content in (leaked, replacement):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": content}}]
+            }).encode("utf-8")
+            responses.append(response)
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("local", focus)
+
+        first_payload = json.loads(request.call_args_list[0].args[0].data.decode("utf-8"))
+        first_prompt = first_payload["messages"][1]["content"]
+        self.assertNotIn("覆盖4个赛道", first_prompt)
+        self.assertIn("不得讨论产品赛道", first_prompt)
+        self.assertEqual(request.call_count, 2)
+        self.assertNotIn("赛道", result["focus"]["analysis"])
+
     def test_fast_focus_generation_retries_a_duplicate_with_another_model(self):
         focus = {
             "id": "scale",
