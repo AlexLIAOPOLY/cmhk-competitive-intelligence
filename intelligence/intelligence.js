@@ -549,35 +549,7 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
     focusRotationTimer = window.setInterval(rotateNextFocus, 4200);
   }
 
-  async function refreshFocusInsight(domainId, focusId) {
-    const key = `${domainId}:${focusId}`;
-    if (insightRefreshState.get(key) === "loading") return;
-    const domain = domainById(domainId);
-    if (!domain) return;
-    insightRefreshState.set(key, "loading");
-    manualFocusPauseUntil.set(domainId, Date.now() + 30000);
-    replaceDomainCard(domain);
-    try {
-      const response = await fetch("/api/executive-intelligence/regenerate-insight", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain: domainId, focus: focusId }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.ok) throw new Error(data.error || "AI洞察生成失败");
-      insightRefreshState.delete(key);
-      await refreshIntelligencePayload(true);
-    } catch (error) {
-      insightRefreshState.set(key, "error");
-      replaceDomainCard(domain);
-      window.setTimeout(() => {
-        if (insightRefreshState.get(key) !== "error") return;
-        insightRefreshState.delete(key);
-        const latestDomain = domainById(domainId);
-        if (latestDomain) replaceDomainCard(latestDomain);
-      }, 5000);
-    }
-  }
+  function refreshFocusInsight() {}
 
   function renderDrawer(domain) {
     const entities = Array.isArray(domain.entities) ? domain.entities : [];

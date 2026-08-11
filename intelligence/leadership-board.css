@@ -688,6 +688,7 @@
   .intelligence-domain-heading strong,
   .intelligence-domain-local .intelligence-domain-heading strong { font-size: 29px; }
   .intelligence-domain-metric > strong { font-size: 44px; }
+  .intelligence-focus-tabs button { font-size: 12.5px; }
 }
 
 @media (max-width: 1180px) {
