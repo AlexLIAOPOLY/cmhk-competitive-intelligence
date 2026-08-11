@@ -13090,6 +13090,128 @@ body.dashboard-page {
   color: #fff;
 }
 
+/* AI workspace: keep every generated/tool surface on the dark canvas. */
+.dashboard-page .floating-chat {
+  --chat-surface-raised: #0f2b38;
+  --chat-surface-inset: #0a222e;
+  --chat-surface-hover: #163746;
+  --chat-surface-border: #315b6a;
+  --chat-surface-text: #c3d7dd;
+  --chat-surface-muted: #91aeb8;
+}
+
+.dashboard-page .tool-body,
+.dashboard-page .tool-result-box,
+.dashboard-page .tool-call-box {
+  border-color: var(--chat-surface-border);
+  border-left-color: #4b8fa2;
+  background: var(--chat-surface-inset);
+  color: var(--chat-surface-text);
+  box-shadow: none;
+  scrollbar-color: #4e7785 transparent;
+}
+
+.dashboard-page .tool-body::selection,
+.dashboard-page .tool-result-box::selection {
+  background: rgba(92, 190, 214, .28);
+  color: #f2fbfc;
+}
+
+.dashboard-page .tool-summary,
+.dashboard-page .tool-icon,
+.dashboard-page .tool-label,
+.dashboard-page .tool-name,
+.dashboard-page .tool-details.is-done .tool-summary,
+.dashboard-page .tool-details.is-done .tool-icon,
+.dashboard-page .tool-details.is-done .tool-label,
+.dashboard-page .tool-details.is-done .tool-name {
+  color: var(--chat-surface-muted);
+}
+
+.dashboard-page .tool-summary:hover,
+.dashboard-page .tool-summary:focus-visible {
+  border-color: #3d6b7a;
+  background: var(--chat-surface-hover);
+  color: #dbecef;
+  outline: none;
+}
+
+.dashboard-page .tool-status {
+  border-color: #315b6a;
+  background: #102e3b;
+  color: #aac2ca;
+}
+
+.dashboard-page .tool-status.is-running {
+  border-color: #39748a;
+  background: #123747;
+  color: #8bd5e4;
+}
+
+.dashboard-page .tool-status.is-done {
+  border-color: transparent;
+  background: transparent;
+  color: #91aeb8;
+}
+
+.dashboard-page .message-body pre,
+.dashboard-page .message-body .markdown-body pre,
+.dashboard-page .model-reasoning-content pre {
+  border: 1px solid #315968;
+  background: #081e29;
+  color: #c8dce2;
+  box-shadow: none;
+}
+
+.dashboard-page .message-body blockquote,
+.dashboard-page .model-reasoning-content blockquote {
+  border-left-color: #4b8fa2;
+  background: rgba(18, 55, 70, .58);
+  color: #b7ccd3;
+}
+
+.dashboard-page .message-body hr,
+.dashboard-page .model-reasoning-content hr {
+  border-color: #315968;
+}
+
+.dashboard-page .tool-body .markdown-body,
+.dashboard-page .tool-body .markdown-body p,
+.dashboard-page .tool-body .markdown-body li,
+.dashboard-page .tool-result-box pre,
+.dashboard-page .tool-result-box code {
+  background: transparent;
+  color: inherit;
+}
+
+.dashboard-page .chat-attachment-chip,
+.dashboard-page .queued-message-item,
+.dashboard-page .chat-approval-bar,
+.dashboard-page .message-body .crawl-summary-card,
+.dashboard-page .message-body .summary-header {
+  border-color: #315968;
+  background: var(--chat-surface-raised);
+  color: #d7e8ec;
+  box-shadow: none;
+}
+
+.dashboard-page .chat-attachment-chip button,
+.dashboard-page .chat-image-lightbox-close {
+  border-color: #3c6878;
+  background: #102e3b;
+  color: #b9d1d8;
+}
+
+.dashboard-page .chat-attachment-chip button:hover,
+.dashboard-page .chat-attachment-chip button:focus-visible,
+.dashboard-page .chat-image-lightbox-close:hover,
+.dashboard-page .chat-image-lightbox-close:focus-visible {
+  border-color: #5aa9bc;
+  background: #183b49;
+  color: #f0fafc;
+  outline: none;
+}
+
 /* ===== Xiaojing response tables and composer controls v4 ===== */
 .dashboard-page .markdown-body .chat-table-wrap {
   margin: 14px 0 16px;
