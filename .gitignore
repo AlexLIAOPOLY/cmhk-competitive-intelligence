@@ -7,6 +7,8 @@ Codex/
 *.log
 *.pid
 ai_config.json
+config/feishu_media_metrics.local.json
+var/feishu_media_metrics/
 raw/
 archives/
 last_daily_command.log
