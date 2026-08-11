@@ -15238,8 +15238,6 @@ body.report-library-open::before {
   background: #3a9bb2;
   color: #fff;
 }
-
-
 html, body { width: 100%; min-width: 0; min-height: 100%; margin: 0; background: #061724; }
 body.dashboard-page { overflow-x: hidden; }
 .app-shell { min-height: 100vh; }
@@ -15252,4 +15250,3 @@ body.dashboard-page { overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
-

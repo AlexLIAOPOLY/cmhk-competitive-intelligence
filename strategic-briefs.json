@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-11T03:35:30+08:00",
+  "generated_at": "2026-08-11T09:24:31+08:00",
   "items": [
+    {
+      "id": "NEWS-DA3A0C0591B21E",
+      "title": "Hutchison Telecommunications Hong Kong派发中期股息",
+      "summary": "Hutchison Telecommunications Hong Kong宣布将于9月16日向股东派发每股0.0228港元的中期股息。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQVkVUNzd4T0RZZDRtd2ZBWFc1RFZiY0JGNC1iZWhGSDNSZWkybDhtaVhaSDJhR25sdmZTNzNRZElWSUl6MDBpUTZoNlh0MmhBc19SVFhsS3hqS01yWDZ4bGg0MGpDXzQtaXAzU0tRQjAxTHY0ZDBPU2tjYW9pQjhyVFFNTDVJWTNZLTJjaVcycVk2SmtVQjloYTR2T2RsUWdxSEMyVktGVE9HaXNiY25fcElpd1c?oc=5",
+      "published_at": "2026-08-10T17:23:29+08:00"
+    },
     {
       "id": "NEWS-AB3DB8101B8137",
       "title": "大型活动带动上半年访港消费达58亿港元",
@@ -57,15 +65,7 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBhck1waV95cExtWlQzaE90dm5zRjdVR0dzcHBMeUJuVkE1a0RtRW9iVFFneWVnR2MyR0hEb05NT2M5elgtN0pUWldNa3dvYlp2VW54bGNMeXNVZFlncWJSZi1zUFJkTXdnU3dNTmNicEV6dnFWYk5KRjMxQU0?oc=5",
       "published_at": "2026-08-06T11:19:26+08:00"
-    },
-    {
-      "id": "NEWS-43470AD7B13C17",
-      "title": "香港重视创新吸引新加坡名校合作",
-      "summary": "香港特区政府重视创新，吸引新加坡名校来港合作，推动本地创新生态发展。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBGbHdjY21maHl2cGVjQzR5bDJPbVc1ZjFCN1ZwN3VQZnJtQ0tWbUkxNWx0Ni12aW1DSXJqQTR2OVpONWEwQmJWV210R2tHNWRiS2pTd2VyT3lhOWVObDNFNklMWHhlX0dIWU9oQVFPUVFUYkJr?oc=5",
-      "published_at": "2026-08-06T10:15:00+08:00"
     }
   ],
-  "site_version": "8b9a626221c00e2711b69ca85b798fc02d18587270b17c3810cf5553ce17e807"
+  "site_version": "25a0fc33fb00735493182445dbb5e39d0be9f4a0ac6ad73f35cbfad0d75426f8"
 }

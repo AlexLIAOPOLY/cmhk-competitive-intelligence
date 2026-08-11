@@ -558,7 +558,113 @@
   }
 }
 
+/* Readability pass: keep decision-critical labels legible without changing the
+   four-panel information hierarchy. */
+.intelligence-relation span { font-size: 12px; }
+.intelligence-relation strong { font-size: 14px; line-height: 1.3; }
+.intelligence-page-identity span { font-size: 10px; }
+.intelligence-page-identity strong { font-size: 22px; }
 
+.intelligence-domain-heading strong,
+.intelligence-domain-local .intelligence-domain-heading strong { font-size: 29px; }
+.intelligence-domain-metric { min-width: 122px; }
+.intelligence-domain-metric small { font-size: 12px; line-height: 1.3; }
+.intelligence-domain-metric > strong i { font-size: 13px; }
+
+.intelligence-focus-tabs { height: 34px; }
+.intelligence-focus-tabs button {
+  min-height: 32px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.intelligence-domain-focus-stage {
+  grid-template-columns: minmax(0, 1.22fr) minmax(218px, .78fr);
+}
+.intelligence-entity-focus > span { font-size: 13px; }
+.intelligence-entity-focus > strong { font-size: 31px; }
+.intelligence-entity-focus > strong i { font-size: 12px; }
+.intelligence-entity-focus.is-overview > strong { font-size: 19px; }
+.intelligence-entity-detail-body { max-height: 104px; }
+.intelligence-entity-detail-body > p { font-size: 13.5px; line-height: 1.55; }
+.intelligence-entity-components > header span,
+.intelligence-entity-components > header small,
+.intelligence-entity-components li,
+.intelligence-entity-components li > strong { font-size: 11px; }
+.intelligence-entity-components li > strong i { font-size: 9.5px; }
+.intelligence-entity-actions > a { font-size: 11.5px; }
+
+.intelligence-viz-rows li,
+.intelligence-viz-ranges li,
+.intelligence-viz-trends li {
+  grid-template-columns: 88px minmax(58px, 1fr) 74px;
+  min-height: 32px;
+}
+.intelligence-viz-diverging li {
+  grid-template-columns: 84px minmax(70px, 1fr) 58px;
+  min-height: 30px;
+}
+.intelligence-viz-rows li > span,
+.intelligence-viz-ranges li > span,
+.intelligence-viz-trends li > span,
+.intelligence-viz-diverging span,
+.intelligence-viz-disclosure li > span,
+.intelligence-viz-kpis span { font-size: 13px; }
+.intelligence-viz-rows li > strong,
+.intelligence-viz-ranges li > strong,
+.intelligence-viz-trends li > strong,
+.intelligence-viz-diverging strong,
+.intelligence-viz-kpis strong { font-size: 13.5px; }
+.intelligence-viz-rows li > strong small,
+.intelligence-viz-ranges li > strong small,
+.intelligence-viz-trends li > strong small { font-size: 9px; }
+.intelligence-viz-columns span,
+.intelligence-viz-columns strong { font-size: 12px; }
+.intelligence-viz-disclosure li > strong { font-size: 19px; }
+
+@media (max-width: 1366px) {
+  .intelligence-domain,
+  .intelligence-domain-local {
+    grid-template-columns: 38px minmax(126px, .68fr) minmax(186px, 1.1fr) minmax(112px, auto);
+    gap: 10px;
+    padding-inline: 16px;
+  }
+  .intelligence-domain-heading strong,
+  .intelligence-domain-local .intelligence-domain-heading strong { font-size: 27px; }
+}
+
+@media (max-width: 1180px) {
+  .intelligence-domain-focus-stage {
+    grid-template-columns: minmax(0, 1.3fr) minmax(240px, .7fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .intelligence-domain,
+  .intelligence-domain-local {
+    grid-template-columns: 36px minmax(0, 1fr);
+    grid-template-rows: auto auto 36px minmax(0, 1fr);
+    min-height: 510px;
+  }
+  .intelligence-domain-heading strong,
+  .intelligence-domain-local .intelligence-domain-heading strong { font-size: 24px; }
+  .intelligence-domain-metric { min-width: 0; }
+  .intelligence-domain-metric small { font-size: 12px; }
+  .intelligence-focus-tabs { height: 36px; }
+  .intelligence-focus-tabs button { min-height: 34px; font-size: 12px; }
+  .intelligence-domain-focus-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(148px, 1fr) minmax(126px, auto);
+  }
+  .intelligence-viz-rows li,
+  .intelligence-viz-ranges li,
+  .intelligence-viz-trends li {
+    grid-template-columns: 82px minmax(48px, 1fr) 70px;
+  }
+  .intelligence-viz-diverging li {
+    grid-template-columns: 80px minmax(58px, 1fr) 54px;
+  }
+}
 html, body { width: 100%; min-width: 0; min-height: 100%; margin: 0; background: #061724; }
 body.dashboard-page { overflow-x: hidden; }
 .app-shell { min-height: 100vh; }
@@ -571,4 +677,3 @@ body.dashboard-page { overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
-
