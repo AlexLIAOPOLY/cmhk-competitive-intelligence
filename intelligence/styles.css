@@ -15247,6 +15247,7 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
+.static-snapshot .intelligence-ai-refresh { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
