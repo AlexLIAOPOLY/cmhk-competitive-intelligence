@@ -62,11 +62,12 @@ final result: passed
 
 - Source visual truth: `/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/codex-clipboard-fd3c49b1-8025-48df-84bd-e33e5604fea5.png`
 - User clarification for stroke weight: `/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/codex-clipboard-0cd921d0-85a2-460c-9b1c-d5266b02bd1b.png`
-- Implementation full screenshot: `artifacts/design-qa/ai-panel-full.png`
-- Implementation focused screenshot: `artifacts/design-qa/ai-logo-background-implemented.png`
-- Side-by-side comparison: `artifacts/design-qa/ai-logo-background-comparison.jpg`
+- User clarification for logo brightness: `/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/codex-clipboard-e1256e3b-84b2-46e7-9098-42a8a7b7316f.png`
+- Implementation full screenshot: `artifacts/design-qa/ai-panel-full-bright.png`
+- Implementation focused screenshot: `artifacts/design-qa/ai-logo-background-bright-implemented.png`
+- Side-by-side comparison: `artifacts/design-qa/ai-logo-brightness-comparison.jpg`
 - Browser viewport: 1280 × 720 CSS px, density 1
-- Source pixels: 86 × 90
+- Latest source pixels: 98 × 108
 - Implementation empty-state mark: 48 × 48 CSS px before responsive page scaling
 - State: 小竞AI panel open on the empty conversation view
 
@@ -76,7 +77,7 @@ The new dark rounded-square base sits quietly above the empty-state heading and 
 
 ## Focused comparison
 
-The reference contributes only the base treatment: a dark navy surface, fine cyan outline, rounded corners, and restrained inner depth. The central artwork remains the existing CMHK 小竞AI logo asset. Its original stroke is expanded by sub-pixel same-color shadows so the mark remains legible on the dark base without becoming a glow.
+The references contribute the base treatment and brightness target: a dark navy surface, fine cyan outline, rounded corners, restrained inner depth, and a pale cyan-white logo body. The central artwork remains the existing CMHK 小竞AI logo asset. Its original stroke is recolored to the brighter foreground target and expanded by sub-pixel same-color shadows so it remains legible without becoming a glow.
 
 ## Required fidelity surfaces
 
@@ -85,6 +86,7 @@ The reference contributes only the base treatment: a dark navy surface, fine cya
 - Surface: solid `#0a202a` with subtle inset depth and no light fill.
 - Brand asset: unchanged `/static/assets/logo/xiaojing-ai-logo-mark.png?v=2`.
 - Stroke treatment: approximately 1 px visual thickening at the empty-state size and a reduced expansion for chat avatars.
+- Foreground treatment: pale cyan-white logo body with brighter cyan edge expansion, matching the latest reference contrast.
 
 ## Findings and comparison history
 
@@ -92,15 +94,17 @@ The reference contributes only the base treatment: a dark navy surface, fine cya
    - Fix: raised brightness and contrast while keeping the source asset unchanged.
 2. User feedback showed the logo line was still too thin at the responsive rendered size.
    - Fix: added balanced 0.55 px same-color expansion on the empty-state mark and 0.4 px on assistant avatars.
-3. Final focused comparison confirms the original mark is recognizable, the stroke is visibly heavier, and the base stays visually restrained.
+3. The thickened mark remained materially darker than the user's latest pale cyan-white reference.
+   - Fix: recolored the existing raster mark through a CSS filter to a near-white cyan foreground while preserving the original alpha shape and asset path.
+4. Final focused comparison confirms the original mark is recognizable, visibly heavier, and now reaches the reference brightness while the base stays restrained.
 
 ## Interaction and console verification
 
 - Open 小竞AI panel: passed.
 - Empty-state logo uses the original asset path: passed.
-- Computed dark base, border, inset shadow, and thickened-line filter: passed.
+- Computed dark base, border, inset shadow, bright foreground, and thickened-line filter: passed.
 - Browser console errors/warnings: 0.
-- Automated targeted regression: 165 tests passed.
+- Automated full regression: 219 tests passed.
 
 ## Follow-up polish
 
