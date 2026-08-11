@@ -7523,6 +7523,9 @@ document.addEventListener("keydown", (event) => {
           ? `<span class="intelligence-ai-stream-text">${safe(refreshState.text)}</span><i class="intelligence-ai-stream-cursor" aria-hidden="true"></i>`
           : `<span class="intelligence-ai-paragraph-skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sr-only">${safe(refreshState.message || "正在生成新的数据判断")}</span>`
         : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
+      const headlineContent = isGenerating
+        ? `<span class="intelligence-ai-headline-skeleton" aria-hidden="true"><i></i><i></i></span>`
+        : safe(aiHeadline);
       const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-overview`.replace(/[^a-zA-Z0-9_-]/g, "-");
       return `
         <div class="intelligence-entity-focus is-overview">
@@ -7535,7 +7538,7 @@ document.addEventListener("keydown", (event) => {
             </svg>
             <span>AI 洞察</span>
           </button>
-          <strong>${safe(aiHeadline)}</strong>
+          <strong class="${isGenerating ? "is-generating" : ""}" data-intelligence-insight-headline>${headlineContent}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body ${isGenerating ? "is-generating" : ""}" data-intelligence-detail-body>
             <p role="status" aria-live="polite" aria-atomic="false" aria-busy="${isGenerating ? "true" : "false"}">${insightContent}</p>
           </div>

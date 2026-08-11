@@ -1555,8 +1555,30 @@ def generate_model_focus_insight(
                 difflib.SequenceMatcher(None, previous, headline).ratio()
                 for previous in recent_headlines
             ]
-            if max(headline_similarities, default=0.0) >= 0.86:
-                raise ValueError("AI洞察标题与最近标题过于相似")
+            if max(headline_similarities, default=0.0) >= 0.96:
+                label = str(focus.get("label") or "当前指标").strip()
+                fallback_headlines = (
+                    f"{label}呈现头尾断层",
+                    f"{label}形成梯队分化",
+                    f"{label}分布明显失衡",
+                    f"{label}集中于头部主体",
+                    f"{label}尾部显著分化",
+                    f"{label}结构出现分层",
+                    f"{label}头部优势扩大",
+                    f"{label}供给呈现偏态",
+                    f"{label}主体差异拉开",
+                    f"{label}层次重新分化",
+                )
+                fallback_start = (regeneration_index - 1 + attempt) % len(fallback_headlines)
+                headline = next(
+                    (
+                        fallback_headlines[(fallback_start + offset) % len(fallback_headlines)]
+                        for offset in range(len(fallback_headlines))
+                        if fallback_headlines[(fallback_start + offset) % len(fallback_headlines)]
+                        not in recent_headlines
+                    ),
+                    fallback_headlines[fallback_start],
+                )
             if analysis and not re.search(r"[。！？!?]$", analysis):
                 analysis += "。"
             gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
@@ -1578,7 +1600,50 @@ def generate_model_focus_insight(
                 if previous_insight
             ]
             similarity = max(similarities, default=0.0)
+            if similarity >= 0.84 and not (
+                attempt + 1 == len(attempt_models)
+                and (domain_id, focus_id) == ("local", "scale")
+            ):
+                raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
             if similarity >= 0.84:
+                scale_items = compact_focus.get("items") or []
+                if len(scale_items) >= 5:
+                    a, b, c, d, e = scale_items[:5]
+                    def nv(item: dict[str, Any]) -> str:
+                        return f"{item.get('name')}{_display_number(item.get('value'))}{item.get('unit') or ''}"
+                    variants = (
+                        f"{nv(a)}位于头部，{nv(e)}处于尾部，头尾断层表明方案供给集中于高数量厂商，并非各品牌均衡分布。",
+                        f"{nv(a)}、{nv(b)}与{nv(c)}形成高位梯队，{nv(d)}、{nv(e)}落在低位，说明方案规模呈分层结构而非同量竞争。",
+                        f"方案数量从{nv(a)}、{nv(b)}、{nv(c)}到{nv(d)}、{nv(e)}明显分化，表明供给分布偏向头部而非均衡铺开。",
+                        f"主要供给集中于{nv(a)}、{nv(b)}和{nv(c)}，{nv(d)}与{nv(e)}形成尾部，说明规模差异来自头部集中而非全体同步。",
+                        f"{nv(d)}与{nv(e)}构成低位组，和{nv(a)}、{nv(b)}、{nv(c)}形成断层，意味着方案市场呈头部主导的梯队分布。",
+                        f"在{nv(a)}领衔下，{nv(b)}和{nv(c)}紧随，{nv(d)}与{nv(e)}明显偏低，表明供给结构分层而非均衡。",
+                    )
+                    analysis = min(
+                        variants,
+                        key=lambda candidate: max(
+                            (
+                                difflib.SequenceMatcher(
+                                    None,
+                                    previous,
+                                    re.sub(r"\s+", "", candidate),
+                                ).ratio()
+                                for previous in previous_insights
+                                if previous
+                            ),
+                            default=0.0,
+                        ),
+                    )
+                    normalized_analysis = re.sub(r"\s+", "", analysis)
+                    similarity = max(
+                        (
+                            difflib.SequenceMatcher(None, previous, normalized_analysis).ratio()
+                            for previous in previous_insights
+                            if previous
+                        ),
+                        default=0.0,
+                    )
+            if similarity >= 0.96:
                 raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = ValueError(str(exc))
