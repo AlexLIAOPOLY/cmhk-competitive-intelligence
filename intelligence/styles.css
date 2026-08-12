@@ -11985,6 +11985,29 @@ body.dashboard-page {
 
 .intelligence-domain-heading {
   align-self: start;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+
+.intelligence-domain-heading:disabled {
+  opacity: 1;
+  cursor: progress;
+}
+
+.intelligence-domain-heading:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--domain-accent) 68%, transparent);
+  outline-offset: 5px;
+}
+
+.intelligence-domain-heading:not(:disabled):hover strong,
+.intelligence-domain-heading:not(:disabled):focus-visible strong {
+  filter: brightness(1.12);
 }
 
 .intelligence-domain-heading span {
