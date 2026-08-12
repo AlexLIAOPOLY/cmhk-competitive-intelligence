@@ -3483,6 +3483,27 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/executive-intelligence/regenerate-discovery":
+            if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(blocking=False):
+                json_response(self, {"ok": False, "error": "已有AI洞察正在生成，请稍候。"}, 409)
+                return
+            try:
+                from executive_intelligence_pipeline import regenerate_model_discovery
+
+                payload = read_request_json(self)
+                index = int(payload.get("index"))
+                source_domain = str(payload.get("from") or "").strip()
+                target_domain = str(payload.get("to") or "").strip()
+                if not source_domain or not target_domain:
+                    raise ValueError("from和to不能为空")
+                json_response(self, regenerate_model_discovery(index, source_domain, target_domain))
+            except (TypeError, ValueError) as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 500)
+            finally:
+                INTELLIGENCE_INSIGHT_REFRESH_LOCK.release()
+            return
         if parsed.path == "/api/executive-intelligence/regenerate-insight":
             if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(blocking=False):
                 json_response(self, {"ok": False, "error": "已有AI洞察正在生成，请稍候。"}, 409)

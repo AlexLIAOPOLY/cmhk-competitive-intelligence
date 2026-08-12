@@ -140,7 +140,7 @@
 }
 .intelligence-relation:hover::before,
 .intelligence-relation:focus-visible::before { opacity: 1; }
-.intelligence-relation span,
+.intelligence-relation-title,
 .intelligence-relation small { display: block; color: #6f9bad; font-size: 10px; }
 .intelligence-relation strong {
   display: block;
@@ -150,6 +150,36 @@
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.intelligence-relation strong.is-generating {
+  align-self: center;
+  overflow: visible;
+}
+
+.intelligence-relation-skeleton {
+  display: grid;
+  width: min(92%, 230px);
+  gap: 4px;
+}
+
+.intelligence-relation-skeleton i {
+  display: block;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(82, 166, 187, .28);
+  animation: intelligence-skeleton-pulse 1.12s ease-in-out infinite;
+}
+
+.intelligence-relation-skeleton i:nth-child(2) {
+  width: 78%;
+  animation-delay: 140ms;
+}
+
+.intelligence-relation-skeleton i:nth-child(3) {
+  width: 56%;
+  animation-delay: 280ms;
 }
 
 .intelligence-domain-grid {
@@ -11844,13 +11874,32 @@ body.dashboard-page {
   opacity: .55;
 }
 
-.intelligence-relation span {
+.intelligence-relation-title {
   grid-column: 2;
   grid-row: 1;
   align-self: end;
+  justify-self: start;
+  min-width: 0;
+  padding: 0;
+  border: 0;
   color: #6f9eb1;
+  text-align: left;
+  background: transparent;
   font-size: 10px;
   letter-spacing: .03em;
+  cursor: pointer;
+  appearance: none;
+}
+
+.intelligence-relation-title:hover,
+.intelligence-relation-title:focus-visible {
+  color: #a8d8e5;
+  outline: none;
+}
+
+.intelligence-relation-title:disabled {
+  opacity: .68;
+  cursor: progress;
 }
 
 .intelligence-relation strong {
@@ -11985,29 +12034,6 @@ body.dashboard-page {
 
 .intelligence-domain-heading {
   align-self: start;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  color: inherit;
-  text-align: left;
-  background: transparent;
-  cursor: pointer;
-  appearance: none;
-}
-
-.intelligence-domain-heading:disabled {
-  opacity: 1;
-  cursor: progress;
-}
-
-.intelligence-domain-heading:focus-visible {
-  outline: 1px solid color-mix(in srgb, var(--domain-accent) 68%, transparent);
-  outline-offset: 5px;
-}
-
-.intelligence-domain-heading:not(:disabled):hover strong,
-.intelligence-domain-heading:not(:disabled):focus-visible strong {
-  filter: brightness(1.12);
 }
 
 .intelligence-domain-heading span {

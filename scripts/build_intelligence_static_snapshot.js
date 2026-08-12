@@ -39,7 +39,7 @@ body.dashboard-page { overflow-x: hidden; }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
 .static-snapshot .ai-insight-label,
-.static-snapshot .intelligence-domain-heading { pointer-events: none; cursor: default; }
+.static-snapshot .intelligence-relation-title { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -117,8 +117,9 @@ async function main() {
           if (!/^https?:\/\//i.test(href)) item.removeAttribute("href");
         });
         copy.querySelectorAll("[tabindex]").forEach((item) => item.removeAttribute("tabindex"));
-        copy.querySelectorAll("[data-intelligence-insight-refresh]").forEach((item) => {
+        copy.querySelectorAll("[data-intelligence-insight-refresh], [data-intelligence-relation-refresh]").forEach((item) => {
           item.removeAttribute("data-intelligence-insight-refresh");
+          item.removeAttribute("data-intelligence-relation-refresh");
           item.setAttribute("disabled", "");
           item.setAttribute("aria-disabled", "true");
         });
@@ -184,8 +185,9 @@ async function main() {
   const root = document.getElementById("intelligenceBoard");
   if (!root) return;
   const disableRefreshControls = () => {
-    root.querySelectorAll("[data-intelligence-insight-refresh]").forEach((item) => {
+    root.querySelectorAll("[data-intelligence-insight-refresh], [data-intelligence-relation-refresh]").forEach((item) => {
       item.removeAttribute("data-intelligence-insight-refresh");
+      item.removeAttribute("data-intelligence-relation-refresh");
       item.setAttribute("disabled", "");
       item.setAttribute("aria-disabled", "true");
     });
@@ -268,7 +270,7 @@ async function main() {
       </section>
     </section>
   </main>
-  <script src="./intelligence.js?v=3"></script>
+  <script src="./intelligence.js?v=4"></script>
 </body>
 </html>\n`;
     fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content.replace(/[ \t]+$/gm, ""));

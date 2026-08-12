@@ -7399,6 +7399,7 @@ document.addEventListener("keydown", (event) => {
   const selectedFocusByDomain = new Map();
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
+  const relationRefreshState = new Map();
   let focusRotationCursor = 0;
   let focusRotationTimer = null;
   let payloadSignature = "";
@@ -7637,8 +7638,15 @@ document.addEventListener("keydown", (event) => {
         style="--relation-index:${index}"
         title="${safe(relation.detail || relation.title)}" aria-label="发现${index + 1}：${safe(relation.title)}">
         <em>${String(index + 1).padStart(2, "0")}</em>
-        <span>${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}</span>
-        <strong>${safe(relation.title)}</strong>
+        <button type="button" class="intelligence-relation-title ${relationRefreshState.get(index)?.status === "loading" ? "is-loading" : ""} ${relationRefreshState.get(index)?.status === "error" ? "is-error" : ""}"
+          data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
+          aria-label="点击重新生成${safe(domainLabels[relation.from] || relation.from)}与${safe(domainLabels[relation.to] || relation.to)}跨库洞察"
+          ${relationRefreshState.get(index)?.status === "loading" ? "disabled aria-busy=\"true\"" : ""}>
+          ${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}
+        </button>
+        <strong class="${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""}">${relationRefreshState.get(index)?.status === "loading"
+          ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成跨库洞察</span>`
+          : safe(relation.title)}</strong>
         <small>${safe(relation.origin === "ai" ? "AI 研判" : relation.kind)}</small>
       </div>
     `).join("");
@@ -7822,23 +7830,14 @@ document.addEventListener("keydown", (event) => {
     const entityIndex = selectedEntityIndex(domain, selectedFocus);
     const selectedEntity = items[entityIndex] || null;
     const focusMetric = selectedFocus.metric || domain.metric || {};
-    const refreshState = insightRefreshState.get(`${domain.id}:${selectedFocus.id}`);
-    const isGenerating = ["loading", "streaming"].includes(refreshState?.status);
-    const titleRefreshLabel = isGenerating
-      ? `正在重新生成${domain.title}${selectedFocus.label}AI洞察`
-      : refreshState?.status === "error"
-        ? `${domain.title}${selectedFocus.label}AI洞察生成失败，点击重试`
-        : `点击重新生成${domain.title}${selectedFocus.label}AI洞察`;
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
         <span class="intelligence-domain-index">${safe(domain.index)}</span>
-        <button type="button" class="intelligence-domain-heading ${isGenerating ? "is-loading" : ""} ${refreshState?.status === "error" ? "is-error" : ""}"
-          data-intelligence-insight-refresh data-intelligence-domain-id="${safe(domain.id)}" data-intelligence-focus-id="${safe(selectedFocus.id)}"
-          aria-label="${safe(titleRefreshLabel)}" title="${safe(titleRefreshLabel)}" ${isGenerating ? "disabled aria-busy=\"true\"" : ""}>
+        <span class="intelligence-domain-heading">
           <span>${safe(domain.kicker)}</span>
           <strong>${safe(domain.title)}</strong>
-        </button>
+        </span>
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
           <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
@@ -7991,6 +7990,32 @@ document.addEventListener("keydown", (event) => {
     }
   }
 
+  async function refreshRelationInsight(index, sourceDomain, targetDomain) {
+    if (relationRefreshState.get(index)?.status === "loading") return;
+    relationRefreshState.set(index, { status: "loading" });
+    renderRail(payload?.relations || []);
+    try {
+      const response = await fetch("/api/executive-intelligence/regenerate-discovery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ index, from: sourceDomain, to: targetDomain }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || "跨库洞察生成失败");
+      await refreshIntelligencePayload(true);
+      relationRefreshState.delete(index);
+      renderRail(payload?.relations || []);
+    } catch (error) {
+      relationRefreshState.set(index, { status: "error" });
+      renderRail(payload?.relations || []);
+      window.setTimeout(() => {
+        if (relationRefreshState.get(index)?.status !== "error") return;
+        relationRefreshState.delete(index);
+        renderRail(payload?.relations || []);
+      }, 5000);
+    }
+  }
+
   function renderDrawer(domain) {
     const entities = Array.isArray(domain.entities) ? domain.entities : [];
     const maxValue = Math.max(...entities.map((item) => Math.abs(Number(item.value) || 0)), 1);
@@ -8134,6 +8159,17 @@ document.addEventListener("keydown", (event) => {
     if (!entityTrigger) return;
     event.preventDefault();
     selectEntity(entityTrigger.dataset.intelligenceDomainId, Number(entityTrigger.dataset.intelligenceEntity), true);
+  });
+  rail.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-intelligence-relation-refresh]");
+    if (!trigger) return;
+    event.preventDefault();
+    event.stopPropagation();
+    refreshRelationInsight(
+      Number(trigger.dataset.intelligenceRelationRefresh),
+      trigger.dataset.relationFrom,
+      trigger.dataset.relationTo,
+    );
   });
   drawerBody.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-intelligence-peer]");

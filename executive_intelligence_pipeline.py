@@ -2110,6 +2110,143 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     return {"generated_at_hkt": _now(), "model": used_model, "discoveries": discoveries}
 
 
+def regenerate_model_discovery(
+    index: int,
+    source_domain: str,
+    target_domain: str,
+    *,
+    path: Path = AI_ANALYSIS_PATH,
+    progress: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
+    """Regenerate one cross-library discovery while preserving the other three."""
+    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from ai_rate_limit import wait_for_internal_ai_slot
+    from network_utils import urlopen_with_local_proxy_fallback
+
+    def report(message: str) -> None:
+        if progress:
+            progress(message)
+
+    if index not in range(4):
+        raise ValueError("跨库洞察序号必须为0至3")
+    expected_domains = {"local", "international", "cloud", "macro"}
+    if source_domain not in expected_domains or target_domain not in expected_domains or source_domain == target_domain:
+        raise ValueError("跨库洞察领域组合无效")
+
+    report("正在读取两域当前证据")
+    evidence = _analysis_input_snapshot()
+    evidence_hash = _content_hash(evidence)
+    analysis = _read_json(path, {}) or {}
+    previous = analysis.get("model_analysis") or {}
+    previous_is_current = bool(
+        str(previous.get("evidence_hash") or "") == evidence_hash
+        and str(previous.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
+        and previous.get("summaries")
+    )
+    discoveries = json.loads(json.dumps(
+        previous.get("discoveries") if previous_is_current else _deterministic_discoveries(evidence),
+        ensure_ascii=False,
+    ))
+    discoveries = _validate_model_discoveries(discoveries, evidence)
+    current = discoveries[index]
+    if {str(current.get("from") or ""), str(current.get("to") or "")} != {source_domain, target_domain}:
+        raise ValueError("跨库洞察位置与当前领域组合不一致，请刷新页面后重试")
+
+    config = load_ai_config(include_key=True)
+    api_key = str(config.get("api_key") or "").strip()
+    if not api_key:
+        raise RuntimeError("未配置内网模型密钥")
+    compact = _compact_discovery_evidence(evidence)
+    scoped_evidence = {
+        "domains": [item for item in compact.get("domains") or [] if item.get("id") in {source_domain, target_domain}],
+        "current_discovery": current,
+    }
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "你是电信竞争情报分析员。只重新生成指定两个领域的一条跨库发现。"
+                "只返回JSON对象{from,to,title,detail,kind,source_urls}。from和to必须保持输入顺序；"
+                "title不超过28字，detail不超过110字，kind写AI综合研判。必须引用输入原值，解释结构、驱动、"
+                "集中度、口径差异、市场阶段或跨领域背离；禁止建议、应、需、优先、关注、评估、验证等行动话术。"
+                "source_urls必须分别包含两个领域在输入中原样提供的来源，不得新增数字、来源或伪造因果。"
+                "新结论不得复用current_discovery的标题或核心判断。"
+            ),
+        },
+        {
+            "role": "user",
+            "content": json.dumps({"from": source_domain, "to": target_domain, **scoped_evidence}, ensure_ascii=False),
+        },
+    ]
+    configured_model = str(config.get("model") or "deepseek-v4")
+    models = list(dict.fromkeys([configured_model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
+    last_error: Exception | None = None
+    replacement: dict[str, Any] | None = None
+    used_model = configured_model
+    report("正在生成新的跨库判断")
+    for attempt, model in enumerate(models):
+        request = urllib.request.Request(
+            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
+            data=json.dumps({
+                "model": model,
+                "messages": messages,
+                "temperature": 0.25 if attempt == 0 else 0.55,
+                "max_tokens": 520,
+                "chat_template_kwargs": {"enable_thinking": False},
+            }, ensure_ascii=False).encode("utf-8"),
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        wait_for_internal_ai_slot(f"executive-intelligence-discovery-{index}")
+        try:
+            with urlopen_with_local_proxy_fallback(request, timeout=120) as response:
+                response_payload = json.loads(response.read().decode("utf-8"))
+            message = (response_payload.get("choices") or [{}])[0].get("message") or {}
+            parsed = _extract_json_payload(message.get("content") or message.get("reasoning_content") or "")
+            if isinstance(parsed, list) and len(parsed) == 1:
+                parsed = parsed[0]
+            if not isinstance(parsed, dict):
+                raise ValueError("模型未返回单项跨库洞察对象")
+            if str(parsed.get("from") or "") != source_domain or str(parsed.get("to") or "") != target_domain:
+                raise ValueError("模型改变了跨库领域组合")
+            candidate = [dict(item) for item in discoveries]
+            candidate[index] = parsed
+            replacement = _validate_model_discoveries(candidate, evidence)[index]
+            used_model = model
+            break
+        except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
+            last_error = exc
+            messages.append({
+                "role": "user",
+                "content": f"上一版未通过门禁：{exc}。保持领域组合，换一个数据关系角度，只返回合法JSON对象。",
+            })
+    if replacement is None:
+        raise ValueError(f"跨库洞察连续三次未通过门禁：{last_error}")
+
+    report("证据校验通过，正在返回洞察")
+    discoveries[index] = replacement
+    generated_at = _now()
+    generated = {
+        **previous,
+        "generated_at_hkt": generated_at,
+        "discoveries": discoveries,
+        "discovery_model": used_model,
+        "discovery_generated_at_hkt": generated_at,
+        "evidence_hash": evidence_hash,
+        "insight_format": INSIGHT_FORMAT_VERSION,
+        "reused": False,
+        "manual_discovery_regeneration": {
+            "index": index,
+            "from": source_domain,
+            "to": target_domain,
+            "generated_at_hkt": generated_at,
+        },
+    }
+    analysis["model_analysis"] = generated
+    _atomic_write_json(path, analysis)
+    return {"ok": True, "index": index, **replacement, "model": used_model, "generated_at_hkt": generated_at}
+
+
 def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
     analysis = _read_json(path, {}) or {}
     evidence = _analysis_input_snapshot()

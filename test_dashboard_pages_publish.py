@@ -32,7 +32,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('item.removeAttribute("data-intelligence-insight-refresh")', source)
         self.assertIn('item.setAttribute("disabled", "")', source)
         self.assertIn("new MutationObserver(disableRefreshControls)", source)
-        self.assertIn(".static-snapshot .intelligence-domain-heading", source)
+        self.assertIn(".static-snapshot .intelligence-relation-title", source)
 
     def test_public_verification_uses_system_https_without_proxy(self):
         expected_version = "site-v2"
@@ -212,7 +212,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         html = (static_dir / "index.html").read_text(encoding="utf-8")
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
 
-        self.assertIn('<script src="./intelligence.js?v=3"></script>', html)
+        self.assertIn('<script src="./intelligence.js?v=4"></script>', html)
         self.assertIn("竞争情报 · 证据研判", html)
         self.assertIn("AI 洞察", html)
         self.assertIn('class="ai-insight-mark"', html)
