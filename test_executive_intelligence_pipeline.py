@@ -22,6 +22,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             'models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
             source,
         )
+        self.assertIn('detail必须同时包含“表明、反映、说明”之一', source)
 
     def test_manual_discovery_regeneration_bypasses_cache_and_retries_identical_result(self):
         discoveries = [
@@ -68,9 +69,12 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         requests = [call.args[0] for call in request.call_args_list]
         bodies = [json.loads(item.data.decode("utf-8")) for item in requests]
         self.assertEqual([body["model"] for body in bodies], ["Qwen3-30B-A3B-Instruct-2507", "GLM"])
-        self.assertNotEqual(bodies[0]["regeneration_request_id"], bodies[1]["regeneration_request_id"])
+        request_ids = [item.get_header("X-request-id") for item in requests]
+        self.assertNotEqual(request_ids[0], request_ids[1])
+        self.assertIn(request_ids[0], bodies[0]["messages"][-1]["content"])
+        self.assertIn("结构差异", bodies[0]["messages"][-1]["content"])
+        self.assertIn("驱动因素", bodies[1]["messages"][-1]["content"])
         self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
-        self.assertEqual(requests[0].get_header("X-request-id"), bodies[0]["regeneration_request_id"])
         self.assertEqual(result["title"], "新标题")
         self.assertEqual(result["model"], "GLM")
 

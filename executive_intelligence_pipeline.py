@@ -2160,7 +2160,6 @@ def regenerate_model_discovery(
     compact = _compact_discovery_evidence(evidence)
     scoped_evidence = {
         "domains": [item for item in compact.get("domains") or [] if item.get("id") in {source_domain, target_domain}],
-        "current_discovery": current,
     }
     messages = [
         {
@@ -2170,8 +2169,9 @@ def regenerate_model_discovery(
                 "只返回JSON对象{from,to,title,detail,kind,source_urls}。from和to必须保持输入顺序；"
                 "title不超过28字，detail不超过110字，kind写AI综合研判。必须引用输入原值，解释结构、驱动、"
                 "集中度、口径差异、市场阶段或跨领域背离；禁止建议、应、需、优先、关注、评估、验证等行动话术。"
+                "detail必须同时包含“表明、反映、说明”之一，以及“源于、驱动、结构性差异、脱钩、接近饱和”之一。"
                 "source_urls必须分别包含两个领域在输入中原样提供的来源，不得新增数字、来源或伪造因果。"
-                "新结论不得复用current_discovery的标题或核心判断。"
+                "必须依据证据重新推导一条判断，不得复述输入指令或请求编号。"
             ),
         },
         {
@@ -2185,14 +2185,21 @@ def regenerate_model_discovery(
     replacement: dict[str, Any] | None = None
     used_model = models[0]
     report("正在生成新的跨库判断")
+    regeneration_angles = ("结构差异", "驱动因素", "市场阶段", "集中度", "口径与时间差")
     for attempt, model in enumerate(models):
         request_id = f"relation-{index}-{uuid4().hex}"
+        request_messages = [*messages, {
+            "role": "user",
+            "content": (
+                f"本次重生成请求编号：{request_id}。该编号只用于隔离缓存，不属于证据，不得写入答案。"
+                f"本次优先从“{regeneration_angles[attempt % len(regeneration_angles)]}”角度形成与当前标题和正文不同的新判断。"
+            ),
+        }]
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
             data=json.dumps({
                 "model": model,
-                "messages": messages,
-                "regeneration_request_id": request_id,
+                "messages": request_messages,
                 "temperature": 0.25 if attempt == 0 else 0.55,
                 "max_tokens": 520,
                 "chat_template_kwargs": {"enable_thinking": False},
