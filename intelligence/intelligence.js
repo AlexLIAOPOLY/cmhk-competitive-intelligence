@@ -260,14 +260,14 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
 
   function renderRail(relations) {
     const markup = relations.slice(0, 4).map((relation, index) => `
-      <button type="button" class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
-        data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}"
+      <div class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
+        style="--relation-index:${index}"
         title="${safe(relation.detail || relation.title)}" aria-label="发现${index + 1}：${safe(relation.title)}">
         <em>${String(index + 1).padStart(2, "0")}</em>
         <span>${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}</span>
         <strong>${safe(relation.title)}</strong>
         <small>${safe(relation.origin === "ai" ? "AI 研判" : relation.kind)}</small>
-      </button>
+      </div>
     `).join("");
     patchElementList(rail, markup);
   }
@@ -694,10 +694,6 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
     if (!entityTrigger) return;
     event.preventDefault();
     selectEntity(entityTrigger.dataset.intelligenceDomainId, Number(entityTrigger.dataset.intelligenceEntity), true);
-  });
-  rail.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-relation-domain]");
-    if (trigger) openDrawer(trigger.dataset.relationDomain);
   });
   drawerBody.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-intelligence-peer]");

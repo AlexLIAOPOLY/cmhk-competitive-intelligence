@@ -11816,6 +11816,7 @@ body.dashboard-page {
   overflow: hidden;
   border-right: 1px solid rgba(122, 196, 222, .11);
   background: transparent;
+  cursor: default;
   animation: intelligence-reveal .5s both;
   animation-delay: calc(var(--relation-index) * 70ms);
 }
@@ -11841,18 +11842,6 @@ body.dashboard-page {
   box-shadow: 0 0 8px rgba(132, 184, 199, .34);
   content: "";
   opacity: .55;
-}
-
-.intelligence-relation:hover,
-.intelligence-relation:focus-visible {
-  background: rgba(25, 68, 89, .36);
-  outline: none;
-}
-
-.intelligence-relation:hover::before,
-.intelligence-relation:focus-visible::before {
-  opacity: .86;
-  transform: scaleX(1);
 }
 
 .intelligence-relation span {
