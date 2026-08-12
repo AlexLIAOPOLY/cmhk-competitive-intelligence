@@ -18,6 +18,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 
@@ -2185,16 +2186,24 @@ def regenerate_model_discovery(
     used_model = models[0]
     report("正在生成新的跨库判断")
     for attempt, model in enumerate(models):
+        request_id = f"relation-{index}-{uuid4().hex}"
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
             data=json.dumps({
                 "model": model,
                 "messages": messages,
+                "regeneration_request_id": request_id,
                 "temperature": 0.25 if attempt == 0 else 0.55,
                 "max_tokens": 520,
                 "chat_template_kwargs": {"enable_thinking": False},
             }, ensure_ascii=False).encode("utf-8"),
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "Cache-Control": "no-cache, no-store",
+                "Pragma": "no-cache",
+                "X-Request-ID": request_id,
+            },
             method="POST",
         )
         wait_for_internal_ai_slot(f"executive-intelligence-discovery-{index}")
@@ -2209,6 +2218,10 @@ def regenerate_model_discovery(
                 raise ValueError("模型未返回单项跨库洞察对象")
             if str(parsed.get("from") or "") != source_domain or str(parsed.get("to") or "") != target_domain:
                 raise ValueError("模型改变了跨库领域组合")
+            current_signature = tuple(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
+            parsed_signature = tuple(re.sub(r"\s+", "", str(parsed.get(key) or "")) for key in ("title", "detail"))
+            if parsed_signature == current_signature:
+                raise ValueError("模型返回了与当前跨库洞察完全相同的结果")
             candidate = [dict(item) for item in discoveries]
             candidate[index] = parsed
             replacement = _validate_model_discoveries(candidate, evidence)[index]

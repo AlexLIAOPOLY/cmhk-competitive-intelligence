@@ -23,6 +23,57 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             source,
         )
 
+    def test_manual_discovery_regeneration_bypasses_cache_and_retries_identical_result(self):
+        discoveries = [
+            {"from": "macro", "to": "international", "title": "旧标题", "detail": "旧正文", "kind": "AI综合研判"},
+            {"from": "local", "to": "cloud", "title": "二", "detail": "正文二", "kind": "AI综合研判"},
+            {"from": "international", "to": "cloud", "title": "三", "detail": "正文三", "kind": "AI综合研判"},
+            {"from": "local", "to": "macro", "title": "四", "detail": "正文四", "kind": "AI综合研判"},
+        ]
+        cached = json.dumps(discoveries[0], ensure_ascii=False)
+        fresh = json.dumps({**discoveries[0], "title": "新标题", "detail": "新正文"}, ensure_ascii=False)
+        responses = []
+        for content in (cached, fresh):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": content}}]
+            }).encode("utf-8")
+            responses.append(response)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "analysis.json"
+            output_path.write_text(json.dumps({
+                "model_analysis": {
+                    "evidence_hash": "evidence-hash",
+                    "insight_format": pipeline.INSIGHT_FORMAT_VERSION,
+                    "summaries": {"macro": {}},
+                    "discoveries": discoveries,
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value={"domains": []}),
+                patch("executive_intelligence_pipeline._content_hash", return_value="evidence-hash"),
+                patch("executive_intelligence_pipeline._compact_discovery_evidence", return_value={"domains": []}),
+                patch("executive_intelligence_pipeline._validate_model_discoveries", side_effect=lambda items, _evidence: items),
+                patch("ai_config.load_ai_config", return_value={
+                    "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+                }),
+                patch("ai_rate_limit.wait_for_internal_ai_slot"),
+                patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+            ):
+                result = pipeline.regenerate_model_discovery(
+                    0, "macro", "international", path=output_path
+                )
+
+        requests = [call.args[0] for call in request.call_args_list]
+        bodies = [json.loads(item.data.decode("utf-8")) for item in requests]
+        self.assertEqual([body["model"] for body in bodies], ["Qwen3-30B-A3B-Instruct-2507", "GLM"])
+        self.assertNotEqual(bodies[0]["regeneration_request_id"], bodies[1]["regeneration_request_id"])
+        self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
+        self.assertEqual(requests[0].get_header("X-request-id"), bodies[0]["regeneration_request_id"])
+        self.assertEqual(result["title"], "新标题")
+        self.assertEqual(result["model"], "GLM")
+
     def test_focus_generation_changes_cache_busting_prompt_each_time(self):
         focus = {
             "id": "scale",
