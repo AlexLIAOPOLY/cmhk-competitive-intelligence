@@ -15428,6 +15428,12 @@ body.report-library-open::before {
   color: #f0f7f9;
 }
 
+.dashboard-page .message-body.is-typing {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
 .dashboard-page .message.user .message-body {
   border-color: #418397;
   background: #123a49;
