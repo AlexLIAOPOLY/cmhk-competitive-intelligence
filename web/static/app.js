@@ -7633,14 +7633,14 @@ document.addEventListener("keydown", (event) => {
 
   function renderRail(relations) {
     const markup = relations.slice(0, 4).map((relation, index) => `
-      <button type="button" class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
-        data-relation-domain="${safe(relation.from)}" style="--relation-index:${index}"
+      <div class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
+        style="--relation-index:${index}"
         title="${safe(relation.detail || relation.title)}" aria-label="发现${index + 1}：${safe(relation.title)}">
         <em>${String(index + 1).padStart(2, "0")}</em>
         <span>${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}</span>
         <strong>${safe(relation.title)}</strong>
         <small>${safe(relation.origin === "ai" ? "AI 研判" : relation.kind)}</small>
-      </button>
+      </div>
     `).join("");
     patchElementList(rail, markup);
   }
@@ -7822,14 +7822,23 @@ document.addEventListener("keydown", (event) => {
     const entityIndex = selectedEntityIndex(domain, selectedFocus);
     const selectedEntity = items[entityIndex] || null;
     const focusMetric = selectedFocus.metric || domain.metric || {};
+    const refreshState = insightRefreshState.get(`${domain.id}:${selectedFocus.id}`);
+    const isGenerating = ["loading", "streaming"].includes(refreshState?.status);
+    const titleRefreshLabel = isGenerating
+      ? `正在重新生成${domain.title}${selectedFocus.label}AI洞察`
+      : refreshState?.status === "error"
+        ? `${domain.title}${selectedFocus.label}AI洞察生成失败，点击重试`
+        : `点击重新生成${domain.title}${selectedFocus.label}AI洞察`;
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
         <span class="intelligence-domain-index">${safe(domain.index)}</span>
-        <span class="intelligence-domain-heading">
+        <button type="button" class="intelligence-domain-heading ${isGenerating ? "is-loading" : ""} ${refreshState?.status === "error" ? "is-error" : ""}"
+          data-intelligence-insight-refresh data-intelligence-domain-id="${safe(domain.id)}" data-intelligence-focus-id="${safe(selectedFocus.id)}"
+          aria-label="${safe(titleRefreshLabel)}" title="${safe(titleRefreshLabel)}" ${isGenerating ? "disabled aria-busy=\"true\"" : ""}>
           <span>${safe(domain.kicker)}</span>
           <strong>${safe(domain.title)}</strong>
-        </span>
+        </button>
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
           <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
@@ -8125,10 +8134,6 @@ document.addEventListener("keydown", (event) => {
     if (!entityTrigger) return;
     event.preventDefault();
     selectEntity(entityTrigger.dataset.intelligenceDomainId, Number(entityTrigger.dataset.intelligenceEntity), true);
-  });
-  rail.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-relation-domain]");
-    if (trigger) openDrawer(trigger.dataset.relationDomain);
   });
   drawerBody.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-intelligence-peer]");

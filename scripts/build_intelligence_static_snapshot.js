@@ -116,6 +116,11 @@ async function main() {
           if (!/^https?:\/\//i.test(href)) item.removeAttribute("href");
         });
         copy.querySelectorAll("[tabindex]").forEach((item) => item.removeAttribute("tabindex"));
+        copy.querySelectorAll("[data-intelligence-insight-refresh]").forEach((item) => {
+          item.removeAttribute("data-intelligence-insight-refresh");
+          item.setAttribute("disabled", "");
+          item.setAttribute("aria-disabled", "true");
+        });
         return copy.outerHTML;
       };
       return {

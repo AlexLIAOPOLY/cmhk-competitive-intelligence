@@ -181,12 +181,12 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('grid.innerHTML = domains.map(renderDomainCard).join("")', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=259"', html)
+        self.assertIn('href="/static/styles.css?v=261"', html)
         self.assertIn('Log and audit surfaces: complete dark-theme coverage v252', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=264"', html)
+        self.assertIn('src="/static/app.js?v=266"', html)
         self.assertIn('logo.alt = "小竞 AI"', app)
         self.assertIn('.dashboard-page .message.assistant .avatar {', styles)
         self.assertIn('background: #0a202a;', styles)
@@ -3526,6 +3526,25 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
 
 
 class IntelligenceEntityScrollTests(unittest.TestCase):
+    def test_domain_title_regenerates_the_selected_focus_insight(self) -> None:
+        app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
+
+        self.assertIn('<button type="button" class="intelligence-domain-heading ${isGenerating', app)
+        self.assertIn('data-intelligence-focus-id="${safe(selectedFocus.id)}"', app)
+        self.assertIn('aria-label="${safe(titleRefreshLabel)}"', app)
+        self.assertIn('refreshFocusInsight(insightRefresh.dataset.intelligenceDomainId, insightRefresh.dataset.intelligenceFocusId)', app)
+
+    def test_cross_library_relation_rail_is_display_only(self) -> None:
+        app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (Path(__file__).parent / "web/static/styles.css").read_text(encoding="utf-8")
+
+        rail_markup = app[app.index("function renderRail"):app.index("function renderDomainVisual")]
+        self.assertIn('<div class="intelligence-relation', rail_markup)
+        self.assertNotIn('<button type="button" class="intelligence-relation', rail_markup)
+        self.assertNotIn("data-relation-domain", rail_markup)
+        self.assertNotIn('rail.addEventListener("click"', app)
+        self.assertIn("cursor: default;", styles)
+
     def test_entity_details_use_local_scroll_without_disclosure_button(self) -> None:
         app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
         styles = (Path(__file__).parent / "web/static/styles.css").read_text(encoding="utf-8")

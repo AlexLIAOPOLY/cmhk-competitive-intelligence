@@ -29,6 +29,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
         source = INTELLIGENCE_BUILDER_PATH.read_text(encoding="utf-8")
         self.assertIn("delete value.intelligence_source_url", source)
         self.assertIn("scrubRuntimeAddresses(intelligencePayload)", source)
+        self.assertIn('item.removeAttribute("data-intelligence-insight-refresh")', source)
+        self.assertIn('item.setAttribute("disabled", "")', source)
 
     def test_public_verification_uses_system_https_without_proxy(self):
         expected_version = "site-v2"
