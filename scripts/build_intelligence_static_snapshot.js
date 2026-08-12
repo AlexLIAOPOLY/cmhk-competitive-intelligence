@@ -38,7 +38,8 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
-.static-snapshot .ai-insight-label { pointer-events: none; cursor: default; }
+.static-snapshot .ai-insight-label,
+.static-snapshot .intelligence-domain-heading { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -178,6 +179,21 @@ async function main() {
       .replaceAll("<", "\\u003c")
       .replaceAll(">", "\\u003e")
       .replaceAll("&", "\\u0026");
+    const staticReadOnlyScript = `
+(() => {
+  const root = document.getElementById("intelligenceBoard");
+  if (!root) return;
+  const disableRefreshControls = () => {
+    root.querySelectorAll("[data-intelligence-insight-refresh]").forEach((item) => {
+      item.removeAttribute("data-intelligence-insight-refresh");
+      item.setAttribute("disabled", "");
+      item.setAttribute("aria-disabled", "true");
+    });
+  };
+  new MutationObserver(disableRefreshControls).observe(root, { childList: true, subtree: true });
+  disableRefreshControls();
+})();
+`;
     const tickerScript = `
 (() => {
   const list = document.getElementById("strategyTickerList");
@@ -207,7 +223,7 @@ async function main() {
 `;
     fs.writeFileSync(
       path.join(OUTPUT_DIR, "intelligence.js"),
-      `window.CMHK_STATIC_INTELLIGENCE = ${staticPayload};\n${boardScript}\n${tickerScript}`,
+      `window.CMHK_STATIC_INTELLIGENCE = ${staticPayload};\n${boardScript}\n${staticReadOnlyScript}\n${tickerScript}`,
     );
 
     const assets = [

@@ -31,6 +31,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("scrubRuntimeAddresses(intelligencePayload)", source)
         self.assertIn('item.removeAttribute("data-intelligence-insight-refresh")', source)
         self.assertIn('item.setAttribute("disabled", "")', source)
+        self.assertIn("new MutationObserver(disableRefreshControls)", source)
+        self.assertIn(".static-snapshot .intelligence-domain-heading", source)
 
     def test_public_verification_uses_system_https_without_proxy(self):
         expected_version = "site-v2"
