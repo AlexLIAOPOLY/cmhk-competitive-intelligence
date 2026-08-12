@@ -1424,6 +1424,19 @@ if (!rendered.includes('citation-marker') || rendered.includes('[来源')) {
         )
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
 
+    def test_inline_citation_marker_uses_subtle_unfilled_style(self) -> None:
+        styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        marker_start = styles.index(".citation-marker {")
+        marker_end = styles.index("}", marker_start)
+        marker = styles[marker_start:marker_end]
+
+        self.assertIn("background: transparent;", marker)
+        self.assertIn("font-size: 0.62em;", marker)
+        self.assertIn("vertical-align: super;", marker)
+        self.assertNotIn("border-radius: 50%", marker)
+        self.assertIn(".dashboard-page .message-body .citation-marker", styles)
+        self.assertIn(".dashboard-page .citation-popover", styles)
+
     def test_reference_merge_reassigns_duplicate_indexes(self) -> None:
         script = r"""
 const fs = require('fs');
@@ -1698,7 +1711,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             return object()
 
         with (
-            mock.patch("agent.StableAgentChatDeepSeek", FakeLLM),
+            mock.patch("agent.ChatDeepSeek", FakeLLM),
             mock.patch("agent.create_react_agent", side_effect=fake_create_react_agent),
         ):
             agent.get_agent(
@@ -1715,6 +1728,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("自主选择", prompt)
         self.assertIn("联网搜索已开启", prompt)
         self.assertIn("search_local_reports 会同时返回本地和联网资料", prompt)
+        self.assertIn("不能只在回答末尾罗列来源而省略文内引用", prompt)
+        self.assertIn("例如 [1] 或 [1,2]", prompt)
         self.assertIn("由你判断查询方式与次数", prompt)
         self.assertIn("指出冲突、未命中和时效差异", prompt)
         self.assertIn("根据工具描述自主规划", prompt)
@@ -1875,7 +1890,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             return object()
 
         with (
-            mock.patch("agent.StableAgentChatDeepSeek", FakeLLM),
+            mock.patch("agent.ChatDeepSeek", FakeLLM),
             mock.patch("agent.create_react_agent", side_effect=fake_create_react_agent),
         ):
             agent.get_agent(
@@ -1926,7 +1941,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             return object()
 
         with (
-            mock.patch("agent.StableAgentChatDeepSeek", FakeLLM),
+            mock.patch("agent.ChatDeepSeek", FakeLLM),
             mock.patch("agent.create_react_agent", side_effect=fake_create_react_agent),
         ):
             agent.get_agent(
@@ -1961,66 +1976,15 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn("list_crawl_runs", targeted_names)
         self.assertIn("render_python_chart", targeted_names)
 
-    def test_gateway_corruption_detector_catches_known_failure_shapes(self) -> None:
-        samples = [
-            "<｜DSML｜tool_calls><｜DSML｜invoke name=\"get_system_status\">",
-            "<search_local_reports>\n<query>本周竞对</query>\n<max_results>5</max_results>\n</search_local_reports>",
-            "import pdb;pdb.set_trace(); <|begin_of_file|> Admin override restarting cleanly",
-            "get_system_status() " * 40,
-            "[1]" * 40,
-            "¹²³⁴⁵⁶⁷⁸⁹" * 8,
-            "正常中文 Русский 한국어 日本語 mixed corruption",
-        ]
-
-        for sample in samples:
-            self.assertTrue(agent._looks_like_unstable_model_text(sample), sample[:80])
-        self.assertFalse(agent._looks_like_unstable_model_text("这是清晰、正常的中文分析结论。"))
-
-    def test_incomplete_answer_detector_catches_mid_sentence_provider_stops(self) -> None:
-        incomplete = (
-            "如需获取本周竞对动态，建议：\n"
-            "- 明确指定竞对名称（如中国移动、华为云、AWS 等）或动态类型（如新品发布、财报预告、监管事件）；"
-        )
-        self.assertTrue(agent._looks_like_incomplete_model_answer(incomplete))
-        self.assertTrue(agent._looks_like_incomplete_model_answer("这是完整句子。", "length"))
-        self.assertTrue(agent._looks_like_incomplete_model_answer("分析需要结合"))
-        self.assertTrue(
-            agent._looks_like_incomplete_model_answer(
-                '请进一步说明，\n<suggestions>["查看本周动态", "对比战略路线图"'
-            )
-        )
-        self.assertTrue(
-            agent._looks_like_incomplete_model_answer(
-                '明确主体后，\n<suggestions>["中国移动", "AWS", "华为云"]'
-            )
-        )
-        self.assertTrue(
-            agent._looks_like_incomplete_model_answer(
-                "这是完整正文。\n<引用来源>[来源 1] 本地资料"
-            )
-        )
-        self.assertFalse(
-            agent._looks_like_incomplete_model_answer(
-                "这是语义完整的回答，只是末尾多了一个 Markdown 粗体标记。**"
-            )
-        )
-        self.assertFalse(agent._looks_like_incomplete_model_answer("这是清晰、完整的中文分析结论。"))
-        self.assertFalse(
-            agent._looks_like_incomplete_model_answer(
-                "结论已经完整。\n<suggestions>继续分析|查看来源|对比趋势</suggestions>"
-            )
-        )
-
-    def test_complete_prose_does_not_require_ui_suggestion_footer(self) -> None:
-        seemingly_finished = (
-            "这段回答虽然以句号结束，但它只写完了用户要求的第一部分。"
-            "模型有时会在网关或上下文限制下提前停止，finish_reason 仍可能被记录成 stop。"
-            "因此不能只根据最后一个标点判断整份回答是否已经完成，还必须观察应用约定的完成标记。"
-            "这里再补足一些正文长度，用来模拟真实的长回答在某一段末尾突然结束。"
-        )
-
-        self.assertFalse(agent._looks_like_incomplete_model_answer(seemingly_finished))
-        self.assertFalse(agent._looks_like_incomplete_model_answer("4。"))
+    def test_answer_content_gates_are_not_installed(self) -> None:
+        for name in (
+            "_looks_like_unstable_model_text",
+            "_looks_like_incomplete_model_answer",
+            "_salvage_complete_answer",
+            "_finalize_after_incomplete_run",
+            "StableAgentChatDeepSeek",
+        ):
+            self.assertFalse(hasattr(agent, name), name)
 
     def test_follow_up_parser_accepts_model_format_variants(self) -> None:
         self.assertEqual(
@@ -2201,43 +2165,25 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertIn('streamError.code = "STREAM_INCOMPLETE";', send_chat)
         self.assertIn("连接意外中断，本次回答未完成，请重新发送。", send_chat)
 
-    def test_model_transport_failure_uses_application_fallback(self) -> None:
+    def test_model_transport_failure_is_not_rewritten_by_an_application_wrapper(self) -> None:
         primary_error = RuntimeError(
             "Error code: 500 - InternalServerError: Cannot connect to host 10.0.62.169:30001"
         )
-        fallback_message = agent.AIMessage(content="备用模型已经完整回答。")
-        fallback_result = mock.Mock()
-        fallback_result.generations = [mock.Mock(message=fallback_message, generation_info={"finish_reason": "stop"})]
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
-            model="deepseek-r1-0528-PPU",
+        model = agent.ChatDeepSeek(
+            model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
             disable_streaming=True,
             max_retries=1,
         )
 
-        with mock.patch.object(agent.ChatDeepSeek, "_generate", side_effect=[primary_error, fallback_result]) as generate:
-            result = model._generate([agent.HumanMessage(content="请完整回答")])
+        with mock.patch.object(agent.ChatDeepSeek, "_generate", side_effect=primary_error) as generate:
+            with self.assertRaisesRegex(RuntimeError, "Cannot connect"):
+                model._generate([agent.HumanMessage(content="请完整回答")])
+        self.assertEqual(generate.call_count, 1)
 
-        self.assertIs(result, fallback_result)
-        self.assertEqual(generate.call_count, 2)
-        self.assertIn("已自动切换至 deepseek-v4", fallback_message.additional_kwargs["reasoning_content"])
-
-    def test_model_transport_fallbacks_only_use_team_allowed_models(self) -> None:
-        fallbacks = agent.StableAgentChatDeepSeek.model_fields[
-            "transport_fallback_models"
-        ].default
-        self.assertEqual(
-            fallbacks,
-            ("deepseek-v4", "DeepSeek-V4-Pro", "GLM"),
-        )
-        self.assertNotIn(
-            "deepseek-r1-0528",
-            fallbacks,
-        )
-
-    def test_model_retries_when_suggestion_footer_is_cut_off(self) -> None:
+    def test_model_output_is_returned_without_footer_completeness_retry(self) -> None:
         incomplete_message = agent.AIMessage(
             content='请进一步说明，\n<suggestions>["查看本周动态", "对比路线图"'
         )
@@ -2251,7 +2197,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2266,8 +2212,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate([agent.HumanMessage(content="请完整回答")])
 
-        self.assertIs(result, complete_result)
-        self.assertEqual(generate.call_count, 2)
+        self.assertIs(result, incomplete_result)
+        self.assertEqual(generate.call_count, 1)
 
     def test_search_marker_does_not_force_an_original_read(self) -> None:
         incomplete_message = agent.AIMessage(content="")
@@ -2289,7 +2235,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=tool_message, generation_info={"finish_reason": "tool_calls"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2349,7 +2295,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=chart_call, generation_info={"finish_reason": "tool_calls"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2387,7 +2333,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=complete, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2429,7 +2375,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=text_only_2, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2489,7 +2435,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=repaired, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2518,7 +2464,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(generate.call_count, 1)
 
     def test_dual_source_disclosure_gate_is_removed(self) -> None:
-        self.assertFalse(hasattr(agent.StableAgentChatDeepSeek, "_has_dual_source_disclosure"))
+        self.assertFalse(hasattr(agent, "_has_dual_source_disclosure"))
 
     def test_process_cleanup_does_not_discard_data_table_before_conclusion(self) -> None:
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
@@ -2529,7 +2475,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertFalse(hasattr(agent, "_recover_chart_after_tool_limit"))
 
     def test_required_read_gate_is_removed(self) -> None:
-        self.assertFalse(hasattr(agent.StableAgentChatDeepSeek, "_has_pending_required_read"))
+        self.assertFalse(hasattr(agent, "_has_pending_required_read"))
 
     def test_long_complete_answer_does_not_require_completion_footer(self) -> None:
         partial_message = agent.AIMessage(
@@ -2556,7 +2502,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2595,7 +2541,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=repaired_message, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2614,7 +2560,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertEqual(generate.call_count, 1)
         self.assertNotIn("<suggestions>", first_message.content)
 
-    def test_provider_length_finish_still_uses_engineering_recovery(self) -> None:
+    def test_provider_length_finish_does_not_trigger_content_recovery(self) -> None:
         complete_text = (
             "## 一、背景\n第一节完整。\n## 二、网络\n第二节完整。\n"
             "## 三、业务\n第三节完整。\n## 四、产业\n第四节完整。\n"
@@ -2626,7 +2572,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "length"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2642,9 +2588,9 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             result = model._generate([agent.HumanMessage(content=request)])
 
         self.assertIs(result, complete_result)
-        self.assertGreater(generate.call_count, 1)
+        self.assertEqual(generate.call_count, 1)
 
-    def test_incomplete_retry_uses_bounded_tool_free_context(self) -> None:
+    def test_incomplete_looking_output_is_not_retried_or_rewritten(self) -> None:
         incomplete_message = agent.AIMessage(
             content='现金流对比如下，\n<suggestions>["继续查看"'
         )
@@ -2658,7 +2604,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=complete_message, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="MiniMax-M2.1",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2684,14 +2630,8 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         ) as generate:
             result = model._generate(messages, tools=[agent.search_local_reports])
 
-        self.assertIs(result, complete_result)
-        self.assertEqual(generate.call_count, 2)
-        retry_messages = generate.call_args_list[1].args[0]
-        retry_text = "\n".join(str(item.content or "") for item in retry_messages)
-        self.assertLess(len(retry_text), 25000)
-        self.assertNotIn("tools", generate.call_args_list[1].kwargs)
-        self.assertIn("按问题本身决定合适的详略", retry_text)
-        self.assertNotIn("1200 个中文字符", retry_text)
+        self.assertIs(result, incomplete_result)
+        self.assertEqual(generate.call_count, 1)
 
     def test_search_local_reports_does_not_limit_repeated_searches(self) -> None:
         with mock.patch("agent.retrieve_context", return_value=[]) as retrieve:
@@ -2836,7 +2776,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         self.assertFalse(hasattr(agent, "_tariff_answer_evidence_mismatch"))
         self.assertFalse(hasattr(agent, "_tariff_evidence_fallback_answer"))
 
-    def test_xml_pseudo_tool_call_is_recovered_without_another_model_request(self) -> None:
+    def test_xml_looking_model_text_is_not_rewritten_as_a_tool_call(self) -> None:
         pseudo_message = agent.AIMessage(
             content=(
                 "<search_local_reports>\n"
@@ -2849,7 +2789,7 @@ class AgentWebSearchToggleTests(unittest.TestCase):
             generations=[mock.Mock(message=pseudo_message, generation_info={"finish_reason": "stop"})]
         )
         config = agent.load_ai_config()
-        model = agent.StableAgentChatDeepSeek(
+        model = agent.ChatDeepSeek(
             model="deepseek-v4",
             api_key=config.get("api_key", ""),
             api_base=config.get("base_url", ""),
@@ -2865,13 +2805,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
 
         self.assertIs(result, pseudo_result)
         self.assertEqual(generate.call_count, 1)
-        recovered = result.generations[0].message
-        self.assertEqual(recovered.content, "")
-        self.assertEqual(recovered.tool_calls[0]["name"], "search_local_reports")
-        self.assertEqual(recovered.tool_calls[0]["args"]["max_results"], 5)
-        self.assertEqual(recovered.tool_calls[0]["args"]["query"], "2026-07-20 周报 竞争情报 本周")
+        returned = result.generations[0].message
+        self.assertEqual(returned.content, pseudo_message.content)
+        self.assertFalse(returned.tool_calls)
 
-    def test_stream_agent_repairs_unclosed_footer_before_done(self) -> None:
+    def test_stream_agent_preserves_unclosed_footer_without_content_gate(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None, config=None):
                 yield agent.AIMessage(
@@ -2879,43 +2817,35 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                     response_metadata={"finish_reason": "stop"},
                 ), {}
 
-        repaired = '已重新组织为完整回答。\n<suggestions>["继续分析", "查看来源", "对比路线"]</suggestions>'
         with (
             mock.patch("agent.get_agent", return_value=FakeAgent()),
             mock.patch(
-                "agent._finalize_after_incomplete_run",
-                return_value=(repaired, {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3}),
-            ) as finalize,
+                "agent._ensure_ai_follow_up_suggestions",
+                return_value=(["继续分析", "查看来源", "对比路线"], {"inputTokens": 0, "outputTokens": 0, "totalTokens": 0}, "answer"),
+            ),
         ):
             events = list(agent.stream_agent("请查看路线图", thinking_enabled=False))
 
         answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
-        self.assertEqual(answer, repaired)
-        self.assertEqual(finalize.call_count, 1)
+        self.assertEqual(answer, '明确主体后，\n<suggestions>["中国移动", "AWS"')
         self.assertFalse(any(event.get("type") == "error" for event in events))
         self.assertTrue(any(event.get("type") == "run_summary" for event in events))
         self.assertEqual(events[-1].get("type"), "done")
 
-    def test_graph_recursion_limit_is_finalized_as_answer_not_error(self) -> None:
+    def test_graph_recursion_limit_surfaces_as_runtime_error_without_answer_rewrite(self) -> None:
         class FakeAgent:
             def stream(self, inputs, stream_mode=None, config=None):
                 raise RuntimeError("GRAPH_RECURSION_LIMIT: stopped after 20 steps")
                 yield
 
-        final = '已基于当前证据完成收尾。\n<suggestions>["缩小范围", "查看来源", "继续追问"]</suggestions>'
-        with (
-            mock.patch("agent.get_agent", return_value=FakeAgent()),
-            mock.patch(
-                "agent._finalize_after_incomplete_run",
-                return_value=(final, {"inputTokens": 5, "outputTokens": 8, "totalTokens": 13}),
-            ) as finalize,
-        ):
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
             events = list(agent.stream_agent("请完成复杂分析", thinking_enabled=False))
 
         answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
-        self.assertEqual(answer, final)
-        self.assertEqual(finalize.call_count, 1)
-        self.assertFalse(any(event.get("type") == "error" for event in events))
+        self.assertEqual(answer, "")
+        errors = [event for event in events if event.get("type") == "error"]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("GRAPH_RECURSION_LIMIT", errors[0]["text"])
         self.assertEqual(events[-1].get("type"), "done")
 
     def test_agent_graph_has_no_product_step_limit(self) -> None:
@@ -2942,15 +2872,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 ), {}
                 yield agent.AIMessage(content="Agent 已继续完成回答。"), {}
 
-        with (
-            mock.patch("agent.get_agent", return_value=FakeAgent()),
-            mock.patch("agent._finalize_after_incomplete_run") as finalize,
-        ):
+        with mock.patch("agent.get_agent", return_value=FakeAgent()):
             events = list(agent.stream_agent("对比最近两周的竞对动态变化", thinking_enabled=False))
 
         answer = "".join(event.get("text", "") for event in events if event.get("type") == "delta")
         self.assertEqual(answer, "Agent 已继续完成回答。")
-        self.assertEqual(finalize.call_count, 0)
         self.assertFalse(any(event.get("type") == "error" for event in events))
         self.assertEqual(events[-1].get("type"), "done")
 
@@ -3048,7 +2974,10 @@ class AgentWebSearchToggleTests(unittest.TestCase):
         answers = [event for event in events if event.get("type") == "delta"]
         self.assertGreater(len(reasoning), 1)
         self.assertGreater(len(answers), 1)
-        self.assertIn("正在组织", "".join(event["text"] for event in reasoning))
+        self.assertEqual(
+            "".join(event["text"] for event in reasoning),
+            "The model checked context and prepared the answer.",
+        )
         self.assertEqual(
             "".join(event["text"] for event in answers),
             "这是正常的中文最终答案，正文也必须通过多个连续事件逐段流式返回给页面。",
