@@ -783,7 +783,8 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
-.static-snapshot .ai-insight-label { pointer-events: none; cursor: default; }
+.static-snapshot .ai-insight-label,
+.static-snapshot .intelligence-relation-title { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
