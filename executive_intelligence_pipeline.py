@@ -2179,10 +2179,10 @@ def regenerate_model_discovery(
         },
     ]
     configured_model = str(config.get("model") or "deepseek-v4")
-    models = list(dict.fromkeys([configured_model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
+    models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
     last_error: Exception | None = None
     replacement: dict[str, Any] | None = None
-    used_model = configured_model
+    used_model = models[0]
     report("正在生成新的跨库判断")
     for attempt, model in enumerate(models):
         request = urllib.request.Request(

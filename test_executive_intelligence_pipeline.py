@@ -15,6 +15,14 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_manual_discovery_regeneration_prefers_qwen(self):
+        source = Path(pipeline.__file__).read_text(encoding="utf-8")
+
+        self.assertIn(
+            'models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
+            source,
+        )
+
     def test_focus_generation_changes_cache_busting_prompt_each_time(self):
         focus = {
             "id": "scale",
