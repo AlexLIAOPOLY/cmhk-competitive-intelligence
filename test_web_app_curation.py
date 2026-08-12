@@ -1424,16 +1424,17 @@ if (!rendered.includes('citation-marker') || rendered.includes('[来源')) {
         )
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
 
-    def test_inline_citation_marker_uses_subtle_unfilled_style(self) -> None:
+    def test_inline_citation_marker_uses_compact_teal_badge_style(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
         marker_start = styles.index(".citation-marker {")
         marker_end = styles.index("}", marker_start)
         marker = styles[marker_start:marker_end]
 
-        self.assertIn("background: transparent;", marker)
-        self.assertIn("font-size: 0.62em;", marker)
-        self.assertIn("vertical-align: super;", marker)
-        self.assertNotIn("border-radius: 50%", marker)
+        self.assertIn("display: inline-flex;", marker)
+        self.assertIn("border-radius: 999px;", marker)
+        self.assertIn("background: rgba(19, 125, 148, 0.2);", marker)
+        self.assertIn("font-size: 0.64em;", marker)
+        self.assertIn("vertical-align: 0.26em;", marker)
         self.assertIn(".dashboard-page .message-body .citation-marker", styles)
         self.assertIn(".dashboard-page .citation-popover", styles)
 

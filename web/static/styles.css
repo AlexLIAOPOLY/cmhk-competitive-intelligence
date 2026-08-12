@@ -3079,29 +3079,30 @@ select {
 }
 
 .citation-marker {
-  display: inline;
-  margin: 0 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.42em;
+  height: 1.42em;
+  margin: 0 0.12em;
+  padding: 0 0.24em;
   border: 0;
-  border-bottom: 1px solid transparent;
-  border-radius: 1px;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.62em;
-  font-weight: 650;
-  vertical-align: super;
+  border-radius: 999px;
+  background: rgba(19, 125, 148, 0.2);
+  color: #3f8fa3;
+  font-size: 0.64em;
+  font-weight: 700;
+  vertical-align: 0.26em;
   cursor: pointer;
-  transition: color 0.16s ease, border-color 0.16s ease;
+  transition: color 0.16s ease, background-color 0.16s ease;
   user-select: none;
   line-height: 1;
-  opacity: 0.82;
 }
 
 .citation-marker:hover,
 .citation-marker:focus-visible {
-  border-bottom-color: currentColor;
-  background: transparent;
-  color: var(--blue);
-  opacity: 1;
+  background: rgba(19, 125, 148, 0.3);
+  color: #23778c;
   outline: none;
 }
 
@@ -12982,19 +12983,15 @@ body.dashboard-page {
 }
 
 .dashboard-page .message-body .citation-marker {
-  border-bottom-color: transparent;
-  background: transparent;
-  color: #78aab6;
+  background: rgba(16, 119, 143, 0.32);
+  color: #7fd4e4;
   text-decoration: none;
-  opacity: 0.72;
 }
 
 .dashboard-page .message-body .citation-marker:hover,
 .dashboard-page .message-body .citation-marker:focus-visible {
-  border-bottom-color: #79c3d3;
-  background: transparent;
-  color: #b9e6ee;
-  opacity: 1;
+  background: rgba(25, 143, 168, 0.44);
+  color: #b9edf3;
 }
 
 .dashboard-page .citation-popover {
