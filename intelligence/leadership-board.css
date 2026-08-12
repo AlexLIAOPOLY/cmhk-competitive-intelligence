@@ -595,7 +595,10 @@
 .intelligence-focus-tabs button {
   min-height: 36px;
   font-size: 13.5px;
-  line-height: 1.2;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .intelligence-domain-focus-stage {
