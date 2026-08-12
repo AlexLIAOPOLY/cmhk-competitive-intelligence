@@ -774,6 +774,21 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
 
 
 (() => {
+  const root = document.getElementById("intelligenceBoard");
+  if (!root) return;
+  const disableRefreshControls = () => {
+    root.querySelectorAll("[data-intelligence-insight-refresh]").forEach((item) => {
+      item.removeAttribute("data-intelligence-insight-refresh");
+      item.setAttribute("disabled", "");
+      item.setAttribute("aria-disabled", "true");
+    });
+  };
+  new MutationObserver(disableRefreshControls).observe(root, { childList: true, subtree: true });
+  disableRefreshControls();
+})();
+
+
+(() => {
   const list = document.getElementById("strategyTickerList");
   const track = list?.querySelector(".strategy-ticker-track");
   if (!list || !track) return;
