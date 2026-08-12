@@ -268,7 +268,7 @@ async function main() {
       </section>
     </section>
   </main>
-  <script src="./intelligence.js?v=2"></script>
+  <script src="./intelligence.js?v=3"></script>
 </body>
 </html>\n`;
     fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content.replace(/[ \t]+$/gm, ""));

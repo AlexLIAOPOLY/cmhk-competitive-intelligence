@@ -212,7 +212,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         html = (static_dir / "index.html").read_text(encoding="utf-8")
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
 
-        self.assertIn('<script src="./intelligence.js?v=2"></script>', html)
+        self.assertIn('<script src="./intelligence.js?v=3"></script>', html)
         self.assertIn("竞争情报 · 证据研判", html)
         self.assertIn("AI 洞察", html)
         self.assertIn('class="ai-insight-mark"', html)
