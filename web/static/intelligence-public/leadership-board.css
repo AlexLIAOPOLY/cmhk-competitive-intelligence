@@ -38,7 +38,7 @@
 
 .intelligence-relation::before,
 .intelligence-relation::after { display: none; }
-.intelligence-relation span { font-size: 10.5px; }
+.intelligence-relation-title { font-size: 10.5px; }
 .intelligence-relation strong { margin-top: 3px; font-size: 13px; }
 
 .intelligence-domain-grid {
@@ -252,6 +252,16 @@
 .intelligence-viz-rows li > span small,
 .intelligence-viz-disclosure li > span small,
 .intelligence-viz-kpis small { display: none; }
+
+.intelligence-domain-local .intelligence-domain-metric em {
+  display: block;
+  margin-top: 2px;
+  color: #7fa0ad;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 
 .intelligence-focus-tabs {
   border-color: rgba(128, 190, 211, .19);
@@ -560,7 +570,7 @@
 
 /* Readability pass: keep decision-critical labels legible without changing the
    four-panel information hierarchy. */
-.intelligence-relation span { font-size: 13.5px; }
+.intelligence-relation-title { font-size: 13.5px; }
 .intelligence-relation strong {
   display: -webkit-box;
   font-size: 16px;
@@ -595,7 +605,10 @@
 .intelligence-focus-tabs button {
   min-height: 36px;
   font-size: 13.5px;
-  line-height: 1.2;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .intelligence-domain-focus-stage {
@@ -637,6 +650,27 @@
 .intelligence-entity-focus > .ai-insight-label.is-loading { cursor: wait; opacity: .68; }
 .intelligence-entity-focus > .ai-insight-label.is-error {
   color: #ffb1ae;
+}
+
+.intelligence-ai-headline-skeleton {
+  display: grid;
+  width: min(72%, 310px);
+  gap: 7px;
+  padding-block: 4px 3px;
+}
+.intelligence-ai-headline-skeleton i {
+  display: block;
+  width: 100%;
+  height: 11px;
+  border-radius: 4px;
+  background: rgba(104, 178, 194, .3);
+  transform-origin: left center;
+  animation: intelligence-skeleton-pulse 1.12s ease-in-out infinite;
+}
+.intelligence-ai-headline-skeleton i:nth-child(2) {
+  width: 46%;
+  height: 7px;
+  animation-delay: 170ms;
 }
 
 .intelligence-ai-paragraph-skeleton {
@@ -731,6 +765,10 @@
   .intelligence-domain-local .intelligence-domain-heading strong { font-size: 27px; }
   .intelligence-domain-metric { min-width: 0; }
   .intelligence-domain-metric small { font-size: 13.5px; }
+  .intelligence-domain-local .intelligence-domain-metric em {
+    font-size: 8.5px;
+    white-space: normal;
+  }
   .intelligence-domain-metric > strong { font-size: 46px; }
   .intelligence-focus-tabs { height: 40px; }
   .intelligence-focus-tabs button { min-height: 38px; font-size: 13px; }
@@ -749,6 +787,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .intelligence-ai-headline-skeleton i,
   .intelligence-ai-paragraph-skeleton i,
   .intelligence-ai-stream-cursor { animation: none; }
 }
@@ -761,7 +800,8 @@ body.dashboard-page { overflow-x: hidden; }
 .intelligence-command-board { min-height: calc(100vh - 154px); }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
-.static-snapshot .ai-insight-label { pointer-events: none; cursor: default; }
+.static-snapshot .ai-insight-label,
+.static-snapshot .intelligence-relation-title { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

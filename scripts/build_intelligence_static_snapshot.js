@@ -14,10 +14,10 @@ const CHROME_PATH = process.env.CMHK_CHROME_PATH
   || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const TARGET_TABS = [
-  ["local", "月费区间"],
-  ["international", "投入强度"],
-  ["cloud", "增长趋势"],
-  ["macro", "流量需求"],
+  ["local", "月费（港元/月）"],
+  ["international", "资本开支/营收（%）"],
+  ["cloud", "增速较上年变化"],
+  ["macro", "移动数据用量"],
 ];
 
 function cleanDirectory(directory) {
@@ -91,6 +91,11 @@ async function main() {
       throw new Error(`Intelligence payload request failed: ${intelligenceResponse.status()}`);
     }
     const intelligencePayload = await intelligenceResponse.json();
+    if (intelligencePayload.ai) delete intelligencePayload.ai.model_analysis;
+    for (const domain of intelligencePayload.domains || []) {
+      const verifiedCount = Array.isArray(domain.ai_analysis) ? domain.ai_analysis.length : 0;
+      domain.ai_analysis = Array.from({ length: verifiedCount }, () => ({}));
+    }
     const scrubRuntimeAddresses = (value) => {
       if (Array.isArray(value)) {
         value.forEach(scrubRuntimeAddresses);
@@ -252,7 +257,7 @@ async function main() {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex, nofollow">
-  <title>中国移动香港｜四库竞争情报驾驶舱</title>
+  <title>中国移动香港｜市场与竞争数据</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./leadership-board.css?v=10">
@@ -261,8 +266,8 @@ async function main() {
   <main class="app-shell">
     ${localizeAssets(fragments.header)}
     <section class="console-shell">
-      <section class="operations" aria-label="四库竞争情报驾驶舱">
-        <section class="insight-board" aria-label="四库竞争情报态势看板">
+      <section class="operations" aria-label="市场与竞争数据">
+        <section class="insight-board" aria-label="市场与竞争数据看板">
           ${localizeAssets(fragments.ticker)}
           ${localizeAssets(fragments.board)}
           ${localizeAssets(fragments.drawer)}

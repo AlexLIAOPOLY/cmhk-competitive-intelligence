@@ -213,8 +213,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
 
         self.assertIn('<script src="./intelligence.js?v=4"></script>', html)
-        self.assertIn("竞争情报 · 证据研判", html)
-        self.assertIn("AI 洞察", html)
+        self.assertIn("市场与竞争数据", html)
+        self.assertIn("AI 数据解读", html)
+        self.assertIn("运营商动态", html)
+        self.assertNotIn(">竞对动态<", html)
         self.assertIn('class="ai-insight-mark"', html)
         self.assertIn('id="intelligenceDrawerBackdrop"', html)
         self.assertIn('data-intelligence-focus', script)
@@ -223,6 +225,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn('function openDrawer', script)
         self.assertIn('strategy-ticker-track', script)
         self.assertNotIn("/api/", script)
+        self.assertNotIn("方案规模", script)
+        self.assertNotIn("竞对重叠", script)
+        self.assertNotIn("增长动量", script)
+        self.assertNotIn("投入强度", script)
         self.assertNotRegex(script, r"127\.0\.0\.1|localhost|10\.0\.|192\.168\.")
 
 

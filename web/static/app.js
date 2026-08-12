@@ -1076,6 +1076,10 @@ const STRATEGIC_CATEGORY_COLORS = {
   "基建与地产": "#5e7f9b",
 };
 
+function strategicCategoryLabel(category) {
+  return category === "竞对动态" ? "运营商动态" : String(category || "战略动态");
+}
+
 function strategicCategoryColor(category, index = 0) {
   const fallback = ["#0077c8", "#13a27a", "#7656d6", "#e59a18", "#dc6b54", "#5e7f9b"];
   return STRATEGIC_CATEGORY_COLORS[category] || fallback[index % fallback.length];
@@ -7387,10 +7391,10 @@ document.addEventListener("keydown", (event) => {
   if (!board || !grid || !rail || !backdrop || !drawer || !drawerBody) return;
 
   const domainLabels = {
-    local: "本地竞对",
-    international: "国际竞对",
+    local: "本地运营商",
+    international: "国际电讯企业",
     cloud: "云厂商",
-    macro: "宏观政策",
+    macro: "香港电讯市场",
   };
   let payload = null;
   let lastFocus = null;
@@ -7414,7 +7418,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function formatValue(value) {
-    if (value == null || value === "") return "-";
+    if (value == null || value === "") return "未披露";
     if (typeof value === "number") {
       return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(value);
     }
@@ -7493,7 +7497,7 @@ document.addEventListener("keydown", (event) => {
     const total = Number(entity.component_count) || components.length;
     const recordCount = Number(entity.record_count) || 0;
     const countLabel = recordCount && recordCount !== total
-      ? `${total} 个唯一项 · ${recordCount} 条记录`
+      ? `去重套餐 ${total} 个 · 数据库记录 ${recordCount} 条`
       : `${total} 项`;
     return `
       <section class="intelligence-entity-components" aria-label="具体包含">
@@ -7515,10 +7519,10 @@ document.addEventListener("keydown", (event) => {
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
       const refreshLabel = isGenerating
-        ? `正在重新生成${domain.title}${focus.label}AI洞察`
+        ? `正在重新生成${domain.title}${focus.label}AI数据解读`
         : refreshState?.status === "error"
-          ? `${domain.title}${focus.label}AI洞察生成失败，点击重试`
-          : `点击重新生成${domain.title}${focus.label}AI洞察`;
+          ? `${domain.title}${focus.label}AI数据解读生成失败，点击重试`
+          : `点击重新生成${domain.title}${focus.label}AI数据解读`;
       const insightContent = isGenerating
         ? refreshState.text
           ? `<span class="intelligence-ai-stream-text">${safe(refreshState.text)}</span><i class="intelligence-ai-stream-cursor" aria-hidden="true"></i>`
@@ -7537,7 +7541,7 @@ document.addEventListener("keydown", (event) => {
               <path d="M8.2 1.6c.35 3.48 2.72 5.85 6.2 6.2-3.48.35-5.85 2.72-6.2 6.2C7.85 10.52 5.48 8.15 2 7.8c3.48-.35 5.85-2.72 6.2-6.2Z"></path>
               <path d="M14.5 1.7v3.2M12.9 3.3h3.2"></path>
             </svg>
-            <span>AI 洞察</span>
+            <span>AI 数据解读</span>
           </button>
           <strong class="${isGenerating ? "is-generating" : ""}" data-intelligence-insight-headline>${headlineContent}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body ${isGenerating ? "is-generating" : ""}" data-intelligence-detail-body>
@@ -7640,14 +7644,14 @@ document.addEventListener("keydown", (event) => {
         <em>${String(index + 1).padStart(2, "0")}</em>
         <button type="button" class="intelligence-relation-title ${relationRefreshState.get(index)?.status === "loading" ? "is-loading" : ""} ${relationRefreshState.get(index)?.status === "error" ? "is-error" : ""}"
           data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
-          aria-label="点击重新生成${safe(domainLabels[relation.from] || relation.from)}与${safe(domainLabels[relation.to] || relation.to)}跨库洞察"
+          aria-label="点击重新生成${safe(domainLabels[relation.from] || relation.from)}与${safe(domainLabels[relation.to] || relation.to)}数据解读"
           ${relationRefreshState.get(index)?.status === "loading" ? "disabled aria-busy=\"true\"" : ""}>
           ${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}
         </button>
         <strong class="${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""}">${relationRefreshState.get(index)?.status === "loading"
-          ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成跨库洞察</span>`
+          ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成数据解读</span>`
           : safe(relation.title)}</strong>
-        <small>${safe(relation.origin === "ai" ? "AI 研判" : relation.kind)}</small>
+        <small>${safe(relation.origin === "ai" ? "AI 数据解读" : relation.kind)}</small>
       </div>
     `).join("");
     patchElementList(rail, markup);
@@ -7660,7 +7664,7 @@ document.addEventListener("keydown", (event) => {
       role="button" tabindex="0" data-intelligence-entity="${index}"
       data-intelligence-domain-id="${safe(domain.id)}"
       aria-pressed="${index === selectedIndex ? "true" : "false"}"
-      aria-label="${index === selectedIndex ? "取消选择并返回AI洞察" : "查看个体分析"}：${safe(item.name)}"`;
+      aria-label="${index === selectedIndex ? "取消选择并返回AI数据解读" : "查看个体分析"}：${safe(item.name)}"`;
 
     if (visual === "network") {
       const points = items.map((item, index) => ({
@@ -7840,6 +7844,7 @@ document.addEventListener("keydown", (event) => {
         </span>
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
+          ${domain.id === "local" && selectedFocus.context ? `<em>${safe(selectedFocus.context)}</em>` : ""}
           <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
@@ -7935,7 +7940,7 @@ document.addEventListener("keydown", (event) => {
     if (["loading", "streaming"].includes(insightRefreshState.get(key)?.status)) return;
     const domain = domainById(domainId);
     if (!domain) return;
-    insightRefreshState.set(key, { status: "loading", text: "", message: "正在连接洞察服务" });
+    insightRefreshState.set(key, { status: "loading", text: "", message: "正在连接数据解读服务" });
     manualFocusPauseUntil.set(domainId, Date.now() + 30000);
     replaceDomainCard(domain);
     try {
@@ -7946,7 +7951,7 @@ document.addEventListener("keydown", (event) => {
       });
       if (!response.ok || !response.body) {
         const data = await response.json();
-        throw new Error(data.error || "AI洞察生成失败");
+        throw new Error(data.error || "AI数据解读生成失败");
       }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -7960,7 +7965,7 @@ document.addEventListener("keydown", (event) => {
         for (const line of lines) {
           if (!line.trim()) continue;
           const event = JSON.parse(line);
-          if (event.type === "error") throw new Error(event.message || "AI洞察生成失败");
+          if (event.type === "error") throw new Error(event.message || "AI数据解读生成失败");
           const current = insightRefreshState.get(key) || { status: "loading", text: "" };
           if (event.type === "status") {
             insightRefreshState.set(key, { ...current, status: "loading", message: event.message });
@@ -7973,7 +7978,7 @@ document.addEventListener("keydown", (event) => {
         }
         if (done) break;
       }
-      if (!completed) throw new Error("AI洞察流意外中断");
+      if (!completed) throw new Error("AI数据解读意外中断");
       await refreshIntelligencePayload(true);
       insightRefreshState.delete(key);
       const latestDomain = domainById(domainId);
@@ -8001,7 +8006,7 @@ document.addEventListener("keydown", (event) => {
         body: JSON.stringify({ index, from: sourceDomain, to: targetDomain }),
       });
       const data = await response.json();
-      if (!response.ok || !data.ok) throw new Error(data.error || "跨库洞察生成失败");
+      if (!response.ok || !data.ok) throw new Error(data.error || "数据解读生成失败");
       await refreshIntelligencePayload(true);
       relationRefreshState.delete(index);
       renderRail(payload?.relations || []);
@@ -8057,7 +8062,7 @@ document.addEventListener("keydown", (event) => {
     const verifiedCount = Array.isArray(domain.ai_analysis) ? domain.ai_analysis.length : 0;
     const sourceCount = Array.isArray(domain.sources) ? domain.sources.length : 0;
 
-    drawerKicker.textContent = `${domain.index} · AI 洞察`;
+    drawerKicker.textContent = `${domain.index} · 数据解读`;
     drawerTitle.textContent = domain.title;
     drawerBody.innerHTML = `
       <section class="intelligence-detail-lead">
@@ -8394,10 +8399,10 @@ document.addEventListener("keydown", (event) => {
         "<" + tag + ' class="strategy-ticker-item"' + linkAttrs + ">" +
           '<span class="strategy-ticker-meta">' +
             "<time>" + escapeValue(formatTime(item.published_at)) + "</time>" +
-            "<b>" + escapeValue(item.category || "战略动态") + "</b>" +
+            "<b>" + escapeValue(strategicCategoryLabel(item.category)) + "</b>" +
           "</span>" +
           "<strong>" + escapeValue(item.title || "战略快讯") + "</strong>" +
-          "<p>" + escapeValue(item.summary || ("这条" + (item.category || "战略动态") + "涉及“" + (item.title || "该动态") + "”。可点击标题查看原文，关注其产品定位、市场变化及竞争影响。")) + "</p>" +
+          "<p>" + escapeValue(item.summary || ("这条" + strategicCategoryLabel(item.category) + "涉及“" + (item.title || "该动态") + "”。可点击标题查看原文，关注其产品定位、市场变化及竞争影响。")) + "</p>" +
         "</" + tag + ">"
       );
     }).join("");
