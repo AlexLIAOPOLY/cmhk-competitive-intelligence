@@ -38,7 +38,7 @@
 
 .intelligence-relation::before,
 .intelligence-relation::after { display: none; }
-.intelligence-relation span { font-size: 10.5px; }
+.intelligence-relation-title { font-size: 10.5px; }
 .intelligence-relation strong { margin-top: 3px; font-size: 13px; }
 
 .intelligence-domain-grid {
@@ -560,7 +560,7 @@
 
 /* Readability pass: keep decision-critical labels legible without changing the
    four-panel information hierarchy. */
-.intelligence-relation span { font-size: 13.5px; }
+.intelligence-relation-title { font-size: 13.5px; }
 .intelligence-relation strong {
   display: -webkit-box;
   font-size: 16px;
