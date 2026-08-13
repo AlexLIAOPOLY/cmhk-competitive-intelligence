@@ -213,28 +213,38 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
   }
 
   function focusPeriodLabel(domain, focus, metric, items) {
+    const periodRank = (period) => {
+      const quarter = period.match(/(20\d{2}) Q([1-4])/);
+      if (quarter) return Number(quarter[1]) * 100 + Number(quarter[2]) * 3;
+      const fiscal = period.match(/FY(20\d{2})/);
+      if (fiscal) return Number(fiscal[1]) * 100 + 12;
+      const date = period.match(/(20\d{2})-(\d{2})/);
+      return date ? Number(date[1]) * 100 + Number(date[2]) : 0;
+    };
+    const extractPeriods = (value) => {
+      const text = String(value || "");
+      const found = [];
+      for (const match of text.matchAll(/Q([1-4])\s*(20\d{2})/gi)) found.push(`${match[2]} Q${match[1]}`);
+      for (const match of text.matchAll(/FY\s*(20\d{2})/gi)) found.push(`FY${match[1]}`);
+      for (const match of text.matchAll(/(20\d{2}-\d{2})-\d{2}/g)) found.push(match[1]);
+      return found;
+    };
     const candidates = [metric?.label, focus?.context];
     (items || []).forEach((item) => {
       candidates.push(item?.period, item?.detail);
       (item?.components || []).forEach((component) => candidates.push(component?.label, component?.detail));
     });
-    const periods = [];
-    candidates.filter(Boolean).forEach((value) => {
-      const text = String(value);
-      const quarter = text.match(/Q([1-4])\s*(20\d{2})/i);
-      const fiscal = text.match(/FY\s*(20\d{2})/i);
-      const date = text.match(/(20\d{2}-\d{2}-\d{2})/);
-      const period = quarter ? `${quarter[2]} Q${quarter[1]}` : fiscal ? `FY${fiscal[1]}` : date?.[1].slice(0, 7);
-      if (period && !periods.includes(period)) periods.push(period);
-    });
+    const periods = [...new Set(candidates.flatMap(extractPeriods))];
     if (!periods.length && domain?.id === "local") {
-      const date = String(domain?.data_time || "").match(/(20\d{2}-\d{2}-\d{2})/);
-      if (date) periods.push(date[1].slice(0, 7));
+      periods.push(...extractPeriods(domain?.data_time));
     }
     if (!periods.length) return "截至各公司最新披露期";
-    if (periods.length === 1) return `截至${periods[0]}`;
-    const years = [...new Set(periods.map((period) => (period.match(/20\d{2}/) || [""])[0]).filter(Boolean))];
-    return years.length === 1 ? `截至${years[0]}各指标最新期` : "截至各指标最新披露期";
+    const latest = [...periods].sort((a, b) => periodRank(b) - periodRank(a))[0];
+    const latestYears = [...new Set(periods.map((period) => (period.match(/20\d{2}/) || [""])[0]).filter(Boolean))];
+    const latestKinds = [...new Set(periods.map((period) => period.startsWith("FY") ? "fy" : period.includes(" Q") ? "q" : "date"))];
+    if (latestYears.length === 1 && latestKinds.length === 1 && periods.every((period) => periodRank(period) === periodRank(latest))) return `截至${latest}`;
+    if (focus?.id !== "service") return `截至${latest}`;
+    return latestYears.length === 1 ? `截至${latestYears[0]}各指标最新期` : "截至各指标最新披露期";
   }
 
   function patchIntelligenceNode(current, next) {
