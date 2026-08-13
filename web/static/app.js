@@ -8139,9 +8139,13 @@ document.addEventListener("keydown", (event) => {
       const latestDomain = domainById(domainId);
       if (latestDomain) replaceDomainCard(latestDomain);
     } catch (error) {
+      const rawMessage = String(error?.message || "");
+      const technicalError = /Expecting value|JSON|line \d+ column \d+|char \d+|Traceback|SyntaxError/i.test(rawMessage);
       insightRefreshState.set(key, {
         status: "error",
-        message: error?.message || "本次未生成新内容，请点击重试",
+        message: technicalError
+          ? "模型本次未返回有效内容，已安全保留当前版本，请点击重试"
+          : rawMessage || "本次未生成新内容，请点击重试",
       });
       const latestDomain = domainById(domainId) || domain;
       replaceDomainCard(latestDomain);

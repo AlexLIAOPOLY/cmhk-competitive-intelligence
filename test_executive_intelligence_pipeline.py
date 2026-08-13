@@ -420,6 +420,42 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("两项期间不同", result["focus"]["analysis"])
         self.assertNotIn("因果", result["focus"]["analysis"])
 
+    def test_international_growth_empty_model_output_uses_safe_new_judgement(self):
+        evidence = pipeline._analysis_input_snapshot()
+        domain = next(item for item in evidence["domains"] if item["id"] == "international")
+        focus = next(item for item in domain["focuses"] if item["id"] == "growth")
+        focus = {
+            **focus,
+            "regeneration_index": 1,
+            "recent_insights": [str(focus.get("insight") or "")],
+        }
+        responses = []
+        for _ in range(3):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": ""}}]
+            }).encode("utf-8")
+            responses.append(response)
+
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("international", focus)
+
+        self.assertEqual(request.call_count, 3)
+        self.assertEqual(result["model"], "evidence-rule-fallback")
+        self.assertEqual(result["focus"]["headline"], "营收增长分成正负两层")
+        self.assertIn("行业并非同步扩张", result["focus"]["analysis"])
+        self.assertNotIn("Expecting value", result["focus"]["analysis"])
+
+    def test_empty_model_payload_has_stable_nontechnical_error(self):
+        with self.assertRaisesRegex(ValueError, "模型本次未返回有效内容"):
+            pipeline._extract_json_payload("")
+
     def test_focus_regeneration_merges_one_validated_insight(self):
         evidence = pipeline._analysis_input_snapshot()
         domain = next(item for item in evidence["domains"] if item["id"] == "international")

@@ -424,6 +424,8 @@ def _analysis_input_snapshot() -> dict[str, Any]:
 
 def _extract_json_payload(text: str) -> Any:
     cleaned = str(text or "").strip()
+    if not cleaned:
+        raise ValueError("模型本次未返回有效内容")
     if cleaned.startswith("```"):
         cleaned = re.sub(r"^```(?:json)?", "", cleaned).strip()
         cleaned = re.sub(r"```$", "", cleaned).strip()
@@ -1501,9 +1503,13 @@ def _safe_focus_regeneration_fallback(
     regeneration_index: int,
     recent_insights: list[str],
 ) -> dict[str, Any] | None:
-    """Return a rotating evidence-only judgement for fragile mixed-period views."""
+    """Return rotating evidence-only judgements when every model attempt fails."""
     focus_id = str(focus.get("id") or "")
-    if (domain_id, focus_id) != ("macro", "service"):
+    supported = {
+        ("macro", "service"),
+        ("international", "growth"),
+    }
+    if (domain_id, focus_id) not in supported:
         return None
     items = {
         str(item.get("name") or ""): item
@@ -1514,25 +1520,47 @@ def _safe_focus_regeneration_fallback(
     def value(name: str) -> str:
         return _display_number((items.get(name) or {}).get("value"))
 
-    variants = [
-        (
-            "供给指标不等同服务改善",
-            f"5G人口覆盖{value('5G人口覆盖')}、已分配公共移动及5G频谱{value('已分配公共移动及5G频谱')}MHz，"
-            f"说明供给资源已处高位；电讯业投资同比{value('电讯业投资')}%与投诉同比{value('电讯投诉')}%的期间不同，"
-            "不能据此判断投入是否转化为服务改善。",
-        ),
-        (
-            "投入与投诉期间错位",
-            f"电讯业投资同比{value('电讯业投资')}%反映截至2025-03-31的投入变化，"
-            f"投诉同比{value('电讯投诉')}%反映截至2025-12-31的服务压力；两项期间不同，不能比较增速差距。",
-        ),
-        (
-            "供给规模不代表服务质量",
-            f"投诉同比{value('电讯投诉')}%只说明截至2025-12-31的服务压力变化；"
-            f"5G人口覆盖{value('5G人口覆盖')}与频谱{value('已分配公共移动及5G频谱')}MHz是供给背景，"
-            "不能等同服务质量改善。",
-        ),
-    ]
+    if (domain_id, focus_id) == ("macro", "service"):
+        variants = [
+            (
+                "供给指标不等同服务改善",
+                f"5G人口覆盖{value('5G人口覆盖')}、已分配公共移动及5G频谱{value('已分配公共移动及5G频谱')}MHz，"
+                f"说明供给资源已处高位；电讯业投资同比{value('电讯业投资')}%与投诉同比{value('电讯投诉')}%的期间不同，"
+                "不能据此判断投入是否转化为服务改善。",
+            ),
+            (
+                "投入与投诉期间错位",
+                f"电讯业投资同比{value('电讯业投资')}%反映截至2025-03-31的投入变化，"
+                f"投诉同比{value('电讯投诉')}%反映截至2025-12-31的服务压力；两项期间不同，不能比较增速差距。",
+            ),
+            (
+                "供给规模不代表服务质量",
+                f"投诉同比{value('电讯投诉')}%只说明截至2025-12-31的服务压力变化；"
+                f"5G人口覆盖{value('5G人口覆盖')}与频谱{value('已分配公共移动及5G频谱')}MHz是供给背景，"
+                "不能等同服务质量改善。",
+            ),
+        ]
+    else:
+        variants = [
+            (
+                "营收增长分成正负两层",
+                f"Q1 2026中国铁塔{value('中国铁塔')}%、中国移动{value('中国移动')}%仍为正增长，"
+                f"中国联通{value('中国联通')}%、中国电信{value('中国电信')}%已转负，"
+                "表明四家公司分成正负两层，行业并非同步扩张。",
+            ),
+            (
+                "行业扩张已明显分化",
+                f"中国铁塔{value('中国铁塔')}%与中国移动{value('中国移动')}%保持增长，"
+                f"中国联通{value('中国联通')}%及中国电信{value('中国电信')}%下降，"
+                "说明同一季度的收入方向已经分化，而非四家公司共同增长。",
+            ),
+            (
+                "正增长仅集中于两家",
+                f"Q1 2026四家公司中，中国铁塔{value('中国铁塔')}%和中国移动{value('中国移动')}%为正，"
+                f"中国联通{value('中国联通')}%与中国电信{value('中国电信')}%为负；"
+                "这说明增长只集中在两家，并非行业整体回升。",
+            ),
+        ]
     normalized_recent = [re.sub(r"\s+", "", str(item or "")) for item in recent_insights]
     start = (max(1, regeneration_index) - 1) % len(variants)
     for offset in range(len(variants)):
@@ -1815,7 +1843,10 @@ def generate_model_focus_insight(
             last_error = ValueError(str(exc))
             if attempt + 1 < len(attempt_models):
                 continue
-            if scale_has_record_counts or (domain_id, focus_id) == ("macro", "service"):
+            if scale_has_record_counts or (domain_id, focus_id) in {
+                ("macro", "service"),
+                ("international", "growth"),
+            }:
                 break
             raise last_error
         return {
