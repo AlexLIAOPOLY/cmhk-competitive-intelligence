@@ -673,6 +673,9 @@
 .intelligence-entity-focus > .ai-insight-label.is-error {
   color: #ffb1ae;
 }
+.intelligence-ai-refresh-error {
+  color: #ffcbc8;
+}
 
 .intelligence-ai-headline-skeleton {
   display: grid;

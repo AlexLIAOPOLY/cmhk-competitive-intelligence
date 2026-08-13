@@ -1452,6 +1452,117 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
     return _validate_model_discoveries(discoveries, evidence)
 
 
+def _normalize_fresh_focus_headline(
+    headline: Any,
+    *,
+    label: str,
+    recent_headlines: list[str],
+    forbidden_terms: tuple[str, ...] = (),
+) -> str:
+    """Fit a fresh model title to the card without discarding valid analysis."""
+    normalized = re.sub(r"[\s\d０-９％%。，,；;：:！？!?（）()【】\[\]、]", "", str(headline or ""))
+    normalized = re.sub(
+        r"(个百分点|港元|亿元|万元|万户|万项|MHz|MB|GB|项|个)$",
+        "",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    if len(normalized) > 14:
+        normalized = re.sub(r"(增长质量|经营质量|竞争质量|市场表现)$", "", normalized)
+    candidates = [
+        normalized[:14],
+        f"{label}关系重新判断"[:14],
+        f"{label}口径边界显现"[:14],
+        f"{label}结构重新分化"[:14],
+        "数据关系出现新分层",
+        "口径边界重新显现",
+    ]
+    recent = [re.sub(r"\s+", "", str(value or "")) for value in recent_headlines]
+    for candidate in dict.fromkeys(candidates):
+        if not (4 <= len(candidate) <= 14):
+            continue
+        if any(term in candidate for term in ("洞察", "研判", "格局分化", *forbidden_terms)):
+            continue
+        if _contains_action_advice(candidate):
+            continue
+        if max(
+            (difflib.SequenceMatcher(None, previous, candidate).ratio() for previous in recent),
+            default=0.0,
+        ) >= 0.96:
+            continue
+        return candidate
+    raise ValueError(f"无法生成与最近版本不同的短标题：{str(headline or '')[:40]}")
+
+
+def _safe_focus_regeneration_fallback(
+    domain_id: str,
+    focus: dict[str, Any],
+    *,
+    regeneration_index: int,
+    recent_insights: list[str],
+) -> dict[str, Any] | None:
+    """Return a rotating evidence-only judgement for fragile mixed-period views."""
+    focus_id = str(focus.get("id") or "")
+    if (domain_id, focus_id) != ("macro", "service"):
+        return None
+    items = {
+        str(item.get("name") or ""): item
+        for item in focus.get("items") or []
+        if isinstance(item, dict)
+    }
+
+    def value(name: str) -> str:
+        return _display_number((items.get(name) or {}).get("value"))
+
+    variants = [
+        (
+            "供给指标不等同服务改善",
+            f"5G人口覆盖{value('5G人口覆盖')}、已分配公共移动及5G频谱{value('已分配公共移动及5G频谱')}MHz，"
+            f"说明供给资源已处高位；电讯业投资同比{value('电讯业投资')}%与投诉同比{value('电讯投诉')}%的期间不同，"
+            "不能据此判断投入是否转化为服务改善。",
+        ),
+        (
+            "投入与投诉期间错位",
+            f"电讯业投资同比{value('电讯业投资')}%反映截至2025-03-31的投入变化，"
+            f"投诉同比{value('电讯投诉')}%反映截至2025-12-31的服务压力；两项期间不同，不能比较增速差距。",
+        ),
+        (
+            "供给规模不代表服务质量",
+            f"投诉同比{value('电讯投诉')}%只说明截至2025-12-31的服务压力变化；"
+            f"5G人口覆盖{value('5G人口覆盖')}与频谱{value('已分配公共移动及5G频谱')}MHz是供给背景，"
+            "不能等同服务质量改善。",
+        ),
+    ]
+    normalized_recent = [re.sub(r"\s+", "", str(item or "")) for item in recent_insights]
+    start = (max(1, regeneration_index) - 1) % len(variants)
+    for offset in range(len(variants)):
+        headline, analysis = variants[(start + offset) % len(variants)]
+        if _focus_gate_error(domain_id, focus_id, analysis, focus):
+            continue
+        similarity = max(
+            (
+                difflib.SequenceMatcher(None, previous, re.sub(r"\s+", "", analysis)).ratio()
+                for previous in normalized_recent if previous
+            ),
+            default=0.0,
+        )
+        if similarity >= 0.84:
+            continue
+        return {
+            "generated_at_hkt": _now(),
+            "model": "evidence-rule-fallback",
+            "focus": {
+                "id": focus_id,
+                "headline": headline,
+                "analysis": analysis,
+                "risk": "仅基于当前已核验记录；异期间指标不作因果推断。",
+                "source_urls": [],
+                "origin": "evidence_rule",
+            },
+        }
+    return None
+
+
 def generate_model_focus_insight(
     domain_id: str,
     focus: dict[str, Any],
@@ -1619,20 +1730,15 @@ def generate_model_focus_insight(
                 raise ValueError("模型未返回单项洞察对象")
             headline = re.sub(r"\s+", " ", str(parsed.get("headline") or "")).strip()
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
-            if not (4 <= len(headline) <= 14) or re.search(
-                r"[\d％%。，,；;：:！？!?]|百分点|港元|亿元|万元|万户|万项|项$",
-                headline,
-            ):
-                raise ValueError(f"AI洞察标题必须为4至14字且不含数字、单位或标点：{headline[:40]}")
-            if any(term in headline for term in ("洞察", "研判", "格局分化")):
-                raise ValueError(f"AI洞察标题使用空泛词：{headline[:40]}")
-            if _contains_action_advice(headline):
-                raise ValueError(f"AI洞察标题含行动建议：{headline[:40]}")
             forbidden_headline_terms = {
                 ("local", "scale"): ("赛道", "月费", "资费", "重叠", "交集"),
             }.get((domain_id, focus_id), ())
-            if any(term in headline for term in forbidden_headline_terms):
-                raise ValueError(f"AI洞察标题混入其他页维度：{headline}")
+            headline = _normalize_fresh_focus_headline(
+                headline,
+                label=str(focus.get("label") or "当前指标").strip(),
+                recent_headlines=[] if scale_has_record_counts else recent_headlines,
+                forbidden_terms=forbidden_headline_terms,
+            )
             if "分散" in headline and any(term in analysis for term in ("集中", "头部三家", "主要来自头部")):
                 raise ValueError(f"AI洞察标题与正文判断相反：{headline}")
             headline_similarities = [
@@ -1709,7 +1815,7 @@ def generate_model_focus_insight(
             last_error = ValueError(str(exc))
             if attempt + 1 < len(attempt_models):
                 continue
-            if scale_has_record_counts:
+            if scale_has_record_counts or (domain_id, focus_id) == ("macro", "service"):
                 break
             raise last_error
         return {
@@ -1771,6 +1877,14 @@ def generate_model_focus_insight(
                 "origin": "evidence_rule",
             },
         }
+    safe_fallback = _safe_focus_regeneration_fallback(
+        domain_id,
+        focus,
+        regeneration_index=regeneration_index,
+        recent_insights=recent_insights,
+    )
+    if safe_fallback:
+        return safe_fallback
     raise last_error or ValueError("AI洞察生成失败")
 
 

@@ -346,6 +346,80 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["model"], "GLM")
         self.assertNotEqual(result["focus"]["analysis"], focus["insight"])
 
+    def test_focus_generation_normalizes_long_title_without_discarding_fresh_analysis(self):
+        evidence = pipeline._analysis_input_snapshot()
+        macro = next(item for item in evidence["domains"] if item["id"] == "macro")
+        focus = next(item for item in macro["focuses"] if item["id"] == "service")
+        focus = {
+            **focus,
+            "insight": "电讯业投资同比为1.3%；电讯业投资与投诉数据期间不同，分别反映投入规模与服务压力，不可直接比较差距。",
+        }
+        fresh_analysis = (
+            "电讯业投资1.3%与电讯投诉2.9%的口径和期间不同，"
+            "说明两者只能分别反映投入规模与服务压力，不能直接比较差距。"
+        )
+        content = json.dumps({
+            "headline": "投资与投诉错期不能等同增长质量",
+            "analysis": fresh_analysis,
+        }, ensure_ascii=False)
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            "choices": [{"message": {"content": content}}]
+        }).encode("utf-8")
+
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("macro", focus)
+
+        self.assertEqual(request.call_count, 1)
+        self.assertEqual(result["focus"]["analysis"], fresh_analysis)
+        self.assertEqual(result["focus"]["headline"], "投资与投诉错期不能等同")
+        self.assertLessEqual(len(result["focus"]["headline"]), 14)
+
+    def test_macro_service_regeneration_rotates_to_safe_evidence_fallback(self):
+        evidence = pipeline._analysis_input_snapshot()
+        macro = next(item for item in evidence["domains"] if item["id"] == "macro")
+        focus = next(item for item in macro["focuses"] if item["id"] == "service")
+        focus = {
+            **focus,
+            "regeneration_index": 2,
+            "recent_insights": [
+                "电讯业投资同比1.3%截至2025-03-31，电讯投诉同比2.9%截至2025-12-31，期间口径不同，不能判断两者关系。",
+            ],
+        }
+        invalid = json.dumps({
+            "headline": "投资增量驱动服务改善",
+            "analysis": "电讯业投资1.3%直接驱动投诉2.9%，说明两者存在因果。",
+        }, ensure_ascii=False)
+        responses = []
+        for _ in range(3):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": invalid}}]
+            }).encode("utf-8")
+            responses.append(response)
+
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("macro", focus)
+
+        self.assertEqual(request.call_count, 3)
+        self.assertEqual(result["model"], "evidence-rule-fallback")
+        self.assertEqual(result["focus"]["origin"], "evidence_rule")
+        self.assertEqual(result["focus"]["headline"], "投入与投诉期间错位")
+        self.assertIn("两项期间不同", result["focus"]["analysis"])
+        self.assertNotIn("因果", result["focus"]["analysis"])
+
     def test_focus_regeneration_merges_one_validated_insight(self):
         evidence = pipeline._analysis_input_snapshot()
         domain = next(item for item in evidence["domains"] if item["id"] == "international")

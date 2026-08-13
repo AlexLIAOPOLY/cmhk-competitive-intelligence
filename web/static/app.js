@@ -7622,16 +7622,19 @@ document.addEventListener("keydown", (event) => {
       const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
+      const hasRefreshError = refreshState?.status === "error";
       const refreshLabel = isGenerating
         ? `正在重新生成${domain.title}${focus.label}AI战略解读`
-        : refreshState?.status === "error"
+        : hasRefreshError
           ? `${domain.title}${focus.label}AI战略解读生成失败，点击重试`
           : `点击重新生成${domain.title}${focus.label}AI战略解读`;
       const insightContent = isGenerating
         ? refreshState.text
           ? `<span class="intelligence-ai-stream-text">${safe(refreshState.text)}</span><i class="intelligence-ai-stream-cursor" aria-hidden="true"></i>`
           : `<span class="intelligence-ai-paragraph-skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sr-only">${safe(refreshState.message || "正在生成新的数据判断")}</span>`
-        : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
+        : hasRefreshError
+          ? `<span class="intelligence-ai-refresh-error">${safe(refreshState.message || "本次未生成新内容，请点击重试")}</span>`
+          : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
       const headlineContent = isGenerating
         ? `<span class="intelligence-ai-headline-skeleton" aria-hidden="true"><i></i><i></i></span>`
         : safe(aiHeadline);
@@ -8078,6 +8081,11 @@ document.addEventListener("keydown", (event) => {
     if (["loading", "streaming"].includes(insightRefreshState.get(key)?.status)) return;
     const domain = domainById(domainId);
     if (!domain) return;
+    const focusBefore = domainFocuses(domain).find((item) => item.id === focusId);
+    const summaryBefore = JSON.stringify([
+      focusBefore?.ai_summary?.headline || "",
+      focusBefore?.ai_summary?.analysis || focusBefore?.insight || "",
+    ]);
     insightRefreshState.set(key, { status: "loading", text: "", message: "正在连接数据解读服务" });
     manualFocusPauseUntil.set(domainId, Date.now() + 30000);
     replaceDomainCard(domain);
@@ -8118,18 +8126,25 @@ document.addEventListener("keydown", (event) => {
       }
       if (!completed) throw new Error("AI数据解读意外中断");
       await refreshIntelligencePayload(true);
+      const refreshedDomain = domainById(domainId);
+      const refreshedFocus = domainFocuses(refreshedDomain).find((item) => item.id === focusId);
+      const summaryAfter = JSON.stringify([
+        refreshedFocus?.ai_summary?.headline || "",
+        refreshedFocus?.ai_summary?.analysis || refreshedFocus?.insight || "",
+      ]);
+      if (summaryAfter === summaryBefore) {
+        throw new Error("服务未返回与当前版本不同的新内容，请重试");
+      }
       insightRefreshState.delete(key);
       const latestDomain = domainById(domainId);
       if (latestDomain) replaceDomainCard(latestDomain);
     } catch (error) {
-      insightRefreshState.set(key, { status: "error" });
-      replaceDomainCard(domain);
-      window.setTimeout(() => {
-        if (insightRefreshState.get(key)?.status !== "error") return;
-        insightRefreshState.delete(key);
-        const latestDomain = domainById(domainId);
-        if (latestDomain) replaceDomainCard(latestDomain);
-      }, 5000);
+      insightRefreshState.set(key, {
+        status: "error",
+        message: error?.message || "本次未生成新内容，请点击重试",
+      });
+      const latestDomain = domainById(domainId) || domain;
+      replaceDomainCard(latestDomain);
     }
   }
 
