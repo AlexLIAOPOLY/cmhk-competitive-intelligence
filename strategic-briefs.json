@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-08-13T16:31:02+08:00",
+  "generated_at": "2026-08-13T16:36:04+08:00",
   "items": [
+    {
+      "id": "NEWS-38426C9F897E27",
+      "title": "央行二季度货币政策报告：保持流动性充裕并适时调整工具",
+      "summary": "中国人民银行发布二季度货币政策执行报告，明确下一阶段政策取向，提出将及时谋划出台增量政策，加大逆周期调节力度以扩大内需。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.sohu.com/a/1062150161_116132",
+      "published_at": "2026-08-13T08:19:00+08:00"
+    },
     {
       "id": "NEWS-DA3A0C0591B21E",
       "title": "Hutchison Telecommunications Hong Kong派发中期股息",
@@ -57,15 +65,7 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxQZHg0X2hBUEJEQS1VRUtjOWtocjN5c0tSb2lkdlkwNFJnNnlCOVl2VjFQVV9DMjNRT1FKU1VINnpmUVZXcEQxN0lEQUtFNXVXb1ZxWWpldDRiNXJfbHZwaGt2Y3ViVXpQWVprQjRtaDV6Ni1oVFBfWnNRMVNZcS1keW8wbTM0aXNDTjRGTW1MNVl6TDVZZ3EtcUc4X29lWFNGT05JdGJ1b29RaHBXYW5RZXg1U05JQ3FiQTAyWkc1QzVPMnNvMFRhSkMyNjZoSHBPMklyeV93cHB6QXFJSGV4cDlpbnZVY0ZuUnpMQlEtcnphS0tKQVRsbHpGUVBtdHN0X3RvdHRuQ0lYb1J0ODlqN3UxUGl2X1JGUUJZWTVpNkZfV3Fka2huN3l5UWM1VTdOV2U0eUNVYjZMNkhGZHdVU3JWNG5YM3l0THZHMkRadG4ycWNINEVrcjdyV1ZNQVpFbEhPY0lhamRiLWlTZGVrUk43X1JKZ2twVFFSSzFYeVRNSlI5eFZVU19ST3doeGRYQkk0MEFqcXg3WExN?oc=5",
       "published_at": "2026-08-06T19:03:00+08:00"
-    },
-    {
-      "id": "NEWS-BC20B8FF064970",
-      "title": "香港加快无人驾驶应用发展",
-      "summary": "香港政府加快无人驾驶技术应用，以满足市民生活需要，推动智慧交通发展。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBhck1waV95cExtWlQzaE90dm5zRjdVR0dzcHBMeUJuVkE1a0RtRW9iVFFneWVnR2MyR0hEb05NT2M5elgtN0pUWldNa3dvYlp2VW54bGNMeXNVZFlncWJSZi1zUFJkTXdnU3dNTmNicEV6dnFWYk5KRjMxQU0?oc=5",
-      "published_at": "2026-08-06T11:19:26+08:00"
     }
   ],
-  "site_version": "ff378579bce01a790f05eaa3a661b322a95a717947e87e10a2d3bbf5928eb652"
+  "site_version": "cae48f3c73f4ac0ff670eedec78a318e776d87e952f755d1882f87b77c91a6a6"
 }
