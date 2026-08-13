@@ -1198,8 +1198,10 @@ class HumanReferencePromptTests(unittest.TestCase):
                     {"choices": [{"message": {"content": "{\"items\":[]}"}}]}
                 ).encode("utf-8")
 
+        captured_timeouts = []
+
         def fake_urlopen(request, timeout):
-            del timeout
+            captured_timeouts.append(timeout)
             captured_requests.append(json.loads(request.data.decode("utf-8")))
             return FakeResponse()
 
@@ -1224,6 +1226,12 @@ class HumanReferencePromptTests(unittest.TestCase):
             report._call_weekly_quality_reviewer_llm([])
 
         self.assertEqual(len(captured_requests), 2)
+        self.assertEqual(
+            captured_timeouts,
+            [report.WEEKLY_WRITER_TIMEOUT_SECONDS, report.WEEKLY_REVIEW_TIMEOUT_SECONDS],
+        )
+        self.assertGreaterEqual(report.WEEKLY_WRITER_TIMEOUT_SECONDS, 180)
+        self.assertGreaterEqual(report.WEEKLY_REVIEW_TIMEOUT_SECONDS, 180)
         for body in captured_requests:
             self.assertIn(marker, body["messages"][0]["content"])
         self.assertIn("真正重要的变化", captured_requests[0]["messages"][0]["content"])

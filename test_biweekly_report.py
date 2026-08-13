@@ -449,7 +449,7 @@ class BiweeklyContentQualityTests(unittest.TestCase):
         progress_text = " ".join(str(args[0]) for args, _ in progress_events if args)
         self.assertIn("并行修复", progress_text)
         self.assertGreaterEqual(report.WEEKLY_WRITER_RETRY_WORKERS, 4)
-        self.assertLessEqual(report.WEEKLY_WRITER_TIMEOUT_SECONDS, 60)
+        self.assertGreaterEqual(report.WEEKLY_WRITER_TIMEOUT_SECONDS, 180)
 
     def test_social_livelihood_rows_are_classified_as_social_news(self) -> None:
         cases = [

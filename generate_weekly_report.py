@@ -38,6 +38,13 @@ from report_web_research import public_web_search, run_web_research
 ROOT = Path(__file__).resolve().parent
 RESULTS_DIR = ROOT / "results"
 
+
+def _env_timeout_seconds(name: str, default: int, minimum: int) -> int:
+    try:
+        return max(minimum, int(os.environ.get(name, str(default))))
+    except (TypeError, ValueError):
+        return default
+
 WEEKLY_MD = ROOT / "weekly_report.md"
 WEEKLY_HTML = ROOT / "weekly_report.html"
 WEEKLY_USAGE_AUDIT = ROOT / "weekly_report_fact_usage.json"
@@ -50,10 +57,23 @@ WEEKLY_SUPPLEMENTAL_EVIDENCE = ROOT / "weekly_report_supplemental_evidence.json"
 BIWEEKLY_WINDOW_DAYS = 14
 WEEKLY_WRITER_BATCH_SIZE = 5
 WEEKLY_WRITER_RETRY_WORKERS = 4
-WEEKLY_WRITER_TIMEOUT_SECONDS = 60
+WEEKLY_WRITER_TIMEOUT_SECONDS = _env_timeout_seconds(
+    "CMHK_WEEKLY_WRITER_TIMEOUT_SECONDS",
+    180,
+    60,
+)
 WEEKLY_WRITER_PROMPT_VERSION = "strategic-internal-writer-v7-nine-full-human-reports-focus"
 WEEKLY_REVIEW_BATCH_SIZE = 5
-WEEKLY_REVIEW_TIMEOUT_SECONDS = 75
+WEEKLY_REVIEW_TIMEOUT_SECONDS = _env_timeout_seconds(
+    "CMHK_WEEKLY_REVIEW_TIMEOUT_SECONDS",
+    180,
+    75,
+)
+WEEKLY_PAGE_FETCH_TIMEOUT_SECONDS = _env_timeout_seconds(
+    "CMHK_WEEKLY_PAGE_FETCH_TIMEOUT_SECONDS",
+    45,
+    22,
+)
 WEEKLY_REVIEW_PROMPT_VERSION = "strategic-internal-reviewer-v9-nine-full-human-reports-focus"
 WEEKLY_REFERENCE_MIN_CHARS = 90
 WEEKLY_REFERENCE_MIN_FACT_UNITS = 3
@@ -3327,7 +3347,7 @@ def _fetch_search_result_content(result: dict, headline: str) -> str:
     if not url.startswith(("http://", "https://")):
         return ""
     try:
-        html_text = _fetch_public_html(url, timeout=22)
+        html_text = _fetch_public_html(url, timeout=WEEKLY_PAGE_FETCH_TIMEOUT_SECONDS)
     except Exception:
         return ""
     soup = BeautifulSoup(html_text, "html.parser")

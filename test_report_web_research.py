@@ -2,10 +2,16 @@ from __future__ import annotations
 
 import unittest
 
-from report_web_research import run_web_research
+import report_web_research as research
+
+
+run_web_research = research.run_web_research
 
 
 class ReportWebResearchTests(unittest.TestCase):
+    def test_search_timeout_allows_slow_providers_more_time(self) -> None:
+        self.assertGreaterEqual(research.REPORT_SEARCH_TIMEOUT_SECONDS, 45)
+
     def test_parallel_research_preserves_request_order_and_metadata(self) -> None:
         def search_client(query, limit):
             return {

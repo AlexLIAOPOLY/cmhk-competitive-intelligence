@@ -16,6 +16,19 @@ SearchResult = dict[str, object]
 SearchClient = Callable[[str, int], SearchResult]
 
 
+def _env_timeout_seconds(name: str, default: int) -> int:
+    try:
+        return max(10, int(os.environ.get(name, str(default))))
+    except (TypeError, ValueError):
+        return default
+
+
+REPORT_SEARCH_TIMEOUT_SECONDS = _env_timeout_seconds(
+    "CMHK_REPORT_SEARCH_TIMEOUT_SECONDS",
+    45,
+)
+
+
 def _clean_text(value: object, limit: int = 500) -> str:
     text = " ".join(str(value or "").replace("\x00", " ").split())
     return text[:limit].strip()
@@ -65,7 +78,10 @@ def _search_searxng(query: str, limit: int) -> list[dict[str, str]]:
         + urlencode({"q": query, "format": "json", "language": "all", "categories": "general,news"}),
         headers={"User-Agent": "CMHK-Report-Web-Research/1.0"},
     )
-    with urlopen_with_local_proxy_fallback(request, timeout=20) as response:
+    with urlopen_with_local_proxy_fallback(
+        request,
+        timeout=REPORT_SEARCH_TIMEOUT_SECONDS,
+    ) as response:
         payload = json.loads(response.read().decode("utf-8", errors="ignore"))
     return _normalize_results(payload.get("results") if isinstance(payload, dict) else [], limit)
 
@@ -73,7 +89,7 @@ def _search_searxng(query: str, limit: int) -> list[dict[str, str]]:
 def _search_ddgs(query: str, limit: int) -> list[dict[str, str]]:
     from ddgs import DDGS  # type: ignore
 
-    with DDGS(timeout=12) as ddgs:
+    with DDGS(timeout=REPORT_SEARCH_TIMEOUT_SECONDS) as ddgs:
         return _normalize_results(list(ddgs.text(query, max_results=limit)), limit)
 
 
@@ -95,7 +111,10 @@ def _search_html(query: str, limit: int, provider: str) -> list[dict[str, str]]:
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
         },
     )
-    with urlopen_with_local_proxy_fallback(request, timeout=20) as response:
+    with urlopen_with_local_proxy_fallback(
+        request,
+        timeout=REPORT_SEARCH_TIMEOUT_SECONDS,
+    ) as response:
         html = response.read().decode("utf-8", errors="ignore")
     soup = BeautifulSoup(html, "html.parser")
     rows = []
