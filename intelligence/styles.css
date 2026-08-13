@@ -1321,6 +1321,7 @@ select {
 }
 
 .output-tab {
+  position: relative;
   height: 24px;
   padding: 0 10px;
   border: 0;
@@ -1331,6 +1332,19 @@ select {
   font-weight: 700;
   cursor: pointer;
   transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.output-tab.has-new-report::after {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #0a222e;
+  border-radius: 50%;
+  background: #f04444;
+  box-shadow: 0 1px 4px rgba(240, 68, 68, 0.42);
+  content: "";
 }
 
 .output-tab:hover {
@@ -12028,6 +12042,15 @@ body.dashboard-page {
 .intelligence-relation-title:disabled {
   opacity: .68;
   cursor: progress;
+}
+
+.intelligence-relation-title.is-error,
+.intelligence-relation-title.is-error + strong {
+  color: #f0b0ba;
+}
+
+.intelligence-relation-title.is-error {
+  cursor: pointer;
 }
 
 .intelligence-relation strong {
