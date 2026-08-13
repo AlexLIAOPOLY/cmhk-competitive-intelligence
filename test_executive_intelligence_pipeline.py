@@ -297,6 +297,51 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             self.assertEqual(progress[0], "正在读取当前证据")
             self.assertEqual(progress[-1], "证据校验通过，正在返回洞察")
 
+    def test_focus_regeneration_does_not_merge_stale_unrelated_ai_copy(self):
+        evidence = pipeline._analysis_input_snapshot()
+        evidence_hash = pipeline._content_hash(evidence)
+        generated_focus = next(
+            focus
+            for summary in pipeline._deterministic_domain_summaries(evidence)
+            if summary["domain"] == "local"
+            for focus in summary["focuses"]
+            if focus["id"] == "scale"
+        )
+        generated_focus = {
+            **generated_focus,
+            "headline": "去重后选择呈分层",
+            "analysis": "HKBN 27个套餐与HGC 4个套餐形成差距，说明去重后套餐选择并非均匀分布。",
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "analysis.json"
+            path.write_text(json.dumps({
+                "model_analysis": {
+                    "evidence_hash": evidence_hash,
+                    "insight_format": pipeline.INSIGHT_FORMAT_VERSION,
+                    "summaries": [{
+                        "domain": "local",
+                        "headline": "旧版",
+                        "analysis": "旧口径共161项。",
+                        "focuses": [{"id": "scale", "headline": "旧版", "analysis": "旧口径161项。"}],
+                    }],
+                    "discoveries": [],
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.generate_model_focus_insight", return_value={
+                    "model": "test-model",
+                    "focus": generated_focus,
+                }),
+            ):
+                result = pipeline.regenerate_model_focus_summary("local", "scale", path=path)
+
+            saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
+            serialized = json.dumps(saved["summaries"], ensure_ascii=False)
+            self.assertTrue(result["ok"])
+            self.assertNotIn("161", serialized)
+            self.assertIn("去重后选择呈分层", serialized)
+
     def test_analysis_evidence_excludes_rendered_ai_relations(self):
         rendered = {
             "domains": [],

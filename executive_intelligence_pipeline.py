@@ -2438,12 +2438,17 @@ def regenerate_model_focus_summary(
         raise ValueError(f"模型未返回当前洞察：{domain_id}.{focus_id}")
 
     report("正在校验数字与来源")
-    if previous_is_current:
-        summaries = json.loads(json.dumps(previous.get("summaries") or [], ensure_ascii=False))
-        discoveries = json.loads(json.dumps(previous.get("discoveries") or [], ensure_ascii=False))
-    else:
-        summaries = _deterministic_domain_summaries(evidence)
-        discoveries = _deterministic_discoveries(evidence)
+    # Rebuild the non-target summaries from current evidence before merging the
+    # newly generated focus. A previously valid bundle can still contain copy
+    # produced under an older metric meaning (for example record counts rather
+    # than deduplicated plan counts); validating that whole stale bundle would
+    # reject an otherwise valid new focus and leave the UI apparently unchanged.
+    summaries = _deterministic_domain_summaries(evidence)
+    discoveries = (
+        json.loads(json.dumps(previous.get("discoveries") or [], ensure_ascii=False))
+        if previous_is_current
+        else _deterministic_discoveries(evidence)
+    )
 
     target_domain = next(item for item in summaries if str(item.get("domain") or "") == domain_id)
     target_domain["focuses"] = [
