@@ -16,7 +16,7 @@ CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendo
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
-INSIGHT_FORMAT_VERSION = "deep_interpretation_v4"
+INSIGHT_FORMAT_VERSION = "evidence_relationship_v6"
 
 DOMAIN_PATHS = (LOCAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
@@ -331,14 +331,14 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         fibre_values = [float(_number(row.get("monthly_fee_hkd"))) / float(_number(row.get("broadband_speed_mbps"))) * 1000 for row in fibre_rows]
         fibre_median = _median(fibre_values)
         fibre_items.append({
-            "name": brand, "value": round(fibre_median, 1) if fibre_median is not None else None, "unit": "港元/每1000Mbps/月",
+            "name": brand, "value": round(fibre_median, 1) if fibre_median is not None else None, "unit": "港元/千兆/月",
             "detail": f"{data_time_note} · 按每1000Mbps折算" if fibre_values else f"{data_time_note} · 未披露可计算的家宽速度与月费",
             "analysis": (f"按每1000Mbps折算，月费中位数为 {fibre_median:.1f} 港元；安装费、优惠和覆盖地区未计入。" if fibre_median is not None else "数据库缺少同一产品的速度与月费，不作估算。"),
             "components": [
                 _component(
                     short_product_label(row),
                     round(value, 1),
-                    "港元/每1000Mbps/月",
+                    "港元/千兆/月",
                     " · ".join(filter(None, [
                         f"原月费 HK${_format_price(row.get('monthly_fee_hkd'))}",
                         f"速度 {_format_price(row.get('broadband_speed_mbps'))}Mbps",
@@ -411,9 +411,10 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     top_three = scale_items[:3]
     scale_insight = (
         f"{top_three[0]['name']}、{top_three[1]['name']}、{top_three[2]['name']}去重后分别有"
-        f"{top_three[0]['value']}、{top_three[1]['value']}、{top_three[2]['value']}个在售产品，数据库总计{unique_plan_count}个；"
-        "三家数量接近，这说明单靠产品数量难以拉开头部差距。"
-        if unique_plan_count and len(top_three) == 3 else "数据库暂无可去重的在售产品。"
+        f"{top_three[0]['value']}、{top_three[1]['value']}、{top_three[2]['value']}个在售产品，"
+        f"而{scale_items[-2]['name']}和{scale_items[-1]['name']}为{scale_items[-2]['value']}、{scale_items[-1]['value']}个，数量形成两层；"
+        f"头部三家最多只差{top_three[0]['value'] - top_three[-1]['value']}个，这说明产品数量差距难以成为头部之间的主要区隔。"
+        if unique_plan_count and len(scale_items) >= 5 else "数据库暂无足够运营商形成产品数量关系判断。"
     )
     focuses = [
         {
@@ -430,7 +431,7 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         },
         {
             "id": "fibre_value", "label": "家宽每千兆价格", "visual": "rows",
-            "metric": {**_focus_metric(fibre_items, "每1000Mbps月费中位数", "港元/每1000Mbps/月", mode="min"), "label": "较低的每1000Mbps月费中位数"},
+            "metric": {**_focus_metric(fibre_items, "每1000Mbps月费中位数", "港元/千兆/月", mode="min"), "label": "较低的每1000Mbps月费中位数"},
             "context": data_time_note, "insight": fibre_insight, "items": fibre_items,
         },
         {
@@ -823,7 +824,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     direct_growth_text = "、".join(f"{short_cloud_name(item['name'])}{item['value']:.1f}%" for item in direct_growth[:4])
     proxy_names = "、".join(short_cloud_name(item["name"]) for item in growth_items if "代理分部" in str(item.get("detail") or ""))
     insight = (
-        f"直接披露云收入的厂商中，{direct_growth_text}；这说明高增长集中于少数厂商。"
+        f"直接披露云收入的厂商中，{direct_growth_text}；这说明即使口径相同，厂商扩张速度仍不同，不能用单一行业增速概括。"
         + (f"{proxy_names}采用代理分部口径，不参与同一排名。" if proxy_names else "")
     )
     best_trend = next((item for item in trend_items if _number(item.get("value")) is not None), None)
@@ -886,7 +887,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     ]
     for focus in focuses:
         focus["headline"] = {
-            "growth": "高增长集中在少数厂商", "trend": "收入提速并非少数",
+            "growth": "直接披露仍有分层", "trend": "收入提速并非少数",
             "profit": "利润率不能跨厂商排名", "margin_change": "利润改善方向分化",
         }[focus["id"]]
     return {
@@ -1003,9 +1004,9 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         income_period = str(income_item.get("detail") or "").split(" 对比 ", 1)[0]
         purchasing_analysis = (
             f"{income_period}家庭月入同比{float(income_item['value']):+.1f}%，甲类消费物价同比{float(cpi_item['value']):+.1f}%，"
-            f"收入增幅低{abs(gap):.1f}个百分点；这一差距说明家庭购买力代理承压，但电讯消费行为未单独统计。"
+            f"两者相减的购买力代理为{gap:+.1f}%；这说明家庭购买力承压，但电讯消费行为未单独统计。"
         )
-        purchasing_items.insert(0, {"name": "收入增幅减物价增幅", "value": round(gap, 1), "unit": "个百分点", "detail": f"{income_item['detail']} · 购买力代理", "analysis": purchasing_analysis, "components": [_component("家庭月入同比", income_item["value"], "%"), _component("甲类消费物价同比", cpi_item["value"], "%")], "component_count": 2, "source_url": income_item["source_url"]})
+        purchasing_items.insert(0, {"name": "购买力代理变化", "value": round(gap, 1), "unit": "%", "detail": f"{income_item['detail']} · 收入增幅减物价增幅", "analysis": purchasing_analysis, "components": [_component("家庭月入同比", income_item["value"], "%"), _component("甲类消费物价同比", cpi_item["value"], "%")], "component_count": 2, "source_url": income_item["source_url"]})
     investment_item = yoy_item("annual_telecom_investment", "电讯业投资")
     complaints_item = yoy_item("telecom_consumer_complaints_total", "电讯投诉", same_grain=True)
     service_items = [item for item in [investment_item, complaints_item] if item]
@@ -1022,16 +1023,16 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     traffic_total = next((item for item in traffic_items if item["name"] == "移动数据总量"), None)
     traffic_per = next((item for item in traffic_items if item["name"] == "每个移动宽带连接用量"), None)
     traffic_insight = (f"总流量同比 {traffic_total['value']:+.1f}%，每连接流量同比 {traffic_per['value']:+.1f}%；差距说明增量更偏连接规模，而非单连接使用强度。" if traffic_total and traffic_per and _number(traffic_total.get("value")) is not None and _number(traffic_per.get("value")) is not None else "缺少同周期数据，不判断流量增长来源。")
-    purchasing_gap = purchasing_items[0] if purchasing_items and purchasing_items[0]["name"] == "收入增幅减物价增幅" else None
+    purchasing_gap = purchasing_items[0] if purchasing_items and purchasing_items[0]["name"] == "购买力代理变化" else None
     focuses = [
-        {"id": "connections", "label": "连接增长", "visual": "diverging", "metric": {**_focus_metric(connection_items, "移动服务连接同比", "%"), "label": "移动服务连接同比"}, "context": "最新月对比上年同月", "insight": (f"移动服务连接同比 {connection_items[0]['value']:+.1f}%；该指标包含机器类型连接，因此不能等同新增独立客户。" if connection_items and _number(connection_items[0].get('value')) is not None else "缺少同月上年数据，不判断连接增长。"), "items": connection_items},
+        {"id": "connections", "label": "连接增长", "visual": "diverging", "metric": {**_focus_metric(connection_items, "移动服务连接同比", "%"), "label": "移动服务连接同比"}, "context": "最新月对比上年同月", "insight": (f"移动服务连接、移动宽带连接、渗透率同比分别为{connection_items[0]['value']:+.1f}%、{connection_items[1]['value']:+.1f}%、{connection_items[2]['value']:+.1f}%；三项同步上升但受多卡或机器连接影响，不能等同独立客户增长。" if len(connection_items) >= 3 and all(_number(item.get('value')) is not None for item in connection_items[:3]) else "缺少同月上年数据，不判断连接增长。"), "items": connection_items},
         {"id": "traffic", "label": "流量增长", "visual": "diverging", "metric": {**_focus_metric(traffic_items, "移动数据总量同比", "%"), "label": "移动数据总量同比"}, "context": "最新年度对比上年", "insight": traffic_insight, "items": traffic_items},
-        {"id": "purchasing", "label": "家庭购买力", "visual": "diverging", "metric": {"value": purchasing_gap["value"] if purchasing_gap else "-", "unit": "个百分点", "label": "收入增幅减物价增幅"}, "context": "收入与物价的同周期变化", "insight": (purchasing_gap["analysis"] if purchasing_gap else "缺少同周期收入与物价数据，不判断购买力变化。"), "items": purchasing_items},
+        {"id": "purchasing", "label": "家庭购买力", "visual": "diverging", "metric": {"value": purchasing_gap["value"] if purchasing_gap else "-", "unit": "%", "label": "购买力代理变化"}, "context": "收入与物价的同周期变化", "insight": (purchasing_gap["analysis"] if purchasing_gap else "缺少同周期收入与物价数据，不判断购买力变化。"), "items": purchasing_items},
         {"id": "service", "label": "投入与投诉", "visual": "kpis", "metric": {"value": investment_item["value"] if investment_item else "-", "unit": "%", "label": "电讯业投资同比"}, "context": "投资和投诉各自与同周期上年比较", "insight": (f"电讯业投资在截至2025年3月的财政年度增长{investment_item['value']:.1f}%；2025年全年投诉增长{complaints_item['value']:.1f}%。两项数据期间不同，这说明它们只能分别反映投入与服务压力，不能比较差距或建立关系。" if investment_item and complaints_item and _number(investment_item.get("value")) is not None and _number(complaints_item.get("value")) is not None else "投资与投诉缺少同周期对照，不建立因果关系。"), "items": service_items},
     ]
     for focus in focuses:
         focus["headline"] = {
-            "connections": "连接增长不等于客户增长", "traffic": "流量增量偏连接驱动",
+            "connections": "连接增长不等于客户增长", "traffic": "总量增长高于单连接",
             "purchasing": "购买力代理指标下降", "service": "投入与投诉不可直接关联",
         }[focus["id"]]
     entities = [item for focus in focuses for item in focus["items"]]
@@ -1101,6 +1102,17 @@ def _content_hash(payload: Any) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def _reader_percent_units(value: Any) -> Any:
+    """Use one compact percent notation throughout the reader-facing board."""
+    if isinstance(value, dict):
+        return {key: _reader_percent_units(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_reader_percent_units(item) for item in value]
+    if isinstance(value, str):
+        return value.replace(" 个百分点", "%").replace("个百分点", "%")
+    return value
+
+
 @lru_cache(maxsize=4)
 def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     del signature
@@ -1113,6 +1125,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
     for domain in domains:
         domain["ai_analysis"] = list((ai_domains or {}).get(domain["id"]) or [])
+    domains = _reader_percent_units(domains)
     evidence = _analysis_evidence_snapshot(domains)
     evidence_hash = _content_hash(evidence)
     model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
@@ -1145,6 +1158,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
                 entity["ai_summary"] = entity_summaries.get(str(entity.get("name") or ""), {})
         domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
         domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
+    domains = _reader_percent_units(domains)
     deterministic_relations = [
         {
             "from": "macro",
@@ -1199,6 +1213,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         }
         for item in model_discoveries[:4]
     ] if len(model_discoveries) >= 4 else deterministic_relations
+    relations = _reader_percent_units(relations)
     refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
     return {
         "domains": domains,

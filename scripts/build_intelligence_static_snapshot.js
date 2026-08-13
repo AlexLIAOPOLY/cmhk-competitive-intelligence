@@ -151,10 +151,11 @@ async function main() {
       path.join(OUTPUT_DIR, "styles.css"),
       `${css.trimEnd()}\n${staticOverrides().trim()}\n`,
     );
+    let leadershipCss = "";
     if (fragments.leadershipStyleHref) {
       const leadershipResponse = await context.request.get(fragments.leadershipStyleHref);
       if (!leadershipResponse.ok()) throw new Error(`Leadership stylesheet request failed: ${leadershipResponse.status()}`);
-      const leadershipCss = (await leadershipResponse.text())
+      leadershipCss = (await leadershipResponse.text())
         .replaceAll('url("/static/assets/', 'url("./assets/')
         .replaceAll("url('/static/assets/", "url('./assets/");
       fs.writeFileSync(
@@ -254,6 +255,8 @@ async function main() {
     const assetVersion = crypto.createHash("sha256")
       .update(staticPayload)
       .update(css)
+      .update(leadershipCss)
+      .update(boardScript)
       .digest("hex")
       .slice(0, 12);
     const content = `<!doctype html>
@@ -263,7 +266,7 @@ async function main() {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <meta name="robots" content="noindex, nofollow">
-  <title>中国移动香港｜市场与竞争数据</title>
+  <title>中国移动香港｜CMHK市场竞争全景</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css?v=${assetVersion}">
   <link rel="stylesheet" href="./leadership-board.css?v=${assetVersion}">
@@ -272,8 +275,8 @@ async function main() {
   <main class="app-shell">
     ${localizeAssets(fragments.header)}
     <section class="console-shell">
-      <section class="operations" aria-label="市场与竞争数据">
-        <section class="insight-board" aria-label="市场与竞争数据看板">
+      <section class="operations" aria-label="CMHK市场竞争全景">
+        <section class="insight-board" aria-label="CMHK市场竞争全景">
           ${localizeAssets(fragments.ticker)}
           ${localizeAssets(fragments.board)}
           ${localizeAssets(fragments.drawer)}

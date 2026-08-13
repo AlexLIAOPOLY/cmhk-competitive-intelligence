@@ -83,6 +83,8 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
                          ["columns", "ranges", "rows", "network"])
         self.assertEqual(local["scale"]["metric"]["unit"], "个产品")
         self.assertTrue(all(item["unit"] == "个产品" for item in local["scale"]["items"]))
+        self.assertEqual(local["fibre_value"]["metric"]["unit"], "港元/千兆/月")
+        self.assertTrue(all(item["unit"] == "港元/千兆/月" for item in local["fibre_value"]["items"]))
         self.assertTrue(any(item["record_count"] > item["component_count"] for item in local["scale"]["items"]))
         self.assertIn("数据采集于", local["scale"]["context"])
         self.assertIn("香港时间", local["scale"]["context"])
@@ -251,6 +253,12 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertNotIn("正值代表", momentum["insight"])
         margin = next(focus for focus in domain["focuses"] if focus["id"] == "margin")
         self.assertNotIn("用于判断", margin["insight"])
+
+    def test_reader_facing_snapshot_uses_percent_symbol_instead_of_percentage_points(self):
+        visible = json.dumps(self.snapshot["domains"], ensure_ascii=False)
+
+        self.assertNotIn("百分点", visible)
+        self.assertIn('"unit": "%"', visible)
 
 
 if __name__ == "__main__":

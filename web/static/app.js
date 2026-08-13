@@ -7658,18 +7658,12 @@ document.addEventListener("keydown", (event) => {
       ? `<a href="${safe(entity.source_url)}" target="_self">来源<span aria-hidden="true">↗</span></a>`
       : "";
     const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-${index}`.replace(/[^a-zA-Z0-9_-]/g, "-");
-    const entityAnalysis = entity.ai_summary?.analysis || entity.analysis || focus.insight || entity.detail || "暂无分析结论";
-    const dataTime = domain.id === "local" && domain.data_time
-      ? `<div class="intelligence-entity-data-time">${safe(String(domain.data_time).replace(/^数据采集于\s*/, "数据采集时间："))}</div>`
-      : "";
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
         <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
         <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
-          ${dataTime}
           ${renderEntityComponents(entity)}
-          <p>${safe(entityAnalysis)}</p>
         </div>
         <div class="intelligence-entity-actions">
           ${source}
@@ -7689,6 +7683,41 @@ document.addEventListener("keydown", (event) => {
         `).join("")}
       </div>
     `;
+  }
+
+  function focusPeriodLabel(domain, focus, metric, items) {
+    const periodRank = (period) => {
+      const quarter = period.match(/(20\d{2}) Q([1-4])/);
+      if (quarter) return Number(quarter[1]) * 100 + Number(quarter[2]) * 3;
+      const fiscal = period.match(/FY(20\d{2})/);
+      if (fiscal) return Number(fiscal[1]) * 100 + 12;
+      const date = period.match(/(20\d{2})-(\d{2})/);
+      return date ? Number(date[1]) * 100 + Number(date[2]) : 0;
+    };
+    const extractPeriods = (value) => {
+      const text = String(value || "");
+      const found = [];
+      for (const match of text.matchAll(/Q([1-4])\s*(20\d{2})/gi)) found.push(`${match[2]} Q${match[1]}`);
+      for (const match of text.matchAll(/FY\s*(20\d{2})/gi)) found.push(`FY${match[1]}`);
+      for (const match of text.matchAll(/(20\d{2}-\d{2})-\d{2}/g)) found.push(match[1]);
+      return found;
+    };
+    const candidates = [metric?.label, focus?.context];
+    (items || []).forEach((item) => {
+      candidates.push(item?.period, item?.detail);
+      (item?.components || []).forEach((component) => candidates.push(component?.label, component?.detail));
+    });
+    const periods = [...new Set(candidates.flatMap(extractPeriods))];
+    if (!periods.length && domain?.id === "local") {
+      periods.push(...extractPeriods(domain?.data_time));
+    }
+    if (!periods.length) return "截至各公司最新披露期";
+    const latest = [...periods].sort((a, b) => periodRank(b) - periodRank(a))[0];
+    const latestYears = [...new Set(periods.map((period) => (period.match(/20\d{2}/) || [""])[0]).filter(Boolean))];
+    const latestKinds = [...new Set(periods.map((period) => period.startsWith("FY") ? "fy" : period.includes(" Q") ? "q" : "date"))];
+    if (latestYears.length === 1 && latestKinds.length === 1 && periods.every((period) => periodRank(period) === periodRank(latest))) return `截至${latest}`;
+    if (focus?.id !== "service") return `截至${latest}`;
+    return latestYears.length === 1 ? `截至${latestYears[0]}各指标最新期` : "截至各指标最新披露期";
   }
 
   function patchIntelligenceNode(current, next) {
@@ -7942,6 +7971,7 @@ document.addEventListener("keydown", (event) => {
     const entityIndex = selectedEntityIndex(domain, selectedFocus);
     const selectedEntity = items[entityIndex] || null;
     const focusMetric = selectedFocus.metric || domain.metric || {};
+    const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items);
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
@@ -7953,6 +7983,7 @@ document.addEventListener("keydown", (event) => {
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
           <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
+          <em>${safe(periodLabel)}</em>
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
         <div class="intelligence-domain-focus-stage">

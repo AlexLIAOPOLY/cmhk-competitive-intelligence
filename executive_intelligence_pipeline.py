@@ -31,7 +31,22 @@ LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
-INSIGHT_FORMAT_VERSION = "deep_interpretation_v4"
+INSIGHT_FORMAT_VERSION = "evidence_relationship_v6"
+
+FOCUS_RELATION_FEW_SHOTS = (
+    "少样本约束：\n"
+    "反例：HKBN有27个产品、3HK有24个、SmarTone有21个，说明三家产品较多。"
+    "问题：只是复述数字，没有竞对结构和经营含义。\n"
+    "正例：HKBN、3HK和SmarTone分别有27、24、21个产品，而i-CABLE和HGC为8、4个，"
+    "数量形成两层；但头部三家彼此只差6个，产品数量难以成为头部之间的主要区隔。\n"
+    "反例：Google Cloud增长35.8%，高于Oracle 23.9%，说明Google领先。"
+    "问题：把单项增速直接等同竞争力。\n"
+    "正例：4家直接披露云收入的厂商中，Google Cloud为35.8%、Alibaba Cloud为11.0%，"
+    "收入增速形成两层；Azure和Tencent是代理分部口径，不纳入这一比较。\n"
+    "反例：投资增长1.3%推动投诉增长2.9%。问题：期间不同且虚构因果。\n"
+    "正例：投资数据截至2025年3月，投诉数据为2025自然年，期间不同，"
+    "不能判断两者关系，只能分别观察投入变化和服务压力。"
+)
 MAX_FOCUS_INSIGHT_CHARS = 120
 MAX_FOCUS_INSIGHT_SENTENCES = 2
 TASK_KIND = "executive-intelligence-refresh"
@@ -534,6 +549,12 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         )
     if _contains_action_advice(analysis):
         return f"AI分析分类含行动建议而非数据洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
+    unsupported_causal = tuple(
+        term for term in ("导致", "造成", "推动", "带来", "源于", "驱动")
+        if term in analysis and not any(boundary in analysis for boundary in ("不能判断", "无法判断", "不能建立", "不代表"))
+    )
+    if unsupported_causal:
+        return f"AI分析分类使用了未经证据支持的因果词{unsupported_causal}：{domain}.{focus_id}；内容：{analysis[:180]}"
     focus_numbers = _focus_value_tokens(evidence_focus)
     analysis_numbers = _numeric_tokens(analysis)
     if focus_numbers and not (focus_numbers & analysis_numbers):
@@ -543,6 +564,7 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     restriction_phrases = (
         "缺失值不估算", "缺失数据不估算", "只比较已结构化", "仅比较已结构化",
         "用于判断", "用于识别", "用于展示", "展示可分析", "此处比较", "聚焦云业务",
+        "高增长集中", "说明存在差异", "说明存在差距",
     )
     if any(phrase in analysis for phrase in restriction_phrases):
         return f"AI分析分类仍以方法说明代替洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
@@ -851,16 +873,20 @@ def _validate_model_summaries(
                     validated_focus["origin"] = "evidence_rule"
                 if not validated_focus["analysis"] or not validated_focus["risk"]:
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
+                evidence_focus = next(
+                    focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
+                    if str(focus.get("id") or "") == focus_id
+                )
+                if validated_focus["headline"] and re.sub(r"\s+", "", validated_focus["headline"]) == re.sub(
+                    r"\s+", "", str(evidence_focus.get("label") or "")
+                ):
+                    validated_focus["headline"] = str(evidence_focus.get("headline") or "").strip()
                 unknown_focus_urls = set(validated_focus["source_urls"]) - allowed_urls
                 if unknown_focus_urls:
                     raise ValueError(f"AI分析分类引用了输入之外的来源：{sorted(unknown_focus_urls)}")
                 unknown_focus_numbers = _numeric_tokens(validated_focus) - allowed_numbers
                 if unknown_focus_numbers:
                     raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_focus_numbers)}")
-                evidence_focus = next(
-                    focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
-                    if str(focus.get("id") or "") == focus_id
-                )
                 focus_gate_error = _focus_gate_error(
                     domain,
                     focus_id,
@@ -902,8 +928,6 @@ def _validate_model_summaries(
                         for component in evidence_entities[name].get("components") or []
                         if str(component.get("label") or "")
                     }
-                    if allowed_labels and not entity_summary["evidence_labels"]:
-                        raise ValueError(f"AI分析实体未引用组成明细：{domain}.{focus_id}.{name}")
                     unknown_labels = set(entity_summary["evidence_labels"]) - allowed_labels
                     if unknown_labels:
                         raise ValueError(f"AI分析实体引用未知明细：{domain}.{focus_id}.{name}.{sorted(unknown_labels)}")
@@ -1445,7 +1469,7 @@ def generate_model_focus_insight(
         raise RuntimeError("未配置内网模型密钥")
     focus_id = str(focus.get("id") or "")
     focus_contracts = {
-        ("local", "scale"): "只分析去重后在售产品数量与产品选择；数据库记录数只作重复记录说明。",
+        ("local", "scale"): "只分析运营商之间去重后在售产品数量的分层与区隔；记录数只作数据质量边界，不能成为标题或主要结论。",
         ("local", "mobile_price"): "只分析个人5G的月费中位数、价格带重合与价格区隔。",
         ("local", "fibre_value"): "只分析家宽每千兆月费及合约期对价格优势的影响。",
         ("local", "overlap"): (
@@ -1472,9 +1496,9 @@ def generate_model_focus_insight(
     )
     angle_options = (
         (
-            "从数据库记录数与去重后套餐数的差异切入，必须说明重复记录会放大表面规模",
+            "比较头部三家与尾部两家的数量层次，必须说明竞争结构分成哪两层",
             "从头部三家去重产品数量相近切入，必须说明三家之间的数量差距有限",
-            "从尾部两家去重套餐选择较少切入，必须说明这只能反映当前收录的选择宽度",
+            "比较尾部两家与头部三家的选择宽度，说明数量差距对应的产品覆盖层次",
             "从数据边界切入，必须说明产品数量不能等同产品吸引力、价值或竞争力",
         )
         if scale_has_record_counts
@@ -1519,6 +1543,7 @@ def generate_model_focus_insight(
             "role": "system",
             "content": (
                 "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
+                "任务不是解释指标，而是比较当前items中至少两个竞对、期间或指标，找出数据关系及其有界经营含义。"
                 "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
                 "不得复用旧版标题。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、驱动、集中度、"
@@ -1527,6 +1552,8 @@ def generate_model_focus_insight(
                 "禁止自行加总、计算占比或创造衍生数字。结论必须使用表明、说明、意味着、主要来自、"
                 "并非、而非或不能等同中的至少一个连接词。必须严格遵守输入scope，只能总结当前页，"
                 "不得把相邻页或item附带信息扩展为当前页结论。"
+                "禁止把单项高低直接写成领先、竞争力、定价权或因果；少于3个可比对象时必须明确样本边界。"
+                + FOCUS_RELATION_FEW_SHOTS
             ),
         },
         {
@@ -1644,11 +1671,12 @@ def generate_model_focus_insight(
             if scale_has_record_counts:
                 angle_index = (regeneration_index - 1) % len(angle_options)
                 angle_passed = (
-                    ("去重" in analysis and any(term in analysis for term in ("记录", "重复")))
+                    (sum(name in analysis for name in ("HKBN", "3HK", "SmarTone", "i-CABLE", "HGC")) >= 4
+                     and any(term in analysis for term in ("两层", "头部", "尾部")))
                     if angle_index == 0 else
                     (any(term in analysis for term in ("接近", "相近", "差距有限")))
                     if angle_index == 1 else
-                    ("i-CABLE" in analysis and "HGC" in analysis and "选择" in analysis)
+                    ("i-CABLE" in analysis and "HGC" in analysis and any(term in analysis for term in ("选择", "覆盖", "层次")))
                     if angle_index == 2 else
                     (
                         any(term in analysis for term in ("不能等同", "不代表", "并不等同"))
@@ -1699,12 +1727,14 @@ def generate_model_focus_insight(
         items = compact_focus.get("items") or []
         angle_index = (regeneration_index - 1) % len(angle_options)
         if angle_index == 0:
-            item = max(items, key=lambda value: int(value.get("record_count") or 0) - int(value.get("value") or 0))
-            headline = "重复记录放大规模"
+            a, b, c = items[:3]
+            d, e = items[-2:]
+            headline = "产品数量形成两层"
             analysis = (
-                f"{item.get('name')}{_display_number(item.get('record_count'))}条记录去重后为"
-                f"{_display_number(item.get('value'))}个套餐，说明重复记录会放大表面规模，"
-                "不能把记录条数当作套餐选择。"
+                f"{a.get('name')}、{b.get('name')}、{c.get('name')}分别有{_display_number(a.get('value'))}、"
+                f"{_display_number(b.get('value'))}、{_display_number(c.get('value'))}个产品，"
+                f"而{d.get('name')}、{e.get('name')}为{_display_number(d.get('value'))}、{_display_number(e.get('value'))}个；"
+                "数量形成头尾两层，但头部三家彼此接近，难以靠数量形成区隔。"
             )
         elif angle_index == 1:
             a, b, c = items[:3]
@@ -1761,19 +1791,25 @@ def generate_model_domain_summaries(
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
         "你是电信竞争情报分析员。只能使用输入JSON里的事实、数字、期间、口径和来源，不得补充常识数字或猜测。"
+        "任务不是解释数据，而是从每个focus的竞对、期间或指标之间找出可验证关系，并说明这项关系对竞争结构、"
+        "价格区隔、增长质量、利润转化、需求强度或服务压力的有界含义。"
         "每个领域给出一句headline、一段analysis和一句risk；为每个focus给出analysis、risk；"
         "并为每个focus中的每个实体逐一给出headline、analysis、risk、evidence_labels和source_urls。"
-        "实体analysis必须先说清具体包含哪些组成明细，再解释结构、集中度、变化或差距背后的数据含义；"
+        "实体analysis只需准确陈述该实体的事实、期间、单位和口径，不强迫单个实体推导经营含义；"
         "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
         "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
         "每个focus的analysis必须是一至两句、总长不超过120字，并引用至少一个输入具体数值作为证据；"
         "结论必须解释数字背后的结构、驱动因素、集中度、口径可比性、市场阶段或指标关系，不能停留在数字高低、增减或事实复述；"
         "禁止写建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术，也不要告诉读者下一步做什么。"
         "全部16个focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
+        "focus.headline必须是关系判断，不能照抄页签或指标名称。"
+        "每个focus至少比较两个竞对、两个期间或两个指标；无法同口径比较时，结论必须是不可比边界而非强行排名。"
+        "禁止无证据写领先、竞争力、定价权、导致、造成、推动、带来、源于或驱动；少于3个可比对象时明确样本边界。"
         "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
         "跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
         "source_urls只能从输入中原样选择。只返回JSON数组。"
+        + FOCUS_RELATION_FEW_SHOTS
     )
     requested_domain_ids = [str(domain.get("id") or "") for domain in evidence.get("domains") or []]
     validation_domains = set(requested_domain_ids) if allow_partial_domains else None
@@ -1967,8 +2003,8 @@ def generate_model_domain_summaries(
                             "role": "system",
                             "content": (
                                 "你是电信竞争情报分析员。只返回合法JSON数组，不要解释。只能使用输入证据。"
-                                "逐一覆盖items中的全部实体，name必须原样；每个实体先说明components具体包含什么，"
-                                "再解释结构、变化或差距背后的数据含义。evidence_labels只能原样选自该实体components.label。"
+                                "逐一覆盖items中的全部实体，name必须原样；实体只需准确陈述事实、期间、单位和口径，"
+                                "不强迫单个实体推导经营含义。evidence_labels如使用，只能原样选自该实体components.label。"
                                 "focus.analysis必须用一至两句、总长不超过120字，引用输入具体数值并解释结构、驱动、"
                                 "集中度、口径可比性或市场阶段；禁止行动建议与数字复述。"
                                 "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图等界面说明。"

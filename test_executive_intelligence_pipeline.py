@@ -15,6 +15,17 @@ import scheduler
 
 
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
+    def test_focus_prompts_use_relation_few_shots_and_forbid_free_form_causality(self):
+        source = Path(pipeline.__file__).read_text(encoding="utf-8")
+
+        self.assertIn("FOCUS_RELATION_FEW_SHOTS", source)
+        self.assertIn("任务不是解释数据", source)
+        self.assertIn("至少比较两个竞对、两个期间或两个指标", source)
+        self.assertIn("问题：只是复述数字", source)
+        self.assertIn("问题：期间不同且虚构因果", source)
+        self.assertIn('(\"导致\", \"造成\", \"推动\", \"带来\", \"源于\", \"驱动\")', source)
+        self.assertIn('validated_focus["headline"] = str(evidence_focus.get("headline")', source)
+
     def test_manual_discovery_regeneration_prefers_qwen(self):
         source = Path(pipeline.__file__).read_text(encoding="utf-8")
 
@@ -202,7 +213,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         first_payload = json.loads(request.call_args_list[0].args[0].data.decode("utf-8"))
         first_prompt = first_payload["messages"][1]["content"]
         self.assertNotIn("覆盖4个赛道", first_prompt)
-        self.assertIn("数据库记录数只作重复记录说明", first_prompt)
+        self.assertIn("记录数只作数据质量边界", first_prompt)
+        self.assertIn("不能成为标题或主要结论", first_prompt)
         self.assertIn("请求唯一标识", first_prompt)
         self.assertIn("required_angle", first_prompt)
         self.assertEqual(request.call_count, 2)

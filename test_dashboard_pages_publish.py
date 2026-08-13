@@ -211,10 +211,13 @@ class DashboardPagesPublishTests(unittest.TestCase):
         static_dir = Path(__file__).resolve().parent / "web" / "static" / "intelligence-public"
         html = (static_dir / "index.html").read_text(encoding="utf-8")
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
+        builder = (Path(__file__).resolve().parent / "scripts" / "build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
         self.assertRegex(html, r'<script src="\./intelligence\.js\?v=[0-9a-f]{12}"></script>')
-        self.assertIn("市场与竞争数据", html)
-        self.assertIn("数据战略解读", html)
+        self.assertIn(".update(leadershipCss)", builder)
+        self.assertIn(".update(boardScript)", builder)
+        self.assertIn("CMHK市场竞争全景", html)
+        self.assertIn("战略解读", html)
         self.assertIn("运营商动态", html)
         self.assertNotIn(">竞对动态<", html)
         self.assertIn('class="ai-insight-mark"', html)
