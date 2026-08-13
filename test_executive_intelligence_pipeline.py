@@ -136,13 +136,13 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "recent_insights": ["历史文案含59项与48项。"],
             "recent_headlines": ["方案供给集中"],
             "items": [
-                {"name": "HKBN", "value": 27, "unit": "个套餐"},
-                {"name": "HGC", "value": 4, "unit": "个套餐"},
+                {"name": "HKBN", "value": 27, "unit": "个产品"},
+                {"name": "HGC", "value": 4, "unit": "个产品"},
             ],
         }
         content = json.dumps({
             "headline": "去重后选择呈分层",
-            "analysis": "HKBN 27个套餐与HGC 4个套餐形成差距，说明去重后套餐选择并非均匀分布。",
+            "analysis": "HKBN 27个产品与HGC 4个产品形成差距，说明去重后产品选择并非均匀分布。",
         }, ensure_ascii=False)
         response = mock.MagicMock()
         response.__enter__.return_value.read.return_value = json.dumps({
@@ -158,8 +158,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             pipeline.generate_model_focus_insight("local", focus)
 
         prompt = json.loads(request.call_args.args[0].data.decode("utf-8"))["messages"][1]["content"]
-        self.assertNotIn("161", prompt)
-        self.assertNotIn("59", prompt)
+        self.assertNotIn("161项", prompt)
+        self.assertNotIn("59项", prompt)
         self.assertNotIn("旧版头部三家主导", prompt)
         self.assertIn('"value": 84', prompt)
         self.assertIn('"value": 27', prompt)
@@ -215,20 +215,20 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "metric": {"value": 84, "unit": "个"},
             "regeneration_index": 8,
             "items": [
-                {"name": "HKBN", "value": 27, "unit": "个套餐", "record_count": 59, "component_count": 27},
-                {"name": "3HK / Hutchison", "value": 24, "unit": "个套餐", "record_count": 48, "component_count": 24},
-                {"name": "SmarTone", "value": 21, "unit": "个套餐", "record_count": 37, "component_count": 21},
-                {"name": "i-CABLE", "value": 8, "unit": "个套餐", "record_count": 10, "component_count": 8},
-                {"name": "HGC", "value": 4, "unit": "个套餐", "record_count": 7, "component_count": 4},
+                {"name": "HKBN", "value": 27, "unit": "个产品", "record_count": 59, "component_count": 27},
+                {"name": "3HK / Hutchison", "value": 24, "unit": "个产品", "record_count": 48, "component_count": 24},
+                {"name": "SmarTone", "value": 21, "unit": "个产品", "record_count": 37, "component_count": 21},
+                {"name": "i-CABLE", "value": 8, "unit": "个产品", "record_count": 10, "component_count": 8},
+                {"name": "HGC", "value": 4, "unit": "个产品", "record_count": 7, "component_count": 4},
             ],
         }
         same_meaning = json.dumps({
-            "headline": "在售套餐头部集中",
+            "headline": "在售产品头部集中",
             "analysis": "HKBN 27个、3HK 24个与SmarTone 21个高于i-CABLE 8个及HGC 4个，说明头部三家集中度较高。",
         }, ensure_ascii=False)
         new_boundary = json.dumps({
             "headline": "数量不代表吸引力",
-            "analysis": "去重后在售套餐84个，但套餐数量不能等同产品吸引力或竞争力，这页只能说明当前收录的选择宽度。",
+            "analysis": "去重后在售产品84个，但产品数量不能等同产品吸引力或竞争力，这页只能说明当前收录的选择宽度。",
         }, ensure_ascii=False)
         responses = []
         for content in (same_meaning, new_boundary):
@@ -248,7 +248,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
         first_prompt = json.loads(request.call_args_list[0].args[0].data.decode("utf-8"))["messages"][1]["content"]
         retry_prompt = json.loads(request.call_args_list[1].args[0].data.decode("utf-8"))["messages"][-1]["content"]
-        self.assertIn("套餐数量不能等同产品吸引力", first_prompt)
+        self.assertIn("产品数量不能等同产品吸引力", first_prompt)
         self.assertIn('"record_count": 59', first_prompt)
         self.assertIn("数据边界", retry_prompt)
         self.assertEqual(request.call_count, 2)
@@ -262,16 +262,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "metric": {"value": 84, "unit": "个"},
             "regeneration_index": 8,
             "items": [
-                {"name": "HKBN", "value": 27, "unit": "个套餐", "record_count": 59, "component_count": 27},
-                {"name": "3HK / Hutchison", "value": 24, "unit": "个套餐", "record_count": 48, "component_count": 24},
-                {"name": "SmarTone", "value": 21, "unit": "个套餐", "record_count": 37, "component_count": 21},
-                {"name": "i-CABLE", "value": 8, "unit": "个套餐", "record_count": 10, "component_count": 8},
-                {"name": "HGC", "value": 4, "unit": "个套餐", "record_count": 7, "component_count": 4},
+                {"name": "HKBN", "value": 27, "unit": "个产品", "record_count": 59, "component_count": 27},
+                {"name": "3HK / Hutchison", "value": 24, "unit": "个产品", "record_count": 48, "component_count": 24},
+                {"name": "SmarTone", "value": 21, "unit": "个产品", "record_count": 37, "component_count": 21},
+                {"name": "i-CABLE", "value": 8, "unit": "个产品", "record_count": 10, "component_count": 8},
+                {"name": "HGC", "value": 4, "unit": "个产品", "record_count": 7, "component_count": 4},
             ],
         }
         too_long = json.dumps({
             "headline": "数量不代表吸引力",
-            "analysis": "去重后在售套餐84个，但套餐数量不能等同产品吸引力或竞争力。" + "数据边界" * 30,
+            "analysis": "去重后在售产品84个，但产品数量不能等同产品吸引力或竞争力。" + "数据边界" * 30,
         }, ensure_ascii=False)
         responses = []
         for _ in range(3):
@@ -292,7 +292,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["model"], "evidence-rule-fallback")
         self.assertEqual(result["focus"]["origin"], "evidence_rule")
         self.assertEqual(result["focus"]["headline"], "数量不代表吸引力")
-        self.assertIn("去重后在售套餐84个", result["focus"]["analysis"])
+        self.assertIn("去重后在售产品84个", result["focus"]["analysis"])
         self.assertLessEqual(len(result["focus"]["analysis"]), 120)
 
     def test_fast_focus_generation_retries_a_duplicate_with_another_model(self):
@@ -397,7 +397,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         generated_focus = {
             **generated_focus,
             "headline": "去重后选择呈分层",
-            "analysis": "HKBN 27个套餐与HGC 4个套餐形成差距，说明去重后套餐选择并非均匀分布。",
+            "analysis": "HKBN 27个产品与HGC 4个产品形成差距，说明去重后产品选择并非均匀分布。",
         }
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
@@ -892,6 +892,20 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 self.assertFalse(pipeline._contains_action_advice(analysis))
                 checked += 1
         self.assertEqual(checked, 16)
+
+    def test_mobile_price_gate_rejects_false_no_overlap_claim(self):
+        focus = {
+            "metric": {"value": 168, "unit": "港元/月"},
+            "items": [
+                {"name": "3HK", "value": 168, "low": 124, "high": 228},
+                {"name": "SmarTone", "value": 239, "low": 159, "high": 549},
+            ],
+        }
+        analysis = "3HK为168港元，SmarTone为239港元；价格区间未重合，说明竞争主要来自定位不同。"
+        self.assertIn(
+            "与输入价格区间矛盾",
+            pipeline._focus_gate_error("local", "mobile_price", analysis, focus),
+        )
 
     def test_numeric_anchor_repair_keeps_ai_judgement_but_does_not_rescue_filler(self):
         evidence = {"domains": [{

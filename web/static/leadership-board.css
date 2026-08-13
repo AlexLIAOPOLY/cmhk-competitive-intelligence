@@ -595,7 +595,7 @@
 .insight-board > .strategy-ticker .strategy-ticker-item p { font-size: 12px; line-height: 1.42; }
 
 .intelligence-domain-heading strong,
-.intelligence-domain-local .intelligence-domain-heading strong { font-size: 32px; }
+.intelligence-domain-local .intelligence-domain-heading strong { font-size: 27px; }
 .intelligence-domain-metric { min-width: 132px; }
 .intelligence-domain-metric small { font-size: 14px; line-height: 1.32; }
 .intelligence-domain-metric > strong { font-size: clamp(42px, 3.1vw, 56px); }
@@ -604,11 +604,27 @@
 .intelligence-focus-tabs { height: 38px; }
 .intelligence-focus-tabs button {
   min-height: 36px;
-  font-size: 13.5px;
-  line-height: 1.08;
-  overflow-wrap: anywhere;
-  text-overflow: clip;
-  white-space: normal;
+  padding-inline: 8px;
+  font-size: 14px;
+  line-height: 1;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
+.intelligence-focus-tabs button + button {
+  border-left: 1px solid rgba(128, 190, 211, .12);
+}
+
+@media (min-width: 561px) {
+  .intelligence-domain,
+  .intelligence-domain-local {
+    grid-template-rows: auto 38px minmax(0, 1fr);
+  }
+  .intelligence-focus-tabs {
+    grid-column: 2 / 5;
+    grid-row: 2;
+  }
+  .intelligence-domain-focus-stage { grid-row: 3; }
 }
 
 .intelligence-domain-focus-stage {
@@ -743,9 +759,9 @@
     padding-inline: 16px;
   }
   .intelligence-domain-heading strong,
-  .intelligence-domain-local .intelligence-domain-heading strong { font-size: 29px; }
+  .intelligence-domain-local .intelligence-domain-heading strong { font-size: 27px; }
   .intelligence-domain-metric > strong { font-size: 44px; }
-  .intelligence-focus-tabs button { font-size: 12.5px; }
+  .intelligence-focus-tabs button { font-size: 13px; }
 }
 
 @media (max-width: 1180px) {
@@ -770,8 +786,14 @@
     white-space: normal;
   }
   .intelligence-domain-metric > strong { font-size: 46px; }
-  .intelligence-focus-tabs { height: 40px; }
-  .intelligence-focus-tabs button { min-height: 38px; font-size: 13px; }
+  .intelligence-focus-tabs { height: 40px; overflow-x: auto; }
+  .intelligence-focus-tabs button {
+    flex: 0 0 auto;
+    min-width: max-content;
+    min-height: 38px;
+    padding-inline: 12px;
+    font-size: 13.5px;
+  }
   .intelligence-domain-focus-stage {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(174px, 1fr) minmax(156px, auto);

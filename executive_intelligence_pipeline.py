@@ -31,7 +31,7 @@ LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
-INSIGHT_FORMAT_VERSION = "deep_interpretation_v3"
+INSIGHT_FORMAT_VERSION = "deep_interpretation_v4"
 MAX_FOCUS_INSIGHT_CHARS = 120
 MAX_FOCUS_INSIGHT_SENTENCES = 2
 TASK_KIND = "executive-intelligence-refresh"
@@ -478,7 +478,7 @@ _INTERPRETIVE_CONNECTORS = (
 _INTERPRETIVE_DIMENSIONS = (
     "结构", "口径", "集中", "可比", "驱动", "依赖", "饱和", "错位", "背离", "同步",
     "脱钩", "分层", "梯队", "边界", "质量", "效率", "弹性", "定价权", "产品广度",
-    "记录颗粒度", "记录密度", "渗透", "变现", "盈利", "利润", "收入", "客户", "网络", "竞争", "产品类型", "购买力", "价格", "套餐", "投入", "资本", "负担", "流量", "连接", "服务", "优惠条件",
+    "记录颗粒度", "记录密度", "渗透", "变现", "盈利", "利润", "收入", "客户", "网络", "竞争", "产品类型", "产品选择", "产品数量", "购买力", "价格", "套餐", "投入", "资本", "负担", "流量", "连接", "服务", "优惠条件",
 )
 _DEEP_RELATION_MARKERS = (
     "主要来自", "源于", "驱动", "并非", "而非", "不等同", "不等价", "不等于", "不能", "不可",
@@ -549,8 +549,10 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     forbidden_by_focus = {
         ("local", "scale"): (
             "赛道", "月费", "资费区间", "重叠", "交集", "资本负担", "利润转化",
-            "增长质量", "购买力", "服务压力", "存量竞争", "爆款",
+            "增长质量", "购买力", "服务压力", "存量竞争", "爆款", "套餐",
         ),
+        ("local", "fibre_value"): ("增长质量", "低价吸引", "全市场覆盖"),
+        ("local", "overlap"): ("增长质量", "增长能力"),
     }
     forbidden_terms = forbidden_by_focus.get((domain, focus_id), ())
     leaked_terms = [term for term in forbidden_terms if term in analysis]
@@ -559,6 +561,24 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
             f"AI分析分类混入其他页维度{leaked_terms}：{domain}.{focus_id}；"
             f"内容：{analysis[:180]}"
         )
+    if (domain, focus_id) == ("local", "mobile_price"):
+        ranges = [
+            (float(item["low"]), float(item["high"]))
+            for item in evidence_focus.get("items") or []
+            if isinstance(item, dict)
+            and isinstance(item.get("low"), (int, float))
+            and isinstance(item.get("high"), (int, float))
+        ]
+        has_overlap = any(
+            max(left[0], right[0]) <= min(left[1], right[1])
+            for index, left in enumerate(ranges)
+            for right in ranges[index + 1:]
+        )
+        if has_overlap and any(phrase in analysis for phrase in ("未重合", "没有重合", "无重合")):
+            return (
+                f"AI分析分类与输入价格区间矛盾：{domain}.{focus_id}；"
+                f"内容：{analysis[:180]}"
+            )
     return ""
 
 
@@ -1425,7 +1445,7 @@ def generate_model_focus_insight(
         raise RuntimeError("未配置内网模型密钥")
     focus_id = str(focus.get("id") or "")
     focus_contracts = {
-        ("local", "scale"): "只分析去重后在售套餐数量与套餐选择；数据库记录数只作重复记录说明。",
+        ("local", "scale"): "只分析去重后在售产品数量与产品选择；数据库记录数只作重复记录说明。",
         ("local", "mobile_price"): "只分析个人5G的月费中位数、价格带重合与价格区隔。",
         ("local", "fibre_value"): "只分析家宽每千兆月费及合约期对价格优势的影响。",
         ("local", "overlap"): (
@@ -1453,14 +1473,14 @@ def generate_model_focus_insight(
     angle_options = (
         (
             "从数据库记录数与去重后套餐数的差异切入，必须说明重复记录会放大表面规模",
-            "从头部三家去重套餐数量相近切入，必须说明三家之间的选择宽度差距有限",
+            "从头部三家去重产品数量相近切入，必须说明三家之间的数量差距有限",
             "从尾部两家去重套餐选择较少切入，必须说明这只能反映当前收录的选择宽度",
-            "从数据边界切入，必须说明套餐数量不能等同产品吸引力、价值或竞争力",
+            "从数据边界切入，必须说明产品数量不能等同产品吸引力、价值或竞争力",
         )
         if scale_has_record_counts
         else (
             "从竞争区隔或增长质量切入",
-            "从资本负担或利润转化切入",
+            "从资本投入比例或利润转化切入",
             "从需求强度或购买力压力切入",
             "从服务压力或数据边界切入",
         )
@@ -1705,8 +1725,8 @@ def generate_model_focus_insight(
         else:
             headline = "数量不代表吸引力"
             analysis = (
-                f"去重后在售套餐{_display_number((compact_focus.get('metric') or {}).get('value'))}个，"
-                "但套餐数量不能等同产品吸引力、价值或竞争力；"
+                f"去重后在售产品{_display_number((compact_focus.get('metric') or {}).get('value'))}个，"
+                "但产品数量不能等同产品吸引力、价值或竞争力；"
                 "这页只能说明当前收录的选择宽度。"
             )
         return {
@@ -1716,7 +1736,7 @@ def generate_model_focus_insight(
                 "id": focus_id,
                 "headline": headline,
                 "analysis": analysis,
-                "risk": "仅基于当前已核验记录；套餐数量不代表产品吸引力。",
+                "risk": "仅基于当前已核验记录；产品数量不代表产品吸引力。",
                 "source_urls": [],
                 "origin": "evidence_rule",
             },

@@ -77,12 +77,12 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         local = {focus["id"]: focus for focus in domains["local"]["focuses"]}
         self.assertEqual(
             [local[key]["label"] for key in ("scale", "mobile_price", "fibre_value", "overlap")],
-            ["在售方案组合", "个人5G月费", "家宽速度价格", "同类套餐价格重合"],
+            ["在售产品组合", "个人5G月费", "家宽每千兆价格", "同类价格重合"],
         )
         self.assertEqual([local[key]["visual"] for key in ("scale", "mobile_price", "fibre_value", "overlap")],
                          ["columns", "ranges", "rows", "network"])
-        self.assertEqual(local["scale"]["metric"]["unit"], "个")
-        self.assertTrue(all(item["unit"] == "个套餐" for item in local["scale"]["items"]))
+        self.assertEqual(local["scale"]["metric"]["unit"], "个产品")
+        self.assertTrue(all(item["unit"] == "个产品" for item in local["scale"]["items"]))
         self.assertTrue(any(item["record_count"] > item["component_count"] for item in local["scale"]["items"]))
         self.assertIn("数据采集于", local["scale"]["context"])
         self.assertIn("香港时间", local["scale"]["context"])
@@ -98,12 +98,12 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertIn(highest["name"], price_insight)
         self.assertIn(str(int(lowest["value"])), price_insight)
         self.assertIn(str(int(highest["value"])), price_insight)
-        self.assertIn("价格带", price_insight)
+        self.assertIn("月费区间", price_insight)
 
         international = {focus["id"]: focus for focus in domains["international"]["focuses"]}
         self.assertEqual(domains["international"]["title"], "内地电讯企业")
         self.assertEqual(international["momentum"]["label"], "增长变化")
-        self.assertIn("均较上一可比期放缓", international["momentum"]["insight"])
+        self.assertIn("放缓已扩散至全部公司", international["momentum"]["insight"])
         self.assertIn(international["growth"]["items"][0]["period"], international["growth"]["metric"]["label"])
         self.assertNotEqual(
             [item["value"] for item in international["growth"]["items"]],
@@ -122,6 +122,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
 
         cloud = {focus["id"]: focus for focus in domains["cloud"]["focuses"]}
         self.assertEqual(cloud["growth"]["label"], "收入增长")
+        self.assertEqual(cloud["trend"]["headline"], "收入提速并非少数")
         self.assertTrue(all("口径" in item["detail"] for item in cloud["growth"]["items"]))
         self.assertTrue(all("trend" in item for item in cloud["trend"]["items"]))
         self.assertTrue(any(item["value"] is None for item in cloud["profit"]["items"]))
@@ -130,7 +131,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertIn("margin_change", cloud)
 
         macro = {focus["id"]: focus for focus in domains["macro"]["focuses"]}
-        self.assertEqual(macro["service"]["label"], "网络投入与投诉")
+        self.assertEqual(macro["service"]["label"], "投入与投诉")
         name_sets = {tuple(item["name"] for item in focus["items"]) for focus in macro.values()}
         self.assertEqual(len(name_sets), 4)
         self.assertEqual(macro["service"]["visual"], "kpis")
@@ -139,10 +140,16 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertTrue(all(component.get("unit") == "百万港元" for component in investment["components"]))
         coverage = next(item for item in macro["service"]["items"] if item["name"] == "5G人口覆盖")
         self.assertEqual(coverage["value"], "超过99%")
+        macro_text = json.dumps(macro, ensure_ascii=False)
+        self.assertNotIn("e+", macro_text.lower())
+        for untranslated_unit in ("subscriptions", "access lines", '"unit": "count"', '"unit": "index"'):
+            self.assertNotIn(untranslated_unit, macro_text)
         purchasing = macro["purchasing"]
         income = next(item for item in purchasing["items"] if item["name"] == "家庭月入中位数")
         cpi = next(item for item in purchasing["items"] if item["name"] == "甲类消费物价同比")
         self.assertTrue(income["detail"].startswith(cpi["detail"].replace("截至 ", "")))
+        self.assertIn(income["detail"].split(" 对比 ", 1)[0], purchasing["insight"])
+        self.assertIn("期间不同", macro["service"]["insight"])
 
     def test_reader_facing_database_copy_avoids_internal_jargon_and_false_comparisons(self):
         visible = []
@@ -194,9 +201,9 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertEqual(icable["record_count"], 10)
         self.assertEqual(icable["component_count"], 8)
         self.assertIn("10 条记录", icable["analysis"])
-        self.assertIn("8 个在售套餐", icable["analysis"])
+        self.assertIn("8 个在售产品", icable["analysis"])
         self.assertIn(
-            "i-CABLE Broadband 公屋居屋 1000M HK$68",
+            "光纤家宽｜1000Mbps",
             {component["label"] for component in icable["components"]},
         )
 

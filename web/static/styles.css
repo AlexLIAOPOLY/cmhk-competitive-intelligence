@@ -14570,7 +14570,7 @@ body.report-library-open::before {
   position: relative;
   flex: 1 1 0;
   min-width: 0;
-  padding: 0 5px;
+  padding: 0 8px;
   overflow: hidden;
   border: 0;
   border-bottom: 2px solid transparent;
@@ -14581,7 +14581,7 @@ body.report-library-open::before {
   font-weight: 650;
   letter-spacing: .02em;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap !important;
   cursor: pointer;
   transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
 }
@@ -14735,6 +14735,40 @@ body.report-library-open::before {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.intelligence-entity-components li.has-detail {
+  align-items: flex-start;
+}
+
+.intelligence-entity-components li > span small {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #71939f;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intelligence-entity-data-time {
+  margin-bottom: 6px;
+  color: #8eabb5;
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.intelligence-domain-local .intelligence-focus-tabs {
+  gap: 3px;
+}
+
+.intelligence-domain-local .intelligence-focus-tabs button {
+  flex-basis: auto;
+  min-width: max-content;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 
 .intelligence-entity-components li > strong {

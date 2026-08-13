@@ -212,7 +212,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
         html = (static_dir / "index.html").read_text(encoding="utf-8")
         script = (static_dir / "intelligence.js").read_text(encoding="utf-8")
 
-        self.assertIn('<script src="./intelligence.js?v=4"></script>', html)
+        self.assertRegex(html, r'<script src="\./intelligence\.js\?v=[0-9a-f]{12}"></script>')
         self.assertIn("市场与竞争数据", html)
         self.assertIn("数据战略解读", html)
         self.assertIn("运营商动态", html)

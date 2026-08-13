@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const crypto = require("node:crypto");
 const { chromium } = require("playwright");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -250,6 +251,11 @@ async function main() {
     }
 
     const localizeAssets = (value) => value.replaceAll("/static/assets/", "./assets/");
+    const assetVersion = crypto.createHash("sha256")
+      .update(staticPayload)
+      .update(css)
+      .digest("hex")
+      .slice(0, 12);
     const content = `<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -259,8 +265,8 @@ async function main() {
   <meta name="robots" content="noindex, nofollow">
   <title>中国移动香港｜市场与竞争数据</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./leadership-board.css?v=10">
+  <link rel="stylesheet" href="./styles.css?v=${assetVersion}">
+  <link rel="stylesheet" href="./leadership-board.css?v=${assetVersion}">
 </head>
 <body class="dashboard-page static-snapshot">
   <main class="app-shell">
@@ -275,7 +281,7 @@ async function main() {
       </section>
     </section>
   </main>
-  <script src="./intelligence.js?v=4"></script>
+  <script src="./intelligence.js?v=${assetVersion}"></script>
 </body>
 </html>\n`;
     fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), content.replace(/[ \t]+$/gm, ""));

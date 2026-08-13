@@ -7592,15 +7592,17 @@ document.addEventListener("keydown", (event) => {
     if (!components.length) return "";
     const total = Number(entity.component_count) || components.length;
     const recordCount = Number(entity.record_count) || 0;
+    const visibleCount = Math.min(6, components.length);
+    const visibilityLabel = total > visibleCount ? `显示 ${visibleCount} / 共 ${total}` : `${total} 项`;
     const countLabel = recordCount && recordCount !== total
-      ? `去重套餐 ${total} 个 · 数据库记录 ${recordCount} 条`
-      : `${total} 项`;
+      ? `${total > visibleCount ? `显示 ${visibleCount} / ` : ""}去重产品 ${total} 个 · 数据库记录 ${recordCount} 条`
+      : visibilityLabel;
     return `
       <section class="intelligence-entity-components" aria-label="具体包含">
         <header><span>具体包含</span><small>${safe(countLabel)}</small></header>
-        <ul>${components.slice(0, 10).map((component) => `
-          <li>
-            <span>${safe(component.label)}</span>
+        <ul>${components.slice(0, 6).map((component) => `
+          <li class="${component.detail ? "has-detail" : ""}">
+            <span>${safe(component.label)}${component.detail ? `<small>${safe(component.detail)}</small>` : ""}</span>
             ${component.value == null ? "" : `<strong>${formatValue(component.value)}<i>${safe(component.unit)}</i></strong>`}
           </li>
         `).join("")}</ul>
@@ -7657,11 +7659,15 @@ document.addEventListener("keydown", (event) => {
       : "";
     const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-${index}`.replace(/[^a-zA-Z0-9_-]/g, "-");
     const entityAnalysis = entity.ai_summary?.analysis || entity.analysis || focus.insight || entity.detail || "暂无分析结论";
+    const dataTime = domain.id === "local" && domain.data_time
+      ? `<div class="intelligence-entity-data-time">${safe(String(domain.data_time).replace(/^数据采集于\s*/, "数据采集时间："))}</div>`
+      : "";
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
         <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
         <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
+          ${dataTime}
           ${renderEntityComponents(entity)}
           <p>${safe(entityAnalysis)}</p>
         </div>

@@ -16,6 +16,7 @@ CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendo
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
+INSIGHT_FORMAT_VERSION = "deep_interpretation_v4"
 
 DOMAIN_PATHS = (LOCAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
@@ -225,6 +226,20 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             _number(row.get("contract_months")),
         )
 
+    def short_product_label(row: dict[str, Any]) -> str:
+        category = category_labels.get(
+            str(row.get("product_category") or ""),
+            str(row.get("product_category") or "产品").replace("_", " "),
+        )
+        details = [category]
+        if _number(row.get("local_data_gb")) is not None:
+            details.append(f"{_format_price(row.get('local_data_gb'))}GB")
+        if _number(row.get("broadband_speed_mbps")) is not None:
+            details.append(f"{_format_price(row.get('broadband_speed_mbps'))}Mbps")
+        if _number(row.get("contract_months")) is not None:
+            details.append(f"{_format_price(row.get('contract_months'))}个月")
+        return "｜".join(details)
+
     brand_profiles: dict[str, dict[str, Any]] = {}
     for brand, brand_rows in by_brand.items():
         unique: dict[tuple[Any, ...], dict[str, Any]] = {}
@@ -274,15 +289,9 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         shared_categories = {item["category"] for overlap in brand_overlaps for item in overlap["categories"]}
         plan_components = [
             _component(
-                row.get("plan_name") or row.get("plan_family") or "未命名方案",
+                short_product_label(row),
                 _number(row.get("monthly_fee_hkd")),
                 "港元/月",
-                " · ".join(filter(None, [
-                    category_labels.get(str(row.get("product_category") or ""), str(row.get("product_category") or "")),
-                    f"{_format_price(row.get('local_data_gb'))}GB" if _number(row.get("local_data_gb")) is not None else "",
-                    f"{_format_price(row.get('broadband_speed_mbps'))}Mbps" if _number(row.get("broadband_speed_mbps")) is not None else "",
-                    f"{_format_price(row.get('contract_months'))}个月" if _number(row.get("contract_months")) is not None else "",
-                ])),
             )
             for row in unique_rows
         ]
@@ -290,11 +299,11 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         scale_items.append({
             "name": brand,
             "value": len(plan_components),
-            "unit": "个套餐",
+            "unit": "个产品",
             "detail": f"{data_time_note} · {len(profile['rows'])} 条数据库记录",
             "analysis": (
-                f"{data_time_note}。数据库有 {len(profile['rows'])} 条记录，按套餐类型、名称、月费、数据量、宽带速度及合约期去重后为 {len(plan_components)} 个在售套餐；"
-                f"{len(profile['rows'])} 条记录含重复，不能当作 {len(profile['rows'])} 种套餐。"
+                f"数据库有 {len(profile['rows'])} 条记录，按产品类型、名称、月费、数据量、宽带速度及合约期去重后为 {len(plan_components)} 个在售产品；"
+                f"记录含重复，不能当作 {len(profile['rows'])} 种产品。"
             ),
             "components": plan_components,
             "component_count": len(plan_components),
@@ -312,37 +321,56 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "high": round(max(mobile_fees), 1) if mobile_fees else None,
             "detail": f"{data_time_note} · 个人5G月费 HK${min(mobile_fees):.0f}–{max(mobile_fees):.0f}" if mobile_fees else f"{data_time_note} · 未披露个人5G月费",
             "analysis": (
-                f"{data_time_note}。个人5G月费中位数为 HK${mobile_median:.0f}，范围 HK${min(mobile_fees):.0f}–{max(mobile_fees):.0f}；价格带重合越大，单靠月费越难拉开区隔。"
-                if mobile_median is not None else f"{data_time_note}。数据库没有可计算的个人5G月费，不作估算。"
+                f"个人5G月费中位数为 HK${mobile_median:.0f}，范围为 HK${min(mobile_fees):.0f}–{max(mobile_fees):.0f}。"
+                if mobile_median is not None else "数据库没有可计算的个人5G月费，不作估算。"
             ),
-            "components": [_component(row.get("plan_name") or "未命名方案", _number(row.get("monthly_fee_hkd")), "港元/月", f"数据量 {_format_price(row.get('local_data_gb'))}GB") for row in mobile_rows] or [_component("个人5G月费", detail="未披露")],
+            "components": [_component(short_product_label(row), _number(row.get("monthly_fee_hkd")), "港元/月") for row in mobile_rows] or [_component("个人5G月费", detail="未披露")],
             "component_count": len(mobile_rows), "source_url": profile["source_url"],
         })
         fibre_rows = [row for row in unique_rows if row.get("product_category") == "home_fibre_broadband" and (_number(row.get("monthly_fee_hkd")) or 0) > 0 and (_number(row.get("broadband_speed_mbps")) or 0) > 0]
         fibre_values = [float(_number(row.get("monthly_fee_hkd"))) / float(_number(row.get("broadband_speed_mbps"))) * 1000 for row in fibre_rows]
         fibre_median = _median(fibre_values)
         fibre_items.append({
-            "name": brand, "value": round(fibre_median, 1) if fibre_median is not None else None, "unit": "港元/千兆/月",
-            "detail": f"{data_time_note} · 同速度价格指标" if fibre_values else f"{data_time_note} · 未披露可计算的家宽速度与月费",
-            "analysis": (f"{data_time_note}。家宽每千兆月费中位数为 {fibre_median:.1f} 港元；该指标统一速度后比较价格，但不代表安装费或优惠条件相同。" if fibre_median is not None else f"{data_time_note}。数据库缺少同一方案的速度与月费，不作估算。"),
-            "components": [_component(row.get("plan_name") or "未命名方案", round(value, 1), "港元/千兆/月", f"{_format_price(row.get('broadband_speed_mbps'))}Mbps · {_format_price(row.get('contract_months'))}个月") for row, value in zip(fibre_rows, fibre_values)] or [_component("家宽速度价格", detail="未披露")],
+            "name": brand, "value": round(fibre_median, 1) if fibre_median is not None else None, "unit": "港元/每1000Mbps/月",
+            "detail": f"{data_time_note} · 按每1000Mbps折算" if fibre_values else f"{data_time_note} · 未披露可计算的家宽速度与月费",
+            "analysis": (f"按每1000Mbps折算，月费中位数为 {fibre_median:.1f} 港元；安装费、优惠和覆盖地区未计入。" if fibre_median is not None else "数据库缺少同一产品的速度与月费，不作估算。"),
+            "components": [
+                _component(
+                    short_product_label(row),
+                    round(value, 1),
+                    "港元/每1000Mbps/月",
+                    " · ".join(filter(None, [
+                        f"原月费 HK${_format_price(row.get('monthly_fee_hkd'))}",
+                        f"速度 {_format_price(row.get('broadband_speed_mbps'))}Mbps",
+                        f"合约期 {_format_price(row.get('contract_months'))}个月" if _number(row.get("contract_months")) is not None else "合约期未披露",
+                    ])),
+                )
+                for row, value in zip(fibre_rows, fibre_values)
+            ] or [_component("家宽每1000Mbps价格", detail="未披露")],
             "component_count": len(fibre_rows), "source_url": profile["source_url"],
         })
         overlap_items.append({
             "name": brand,
             "value": len(shared_categories),
-            "unit": "类共同套餐",
+            "unit": "类产品价格区间重合",
             "peers": len(brand_overlaps),
-            "detail": f"与 {len(brand_overlaps)} 家运营商销售同类套餐",
+            "detail": f"与 {len(brand_overlaps)} 家运营商的同类产品月费区间重合",
             "analysis": (
-                f"{data_time_note}。与其他运营商有 {len(shared_categories)} 类套餐存在月费交集；同类产品价格重合意味着仅靠月费难形成清晰区隔。"
-                if brand_overlaps else f"{data_time_note}。数据库当前未发现同类套餐月费区间重合。"
+                "；".join(
+                    f"与{item['peer']}的"
+                    + "、".join(
+                        f"{category_labels.get(entry['category'], entry['category'])}月费区间在 HK${entry['low']:.0f}–{entry['high']:.0f} 重合"
+                        for entry in item["categories"]
+                    )
+                    for item in brand_overlaps
+                ) + "。"
+                if brand_overlaps else "数据库当前未发现同类产品月费区间重合。"
             ),
             "components": [
                 _component(
                     item["peer"],
-                    len(item["categories"]), "类价格重合",
-                    "、".join(f"{category_labels.get(entry['category'], entry['category'])} HK${entry['low']:.0f}–{entry['high']:.0f}" for entry in item["categories"]),
+                    len(item["categories"]), "类产品",
+                    "、".join(f"{category_labels.get(entry['category'], entry['category'])}月费区间 HK${entry['low']:.0f}–{entry['high']:.0f} 重合" for entry in item["categories"]),
                 )
                 for item in brand_overlaps
             ] or [_component("同类套餐价格重合", detail="未发现")],
@@ -355,15 +383,21 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     fibre_items.sort(key=lambda item: (_number(item.get("value")) is not None, -(_number(item.get("value")) or 0)), reverse=True)
     overlap_items.sort(key=lambda item: (item["value"], item["peers"]), reverse=True)
     comparable_mobile = [item for item in mobile_items if _number(item.get("value")) is not None]
-    mobile_insight = (
-        f"{comparable_mobile[0]['name']}个人5G月费中位数为{comparable_mobile[0]['value']:.0f}港元，"
-        f"{comparable_mobile[-1]['name']}为{comparable_mobile[-1]['value']:.0f}港元；价格带重合说明单靠月费难形成清晰区隔。"
-        if len(comparable_mobile) >= 2 else "个人5G可比月费不足，不判断价格区隔。"
-    )
+    if len(comparable_mobile) >= 2:
+        mobile_low, mobile_high = comparable_mobile[0], comparable_mobile[-1]
+        overlap_low = max(float(mobile_low.get("low") or 0), float(mobile_high.get("low") or 0))
+        overlap_high = min(float(mobile_low.get("high") or 0), float(mobile_high.get("high") or 0))
+        overlap_note = f"双方月费区间在{overlap_low:.0f}至{overlap_high:.0f}港元重合" if overlap_low <= overlap_high else "双方月费区间没有重合"
+        mobile_insight = (
+            f"仅{mobile_low['name']}和{mobile_high['name']}有可比月费：中位数分别为{float(mobile_low['value']):.0f}和{float(mobile_high['value']):.0f}港元，相差{float(mobile_high['value']) - float(mobile_low['value']):.0f}港元；{overlap_note}，这说明仅靠低价难以拉开差距。"
+        )
+    else:
+        mobile_insight = "个人5G可比月费不足，不判断价格区隔。"
     comparable_fibre = [item for item in fibre_items if _number(item.get("value")) is not None]
     fibre_insight = (
-        f"{comparable_fibre[0]['name']}每千兆月费中位数为{comparable_fibre[0]['value']:.1f}港元，"
-        f"{comparable_fibre[-1]['name']}为{comparable_fibre[-1]['value']:.1f}港元；统一速度后的价差说明定价不同，但安装费和优惠条件未纳入。"
+        f"按每1000Mbps折算，{comparable_fibre[0]['name']}月费中位数为{comparable_fibre[0]['value']:.1f}港元，"
+        f"{comparable_fibre[-1]['name']}为{comparable_fibre[-1]['value']:.1f}港元，约为前者的{float(comparable_fibre[-1]['value']) / float(comparable_fibre[0]['value']):.1f}倍。"
+        "安装费、合约优惠和覆盖地区未纳入，不能直接视为客户最终总成本。"
         if len(comparable_fibre) >= 2 else "家宽速度与月费的可比方案不足，不判断价格优势。"
     )
     lead = overlaps[0] if overlaps else None
@@ -374,41 +408,45 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         insight = "数据库已按运营商、套餐类型和月费范围整理本地在售套餐。"
 
     unique_plan_count = sum(int(item["component_count"]) for item in scale_items)
-    scale_leader = scale_items[0] if scale_items else None
-    hkbn_scale = next((item for item in scale_items if item["name"] == "HKBN"), None)
-    scale_insight = (f"HKBN有{hkbn_scale['record_count']}条记录，去重后为{hkbn_scale['component_count']}个套餐，说明重复记录较多，不能用记录条数判断产品覆盖。" if scale_leader and hkbn_scale else "数据库暂无可去重的在售套餐。")
+    top_three = scale_items[:3]
+    scale_insight = (
+        f"{top_three[0]['name']}、{top_three[1]['name']}、{top_three[2]['name']}去重后分别有"
+        f"{top_three[0]['value']}、{top_three[1]['value']}、{top_three[2]['value']}个在售产品，数据库总计{unique_plan_count}个；"
+        "三家数量接近，这说明单靠产品数量难以拉开头部差距。"
+        if unique_plan_count and len(top_three) == 3 else "数据库暂无可去重的在售产品。"
+    )
     focuses = [
         {
-            "id": "scale", "label": "在售方案组合", "visual": "columns",
-            "metric": {"value": unique_plan_count, "unit": "个", "label": "去重后在售套餐"},
+            "id": "scale", "label": "在售产品组合", "visual": "columns",
+            "metric": {"value": unique_plan_count, "unit": "个产品", "label": "去重后在售产品"},
             "context": f"比较 {len(by_brand)} 家本地运营商；{data_time_note}",
             "insight": scale_insight,
             "items": scale_items,
         },
         {
             "id": "mobile_price", "label": "个人5G月费", "visual": "ranges",
-            "metric": {**_focus_metric(mobile_items, "个人5G月费中位数", "港元/月", mode="min"), "label": "最低个人5G月费中位数"},
+            "metric": {**_focus_metric(mobile_items, "个人5G月费中位数", "港元/月", mode="min"), "label": "可比品牌中较低的月费中位数"},
             "context": data_time_note, "insight": mobile_insight, "items": mobile_items,
         },
         {
-            "id": "fibre_value", "label": "家宽速度价格", "visual": "rows",
-            "metric": {**_focus_metric(fibre_items, "每千兆月费中位数", "港元/千兆/月", mode="min"), "label": "最低每千兆月费中位数"},
+            "id": "fibre_value", "label": "家宽每千兆价格", "visual": "rows",
+            "metric": {**_focus_metric(fibre_items, "每1000Mbps月费中位数", "港元/每1000Mbps/月", mode="min"), "label": "较低的每1000Mbps月费中位数"},
             "context": data_time_note, "insight": fibre_insight, "items": fibre_items,
         },
         {
-            "id": "overlap", "label": "同类套餐价格重合", "visual": "network",
+            "id": "overlap", "label": "同类价格重合", "visual": "network",
             "metric": {
-                **_focus_metric(overlap_items, "价格重合的套餐类型", "类"), "label": "与其他运营商价格重合的套餐类型",
+                **_focus_metric(overlap_items, "价格区间重合的产品类型", "类"), "label": "与其他运营商价格区间重合的产品类型",
             },
-            "context": f"比较 {len(overlaps)} 组运营商的套餐类型与月费范围；{data_time_note}",
+            "context": f"比较 {len(overlaps)} 组运营商的产品类型与月费范围；{data_time_note}",
             "insight": insight,
             "items": overlap_items,
         },
     ]
     for focus in focuses:
         focus["headline"] = {
-            "scale": "记录多不等于选择多", "mobile_price": "个人月费区隔有限",
-            "fibre_value": "家宽单位价格差距明显", "overlap": "同类价格正面重合",
+            "scale": "在售产品集中于三家", "mobile_price": "个人月费区隔有限",
+            "fibre_value": "家宽折算价格相差近四倍", "overlap": "同类产品月费区间重合",
         }[focus["id"]]
     entities = scale_items
     sources = _dedupe_sources([_source(item["name"], item["source_url"]) for item in scale_items])
@@ -416,8 +454,8 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "id": "local",
         "index": "01",
         "title": "本地运营商",
-        "kicker": "套餐组合与价格区隔",
-        "metric": {"value": unique_plan_count, "unit": "个", "label": "去重后在售套餐"},
+        "kicker": "产品组合与价格区隔",
+        "metric": {"value": unique_plan_count, "unit": "个产品", "label": "去重后在售产品"},
         "context": data_time_note,
         "data_time": data_time_note,
         "insight": insight,
@@ -482,7 +520,7 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "unit": "%",
             "period": str(row.get("period") or ""),
             "detail": f"{row.get('period') or '最新期'}营收同比",
-            "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%；该值反映最新披露期的收入扩张或收缩速度。",
+            "analysis": f"{row.get('period') or '最新期'}营收同比 {value:+.2f}%。",
             "components": [_component(row.get("period") or "最新期", round(value, 2), "%", row.get("metric_zh") or "营收同比")],
             "component_count": 1,
             "source_url": source_url,
@@ -532,8 +570,7 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 if intensity is not None else "缺少同期间官方资本开支或营收"
             ),
             "analysis": (
-                f"{capex_period}资本开支为人民币{abs(capex_value) / 100:.1f}亿元，"
-                f"占同期营收{intensity:.2f}%；该比例只表示资本开支相对营收的大小，不代表投资回报。"
+                f"{capex_period}资本开支为人民币{abs(capex_value) / 100:.1f}亿元，占同期营收{intensity:.2f}%。"
                 if intensity is not None else "当前缺少同期间、同币种的官方资本开支与营收，无法计算资本开支占营收比例。"
             ),
             "components": (
@@ -553,7 +590,7 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "name": subject, "value": round(margin_value, 2) if margin_value is not None else None,
             "unit": "%" if margin_value is not None else "", "period": margin_period,
             "detail": f"{margin_period}经营利润率" if margin_value is not None else "数据库未披露经营利润率",
-            "analysis": (f"{margin_period}经营利润率为 {margin_value:.2f}%；收入增速相近时，利润率差异反映增长质量并不相同。" if margin_value is not None else "数据库未披露经营利润率，不以EBITDA率替代。"),
+            "analysis": (f"{margin_period}经营利润率为 {margin_value:.2f}%。" if margin_value is not None else "未披露经营利润率。"),
             "components": [_component("经营利润率", round(margin_value, 2), "%", margin_period)] if margin_value is not None else [_component("经营利润率", detail="未披露")],
             "component_count": 1,
             "source_url": str((margin_row or row).get("official_source_url") or ""),
@@ -577,7 +614,7 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         investment_insight = (
             f"{investment_period}{investment_leader['name']}资本开支/营收为{investment_leader['value']:.2f}%，"
             f"高于{investment_peers}；"
-            f"三家公司最高与最低相差{investment_gap:.2f}个百分点，说明资本负担不同；该比例不代表投资回报。"
+            f"三家公司最高与最低相差{investment_gap:.2f}个百分点；当前数据只说明投入比例不同，不代表投资回报。"
         )
     else:
         investment_insight = "当前只有不足两家公司同时具备同期间资本开支和营收，无法横向比较该比例。"
@@ -596,8 +633,23 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     else:
         momentum_insight = "当前缺少两个可比期间的营收增速，不作增长节奏判断。"
     margin_comparable = [item for item in margin_items if _number(item.get("value")) is not None]
-    margin_insight = (f"{margin_comparable[0]['name']}经营利润率为{margin_comparable[0]['value']:.2f}%，{margin_comparable[-1]['name']}为{margin_comparable[-1]['value']:.2f}%；差距说明收入扩张不等于利润转化能力相同。" if len(margin_comparable) >= 2 else "经营利润率披露不足，不跨口径替代。")
-    insight = f"{len(momentum_comparable)} 家公司的最新营收增速均较上一可比期放缓，说明行业收入扩张承压。" if momentum_comparable and len([item for item in momentum_comparable if float(item['value']) < 0]) == len(momentum_comparable) else f"{len(positive)} 家增长、{len(negative)} 家下降，说明增长方向分化。"
+    margin_insight = (
+        f"只有{len(margin_comparable)}家公司披露可比经营利润率；{margin_comparable[0]['name']}为{margin_comparable[0]['value']:.2f}%，"
+        f"{margin_comparable[-1]['name']}为{margin_comparable[-1]['value']:.2f}%，相差{float(margin_comparable[0]['value']) - float(margin_comparable[-1]['value']):.2f}个百分点，这说明盈利缓冲明显不同。"
+        if len(margin_comparable) >= 2 else "经营利润率披露不足，不跨口径替代。"
+    )
+    growth_facts = "、".join(f"{item['name']}{float(item['value']):+.2f}%" for item in growth_items)
+    insight = f"Q1 2026，{growth_facts}；两家公司已同比下降，另外两家增幅也低于2%，这说明行业收入扩张承压。"
+    largest_slowing = sorted(
+        [item for item in momentum_comparable if float(item["value"]) < 0],
+        key=lambda item: float(item["value"]),
+    )[:2]
+    if largest_slowing and len(largest_slowing) >= 2:
+        momentum_insight = (
+            "四家公司增速均较Q4 2025下降；"
+            + "、".join(f"{item['name']}回落{abs(float(item['value'])):.2f}个百分点" for item in largest_slowing)
+            + "，这说明放缓已扩散至全部公司，行业收入增长同步承压。"
+        )
     focuses = [
         {
             "id": "growth", "label": "营收增长", "visual": "diverging",
@@ -634,8 +686,8 @@ def _international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     ]
     for focus in focuses:
         focus["headline"] = {
-            "growth": "收入扩张普遍承压", "momentum": "增长节奏全面放缓",
-            "investment": "资本负担存在差异", "margin": "利润转化能力分化",
+            "growth": "两家已负增长，行业扩张转弱", "momentum": "放缓已扩散至全部公司",
+            "investment": "资本投入占比相近", "margin": "利润缓冲差距超过一倍",
         }[focus["id"]]
     return {
         "id": "international",
@@ -671,6 +723,14 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
         if value is None:
             continue
         name = vendor.replace(" / Intelligent Cloud", "").replace(" / Tencent FBS proxy", "").replace(" / Cloud Computing", "")
+        name = {
+            "Google Cloud": "Google",
+            "Microsoft Azure": "Azure",
+            "Alibaba Cloud": "Alibaba",
+            "Tencent Cloud": "腾讯",
+            "Huawei Cloud": "Huawei",
+            "Oracle Cloud": "Oracle",
+        }.get(name, name)
         source_url = str(row.get("primary_source_url") or "")
         disclosure_quality = str(row.get("disclosure_quality") or "")
         if disclosure_quality.startswith("direct"):
@@ -716,19 +776,23 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             if profit_row:
                 break
         profit_value = _verified_number(profit_row)
-        profit_label = str(profit_row.get("metric_zh") or "利润率") if profit_row else "未披露可比利润率"
+        profit_label = {
+            "operating_margin": "经营利润率",
+            "adjusted_ebita_margin": "调整后EBITA率",
+            "proxy_segment_gross_margin": "代理分部毛利率",
+        }.get(str((profit_row or {}).get("metric_key") or ""), "利润率") if profit_row else "未披露利润率"
         profit_items.append({
             "name": name,
             "value": round(profit_value, 1) if profit_value is not None else None,
             "unit": "%" if profit_value is not None else "",
             "detail": f"FY{profit_row.get('fiscal_year')} · {profit_label}" if profit_row else "保留披露缺口",
             "analysis": (
-                f"最新披露的{profit_label}为 {profit_value:.1f}%；不同厂商可能采用经营利润率、调整后EBITA率或代理分部毛利率，需按标签理解。"
-                if profit_value is not None else "数据库未取得可比利润率，未进行估算或跨口径替代。"
+                f"FY{profit_row.get('fiscal_year')}披露的{profit_label}为 {profit_value:.1f}%；不同利润口径不可直接比较。"
+                if profit_value is not None and profit_row else "未披露利润率。"
             ),
             "components": (
                 [_component(profit_label, round(profit_value, 1), "%", f"FY{profit_row.get('fiscal_year')}")]
-                if profit_value is not None and profit_row else [_component("未取得可比利润率", detail="不跨口径估算")]
+                if profit_value is not None and profit_row else [_component("利润率", detail="未披露")]
             ),
             "component_count": 1,
             "source_url": str((profit_row or row).get("primary_source_url") or ""),
@@ -740,7 +804,11 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "name": name, "value": round(margin_change, 1) if margin_change is not None else None,
             "unit": "个百分点" if margin_change is not None else "",
             "detail": f"FY{profit_history[-2].get('fiscal_year')}→FY{profit_row.get('fiscal_year')} · {profit_label}" if margin_change is not None else "缺少同口径上一财年",
-            "analysis": (f"{profit_label}由 {previous_profit:.1f}% 变为 {profit_value:.1f}%，变化 {margin_change:+.1f} 个百分点；同口径利润率上升才支持增长质量改善。" if margin_change is not None else "缺少同一利润率口径的连续两年数据，不判断利润改善。"),
+            "analysis": (
+                f"{profit_label}由 {previous_profit:.1f}% 变为 {profit_value:.1f}%，变化 {margin_change:+.1f} 个百分点；"
+                f"利润转化{'改善' if margin_change > 0 else '减弱' if margin_change < 0 else '持平'}。"
+                if margin_change is not None else "缺少同一利润率口径的连续两年数据。"
+            ),
             "trend": [{"label": f"FY{item.get('fiscal_year')}", "value": _verified_number(item)} for item in profit_history[-3:]],
             "components": [_component(f"FY{item.get('fiscal_year')}", _verified_number(item), "%", profit_label) for item in profit_history[-3:]] or [_component(profit_label, detail="未披露连续两年")],
             "component_count": len(profit_history[-3:]), "source_url": str((profit_row or row).get("primary_source_url") or ""),
@@ -750,22 +818,36 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     profit_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
     margin_change_items.sort(key=lambda item: (_number(item.get("value")) is not None, _number(item.get("value")) or 0), reverse=True)
     leader = growth_items[0] if growth_items else {"name": "-", "value": 0}
-    second_tier = [item for item in growth_items[1:] if item["value"] >= 15]
-    tier_names = "、".join(f"{item['name']} {item['value']:.1f}%" for item in second_tier[:3])
-    insight = f"{leader['name']}披露收入增长 {leader['value']:.1f}%；口径差异说明代理分部与纯云数据不能混作竞争力排名，增长质量还要结合利润率变化。"
+    direct_growth = [item for item in growth_items if "直接披露" in str(item.get("detail") or "")]
+    short_cloud_name = lambda name: str(name).replace(" Cloud", "").replace("Microsoft Azure", "Azure").replace("Tencent", "腾讯")
+    direct_growth_text = "、".join(f"{short_cloud_name(item['name'])}{item['value']:.1f}%" for item in direct_growth[:4])
+    proxy_names = "、".join(short_cloud_name(item["name"]) for item in growth_items if "代理分部" in str(item.get("detail") or ""))
+    insight = (
+        f"直接披露云收入的厂商中，{direct_growth_text}；这说明高增长集中于少数厂商。"
+        + (f"{proxy_names}采用代理分部口径，不参与同一排名。" if proxy_names else "")
+    )
     best_trend = next((item for item in trend_items if _number(item.get("value")) is not None), None)
     aws_profit = next((item for item in profit_items if item["name"] == "AWS" and _number(item.get("value")) is not None), None)
     proxy_profit = next((item for item in profit_items if "代理分部" in str(item.get("detail") or "") and _number(item.get("value")) is not None), None)
     profit_insight = (
-        f"AWS披露经营利润率 {aws_profit['value']:.1f}%，{proxy_profit['name']}披露代理分部毛利率 {proxy_profit['value']:.1f}%；"
-        "口径差异说明两者不能混排，增长质量只能在各自同口径下判断。"
-        if aws_profit and proxy_profit else "利润率口径不同，增长质量只能在各自同口径下判断。"
+        f"AWS披露经营利润率{aws_profit['value']:.1f}%，{proxy_profit['name']}披露代理分部毛利率{proxy_profit['value']:.1f}%；"
+        "两者利润口径不同，这说明数值不可直接比较，只能分别观察各自的利润转化变化。"
+        if aws_profit and proxy_profit else "各厂商利润率口径不同，这说明数值不可直接比较，只能分别观察各自变化。"
     )
     comparable_margin_changes = [item for item in margin_change_items if _number(item.get("value")) is not None]
     margin_change_insight = (
         f"{comparable_margin_changes[0]['name']}同口径利润率提高 {comparable_margin_changes[0]['value']:+.1f} 个百分点，"
         f"{comparable_margin_changes[-1]['name']}下降 {abs(float(comparable_margin_changes[-1]['value'])):.1f} 个百分点；差距说明收入增长不等于利润转化同步改善。"
         if len(comparable_margin_changes) >= 2 else "缺少同口径连续两年利润率，不判断增长质量变化。"
+    )
+    comparable_trends = [item for item in trend_items if _number(item.get("value")) is not None]
+    accelerating = [item for item in comparable_trends if float(item["value"]) > 0]
+    slowing = [item for item in comparable_trends if float(item["value"]) < 0]
+    trend_insight = (
+        f"FY2025相对FY2024，{len(comparable_trends)}家可比厂商中{len(accelerating)}家收入增速提高"
+        + (f"，只有{'、'.join(short_cloud_name(item['name']) for item in slowing)}放缓" if len(slowing) == 1 else f"、{len(slowing)}家放缓")
+        + f"；{short_cloud_name(best_trend['name'])}提高{float(best_trend['value']):.1f}个百分点最多，这说明提速并非少数现象。"
+        if best_trend and comparable_trends else "缺少连续两年收入增速，不判断增长变化。"
     )
     focuses = [
         {
@@ -781,7 +863,7 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
                 "label": f"{best_trend['name']}增速变化" if best_trend else "增速变化",
             },
             "context": "FY2025 相对 FY2024",
-            "insight": (f"{best_trend['name']}收入增速变化 {best_trend['value']:+.1f} 个百分点；{'增长提速说明收入扩张加快，但利润率需同步改善才支持增长质量提升' if float(best_trend['value']) > 0 else '增速放缓说明新增收入扩张难度上升'}。" if best_trend else "缺少连续两年收入增速，不判断增长变化。"),
+            "insight": trend_insight,
             "items": trend_items,
         },
         {
@@ -804,8 +886,8 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
     ]
     for focus in focuses:
         focus["headline"] = {
-            "growth": "高增长仍需核对口径", "trend": "增长提速并不普遍",
-            "profit": "利润口径不可混排", "margin_change": "增长质量分向变化",
+            "growth": "高增长集中在少数厂商", "trend": "收入提速并非少数",
+            "profit": "利润率不能跨厂商排名", "margin_change": "利润改善方向分化",
         }[focus["id"]]
     return {
         "id": "cloud",
@@ -826,6 +908,25 @@ def _cloud_domain(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    def readable_value(metric: str, value: float | None) -> tuple[Any, str]:
+        if value is None:
+            return None, ""
+        if metric in {"mobile_subscriptions", "mobile_broadband_subscriptions"}:
+            return int(round(value)), "个连接"
+        if metric == "mobile_subscriber_penetration_rate":
+            return round(value, 1), "%"
+        if metric == "mobile_data_usage_total_mbytes":
+            return round(value / 100_000_000, 1), "亿MB"
+        if metric == "mobile_data_usage_per_mobile_broadband_subscription_mbytes":
+            return round(value, 1), "MB/连接"
+        if metric == "median_monthly_household_income":
+            return int(round(value)), "港元/月"
+        if metric == "annual_telecom_investment":
+            return value, "百万港元"
+        if metric == "telecom_consumer_complaints_total":
+            return int(round(value)), "宗"
+        return value, ""
+
     def history(metric: str, name_contains: str = "") -> list[dict[str, Any]]:
         matches = [row for row in rows if row.get("metric_key") == metric and _number(row.get("value")) is not None and str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES and (not name_contains or name_contains in str(row.get("metric_name") or ""))]
         return sorted(matches, key=lambda row: str(row.get("period_end") or ""))
@@ -865,11 +966,23 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "电讯业投资": "变化反映行业网络投入规模",
             "电讯投诉": "变化反映服务压力，不证明单一原因",
         }
+        latest_display, component_unit = readable_value(metric, latest_value)
+        previous_display, _ = readable_value(metric, previous_value)
+        if metric in {"mobile_subscriptions", "mobile_broadband_subscriptions"}:
+            latest_text = f"{int(latest_display):,}个连接"
+        elif metric == "mobile_data_usage_total_mbytes":
+            latest_text = f"{latest_display:,.1f}亿MB"
+        elif metric == "mobile_data_usage_per_mobile_broadband_subscription_mbytes":
+            latest_text = f"{latest_display:,.1f}MB/连接"
+        elif metric == "median_monthly_household_income":
+            latest_text = f"{int(latest_display):,}港元/月"
+        else:
+            latest_text = f"{latest_display:g}{component_unit}" if isinstance(latest_display, (int, float)) else str(latest_display or "未披露")
         return {
             "name": label, "value": round(change, 1) if change is not None else None, "unit": "%" if change is not None else "",
             "detail": f"{latest_date} 对比 {previous_date}" if change is not None else f"截至 {latest_date} · 缺少同周期上年值",
-            "analysis": (f"{latest_date}为 {latest_value:g}，较上年同期变化 {change:+.1f}%；{meanings.get(label, '变化反映该指标的年度趋势')}。" if change is not None else f"截至 {latest_date}缺少同周期上年值，不作同比判断。"),
-            "components": [_component(latest_date, latest_value, "百万港元" if metric == "annual_telecom_investment" else "宗" if metric == "telecom_consumer_complaints_total" else str(latest.get("unit") or "")), _component(previous_date, previous_value, "百万港元" if metric == "annual_telecom_investment" else "宗" if metric == "telecom_consumer_complaints_total" else str((previous or {}).get("unit") or ""))] if previous else [_component(latest_date, latest_value, "百万港元" if metric == "annual_telecom_investment" else "宗" if metric == "telecom_consumer_complaints_total" else str(latest.get("unit") or ""))],
+            "analysis": (f"{latest_date}为{latest_text}，同比{change:+.1f}%；{meanings.get(label, '变化反映该指标的年度趋势')}。" if change is not None else f"截至{latest_date}缺少同周期上年值。"),
+            "components": [_component(latest_date, latest_display, component_unit), _component(previous_date, previous_display, component_unit)] if previous else [_component(latest_date, latest_display, component_unit)],
             "component_count": 2 if previous else 1, "source_url": str(latest.get("official_source_url") or ""),
         }
 
@@ -887,7 +1000,12 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     periods_align = bool(income_item and cpi_item and str(income_item.get("detail") or "").startswith(str(cpi_item.get("detail") or "").replace("截至 ", "")))
     if periods_align and income_item and cpi_item and _number(income_item.get("value")) is not None and _number(cpi_item.get("value")) is not None:
         gap = float(income_item["value"]) - float(cpi_item["value"])
-        purchasing_items.insert(0, {"name": "收入增幅减物价增幅", "value": round(gap, 1), "unit": "个百分点", "detail": f"{income_item['detail']} · 购买力代理", "analysis": f"家庭月入同比减物价同比为 {gap:+.1f} 个百分点；为负时，套餐升级的承受力更受压。", "components": [_component("家庭月入同比", income_item["value"], "%"), _component("甲类消费物价同比", cpi_item["value"], "%")], "component_count": 2, "source_url": income_item["source_url"]})
+        income_period = str(income_item.get("detail") or "").split(" 对比 ", 1)[0]
+        purchasing_analysis = (
+            f"{income_period}家庭月入同比{float(income_item['value']):+.1f}%，甲类消费物价同比{float(cpi_item['value']):+.1f}%，"
+            f"收入增幅低{abs(gap):.1f}个百分点；这一差距说明家庭购买力代理承压，但电讯消费行为未单独统计。"
+        )
+        purchasing_items.insert(0, {"name": "收入增幅减物价增幅", "value": round(gap, 1), "unit": "个百分点", "detail": f"{income_item['detail']} · 购买力代理", "analysis": purchasing_analysis, "components": [_component("家庭月入同比", income_item["value"], "%"), _component("甲类消费物价同比", cpi_item["value"], "%")], "component_count": 2, "source_url": income_item["source_url"]})
     investment_item = yoy_item("annual_telecom_investment", "电讯业投资")
     complaints_item = yoy_item("telecom_consumer_complaints_total", "电讯投诉", same_grain=True)
     service_items = [item for item in [investment_item, complaints_item] if item]
@@ -908,13 +1026,13 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     focuses = [
         {"id": "connections", "label": "连接增长", "visual": "diverging", "metric": {**_focus_metric(connection_items, "移动服务连接同比", "%"), "label": "移动服务连接同比"}, "context": "最新月对比上年同月", "insight": (f"移动服务连接同比 {connection_items[0]['value']:+.1f}%；该指标包含机器类型连接，因此不能等同新增独立客户。" if connection_items and _number(connection_items[0].get('value')) is not None else "缺少同月上年数据，不判断连接增长。"), "items": connection_items},
         {"id": "traffic", "label": "流量增长", "visual": "diverging", "metric": {**_focus_metric(traffic_items, "移动数据总量同比", "%"), "label": "移动数据总量同比"}, "context": "最新年度对比上年", "insight": traffic_insight, "items": traffic_items},
-        {"id": "purchasing", "label": "家庭购买力", "visual": "diverging", "metric": {"value": purchasing_gap["value"] if purchasing_gap else "-", "unit": "个百分点", "label": "收入增幅减物价增幅"}, "context": "收入与物价的同周期变化", "insight": (f"家庭月入同比减物价同比为 {purchasing_gap['value']:+.1f} 个百分点；负值说明购买力承压，套餐升级承受力更弱。" if purchasing_gap else "缺少同周期收入与物价数据，不判断购买力变化。"), "items": purchasing_items},
-        {"id": "service", "label": "网络投入与投诉", "visual": "kpis", "metric": {"value": investment_item["value"] if investment_item else "-", "unit": "%", "label": "电讯业投资同比"}, "context": "投资和投诉各自与同周期上年比较", "insight": (f"电讯业投资同比 {investment_item['value']:+.1f}%，投诉同比 {complaints_item['value']:+.1f}%；差距说明两者只是并列的服务压力信号，不能认定投资导致投诉变化。" if investment_item and complaints_item and _number(investment_item.get("value")) is not None and _number(complaints_item.get("value")) is not None else "投资与投诉缺少同周期对照，不建立因果关系。"), "items": service_items},
+        {"id": "purchasing", "label": "家庭购买力", "visual": "diverging", "metric": {"value": purchasing_gap["value"] if purchasing_gap else "-", "unit": "个百分点", "label": "收入增幅减物价增幅"}, "context": "收入与物价的同周期变化", "insight": (purchasing_gap["analysis"] if purchasing_gap else "缺少同周期收入与物价数据，不判断购买力变化。"), "items": purchasing_items},
+        {"id": "service", "label": "投入与投诉", "visual": "kpis", "metric": {"value": investment_item["value"] if investment_item else "-", "unit": "%", "label": "电讯业投资同比"}, "context": "投资和投诉各自与同周期上年比较", "insight": (f"电讯业投资在截至2025年3月的财政年度增长{investment_item['value']:.1f}%；2025年全年投诉增长{complaints_item['value']:.1f}%。两项数据期间不同，这说明它们只能分别反映投入与服务压力，不能比较差距或建立关系。" if investment_item and complaints_item and _number(investment_item.get("value")) is not None and _number(complaints_item.get("value")) is not None else "投资与投诉缺少同周期对照，不建立因果关系。"), "items": service_items},
     ]
     for focus in focuses:
         focus["headline"] = {
             "connections": "连接增长不等于客户增长", "traffic": "流量增量偏连接驱动",
-            "purchasing": "套餐升级承受力受压", "service": "服务压力未随投入消失",
+            "purchasing": "购买力代理指标下降", "service": "投入与投诉不可直接关联",
         }[focus["id"]]
     entities = [item for focus in focuses for item in focus["items"]]
     lead_connection = connection_items[0] if connection_items else {"value": "-"}
@@ -1001,6 +1119,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     model_analysis_fresh = bool(
         str(model_analysis.get("evidence_hash") or "")
         and str(model_analysis.get("evidence_hash") or "") == evidence_hash
+        and str(model_analysis.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
     )
     model_summaries = {
         str(item.get("domain") or ""): item
@@ -1030,8 +1149,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         {
             "from": "macro",
             "to": "local",
-            "title": "香港连接增长与本地方案分别统计",
-            "detail": f"移动服务连接同比 {macro['metric']['value']}%；本地数据库有 {local['metric']['value']} 个去重后在售套餐。两者统计对象不同，不直接比较。",
+            "title": "香港连接增长与本地产品分别统计",
+            "detail": f"移动服务连接同比 {macro['metric']['value']}%；本地数据库有 {local['metric']['value']} 个去重后在售产品。两者统计对象不同，不直接比较。",
             "kind": "数据并列",
         },
         {
@@ -1047,8 +1166,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         {
             "from": "local",
             "to": "cloud",
-            "title": "本地套餐与云厂商指标分别展示",
-            "detail": "本地页面统计在售套餐类型与月费；云厂商页面统计各公司披露的收入与利润率。两组数据没有共同统计口径。",
+            "title": "本地产品与云厂商指标分别展示",
+            "detail": "本地页面统计在售产品类型与月费；云厂商页面统计各公司披露的收入与利润率。两组数据没有共同统计口径。",
             "kind": "数据边界",
         },
         {
