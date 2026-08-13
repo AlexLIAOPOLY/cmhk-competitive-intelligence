@@ -187,12 +187,12 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('grid.innerHTML = domains.map(renderDomainCard).join("")', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=264"', html)
+        self.assertIn('href="/static/styles.css?v=265"', html)
         self.assertIn('Log and audit surfaces: complete dark-theme coverage v252', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=268"', html)
+        self.assertIn('src="/static/app.js?v=269"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -776,12 +776,18 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn(".dashboard-page .chat-fab img {\n  width: 46%;\n  height: 46%;", styles)
 
     def test_chat_picker_menus_use_dark_high_contrast_states(self) -> None:
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
 
         self.assertIn(".dashboard-page .chat-model-option.active {", styles)
         self.assertIn("color: #eaf8fa;\n  background: #194354;", styles)
         self.assertIn(".dashboard-page .skill-option.is-active,", styles)
         self.assertIn(".dashboard-page .database-upload-panel,", styles)
+        self.assertIn("animation: xiaojing-tool-shimmer 3.5s ease-in-out infinite;", styles)
+        self.assertIn(".tool-details:not(.is-done) .tool-label", styles)
+        self.assertIn('@media (prefers-reduced-motion: reduce)', styles)
+        self.assertIn('${active ? "" : "<em>可选</em>"}', app)
+        self.assertNotIn('<em>${active ? "已选" : "可选"}</em>', app)
 
     def test_chat_tables_and_composer_shortcuts_use_dark_contrast_surfaces(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")

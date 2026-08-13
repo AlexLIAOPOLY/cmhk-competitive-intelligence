@@ -637,7 +637,7 @@ function renderSkillMenu() {
         <span class="skill-option-main">
           <span class="skill-option-top">
             <strong>${escapeHtml(skill.title)}</strong>
-            <em>${active ? "已选" : "可选"}</em>
+            ${active ? "" : "<em>可选</em>"}
           </span>
           <small>${escapeHtml(description)}</small>
           ${tags.length ? `<span class="skill-tags">${tags.slice(0, 4).map((tag) => `<b>${escapeHtml(tag)}</b>`).join("")}</span>` : ""}
