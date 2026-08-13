@@ -981,7 +981,7 @@ class QualitySidecarTests(unittest.TestCase):
         self.assertEqual(repaired["writerStatus"], "validated_cache_recovery")
         report.validate_human_template_content(model)
 
-    def test_prepare_human_template_quarantines_only_irreparable_body(self) -> None:
+    def test_prepare_human_template_keeps_irreparable_body_and_logs_warning(self) -> None:
         item = make_item("W001", 1, title="测试主体公布网络部署")
         item["detail"] = item["title"]
         item["rawDetail"] = item["title"]
@@ -989,18 +989,40 @@ class QualitySidecarTests(unittest.TestCase):
 
         prepared = report.prepare_human_template_content(model, progress=lambda _message: None)
 
-        self.assertEqual(prepared["sections"][0]["items"], [])
-        self.assertEqual(len(prepared["humanTemplateExcludedItems"]), 1)
+        self.assertEqual(len(prepared["sections"][0]["items"]), 1)
+        self.assertTrue(prepared["sections"][0]["items"][0]["detail"])
+        self.assertEqual(len(prepared["humanTemplateQualityWarnings"]), 1)
         self.assertEqual(prepared["generationLimitations"][-1]["stage"], "human_template_content")
-        report.validate_human_template_content(prepared)
         with tempfile.TemporaryDirectory() as temp_dir:
             output_path = Path(temp_dir) / "limited.docx"
             report.weekly_to_emergency_docx(prepared, output_path, reason="正文受限")
             payload = json.loads(
                 report.weekly_quality_sidecar_path(output_path).read_text(encoding="utf-8")
             )
-        self.assertEqual(payload["included"], 0)
-        self.assertEqual(payload["excludedItems"][0]["title"], item["title"])
+        self.assertEqual(payload["included"], 1)
+        self.assertEqual(payload["qualityWarnings"][0]["title"], item["title"])
+
+    def test_build_weekly_model_recovers_from_untouched_selected_copy(self) -> None:
+        item = make_item("W001", 1, title="测试主体公布新业务")
+        item["detail"] = detailed_text("原始人工入选正文。")
+        item["rawDetail"] = item["detail"]
+        selected = make_model(item)
+
+        def destructive_review(working, progress=None):
+            del progress
+            working["sections"][0]["items"][0]["detail"] = ""
+            working["sections"][0]["items"][0]["rawDetail"] = ""
+            raise RuntimeError("模型重试失败")
+
+        with (
+            patch.object(report, "build_review_sheet_weekly_model", return_value=selected),
+            patch.object(report, "apply_weekly_ai_review", side_effect=destructive_review),
+        ):
+            recovered = report.build_weekly_model([])
+
+        recovered_item = recovered["sections"][0]["items"][0]
+        self.assertIn("原始人工入选正文", recovered_item["detail"])
+        self.assertEqual(len(recovered["sections"][0]["items"]), 1)
 
     def test_main_uses_emergency_docx_when_standard_template_fails(self) -> None:
         period = report.resolve_weekly_period(

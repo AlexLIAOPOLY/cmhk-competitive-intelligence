@@ -2390,7 +2390,7 @@ def review_weekly_items_with_ai(
             previous_audit = deepcopy(audit_by_index.get(index) or {})
             repaired = dict(source_item)
             repaired["title"] = deterministic_evidence_weekly_title(source_item)
-            repaired["detail"] = deterministic_limited_weekly_detail(source_item)
+            repaired["detail"] = best_available_weekly_detail(source_item)
             repaired["writerStatus"] = "deterministic_evidence_repair"
             repaired["reviewDecision"] = "evidence_repair"
             repaired["reviewStatus"] = "evidence_repaired"
@@ -2401,10 +2401,10 @@ def review_weekly_items_with_ai(
             )
             repaired["_reviewAuditId"] = item_id
             repair_errors = deterministic_evidence_repair_errors(repaired)
+            repaired["reviewIssues"] = list(repair_errors)
             if repair_errors:
-                raise RuntimeError(
-                    f"{item_id}最终证据约束修复未通过程序化门禁："
-                    + "；".join(repair_errors)
+                repaired["reviewReason"] = (
+                    "已保留人工入选新闻及最强可用正文；质量问题已记入审计，不删除条目"
                 )
             candidates[index] = repaired
             reviewed_by_index[index] = repaired
@@ -2413,7 +2413,7 @@ def review_weekly_items_with_ai(
                 "decision": "evidence_repair",
                 "reviewDecision": "evidence_repair",
                 "scores": {},
-                "issues": list(previous_audit.get("issues") or []),
+                "issues": list(dict.fromkeys(list(previous_audit.get("issues") or []) + repair_errors)),
                 "reason": repaired["reviewReason"],
                 "previousDecision": previous_audit.get("decision") or "reject",
                 "previousReason": previous_audit.get("reason") or "",
@@ -2424,10 +2424,16 @@ def review_weekly_items_with_ai(
                 "title": repaired["title"],
             }
             evidence_repair_count += 1
-            progress(
-                f"[周报 5/7] {item_id}最终证据约束修复完成：正文"
-                f"{audit_by_index[index]['detailChars']}字，日期、来源、数字、句子及禁用话术门禁均通过。"
-            )
+            if repair_errors:
+                progress(
+                    f"[周报质量提醒] {item_id}仍有问题：{' ；'.join(repair_errors)}；"
+                    "已保留人工入选条目和最强可用正文，继续写入Word。"
+                )
+            else:
+                progress(
+                    f"[周报 5/7] {item_id}最终证据约束修复完成：正文"
+                    f"{audit_by_index[index]['detailChars']}字，日期、来源、数字、句子及禁用话术门禁均通过。"
+                )
 
     if allow_cache:
         try:
@@ -2441,10 +2447,12 @@ def review_weekly_items_with_ai(
     approved = sum(entry["decision"] == "approve" for entry in audit_items)
     revised = sum(entry["decision"] == "revise" for entry in audit_items)
     rejected = sum(entry["decision"] == "reject" for entry in audit_items)
+    quality_warnings = sum(bool(entry.get("issues")) for entry in audit_items)
     reviewed = [reviewed_by_index[index] for index in sorted(reviewed_by_index)]
     audit = {
         "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
-        "reviewStatus": "passed" if reviewed else "failed",
+        "reviewStatus": "limited" if quality_warnings else ("passed" if reviewed else "failed"),
+        "generationMode": "limited" if quality_warnings else "normal",
         "reviewerModel": model,
         "reviewPromptVersion": WEEKLY_REVIEW_PROMPT_VERSION,
         "inputItems": len(candidates),
@@ -2458,16 +2466,9 @@ def review_weekly_items_with_ai(
         "cacheEnabled": allow_cache,
         "reviewReplacementCount": review_replacement_count,
         "evidenceRepairCount": evidence_repair_count,
+        "qualityWarningCount": quality_warnings,
         "items": audit_items,
     }
-    unresolved = [
-        entry for entry in audit_items if entry.get("decision") == "reject"
-    ]
-    if unresolved:
-        raise RuntimeError(
-            "多级修复和最终证据约束重建后仍有条目未通过程序化门禁："
-            + "；".join(clean_text(entry.get("id")) for entry in unresolved)
-        )
     if not reviewed:
         raise RuntimeError("多级修复后仍未形成可发布条目")
     return reviewed, audit
@@ -4217,6 +4218,26 @@ def deterministic_limited_weekly_detail(item: dict) -> str:
     return concise_web_evidence_detail(item) or deterministic_headline_fact_sentence(item)
 
 
+def best_available_weekly_detail(item: dict) -> str:
+    """Return the strongest available body without ever turning an accepted item blank."""
+    repaired = deterministic_limited_weekly_detail(item)
+    if repaired:
+        return repaired
+    for candidate in (item.get("rawDetail"), item.get("detail")):
+        detail = strip_publication_scaffolding(
+            simplified_chinese(candidate, 1200),
+            item.get("eventAt"),
+        )
+        detail = strip_trailing_source_attribution(detail, item.get("sourceName"))
+        for phrase in FORBIDDEN_REPORT_PHRASES:
+            detail = detail.replace(phrase, "")
+        detail = clean_text(detail).replace("…", "").replace("...", "").strip("，。；,. ")
+        if detail:
+            return detail + "。"
+    title = deterministic_evidence_weekly_title(item)
+    return f"{title}。" if title else "本期人工入选新闻正文信息不足。"
+
+
 def cached_weekly_writer_result(item: dict) -> dict | None:
     """Recover a previously validated dense draft without trusting stale free text."""
     cache_key = clean_text(item.get("_weeklyWriterCacheKey"))
@@ -4371,7 +4392,7 @@ def finalize_weekly_limited_model(model: dict) -> dict:
                     item["detail"] = cached["detail"]
                     item["writerStatus"] = "validated_cache_recovery"
                 else:
-                    item["detail"] = deterministic_limited_weekly_detail(item)
+                    item["detail"] = best_available_weekly_detail(item)
                     item["writerStatus"] = "limited_fallback"
             item["title"] = deterministic_evidence_weekly_title(item)
             item["reviewDecision"] = "evidence_repair"
@@ -4394,6 +4415,7 @@ def finalize_weekly_limited_model(model: dict) -> dict:
                     "eventAt": item.get("eventAt") or "",
                     "sourceIds": list(item.get("sourceIds") or []),
                     "detailChars": len(re.sub(r"\s+", "", clean_text(item.get("detail")))),
+                    "issues": list(item.get("reviewIssues") or human_template_item_errors(item)),
                 }
             )
             global_index += 1
@@ -4417,6 +4439,7 @@ def finalize_weekly_limited_model(model: dict) -> dict:
         "rejectedItems": 0,
         "finalIncludedItems": len(audit_items),
         "items": audit_items,
+        "qualityWarnings": deepcopy(model.get("humanTemplateQualityWarnings") or []),
         "webSearch": {"required": True, "status": "limited", "queries": []},
     }
     model["reviewAudit"] = audit
@@ -4639,6 +4662,7 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
             for entry in audit.get("items") or []
             if entry.get("decision") == "evidence_repair"
         ]
+        warning_count = int(audit.get("qualityWarningCount") or 0)
         record_weekly_limitation(
             reviewed_model,
             "review_evidence_repair",
@@ -4646,10 +4670,13 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
                 "独立AI审核、强制修订、重新写作及备用文章路径仍未形成可通过版本："
                 + "、".join(repaired_ids)
             ),
-            impact=f"{evidence_repair_count}条人工入选新闻需要最终证据约束重建",
+            impact=(
+                f"{evidence_repair_count}条人工入选新闻需要最终证据约束重建，"
+                f"其中{warning_count}条仍有质量提醒"
+            ),
             action=(
                 "已逐条依据锁定原始资料、发布日期、来源和联网证据重建正文，"
-                "并通过日期、来源、数字、人工内参文风及禁用话术程序门禁；条目未删除"
+                "未完全通过的问题只记入日志和质量审计；人工入选条目不删除"
             ),
             progress=progress,
         )
@@ -4823,7 +4850,11 @@ def build_weekly_model(results: list[dict], period: WeeklyPeriod | None = None) 
             reason=exc,
             progress=lambda message: print(message, flush=True),
         )
+    recovery_model = deepcopy(model)
     try:
+        # AI research/review is intentionally isolated from the accepted source
+        # model. Failed retries may mutate their working items; recovery must
+        # always start from the untouched Feishu-selected body.
         reviewed = apply_weekly_ai_review(
             model,
             progress=lambda message: print(message, flush=True),
@@ -4836,6 +4867,7 @@ def build_weekly_model(results: list[dict], period: WeeklyPeriod | None = None) 
         reviewed.setdefault("generationLimitations", [])
         return reviewed
     except Exception as exc:
+        model = recovery_model
         record_weekly_limitation(
             model,
             "research_or_review",
@@ -4966,17 +4998,14 @@ def validate_human_template_content(model: dict) -> None:
 
 
 def prepare_human_template_content(model: dict, *, progress=print) -> dict:
-    """Repair thin bodies, then quarantine only items that still fail the gate."""
+    """Repair thin bodies and log remaining issues without removing accepted news."""
     model = finalize_weekly_limited_model(model)
-    excluded = []
+    warnings = []
     for section in model.get("sections") or []:
-        qualified = []
         for item in section.get("items") or []:
             item_errors = human_template_item_errors(item)
-            if not item_errors:
-                qualified.append(item)
-                continue
-            excluded.append(
+            if item_errors:
+                warnings.append(
                 {
                     "id": item.get("id") or "",
                     "section": section.get("name") or "",
@@ -4985,19 +5014,17 @@ def prepare_human_template_content(model: dict, *, progress=print) -> dict:
                     "sourceIds": list(item.get("sourceIds") or []),
                 }
             )
-        section["items"] = qualified
-    if excluded:
-        model["humanTemplateExcludedItems"] = excluded
+    if warnings:
+        model["humanTemplateQualityWarnings"] = warnings
         record_weekly_limitation(
             model,
             "human_template_content",
-            f"{len(excluded)}条正文在缓存恢复和锁定证据重建后仍未达到人工内参门禁",
-            impact="不合格正文不会进入正式周报",
-            action="保留通过门禁的条目；未通过项写入质量审计，不因单条材料不足中断整份周报",
+            f"{len(warnings)}条正文在缓存恢复和锁定证据重建后仍有质量提醒",
+            impact="相关条目保留在正式周报，审计文件标明具体问题",
+            action="不删除人工入选新闻；使用最强可用正文写入Word，问题仅记入日志和质量审计",
             progress=progress,
         )
         model = finalize_weekly_limited_model(model)
-    validate_human_template_content(model)
     return model
 
 
@@ -5370,6 +5397,11 @@ def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | Non
             or ((model or {}).get("humanTemplateExcludedItems") if model else [])
             or []
         ),
+        "qualityWarnings": deepcopy(
+            audit.get("qualityWarnings")
+            or ((model or {}).get("humanTemplateQualityWarnings") if model else [])
+            or []
+        ),
         "reviewerModel": audit.get("reviewerModel") or audit.get("reviewModel") or "",
         "reviewPromptVersion": audit.get("reviewPromptVersion") or WEEKLY_REVIEW_PROMPT_VERSION,
         "webSearch": audit.get("webSearch") or {},
@@ -5676,7 +5708,7 @@ def main() -> None:
     if model.get("generationMode") == "limited":
         print(
             "[周报 6/7] 当前为受限模式；将先恢复合格缓存和锁定证据正文，"
-            "仍不合格的条目只进入质量审计，不会降低正文门禁或中断整份周报。",
+            "仍有问题的人工入选条目照常写入Word，问题只记入日志和质量审计。",
             flush=True,
         )
     try:

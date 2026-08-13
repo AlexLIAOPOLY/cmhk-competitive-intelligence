@@ -1183,6 +1183,99 @@ def _internal_tts_consistency_filter(text: str, audio_path: Path, ffmpeg: str) -
     return f"atempo={tempo:.5f},loudnorm=I=-16:LRA=5:TP=-1.5"
 
 
+def _run_internal_tts_ffmpeg(command: list[str], *, stage: str) -> None:
+    """Run ffmpeg and surface the useful decoder/muxer error instead of exit 183."""
+    result = subprocess.run(
+        command,
+        check=False,
+        capture_output=True,
+        timeout=240,
+    )
+    if result.returncode:
+        stderr = result.stderr.decode("utf-8", errors="ignore").strip()
+        detail = stderr[-1200:] if stderr else f"ffmpeg exit {result.returncode}"
+        raise RuntimeError(f"公司内网 TTS {stage}失败：{detail}")
+
+
+def _normalize_and_merge_internal_tts_parts(
+    parts: list[Path],
+    text: str,
+    output_path: Path,
+    ffmpeg: str,
+    work_dir: Path,
+) -> None:
+    """Decode every response first so MP3 headers cannot break stream-copy concat."""
+    normalized_parts: list[Path] = []
+    for index, part in enumerate(parts, 1):
+        normalized = work_dir / f"normalized_{index:03d}.wav"
+        _run_internal_tts_ffmpeg(
+            [
+                ffmpeg,
+                "-y",
+                "-v",
+                "error",
+                "-i",
+                str(part),
+                "-ar",
+                "24000",
+                "-ac",
+                "1",
+                "-c:a",
+                "pcm_s16le",
+                str(normalized),
+            ],
+            stage=f"第{index}段解码标准化",
+        )
+        normalized_parts.append(normalized)
+
+    concat_file = work_dir / "concat.txt"
+    concat_file.write_text(
+        "".join(f"file '{path.as_posix()}'\n" for path in normalized_parts),
+        encoding="utf-8",
+    )
+    merged = work_dir / "merged.wav"
+    _run_internal_tts_ffmpeg(
+        [
+            ffmpeg,
+            "-y",
+            "-v",
+            "error",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(concat_file),
+            "-c:a",
+            "pcm_s16le",
+            str(merged),
+        ],
+        stage="分段合并",
+    )
+    _run_internal_tts_ffmpeg(
+        [
+            ffmpeg,
+            "-y",
+            "-v",
+            "error",
+            "-i",
+            str(merged),
+            "-af",
+            _internal_tts_consistency_filter(text, merged, ffmpeg),
+            "-ar",
+            "24000",
+            "-ac",
+            "1",
+            "-codec:a",
+            "libmp3lame",
+            "-b:a",
+            "96k",
+            str(output_path),
+        ],
+        stage="最终音频编码",
+    )
+
+
 def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
     import urllib.error
     import urllib.request
@@ -1253,37 +1346,9 @@ def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
             part_path.write_bytes(audio_bytes)
             parts.append(part_path)
 
-        concat_file = tmp / "concat.txt"
-        concat_file.write_text("".join(f"file '{path.as_posix()}'\n" for path in parts), encoding="utf-8")
-        merged = tmp / "merged.mp3"
         ffmpeg = shutil.which("ffmpeg")
         if ffmpeg:
-            subprocess.run(
-                [ffmpeg, "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file), "-c", "copy", str(merged)],
-                check=True,
-                capture_output=True,
-                timeout=240,
-            )
-            subprocess.run(
-                [
-                    ffmpeg,
-                    "-y",
-                    "-i",
-                    str(merged),
-                    "-af",
-                    _internal_tts_consistency_filter(text, merged, ffmpeg),
-                    "-ar",
-                    "24000",
-                    "-ac",
-                    "1",
-                    "-b:a",
-                    "96k",
-                    str(output_path),
-                ],
-                check=True,
-                capture_output=True,
-                timeout=240,
-            )
+            _normalize_and_merge_internal_tts_parts(parts, text, output_path, ffmpeg, tmp)
         elif len(parts) == 1:
             shutil.copy2(parts[0], output_path)
         else:
