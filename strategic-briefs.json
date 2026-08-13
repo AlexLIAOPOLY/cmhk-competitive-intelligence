@@ -1,71 +1,71 @@
 {
   "ok": true,
-  "generated_at": "2026-08-04T10:25:13+08:00",
+  "generated_at": "2026-08-13T11:59:11+08:00",
   "items": [
     {
-      "id": "NEWS-5C8E24DA9986F4",
-      "title": "3香港推教育机构专属流动通讯服务平台",
-      "summary": "3香港与林溢欣合作推出教育机构专属流动通讯服务平台，为学生及教职员提供数据及学习内容。",
+      "id": "NEWS-DA3A0C0591B21E",
+      "title": "Hutchison Telecommunications Hong Kong派发中期股息",
+      "summary": "Hutchison Telecommunications Hong Kong宣布将于9月16日向股东派发每股0.0228港元的中期股息。",
       "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi7wJBVV95cUxPSHpjOGRiX2t2NTlxdWNMdTdsZ2FuNmdCckpJeHp6T0poLURJdHN5b0Foel96dDJWQjR4aXdPbE1jOGhteTlKaXFjRzJjUUtxdnNWQ3A3YzBfaWl3MmdFVXpMVlF0WThFMnUwZEtyU2dwbTV4dVVwa0JXWVgzeDB0ZnczQXA1MUI1Tm9oYUJyQjNFcXk0MklmVTlodjFwM1NoYU9RUnNBVVJhSWVqa3NscVAwcldRdVcyZVN0OXNJem5FUDlPcUttdEQ4bExybU1JSkhFX0tIYlBzVTUxZ0xVNXZiS0pKQ1VaSl8yUlZMbWpCbDRFdmtHUndlRGFjRHFCbzQzV19ncDBaZzB3dVRwZGVIQU42MncxWnNrRV9nWnRpajZSX2x5eHJOOGpzUE9VZ0M1dXRLb2NvSml3WmI0YjdRcWlhbFRiMVdzRnJmY3BFajE5dHJ1NkllMlhqS2RpTWJwUUdrUlhtSGJoaU5r?oc=5",
-      "published_at": "2026-08-03T18:25:37+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQVkVUNzd4T0RZZDRtd2ZBWFc1RFZiY0JGNC1iZWhGSDNSZWkybDhtaVhaSDJhR25sdmZTNzNRZElWSUl6MDBpUTZoNlh0MmhBc19SVFhsS3hqS01yWDZ4bGg0MGpDXzQtaXAzU0tRQjAxTHY0ZDBPU2tjYW9pQjhyVFFNTDVJWTNZLTJjaVcycVk2SmtVQjloYTR2T2RsUWdxSEMyVktGVE9HaXNiY25fcElpd1c?oc=5",
+      "published_at": "2026-08-10T17:23:29+08:00"
     },
     {
-      "id": "NEWS-A158C76EB3E89E",
-      "title": "“算力金属”，价格狂飙",
-      "summary": "受AI算力基建带动，铜、铝、锡、钽、铟等有色金属价格大幅上涨，其中锡价半年内上涨40%，钽价飙升158%。",
+      "id": "NEWS-AB3DB8101B8137",
+      "title": "大型活动带动上半年访港消费达58亿港元",
+      "summary": "财政司司长陈茂波表示，上半年逾130场大型活动吸引逾175万人次参与，带动访港消费达58亿港元，彰显香港作为活动之都的吸引力。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.scmp.com/news/hong-kong/hong-kong-economy/article/3363432/mega-events-drive-hk58-billion-visitor-spend-first-half-year-paul-chan",
+      "published_at": "2026-08-09T20:20:00+08:00"
+    },
+    {
+      "id": "NEWS-EBBDE75E47F316",
+      "title": "李家超：冀9月公布首份五年规划",
+      "summary": "行政长官李家超表示，香港首份五年规划咨询将于本周五结束；政府正整理分析约13,800份相关意见，目标于9月内发表规划。",
+      "category": "政策监管",
+      "source_url": "https://www.am730.com.hk/article/1046392",
+      "published_at": "2026-08-09T08:07:00+08:00"
+    },
+    {
+      "id": "NEWS-2AF0C9FD353D45",
+      "title": "内蒙建成全球最大AI数据中心 百万P级算力同创纪录",
+      "summary": "远景科技在内蒙建成全球最大AI算力基地，提供百万P级算力容量，刷新全球AI基础设施密度纪录。",
       "category": "基础设施/网络/技术类",
-      "source_url": "https://www.hunantoday.cn/news/xhn/202608/33371415.html",
-      "published_at": "2026-08-03"
+      "source_url": "https://www.am730.com.hk/article/1046152",
+      "published_at": "2026-08-08T08:00:00+08:00"
     },
     {
-      "id": "NEWS-5EEF4D777E7D90",
-      "title": "中国移动香港荣膺Ookla Speedtest七项国际奖项",
-      "summary": "中国移动香港获得Ookla Speedtest七项网络国际权威奖项及认证。",
+      "id": "NEWS-6AF945884F17BD",
+      "title": "来稿｜构建香港特色跨境协同创科金融体系 让初创走出「死亡谷」",
+      "summary": "文章探讨构建香港特色跨境协同创科金融体系，助力初创企业发展的政策与金融建议。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxPbmJ0U0RqUWc3MXpZd2VLNV9sQW5EUy1iWlpNVFEyMmpZR0o2MVhMSDVnUVdhaHVpNXRnQlp3Ylotc0ZXZjdSRGFkSjM1VEpOcUFGcFl5V3dJTm04VEs3dU9zcVJPY1ZxS250ZE1tX0JSc3RmQXpKSEVhZzRKbkNhWVE3OElaMTdVY1RaWVlENEs0bHFUU1M4QTNSQ1FoN3czRWNvekFPeDh0QXRoQmppUmllRURRbkYwMWhYSWhZbVNiSU9zT1hiNzhQT0tvMkpuMW1oQW5pNTVtQXpwX3MwS25ubExidjRDS2FZcVluaGZmUzdhUU9PWVN2d3Bhb3ROc2o1QXFGVktxZzZQZlM5WFBhV1ByYTBjc2E4WTdOUjFVSFVzYTNpTU5MTWlfTWxJTjltWFVnRjBtaGZpZW1sVHpZNl9BYlF3YmdTeUVBSDV6aDRJNzRUcHB1bUdraWk1WkloQ05xdDUxSGdRNjRaS0F3Sm1zb3JPTDZvZjR1TlRIaHJqSUNaVnVmc0VBU0JBOURId2oxb1lWZ1pD?oc=5",
+      "published_at": "2026-08-07T13:00:24+08:00"
+    },
+    {
+      "id": "NEWS-224C4A67BC9494",
+      "title": "疫情后旅客消费模式转变 姚柏良倡湾区协作打造一程多站旅游路线",
+      "summary": "姚柏良建议香港加强与大湾区协作，打造一程多站旅游路线以吸引旅客延长停留。",
       "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNMi02SDBIVDQ2TGxpQUVqOVpYVHRIVGNNQ3VlZS1vdTh2bG5Ja2xsMzU2TnNOazBGdTE0OTQzUjc1bUJSREtVUEJiUFFkSEVBQ2hZUGVnRzJydFZCUHNPa3N3WUQxN0RsZGE4WFJMdXp6emdVc3pMdFFxM0sydzNBSDNISzN3ODByWFFkOUVn?oc=5",
-      "published_at": "2026-08-03"
+      "source_url": "https://www.am730.com.hk/article/1046156",
+      "published_at": "2026-08-07T08:01:00+08:00"
     },
     {
-      "id": "NEWS-0CA9B2A1D2BFEB",
-      "title": "机场岛测试 揭开香港智慧出行新纪元",
-      "summary": "香港机场岛进行智慧出行测试，探索未来交通模式，推动香港智慧出行发展。",
+      "id": "NEWS-7611603AFDB42E",
+      "title": "SmarTone推出SmarT Pass出机快证，优先抢购iPhone及送手机礼券",
+      "summary": "SmarTone推出SmarT Pass出机快证服务，用户可优先抢购iPhone 18及折叠屏手机，并享最高2500港元手机礼券。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMinANBVV95cUxQZHg0X2hBUEJEQS1VRUtjOWtocjN5c0tSb2lkdlkwNFJnNnlCOVl2VjFQVV9DMjNRT1FKU1VINnpmUVZXcEQxN0lEQUtFNXVXb1ZxWWpldDRiNXJfbHZwaGt2Y3ViVXpQWVprQjRtaDV6Ni1oVFBfWnNRMVNZcS1keW8wbTM0aXNDTjRGTW1MNVl6TDVZZ3EtcUc4X29lWFNGT05JdGJ1b29RaHBXYW5RZXg1U05JQ3FiQTAyWkc1QzVPMnNvMFRhSkMyNjZoSHBPMklyeV93cHB6QXFJSGV4cDlpbnZVY0ZuUnpMQlEtcnphS0tKQVRsbHpGUVBtdHN0X3RvdHRuQ0lYb1J0ODlqN3UxUGl2X1JGUUJZWTVpNkZfV3Fka2huN3l5UWM1VTdOV2U0eUNVYjZMNkhGZHdVU3JWNG5YM3l0THZHMkRadG4ycWNINEVrcjdyV1ZNQVpFbEhPY0lhamRiLWlTZGVrUk43X1JKZ2twVFFSSzFYeVRNSlI5eFZVU19ST3doeGRYQkk0MEFqcXg3WExN?oc=5",
+      "published_at": "2026-08-06T19:03:00+08:00"
+    },
+    {
+      "id": "NEWS-BC20B8FF064970",
+      "title": "香港加快无人驾驶应用发展",
+      "summary": "香港政府加快无人驾驶技术应用，以满足市民生活需要，推动智慧交通发展。",
       "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMi3AJBVV95cUxNVWdHQ1ZJa1NOWW1yeWJwRGJXRTZReXZxc09oNHYyUjBMQkJzZFQ5alFHdE5tWDJVRzdjd1FyaE9SalYzbndBLWRPMHlhOUJ2dWFONV9NZWlfN29mSDljUkRkendueGFLOUdYbHRtRzVyTlNOWlNnTlpsRVY0Ymd4WG50N1RoYU1idTRnVm5FLV9VZERCSG4tN2lNNzY4Q0FfTW8xOWlSN2VILWZub21Nc0lfenp0eFlmQW9CaVZ1UkdWaDFNYVNJYjVCQ19YaDBxak9uM2plQUU5WUpKY2pYQmlvQk5oSlZqWkliS0NyQVpOUW9fX2RhT1g4SjFYcG9FUVBheWFhT0x0X0V2ZGkyWVdaejFnN3NxSVpTbEZhUmxqMS1qem1JSGJtd3RkdmQ4TElZOUxtRGJqNmp1MlRyY3N0TEdsdmFmaklQakIwdFhTZ1ViMVoxR3kyNDE?oc=5",
-      "published_at": "2026-08-03"
-    },
-    {
-      "id": "NEWS-93E818ABE49C4B",
-      "title": "滴滴香港正筹备提交网约车平台牌照申请 本月向用户推出夏日出行礼遇",
-      "summary": "滴滴香港筹备提交网约车牌照申请，提升合规管理，并向用户推出夏日出行优惠。",
-      "category": "政策监管",
-      "source_url": "https://www.am730.com.hk/article/1045256",
-      "published_at": "2026-08-03"
-    },
-    {
-      "id": "NEWS-E4D59059AC6C5D",
-      "title": "金管局维持基本利率4厘不变",
-      "summary": "香港金管局宣布维持基本利率在4厘水平不变。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxNZ1I4Z29mZGJySi0zVGtlcDhXNXZIOUJhcFdtaWNkek92N1p6enRGdTFLSVo2VUxRaDYxSUdvQjA5TDZ0SHZRdG5tbm9weFZVclBFTU9Dd2x5QW1HbU9hMmRxd3FWa3h6UHNNUDFTbkxMLXB1eGVvY0FHaWxram9SRF9yS0pxSXV4Qm5GRXV4NHN1Rkxvclg1Ul9aYmxVNG5CZGVrd1hnSWZrSEpwaDA5M3Y5VW9FVFFSR0s5dU9fbXY4T0dNSmNhMzB1enR3b0NEV0VwNTlVcDNQUkx2ZjNPdWFvODZ3VDBuSGgtc1ZjdmVZVEk?oc=5",
-      "published_at": "2026-07-30"
-    },
-    {
-      "id": "NEWS-42A8A8BD467BFE",
-      "title": "商汤大装置持续拓展产业生态边界 集中落地多项重磅战略合作",
-      "summary": "商汤大装置与国信数算签署全国一体化算力网试验场战略合作，联合举办AI基础设施创新发展论坛。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.leiphone.com/category/industrynews/sO1Q58AgzvWr2mFJ.html",
-      "published_at": "2026-07-29"
-    },
-    {
-      "id": "NEWS-FAB947EEC47797",
-      "title": "工信部等七部门：启动2026年首批工业和信息化领域创新任务揭榜挂帅工作",
-      "summary": "工信部等七部门启动2026年工业和信息化领域创新任务揭榜挂帅，布局24个专题。",
-      "category": "政策监管",
-      "source_url": "https://www.msn.cn/zh-cn/news/other/%E5%B7%A5%E4%BF%A1%E9%83%A8%E7%AD%89%E4%B8%83%E9%83%A8%E9%97%A8-%E5%90%AF%E5%8A%A82026%E5%B9%B4%E9%A6%96%E6%89%B9%E5%B7%A5%E4%B8%9A%E5%92%8C%E4%BF%A1%E6%81%AF%E5%8C%96%E9%A2%86%E5%9F%9F%E5%88%9B%E6%96%B0%E4%BB%BB%E5%8A%A1%E6%8F%AD%E6%A6%9C%E6%8C%82%E5%B8%85%E5%B7%A5%E4%BD%9C/ar-AA28WMXs",
-      "published_at": "2026-07-29"
+      "source_url": "https://news.google.com/rss/articles/CBMifEFVX3lxTFBhck1waV95cExtWlQzaE90dm5zRjdVR0dzcHBMeUJuVkE1a0RtRW9iVFFneWVnR2MyR0hEb05NT2M5elgtN0pUWldNa3dvYlp2VW54bGNMeXNVZFlncWJSZi1zUFJkTXdnU3dNTmNicEV6dnFWYk5KRjMxQU0?oc=5",
+      "published_at": "2026-08-06T11:19:26+08:00"
     }
   ],
-  "site_version": "1bfa7531b43d7480f6e8aee114a87655ec45fe57a4c377d62dd17a994f37e42d"
+  "site_version": "1db816dec34df85f1bdf28661d266817e6b8fa442341688002e1fbf2ce9988d9"
 }
