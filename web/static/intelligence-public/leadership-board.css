@@ -119,28 +119,75 @@
   left: 50%;
   top: 50%;
   display: grid;
-  gap: 2px;
+  gap: 3px;
   justify-items: center;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
 .intelligence-page-identity span {
-  color: rgba(119, 202, 229, .64);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .2em;
+  color: rgba(124, 199, 221, .68);
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: .24em;
+  line-height: 1;
 }
 
 .intelligence-page-identity strong {
+  position: relative;
+  padding: 0 7px 3px;
+  background: linear-gradient(180deg, #f2fcff 4%, #ccebf4 54%, #89c7db 100%);
   color: #d9f3fb;
   font-size: 20px;
-  font-weight: 650;
-  letter-spacing: .12em;
+  font-weight: 760;
+  letter-spacing: .14em;
+  line-height: 1.08;
+  text-shadow: 0 0 15px rgba(77, 190, 220, .22);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.intelligence-page-identity strong::after {
+  position: absolute;
+  left: 19%;
+  right: 19%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(104, 207, 232, .64), transparent);
+  box-shadow: 0 0 8px rgba(75, 183, 211, .25);
+  content: "";
 }
 
 @media (max-width: 980px) {
-  .intelligence-page-identity { display: none; }
+  .intelligence-page-identity {
+    left: 44%;
+    display: grid;
+    width: 270px;
+  }
+  .intelligence-page-identity strong { font-size: 19px; }
+  .intelligence-page-identity span { font-size: 8px; }
+}
+
+@media (max-width: 560px) {
+  .intelligence-page-identity {
+    left: 174px;
+    right: 18px;
+    top: 8px;
+    width: auto;
+    transform: none;
+  }
+  .intelligence-page-identity strong {
+    padding-inline: 2px;
+    font-size: 15px;
+    letter-spacing: .08em;
+    white-space: nowrap;
+  }
+  .intelligence-page-identity span {
+    font-size: 6.5px;
+    letter-spacing: .13em;
+    white-space: nowrap;
+  }
 }
 
 .intelligence-domain:hover,
@@ -581,8 +628,26 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.intelligence-page-identity span { font-size: 11px; }
-.intelligence-page-identity strong { font-size: 24px; }
+.intelligence-page-identity span { font-size: 10px; }
+.intelligence-page-identity strong { font-size: 25px; }
+
+@media (min-width: 561px) and (max-width: 980px) {
+  .intelligence-page-identity strong { font-size: 19px; }
+  .intelligence-page-identity span { font-size: 8px; }
+}
+
+@media (max-width: 560px) {
+  .intelligence-page-identity strong {
+    max-width: 100%;
+    font-size: 13.5px;
+    letter-spacing: .04em;
+  }
+  .intelligence-page-identity span {
+    max-width: 100%;
+    font-size: 6.2px;
+    letter-spacing: .1em;
+  }
+}
 
 .insight-board > .strategy-ticker .strategy-eyebrow,
 .insight-board > .strategy-ticker .strategy-ticker-header small,

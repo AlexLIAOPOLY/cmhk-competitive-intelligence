@@ -152,6 +152,12 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('class="intelligence-board-header"', html)
         self.assertIn('aria-label="CMHK市场竞争全景"', html)
         self.assertIn('CMHK COMPETITIVE LANDSCAPE', html)
+        identity_markup = html[html.index('<div class="intelligence-page-identity"'):html.index('<div class="header-tools">')]
+        self.assertLess(identity_markup.index('<strong>CMHK市场竞争全景</strong>'), identity_markup.index('<span>CMHK COMPETITIVE LANDSCAPE</span>'))
+        self.assertIn('background: linear-gradient(180deg, #f2fcff 4%, #ccebf4 54%, #89c7db 100%);', leadership_styles)
+        self.assertIn('.intelligence-page-identity strong::after {', leadership_styles)
+        self.assertNotIn('.intelligence-page-identity { display: none; }', leadership_styles)
+        self.assertIn('left: 174px;', leadership_styles)
         self.assertIn('id="intelligenceDomainGrid"', html)
         self.assertIn('id="intelligenceRelationRail"', html)
         self.assertIn('id="intelligenceDrawer"', html)
