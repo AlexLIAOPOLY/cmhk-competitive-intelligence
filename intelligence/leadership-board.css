@@ -604,11 +604,14 @@
 .intelligence-focus-tabs { height: 38px; }
 .intelligence-focus-tabs button {
   min-height: 36px;
-  font-size: 13.5px;
-  line-height: 1.08;
-  overflow-wrap: anywhere;
-  text-overflow: clip;
-  white-space: normal;
+  font-size: 14px;
+  line-height: 1;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
+.intelligence-focus-tabs button + button {
+  border-left: 1px solid rgba(128, 190, 211, .12);
 }
 
 .intelligence-domain-focus-stage {
@@ -745,7 +748,7 @@
   .intelligence-domain-heading strong,
   .intelligence-domain-local .intelligence-domain-heading strong { font-size: 29px; }
   .intelligence-domain-metric > strong { font-size: 44px; }
-  .intelligence-focus-tabs button { font-size: 12.5px; }
+  .intelligence-focus-tabs button { font-size: 13px; }
 }
 
 @media (max-width: 1180px) {
@@ -770,8 +773,14 @@
     white-space: normal;
   }
   .intelligence-domain-metric > strong { font-size: 46px; }
-  .intelligence-focus-tabs { height: 40px; }
-  .intelligence-focus-tabs button { min-height: 38px; font-size: 13px; }
+  .intelligence-focus-tabs { height: 40px; overflow-x: auto; }
+  .intelligence-focus-tabs button {
+    flex: 0 0 auto;
+    min-width: max-content;
+    min-height: 38px;
+    padding-inline: 12px;
+    font-size: 13.5px;
+  }
   .intelligence-domain-focus-stage {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(174px, 1fr) minmax(156px, auto);
