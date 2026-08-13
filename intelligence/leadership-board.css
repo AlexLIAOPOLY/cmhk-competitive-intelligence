@@ -630,6 +630,24 @@
 .intelligence-page-identity span { font-size: 10px; }
 .intelligence-page-identity strong { font-size: 25px; }
 
+@media (min-width: 561px) and (max-width: 980px) {
+  .intelligence-page-identity strong { font-size: 19px; }
+  .intelligence-page-identity span { font-size: 8px; }
+}
+
+@media (max-width: 560px) {
+  .intelligence-page-identity strong {
+    max-width: 100%;
+    font-size: 13.5px;
+    letter-spacing: .04em;
+  }
+  .intelligence-page-identity span {
+    max-width: 100%;
+    font-size: 6.2px;
+    letter-spacing: .1em;
+  }
+}
+
 .insight-board > .strategy-ticker .strategy-eyebrow,
 .insight-board > .strategy-ticker .strategy-ticker-header small,
 .insight-board > .strategy-ticker #strategySyncStatus { font-size: 10px; }
@@ -719,6 +737,9 @@
 .intelligence-entity-focus > .ai-insight-label.is-loading { cursor: wait; opacity: .68; }
 .intelligence-entity-focus > .ai-insight-label.is-error {
   color: #ffb1ae;
+}
+.intelligence-ai-refresh-error {
+  color: #ffcbc8;
 }
 
 .intelligence-ai-headline-skeleton {
