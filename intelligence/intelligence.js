@@ -185,14 +185,12 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       ? `<a href="${safe(entity.source_url)}" target="_self">来源<span aria-hidden="true">↗</span></a>`
       : "";
     const detailId = `intelligence-detail-${String(domain.id)}-${String(focus.id)}-${index}`.replace(/[^a-zA-Z0-9_-]/g, "-");
-    const entityAnalysis = entity.ai_summary?.analysis || entity.analysis || focus.insight || entity.detail || "暂无分析结论";
     return `
       <div class="intelligence-entity-focus">
         <span>${safe(entity.name)}</span>
         <strong>${formatValue(entity.value)}<i>${safe(entity.unit)}</i></strong>
         <div id="${safe(detailId)}" class="intelligence-entity-detail-body" data-intelligence-detail-body>
           ${renderEntityComponents(entity)}
-          <p>${safe(entityAnalysis)}</p>
         </div>
         <div class="intelligence-entity-actions">
           ${source}
