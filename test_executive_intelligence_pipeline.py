@@ -155,7 +155,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         first_payload = json.loads(request.call_args_list[0].args[0].data.decode("utf-8"))
         first_prompt = first_payload["messages"][1]["content"]
         self.assertNotIn("覆盖4个赛道", first_prompt)
-        self.assertIn("不得讨论产品赛道", first_prompt)
+        self.assertIn("数据库记录数只作重复记录说明", first_prompt)
         self.assertIn("请求唯一标识", first_prompt)
         self.assertIn("required_angle", first_prompt)
         self.assertEqual(request.call_count, 2)
@@ -526,8 +526,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 {
                     "id": domain,
                     "focuses": [
-                        {"id": f"{domain}-a", "items": []},
-                        {"id": f"{domain}-b", "items": []},
+                        {"id": f"{domain}-a", "metric": {"value": 1}, "items": []},
+                        {"id": f"{domain}-b", "metric": {"value": 2}, "items": []},
                     ],
                     "agent_verified_facts": [],
                 }
@@ -542,8 +542,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "risk": "保持口径边界。",
                 "source_urls": [],
                 "focuses": [
-                    {"id": f"{domain}-a", "analysis": "竞争位置变化表明收入结构分层主要来自客户组合差异。", "risk": "保持边界。", "source_urls": []},
-                    {"id": f"{domain}-b", "analysis": "竞争差距扩大说明客户结构差异并非同步变化。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-a", "analysis": "1项竞争位置变化表明收入结构分层主要来自客户组合差异。", "risk": "保持边界。", "source_urls": []},
+                    {"id": f"{domain}-b", "analysis": "2项竞争差距扩大说明客户结构差异并非同步变化。", "risk": "保持边界。", "source_urls": []},
                 ],
             }
             for domain in ("local", "international", "cloud", "macro")
@@ -607,14 +607,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         evidence = {
             "domains": [{
                 "id": domain,
-                "focuses": [{"id": "focus", "items": [{"name": "实体", "components": [{"label": "项目"}]}]}],
+                "focuses": [{"id": "focus", "metric": {"value": 10}, "items": [{
+                    "name": "实体", "value": 10, "components": [{"label": "项目", "value": 10}],
+                }]}],
                 "agent_verified_facts": [],
             } for domain in ("local", "international", "cloud", "macro")]
         }
         summaries = [{
             "domain": domain, "headline": "观察", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": [],
             "focuses": [{
-                "id": "focus", "analysis": "竞争位置变化表明收入结构分层主要来自客户组合差异。", "risk": "谨慎。", "source_urls": [],
+                "id": "focus", "analysis": "10项竞争位置变化表明收入结构分层主要来自客户组合差异。", "risk": "谨慎。", "source_urls": [],
                 "entities": [{
                     "name": "实体", "headline": "观察", "analysis": "数据库内按排名展示。", "risk": "谨慎。",
                     "evidence_labels": ["项目"], "source_urls": [],
@@ -679,6 +681,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
         shallow = "移动连接3428.5万显示用户规模领先，市场分化明显。"
         self.assertIn("结构、驱动或可比性", pipeline._focus_gate_error("macro", "market", shallow, evidence_focus))
+
+    def test_focus_gate_accepts_not_equal_as_a_comparability_explanation(self):
+        evidence_focus = {
+            "id": "scale",
+            "metric": {"value": 84},
+            "items": [{"name": "HKBN", "value": 27, "record_count": 59, "component_count": 27}],
+        }
+        analysis = "HKBN有27个可区分方案；HKBN的59条记录去重后为27个，记录密度不等于产品选择更多。"
+
+        self.assertEqual(pipeline._focus_gate_error("local", "scale", analysis, evidence_focus), "")
 
     def test_scoped_model_identity_is_restored_before_evidence_repair(self):
         raw = [{"domain": "", "focuses": [{"id": "", "analysis": "内容"}]}]
