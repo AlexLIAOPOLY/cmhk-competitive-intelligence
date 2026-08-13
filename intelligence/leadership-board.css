@@ -248,12 +248,11 @@
 }
 
 .intelligence-domain-metric small { color: #9ab3bd; font-size: 10.5px; }
-.intelligence-domain-metric em,
 .intelligence-viz-rows li > span small,
 .intelligence-viz-disclosure li > span small,
 .intelligence-viz-kpis small { display: none; }
 
-.intelligence-domain-local .intelligence-domain-metric em {
+.intelligence-domain-metric em {
   display: block;
   margin-top: 2px;
   color: #7fa0ad;
@@ -797,7 +796,7 @@
   .intelligence-domain-local .intelligence-domain-heading strong { font-size: 27px; }
   .intelligence-domain-metric { min-width: 0; }
   .intelligence-domain-metric small { font-size: 13.5px; }
-  .intelligence-domain-local .intelligence-domain-metric em {
+  .intelligence-domain-metric em {
     font-size: 8.5px;
     white-space: normal;
   }
