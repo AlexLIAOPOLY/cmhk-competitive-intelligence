@@ -2589,6 +2589,10 @@ TASK_RUNS_DIR = ROOT / "task_runs"
 TASK_RUNS_LOG_DIR = TASK_RUNS_DIR / "logs"
 TASK_RUNS_INDEX_PATH = TASK_RUNS_DIR / "index.json"
 TASK_RUNS_LOCK = threading.Lock()
+GENERAL_TASK_MAX_AUTO_RETRIES = max(1, int(os.environ.get("CMHK_TASK_AUTO_RETRY_MAX", "3")))
+GENERAL_TASK_RETRY_DELAY_SECONDS = max(
+    1.0, float(os.environ.get("CMHK_TASK_AUTO_RETRY_DELAY_SECONDS", "5"))
+)
 
 
 def _task_atomic_json(path: Path, payload: object) -> None:
@@ -2634,7 +2638,16 @@ def _task_public_record(record: dict) -> dict:
     return public
 
 
-def start_general_task_run(kind: str, title: str, scope: str, script_name: str = "") -> dict:
+def start_general_task_run(
+    kind: str,
+    title: str,
+    scope: str,
+    script_name: str = "",
+    *,
+    recovery_of: str = "",
+    retry_count: int = 0,
+    target_path: str = "",
+) -> dict:
     now = datetime.now().astimezone()
     raw_id = now.strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:8]
     task_id = "task:" + raw_id
@@ -2662,6 +2675,10 @@ def start_general_task_run(kind: str, title: str, scope: str, script_name: str =
         "progress_detail": "后台已接收任务，正在准备执行。",
         "heartbeat_at_hkt": now.isoformat(timespec="seconds"),
         "log_path": str(log_path.relative_to(ROOT)),
+        "recovery_of": str(recovery_of or ""),
+        "retry_count": max(0, int(retry_count or 0)),
+        "auto_recovered": bool(recovery_of),
+        "target_path": str(target_path or ""),
     }
     with TASK_RUNS_LOCK:
         TASK_RUNS_DIR.mkdir(parents=True, exist_ok=True)
@@ -2810,6 +2827,185 @@ def reconcile_interrupted_general_tasks() -> list[dict]:
         if reconciled:
             _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
     return reconciled
+
+
+def pending_interrupted_general_task_retries() -> list[dict]:
+    """Include interruptions recorded by an older service before auto-retry existed."""
+    return [
+        dict(task)
+        for task in _task_read_local_index()
+        if task.get("run_status") == "failed"
+        and bool(task.get("interrupted"))
+        and not task.get("recovery_disposition")
+    ]
+
+
+def _mark_general_task_recovery_disposition(task_id: str, disposition: str) -> None:
+    now = datetime.now().astimezone().isoformat(timespec="seconds")
+    raw_id = str(task_id or "").removeprefix("task:")
+    with TASK_RUNS_LOCK:
+        tasks = _task_read_local_index()
+        updated = None
+        for task in tasks:
+            if str(task.get("task_id") or "") != task_id:
+                continue
+            task["recovery_disposition"] = str(disposition or "")
+            task["recovery_scheduled_at_hkt"] = now
+            updated = dict(task)
+            break
+        if updated:
+            _task_atomic_json(TASK_RUNS_INDEX_PATH, {"tasks": tasks[:500]})
+            _task_atomic_json(TASK_RUNS_DIR / (raw_id + ".json"), updated)
+
+
+def _latest_report_for_recovered_task(kind: str) -> Path:
+    report_kind = "weekly" if kind == "weekly-report" else "carrier-performance"
+    target = latest_output_path(build_status(), report_kind)
+    if not target or not target.exists():
+        raise RuntimeError("报告进程结束后未找到可用Word文件")
+    return target
+
+
+def _run_recovered_general_task(original: dict) -> None:
+    """Retry an interrupted report/audio task without requiring a browser connection."""
+    kind = str(original.get("kind") or "")
+    retry_count = int(original.get("retry_count") or 0) + 1
+    root_id = str(original.get("recovery_of") or original.get("task_id") or "")
+    task = start_general_task_run(
+        kind,
+        str(original.get("title") or "自动恢复任务"),
+        str(original.get("scope") or ""),
+        str(original.get("script") or ""),
+        recovery_of=root_id,
+        retry_count=retry_count,
+        target_path=str(original.get("target_path") or ""),
+    )
+    task_id = str(task["task_id"])
+    append_general_task_log(
+        task_id,
+        f"[自动恢复] 服务已恢复，正在重试中断任务（第{retry_count}/{GENERAL_TASK_MAX_AUTO_RETRIES}次）。",
+    )
+    try:
+        if kind == "audio-generation":
+            target = Path(str(original.get("target_path") or ""))
+            if not target.exists() or target.parent.resolve() != ROOT.resolve():
+                raise RuntimeError("原音频任务的报告文件已不存在或不在允许目录")
+            heartbeat_general_task_run(
+                task_id,
+                "生成语音摘要",
+                "服务恢复后正在重新生成音频。",
+                append_log=True,
+            )
+            result = synthesize_report_audio(target, force=True)
+            if not result.get("ok"):
+                raise RuntimeError(str(result.get("error") or "音频生成失败"))
+            detail = f"自动恢复成功：{(result.get('audio') or {}).get('name') or target.name}"
+        elif kind in {"weekly-report", "carrier-performance"}:
+            script_name = str(original.get("script") or "")
+            allowed_scripts = {
+                "weekly-report": "generate_weekly_report.py",
+                "carrier-performance": "generate_carrier_performance_report.py",
+            }
+            if script_name != allowed_scripts[kind]:
+                raise RuntimeError("任务恢复脚本不在允许列表")
+            proc = subprocess.Popen(
+                [sys.executable, "-u", str(ROOT / script_name)],
+                cwd=str(ROOT),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+            )
+            heartbeat_general_task_run(
+                task_id,
+                "报告生成",
+                "服务恢复后已重新启动报告进程。",
+                worker_pid=proc.pid,
+                append_log=True,
+            )
+            if proc.stdout:
+                for line in proc.stdout:
+                    value = line.rstrip()
+                    if value:
+                        append_general_task_log(task_id, value)
+                        phase, progress = _task_phase_from_payload({"type": "log", "text": value}, "报告生成")
+                        heartbeat_general_task_run(
+                            task_id,
+                            phase,
+                            progress,
+                            worker_pid=proc.pid,
+                            append_log=False,
+                        )
+            proc.wait()
+            if proc.returncode:
+                raise RuntimeError(f"报告生成进程返回{proc.returncode}")
+            target = _latest_report_for_recovered_task(kind)
+            heartbeat_general_task_run(
+                task_id,
+                "生成语音摘要",
+                "Word已恢复生成，正在重新生成音频。",
+                append_log=True,
+            )
+            audio = synthesize_report_audio(target, force=True)
+            if not audio.get("ok"):
+                raise RuntimeError(str(audio.get("error") or "音频生成失败"))
+            detail = f"自动恢复成功：{target.name}及音频均已生成"
+        else:
+            raise RuntimeError(f"尚未支持自动恢复的任务类型：{kind or '-'}")
+        append_general_task_log(task_id, detail)
+        finish_general_task_run(task_id, True, detail)
+    except Exception as exc:
+        detail = f"第{retry_count}次自动恢复失败：{exc}"
+        append_general_task_log(task_id, detail)
+        finish_general_task_run(task_id, False, detail)
+
+
+def schedule_interrupted_general_task_retries(interrupted: list[dict]) -> list[str]:
+    """Queue bounded retries for every safely replayable general task."""
+    scheduled: list[str] = []
+    supported = {"weekly-report", "carrier-performance", "audio-generation"}
+    seen: set[tuple[str, str]] = set()
+    for task in interrupted:
+        kind = str(task.get("kind") or "")
+        retry_count = int(task.get("retry_count") or 0)
+        # The index is newest-first. If several restarts interrupted the same
+        # logical operation, retry only the newest record instead of launching
+        # duplicate reports/audio jobs after recovery.
+        recovery_key = (kind, str(task.get("target_path") or task.get("scope") or ""))
+        if recovery_key in seen:
+            _mark_general_task_recovery_disposition(
+                str(task.get("task_id") or ""), "superseded_by_newer_interruption"
+            )
+            continue
+        seen.add(recovery_key)
+        if kind not in supported:
+            append_general_task_log(str(task.get("task_id") or ""), "[自动恢复] 任务类型不支持安全重放，未自动重试。")
+            _mark_general_task_recovery_disposition(
+                str(task.get("task_id") or ""), "unsupported"
+            )
+            continue
+        if retry_count >= GENERAL_TASK_MAX_AUTO_RETRIES:
+            append_general_task_log(
+                str(task.get("task_id") or ""),
+                f"[自动恢复] 已达最大{GENERAL_TASK_MAX_AUTO_RETRIES}次，停止自动重试。",
+            )
+            _mark_general_task_recovery_disposition(
+                str(task.get("task_id") or ""), "retry_limit_reached"
+            )
+            continue
+        timer = threading.Timer(
+            GENERAL_TASK_RETRY_DELAY_SECONDS,
+            _run_recovered_general_task,
+            args=(dict(task),),
+        )
+        timer.name = f"task-auto-retry-{task.get('task_run_id') or 'unknown'}"
+        timer.daemon = True
+        timer.start()
+        _mark_general_task_recovery_disposition(
+            str(task.get("task_id") or ""), "scheduled"
+        )
+        scheduled.append(str(task.get("task_id") or ""))
+    return scheduled
 
 
 def reconcile_misclassified_general_tasks() -> list[dict]:
@@ -4302,6 +4498,10 @@ def main() -> None:
     interrupted_tasks = reconcile_interrupted_general_tasks()
     if interrupted_tasks:
         print(f"Reconciled {len(interrupted_tasks)} interrupted report task(s)", flush=True)
+    recovery_candidates = pending_interrupted_general_task_retries()
+    if recovery_candidates:
+        scheduled_retries = schedule_interrupted_general_task_retries(recovery_candidates)
+        print(f"Scheduled {len(scheduled_retries)} interrupted task retry/retries", flush=True)
     corrected_tasks = reconcile_misclassified_general_tasks()
     if corrected_tasks:
         print(f"Corrected {len(corrected_tasks)} misclassified report task(s)", flush=True)
