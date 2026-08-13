@@ -12044,6 +12044,15 @@ body.dashboard-page {
   cursor: progress;
 }
 
+.intelligence-relation-title.is-error,
+.intelligence-relation-title.is-error + strong {
+  color: #f0b0ba;
+}
+
+.intelligence-relation-title.is-error {
+  cursor: pointer;
+}
+
 .intelligence-relation strong {
   grid-column: 2 / 4;
   grid-row: 2;

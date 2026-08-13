@@ -1454,6 +1454,135 @@ def _deterministic_discoveries(evidence: dict[str, Any]) -> list[dict[str, Any]]
     return _validate_model_discoveries(discoveries, evidence)
 
 
+def _safe_discovery_regeneration_fallback(
+    evidence: dict[str, Any],
+    source_domain: str,
+    target_domain: str,
+    *,
+    current: dict[str, Any],
+    regeneration_index: int,
+) -> dict[str, Any] | None:
+    """Rotate evidence-only cross-domain judgements when every model returns unusable output."""
+    focuses = {
+        (str(domain.get("id") or ""), str(focus.get("id") or "")): focus
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+    }
+    urls_by_domain = _evidence_urls_by_domain(evidence)
+
+    def metric(domain_id: str, focus_id: str) -> str:
+        focus = focuses.get((domain_id, focus_id)) or {}
+        raw_metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
+        return f"{_display_number(raw_metric.get('value'))}{str(raw_metric.get('unit') or '')}"
+
+    def item_value(domain_id: str, focus_id: str, keyword: str) -> str:
+        focus = focuses.get((domain_id, focus_id)) or {}
+        for item in focus.get("items") or []:
+            if keyword in str(item.get("name") or ""):
+                return f"{_display_number(item.get('value'))}{str(item.get('unit') or '')}"
+        return ""
+
+    local_scale = metric("local", "scale")
+    international_growth = metric("international", "growth")
+    international_momentum = metric("international", "momentum")
+    cloud_growth = metric("cloud", "growth")
+    macro_connections = metric("macro", "connections")
+    macro_coverage = item_value("macro", "service", "5G人口覆盖")
+    variants: dict[tuple[str, str], list[tuple[str, str]]] = {
+        ("macro", "local"): [
+            (
+                "连接变化与方案供给分层",
+                f"手机卡及设备同比{macro_connections}与本地在售方案{local_scale}分属需求变化和供给数量口径，"
+                "说明两者存在结构性差异，方案数量不能直接解释连接变化。",
+            ),
+            (
+                "需求变化不等同方案规模",
+                f"本地在售方案{local_scale}反映供给广度，手机卡及设备同比{macro_connections}反映需求变化，"
+                "说明两项口径不同，产品数量不代表连接需求强弱。",
+            ),
+            (
+                "连接与产品数量口径错位",
+                f"手机卡及设备同比{macro_connections}、本地在售方案{local_scale}分别描述需求增量与产品数量，"
+                "表明两域指标存在结构差异且不能直接比较，竞争关系出现口径错位。",
+            ),
+        ],
+        ("international", "cloud"): [
+            (
+                "运营商与云增长分处两档",
+                f"内地运营商最高营收增速{international_growth}，云厂商领先增速{cloud_growth}，"
+                "说明两类市场增长梯队明显分化，业务周期并不同步。",
+            ),
+            (
+                "电信动量与云增速背离",
+                f"运营商增速变化{international_momentum}与云端领先增速{cloud_growth}分处不同区间，"
+                "表明传统电信和云业务增长动量脱钩，不能按同一周期解释。",
+            ),
+            (
+                "两类市场增长梯队分化",
+                f"云端领先增速{cloud_growth}高于运营商最高营收增速{international_growth}，"
+                "说明两类市场形成分层竞争，增速差距并非同口径经营效率比较。",
+            ),
+        ],
+        ("local", "cloud"): [
+            (
+                "产品数量与云增速口径错位",
+                f"本地在售方案{local_scale}衡量产品广度，云端领先增速{cloud_growth}衡量收入变化，"
+                "说明两项指标存在结构性差异，方案数量不代表云增长能力。",
+            ),
+            (
+                "供给广度不等同增长动量",
+                f"本地市场共有{local_scale}，云端领先增速为{cloud_growth}，"
+                "表明产品数量与收入增长属于不同口径，两者不能直接换算。",
+            ),
+            (
+                "方案规模与云增长脱钩",
+                f"本地在售方案{local_scale}与云端领先增速{cloud_growth}分别描述供给规模和增长速度，"
+                "说明两域指标口径不同，产品广度不等于增长梯队。",
+            ),
+        ],
+        ("macro", "international"): [
+            (
+                "覆盖高位与营收增长脱钩",
+                f"5G人口覆盖{macro_coverage}，内地运营商最高营收增速{international_growth}，"
+                "说明网络可达性与收入增长分属不同层面，覆盖高位不代表同步增长。",
+            ),
+            (
+                "网络覆盖不等同增长动量",
+                f"5G人口覆盖{macro_coverage}反映网络供给，运营商最高营收增速{international_growth}反映收入变化，"
+                "表明两项指标结构性差异明显，不能直接推导增长动量。",
+            ),
+            (
+                "覆盖成熟与收入表现分层",
+                f"5G人口覆盖{macro_coverage}已处高位，运营商最高营收增速为{international_growth}，"
+                "说明覆盖成熟和收入表现并不同步，两者形成分层关系。",
+            ),
+        ],
+    }
+    options = variants.get((source_domain, target_domain))
+    if not options:
+        return None
+    source_urls = [
+        sorted(urls_by_domain[domain_id])[0]
+        for domain_id in (source_domain, target_domain)
+        if urls_by_domain.get(domain_id)
+    ]
+    current_signature = tuple(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
+    for offset in range(len(options)):
+        title, detail = options[(regeneration_index + offset) % len(options)]
+        candidate = {
+            "from": source_domain,
+            "to": target_domain,
+            "title": title,
+            "detail": detail,
+            "kind": "数据证据解读",
+            "source_urls": source_urls,
+        }
+        candidate_signature = tuple(re.sub(r"\s+", "", str(candidate.get(key) or "")) for key in ("title", "detail"))
+        if candidate_signature != current_signature:
+            return candidate
+    return None
+
+
 def _normalize_fresh_focus_headline(
     headline: Any,
     *,
@@ -2444,6 +2573,9 @@ def regenerate_model_discovery(
     last_error: Exception | None = None
     replacement: dict[str, Any] | None = None
     used_model = models[0]
+    manual_state = previous.get("manual_discovery_regeneration") or {}
+    regeneration_count = int(manual_state.get("count") or 0) + 1
+    fallback_used = False
     report("正在生成新的跨库判断")
     regeneration_angles = ("结构差异", "驱动因素", "市场阶段", "集中度", "口径与时间差")
     for attempt, model in enumerate(models):
@@ -2475,7 +2607,7 @@ def regenerate_model_discovery(
         )
         wait_for_internal_ai_slot(f"executive-intelligence-discovery-{index}")
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=120) as response:
+            with urlopen_with_local_proxy_fallback(request, timeout=15) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
             message = (response_payload.get("choices") or [{}])[0].get("message") or {}
             parsed = _extract_json_payload(message.get("content") or message.get("reasoning_content") or "")
@@ -2501,7 +2633,23 @@ def regenerate_model_discovery(
                 "content": f"上一版未通过门禁：{exc}。保持领域组合，换一个数据关系角度，只返回合法JSON对象。",
             })
     if replacement is None:
-        raise ValueError(f"跨库洞察连续三次未通过门禁：{last_error}")
+        fallback = _safe_discovery_regeneration_fallback(
+            evidence,
+            source_domain,
+            target_domain,
+            current=current,
+            regeneration_index=regeneration_count - 1,
+        )
+        if fallback is None:
+            raise ValueError("模型本次未返回有效内容")
+        candidate = [dict(item) for item in discoveries]
+        candidate[index] = fallback
+        try:
+            replacement = _validate_model_discoveries(candidate, evidence)[index]
+        except ValueError as exc:
+            raise ValueError("模型本次未返回有效内容") from exc
+        used_model = "evidence-rule-fallback"
+        fallback_used = True
 
     report("证据校验通过，正在返回洞察")
     discoveries[index] = replacement
@@ -2520,11 +2668,21 @@ def regenerate_model_discovery(
             "from": source_domain,
             "to": target_domain,
             "generated_at_hkt": generated_at,
+            "count": regeneration_count,
+            "fallback_used": fallback_used,
+            "fallback_reason": str(last_error or "") if fallback_used else "",
         },
     }
     analysis["model_analysis"] = generated
     _atomic_write_json(path, analysis)
-    return {"ok": True, "index": index, **replacement, "model": used_model, "generated_at_hkt": generated_at}
+    return {
+        "ok": True,
+        "index": index,
+        **replacement,
+        "model": used_model,
+        "fallback_used": fallback_used,
+        "generated_at_hkt": generated_at,
+    }
 
 
 def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:

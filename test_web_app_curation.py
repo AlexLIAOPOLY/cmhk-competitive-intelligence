@@ -3589,6 +3589,7 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
 class IntelligenceEntityScrollTests(unittest.TestCase):
     def test_domain_title_is_display_only_and_relation_title_regenerates_discovery(self) -> None:
         app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
+        server = (Path(__file__).parent / "web_app.py").read_text(encoding="utf-8")
 
         self.assertIn('<span class="intelligence-domain-heading">', app)
         self.assertNotIn('<button type="button" class="intelligence-domain-heading', app)
@@ -3596,6 +3597,13 @@ class IntelligenceEntityScrollTests(unittest.TestCase):
         self.assertIn('data-intelligence-relation-refresh="${index}"', app)
         self.assertIn('/api/executive-intelligence/regenerate-discovery', app)
         self.assertIn('class="intelligence-relation-skeleton"', app)
+        self.assertIn('signatureAfter === signatureBefore', app)
+        self.assertIn('const relationRefreshPending = Array.from(relationRefreshState.values())', app)
+        self.assertIn('if (Array.from(relationRefreshState.values()).some((state) => state?.status === "loading")) return;', app)
+        self.assertIn('模型本次未返回有效内容，已保留当前版本', app)
+        self.assertNotIn('window.setTimeout(() => {\n        if (relationRefreshState.get(index)?.status !== "error")', app)
+        self.assertEqual(server.count('INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(timeout=60)'), 2)
+        self.assertNotIn('INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(blocking=False)', server)
         self.assertNotIn('? "正在重新生成洞察"', app)
 
     def test_cross_library_relation_rail_is_display_only(self) -> None:

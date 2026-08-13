@@ -86,8 +86,61 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("结构差异", bodies[0]["messages"][-1]["content"])
         self.assertIn("驱动因素", bodies[1]["messages"][-1]["content"])
         self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
+        self.assertEqual(request.call_args_list[0].kwargs["timeout"], 15)
         self.assertEqual(result["title"], "新标题")
         self.assertEqual(result["model"], "GLM")
+
+    def test_manual_discovery_regeneration_falls_back_for_all_four_pairs(self):
+        evidence = pipeline._analysis_input_snapshot()
+        discoveries = pipeline._deterministic_discoveries(evidence)
+        for index, discovery in enumerate(discoveries):
+            for regeneration_index in range(3):
+                fallback = pipeline._safe_discovery_regeneration_fallback(
+                    evidence,
+                    str(discovery["from"]),
+                    str(discovery["to"]),
+                    current=discovery,
+                    regeneration_index=regeneration_index,
+                )
+                candidate = [dict(item) for item in discoveries]
+                candidate[index] = fallback
+                pipeline._validate_model_discoveries(candidate, evidence)
+        empty_response = mock.MagicMock()
+        empty_response.__enter__.return_value.read.return_value = json.dumps({
+            "choices": [{"message": {"content": ""}}]
+        }).encode("utf-8")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "analysis.json"
+            output_path.write_text(json.dumps({
+                "model_analysis": {
+                    "evidence_hash": pipeline._content_hash(evidence),
+                    "insight_format": pipeline.INSIGHT_FORMAT_VERSION,
+                    "summaries": {"local": {}},
+                    "discoveries": discoveries,
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            results = []
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("ai_config.load_ai_config", return_value={
+                    "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+                }),
+                patch("ai_rate_limit.wait_for_internal_ai_slot"),
+                patch("network_utils.urlopen_with_local_proxy_fallback", return_value=empty_response),
+            ):
+                for index, discovery in enumerate(discoveries):
+                    results.append(pipeline.regenerate_model_discovery(
+                        index,
+                        str(discovery["from"]),
+                        str(discovery["to"]),
+                        path=output_path,
+                    ))
+
+        self.assertTrue(all(item["ok"] and item["fallback_used"] for item in results))
+        self.assertTrue(all(item["model"] == "evidence-rule-fallback" for item in results))
+        self.assertEqual(len({item["title"] for item in results}), 4)
+        self.assertTrue(all(item["kind"] == "数据证据解读" for item in results))
 
     def test_focus_generation_changes_cache_busting_prompt_each_time(self):
         focus = {

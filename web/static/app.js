@@ -7797,6 +7797,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderRail(relations) {
+    const relationRefreshPending = Array.from(relationRefreshState.values()).some((state) => state?.status === "loading");
     const markup = relations.slice(0, 4).map((relation, index) => `
       <div class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"
         style="--relation-index:${index}"
@@ -7805,13 +7806,15 @@ document.addEventListener("keydown", (event) => {
         <button type="button" class="intelligence-relation-title ${relationRefreshState.get(index)?.status === "loading" ? "is-loading" : ""} ${relationRefreshState.get(index)?.status === "error" ? "is-error" : ""}"
           data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
           aria-label="点击重新生成${safe(domainLabels[relation.from] || relation.from)}与${safe(domainLabels[relation.to] || relation.to)}战略解读"
-          ${relationRefreshState.get(index)?.status === "loading" ? "disabled aria-busy=\"true\"" : ""}>
+          ${relationRefreshPending ? `disabled ${relationRefreshState.get(index)?.status === "loading" ? "aria-busy=\"true\"" : "aria-disabled=\"true\""}` : ""}>
           ${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}
         </button>
         <strong class="${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""}">${relationRefreshState.get(index)?.status === "loading"
           ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成数据解读</span>`
-          : safe(relation.title)}</strong>
-        <small>${safe(relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
+          : relationRefreshState.get(index)?.status === "error"
+            ? safe(relationRefreshState.get(index)?.message || "本次未生成新内容")
+            : safe(relation.title)}</strong>
+        <small>${safe(relationRefreshState.get(index)?.status === "error" ? "点击重试" : relation.kind === "数据证据解读" ? "数据战略解读" : relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
       </div>
     `).join("");
     patchElementList(rail, markup);
@@ -8173,7 +8176,9 @@ document.addEventListener("keydown", (event) => {
   }
 
   async function refreshRelationInsight(index, sourceDomain, targetDomain) {
-    if (relationRefreshState.get(index)?.status === "loading") return;
+    if (Array.from(relationRefreshState.values()).some((state) => state?.status === "loading")) return;
+    const relationBefore = (payload?.relations || [])[index] || {};
+    const signatureBefore = JSON.stringify([relationBefore.title || "", relationBefore.detail || ""]);
     relationRefreshState.set(index, { status: "loading" });
     renderRail(payload?.relations || []);
     try {
@@ -8185,16 +8190,23 @@ document.addEventListener("keydown", (event) => {
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || "数据解读生成失败");
       await refreshIntelligencePayload(true);
+      const relationAfter = (payload?.relations || [])[index] || {};
+      const signatureAfter = JSON.stringify([relationAfter.title || "", relationAfter.detail || ""]);
+      if (signatureAfter === signatureBefore) {
+        throw new Error("服务未返回与当前版本不同的新内容，请点击重试");
+      }
       relationRefreshState.delete(index);
       renderRail(payload?.relations || []);
     } catch (error) {
-      relationRefreshState.set(index, { status: "error" });
+      const rawMessage = String(error?.message || "");
+      const technicalError = /Expecting value|JSON|line \d+ column \d+|char \d+|Traceback|SyntaxError/i.test(rawMessage);
+      relationRefreshState.set(index, {
+        status: "error",
+        message: technicalError
+          ? "模型本次未返回有效内容，已保留当前版本"
+          : rawMessage || "本次未生成新内容，请点击重试",
+      });
       renderRail(payload?.relations || []);
-      window.setTimeout(() => {
-        if (relationRefreshState.get(index)?.status !== "error") return;
-        relationRefreshState.delete(index);
-        renderRail(payload?.relations || []);
-      }, 5000);
     }
   }
 

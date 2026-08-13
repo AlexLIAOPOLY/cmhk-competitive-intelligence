@@ -3680,8 +3680,8 @@ class AppHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
         if parsed.path == "/api/executive-intelligence/regenerate-discovery":
-            if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(blocking=False):
-                json_response(self, {"ok": False, "error": "已有AI洞察正在生成，请稍候。"}, 409)
+            if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(timeout=60):
+                json_response(self, {"ok": False, "error": "数据解读服务仍在处理上一项任务，请稍后重试。"}, 409)
                 return
             try:
                 from executive_intelligence_pipeline import regenerate_model_discovery
@@ -3701,8 +3701,8 @@ class AppHandler(BaseHTTPRequestHandler):
                 INTELLIGENCE_INSIGHT_REFRESH_LOCK.release()
             return
         if parsed.path == "/api/executive-intelligence/regenerate-insight":
-            if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(blocking=False):
-                json_response(self, {"ok": False, "error": "已有AI洞察正在生成，请稍候。"}, 409)
+            if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(timeout=60):
+                json_response(self, {"ok": False, "error": "数据解读服务仍在处理上一项任务，请稍后重试。"}, 409)
                 return
             try:
                 from executive_intelligence_pipeline import regenerate_model_focus_summary
