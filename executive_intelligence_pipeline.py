@@ -469,10 +469,10 @@ _ANALYTICAL_JUDGEMENT_TERMS = (
     "下降", "回落", "改善", "加速", "放缓", "分化", "集中", "重叠", "梯度", "饱和",
     "压力", "风险", "机会", "空间", "优势", "短板", "不同", "差异", "相差", "居首",
     "覆盖", "完整", "充分", "不足", "多于", "少于", "强于", "弱于", "扩大", "收窄",
-    "深度", "约束", "承压", "断层", "区隔", "选择", "负担", "转化", "压力",
+    "深度", "约束", "承压", "断层", "区隔", "选择", "新增", "负担", "转化", "压力",
 )
 _INTERPRETIVE_CONNECTORS = (
-    "表明", "反映", "说明", "意味着", "显示", "主要来自", "并非", "而非", "本质上",
+    "表明", "反映", "说明", "意味着", "显示", "因此", "主要来自", "并非", "而非", "本质上",
     "取决于", "受制于", "源于", "不能等同", "不能直接", "并不等同", "不等于", "不可直接", "不完全是", "更接近",
 )
 _INTERPRETIVE_DIMENSIONS = (
@@ -1115,9 +1115,17 @@ def _display_number(value: Any) -> str:
 
 
 def _ranked_focus_items(focus: dict[str, Any]) -> list[dict[str, Any]]:
+    def numeric_rank(item: dict[str, Any]) -> float:
+        value = item.get("value")
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            match = re.search(r"[-+]?\d+(?:\.\d+)?", str(value or "").replace(",", ""))
+            return float(match.group()) if match else float("-inf")
+
     return sorted(
         [item for item in focus.get("items") or [] if isinstance(item, dict) and item.get("value") not in (None, "")],
-        key=lambda item: float(item.get("value")),
+        key=numeric_rank,
         reverse=True,
     )
 
