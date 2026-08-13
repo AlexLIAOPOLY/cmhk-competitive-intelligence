@@ -547,29 +547,29 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     ) or not re.search(r"[。！？!?]$", analysis):
         return (
             f"AI分析分类必须精炼为一至两句、总长不超过{MAX_FOCUS_INSIGHT_CHARS}字："
-            f"{domain}.{focus_id}；内容：{analysis[:180]}"
+            f"{domain}.{focus_id}"
         )
     if _contains_action_advice(analysis):
-        return f"AI分析分类含行动建议而非数据洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
+        return f"AI分析分类含行动建议而非数据洞察：{domain}.{focus_id}"
     unsupported_causal = tuple(
         term for term in ("导致", "造成", "推动", "带来", "源于", "驱动")
         if term in analysis and not any(boundary in analysis for boundary in ("不能判断", "无法判断", "不能建立", "不代表"))
     )
     if unsupported_causal:
-        return f"AI分析分类使用了未经证据支持的因果词{unsupported_causal}：{domain}.{focus_id}；内容：{analysis[:180]}"
+        return f"AI分析分类使用了未经证据支持的因果词{unsupported_causal}：{domain}.{focus_id}"
     focus_numbers = _focus_value_tokens(evidence_focus)
     analysis_numbers = _numeric_tokens(analysis)
     if focus_numbers and not (focus_numbers & analysis_numbers):
-        return f"AI分析分类缺少输入数值证据：{domain}.{focus_id}；内容：{analysis[:180]}"
+        return f"AI分析分类缺少输入数值证据：{domain}.{focus_id}"
     if not _has_deep_interpretation(analysis):
-        return f"AI分析分类缺少结构、驱动或可比性解释：{domain}.{focus_id}；内容：{analysis[:180]}"
+        return f"AI分析分类缺少结构、驱动或可比性解释：{domain}.{focus_id}"
     restriction_phrases = (
         "缺失值不估算", "缺失数据不估算", "只比较已结构化", "仅比较已结构化",
         "用于判断", "用于识别", "用于展示", "展示可分析", "此处比较", "聚焦云业务",
         "高增长集中", "说明存在差异", "说明存在差距",
     )
     if any(phrase in analysis for phrase in restriction_phrases):
-        return f"AI分析分类仍以方法说明代替洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
+        return f"AI分析分类仍以方法说明代替洞察：{domain}.{focus_id}"
     forbidden_by_focus = {
         ("local", "scale"): (
             "赛道", "月费", "资费区间", "重叠", "交集", "资本负担", "利润转化",
@@ -582,8 +582,7 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     leaked_terms = [term for term in forbidden_terms if term in analysis]
     if leaked_terms:
         return (
-            f"AI分析分类混入其他页维度{leaked_terms}：{domain}.{focus_id}；"
-            f"内容：{analysis[:180]}"
+            f"AI分析分类混入其他页维度{leaked_terms}：{domain}.{focus_id}"
         )
     if (domain, focus_id) == ("local", "mobile_price"):
         ranges = [
@@ -600,10 +599,43 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         )
         if has_overlap and any(phrase in analysis for phrase in ("未重合", "没有重合", "无重合")):
             return (
-                f"AI分析分类与输入价格区间矛盾：{domain}.{focus_id}；"
-                f"内容：{analysis[:180]}"
+                f"AI分析分类与输入价格区间矛盾：{domain}.{focus_id}"
             )
     return ""
+
+
+def _repair_generated_focus_analysis(
+    analysis: str,
+    allowed_numeric_evidence: dict[str, Any],
+) -> tuple[str, bool]:
+    """Repair common model formatting slips without inventing a new judgement."""
+    repaired = re.sub(r"\s+", " ", str(analysis or "")).strip()
+    original = repaired
+    allowed_numbers = _numeric_tokens(allowed_numeric_evidence)
+    unknown_numbers = _numeric_tokens(repaired) - allowed_numbers
+    for number in sorted(unknown_numbers, key=len, reverse=True):
+        # Models often subtract two admitted percentages despite an explicit ban.
+        # Keep the qualitative comparison and remove only that derived result.
+        derived_difference = re.compile(
+            rf"(?:仅|只)?(?:相差|差距(?:仅|为|仅为)?|差|高出|低于)\s*"
+            rf"{re.escape(number)}\s*(?:个?百分点|%|港元/月|港元|倍)?"
+        )
+        repaired = derived_difference.sub("差距有限", repaired)
+
+    if len(repaired) > MAX_FOCUS_INSIGHT_CHARS:
+        # A trailing disclosure caveat is useful but lower priority when the same
+        # sample boundary is already stated earlier in the sentence.
+        repaired = re.sub(
+            r"[，；][^，；。！？]*(?:未披露|未提供|数据缺失)[^。！？]*[。！？]$",
+            "。",
+            repaired,
+        )
+    if len(repaired) > MAX_FOCUS_INSIGHT_CHARS:
+        repaired = re.sub(r"[，；]?样本(?:仅|限于)[^，；。！？]*[，；]", "，", repaired, count=1)
+    repaired = re.sub(r"[，；]{2,}", "，", repaired).strip("，； ")
+    if repaired and not re.search(r"[。！？!?]$", repaired):
+        repaired += "。"
+    return repaired, repaired != original
 
 
 def _repair_focus_numeric_anchors(raw: Any, evidence: dict[str, Any]) -> Any:
@@ -1598,10 +1630,18 @@ def _normalize_fresh_focus_headline(
         normalized,
         flags=re.IGNORECASE,
     )
+    normalized = (
+        normalized
+        .replace("中国联通", "联通")
+        .replace("中国移动", "移动")
+        .replace("中国电信", "电信")
+        .replace("资本投入强度", "投入强度")
+        .replace("个人五G", "个人")
+    )
     if len(normalized) > 14:
         normalized = re.sub(r"(增长质量|经营质量|竞争质量|市场表现)$", "", normalized)
     candidates = [
-        normalized[:14],
+        normalized if len(normalized) <= 14 else "",
         f"{label}关系重新判断"[:14],
         f"{label}口径边界显现"[:14],
         f"{label}结构重新分化"[:14],
@@ -1928,6 +1968,16 @@ def generate_model_focus_insight(
                 )
             if analysis and not re.search(r"[。！？!?]$", analysis):
                 analysis += "。"
+            # Repair two recurring model slips before applying the strict gate:
+            # derived differences and an overlong trailing disclosure caveat.
+            allowed_numeric_evidence = {
+                "metric": compact_focus.get("metric"),
+                "items": compact_focus.get("items"),
+            }
+            analysis, analysis_repaired = _repair_generated_focus_analysis(
+                analysis,
+                allowed_numeric_evidence,
+            )
             gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
             if gate_error:
                 raise ValueError(gate_error)
@@ -1950,10 +2000,6 @@ def generate_model_focus_insight(
                     raise ValueError(f"AI洞察未真正采用指定的新分析角度：{angle_instruction}")
             # Validate against exactly what the model was allowed to see. Hidden
             # cross-focus details must never make their numbers look admissible.
-            allowed_numeric_evidence = {
-                "metric": compact_focus.get("metric"),
-                "items": compact_focus.get("items"),
-            }
             unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(allowed_numeric_evidence)
             if unknown_numbers:
                 raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_numbers)}")
@@ -1987,6 +2033,7 @@ def generate_model_focus_insight(
                 "analysis": analysis,
                 "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
                 "source_urls": [],
+                **({"repaired": True} if analysis_repaired else {}),
             },
         }
     if scale_has_record_counts:
@@ -2464,7 +2511,17 @@ def _manual_discovery_evidence(
             "value": value,
             "source_url": source_url,
         })
-    return {"required_values": [item["value"] for item in anchors], "evidence": anchors}
+    required_lens = {
+        ("macro", "local"): "区分需求变化与本地产品选择宽度，明确两种口径的边界，不虚构因果。",
+        ("international", "cloud"): "判断传统运营商与云业务所处增长阶段是否分层，不把增速差直接等同经营效率。",
+        ("local", "cloud"): "区分本地产品供给广度与全球云收入增速，解释范围错配而不是笼统写脱钩。",
+        ("macro", "international"): "比较成熟网络覆盖与运营商收入增速，解释网络可达性和变现阶段的边界。",
+    }.get((source_domain, target_domain), "解释两项指标的口径和市场阶段边界。")
+    return {
+        "required_values": [item["value"] for item in anchors],
+        "required_lens": required_lens,
+        "evidence": anchors,
+    }
 
 
 def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -2605,7 +2662,11 @@ def regenerate_model_discovery(
                 "title不超过28字，detail不超过110字，kind写AI综合研判。detail必须逐字包含required_values中的"
                 "两个值，且两个领域各一个；解释结构、驱动、"
                 "集中度、口径差异、市场阶段或跨领域背离；禁止建议、应、需、优先、关注、评估、验证等行动话术。"
-                "detail必须同时包含“表明、反映、说明”之一，以及“不能直接比较、不等同、结构性差异、脱钩”之一。"
+                "detail必须遵守required_lens；detail必须包含“表明、反映、说明”三者之一且只用一个即可；"
+                "关系判断可使用分层、差距、不同、并非、不等于、重合、错位、边界等最贴合证据的词。"
+                "除非required_lens明确要求，否则不要使用‘脱钩’或‘结构性差异’，也不要连续堆叠多个解释连接词。"
+                "required_lens已经给出可解释边界；不得进一步猜测增速或差距为何发生，不得补写AI、算力、基站共享、"
+                "套餐组合、客户需求等输入中没有的驱动因素。"
                 "source_urls必须逐字使用evidence中两个领域各自的source_url，不得新增数字、来源或伪造因果。"
                 "必须依据证据重新推导一条判断，不得复述输入指令或请求编号。"
             ),
@@ -2664,10 +2725,20 @@ def regenerate_model_discovery(
                 raise ValueError("模型未返回单项跨库洞察对象")
             if str(parsed.get("from") or "") != source_domain or str(parsed.get("to") or "") != target_domain:
                 raise ValueError("模型改变了跨库领域组合")
+            unsupported_driver_terms = (
+                "AI扩张", "算力需求", "基站共享", "存量基站", "客户需求", "套餐组合",
+            )
+            leaked_drivers = [term for term in unsupported_driver_terms if term in str(parsed.get("detail") or "")]
+            if leaked_drivers:
+                raise ValueError(f"模型补写了输入之外的驱动因素：{leaked_drivers}")
             current_signature = tuple(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
             parsed_signature = tuple(re.sub(r"\s+", "", str(parsed.get(key) or "")) for key in ("title", "detail"))
             if parsed_signature == current_signature:
                 raise ValueError("模型返回了与当前跨库洞察完全相同的结果")
+            current_text = "".join(current_signature)
+            parsed_text = "".join(parsed_signature)
+            if difflib.SequenceMatcher(None, current_text, parsed_text).ratio() >= 0.82:
+                raise ValueError("模型返回的跨库判断与当前版本语义过于相似")
             candidate = [dict(item) for item in discoveries]
             candidate[index] = parsed
             replacement = _validate_model_discoveries(candidate, evidence)[index]

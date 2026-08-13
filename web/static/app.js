@@ -8163,7 +8163,7 @@ document.addEventListener("keydown", (event) => {
       if (latestDomain) replaceDomainCard(latestDomain);
     } catch (error) {
       const rawMessage = String(error?.message || "");
-      const technicalError = /Expecting value|JSON|line \d+ column \d+|char \d+|Traceback|SyntaxError/i.test(rawMessage);
+      const technicalError = /Expecting value|JSON|line \d+ column \d+|char \d+|Traceback|SyntaxError|AI分析|AI跨库发现|输入之外的数字|必须精炼|内容：|模型未返回|内网模型|门禁/i.test(rawMessage);
       insightRefreshState.set(key, {
         status: "error",
         message: technicalError
@@ -8199,7 +8199,7 @@ document.addEventListener("keydown", (event) => {
       renderRail(payload?.relations || []);
     } catch (error) {
       const rawMessage = String(error?.message || "");
-      const technicalError = /Expecting value|JSON|line \d+ column \d+|char \d+|Traceback|SyntaxError/i.test(rawMessage);
+      const technicalError = /Expecting value|JSON|line \d+ column \d+|char \d+|Traceback|SyntaxError|AI分析|AI跨库发现|输入之外的数字|必须精炼|内容：|模型未返回|内网模型|门禁/i.test(rawMessage);
       relationRefreshState.set(index, {
         status: "error",
         message: technicalError

@@ -17,6 +17,19 @@ import rag_llm
 import web_app
 
 
+class IntelligenceErrorSanitizationTests(unittest.TestCase):
+    def test_internal_gate_and_rejected_copy_are_not_returned_to_browser(self) -> None:
+        internal = ValueError(
+            "AI分析分类必须精炼为一至两句、总长不超过120字：local.mobile_price；内容：秘密模型正文"
+        )
+
+        message = web_app.public_intelligence_error_message(internal)
+
+        self.assertEqual(message, "本次AI结果未通过数据校验，已保留当前版本，请点击重试。")
+        self.assertNotIn("内容：", message)
+        self.assertNotIn("秘密模型正文", message)
+
+
 class ReportFileNameTests(unittest.TestCase):
     def test_report_audio_metadata_does_not_read_transcript_sidecars(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

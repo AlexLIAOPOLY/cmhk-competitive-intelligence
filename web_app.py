@@ -833,6 +833,19 @@ def write_ndjson_event(handler: BaseHTTPRequestHandler, payload: dict) -> None:
     handler.wfile.flush()
 
 
+def public_intelligence_error_message(exc: Exception) -> str:
+    """Return a stable user-facing message without leaking model output or gates."""
+    raw = str(exc or "").strip()
+    internal_markers = (
+        "AI分析", "AI跨库发现", "新洞察", "模型未返回", "内网模型",
+        "Expecting value", "JSON", "Traceback", "SyntaxError", "内容：",
+        "输入之外的数字", "必须精炼", "门禁",
+    )
+    if not raw or any(marker in raw for marker in internal_markers):
+        return "本次AI结果未通过数据校验，已保留当前版本，请点击重试。"
+    return raw[:120]
+
+
 def load_curation_status() -> dict:
     if not CURATION_LATEST_PATH.exists():
         return {}
@@ -3694,9 +3707,9 @@ class AppHandler(BaseHTTPRequestHandler):
                     raise ValueError("from和to不能为空")
                 json_response(self, regenerate_model_discovery(index, source_domain, target_domain))
             except (TypeError, ValueError) as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
+                json_response(self, {"ok": False, "error": public_intelligence_error_message(exc)}, 400)
             except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
+                json_response(self, {"ok": False, "error": public_intelligence_error_message(exc)}, 500)
             finally:
                 INTELLIGENCE_INSIGHT_REFRESH_LOCK.release()
             return
@@ -3729,14 +3742,17 @@ class AppHandler(BaseHTTPRequestHandler):
                             **{key: value for key, value in result.items() if key != "analysis"},
                         })
                     except Exception as exc:
-                        write_ndjson_event(self, {"type": "error", "message": str(exc)})
+                        write_ndjson_event(self, {
+                            "type": "error",
+                            "message": public_intelligence_error_message(exc),
+                        })
                     self.close_connection = True
                 else:
                     json_response(self, regenerate_model_focus_summary(domain_id, focus_id))
             except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
+                json_response(self, {"ok": False, "error": public_intelligence_error_message(exc)}, 400)
             except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
+                json_response(self, {"ok": False, "error": public_intelligence_error_message(exc)}, 500)
             finally:
                 INTELLIGENCE_INSIGHT_REFRESH_LOCK.release()
             return

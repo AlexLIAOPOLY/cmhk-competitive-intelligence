@@ -33,7 +33,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             'models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
             source,
         )
-        self.assertIn('detail必须同时包含“表明、反映、说明”之一', source)
+        self.assertIn('detail必须包含“表明、反映、说明”三者之一且只用一个即可', source)
 
     def test_manual_discovery_uses_two_explicit_numeric_anchors_per_pair(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -1095,6 +1095,58 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "与输入价格区间矛盾",
             pipeline._focus_gate_error("local", "mobile_price", analysis, focus),
         )
+
+    def test_focus_analysis_repair_removes_only_derived_difference(self):
+        analysis = (
+            "中国移动11.41%与中国电信11.18%仅差0.23个百分点，"
+            "说明两者资本投入占比相近，并非形成明显分层。"
+        )
+        repaired, changed = pipeline._repair_generated_focus_analysis(
+            analysis,
+            {
+                "metric": {"value": 13.28},
+                "items": [{"value": 11.41}, {"value": 11.18}],
+            },
+        )
+
+        self.assertTrue(changed)
+        self.assertNotIn("0.23", repaired)
+        self.assertIn("11.41%", repaired)
+        self.assertIn("11.18%", repaired)
+        self.assertIn("差距有限", repaired)
+
+    def test_focus_analysis_repair_trims_redundant_disclosure_tail(self):
+        analysis = (
+            "仅3HK与SmarTone披露个人5G月费，样本限于两家；"
+            "3HK价格带124–228与SmarTone 159–399在159–228区间重合，"
+            "说明中位价168与239的差异主要来自SmarTone向上延伸至399，而非基础档分层，"
+            "HKBN等三家未披露，不能等同市场全貌。"
+        )
+        repaired, changed = pipeline._repair_generated_focus_analysis(
+            analysis,
+            {
+                "metric": {"value": 168},
+                "items": [
+                    {"name": "3HK", "value": 168, "detail": "价格带124–228"},
+                    {"name": "SmarTone", "value": 239, "detail": "价格带159–399"},
+                ],
+            },
+        )
+
+        self.assertTrue(changed)
+        self.assertLessEqual(len(repaired), pipeline.MAX_FOCUS_INSIGHT_CHARS)
+        self.assertNotIn("HKBN等三家未披露", repaired)
+        self.assertIn("价格带124–228", repaired)
+
+    def test_focus_headline_compacts_whole_words_instead_of_cutting_mid_phrase(self):
+        headline = pipeline._normalize_fresh_focus_headline(
+            "中国联通资本投入强度与移动电信分化",
+            label="资本投入占比",
+            recent_headlines=[],
+        )
+
+        self.assertEqual(headline, "联通投入强度与移动电信分化")
+        self.assertFalse(headline.endswith("分"))
 
     def test_numeric_anchor_repair_keeps_ai_judgement_but_does_not_rescue_filler(self):
         evidence = {"domains": [{
