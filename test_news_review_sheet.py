@@ -286,6 +286,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
     def test_sync_places_new_rows_above_history_and_preserves_history(self):
         writes = []
         read_count = [0]
+        progress_events = []
 
         def read_rows(_sheet_id):
             read_count[0] += 1
@@ -315,15 +316,22 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             mock.patch.object(
                 strategic_briefing,
                 "polish_candidates_before_review",
-                side_effect=lambda items: items,
+                side_effect=lambda items, **_kwargs: items,
             ),
             mock.patch.object(
                 strategic_briefing,
                 "agent_semantic_deduplicate_candidates",
-                side_effect=self._semantic_keep,
+                side_effect=lambda items, history, **_kwargs: self._semantic_keep(
+                    items, history
+                ),
             ),
         ):
-            result = review_sheet.sync_candidates([self._new_item()])
+            result = review_sheet.sync_candidates(
+                [self._new_item()],
+                progress_callback=lambda phase, detail: progress_events.append(
+                    (phase, detail)
+                ),
+            )
 
         self.assertEqual(result["candidate_count"], 2)
         self.assertEqual(
@@ -346,6 +354,17 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual([cell_range for cell_range, _ in writes], ["A2:N3"])
         self.assertEqual(writes[0][1][0][6], "今日新新闻")
         self.assertEqual(writes[0][1][1], self._existing_row())
+        progress_phases = [phase for phase, _detail in progress_events]
+        for phase in (
+            "飞书审核表准备",
+            "飞书历史读取",
+            "候选确定性门禁",
+            "AI逐条审核",
+            "新增候选组装",
+            "飞书分批写入",
+            "飞书逐格回读",
+        ):
+            self.assertIn(phase, progress_phases)
         saved_state = write_json.call_args.args[1]
         metadata = saved_state[review_sheet.GATE_METADATA_STATE_KEY]
         self.assertEqual(

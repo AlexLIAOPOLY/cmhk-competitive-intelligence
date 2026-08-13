@@ -16,7 +16,7 @@ from datetime import datetime
 from difflib import SequenceMatcher
 from email.utils import parsedate_to_datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from zoneinfo import ZoneInfo
 
@@ -109,6 +109,22 @@ def _now_iso() -> str:
 
 def _group_notifications_paused() -> bool:
     return os.environ.get("CMHK_STRATEGIC_GROUP_NOTIFICATIONS", "0") != "1"
+
+
+ProgressCallback = Callable[[str, str], None]
+
+
+def _progress(
+    progress_callback: ProgressCallback | None,
+    phase: str,
+    detail: str,
+) -> None:
+    if progress_callback is None:
+        return
+    try:
+        progress_callback(phase, detail)
+    except Exception:
+        logging.exception("战略新闻审核详细日志回调失败")
 
 
 def _schedule_public_dashboard_publish() -> dict[str, Any]:
@@ -1059,8 +1075,14 @@ def sync_candidates(
     *,
     generated_at: str = "",
     slot_label: str = "",
+    progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
     with _LOCK:
+        _progress(
+            progress_callback,
+            "飞书审核表准备",
+            f"正在解析目标工作表并读取全量历史；本轮传入 {len(items)} 条。",
+        )
         sheet_id = ensure_sheet()
         rows = _read_rows(sheet_id)
         _validate_sheet_rows(rows, context="现有飞书审核表")
@@ -1091,6 +1113,14 @@ def sync_candidates(
             )
             existing_rows_by_id[parsed["news_id"]] = normalized_row
             existing_history_items.append(parsed)
+        _progress(
+            progress_callback,
+            "飞书历史读取",
+            (
+                f"已读取 {len(rows)} 行，有效历史 {existing_row_count} 条，"
+                f"唯一新闻ID {len(existing_rows_by_id)} 个。"
+            ),
+        )
         state = _read_json(STATE_PATH, {})
         try:
             previous_candidate_count = int(state.get("last_candidate_count") or 0)
@@ -1102,6 +1132,20 @@ def sync_candidates(
                 f"当前 {existing_row_count} 条，上次 {previous_candidate_count} 条"
             )
         curated_items, gate_reasons = curate_news_items(list(items))
+        gate_reason_text = "、".join(
+            f"{name} {count}"
+            for name, count in sorted(
+                gate_reasons.items(), key=lambda entry: (-entry[1], entry[0])
+            )[:8]
+        ) or "无"
+        _progress(
+            progress_callback,
+            "候选确定性门禁",
+            (
+                f"输入 {len(items)} 条，通过 {len(curated_items)} 条，"
+                f"过滤 {len(items) - len(curated_items)} 条；主要原因：{gate_reason_text}。"
+            ),
+        )
         candidate_gate_metadata = (
             dict(state.get(GATE_METADATA_STATE_KEY) or {})
             if isinstance(state.get(GATE_METADATA_STATE_KEY), dict)
@@ -1117,12 +1161,46 @@ def sync_candidates(
             polish_candidates_before_review,
         )
 
-        prepared_items = polish_candidates_before_review(curated_items)
-        semantic_result = agent_semantic_deduplicate_candidates(
-            prepared_items,
-            existing_history_items,
+        _progress(
+            progress_callback,
+            "AI逐条审核",
+            f"开始审核 {len(curated_items)} 条门禁通过候选。",
+        )
+        prepared_items = (
+            polish_candidates_before_review(
+                curated_items,
+                progress_callback=progress_callback,
+            )
+            if progress_callback is not None
+            else polish_candidates_before_review(curated_items)
+        )
+        _progress(
+            progress_callback,
+            "AI逐条审核",
+            f"AI审核结束，保留 {len(prepared_items)}/{len(curated_items)} 条，即将进入全历史去重。",
+        )
+        semantic_result = (
+            agent_semantic_deduplicate_candidates(
+                prepared_items,
+                existing_history_items,
+                progress_callback=progress_callback,
+            )
+            if progress_callback is not None
+            else agent_semantic_deduplicate_candidates(
+                prepared_items,
+                existing_history_items,
+            )
         )
         prepared_items = semantic_result["kept"]
+        _progress(
+            progress_callback,
+            "新增候选组装",
+            (
+                f"去重后保留 {len(prepared_items)} 条；重复 "
+                f"{len(semantic_result['duplicates'])} 条，延期 "
+                f"{len(semantic_result['deferred'])} 条。"
+            ),
+        )
         archived_count = len(existing_rows_by_id)
         new_values: list[list[Any]] = []
         new_count = 0
@@ -1197,10 +1275,19 @@ def sync_candidates(
         if len(ordered_values) > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 行数据上限")
         _validate_sheet_rows(ordered_values, context="待写入飞书审核表")
+        total_chunks = (len(ordered_values) + 39) // 40
         for offset in range(0, len(ordered_values), 40):
             chunk = ordered_values[offset : offset + 40]
             start_row = 2 + offset
             end_row = start_row + len(chunk) - 1
+            _progress(
+                progress_callback,
+                "飞书分批写入",
+                (
+                    f"写入第 {offset // 40 + 1}/{total_chunks} 批，"
+                    f"范围 A{start_row}:N{end_row}，共 {len(chunk)} 行。"
+                ),
+            )
             _write(sheet_id, f"A{start_row}:N{end_row}", chunk)
         if len(ordered_values) < existing_row_count:
             clear_start = 2 + len(ordered_values)
@@ -1217,12 +1304,25 @@ def sync_candidates(
         # but allow a short eventual-consistency window before declaring a
         # real mismatch.
         for readback_attempt in range(1, 5):
+            _progress(
+                progress_callback,
+                "飞书逐格回读",
+                (
+                    f"第 {readback_attempt}/4 次回读，校验 "
+                    f"{len(ordered_values)} 行 x {len(HEADERS)} 列。"
+                ),
+            )
             written_rows = _read_rows(sheet_id)
             actual_rows = [
                 _comparable_sheet_row(row)
                 for row in written_rows[: len(ordered_values)]
             ]
             if actual_rows == expected_rows:
+                _progress(
+                    progress_callback,
+                    "飞书逐格回读",
+                    f"第 {readback_attempt} 次回读通过，所有 {len(ordered_values) * len(HEADERS)} 个单元格一致。",
+                )
                 break
             if readback_attempt < 4:
                 time.sleep(readback_attempt)
@@ -2029,7 +2129,10 @@ def curate_news_items(items: list[dict[str, Any]]) -> tuple[list[dict[str, Any]]
     return result, reasons
 
 
-def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def _load_curated_latest(
+    *,
+    progress_callback: ProgressCallback | None = None,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     paths = _news_source_paths()
     combined: list[dict[str, Any]] = []
     generated_at = ""
@@ -2057,7 +2160,14 @@ def _load_curated_latest() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     from strategic_briefing import polish_candidates_before_review
 
     try:
-        curated = polish_candidates_before_review(curated)
+        curated = (
+            polish_candidates_before_review(
+                curated,
+                progress_callback=progress_callback,
+            )
+            if progress_callback is not None
+            else polish_candidates_before_review(curated)
+        )
     except Exception as exc:
         logging.exception("公司内部 AI 候选审核失败，本轮禁止写表并等待重试: %s", exc)
         raise
@@ -2120,13 +2230,25 @@ def run_cycle(
     force: bool = False,
     schedule_dashboard_publish: bool = True,
     idempotency_key: str = "",
+    progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
+    lock_started = time.monotonic()
+    _progress(
+        progress_callback,
+        "审核进程锁",
+        f"正在等待审核进程锁；force={force}，幂等键={_text(idempotency_key, 120) or '无'}。",
+    )
     with _LOCK, _review_process_lock(wait=force) as process_lock_acquired:
         if not process_lock_acquired:
             return {
                 "status": "busy",
                 "reason": "another_review_process_is_running",
             }
+        _progress(
+            progress_callback,
+            "审核进程锁",
+            f"已取得锁，等待 {time.monotonic() - lock_started:.2f} 秒。",
+        )
         state = _read_json(STATE_PATH, {})
         now_epoch = time.time()
         if not force and now_epoch - float(state.get("last_poll_epoch") or 0) < POLL_SECONDS:
@@ -2141,6 +2263,11 @@ def run_cycle(
             and cached_cycle.get("status") == "ok"
             and cached_cycle.get("readback_verified") is True
         ):
+            _progress(
+                progress_callback,
+                "幂等结果复用",
+                "已找到同一时段且逐格回读成功的结果，直接复用，不重复审核和写表。",
+            )
             return {
                 **cached_cycle,
                 "status": "ok",
@@ -2193,13 +2320,48 @@ def run_cycle(
                     "semantic_deferred_count": 0,
                 }
             else:
-                items, latest = _load_curated_latest()
+                _progress(
+                    progress_callback,
+                    "候选源汇总",
+                    "正在读取新闻发现池、运行时候选和延期记录并做入口门禁。",
+                )
+                items, latest = (
+                    _load_curated_latest(progress_callback=progress_callback)
+                    if progress_callback is not None
+                    else _load_curated_latest()
+                )
+                _progress(
+                    progress_callback,
+                    "候选源汇总",
+                    (
+                        f"原始汇总 {int(latest.get('input_count') or 0)} 条，"
+                        f"入口后 {len(items)} 条，来自 "
+                        f"{int(latest.get('source_count') or 0)} 个来源。"
+                    ),
+                )
                 sync_result = sync_candidates(
                     items,
                     generated_at=_text(latest.get("generated_at"), 40),
                     slot_label=_text(latest.get("slot_label"), 80),
+                    progress_callback=progress_callback,
                 )
+            _progress(
+                progress_callback,
+                "人工审核状态同步",
+                "正在读取飞书中的接受、不接受、暂缓状态，更新APP发布池及同步标记。",
+            )
             review_result = apply_reviews(sync_result["sheet_id"])
+            _progress(
+                progress_callback,
+                "人工审核状态同步",
+                (
+                    f"已同步：请求接受 {int(review_result.get('requested_accept_count') or 0)} 条，"
+                    f"实际纳入 {int(review_result.get('accepted_count') or 0)} 条，"
+                    f"阻断 {int(review_result.get('blocked_accept_count') or 0)} 条，"
+                    f"待审 {int(review_result.get('pending_count') or 0)} 条，"
+                    f"更新同步状态 {int(review_result.get('changed_rows') or 0)} 行。"
+                ),
+            )
         except Exception as exc:
             state["last_poll_error"] = _text(exc, 600)
             state["last_poll_error_at"] = _now_iso()
@@ -2256,6 +2418,16 @@ def run_cycle(
             ):
                 state.pop(PENDING_CYCLE_STATE_KEY, None)
             _write_json(STATE_PATH, state)
+        _progress(
+            progress_callback,
+            "审核周期完成",
+            (
+                f"状态 ok；源候选 {cycle_result['source_candidate_count']} 条，"
+                f"写表新增 {int(cycle_result.get('new_count') or 0)} 条，"
+                f"历史重复 {int(cycle_result.get('semantic_duplicate_count') or 0)} 条，"
+                f"逐格回读={'通过' if cycle_result.get('readback_verified') is True else '未通过'}。"
+            ),
+        )
         return cycle_result
 
 

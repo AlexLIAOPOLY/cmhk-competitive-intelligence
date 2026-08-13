@@ -14,7 +14,7 @@ from collections import Counter
 from datetime import datetime, time as clock_time, timedelta
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import urlencode, urlparse, urlunparse
 from urllib.error import HTTPError
 from urllib.request import ProxyHandler, Request, build_opener, urlopen
@@ -1856,6 +1856,14 @@ def _run_scan_impl(
     crawl_run_id: str = "",
     stream_log_path: str | Path = "",
 ) -> dict[str, Any]:
+    def task_progress(phase: str, detail: str) -> None:
+        _strategic_task_progress(
+            crawl_run_id,
+            stream_log_path,
+            phase,
+            detail,
+        )
+
     spec = read_monitoring_spec()
     _strategic_task_progress(
         crawl_run_id,
@@ -1943,7 +1951,10 @@ def _run_scan_impl(
         candidate["slot"] = slot_label
         candidate["spec_hash"] = spec["spec_hash"]
     _enrich_with_crawler(ranked)
-    ranked = polish_candidates_before_review(ranked)
+    ranked = polish_candidates_before_review(
+        ranked,
+        progress_callback=task_progress,
+    )
     discovery_result: dict[str, Any] = {}
     _strategic_task_progress(
         crawl_run_id,
@@ -2059,6 +2070,7 @@ def _run_scan_impl(
             force=True,
             schedule_dashboard_publish=False,
             idempotency_key=slot_key,
+            progress_callback=task_progress,
         )
     except Exception as exc:
         review_result = {"error": _clean_text(exc, 300)}
@@ -3197,10 +3209,39 @@ def _critic_review_included(
     }
 
 
-def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+ProgressCallback = Callable[[str, str], None]
+
+
+def _emit_progress(
+    progress_callback: ProgressCallback | None,
+    phase: str,
+    detail: str,
+) -> None:
+    if progress_callback is None:
+        return
+    try:
+        progress_callback(phase, detail)
+    except Exception:
+        logging.exception("战略新闻详细进度日志写入失败")
+
+
+def polish_candidates_before_review(
+    items: list[dict[str, Any]],
+    *,
+    progress_callback: ProgressCallback | None = None,
+) -> list[dict[str, Any]]:
     """Create the final Chinese title and concise copy before human review."""
     items, deferred_queue_records, deferred_queue_load = (
         _prepare_deferred_ai_candidates(items)
+    )
+    _emit_progress(
+        progress_callback,
+        "AI审核队列",
+        (
+            f"本轮输入 {len(items)} 条；延期队列加载 "
+            f"{int(deferred_queue_load.get('loaded_count') or 0)} 条，"
+            f"过期或超限 {int(deferred_queue_load.get('dropped_count') or 0)} 条。"
+        ),
     )
     if not items:
         if deferred_queue_load["loaded_count"]:
@@ -3273,6 +3314,16 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 pass
         pending.append((key, item))
 
+    _emit_progress(
+        progress_callback,
+        "AI审核缓存盘点",
+        (
+            f"候选 {len(items)} 条；可复用已审核/缓存 "
+            f"{len(resolved) + len(excluded_decisions)} 条，"
+            f"需调用模型 {len(pending)} 条；缓存版本 {AI_EDITOR_VERSION}。"
+        ),
+    )
+
     single_retry_attempts = 0
     retry_budget_exhausted_count = 0
     compact_retry_batch_count = 0
@@ -3283,9 +3334,20 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
     unstructured_copy_recovered_count = 0
     for offset in range(0, len(pending), AI_EDITOR_BATCH_SIZE):
         batch = pending[offset : offset + AI_EDITOR_BATCH_SIZE]
+        batch_number = offset // AI_EDITOR_BATCH_SIZE + 1
+        batch_total = (len(pending) + AI_EDITOR_BATCH_SIZE - 1) // AI_EDITOR_BATCH_SIZE
         request_items = []
         for key, item in batch:
             request_items.append(_candidate_editor_input(key, item))
+        _emit_progress(
+            progress_callback,
+            "AI批量审核",
+            (
+                f"开始第 {batch_number}/{batch_total} 批，"
+                f"候选 {offset + 1}-{offset + len(batch)}/{len(pending)}，"
+                f"本批 {len(batch)} 条。"
+            ),
+        )
         try:
             response = _call_internal_ai(
                 (
@@ -3374,9 +3436,23 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
             entry for entry in request_items
             if entry["id"] not in validated_verbose
         ]
+        _emit_progress(
+            progress_callback,
+            "AI批量审核",
+            (
+                f"第 {batch_number}/{batch_total} 批长格式返回 "
+                f"{len(response_items or [])} 条，校验通过 {len(validated_verbose)} 条，"
+                f"需补审 {len(missing_from_verbose)} 条。"
+            ),
+        )
         if missing_from_verbose:
             compact_retry_batch_count += 1
             compact_retry_item_count += len(missing_from_verbose)
+            _emit_progress(
+                progress_callback,
+                "AI紧凑补审",
+                f"第 {batch_number}/{batch_total} 批对 {len(missing_from_verbose)} 条执行紧凑协议补审。",
+            )
             try:
                 compact_response = _call_internal_ai(
                     (
@@ -3693,6 +3769,15 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
                 "items": cache,
             },
         )
+        _emit_progress(
+            progress_callback,
+            "AI批量审核",
+            (
+                f"完成第 {batch_number}/{batch_total} 批；累计解析决策 "
+                f"{len(resolved) + len(excluded_decisions)}/{len(items)} 条，"
+                f"延期 {len(deferred_reviews)} 条，逐条重试 {single_retry_attempts} 次。"
+            ),
+        )
 
     polished_items: list[dict[str, Any]] = []
     for source_item in items:
@@ -3789,6 +3874,16 @@ def polish_candidates_before_review(items: list[dict[str, Any]]) -> list[dict[st
         "deferred": deferred_reviews,
     }
     _atomic_write_json(AI_EDITOR_AUDIT_PATH, audit)
+    _emit_progress(
+        progress_callback,
+        "AI审核完成",
+        (
+            f"输入 {len(items)} 条，纳入 {len(polished_items)} 条，"
+            f"排除 {audit['excluded_count']} 条，延期 {deferred_count} 条；"
+            f"紧凑补审 {compact_retry_item_count} 条/成功 {compact_retry_resolved_count} 条，"
+            f"逐条重试 {single_retry_attempts} 次，救援模型 {rescue_retry_attempt_count} 次。"
+        ),
+    )
     if deferred_reviews:
         logging.warning(
             "公司内部 AI 候选审核有 %s/%s 条延期；仅隔离失败条目，其余 %s 条继续后续去重和写表",
@@ -4092,6 +4187,8 @@ def _call_semantic_dedupe_agent(
 def agent_semantic_deduplicate_candidates(
     items: list[dict[str, Any]],
     history_items: list[dict[str, Any]],
+    *,
+    progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
     """Let the internal Agent decide whether candidates duplicate any prior event."""
     if not items:
@@ -4119,6 +4216,14 @@ def agent_semantic_deduplicate_candidates(
         history[offset : offset + SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE]
         for offset in range(0, len(history), SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE)
     ] or [[]]
+    _emit_progress(
+        progress_callback,
+        "语义去重准备",
+        (
+            f"待核对 {len(candidates)} 条，历史 {len(history)} 条，"
+            f"分为 {len(chunks)} 个分片（每片最多 {SEMANTIC_DEDUPE_HISTORY_CHUNK_SIZE} 条）。"
+        ),
+    )
     priority_by_id = {
         candidate["id"]: _semantic_priority_history(candidate, history)
         for candidate in candidates
@@ -4192,8 +4297,20 @@ def agent_semantic_deduplicate_candidates(
             earlier_by_url[candidate_url] = candidate
         if candidate_signature:
             earlier_by_signature.setdefault(candidate_signature, []).append(candidate)
+    deterministic_count = sum(
+        1 for record in aggregate.values() if record["is_duplicate"]
+    )
+    _emit_progress(
+        progress_callback,
+        "确定性去重",
+        f"ID、规范化URL和高置信事件签名先行命中 {deterministic_count} 条。",
+    )
     for offset in range(0, len(candidates), SEMANTIC_DEDUPE_BATCH_SIZE):
         batch = candidates[offset : offset + SEMANTIC_DEDUPE_BATCH_SIZE]
+        batch_number = offset // SEMANTIC_DEDUPE_BATCH_SIZE + 1
+        batch_total = (
+            len(candidates) + SEMANTIC_DEDUPE_BATCH_SIZE - 1
+        ) // SEMANTIC_DEDUPE_BATCH_SIZE
         earlier = candidates[:offset]
         for shard_index, history_chunk in enumerate(chunks, start=1):
             active = [
@@ -4203,6 +4320,15 @@ def agent_semantic_deduplicate_candidates(
             ]
             if not active:
                 break
+            _emit_progress(
+                progress_callback,
+                "语义去重分片",
+                (
+                    f"开始批次 {batch_number}/{batch_total}、历史分片 "
+                    f"{shard_index}/{len(chunks)}；本次核对 {len(active)} 条候选"
+                    f"与 {len(history_chunk)} 条历史。"
+                ),
+            )
             try:
                 priority_history = list(
                     {
@@ -4256,6 +4382,16 @@ def agent_semantic_deduplicate_candidates(
                             "reason": decision["reason"],
                         }
                     )
+            _emit_progress(
+                progress_callback,
+                "语义去重分片",
+                (
+                    f"完成批次 {batch_number}/{batch_total}、分片 "
+                    f"{shard_index}/{len(chunks)}；累计判定重复 "
+                    f"{sum(1 for record in aggregate.values() if record['is_duplicate'])} 条，"
+                    f"累计错误 {sum(len(record['errors']) for record in aggregate.values())} 个。"
+                ),
+            )
 
     independently_confirmed: list[dict[str, Any]] = []
     for candidate in candidates:
@@ -4266,6 +4402,14 @@ def agent_semantic_deduplicate_candidates(
             or record["assessed_shards"] != len(chunks)
         ):
             continue
+        _emit_progress(
+            progress_callback,
+            "去重独立复核",
+            (
+                f"正在复核候选 {candidate['order']}/{len(candidates)}"
+                f"（ID {candidate['id'][:20]}）。"
+            ),
+        )
         try:
             decisions = _call_semantic_dedupe_agent(
                 [candidate],
@@ -4328,6 +4472,15 @@ def agent_semantic_deduplicate_candidates(
         "decisions": list(aggregate.values()),
     }
     _atomic_write_json(SEMANTIC_DEDUPE_AUDIT_PATH, audit)
+    _emit_progress(
+        progress_callback,
+        "语义去重完成",
+        (
+            f"候选 {len(items)} 条，历史 {len(history)} 条/{len(chunks)} 分片；"
+            f"重复 {len(duplicates)} 条，延期 {len(deferred)} 条，"
+            f"保留 {len(kept)} 条。"
+        ),
+    )
     return {
         "kept": kept,
         "duplicates": duplicates,
