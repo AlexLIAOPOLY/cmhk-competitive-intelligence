@@ -604,6 +604,7 @@
 .intelligence-focus-tabs { height: 38px; }
 .intelligence-focus-tabs button {
   min-height: 36px;
+  padding-inline: 4px;
   font-size: 14px;
   line-height: 1;
   overflow-wrap: normal;

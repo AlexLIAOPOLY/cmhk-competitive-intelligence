@@ -14579,7 +14579,7 @@ body.report-library-open::before {
   font: inherit;
   font-size: 10.5px;
   font-weight: 650;
-  letter-spacing: .065em;
+  letter-spacing: .02em;
   text-overflow: ellipsis;
   white-space: nowrap !important;
   cursor: pointer;
