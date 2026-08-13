@@ -1934,6 +1934,25 @@ function setReportLibraryNewDot(visible) {
   );
 }
 
+function setReportCategoryNewDots(unreadByType) {
+  els.outputTabs.forEach((button) => {
+    const reportType = button.dataset.scrollReport;
+    const visible = Boolean(unreadByType && unreadByType[reportType]);
+    const label = reportType === "performance" ? "业绩摘要" : "周报";
+    button.classList.toggle("has-new-report", visible);
+    button.setAttribute("aria-label", visible ? `${label}，有新报告` : label);
+  });
+}
+
+function setReportLibraryNewIndicators(files) {
+  const unreadByType = {
+    weekly: files.some((file) => file.reportType !== "carrier-performance" && isReportUnread(file)),
+    performance: files.some((file) => file.reportType === "carrier-performance" && isReportUnread(file)),
+  };
+  setReportCategoryNewDots(unreadByType);
+  setReportLibraryNewDot(unreadByType.weekly || unreadByType.performance);
+}
+
 function markReportConsumed(pathStr) {
   const file = state.outputs.find((item) => item.path_str === pathStr);
   if (!file || !isReportUnread(file)) return;
@@ -1965,6 +1984,7 @@ function updateReportLibraryNewIndicator(files) {
     if (!stored && latest > 0) {
       window.localStorage.setItem(REPORT_LIBRARY_SEEN_STORAGE_KEY, String(latest));
       window.localStorage.removeItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY);
+      setReportCategoryNewDots({ weekly: false, performance: false });
       setReportLibraryNewDot(false);
       return;
     }
@@ -1976,7 +1996,7 @@ function updateReportLibraryNewIndicator(files) {
   } else {
     window.localStorage.removeItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY);
   }
-  setReportLibraryNewDot(files.some((file) => isReportUnread(file)));
+  setReportLibraryNewIndicators(files);
 }
 
 function renderStatus(status) {
