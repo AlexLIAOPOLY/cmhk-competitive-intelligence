@@ -2447,7 +2447,10 @@ def review_weekly_items_with_ai(
     approved = sum(entry["decision"] == "approve" for entry in audit_items)
     revised = sum(entry["decision"] == "revise" for entry in audit_items)
     rejected = sum(entry["decision"] == "reject" for entry in audit_items)
-    quality_warnings = sum(bool(entry.get("issues")) for entry in audit_items)
+    quality_warnings = sum(
+        entry.get("decision") == "evidence_repair" and bool(entry.get("issues"))
+        for entry in audit_items
+    )
     reviewed = [reviewed_by_index[index] for index in sorted(reviewed_by_index)]
     audit = {
         "generatedAt": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
