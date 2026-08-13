@@ -97,8 +97,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         request_ids = [item.get_header("X-request-id") for item in requests]
         self.assertNotEqual(request_ids[0], request_ids[1])
         self.assertIn(request_ids[0], bodies[0]["messages"][-1]["content"])
-        self.assertIn("结构差异", bodies[0]["messages"][-1]["content"])
-        self.assertIn("驱动因素", bodies[1]["messages"][-1]["content"])
+        self.assertIn("网络高覆盖与企业营收增速属于不同层面", bodies[0]["messages"][-1]["content"])
+        self.assertIn("网络可达性不等于收入增长速度", bodies[1]["messages"][-1]["content"])
         self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
         self.assertEqual(request.call_args_list[0].kwargs["timeout"], 15)
         self.assertEqual(result["title"], "新标题")
@@ -334,7 +334,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("不能等同", result["focus"]["analysis"])
         self.assertNotIn("头部三家集中度", result["focus"]["analysis"])
 
-    def test_current_local_scale_refresh_falls_back_to_a_new_grounded_judgement(self):
+    def test_current_local_scale_refresh_repairs_to_a_grounded_judgement(self):
         focus = {
             "id": "scale",
             "label": "在售方案组合",
@@ -353,7 +353,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "analysis": "去重后在售产品84个，但产品数量不能等同产品吸引力或竞争力。" + "数据边界" * 30,
         }, ensure_ascii=False)
         responses = []
-        for _ in range(3):
+        for _ in range(6):
             response = mock.MagicMock()
             response.__enter__.return_value.read.return_value = json.dumps({
                 "choices": [{"message": {"content": too_long}}]
@@ -368,8 +368,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
-        self.assertEqual(result["model"], "evidence-rule-fallback")
-        self.assertEqual(result["focus"]["origin"], "evidence_rule")
+        self.assertEqual(result["model"], "deepseek-v4")
+        self.assertTrue(result["focus"]["repaired"])
         self.assertEqual(result["focus"]["headline"], "数量不代表吸引力")
         self.assertIn("去重后在售产品84个", result["focus"]["analysis"])
         self.assertLessEqual(len(result["focus"]["analysis"]), 120)
@@ -464,7 +464,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "analysis": "电讯业投资1.3%直接驱动投诉2.9%，说明两者存在因果。",
         }, ensure_ascii=False)
         responses = []
-        for _ in range(3):
+        for _ in range(6):
             response = mock.MagicMock()
             response.__enter__.return_value.read.return_value = json.dumps({
                 "choices": [{"message": {"content": invalid}}]
@@ -480,11 +480,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             result = pipeline.generate_model_focus_insight("macro", focus)
 
-        self.assertEqual(request.call_count, 3)
-        self.assertEqual(result["model"], "evidence-rule-fallback")
-        self.assertEqual(result["focus"]["origin"], "evidence_rule")
-        self.assertEqual(result["focus"]["headline"], "投入与投诉期间错位")
-        self.assertIn("两项期间不同", result["focus"]["analysis"])
+        self.assertEqual(request.call_count, 6)
+        self.assertEqual(result["model"], "Qwen3-30B-A3B-Instruct-2507")
+        self.assertTrue(result["focus"]["repaired"])
+        self.assertNotIn("驱动", result["focus"]["headline"])
+        self.assertIn("期间不同", result["focus"]["analysis"])
         self.assertNotIn("因果", result["focus"]["analysis"])
 
     def test_international_growth_empty_model_output_uses_safe_new_judgement(self):
@@ -497,7 +497,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "recent_insights": [str(focus.get("insight") or "")],
         }
         responses = []
-        for _ in range(3):
+        for _ in range(6):
             response = mock.MagicMock()
             response.__enter__.return_value.read.return_value = json.dumps({
                 "choices": [{"message": {"content": ""}}]
@@ -513,15 +513,171 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             result = pipeline.generate_model_focus_insight("international", focus)
 
-        self.assertEqual(request.call_count, 3)
-        self.assertEqual(result["model"], "evidence-rule-fallback")
-        self.assertEqual(result["focus"]["headline"], "营收增长分成正负两层")
-        self.assertIn("行业并非同步扩张", result["focus"]["analysis"])
+        self.assertEqual(request.call_count, 6)
+        self.assertEqual(result["model"], "Qwen3-30B-A3B-Instruct-2507")
+        self.assertTrue(result["focus"]["repaired"])
+        self.assertFalse(
+            pipeline._focus_gate_error("international", "growth", result["focus"]["analysis"], focus)
+        )
         self.assertNotIn("Expecting value", result["focus"]["analysis"])
 
     def test_empty_model_payload_has_stable_nontechnical_error(self):
         with self.assertRaisesRegex(ValueError, "模型本次未返回有效内容"):
             pipeline._extract_json_payload("")
+
+    def test_truncated_focus_json_can_be_salvaged_without_exposing_parser_error(self):
+        parsed = pipeline._extract_focus_response(
+            '{"headline":"增长梯队分化","analysis":"Google35.8%与Alibaba11.0%形成两层，说明增长阶段不同。'
+        )
+
+        self.assertEqual(parsed["headline"], "增长梯队分化")
+        self.assertIn("Google35.8%", parsed["analysis"])
+
+    def test_numeric_tokens_keep_full_number_when_attached_to_company_name(self):
+        self.assertEqual(pipeline._numeric_tokens("Google35.8%与AWS19.7%"), {"35.8", "19.7"})
+
+    def test_focus_gate_rejects_broken_compacted_sentence_order(self):
+        evidence = pipeline._analysis_input_snapshot()
+        focus = next(
+            focus
+            for domain in evidence["domains"] if domain["id"] == "local"
+            for focus in domain["focuses"] if focus["id"] == "mobile_price"
+        )
+        error = pipeline._focus_gate_error(
+            "local",
+            "mobile_price",
+            "但两者价格带重合，意味着中，仅两家样本可比。",
+            focus,
+        )
+
+        self.assertIn("句序不完整", error)
+        self.assertIn(
+            "句序不完整",
+            pipeline._focus_gate_error(
+                "local",
+                "mobile_price",
+                "3HK与SmarTone彼此存在差距个，这说明价格结构存在两层区隔。",
+                focus,
+            ),
+        )
+        self.assertIn(
+            "句序不完整",
+            pipeline._focus_gate_error(
+                "local",
+                "mobile_price",
+                "3HK为168港元，SmarTone为239港元，价格区隔意味着中。",
+                focus,
+            ),
+        )
+        self.assertIn(
+            "句序不完整",
+            pipeline._focus_gate_error(
+                "local",
+                "mobile_price",
+                "这说明价格结构存在两层，3HK为168港元且SmarTone为239港元。",
+                focus,
+            ),
+        )
+
+    def test_derived_count_repair_consumes_dangling_unit(self):
+        repaired, changed = pipeline._repair_generated_focus_analysis(
+            "头部三家相差6个，说明产品数量结构呈现分层。",
+            {"items": [{"value": 27}, {"value": 24}, {"value": 21}]},
+        )
+
+        self.assertTrue(changed)
+        self.assertIn("存在差距", repaired)
+        self.assertNotIn("存在差距个", repaired)
+
+    def test_overlap_prompt_exposes_admitted_range_evidence(self):
+        source = Path(pipeline.__file__).read_text(encoding="utf-8")
+
+        self.assertIn(
+            '**({"analysis": item.get("analysis")} if (domain_id, focus_id) == ("local", "overlap") else {})',
+            source,
+        )
+        self.assertIn(
+            '**({"relationships": item.get("components")} if (domain_id, focus_id) == ("local", "overlap") else {})',
+            source,
+        )
+        self.assertIn("if similarity >= 0.94:", source)
+
+    def test_overlap_gate_rejects_cross_product_category_mixing(self):
+        evidence = pipeline._analysis_input_snapshot()
+        focus = next(
+            focus
+            for domain in evidence["domains"] if domain["id"] == "local"
+            for focus in domain["focuses"] if focus["id"] == "overlap"
+        )
+
+        self.assertIn(
+            "家宽主体混入个人5G",
+            pipeline._focus_gate_error(
+                "local", "overlap",
+                "3HK、SmarTone、HKBN和i-CABLE均有1类重合，说明个人5G重合集中于多数主体。",
+                focus,
+            ),
+        )
+        self.assertIn(
+            "误写为区间独立",
+            pipeline._focus_gate_error(
+                "local", "overlap",
+                "HGC为0类重合，说明HGC区间独立且价格区隔呈现两层结构。",
+                focus,
+            ),
+        )
+
+    def test_focus_headline_keeps_5g_term_intact(self):
+        self.assertEqual(
+            pipeline._normalize_fresh_focus_headline(
+                "个人5G区间重合分化",
+                label="同类价格重合",
+                recent_headlines=[],
+            ),
+            "个人5G区间重合分化",
+        )
+
+    def test_relation_regeneration_tracks_title_history(self):
+        source = Path(pipeline.__file__).read_text(encoding="utf-8")
+
+        self.assertIn('manual_discovery_regeneration_title_history', source)
+        self.assertIn("跨库标题与最近版本过于相似", source)
+
+    def test_cloud_profit_gate_rejects_derived_sample_count(self):
+        evidence = pipeline._analysis_input_snapshot()
+        focus = next(
+            focus
+            for domain in evidence["domains"] if domain["id"] == "cloud"
+            for focus in domain["focuses"] if focus["id"] == "profit"
+        )
+        error = pipeline._focus_gate_error(
+            "cloud",
+            "profit",
+            "AWS经营利润率35.4%，腾讯代理分部毛利率51.0%，口径不同不能等同排名，七家中仅六家有可比数值。",
+            focus,
+        )
+
+        self.assertIn("自行统计了样本家数", error)
+
+    def test_final_grounded_repair_is_fresh_and_gated(self):
+        evidence = pipeline._analysis_input_snapshot()
+        focus = next(
+            focus
+            for domain in evidence["domains"] if domain["id"] == "cloud"
+            for focus in domain["focuses"] if focus["id"] == "growth"
+        )
+        first = pipeline._final_grounded_focus_repair(
+            "cloud", focus, regeneration_index=1, recent_insights=[]
+        )
+        second = pipeline._final_grounded_focus_repair(
+            "cloud", focus, regeneration_index=2, recent_insights=[first]
+        )
+
+        self.assertTrue(first)
+        self.assertTrue(second)
+        self.assertNotEqual(first, second)
+        self.assertFalse(pipeline._focus_gate_error("cloud", "growth", first, focus))
+        self.assertFalse(pipeline._focus_gate_error("cloud", "growth", second, focus))
 
     def test_focus_regeneration_merges_one_validated_insight(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -1113,7 +1269,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertNotIn("0.23", repaired)
         self.assertIn("11.41%", repaired)
         self.assertIn("11.18%", repaired)
-        self.assertIn("差距有限", repaired)
+        self.assertIn("存在差距", repaired)
 
     def test_focus_analysis_repair_trims_redundant_disclosure_tail(self):
         analysis = (
@@ -1137,6 +1293,32 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertLessEqual(len(repaired), pipeline.MAX_FOCUS_INSIGHT_CHARS)
         self.assertNotIn("HKBN等三家未披露", repaired)
         self.assertIn("价格带124–228", repaired)
+
+    def test_overlong_ai_analysis_is_compacted_to_strongest_grounded_clauses(self):
+        focus = {
+            "metric": {"value": 35.8},
+            "items": [
+                {"name": "Google", "value": 35.8},
+                {"name": "Oracle", "value": 23.9},
+                {"name": "AWS", "value": 19.7},
+                {"name": "Alibaba", "value": 11.0},
+            ],
+        }
+        analysis = (
+            "Google35.8%、Oracle23.9%、AWS19.7%、Alibaba11.0%均为直接披露口径，"
+            "四家形成增长梯队，说明同口径厂商处于不同扩张阶段，"
+            "此外还有代理分部口径不能混入排名，更多披露边界也不应被忽略，"
+            "这段冗长说明只用于模拟模型把同一口径边界重复解释多次的常见异常。"
+        )
+        compacted, changed = pipeline._compact_generated_focus_analysis(
+            "cloud", "growth", analysis, focus, focus
+        )
+
+        self.assertTrue(changed)
+        self.assertLessEqual(len(compacted), pipeline.MAX_FOCUS_INSIGHT_CHARS)
+        self.assertEqual(pipeline._focus_gate_error("cloud", "growth", compacted, focus), "")
+        self.assertIn("35.8%", compacted)
+        self.assertIn("增长梯队", compacted)
 
     def test_focus_headline_compacts_whole_words_instead_of_cutting_mid_phrase(self):
         headline = pipeline._normalize_fresh_focus_headline(

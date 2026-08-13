@@ -5,6 +5,7 @@ import csv
 import difflib
 import fcntl
 import hashlib
+import itertools
 import json
 import os
 import shutil
@@ -438,6 +439,32 @@ def _extract_json_payload(text: str) -> Any:
         return json.loads(match.group(1))
 
 
+def _extract_focus_response(text: str) -> dict[str, Any]:
+    """Parse one focus object and salvage a model response cut after its fields."""
+    try:
+        parsed = _extract_json_payload(text)
+    except json.JSONDecodeError:
+        cleaned = re.sub(r"^```(?:json)?|```$", "", str(text or "").strip(), flags=re.I).strip()
+        headline_match = re.search(r'"headline"\s*:\s*"((?:\\.|[^"\\])*)"', cleaned, re.S)
+        analysis_match = re.search(r'"analysis"\s*:\s*"((?:\\.|[^"\\])*)"', cleaned, re.S)
+        if not analysis_match:
+            analysis_match = re.search(r'"analysis"\s*:\s*"(.*)$', cleaned, re.S)
+        if not headline_match or not analysis_match:
+            raise
+        headline = json.loads(f'"{headline_match.group(1)}"')
+        raw_analysis = re.sub(r'"?\s*[,}]?\s*$', "", analysis_match.group(1).strip())
+        try:
+            analysis = json.loads(f'"{raw_analysis}"')
+        except json.JSONDecodeError:
+            analysis = raw_analysis.replace('\\"', '"')
+        parsed = {"headline": headline, "analysis": analysis}
+    if isinstance(parsed, list) and len(parsed) == 1:
+        parsed = parsed[0]
+    if not isinstance(parsed, dict):
+        raise ValueError("模型未返回单项洞察对象")
+    return parsed
+
+
 def _pin_scoped_model_identity(raw: Any, domain_id: str, focus_id: str = "") -> Any:
     """Restore identifiers fixed by a scoped request before evidence-based repairs run."""
     if not isinstance(raw, list) or len(raw) != 1 or not isinstance(raw[0], dict):
@@ -452,7 +479,7 @@ def _pin_scoped_model_identity(raw: Any, domain_id: str, focus_id: str = "") -> 
 
 def _numeric_tokens(value: Any) -> set[str]:
     tokens = set()
-    for token in re.findall(r"(?<![A-Za-z])[-+]?\d+(?:\.\d+)?", json.dumps(value, ensure_ascii=False)):
+    for token in re.findall(r"(?<![\d.])[-+]?\d+(?:\.\d+)?", json.dumps(value, ensure_ascii=False)):
         try:
             tokens.add(f"{float(token):g}")
         except ValueError:
@@ -495,6 +522,8 @@ _INTERPRETIVE_CONNECTORS = (
 _INTERPRETIVE_DIMENSIONS = (
     "结构", "口径", "集中", "可比", "驱动", "依赖", "饱和", "错位", "背离", "同步",
     "脱钩", "分层", "梯队", "边界", "质量", "效率", "弹性", "定价权", "产品广度",
+    "增速", "方向", "幅度", "梯度",
+    "分布", "阵营", "正负", "强弱", "两层",
     "记录颗粒度", "记录密度", "渗透", "变现", "盈利", "利润", "收入", "客户", "网络", "竞争", "产品类型", "产品选择", "产品数量", "购买力", "价格", "套餐", "投入", "资本", "负担", "流量", "连接", "服务", "优惠条件",
 )
 _DEEP_RELATION_MARKERS = (
@@ -502,6 +531,8 @@ _DEEP_RELATION_MARKERS = (
     "受制", "约束", "转为", "集中于", "断层", "同步", "脱钩", "结构性差异", "口径放大",
     "接近饱和", "趋于饱和", "未形成", "不再来自", "共同拉开", "梯队分布",
     "分层竞争", "头部主导", "偏态分布", "不代表", "不纳入", "未纳入", "难形成", "受压", "承压", "混排", "重合", "差距", "不同", "并列信号",
+    "多数", "少数", "唯一", "同向", "分组", "覆盖全部", "覆盖大部分",
+    "梯队", "层次", "范围", "样本", "部分覆盖", "高低", "同类",
 )
 _ACTION_ADVICE_PHRASES = (
     "建议", "值得关注", "后续关注", "应优先", "需优先", "优先关注", "优先评估", "优先验证",
@@ -541,6 +572,10 @@ def _has_business_judgement(value: Any) -> bool:
 
 
 def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus: dict[str, Any]) -> str:
+    if re.match(r"^(?:但|但是|然而|而|这说明|这表明|这意味着|因此)", analysis) or re.search(
+        r"(?:意味着|说明|表明)中(?:[，,。！？!?]|$)|存在差距个|(?:变化|观察)[，,]分别为", analysis
+    ):
+        return f"AI分析分类句序不完整：{domain}.{focus_id}"
     terminal_marks = re.findall(r"[。！？!?]", analysis)
     if len(analysis) > MAX_FOCUS_INSIGHT_CHARS or not terminal_marks or (
         len(terminal_marks) > MAX_FOCUS_INSIGHT_SENTENCES
@@ -601,6 +636,19 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
             return (
                 f"AI分析分类与输入价格区间矛盾：{domain}.{focus_id}"
             )
+    if (domain, focus_id) == ("local", "overlap"):
+        mentions_mobile = "个人5G" in analysis
+        mentions_fibre = "光纤家宽" in analysis
+        if mentions_mobile and not mentions_fibre and any(name in analysis for name in ("HKBN", "i-CABLE")):
+            return f"AI分析分类把家宽主体混入个人5G：{domain}.{focus_id}"
+        if mentions_fibre and not mentions_mobile and any(name in analysis for name in ("3HK", "SmarTone")):
+            return f"AI分析分类把个人5G主体混入家宽：{domain}.{focus_id}"
+        if "HGC区间独立" in analysis:
+            return f"AI分析分类把未发现重合误写为区间独立：{domain}.{focus_id}"
+    if (domain, focus_id) == ("cloud", "profit") and re.search(
+        r"(?:七|7)家中仅(?:六|6)家", analysis
+    ):
+        return f"AI分析分类自行统计了样本家数：{domain}.{focus_id}"
     return ""
 
 
@@ -618,9 +666,9 @@ def _repair_generated_focus_analysis(
         # Keep the qualitative comparison and remove only that derived result.
         derived_difference = re.compile(
             rf"(?:仅|只)?(?:相差|差距(?:仅|为|仅为)?|差|高出|低于)\s*"
-            rf"{re.escape(number)}\s*(?:个?百分点|%|港元/月|港元|倍)?"
+            rf"{re.escape(number)}\s*(?:个?百分点|%|港元/月|港元|倍|个)?"
         )
-        repaired = derived_difference.sub("差距有限", repaired)
+        repaired = derived_difference.sub("存在差距", repaired)
 
     if len(repaired) > MAX_FOCUS_INSIGHT_CHARS:
         # A trailing disclosure caveat is useful but lower priority when the same
@@ -636,6 +684,106 @@ def _repair_generated_focus_analysis(
     if repaired and not re.search(r"[。！？!?]$", repaired):
         repaired += "。"
     return repaired, repaired != original
+
+
+def _compact_generated_focus_analysis(
+    domain_id: str,
+    focus_id: str,
+    analysis: str,
+    evidence_focus: dict[str, Any],
+    allowed_numeric_evidence: dict[str, Any],
+) -> tuple[str, bool]:
+    """Select the strongest evidence-bearing clauses from an overlong AI answer."""
+    normalized = re.sub(r"\s+", " ", str(analysis or "")).strip()
+    if not normalized:
+        return normalized, False
+    if not _focus_gate_error(domain_id, focus_id, normalized, evidence_focus):
+        return normalized, False
+
+    clauses = [
+        clause.strip(" ，；。！？!?\t")
+        for clause in re.split(r"[，；。！？!?]+", normalized)
+        if clause.strip(" ，；。！？!?\t")
+    ]
+    if len(clauses) < 2:
+        return normalized, False
+    # Exhaustive subsequence search is bounded to keep regeneration latency
+    # predictable. Model answers are already capped at a few short sentences.
+    if len(clauses) > 12:
+        clauses = [*clauses[:2], *clauses[-10:]]
+    allowed_numbers = _numeric_tokens(allowed_numeric_evidence)
+    candidates: list[tuple[tuple[int, int, int, int, int], str]] = []
+    for size in range(2, len(clauses) + 1):
+        for indices in itertools.combinations(range(len(clauses)), size):
+            selected_clauses = [clauses[index] for index in indices]
+            if any(re.match(r"^(?:不纳入|未纳入)(?:比较|排名)?$", clause) for clause in selected_clauses):
+                continue
+            candidate = "，".join(selected_clauses) + "。"
+            if len(candidate) > MAX_FOCUS_INSIGHT_CHARS:
+                continue
+            if _numeric_tokens(candidate) - allowed_numbers:
+                continue
+            if _focus_gate_error(domain_id, focus_id, candidate, evidence_focus):
+                continue
+            evidence_count = len(_numeric_tokens(candidate) & allowed_numbers)
+            numeric_mentions = re.findall(r"(?<![\d.])[-+]?\d+(?:\.\d+)?", candidate)
+            duplicate_numbers = len(numeric_mentions) - len({f"{float(value):g}" for value in numeric_mentions})
+            interpretive_count = sum(term in candidate for term in _INTERPRETIVE_CONNECTORS)
+            business_count = sum(
+                term in candidate
+                for term in (*_ANALYTICAL_JUDGEMENT_TERMS, *_INTERPRETIVE_DIMENSIONS, *_DEEP_RELATION_MARKERS)
+            )
+            candidates.append((
+                (evidence_count, -duplicate_numbers, business_count, interpretive_count, -len(candidate)),
+                candidate,
+            ))
+    if not candidates:
+        return normalized, False
+    return max(candidates, key=lambda item: item[0])[1], True
+
+
+def _final_grounded_focus_repair(
+    domain_id: str,
+    focus: dict[str, Any],
+    *,
+    regeneration_index: int,
+    recent_insights: list[str],
+) -> str | None:
+    """Return a fresh, gated evidence repair after all model prose attempts fail."""
+    seed = _compact_grounded_focus_analysis(domain_id, focus)
+    allowed_numeric_evidence = {
+        "metric": focus.get("metric"),
+        "items": [
+            {
+                "name": item.get("name"),
+                "value": item.get("value"),
+                "unit": item.get("unit"),
+                "detail": item.get("detail"),
+                "analysis": item.get("analysis"),
+            }
+            for item in focus.get("items") or []
+            if isinstance(item, dict)
+        ],
+    }
+    prefixes = ("按当前可比口径，", "从同口径样本看，", "就当前披露边界而言，", "从当前数据关系看，")
+    candidates = [seed]
+    clauses = [part.strip() for part in re.split(r"[；。]", seed) if part.strip()]
+    for offset in range(len(prefixes)):
+        prefix = prefixes[(max(1, regeneration_index) - 1 + offset) % len(prefixes)]
+        ordered = clauses[offset % len(clauses):] + clauses[:offset % len(clauses)] if clauses else [seed]
+        candidates.append(prefix + "；".join(ordered) + "。")
+    recent = {re.sub(r"\s+", "", str(value or "")) for value in recent_insights}
+    for candidate in candidates[1:] + candidates[:1]:
+        candidate, _ = _repair_generated_focus_analysis(candidate, allowed_numeric_evidence)
+        candidate, _ = _compact_generated_focus_analysis(
+            domain_id, str(focus.get("id") or ""), candidate, focus, allowed_numeric_evidence,
+        )
+        if _focus_gate_error(domain_id, str(focus.get("id") or ""), candidate, focus):
+            continue
+        if re.sub(r"\s+", "", candidate) in recent:
+            continue
+        return candidate
+    return None
 
 
 def _repair_focus_numeric_anchors(raw: Any, evidence: dict[str, Any]) -> Any:
@@ -1623,7 +1771,8 @@ def _normalize_fresh_focus_headline(
     forbidden_terms: tuple[str, ...] = (),
 ) -> str:
     """Fit a fresh model title to the card without discarding valid analysis."""
-    normalized = re.sub(r"[\s\d０-９％%。，,；;：:！？!?（）()【】\[\]、]", "", str(headline or ""))
+    normalized = str(headline or "").replace("5G", "五G").replace("5g", "五G")
+    normalized = re.sub(r"[\s\d０-９％%。，,；;：:！？!?（）()【】\[\]、]", "", normalized)
     normalized = re.sub(
         r"(个百分点|港元|亿元|万元|万户|万项|MHz|MB|GB|项|个)$",
         "",
@@ -1636,7 +1785,7 @@ def _normalize_fresh_focus_headline(
         .replace("中国移动", "移动")
         .replace("中国电信", "电信")
         .replace("资本投入强度", "投入强度")
-        .replace("个人五G", "个人")
+        .replace("五G", "5G")
     )
     if len(normalized) > 14:
         normalized = re.sub(r"(增长质量|经营质量|竞争质量|市场表现)$", "", normalized)
@@ -1783,6 +1932,18 @@ def generate_model_focus_insight(
         ("local", "overlap"): (
             "只分析同一套餐类型内的月费区间重合，不得跨套餐类型比较。"
         ),
+        ("international", "growth"): "只比较Q1 2026四家企业营收同比的正负分层与增长强弱，不解释无证据原因。",
+        ("international", "momentum"): "只比较四家企业本期与上期营收增速变化，说明放缓范围或梯队，不使用驱动、导致等因果词。",
+        ("international", "investment"): "只比较同期间资本开支占营收比例，并明确缺失主体与投入比例不等于投资回报。",
+        ("international", "margin"): "只比较已披露且同口径经营利润率的层次与样本边界，不计算输入外差值。",
+        ("cloud", "growth"): "先区分直接云收入口径与代理分部口径；只在直接披露组内判断增长层次，不编造增长原因。",
+        ("cloud", "trend"): "只比较同一厂商FY2024至FY2025收入增速方向，说明提速覆盖面与例外主体。",
+        ("cloud", "profit"): "只解释经营利润率、毛利率和调整后EBITA率的口径边界；不同利润口径不得跨厂商排名。",
+        ("cloud", "margin_change"): "只比较各厂商自身同口径利润率变化的正负方向，不把不同利润定义混成统一排名。",
+        ("macro", "connections"): "只解释登记数量、移动宽带登记和每百人登记的共同变化及多卡/联网设备边界，不等同独立客户。",
+        ("macro", "traffic"): "只比较总流量与每连接流量同比，解释规模和单连接强度差异；禁止使用驱动、导致等因果词。",
+        ("macro", "purchasing"): "只使用当前同月家庭收入、消费物价和输入中的购买力代理原值；不引用旧月份或自行重算。",
+        ("macro", "service"): "只分别解释异期间的投资、投诉及网络供给背景，不比较差值、不建立因果。",
     }
     focus_contract = focus_contracts.get(
         (domain_id, focus_id),
@@ -1792,17 +1953,109 @@ def generate_model_focus_insight(
         str(value or "").strip()
         for value in [focus.get("insight"), *(focus.get("recent_insights") or [])]
         if str(value or "").strip()
-    ))[-5:]
+    ))[-12:]
     recent_headlines = list(dict.fromkeys(
         str(value or "").strip()
         for value in [focus.get("headline"), *(focus.get("recent_headlines") or [])]
         if str(value or "").strip()
-    ))[-5:]
+    ))[-12:]
     scale_has_record_counts = (
         (domain_id, focus_id) == ("local", "scale")
         and any(item.get("record_count") for item in focus.get("items") or [] if isinstance(item, dict))
     )
-    angle_options = (
+    focus_angle_options = {
+        ("local", "mobile_price"): (
+            "比较两家月费中位数与价格带重合，判断中位数差异是否形成清晰区隔",
+            "比较两家价格带宽度与共同覆盖区间，说明竞争重合范围",
+            "从只有两家披露的样本边界切入，说明结论不能代表全市场",
+            "从基础档重合与高价端延伸切入，但不得计算新差值",
+        ),
+        ("local", "fibre_value"): (
+            "比较每千兆月费的价格层次，并保留合约期和覆盖边界",
+            "判断低价组与高价组是否形成梯队，不计算新倍数",
+            "从折算价不等于客户最终成本切入，仍须引用至少两个主体原值",
+            "比较中位折算价的离散程度，禁止补写安装费或优惠金额",
+        ),
+        ("local", "overlap"): (
+            "只判断个人5G价格区间重合及其区隔含义",
+            "只判断光纤家宽同类价格重合及其区隔含义",
+            "比较哪些同类组合有重合、哪些没有，不跨产品类型",
+            "从价格带重合不等于产品同质切入，仍须引用原始区间",
+        ),
+        ("international", "growth"): (
+            "按正增长与负增长分成两层",
+            "比较最高与最低原值呈现的增长梯队，不计算差值",
+            "说明正增长只集中于哪些主体，并保留同季度边界",
+            "判断四家是否同步扩张，禁止解释无证据原因",
+        ),
+        ("international", "momentum"): (
+            "说明四家公司增速变化是否同向",
+            "比较放缓幅度较大的主体与其余主体，只引用输入原值",
+            "从放缓覆盖面切入，禁止使用驱动、导致、源于",
+            "判断增长动量是否形成梯队，不计算新差值",
+        ),
+        ("international", "investment"): (
+            "比较联通与移动、电信的投入比例层次",
+            "从移动与电信比例接近切入，不计算两者差值",
+            "从铁塔缺少同口径值的样本边界切入",
+            "说明投入比例不等于投资回报，仍须引用至少两个原值",
+        ),
+        ("international", "margin"): (
+            "比较已披露经营利润率的高低梯队，不计算新差值",
+            "从头部与中尾部利润缓冲层次切入",
+            "从只有三家可比的样本边界切入",
+            "说明利润率不等于绝对利润，仍须引用至少两个主体原值",
+        ),
+        ("cloud", "growth"): (
+            "只在直接披露云收入的厂商中判断增长梯队",
+            "比较直接披露组的高低层次，并把代理分部口径排除在排名外",
+            "从直接披露与代理分部两种口径边界切入",
+            "说明单一行业增速不能概括厂商分层，不解释增长原因",
+        ),
+        ("cloud", "trend"): (
+            "说明多数厂商提速与唯一放缓主体",
+            "从提速覆盖面切入，不计算新比例",
+            "比较提速幅度较大的主体与其余主体，只引用输入原值",
+            "判断变化方向是否一致，并明确缺少可比历史的主体",
+        ),
+        ("cloud", "profit"): (
+            "比较不同利润定义的口径边界，禁止跨厂商排名",
+            "从经营利润率、毛利率、调整后EBITA率不可混排切入",
+            "说明已披露与未披露主体的样本边界",
+            "分别观察两个同类利润口径原值，不计算新差值",
+        ),
+        ("cloud", "margin_change"): (
+            "按自身同口径利润率改善与减弱分组",
+            "比较改善主体与下降主体的方向分化，不计算新差值",
+            "从不同利润定义不能跨厂商统一排名切入",
+            "说明收入增长不等于利润转化同步改善",
+        ),
+        ("macro", "connections"): (
+            "比较三项登记指标增速接近的共同特征",
+            "从多卡和联网设备使登记数不等于独立客户切入",
+            "说明每百人登记高位的口径边界，不推算客户人数",
+            "区分连接规模变化与客户规模变化",
+        ),
+        ("macro", "traffic"): (
+            "比较总流量与每连接流量增速的层次",
+            "从规模增长与单连接使用强度分化切入",
+            "说明两项增速不同但不建立因果",
+            "判断流量增长是否主要体现在总量层面，只引用原值",
+        ),
+        ("macro", "purchasing"): (
+            "比较当前家庭收入与消费物价原值，引用输入中的购买力代理值",
+            "从购买力代理为负切入，但不等同电讯消费变化",
+            "从同月口径边界切入，禁止引用旧月份数字",
+            "说明收入与物价方向形成压力，但不预测消费行为",
+        ),
+        ("macro", "service"): (
+            "说明投资与投诉期间不同，不能直接关联",
+            "从5G覆盖与频谱只属于网络供给背景切入",
+            "比较投入规模与服务压力的口径边界，不计算差值",
+            "说明覆盖高位不等同服务质量改善",
+        ),
+    }
+    angle_options = focus_angle_options.get((domain_id, focus_id)) or (
         (
             "比较头部三家与尾部两家的数量层次，必须说明竞争结构分成哪两层",
             "从头部三家去重产品数量相近切入，必须说明三家之间的数量差距有限",
@@ -1827,7 +2080,6 @@ def generate_model_focus_insight(
         "id": focus_id,
         "label": focus.get("label"),
         "metric": focus.get("metric"),
-        "context": focus.get("context"),
         "scope": focus_contract,
         "required_angle": angle_instruction,
         "items": [
@@ -1840,7 +2092,8 @@ def generate_model_focus_insight(
                     "deduplicated_plan_count": item.get("component_count"),
                 } if scale_has_record_counts else {}),
                 **({"detail": item.get("detail")} if include_item_detail else {}),
-                "source_url": item.get("source_url"),
+                **({"analysis": item.get("analysis")} if (domain_id, focus_id) == ("local", "overlap") else {}),
+                **({"relationships": item.get("components")} if (domain_id, focus_id) == ("local", "overlap") else {}),
             }
             for item in focus.get("items") or []
             if isinstance(item, dict)
@@ -1854,13 +2107,14 @@ def generate_model_focus_insight(
                 "任务不是解释指标，而是比较当前items中至少两个竞对、期间或指标，找出数据关系及其有界经营含义。"
                 "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
                 "不得复用旧版标题。只能使用输入数字和事实。"
-                "analysis必须一至两句、120字内，引用输入具体数值，给出结构、驱动、集中度、"
+                "analysis必须一至两句、120字内，引用输入具体数值，给出结构、集中度、"
                 "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
                 "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value，"
                 "禁止自行加总、计算占比或创造衍生数字。结论必须使用表明、说明、意味着、主要来自、"
                 "并非、而非或不能等同中的至少一个连接词。必须严格遵守输入scope，只能总结当前页，"
                 "不得把相邻页或item附带信息扩展为当前页结论。"
                 "禁止把单项高低直接写成领先、竞争力、定价权或因果；少于3个可比对象时必须明确样本边界。"
+                "禁止使用导致、造成、推动、带来、源于、驱动等因果词；输入scope要求说明驱动时，也只能改写为关系或边界。"
                 + FOCUS_RELATION_FEW_SHOTS
             ),
         },
@@ -1875,12 +2129,42 @@ def generate_model_focus_insight(
         },
     ]
     model = str(config.get("model") or "deepseek-v4")
-    attempt_models = list(dict.fromkeys([model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
+    base_models = list(dict.fromkeys([model, "GLM", "Qwen3-30B-A3B-Instruct-2507"]))
+    has_safe_outage_fallback = scale_has_record_counts or (domain_id, focus_id) in {
+        ("macro", "service"),
+        ("international", "growth"),
+    }
+    attempt_models = [*base_models, *base_models]
     previous_insights = [re.sub(r"\s+", "", value) for value in recent_insights]
     last_error: ValueError | None = None
+    headline = f"{str(focus.get('label') or '当前指标').strip()}结构重新分化"[:14]
     for attempt, attempt_model in enumerate(attempt_models):
-        attempt_messages = list(messages)
-        if attempt:
+        if attempt >= len(base_models):
+            grounded_seed = _compact_grounded_focus_analysis(domain_id, focus)
+            attempt_messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        "你是电信数据分析员。只返回合法JSON对象{headline,analysis}。"
+                        "在不改变任何数字和事实的前提下，把证据底稿改写为新的数据关系结论。"
+                        "标题4至14字且不含数字；正文一至两句、100字内。"
+                        "禁止建议、因果词、衍生计算和证据外事实。"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps({
+                        "focus": compact_focus,
+                        "required_angle": angle_instruction,
+                        "grounded_seed": grounded_seed,
+                        "forbidden_recent_headlines": recent_headlines,
+                        "request_nonce": f"{request_nonce}-{attempt}",
+                    }, ensure_ascii=False),
+                },
+            ]
+        else:
+            attempt_messages = list(messages)
+        if attempt and attempt < len(base_models):
             retry_angle = angle_instruction
             attempt_messages.append({
                 "role": "user",
@@ -1913,18 +2197,22 @@ def generate_model_focus_insight(
         )
         wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")
         try:
-            with urlopen_with_local_proxy_fallback(request, timeout=90) as response:
+            with urlopen_with_local_proxy_fallback(request, timeout=30) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
-            raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
+            last_error = ValueError(f"内网模型 HTTP {exc.code}: {detail}")
+            if attempt + 1 < len(attempt_models):
+                continue
+            raise RuntimeError(str(last_error)) from exc
+        except (TimeoutError, urllib.error.URLError, json.JSONDecodeError) as exc:
+            last_error = ValueError(f"模型连接或响应异常：{exc}")
+            if attempt + 1 < len(attempt_models):
+                continue
+            raise last_error
         try:
             message = (payload.get("choices") or [{}])[0].get("message") or {}
-            parsed = _extract_json_payload(message.get("content") or message.get("reasoning_content") or "")
-            if isinstance(parsed, list) and len(parsed) == 1:
-                parsed = parsed[0]
-            if not isinstance(parsed, dict):
-                raise ValueError("模型未返回单项洞察对象")
+            parsed = _extract_focus_response(message.get("content") or message.get("reasoning_content") or "")
             headline = re.sub(r"\s+", " ", str(parsed.get("headline") or "")).strip()
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
             forbidden_headline_terms = {
@@ -1978,7 +2266,33 @@ def generate_model_focus_insight(
                 analysis,
                 allowed_numeric_evidence,
             )
+            analysis, analysis_compacted = _compact_generated_focus_analysis(
+                domain_id,
+                focus_id,
+                analysis,
+                focus,
+                allowed_numeric_evidence,
+            )
+            analysis_repaired = analysis_repaired or analysis_compacted
             gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
+            if gate_error:
+                grounded_seed = _compact_grounded_focus_analysis(domain_id, focus)
+                merged = f"{grounded_seed.rstrip('。！？!?')}；{analysis}"
+                merged, _ = _repair_generated_focus_analysis(
+                    merged,
+                    allowed_numeric_evidence,
+                )
+                merged, _ = _compact_generated_focus_analysis(
+                    domain_id,
+                    focus_id,
+                    merged,
+                    focus,
+                    allowed_numeric_evidence,
+                )
+                if not _focus_gate_error(domain_id, focus_id, merged, focus):
+                    analysis = merged
+                    analysis_repaired = True
+                    gate_error = ""
             if gate_error:
                 raise ValueError(gate_error)
             if scale_has_record_counts:
@@ -2010,20 +2324,17 @@ def generate_model_focus_insight(
                 if previous_insight
             ]
             similarity = max(similarities, default=0.0)
-            if similarity >= 0.84:
-                raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
-            if similarity >= 0.96:
+            # The same small evidence set necessarily shares names and numeric
+            # anchors. Reject near-copies, but allow a genuinely different
+            # judgement angle even when those immutable anchors keep lexical
+            # similarity moderately high.
+            if similarity >= 0.94:
                 raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = ValueError(str(exc))
             if attempt + 1 < len(attempt_models):
                 continue
-            if scale_has_record_counts or (domain_id, focus_id) in {
-                ("macro", "service"),
-                ("international", "growth"),
-            }:
-                break
-            raise last_error
+            break
         return {
             "generated_at_hkt": _now(),
             "model": attempt_model,
@@ -2034,6 +2345,30 @@ def generate_model_focus_insight(
                 "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
                 "source_urls": [],
                 **({"repaired": True} if analysis_repaired else {}),
+            },
+        }
+    grounded_repair = _final_grounded_focus_repair(
+        domain_id,
+        focus,
+        regeneration_index=regeneration_index,
+        recent_insights=recent_insights,
+    )
+    if grounded_repair:
+        repaired_headline = _normalize_fresh_focus_headline(
+            "",
+            label=str(focus.get("label") or "当前指标").strip(),
+            recent_headlines=recent_headlines,
+        )
+        return {
+            "generated_at_hkt": _now(),
+            "model": attempt_models[-1],
+            "focus": {
+                "id": focus_id,
+                "headline": repaired_headline,
+                "analysis": grounded_repair,
+                "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+                "source_urls": [],
+                "repaired": True,
             },
         }
     if scale_has_record_counts:
@@ -2660,11 +2995,11 @@ def regenerate_model_discovery(
                 "你是电信竞争情报分析员。只重新生成指定两个领域的一条跨库发现。"
                 "只返回JSON对象{from,to,title,detail,kind,source_urls}。from和to必须保持输入顺序；"
                 "title不超过28字，detail不超过110字，kind写AI综合研判。detail必须逐字包含required_values中的"
-                "两个值，且两个领域各一个；解释结构、驱动、"
-                "集中度、口径差异、市场阶段或跨领域背离；禁止建议、应、需、优先、关注、评估、验证等行动话术。"
+                "两个值，且两个领域各一个；只解释结构、口径边界或市场阶段；"
+                "禁止建议、应、需、优先、关注、评估、验证等行动话术。"
                 "detail必须遵守required_lens；detail必须包含“表明、反映、说明”三者之一且只用一个即可；"
                 "关系判断可使用分层、差距、不同、并非、不等于、重合、错位、边界等最贴合证据的词。"
-                "除非required_lens明确要求，否则不要使用‘脱钩’或‘结构性差异’，也不要连续堆叠多个解释连接词。"
+                "不要使用‘脱钩’、‘结构性差异’或任何驱动因果话术，也不要连续堆叠多个解释连接词。"
                 "required_lens已经给出可解释边界；不得进一步猜测增速或差距为何发生，不得补写AI、算力、基站共享、"
                 "套餐组合、客户需求等输入中没有的驱动因素。"
                 "source_urls必须逐字使用evidence中两个领域各自的source_url，不得新增数字、来源或伪造因果。"
@@ -2677,24 +3012,103 @@ def regenerate_model_discovery(
         },
     ]
     configured_model = str(config.get("model") or "deepseek-v4")
-    models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
+    base_models = list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))
+    models = [*base_models, *base_models]
     last_error: Exception | None = None
     replacement: dict[str, Any] | None = None
     used_model = models[0]
-    manual_state = previous.get("manual_discovery_regeneration") or {}
-    regeneration_count = int(manual_state.get("count") or 0) + 1
+    pair_key = f"{source_domain}.{target_domain}"
+    prior_counts = previous.get("manual_discovery_regeneration_counts") or {}
+    if not isinstance(prior_counts, dict):
+        prior_counts = {}
+    regeneration_count = int(prior_counts.get(pair_key) or 0) + 1
+    prior_history = previous.get("manual_discovery_regeneration_history") or {}
+    if not isinstance(prior_history, dict):
+        prior_history = {}
+    relation_history = [
+        str(value or "").strip()
+        for value in prior_history.get(pair_key) or []
+        if str(value or "").strip()
+    ][-12:]
+    prior_title_history = previous.get("manual_discovery_regeneration_title_history") or {}
+    if not isinstance(prior_title_history, dict):
+        prior_title_history = {}
+    relation_title_history = [
+        str(value or "").strip()
+        for value in prior_title_history.get(pair_key) or []
+        if str(value or "").strip()
+    ][-12:]
+    current_text = "".join(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
+    comparison_history = [*relation_history, current_text]
     fallback_used = False
     report("正在生成新的跨库判断")
-    regeneration_angles = ("结构差异", "驱动因素", "市场阶段", "集中度", "口径与时间差")
+    regeneration_angles = {
+        ("macro", "local"): (
+            "需求变化与产品选择宽度属于不同测量层",
+            "宏观百分比与本地产品数量不能互相解释",
+            "市场总体变化与厂商供给广度存在范围边界",
+            "产品数量不等于连接需求强弱",
+        ),
+        ("international", "cloud"): (
+            "传统运营商与云业务处于不同增长阶段",
+            "两类市场增速分层但不等于经营效率差距",
+            "企业范围与业务范围不同，数值只作阶段对照",
+            "低个位数增长与高双位数增长形成阶段梯队",
+        ),
+        ("local", "cloud"): (
+            "本地产品数量与全球云收入增速属于不同口径",
+            "产品广度不等于收入增长动量",
+            "本地市场范围与全球业务范围不能直接换算",
+            "数量指标与百分比指标只能说明测量边界",
+        ),
+        ("macro", "international"): (
+            "网络高覆盖与企业营收增速属于不同层面",
+            "网络可达性不等于收入增长速度",
+            "成熟覆盖与低个位数增长处于不同市场阶段",
+            "覆盖范围指标不能直接推导企业变现表现",
+        ),
+    }.get((source_domain, target_domain), ("口径边界", "市场阶段", "范围差异", "测量层次"))
+    grounded_seed = _safe_discovery_regeneration_fallback(
+        evidence,
+        source_domain,
+        target_domain,
+        current=current,
+        regeneration_index=regeneration_count - 1,
+    )
     for attempt, model in enumerate(models):
         request_id = f"relation-{index}-{uuid4().hex}"
-        request_messages = [*messages, {
-            "role": "user",
-            "content": (
-                f"本次重生成请求编号：{request_id}。该编号只用于隔离缓存，不属于证据，不得写入答案。"
-                f"本次优先从“{regeneration_angles[attempt % len(regeneration_angles)]}”角度形成与当前标题和正文不同的新判断。"
-            ),
-        }]
+        angle = regeneration_angles[(regeneration_count - 1 + attempt) % len(regeneration_angles)]
+        if attempt >= len(base_models) and grounded_seed:
+            request_messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        "只返回合法JSON对象{from,to,title,detail,kind,source_urls}。"
+                        "严格保留证据底稿中的领域、两个数字和两个来源，改写成一条新的口径或市场阶段判断。"
+                        "detail不超过100字；禁止脱钩、结构性差异、驱动、因果、建议和证据外事实。"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": json.dumps({
+                        "from": source_domain,
+                        "to": target_domain,
+                        **scoped_evidence,
+                        "required_angle": angle,
+                        "grounded_seed": grounded_seed,
+                        "recent_titles_to_avoid": [str(item.get("title") or "") for item in discoveries],
+                        "request_id": request_id,
+                    }, ensure_ascii=False),
+                },
+            ]
+        else:
+            request_messages = [*messages, {
+                "role": "user",
+                "content": (
+                    f"本次重生成请求编号：{request_id}。该编号只用于隔离缓存，不属于证据，不得写入答案。"
+                    f"本次必须从“{angle}”形成与最近版本不同的新判断。"
+                ),
+            }]
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
             data=json.dumps({
@@ -2726,19 +3140,36 @@ def regenerate_model_discovery(
             if str(parsed.get("from") or "") != source_domain or str(parsed.get("to") or "") != target_domain:
                 raise ValueError("模型改变了跨库领域组合")
             unsupported_driver_terms = (
-                "AI扩张", "算力需求", "基站共享", "存量基站", "客户需求", "套餐组合",
+                "驱动", "脱钩", "结构性差异", "需求扩张", "供给扩张", "集中度",
+                "AI扩张", "AI需求", "算力需求", "基础设施规模化", "基站共享", "存量基站",
+                "客户需求", "套餐组合", "站址扩张", "基建空间",
             )
             leaked_drivers = [term for term in unsupported_driver_terms if term in str(parsed.get("detail") or "")]
             if leaked_drivers:
                 raise ValueError(f"模型补写了输入之外的驱动因素：{leaked_drivers}")
+            detail = str(parsed.get("detail") or "")
+            missing_required_values = [value for value in scoped_evidence["required_values"] if value not in detail]
+            if missing_required_values:
+                raise ValueError(f"模型未逐字引用两个当前数值：{missing_required_values}")
             current_signature = tuple(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
             parsed_signature = tuple(re.sub(r"\s+", "", str(parsed.get(key) or "")) for key in ("title", "detail"))
             if parsed_signature == current_signature:
                 raise ValueError("模型返回了与当前跨库洞察完全相同的结果")
-            current_text = "".join(current_signature)
             parsed_text = "".join(parsed_signature)
-            if difflib.SequenceMatcher(None, current_text, parsed_text).ratio() >= 0.82:
-                raise ValueError("模型返回的跨库判断与当前版本语义过于相似")
+            parsed_title = re.sub(r"\s+", "", str(parsed.get("title") or ""))
+            if max(
+                (
+                    difflib.SequenceMatcher(None, re.sub(r"\s+", "", title), parsed_title).ratio()
+                    for title in relation_title_history
+                ),
+                default=0.0,
+            ) >= 0.94:
+                raise ValueError("模型返回的跨库标题与最近版本过于相似")
+            if max(
+                (difflib.SequenceMatcher(None, previous_text, parsed_text).ratio() for previous_text in comparison_history),
+                default=0.0,
+            ) >= 0.82:
+                raise ValueError("模型返回的跨库判断与最近版本语义过于相似")
             candidate = [dict(item) for item in discoveries]
             candidate[index] = parsed
             replacement = _validate_model_discoveries(candidate, evidence)[index]
@@ -2751,13 +3182,7 @@ def regenerate_model_discovery(
                 "content": f"上一版未通过门禁：{exc}。保持领域组合，换一个数据关系角度，只返回合法JSON对象。",
             })
     if replacement is None:
-        fallback = _safe_discovery_regeneration_fallback(
-            evidence,
-            source_domain,
-            target_domain,
-            current=current,
-            regeneration_index=regeneration_count - 1,
-        )
+        fallback = grounded_seed
         if fallback is None:
             raise ValueError("模型本次未返回有效内容")
         candidate = [dict(item) for item in discoveries]
@@ -2772,6 +3197,24 @@ def regenerate_model_discovery(
     report("证据校验通过，正在返回洞察")
     discoveries[index] = replacement
     generated_at = _now()
+    updated_counts = dict(prior_counts)
+    updated_counts[pair_key] = regeneration_count
+    updated_history = json.loads(json.dumps(prior_history, ensure_ascii=False))
+    replacement_text = "".join(
+        re.sub(r"\s+", "", str(replacement.get(key) or ""))
+        for key in ("title", "detail")
+    )
+    updated_history[pair_key] = list(dict.fromkeys([
+        *relation_history,
+        current_text,
+        replacement_text,
+    ]))[-12:]
+    updated_title_history = json.loads(json.dumps(prior_title_history, ensure_ascii=False))
+    updated_title_history[pair_key] = list(dict.fromkeys([
+        *relation_title_history,
+        str(current.get("title") or "").strip(),
+        str(replacement.get("title") or "").strip(),
+    ]))[-12:]
     generated = {
         **previous,
         "generated_at_hkt": generated_at,
@@ -2781,6 +3224,9 @@ def regenerate_model_discovery(
         "evidence_hash": evidence_hash,
         "insight_format": INSIGHT_FORMAT_VERSION,
         "reused": False,
+        "manual_discovery_regeneration_counts": updated_counts,
+        "manual_discovery_regeneration_history": updated_history,
+        "manual_discovery_regeneration_title_history": updated_title_history,
         "manual_discovery_regeneration": {
             "index": index,
             "from": source_domain,
@@ -2999,7 +3445,7 @@ def regenerate_model_focus_summary(
         *[str(value or "").strip() for value in recent_insights if str(value or "").strip()],
         str((previous_focus or {}).get("analysis") or "").strip(),
         str(scoped_focus.get("analysis") or "").strip(),
-    ]))[-5:]
+    ]))[-12:]
     updated_counts = json.loads(json.dumps(previous_counts, ensure_ascii=False))
     updated_counts[history_key] = regeneration_index
     updated_title_history = json.loads(json.dumps(previous_title_history, ensure_ascii=False))
@@ -3007,7 +3453,7 @@ def regenerate_model_focus_summary(
         *[str(value or "").strip() for value in recent_headlines if str(value or "").strip()],
         str((previous_focus or {}).get("headline") or "").strip(),
         str(scoped_focus.get("headline") or "").strip(),
-    ]))[-5:]
+    ]))[-12:]
     generated = {
         **previous,
         "generated_at_hkt": generated_at,
@@ -3034,6 +3480,8 @@ def regenerate_model_focus_summary(
         "headline": str(scoped_focus.get("headline") or ""),
         "analysis": str(scoped_focus.get("analysis") or ""),
         "model": generated["model"],
+        "origin": str(scoped_focus.get("origin") or "ai"),
+        "repaired": bool(scoped_focus.get("repaired")),
         "generated_at_hkt": generated_at,
         "evidence_hash": evidence_hash,
     }
