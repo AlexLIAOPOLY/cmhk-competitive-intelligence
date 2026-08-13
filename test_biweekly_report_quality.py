@@ -941,6 +941,67 @@ class QualitySidecarTests(unittest.TestCase):
         self.assertEqual(payload["items"][0]["reviewDecision"], "evidence_repair")
         self.assertEqual(payload["limitations"][0]["stage"], "review")
 
+    def test_limited_mode_repairs_thin_body_from_locked_supplemental_evidence(self) -> None:
+        item = make_item("W001", 1, title="测试主体公布网络部署")
+        item["detail"] = "测试主体公布网络部署。"
+        item["rawDetail"] = item["detail"]
+        item["limitedNotice"] = "写作模型暂不可用"
+        item["webResearch"] = {
+            "supplementalEvidence": {
+                "detail": detailed_text("测试主体公布网络部署。"),
+            }
+        }
+
+        model = report.finalize_weekly_limited_model(make_model(item))
+
+        self.assertTrue(report.summary_has_reference_density(model["sections"][0]["items"][0]["detail"]))
+        report.validate_human_template_content(model)
+
+    def test_limited_mode_recovers_previously_validated_writer_cache(self) -> None:
+        item = make_item("W001", 1, title="测试主体公布网络部署")
+        item["detail"] = item["title"]
+        item["rawDetail"] = item["title"]
+        item["facts"] = [detailed_text("测试主体公布网络部署。")]
+        item["_weeklyWriterCacheKey"] = "validated-draft"
+        cached = {
+            "validated-draft": {
+                "status": "ok",
+                "title": item["title"],
+                "detail": item["facts"][0],
+            }
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "weekly-cache.json"
+            cache_path.write_text(json.dumps(cached, ensure_ascii=False), encoding="utf-8")
+            with patch.object(report, "WEEKLY_LLM_CACHE", cache_path):
+                model = report.finalize_weekly_limited_model(make_model(item))
+
+        repaired = model["sections"][0]["items"][0]
+        self.assertEqual(repaired["writerStatus"], "validated_cache_recovery")
+        report.validate_human_template_content(model)
+
+    def test_prepare_human_template_quarantines_only_irreparable_body(self) -> None:
+        item = make_item("W001", 1, title="测试主体公布网络部署")
+        item["detail"] = item["title"]
+        item["rawDetail"] = item["title"]
+        model = make_model(item)
+
+        prepared = report.prepare_human_template_content(model, progress=lambda _message: None)
+
+        self.assertEqual(prepared["sections"][0]["items"], [])
+        self.assertEqual(len(prepared["humanTemplateExcludedItems"]), 1)
+        self.assertEqual(prepared["generationLimitations"][-1]["stage"], "human_template_content")
+        report.validate_human_template_content(prepared)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = Path(temp_dir) / "limited.docx"
+            report.weekly_to_emergency_docx(prepared, output_path, reason="正文受限")
+            payload = json.loads(
+                report.weekly_quality_sidecar_path(output_path).read_text(encoding="utf-8")
+            )
+        self.assertEqual(payload["included"], 0)
+        self.assertEqual(payload["excludedItems"][0]["title"], item["title"])
+
     def test_main_uses_emergency_docx_when_standard_template_fails(self) -> None:
         period = report.resolve_weekly_period(
             now=report.parse_report_date("2026-07-15T10:00:00+08:00")

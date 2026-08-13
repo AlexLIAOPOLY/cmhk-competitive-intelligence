@@ -1520,6 +1520,7 @@ def enrich_weekly_items_with_llm(
         )
         item["writerStatus"] = "fallback"
         cache_key = _weekly_writer_cache_key(item, model)
+        item["_weeklyWriterCacheKey"] = cache_key
         cached = None if bypass_cache else cache.get(cache_key)
         if isinstance(cached, dict) and _valid_weekly_writer_result(cached, item):
             item["title"] = simplified_chinese(cached.get("title"), 120)
@@ -4216,6 +4217,24 @@ def deterministic_limited_weekly_detail(item: dict) -> str:
     return concise_web_evidence_detail(item) or deterministic_headline_fact_sentence(item)
 
 
+def cached_weekly_writer_result(item: dict) -> dict | None:
+    """Recover a previously validated dense draft without trusting stale free text."""
+    cache_key = clean_text(item.get("_weeklyWriterCacheKey"))
+    if not cache_key or not WEEKLY_LLM_CACHE.exists():
+        return None
+    try:
+        cache = json.loads(WEEKLY_LLM_CACHE.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    cached = cache.get(cache_key) if isinstance(cache, dict) else None
+    if not isinstance(cached, dict) or not _valid_weekly_writer_result(cached, item):
+        return None
+    return {
+        "title": simplified_chinese(cached.get("title"), 120),
+        "detail": simplified_chinese(cached.get("detail"), 1200),
+    }
+
+
 def deterministic_evidence_weekly_title(item: dict) -> str:
     """Keep the evidence-locked headline without introducing truncation markers."""
     title = simplified_chinese(item.get("originalTitle") or item.get("title"))
@@ -4333,19 +4352,25 @@ def finalize_weekly_limited_model(model: dict) -> dict:
             item["index"] = global_index
             item["localIndex"] = local_index
             item["section"] = section.get("name") or item.get("section") or "行业资讯"
-            if not item.get("limitedNotice"):
-                detail = clean_text(item.get("detail"))
-                if (
-                    item.get("writerStatus") == "fallback"
-                    or not detail
-                    or summary_has_unneeded_scaffolding(detail, item.get("eventAt"))
-                    or summary_has_search_noise(detail)
-                    or not summary_adds_information(
-                        item.get("title"),
-                        detail,
-                        item.get("originalTitle"),
-                    )
-                ):
+            detail = clean_text(item.get("detail"))
+            if (
+                item.get("writerStatus") == "fallback"
+                or not detail
+                or summary_has_unneeded_scaffolding(detail, item.get("eventAt"))
+                or summary_has_search_noise(detail)
+                or not summary_has_reference_density(detail)
+                or not summary_adds_information(
+                    item.get("title"),
+                    detail,
+                    item.get("originalTitle"),
+                )
+            ):
+                cached = cached_weekly_writer_result(item)
+                if cached:
+                    item["title"] = cached["title"]
+                    item["detail"] = cached["detail"]
+                    item["writerStatus"] = "validated_cache_recovery"
+                else:
                     item["detail"] = deterministic_limited_weekly_detail(item)
                     item["writerStatus"] = "limited_fallback"
             item["title"] = deterministic_evidence_weekly_title(item)
@@ -4379,6 +4404,7 @@ def finalize_weekly_limited_model(model: dict) -> dict:
         "reviewStatus": "limited",
         "generationMode": "limited",
         "limitations": deepcopy(model.get("generationLimitations") or []),
+        "excludedItems": deepcopy(model.get("humanTemplateExcludedItems") or []),
         "reviewerModel": "",
         "reviewPromptVersion": WEEKLY_REVIEW_PROMPT_VERSION,
         "window": range_value,
@@ -4907,33 +4933,72 @@ def validate_report_model(model: dict) -> None:
         raise ValueError("周报内容校验失败：\n" + "\n".join(errors))
 
 
+def human_template_item_errors(item: dict) -> list[str]:
+    """Return fail-closed body errors for one item without mutating it."""
+    errors = []
+    title = clean_text(item.get("title"))
+    detail = clean_text(item.get("detail"))
+    if not detail:
+        return ["正文为空"]
+    if not summary_adds_information(title, detail, item.get("originalTitle")):
+        errors.append("正文只是重复标题，未总结关键事实")
+    if summary_has_unneeded_scaffolding(detail, item.get("eventAt")):
+        errors.append("正文含发布时间、来源套话或关注式结尾")
+    if summary_has_search_noise(detail):
+        errors.append("正文含网页搜索结果噪声或无关片段")
+    if not summary_has_reference_density(detail):
+        errors.append("正文信息量低于人工内参样本")
+    if simplified_chinese(f"{title} {detail}") != clean_text(f"{title} {detail}"):
+        errors.append("标题或正文未统一为简体中文")
+    return errors
+
+
 def validate_human_template_content(model: dict) -> None:
     """Final fail-closed gate for the exact body style visible in Word."""
     errors = []
     for section in model.get("sections") or []:
         for item in section.get("items") or []:
             title = clean_text(item.get("title"))
-            detail = clean_text(item.get("detail"))
             label = f"{section.get('name') or '-'} / {title or '-'}"
-            if not detail:
-                errors.append(f"{label}: 正文为空")
-                continue
-            if not summary_adds_information(
-                title,
-                detail,
-                item.get("originalTitle"),
-            ):
-                errors.append(f"{label}: 正文只是重复标题，未总结关键事实")
-            if summary_has_unneeded_scaffolding(detail, item.get("eventAt")):
-                errors.append(f"{label}: 正文含发布时间、来源套话或关注式结尾")
-            if summary_has_search_noise(detail):
-                errors.append(f"{label}: 正文含网页搜索结果噪声或无关片段")
-            if not summary_has_reference_density(detail):
-                errors.append(f"{label}: 正文信息量低于人工内参样本")
-            if simplified_chinese(f"{title} {detail}") != clean_text(f"{title} {detail}"):
-                errors.append(f"{label}: 标题或正文未统一为简体中文")
+            errors.extend(f"{label}: {error}" for error in human_template_item_errors(item))
     if errors:
         raise ValueError("周报人工模板正文门禁失败：\n" + "\n".join(errors))
+
+
+def prepare_human_template_content(model: dict, *, progress=print) -> dict:
+    """Repair thin bodies, then quarantine only items that still fail the gate."""
+    model = finalize_weekly_limited_model(model)
+    excluded = []
+    for section in model.get("sections") or []:
+        qualified = []
+        for item in section.get("items") or []:
+            item_errors = human_template_item_errors(item)
+            if not item_errors:
+                qualified.append(item)
+                continue
+            excluded.append(
+                {
+                    "id": item.get("id") or "",
+                    "section": section.get("name") or "",
+                    "title": item.get("title") or "",
+                    "errors": item_errors,
+                    "sourceIds": list(item.get("sourceIds") or []),
+                }
+            )
+        section["items"] = qualified
+    if excluded:
+        model["humanTemplateExcludedItems"] = excluded
+        record_weekly_limitation(
+            model,
+            "human_template_content",
+            f"{len(excluded)}条正文在缓存恢复和锁定证据重建后仍未达到人工内参门禁",
+            impact="不合格正文不会进入正式周报",
+            action="保留通过门禁的条目；未通过项写入质量审计，不因单条材料不足中断整份周报",
+            progress=progress,
+        )
+        model = finalize_weekly_limited_model(model)
+    validate_human_template_content(model)
+    return model
 
 
 def item_source_entries(model: dict, item: dict) -> list[dict]:
@@ -5300,6 +5365,11 @@ def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | Non
             or ((model or {}).get("generationLimitations") if model else [])
             or []
         ),
+        "excludedItems": deepcopy(
+            audit.get("excludedItems")
+            or ((model or {}).get("humanTemplateExcludedItems") if model else [])
+            or []
+        ),
         "reviewerModel": audit.get("reviewerModel") or audit.get("reviewModel") or "",
         "reviewPromptVersion": audit.get("reviewPromptVersion") or WEEKLY_REVIEW_PROMPT_VERSION,
         "webSearch": audit.get("webSearch") or {},
@@ -5604,7 +5674,11 @@ def main() -> None:
     model = normalize_weekly_model_simplified(model)
     print("[周报 6/7] 正在执行关键事实、事件时间、联网来源、简体中文和人工内参文风校验……", flush=True)
     if model.get("generationMode") == "limited":
-        print("[周报 6/7] 当前为受限模式；严格门禁结果只记录局限，不阻断输出。", flush=True)
+        print(
+            "[周报 6/7] 当前为受限模式；将先恢复合格缓存和锁定证据正文，"
+            "仍不合格的条目只进入质量审计，不会降低正文门禁或中断整份周报。",
+            flush=True,
+        )
     try:
         validate_report_model(model)
     except Exception as exc:
@@ -5618,10 +5692,21 @@ def main() -> None:
         model = finalize_weekly_limited_model(model)
         model = normalize_weekly_model_simplified(model)
 
-    # The human-reference body contract is fail-closed even in limited mode:
-    # never publish title-only text, webpage timestamps, source lead-ins,
-    # generic follow-up endings, or mixed Traditional Chinese into the Word.
-    validate_human_template_content(model)
+    # Keep the human-reference body contract fail-closed for every published
+    # item. Limited mode first restores validated cache/evidence text; a single
+    # irreparable item is quarantined in the quality audit instead of crashing
+    # the entire report or leaking a thin paragraph into Word.
+    try:
+        validate_human_template_content(model)
+    except Exception as exc:
+        record_weekly_limitation(
+            model,
+            "human_template_recovery",
+            exc,
+            impact="部分正文需要从合格缓存或锁定证据恢复",
+            action="逐条恢复并复验；仍不合格的条目只写入质量审计",
+        )
+        model = prepare_human_template_content(model)
 
     print("\n--- 报告内容统计 ---")
     for section in model["sections"]:
