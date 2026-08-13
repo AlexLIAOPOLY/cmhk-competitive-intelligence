@@ -36,10 +36,10 @@ MAX_FOCUS_INSIGHT_CHARS = 120
 MAX_FOCUS_INSIGHT_SENTENCES = 2
 TASK_KIND = "executive-intelligence-refresh"
 DOMAIN_LABELS = {
-    "local": "本地竞对",
-    "international": "国际竞对",
-    "cloud": "云厂商",
-    "macro": "宏观政策",
+    "local": "本地运营商",
+    "international": "内地电讯企业",
+    "cloud": "全球云厂商",
+    "macro": "香港电讯市场",
 }
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
@@ -444,7 +444,7 @@ def _numeric_tokens(value: Any) -> set[str]:
 
 
 def _focus_value_tokens(focus: dict[str, Any]) -> set[str]:
-    """Return metric values only; periods, IDs and numbers embedded in labels do not count."""
+    """Return values explicitly present in the current focus evidence."""
     values: list[Any] = []
     metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
     if metric.get("value") not in (None, ""):
@@ -452,12 +452,15 @@ def _focus_value_tokens(focus: dict[str, Any]) -> set[str]:
     for item in focus.get("items") or []:
         if not isinstance(item, dict):
             continue
-        for key in ("value", "record_count", "component_count"):
+        for key in ("value", "record_count", "component_count", "low", "high", "detail"):
             if item.get(key) not in (None, ""):
                 values.append(item.get(key))
         for component in item.get("components") or []:
-            if isinstance(component, dict) and component.get("value") not in (None, ""):
-                values.append(component.get("value"))
+            if isinstance(component, dict):
+                for key in ("value", "detail"):
+                    if component.get(key) not in (None, ""):
+                        values.append(component.get(key))
+    values.append(len([item for item in focus.get("items") or [] if isinstance(item, dict)]))
     return _numeric_tokens(values)
 
 
@@ -466,7 +469,7 @@ _ANALYTICAL_JUDGEMENT_TERMS = (
     "下降", "回落", "改善", "加速", "放缓", "分化", "集中", "重叠", "梯度", "饱和",
     "压力", "风险", "机会", "空间", "优势", "短板", "不同", "差异", "相差", "居首",
     "覆盖", "完整", "充分", "不足", "多于", "少于", "强于", "弱于", "扩大", "收窄",
-    "深度", "约束", "承压", "断层",
+    "深度", "约束", "承压", "断层", "区隔", "选择", "负担", "转化", "压力",
 )
 _INTERPRETIVE_CONNECTORS = (
     "表明", "反映", "说明", "意味着", "显示", "主要来自", "并非", "而非", "本质上",
@@ -475,13 +478,13 @@ _INTERPRETIVE_CONNECTORS = (
 _INTERPRETIVE_DIMENSIONS = (
     "结构", "口径", "集中", "可比", "驱动", "依赖", "饱和", "错位", "背离", "同步",
     "脱钩", "分层", "梯队", "边界", "质量", "效率", "弹性", "定价权", "产品广度",
-    "记录颗粒度", "渗透", "变现", "盈利", "收入", "客户", "网络", "竞争", "产品类型", "购买力",
+    "记录颗粒度", "记录密度", "渗透", "变现", "盈利", "利润", "收入", "客户", "网络", "竞争", "产品类型", "购买力", "价格", "套餐", "投入", "资本", "负担", "流量", "连接", "服务", "优惠条件",
 )
 _DEEP_RELATION_MARKERS = (
     "主要来自", "源于", "驱动", "并非", "而非", "不等同", "不等价", "不能", "不可",
     "受制", "约束", "转为", "集中于", "断层", "同步", "脱钩", "结构性差异", "口径放大",
     "接近饱和", "趋于饱和", "未形成", "不再来自", "共同拉开", "梯队分布",
-    "分层竞争", "头部主导", "偏态分布",
+    "分层竞争", "头部主导", "偏态分布", "不代表", "不纳入", "未纳入", "难形成", "受压", "承压", "混排", "重合", "差距", "不同", "并列信号",
 )
 _ACTION_ADVICE_PHRASES = (
     "建议", "值得关注", "后续关注", "应优先", "需优先", "优先关注", "优先评估", "优先验证",
@@ -1126,6 +1129,9 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
     metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
     metric_value = _display_number(metric.get("value"))
     metric_unit = str(metric.get("unit") or "")
+    strategic_fallback = str(focus.get("insight") or "").strip()
+    if strategic_fallback:
+        return strategic_fallback
 
     if (domain, focus_id) == ("local", "scale") and items:
         record_leader = max(items, key=lambda item: float(item.get("record_count") or item.get("value") or 0))
@@ -1406,18 +1412,11 @@ def generate_model_focus_insight(
         raise RuntimeError("未配置内网模型密钥")
     focus_id = str(focus.get("id") or "")
     focus_contracts = {
-        ("local", "scale"): (
-            "只分析各厂商在售方案数量、数量分布、头尾差距或集中程度；"
-            "不得讨论产品赛道、覆盖范围、月费、资费区间、竞对重叠或交集。"
-        ),
-        ("local", "track"): (
-            "只分析各厂商覆盖的产品赛道数量及广度差异；不得讨论月费、资费区间或竞对重叠。"
-        ),
-        ("local", "price"): (
-            "只分析各厂商月费中位数及价格梯度；不得讨论赛道覆盖或竞对重叠。"
-        ),
+        ("local", "scale"): "只分析去重后在售套餐数量与套餐选择；数据库记录数只作重复记录说明。",
+        ("local", "mobile_price"): "只分析个人5G的月费中位数、价格带重合与价格区隔。",
+        ("local", "fibre_value"): "只分析家宽每千兆月费及合约期对价格优势的影响。",
         ("local", "overlap"): (
-            "只分析品牌之间的产品重叠或交集；不得讨论月费或资费区间。"
+            "只分析同一套餐类型内的月费区间重合，不得跨套餐类型比较。"
         ),
     }
     focus_contract = focus_contracts.get(
@@ -1435,11 +1434,10 @@ def generate_model_focus_insight(
         if str(value or "").strip()
     ))[-5:]
     angle_options = (
-        "从头部与尾部的数量断层切入",
-        "从相邻厂商形成的梯队层次切入",
-        "从整体分布是否均衡切入",
-        "从哪些厂商构成主要集中部分切入",
-        "从尾部厂商与主流供给的分化切入",
+        "从竞争区隔或增长质量切入",
+        "从资本负担或利润转化切入",
+        "从需求强度或购买力压力切入",
+        "从服务压力或数据边界切入",
     )
     regeneration_index = max(1, int(focus.get("regeneration_index") or len(recent_insights) or 1))
     angle_instruction = angle_options[(regeneration_index - 1) % len(angle_options)]
@@ -1475,7 +1473,7 @@ def generate_model_focus_insight(
             "role": "system",
             "content": (
                 "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
-                "headline是随本次判断重新生成的4至18字结论标题，不含数字、单位、标点或行动建议，"
+                "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
                 "不得复用recent_headlines_to_avoid。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、驱动、集中度、"
                 "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
@@ -1540,11 +1538,13 @@ def generate_model_focus_insight(
                 raise ValueError("模型未返回单项洞察对象")
             headline = re.sub(r"\s+", " ", str(parsed.get("headline") or "")).strip()
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
-            if not (4 <= len(headline) <= 18) or re.search(
+            if not (4 <= len(headline) <= 14) or re.search(
                 r"[\d％%。，,；;：:！？!?]|百分点|港元|亿元|万元|万户|万项|项$",
                 headline,
             ):
-                raise ValueError(f"AI洞察标题必须为4至18字且不含数字、单位或标点：{headline[:40]}")
+                raise ValueError(f"AI洞察标题必须为4至14字且不含数字、单位或标点：{headline[:40]}")
+            if any(term in headline for term in ("洞察", "研判", "格局分化")):
+                raise ValueError(f"AI洞察标题使用空泛词：{headline[:40]}")
             if _contains_action_advice(headline):
                 raise ValueError(f"AI洞察标题含行动建议：{headline[:40]}")
             forbidden_headline_terms = {

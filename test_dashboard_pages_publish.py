@@ -214,7 +214,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
 
         self.assertIn('<script src="./intelligence.js?v=4"></script>', html)
         self.assertIn("市场与竞争数据", html)
-        self.assertIn("AI 数据解读", html)
+        self.assertIn("数据战略解读", html)
         self.assertIn("运营商动态", html)
         self.assertNotIn(">竞对动态<", html)
         self.assertIn('class="ai-insight-mark"', html)

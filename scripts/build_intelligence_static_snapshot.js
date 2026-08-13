@@ -14,10 +14,10 @@ const CHROME_PATH = process.env.CMHK_CHROME_PATH
   || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const TARGET_TABS = [
-  ["local", "月费（港元/月）"],
-  ["international", "资本开支/营收（%）"],
-  ["cloud", "增速较上年变化"],
-  ["macro", "移动数据用量"],
+  ["local", "个人5G月费"],
+  ["international", "资本投入占比"],
+  ["cloud", "增长变化"],
+  ["macro", "流量增长"],
 ];
 
 function cleanDirectory(directory) {

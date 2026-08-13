@@ -7392,8 +7392,8 @@ document.addEventListener("keydown", (event) => {
 
   const domainLabels = {
     local: "本地运营商",
-    international: "国际电讯企业",
-    cloud: "云厂商",
+    international: "内地电讯企业",
+    cloud: "全球云厂商",
     macro: "香港电讯市场",
   };
   let payload = null;
@@ -7515,14 +7515,16 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
-      const aiHeadline = focus.ai_summary?.headline || focus.metric?.label || domain.metric?.label || domain.title;
+      const hasFreshAi = Boolean(payload?.ai?.model_analysis_fresh && aiAnalysis);
+      const interpretationLabel = hasFreshAi ? "AI 战略解读" : "数据战略解读";
+      const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
       const refreshLabel = isGenerating
-        ? `正在重新生成${domain.title}${focus.label}AI数据解读`
+        ? `正在重新生成${domain.title}${focus.label}AI战略解读`
         : refreshState?.status === "error"
-          ? `${domain.title}${focus.label}AI数据解读生成失败，点击重试`
-          : `点击重新生成${domain.title}${focus.label}AI数据解读`;
+          ? `${domain.title}${focus.label}AI战略解读生成失败，点击重试`
+          : `点击重新生成${domain.title}${focus.label}AI战略解读`;
       const insightContent = isGenerating
         ? refreshState.text
           ? `<span class="intelligence-ai-stream-text">${safe(refreshState.text)}</span><i class="intelligence-ai-stream-cursor" aria-hidden="true"></i>`
@@ -7541,7 +7543,7 @@ document.addEventListener("keydown", (event) => {
               <path d="M8.2 1.6c.35 3.48 2.72 5.85 6.2 6.2-3.48.35-5.85 2.72-6.2 6.2C7.85 10.52 5.48 8.15 2 7.8c3.48-.35 5.85-2.72 6.2-6.2Z"></path>
               <path d="M14.5 1.7v3.2M12.9 3.3h3.2"></path>
             </svg>
-            <span>AI 数据解读</span>
+            <span>${safe(interpretationLabel)}</span>
           </button>
           <strong class="${isGenerating ? "is-generating" : ""}" data-intelligence-insight-headline>${headlineContent}</strong>
           <div id="${safe(detailId)}" class="intelligence-entity-detail-body ${isGenerating ? "is-generating" : ""}" data-intelligence-detail-body>
@@ -7644,14 +7646,14 @@ document.addEventListener("keydown", (event) => {
         <em>${String(index + 1).padStart(2, "0")}</em>
         <button type="button" class="intelligence-relation-title ${relationRefreshState.get(index)?.status === "loading" ? "is-loading" : ""} ${relationRefreshState.get(index)?.status === "error" ? "is-error" : ""}"
           data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
-          aria-label="点击重新生成${safe(domainLabels[relation.from] || relation.from)}与${safe(domainLabels[relation.to] || relation.to)}数据解读"
+          aria-label="点击重新生成${safe(domainLabels[relation.from] || relation.from)}与${safe(domainLabels[relation.to] || relation.to)}战略解读"
           ${relationRefreshState.get(index)?.status === "loading" ? "disabled aria-busy=\"true\"" : ""}>
           ${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}
         </button>
         <strong class="${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""}">${relationRefreshState.get(index)?.status === "loading"
           ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成数据解读</span>`
           : safe(relation.title)}</strong>
-        <small>${safe(relation.origin === "ai" ? "AI 数据解读" : relation.kind)}</small>
+        <small>${safe(relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
       </div>
     `).join("");
     patchElementList(rail, markup);
@@ -7844,7 +7846,6 @@ document.addEventListener("keydown", (event) => {
         </span>
         <span class="intelligence-domain-metric">
           <small>${safe(focusMetric.label)}</small>
-          ${domain.id === "local" && selectedFocus.context ? `<em>${safe(selectedFocus.context)}</em>` : ""}
           <strong>${formatValue(focusMetric.value)}<i>${safe(focusMetric.unit)}</i></strong>
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
