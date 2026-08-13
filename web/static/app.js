@@ -60,6 +60,11 @@ const state = {
   voiceLiveTranscript: "",
   chatAutoScroll: true,
   crawlRuns: [],
+  crawlRunFilters: {
+    status: "all",
+    kind: "all",
+    time: "all",
+  },
   activeCrawlRunId: null,
   crawlLogPollTimer: null,
   crawlLogPollBusy: false,
@@ -125,6 +130,12 @@ const els = {
   clearLogButton: document.querySelector("#clearLogButton"),
   refreshCrawlRunsButton: document.querySelector("#refreshCrawlRunsButton"),
   crawlRunList: document.querySelector("#crawlRunList"),
+  crawlRunFilter: document.querySelector("#crawlRunFilter"),
+  crawlRunFilterCount: document.querySelector("#crawlRunFilterCount"),
+  crawlRunStatusFilter: document.querySelector("#crawlRunStatusFilter"),
+  crawlRunKindFilter: document.querySelector("#crawlRunKindFilter"),
+  crawlRunTimeFilter: document.querySelector("#crawlRunTimeFilter"),
+  resetCrawlRunFilters: document.querySelector("#resetCrawlRunFilters"),
   logRunTitle: document.querySelector("#logRunTitle"),
   toggleChatThreadsButton: document.querySelector("#toggleChatThreadsButton"),
   collapseChatThreadsButton: document.querySelector("#collapseChatThreadsButton"),
@@ -3282,13 +3293,70 @@ function scheduleUnifiedTaskListRefresh() {
   }, 2500);
 }
 
+function crawlRunTimeValue(task) {
+  const value = task.completed_at_hkt || task.started_at_hkt || "";
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function filteredCrawlRuns() {
+  const filters = state.crawlRunFilters || {};
+  const timeWindows = {
+    "24h": 24 * 60 * 60 * 1000,
+    "7d": 7 * 24 * 60 * 60 * 1000,
+    "30d": 30 * 24 * 60 * 60 * 1000,
+  };
+  const minimumTime = timeWindows[filters.time] ? Date.now() - timeWindows[filters.time] : 0;
+  return state.crawlRuns.filter(function (task) {
+    if (filters.status !== "all" && String(task.run_status || "") !== filters.status) return false;
+    if (filters.kind !== "all" && String(task.kind || "") !== filters.kind) return false;
+    if (minimumTime && crawlRunTimeValue(task) < minimumTime) return false;
+    return true;
+  });
+}
+
+function syncCrawlRunFilterControls() {
+  if (!els.crawlRunKindFilter) return;
+  const selectedKind = state.crawlRunFilters.kind;
+  const kinds = new Map();
+  state.crawlRuns.forEach(function (task) {
+    const value = String(task.kind || "");
+    if (value) kinds.set(value, unifiedTaskKindLabel(task));
+  });
+  els.crawlRunKindFilter.innerHTML = '<option value="all">全部类型</option>'
+    + Array.from(kinds.entries()).sort(function (left, right) {
+      return left[1].localeCompare(right[1], "zh-Hans-CN");
+    }).map(function ([value, label]) {
+      return '<option value="' + escapeHtml(value) + '">' + escapeHtml(label) + '</option>';
+    }).join("");
+  if (selectedKind !== "all" && !kinds.has(selectedKind)) state.crawlRunFilters.kind = "all";
+  els.crawlRunKindFilter.value = state.crawlRunFilters.kind;
+  if (els.crawlRunStatusFilter) els.crawlRunStatusFilter.value = state.crawlRunFilters.status;
+  if (els.crawlRunTimeFilter) els.crawlRunTimeFilter.value = state.crawlRunFilters.time;
+}
+
+function updateCrawlRunFilterBadge() {
+  if (!els.crawlRunFilterCount) return;
+  const activeCount = Object.values(state.crawlRunFilters).filter(function (value) {
+    return value !== "all";
+  }).length;
+  els.crawlRunFilterCount.hidden = activeCount === 0;
+  els.crawlRunFilterCount.textContent = String(activeCount);
+}
+
 function renderCrawlRunList() {
   if (!els.crawlRunList) return;
+  updateCrawlRunFilterBadge();
   if (!state.crawlRuns.length) {
     els.crawlRunList.textContent = "暂无任务记录。";
     return;
   }
-  els.crawlRunList.innerHTML = state.crawlRuns.map(function (task) {
+  const visibleTasks = filteredCrawlRuns();
+  if (!visibleTasks.length) {
+    els.crawlRunList.innerHTML = '<div class="crawl-run-filter-empty"><strong>没有符合条件的任务</strong><span>调整筛选条件或清除筛选。</span></div>';
+    return;
+  }
+  els.crawlRunList.innerHTML = visibleTasks.map(function (task) {
     const id = String(task.task_id || "");
     const time = String(task.completed_at_hkt || task.started_at_hkt || "").replace("T", " ").replace(/\+\d{2}:\d{2}$/, "");
     const status = crawlRunStatusLabel(task);
@@ -3389,6 +3457,7 @@ async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "任务记录加载失败");
     state.crawlRuns = Array.isArray(data.tasks) ? data.tasks : [];
+    syncCrawlRunFilterControls();
     state.hasRunningTasks = state.crawlRuns.some(function (task) {
       return String(task.run_status || "") === "running";
     });
@@ -6738,6 +6807,33 @@ if (els.refreshCrawlRunsButton) {
     loadCrawlRuns({ selectLatest: !state.activeCrawlRunId, selectRunId: state.activeCrawlRunId || "" });
   });
 }
+
+function applyCrawlRunFilters() {
+  state.crawlRunFilters.status = els.crawlRunStatusFilter?.value || "all";
+  state.crawlRunFilters.kind = els.crawlRunKindFilter?.value || "all";
+  state.crawlRunFilters.time = els.crawlRunTimeFilter?.value || "all";
+  renderCrawlRunList();
+}
+
+[els.crawlRunStatusFilter, els.crawlRunKindFilter, els.crawlRunTimeFilter].filter(Boolean).forEach(function (control) {
+  control.addEventListener("change", applyCrawlRunFilters);
+});
+
+if (els.resetCrawlRunFilters) {
+  els.resetCrawlRunFilters.addEventListener("click", function () {
+    state.crawlRunFilters = { status: "all", kind: "all", time: "all" };
+    syncCrawlRunFilterControls();
+    updateCrawlRunFilterBadge();
+    renderCrawlRunList();
+    if (els.crawlRunFilter) els.crawlRunFilter.open = false;
+  });
+}
+
+document.addEventListener("click", function (event) {
+  if (els.crawlRunFilter?.open && !els.crawlRunFilter.contains(event.target)) {
+    els.crawlRunFilter.open = false;
+  }
+});
 
 function closeCrawlLogModal() {
   if (els.logModal) els.logModal.hidden = true;

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>市场与竞争数据</title>
-  <link rel="stylesheet" href="/static/styles.css?v=263" />
+    <link rel="stylesheet" href="/static/styles.css?v=264" />
   <link rel="stylesheet" href="/static/responsive-layout-hardening.css?v=5" />
   <link rel="stylesheet" href="/static/leadership-board.css?v=13" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=1" />
@@ -334,7 +334,36 @@
           </header>
           <div class="log-history-layout">
             <aside class="crawl-run-sidebar" aria-label="任务记录">
-              <strong>任务记录</strong>
+              <div class="crawl-run-sidebar-heading">
+                <strong>任务记录</strong>
+                <details class="crawl-run-filter" id="crawlRunFilter">
+                  <summary>筛选<span id="crawlRunFilterCount" hidden></span></summary>
+                  <div class="crawl-run-filter-menu" aria-label="筛选任务记录">
+                    <label>状态
+                      <select id="crawlRunStatusFilter">
+                        <option value="all">全部状态</option>
+                        <option value="running">运行中</option>
+                        <option value="completed">已完成</option>
+                        <option value="failed">失败</option>
+                      </select>
+                    </label>
+                    <label>任务类型
+                      <select id="crawlRunKindFilter">
+                        <option value="all">全部类型</option>
+                      </select>
+                    </label>
+                    <label>时间范围
+                      <select id="crawlRunTimeFilter">
+                        <option value="all">全部时间</option>
+                        <option value="24h">最近24小时</option>
+                        <option value="7d">最近7天</option>
+                        <option value="30d">最近30天</option>
+                      </select>
+                    </label>
+                    <button id="resetCrawlRunFilters" type="button">清除筛选</button>
+                  </div>
+                </details>
+              </div>
               <div id="crawlRunList" class="crawl-run-list">正在加载任务记录…</div>
             </aside>
             <section class="log-viewer">
@@ -444,7 +473,7 @@
     </div>    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js?v=267"></script>
+    <script src="/static/app.js?v=268"></script>
     <script src="/static/news-review-sheet.js?v=1"></script>
   </body>
 </html>
