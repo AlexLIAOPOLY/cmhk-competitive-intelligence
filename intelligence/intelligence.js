@@ -226,17 +226,17 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       const quarter = text.match(/Q([1-4])\s*(20\d{2})/i);
       const fiscal = text.match(/FY\s*(20\d{2})/i);
       const date = text.match(/(20\d{2}-\d{2}-\d{2})/);
-      const period = quarter ? `${quarter[2]} Q${quarter[1]}` : fiscal ? `FY${fiscal[1]}` : date?.[1];
+      const period = quarter ? `${quarter[2]} Q${quarter[1]}` : fiscal ? `FY${fiscal[1]}` : date?.[1].slice(0, 7);
       if (period && !periods.includes(period)) periods.push(period);
     });
     if (!periods.length && domain?.id === "local") {
       const date = String(domain?.data_time || "").match(/(20\d{2}-\d{2}-\d{2})/);
-      if (date) periods.push(date[1]);
+      if (date) periods.push(date[1].slice(0, 7));
     }
     if (!periods.length) return "截至各公司最新披露期";
-    if (periods.length === 1) return `截至 ${periods[0]}`;
+    if (periods.length === 1) return `截至${periods[0]}`;
     const years = [...new Set(periods.map((period) => (period.match(/20\d{2}/) || [""])[0]).filter(Boolean))];
-    return years.length === 1 ? `截至 ${years[0]} 各指标最新期` : "截至各指标最新披露期";
+    return years.length === 1 ? `截至${years[0]}各指标最新期` : "截至各指标最新披露期";
   }
 
   function patchIntelligenceNode(current, next) {
