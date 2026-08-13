@@ -14753,6 +14753,13 @@ body.report-library-open::before {
   white-space: nowrap;
 }
 
+.intelligence-entity-data-time {
+  margin-bottom: 6px;
+  color: #8eabb5;
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
 .intelligence-domain-local .intelligence-focus-tabs {
   gap: 3px;
 }
