@@ -208,6 +208,93 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(request.call_count, 2)
         self.assertNotIn("赛道", result["focus"]["analysis"])
 
+    def test_current_local_scale_refresh_requires_a_distinct_supported_angle(self):
+        focus = {
+            "id": "scale",
+            "label": "在售方案组合",
+            "metric": {"value": 84, "unit": "个"},
+            "regeneration_index": 8,
+            "items": [
+                {"name": "HKBN", "value": 27, "unit": "个套餐", "record_count": 59, "component_count": 27},
+                {"name": "3HK / Hutchison", "value": 24, "unit": "个套餐", "record_count": 48, "component_count": 24},
+                {"name": "SmarTone", "value": 21, "unit": "个套餐", "record_count": 37, "component_count": 21},
+                {"name": "i-CABLE", "value": 8, "unit": "个套餐", "record_count": 10, "component_count": 8},
+                {"name": "HGC", "value": 4, "unit": "个套餐", "record_count": 7, "component_count": 4},
+            ],
+        }
+        same_meaning = json.dumps({
+            "headline": "在售套餐头部集中",
+            "analysis": "HKBN 27个、3HK 24个与SmarTone 21个高于i-CABLE 8个及HGC 4个，说明头部三家集中度较高。",
+        }, ensure_ascii=False)
+        new_boundary = json.dumps({
+            "headline": "数量不代表吸引力",
+            "analysis": "去重后在售套餐84个，但套餐数量不能等同产品吸引力或竞争力，这页只能说明当前收录的选择宽度。",
+        }, ensure_ascii=False)
+        responses = []
+        for content in (same_meaning, new_boundary):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": content}}]
+            }).encode("utf-8")
+            responses.append(response)
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("local", focus)
+
+        first_prompt = json.loads(request.call_args_list[0].args[0].data.decode("utf-8"))["messages"][1]["content"]
+        retry_prompt = json.loads(request.call_args_list[1].args[0].data.decode("utf-8"))["messages"][-1]["content"]
+        self.assertIn("套餐数量不能等同产品吸引力", first_prompt)
+        self.assertIn('"record_count": 59', first_prompt)
+        self.assertIn("数据边界", retry_prompt)
+        self.assertEqual(request.call_count, 2)
+        self.assertIn("不能等同", result["focus"]["analysis"])
+        self.assertNotIn("头部三家集中度", result["focus"]["analysis"])
+
+    def test_current_local_scale_refresh_falls_back_to_a_new_grounded_judgement(self):
+        focus = {
+            "id": "scale",
+            "label": "在售方案组合",
+            "metric": {"value": 84, "unit": "个"},
+            "regeneration_index": 8,
+            "items": [
+                {"name": "HKBN", "value": 27, "unit": "个套餐", "record_count": 59, "component_count": 27},
+                {"name": "3HK / Hutchison", "value": 24, "unit": "个套餐", "record_count": 48, "component_count": 24},
+                {"name": "SmarTone", "value": 21, "unit": "个套餐", "record_count": 37, "component_count": 21},
+                {"name": "i-CABLE", "value": 8, "unit": "个套餐", "record_count": 10, "component_count": 8},
+                {"name": "HGC", "value": 4, "unit": "个套餐", "record_count": 7, "component_count": 4},
+            ],
+        }
+        too_long = json.dumps({
+            "headline": "数量不代表吸引力",
+            "analysis": "去重后在售套餐84个，但套餐数量不能等同产品吸引力或竞争力。" + "数据边界" * 30,
+        }, ensure_ascii=False)
+        responses = []
+        for _ in range(3):
+            response = mock.MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": too_long}}]
+            }).encode("utf-8")
+            responses.append(response)
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses),
+        ):
+            result = pipeline.generate_model_focus_insight("local", focus)
+
+        self.assertEqual(result["model"], "evidence-rule-fallback")
+        self.assertEqual(result["focus"]["origin"], "evidence_rule")
+        self.assertEqual(result["focus"]["headline"], "数量不代表吸引力")
+        self.assertIn("去重后在售套餐84个", result["focus"]["analysis"])
+        self.assertLessEqual(len(result["focus"]["analysis"]), 120)
+
     def test_fast_focus_generation_retries_a_duplicate_with_another_model(self):
         focus = {
             "id": "scale",

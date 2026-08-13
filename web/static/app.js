@@ -7515,7 +7515,11 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
-      const hasFreshAi = Boolean(payload?.ai?.model_analysis_fresh && aiAnalysis);
+      const hasFreshAi = Boolean(
+        payload?.ai?.model_analysis_fresh
+        && aiAnalysis
+        && focus.ai_summary?.origin !== "evidence_rule"
+      );
       const interpretationLabel = hasFreshAi ? "AI 战略解读" : "数据战略解读";
       const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);

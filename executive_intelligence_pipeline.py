@@ -547,7 +547,10 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     if any(phrase in analysis for phrase in restriction_phrases):
         return f"AI分析分类仍以方法说明代替洞察：{domain}.{focus_id}；内容：{analysis[:180]}"
     forbidden_by_focus = {
-        ("local", "scale"): ("赛道", "月费", "资费区间", "重叠", "交集"),
+        ("local", "scale"): (
+            "赛道", "月费", "资费区间", "重叠", "交集", "资本负担", "利润转化",
+            "增长质量", "购买力", "服务压力", "存量竞争", "爆款",
+        ),
     }
     forbidden_terms = forbidden_by_focus.get((domain, focus_id), ())
     leaked_terms = [term for term in forbidden_terms if term in analysis]
@@ -824,6 +827,8 @@ def _validate_model_summaries(
                     "source_urls": [str(url) for url in focus_item.get("source_urls") or []],
                     "entities": [],
                 }
+                if str(focus_item.get("origin") or "") == "evidence_rule":
+                    validated_focus["origin"] = "evidence_rule"
                 if not validated_focus["analysis"] or not validated_focus["risk"]:
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
                 unknown_focus_urls = set(validated_focus["source_urls"]) - allowed_urls
@@ -1441,11 +1446,24 @@ def generate_model_focus_insight(
         for value in [focus.get("headline"), *(focus.get("recent_headlines") or [])]
         if str(value or "").strip()
     ))[-5:]
+    scale_has_record_counts = (
+        (domain_id, focus_id) == ("local", "scale")
+        and any(item.get("record_count") for item in focus.get("items") or [] if isinstance(item, dict))
+    )
     angle_options = (
-        "从竞争区隔或增长质量切入",
-        "从资本负担或利润转化切入",
-        "从需求强度或购买力压力切入",
-        "从服务压力或数据边界切入",
+        (
+            "从数据库记录数与去重后套餐数的差异切入，必须说明重复记录会放大表面规模",
+            "从头部三家去重套餐数量相近切入，必须说明三家之间的选择宽度差距有限",
+            "从尾部两家去重套餐选择较少切入，必须说明这只能反映当前收录的选择宽度",
+            "从数据边界切入，必须说明套餐数量不能等同产品吸引力、价值或竞争力",
+        )
+        if scale_has_record_counts
+        else (
+            "从竞争区隔或增长质量切入",
+            "从资本负担或利润转化切入",
+            "从需求强度或购买力压力切入",
+            "从服务压力或数据边界切入",
+        )
     )
     regeneration_index = max(1, int(focus.get("regeneration_index") or len(recent_insights) or 1))
     angle_instruction = angle_options[(regeneration_index - 1) % len(angle_options)]
@@ -1465,6 +1483,10 @@ def generate_model_focus_insight(
                 "name": item.get("name"),
                 "value": item.get("value"),
                 "unit": item.get("unit"),
+                **({
+                    "record_count": item.get("record_count"),
+                    "deduplicated_plan_count": item.get("component_count"),
+                } if scale_has_record_counts else {}),
                 **({"detail": item.get("detail")} if include_item_detail else {}),
                 "source_url": item.get("source_url"),
             }
@@ -1504,7 +1526,7 @@ def generate_model_focus_insight(
     for attempt, attempt_model in enumerate(attempt_models):
         attempt_messages = list(messages)
         if attempt:
-            retry_angle = angle_options[(regeneration_index - 1 + attempt) % len(angle_options)]
+            retry_angle = angle_instruction
             attempt_messages.append({
                 "role": "user",
                 "content": (
@@ -1564,6 +1586,8 @@ def generate_model_focus_insight(
             }.get((domain_id, focus_id), ())
             if any(term in headline for term in forbidden_headline_terms):
                 raise ValueError(f"AI洞察标题混入其他页维度：{headline}")
+            if "分散" in headline and any(term in analysis for term in ("集中", "头部三家", "主要来自头部")):
+                raise ValueError(f"AI洞察标题与正文判断相反：{headline}")
             headline_similarities = [
                 difflib.SequenceMatcher(None, previous, headline).ratio()
                 for previous in recent_headlines
@@ -1597,6 +1621,22 @@ def generate_model_focus_insight(
             gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
             if gate_error:
                 raise ValueError(gate_error)
+            if scale_has_record_counts:
+                angle_index = (regeneration_index - 1) % len(angle_options)
+                angle_passed = (
+                    ("去重" in analysis and any(term in analysis for term in ("记录", "重复")))
+                    if angle_index == 0 else
+                    (any(term in analysis for term in ("接近", "相近", "差距有限")))
+                    if angle_index == 1 else
+                    ("i-CABLE" in analysis and "HGC" in analysis and "选择" in analysis)
+                    if angle_index == 2 else
+                    (
+                        any(term in analysis for term in ("不能等同", "不代表", "并不等同"))
+                        and any(term in analysis for term in ("吸引力", "价值", "竞争力"))
+                    )
+                )
+                if not angle_passed:
+                    raise ValueError(f"AI洞察未真正采用指定的新分析角度：{angle_instruction}")
             # Validate against exactly what the model was allowed to see. Hidden
             # cross-focus details must never make their numbers look admissible.
             allowed_numeric_evidence = {
@@ -1613,55 +1653,16 @@ def generate_model_focus_insight(
                 if previous_insight
             ]
             similarity = max(similarities, default=0.0)
-            if similarity >= 0.84 and not (
-                attempt + 1 == len(attempt_models)
-                and (domain_id, focus_id) == ("local", "scale")
-            ):
-                raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
             if similarity >= 0.84:
-                scale_items = compact_focus.get("items") or []
-                if len(scale_items) >= 5:
-                    a, b, c, d, e = scale_items[:5]
-                    def nv(item: dict[str, Any]) -> str:
-                        return f"{item.get('name')}{_display_number(item.get('value'))}{item.get('unit') or ''}"
-                    variants = (
-                        f"{nv(a)}位于头部，{nv(e)}处于尾部，头尾断层表明方案供给集中于高数量厂商，并非各品牌均衡分布。",
-                        f"{nv(a)}、{nv(b)}与{nv(c)}形成高位梯队，{nv(d)}、{nv(e)}落在低位，说明方案规模呈分层结构而非同量竞争。",
-                        f"方案数量从{nv(a)}、{nv(b)}、{nv(c)}到{nv(d)}、{nv(e)}明显分化，表明供给分布偏向头部而非均衡铺开。",
-                        f"主要供给集中于{nv(a)}、{nv(b)}和{nv(c)}，{nv(d)}与{nv(e)}形成尾部，说明规模差异来自头部集中而非全体同步。",
-                        f"{nv(d)}与{nv(e)}构成低位组，和{nv(a)}、{nv(b)}、{nv(c)}形成断层，意味着方案市场呈头部主导的梯队分布。",
-                        f"在{nv(a)}领衔下，{nv(b)}和{nv(c)}紧随，{nv(d)}与{nv(e)}明显偏低，表明供给结构分层而非均衡。",
-                    )
-                    analysis = min(
-                        variants,
-                        key=lambda candidate: max(
-                            (
-                                difflib.SequenceMatcher(
-                                    None,
-                                    previous,
-                                    re.sub(r"\s+", "", candidate),
-                                ).ratio()
-                                for previous in previous_insights
-                                if previous
-                            ),
-                            default=0.0,
-                        ),
-                    )
-                    normalized_analysis = re.sub(r"\s+", "", analysis)
-                    similarity = max(
-                        (
-                            difflib.SequenceMatcher(None, previous, normalized_analysis).ratio()
-                            for previous in previous_insights
-                            if previous
-                        ),
-                        default=0.0,
-                    )
+                raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
             if similarity >= 0.96:
                 raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = ValueError(str(exc))
             if attempt + 1 < len(attempt_models):
                 continue
+            if scale_has_record_counts:
+                break
             raise last_error
         return {
             "generated_at_hkt": _now(),
@@ -1672,6 +1673,52 @@ def generate_model_focus_insight(
                 "analysis": analysis,
                 "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
                 "source_urls": [],
+            },
+        }
+    if scale_has_record_counts:
+        items = compact_focus.get("items") or []
+        angle_index = (regeneration_index - 1) % len(angle_options)
+        if angle_index == 0:
+            item = max(items, key=lambda value: int(value.get("record_count") or 0) - int(value.get("value") or 0))
+            headline = "重复记录放大规模"
+            analysis = (
+                f"{item.get('name')}{_display_number(item.get('record_count'))}条记录去重后为"
+                f"{_display_number(item.get('value'))}个套餐，说明重复记录会放大表面规模，"
+                "不能把记录条数当作套餐选择。"
+            )
+        elif angle_index == 1:
+            a, b, c = items[:3]
+            headline = "头部选择宽度接近"
+            analysis = (
+                f"{a.get('name')}{_display_number(a.get('value'))}个、{b.get('name')}"
+                f"{_display_number(b.get('value'))}个与{c.get('name')}{_display_number(c.get('value'))}个相近，"
+                "说明头部三家的当前套餐选择宽度差距有限。"
+            )
+        elif angle_index == 2:
+            a, b = items[-2:]
+            headline = "尾部套餐选择较少"
+            analysis = (
+                f"{a.get('name')}{_display_number(a.get('value'))}个、{b.get('name')}"
+                f"{_display_number(b.get('value'))}个，说明两家在当前收录中的套餐选择较少；"
+                "这只反映选择宽度，不代表产品价值。"
+            )
+        else:
+            headline = "数量不代表吸引力"
+            analysis = (
+                f"去重后在售套餐{_display_number((compact_focus.get('metric') or {}).get('value'))}个，"
+                "但套餐数量不能等同产品吸引力、价值或竞争力；"
+                "这页只能说明当前收录的选择宽度。"
+            )
+        return {
+            "generated_at_hkt": _now(),
+            "model": "evidence-rule-fallback",
+            "focus": {
+                "id": focus_id,
+                "headline": headline,
+                "analysis": analysis,
+                "risk": "仅基于当前已核验记录；套餐数量不代表产品吸引力。",
+                "source_urls": [],
+                "origin": "evidence_rule",
             },
         }
     raise last_error or ValueError("AI洞察生成失败")

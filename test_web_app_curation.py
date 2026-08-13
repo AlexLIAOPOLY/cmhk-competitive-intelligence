@@ -221,6 +221,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('href="/static/leadership-board.css?v=13"', html)
         self.assertIn('class="ai-insight-mark"', app)
         self.assertIn('数据战略解读', app)
+        self.assertIn('focus.ai_summary?.origin !== "evidence_rule"', app)
         self.assertIn('class="ai-insight-label ${isGenerating', app)
         self.assertIn('/api/executive-intelligence/regenerate-insight', app)
         self.assertIn('focus.ai_summary?.headline || focus.headline || focus.metric?.label', app)
