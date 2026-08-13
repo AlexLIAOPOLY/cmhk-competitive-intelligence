@@ -1458,10 +1458,6 @@ def generate_model_focus_insight(
         "label": focus.get("label"),
         "metric": focus.get("metric"),
         "context": focus.get("context"),
-        "current_insight": focus.get("insight"),
-        "current_headline": focus.get("headline"),
-        "recent_insights_to_avoid": recent_insights,
-        "recent_headlines_to_avoid": recent_headlines,
         "scope": focus_contract,
         "required_angle": angle_instruction,
         "items": [
@@ -1482,7 +1478,7 @@ def generate_model_focus_insight(
             "content": (
                 "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
                 "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
-                "不得复用recent_headlines_to_avoid。只能使用输入数字和事实。"
+                "不得复用旧版标题。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、驱动、集中度、"
                 "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
                 "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value，"
@@ -1496,7 +1492,7 @@ def generate_model_focus_insight(
             "content": (
                 f"请求唯一标识（仅用于避免服务端缓存，不得写入答案）：{request_nonce}\n"
                 f"只重新生成{domain_id}.{focus_id}当前洞察，必须采用required_angle，"
-                "不得复用recent_insights_to_avoid的核心判断或句式：\n"
+                "必须只使用下方当前证据，不得补入历史数字或旧版句式：\n"
             )
             + json.dumps(compact_focus, ensure_ascii=False),
         },
@@ -1518,8 +1514,10 @@ def generate_model_focus_insight(
                     "required_angle；仍只能使用输入原值，只返回JSON对象。"
                 ),
             })
+        request_id = f"focus-{domain_id}-{focus_id}-{request_nonce}-{attempt}"
         request = urllib.request.Request(
-            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
+            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions"
+            f"?request_id={urllib.parse.quote(request_id, safe='')}",
             data=json.dumps({
                 "model": attempt_model,
                 "messages": attempt_messages,
@@ -1527,7 +1525,13 @@ def generate_model_focus_insight(
                 "max_tokens": 480,
                 "chat_template_kwargs": {"enable_thinking": False},
             }, ensure_ascii=False).encode("utf-8"),
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "Cache-Control": "no-cache, no-store",
+                "Pragma": "no-cache",
+                "X-Request-ID": request_id,
+            },
             method="POST",
         )
         wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")

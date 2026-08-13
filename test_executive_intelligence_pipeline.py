@@ -116,6 +116,53 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ]
         self.assertEqual(len(prompts), 2)
         self.assertNotEqual(prompts[0], prompts[1])
+        requests = [call.args[0] for call in request.call_args_list]
+        self.assertTrue(all(item.get_header("Cache-control") == "no-cache, no-store" for item in requests))
+        self.assertTrue(all(item.get_header("Pragma") == "no-cache" for item in requests))
+        self.assertNotEqual(
+            requests[0].get_header("X-request-id"),
+            requests[1].get_header("X-request-id"),
+        )
+        self.assertIn("?request_id=focus-local-scale-", requests[0].full_url)
+        self.assertNotEqual(requests[0].full_url, requests[1].full_url)
+
+    def test_focus_generation_keeps_stale_ai_copy_out_of_model_prompt(self):
+        focus = {
+            "id": "scale",
+            "label": "在售方案组合",
+            "metric": {"value": 84, "unit": "个"},
+            "insight": "旧版共161项，不得再发给模型。",
+            "headline": "旧版头部三家主导",
+            "recent_insights": ["历史文案含59项与48项。"],
+            "recent_headlines": ["方案供给集中"],
+            "items": [
+                {"name": "HKBN", "value": 27, "unit": "个套餐"},
+                {"name": "HGC", "value": 4, "unit": "个套餐"},
+            ],
+        }
+        content = json.dumps({
+            "headline": "去重后选择呈分层",
+            "analysis": "HKBN 27个套餐与HGC 4个套餐形成差距，说明去重后套餐选择并非均匀分布。",
+        }, ensure_ascii=False)
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            "choices": [{"message": {"content": content}}]
+        }).encode("utf-8")
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
+        ):
+            pipeline.generate_model_focus_insight("local", focus)
+
+        prompt = json.loads(request.call_args.args[0].data.decode("utf-8"))["messages"][1]["content"]
+        self.assertNotIn("161", prompt)
+        self.assertNotIn("59", prompt)
+        self.assertNotIn("旧版头部三家主导", prompt)
+        self.assertIn('"value": 84', prompt)
+        self.assertIn('"value": 27', prompt)
 
     def test_local_scale_regeneration_excludes_track_details_and_retries_scope_leak(self):
         focus = {
