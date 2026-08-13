@@ -129,7 +129,7 @@ class InternalAsrSubtitleTimingTests(unittest.TestCase):
         self.assertEqual(numeric_tokens[-1]["text"], "5%")
 
     def test_display_text_preserves_brand_spelling_instead_of_asr_guess(self):
-        asr_transcript = "香港电信2025年增长4%"
+        asr_transcript = "香港电信二零二五年增长百分之四"
         display_text = "香港电讯2025年增长4%"
         segments = [
             {"text": character, "start": index * 0.2, "end": (index + 1) * 0.2}
@@ -157,6 +157,28 @@ class InternalAsrSubtitleTimingTests(unittest.TestCase):
             if token["text"].startswith("4")
         )
         self.assertEqual(numeric_token["text"], "4%")
+
+    def test_spoken_percentage_does_not_pull_following_sentence_early(self):
+        display_text = "香港二季度GDP按年实质增长4.3%。行业方面，受人工智能算力基建带动。"
+        spoken_text = "香港二季度GDP按年实质增长百分之四点三。行业方面受人工智能算力基建带动。"
+        segments = []
+        cursor = 60.0
+        for character in spoken_text:
+            if character in "。，":
+                continue
+            segments.append({"text": character, "start": cursor, "end": cursor + 0.2})
+            cursor += 0.2
+
+        cues = _build_asr_subtitle_cues(display_text, segments, spoken_text)
+
+        self.assertEqual(len(cues), 2)
+        percentage = next(
+            token for token in cues[0]["tokens"]
+            if token["text"] == "4.3%"
+        )
+        self.assertGreater(percentage["end"] - percentage["start"], 0.6)
+        self.assertGreaterEqual(cues[1]["start"], cues[0]["end"])
+        self.assertGreaterEqual(cues[1]["start"], 63.8)
 
     def test_audio_info_exposes_precise_token_cues_to_the_frontend(self):
         transcript = "Three香港。"
