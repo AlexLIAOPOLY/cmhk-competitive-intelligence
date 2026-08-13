@@ -2418,6 +2418,55 @@ def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
     return {"domains": domains, "relations": list(evidence.get("relations") or [])[:4]}
 
 
+def _manual_discovery_evidence(
+    evidence: dict[str, Any], source_domain: str, target_domain: str
+) -> dict[str, Any]:
+    """Give manual regeneration two explicit numeric anchors instead of both full domains."""
+    focus_map = {
+        (str(domain.get("id") or ""), str(focus.get("id") or "")): focus
+        for domain in evidence.get("domains") or []
+        for focus in domain.get("focuses") or []
+        if isinstance(focus, dict)
+    }
+    anchor_focus_ids = {
+        ("macro", "local"): (("macro", "connections"), ("local", "scale")),
+        ("international", "cloud"): (("international", "growth"), ("cloud", "growth")),
+        ("local", "cloud"): (("local", "scale"), ("cloud", "growth")),
+        ("macro", "international"): (("macro", "service"), ("international", "growth")),
+    }
+    selected = anchor_focus_ids.get((source_domain, target_domain))
+    if not selected:
+        return {"required_values": [], "evidence": []}
+    anchors: list[dict[str, Any]] = []
+    for domain_id, focus_id in selected:
+        focus = focus_map.get((domain_id, focus_id)) or {}
+        metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
+        items = [item for item in focus.get("items") or [] if isinstance(item, dict)]
+        if (domain_id, focus_id) == ("macro", "service"):
+            coverage = next((item for item in items if "5G人口覆盖" in str(item.get("name") or "")), {})
+            raw_value = coverage.get("value")
+            unit = str(coverage.get("unit") or "")
+            label = str(coverage.get("name") or "5G人口覆盖")
+            source_url = str(coverage.get("source_url") or "")
+        else:
+            raw_value = metric.get("value")
+            unit = str(metric.get("unit") or "")
+            label = str(metric.get("label") or focus.get("title") or focus_id)
+            source_url = next(
+                (str(item.get("source_url") or "") for item in items if str(item.get("source_url") or "")),
+                "",
+            )
+        value = f"{_display_number(raw_value)}{unit}"
+        anchors.append({
+            "domain": domain_id,
+            "focus": focus_id,
+            "label": label,
+            "value": value,
+            "source_url": source_url,
+        })
+    return {"required_values": [item["value"] for item in anchors], "evidence": anchors}
+
+
 def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
@@ -2546,20 +2595,18 @@ def regenerate_model_discovery(
     api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         raise RuntimeError("未配置内网模型密钥")
-    compact = _compact_discovery_evidence(evidence)
-    scoped_evidence = {
-        "domains": [item for item in compact.get("domains") or [] if item.get("id") in {source_domain, target_domain}],
-    }
+    scoped_evidence = _manual_discovery_evidence(evidence, source_domain, target_domain)
     messages = [
         {
             "role": "system",
             "content": (
                 "你是电信竞争情报分析员。只重新生成指定两个领域的一条跨库发现。"
                 "只返回JSON对象{from,to,title,detail,kind,source_urls}。from和to必须保持输入顺序；"
-                "title不超过28字，detail不超过110字，kind写AI综合研判。必须引用输入原值，解释结构、驱动、"
+                "title不超过28字，detail不超过110字，kind写AI综合研判。detail必须逐字包含required_values中的"
+                "两个值，且两个领域各一个；解释结构、驱动、"
                 "集中度、口径差异、市场阶段或跨领域背离；禁止建议、应、需、优先、关注、评估、验证等行动话术。"
-                "detail必须同时包含“表明、反映、说明”之一，以及“源于、驱动、结构性差异、脱钩、接近饱和”之一。"
-                "source_urls必须分别包含两个领域在输入中原样提供的来源，不得新增数字、来源或伪造因果。"
+                "detail必须同时包含“表明、反映、说明”之一，以及“不能直接比较、不等同、结构性差异、脱钩”之一。"
+                "source_urls必须逐字使用evidence中两个领域各自的source_url，不得新增数字、来源或伪造因果。"
                 "必须依据证据重新推导一条判断，不得复述输入指令或请求编号。"
             ),
         },

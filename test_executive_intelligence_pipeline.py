@@ -35,6 +35,20 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         )
         self.assertIn('detail必须同时包含“表明、反映、说明”之一', source)
 
+    def test_manual_discovery_uses_two_explicit_numeric_anchors_per_pair(self):
+        evidence = pipeline._analysis_input_snapshot()
+        expected = {
+            ("macro", "local"): {"24%", "84个产品"},
+            ("international", "cloud"): {"1.5%", "35.8%"},
+            ("local", "cloud"): {"84个产品", "35.8%"},
+            ("macro", "international"): {"超过99%", "1.5%"},
+        }
+        for pair, values in expected.items():
+            scoped = pipeline._manual_discovery_evidence(evidence, *pair)
+            self.assertEqual(set(scoped["required_values"]), values)
+            self.assertEqual({item["domain"] for item in scoped["evidence"]}, set(pair))
+            self.assertTrue(all(item["source_url"].startswith("http") for item in scoped["evidence"]))
+
     def test_manual_discovery_regeneration_bypasses_cache_and_retries_identical_result(self):
         discoveries = [
             {"from": "macro", "to": "international", "title": "旧标题", "detail": "旧正文", "kind": "AI综合研判"},
