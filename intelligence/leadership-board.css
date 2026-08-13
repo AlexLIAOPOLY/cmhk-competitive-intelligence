@@ -604,7 +604,7 @@
 .intelligence-focus-tabs { height: 38px; }
 .intelligence-focus-tabs button {
   min-height: 36px;
-  padding-inline: 4px;
+  padding-inline: 8px;
   font-size: 14px;
   line-height: 1;
   overflow-wrap: normal;
@@ -613,6 +613,18 @@
 }
 .intelligence-focus-tabs button + button {
   border-left: 1px solid rgba(128, 190, 211, .12);
+}
+
+@media (min-width: 561px) {
+  .intelligence-domain,
+  .intelligence-domain-local {
+    grid-template-rows: auto 38px minmax(0, 1fr);
+  }
+  .intelligence-focus-tabs {
+    grid-column: 2 / 5;
+    grid-row: 2;
+  }
+  .intelligence-domain-focus-stage { grid-row: 3; }
 }
 
 .intelligence-domain-focus-stage {
