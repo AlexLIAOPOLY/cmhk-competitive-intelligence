@@ -958,9 +958,9 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         previous_value = _number((previous or {}).get("value"))
         change = ((latest_value / previous_value - 1) * 100) if latest_value is not None and previous_value not in (None, 0) else None
         meanings = {
-            "移动服务连接": "连接包含机器类型连接，不等同独立客户增长",
-            "移动宽带连接": "连接数量不等同独立客户增长",
-            "移动订户渗透率": "渗透率变化反映多卡及机器连接共同影响",
+            "手机卡/设备": "同一客户可有多张卡，联网设备也会单独登记",
+            "移动宽带": "登记数量不等同独立客户人数",
+            "每百人登记": "该指标同时受多卡及联网设备影响",
             "移动数据总量": "变化反映整体数据需求强度",
             "每个移动宽带连接用量": "变化反映单连接使用强度",
             "家庭月入中位数": "变化是家庭购买力代理",
@@ -987,7 +987,7 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "component_count": 2 if previous else 1, "source_url": str(latest.get("official_source_url") or ""),
         }
 
-    connection_items = [item for item in [yoy_item("mobile_subscriptions", "移动服务连接"), yoy_item("mobile_broadband_subscriptions", "移动宽带连接"), yoy_item("mobile_subscriber_penetration_rate", "移动订户渗透率")] if item]
+    connection_items = [item for item in [yoy_item("mobile_subscriptions", "手机卡/设备"), yoy_item("mobile_broadband_subscriptions", "移动宽带"), yoy_item("mobile_subscriber_penetration_rate", "每百人登记")] if item]
     traffic_items = [item for item in [yoy_item("mobile_data_usage_total_mbytes", "移动数据总量"), yoy_item("mobile_data_usage_per_mobile_broadband_subscription_mbytes", "每个移动宽带连接用量")] if item]
     income_item = yoy_item("median_monthly_household_income", "家庭月入中位数")
     cpi_series = history("consumer_price_indices_a_cm_1920", "Year-on-year % change")
@@ -1025,25 +1025,25 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     traffic_insight = (f"总流量同比 {traffic_total['value']:+.1f}%，每连接流量同比 {traffic_per['value']:+.1f}%；差距说明增量更偏连接规模，而非单连接使用强度。" if traffic_total and traffic_per and _number(traffic_total.get("value")) is not None and _number(traffic_per.get("value")) is not None else "缺少同周期数据，不判断流量增长来源。")
     purchasing_gap = purchasing_items[0] if purchasing_items and purchasing_items[0]["name"] == "购买力代理变化" else None
     focuses = [
-        {"id": "connections", "label": "连接增长", "visual": "diverging", "metric": {**_focus_metric(connection_items, "移动服务连接同比", "%"), "label": "移动服务连接同比"}, "context": "最新月对比上年同月", "insight": (f"移动服务连接、移动宽带连接、渗透率同比分别为{connection_items[0]['value']:+.1f}%、{connection_items[1]['value']:+.1f}%、{connection_items[2]['value']:+.1f}%；三项同步上升但受多卡或机器连接影响，不能等同独立客户增长。" if len(connection_items) >= 3 and all(_number(item.get('value')) is not None for item in connection_items[:3]) else "缺少同月上年数据，不判断连接增长。"), "items": connection_items},
+        {"id": "connections", "label": "登记数量", "visual": "diverging", "metric": {**_focus_metric(connection_items, "手机卡/设备同比", "%"), "label": "手机卡/设备同比"}, "context": "最新月对比上年同月", "insight": (f"手机卡及联网设备登记数、移动宽带登记数、每百人移动登记数同比分别为{connection_items[0]['value']:+.1f}%、{connection_items[1]['value']:+.1f}%、{connection_items[2]['value']:+.1f}%；同一客户可有多张卡，联网设备也会单独登记，因此这些增幅不能当作客户人数增长。" if len(connection_items) >= 3 and all(_number(item.get('value')) is not None for item in connection_items[:3]) else "缺少同月上年数据，无法比较登记数量变化。"), "items": connection_items},
         {"id": "traffic", "label": "流量增长", "visual": "diverging", "metric": {**_focus_metric(traffic_items, "移动数据总量同比", "%"), "label": "移动数据总量同比"}, "context": "最新年度对比上年", "insight": traffic_insight, "items": traffic_items},
         {"id": "purchasing", "label": "家庭购买力", "visual": "diverging", "metric": {"value": purchasing_gap["value"] if purchasing_gap else "-", "unit": "%", "label": "购买力代理变化"}, "context": "收入与物价的同周期变化", "insight": (purchasing_gap["analysis"] if purchasing_gap else "缺少同周期收入与物价数据，不判断购买力变化。"), "items": purchasing_items},
         {"id": "service", "label": "投入与投诉", "visual": "kpis", "metric": {"value": investment_item["value"] if investment_item else "-", "unit": "%", "label": "电讯业投资同比"}, "context": "投资和投诉各自与同周期上年比较", "insight": (f"电讯业投资在截至2025年3月的财政年度增长{investment_item['value']:.1f}%；2025年全年投诉增长{complaints_item['value']:.1f}%。两项数据期间不同，这说明它们只能分别反映投入与服务压力，不能比较差距或建立关系。" if investment_item and complaints_item and _number(investment_item.get("value")) is not None and _number(complaints_item.get("value")) is not None else "投资与投诉缺少同周期对照，不建立因果关系。"), "items": service_items},
     ]
     for focus in focuses:
         focus["headline"] = {
-            "connections": "连接增长不等于客户增长", "traffic": "总量增长高于单连接",
+            "connections": "登记增加不等于客户增加", "traffic": "总量增长高于单连接",
             "purchasing": "购买力代理指标下降", "service": "投入与投诉不可直接关联",
         }[focus["id"]]
     entities = [item for focus in focuses for item in focus["items"]]
     lead_connection = connection_items[0] if connection_items else {"value": "-"}
-    insight = "连接、流量、购买力和服务压力分别判断；不把高连接数直接当作独立客户增长。"
+    insight = "登记数量、流量、购买力和服务压力分别判断；手机卡及联网设备登记数不等于独立客户人数。"
     return {
         "id": "macro",
         "index": "04",
         "title": "香港电讯市场",
         "kicker": "需求、购买力与服务压力",
-        "metric": {"value": lead_connection["value"], "unit": "%", "label": "移动服务连接同比"},
+        "metric": {"value": lead_connection["value"], "unit": "%", "label": "手机卡/设备同比"},
         "context": "香港官方市场与监管数据",
         "insight": insight,
         "entities": entities,
@@ -1163,8 +1163,8 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         {
             "from": "macro",
             "to": "local",
-            "title": "香港连接增长与本地产品分别统计",
-            "detail": f"移动服务连接同比 {macro['metric']['value']}%；本地数据库有 {local['metric']['value']} 个去重后在售产品。两者统计对象不同，不直接比较。",
+            "title": "香港登记数量与本地产品分别统计",
+            "detail": f"手机卡及联网设备登记数同比 {macro['metric']['value']}%；本地数据库有 {local['metric']['value']} 个去重后在售产品。两者统计对象不同，不直接比较。",
             "kind": "数据并列",
         },
         {

@@ -171,7 +171,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
             "segment_with_reclassification",
         ):
             self.assertNotIn(forbidden, text)
-        self.assertIn("机器类型连接", text)
+        self.assertIn("联网设备", text)
         self.assertIn("不直接比较", text)
         self.assertNotIn("同类套餐竞争最多", text)
         self.assertNotIn("可核验指标数", text)
@@ -182,7 +182,14 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         self.assertIn("ai", self.snapshot)
         self.assertTrue(all("ai_analysis" in domain for domain in self.snapshot["domains"]))
         macro = next(domain for domain in self.snapshot["domains"] if domain["id"] == "macro")
-        self.assertEqual(macro["metric"]["label"], "移动服务连接同比")
+        self.assertEqual(macro["metric"]["label"], "手机卡/设备同比")
+        connections = next(focus for focus in macro["focuses"] if focus["id"] == "connections")
+        self.assertEqual(connections["label"], "登记数量")
+        self.assertEqual(
+            [item["name"] for item in connections["items"]],
+            ["手机卡/设备", "移动宽带", "每百人登记"],
+        )
+        self.assertIn("不能当作客户人数增长", connections["insight"])
         self.assertIn("独立客户", macro["insight"])
         for domain in self.snapshot["domains"]:
             self.assertTrue(all("ai_summary" in focus for focus in domain["focuses"]))
