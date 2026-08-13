@@ -820,7 +820,7 @@
   .intelligence-viz-rows li,
   .intelligence-viz-ranges li,
   .intelligence-viz-trends li {
-    grid-template-columns: 82px minmax(48px, 1fr) 70px;
+    grid-template-columns: 82px minmax(36px, 1fr) minmax(112px, auto);
   }
   .intelligence-viz-diverging li {
     grid-template-columns: 80px minmax(58px, 1fr) 54px;
