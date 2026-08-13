@@ -308,8 +308,9 @@ class PublicationLabelTests(unittest.TestCase):
 
         item = make_item("W001", 1)
         item["detail"] = "第一句交代主体动作。第二句补充关键数字。第三句继续搬运活动背景。"
-        with self.assertRaisesRegex(ValueError, "信息量低于人工内参样本"):
-            report.validate_human_template_content(make_model(item))
+        # Length is a diagnostic comparison with the human corpus, not a
+        # publication blocker. Editorial quality comes from the examples.
+        report.validate_human_template_content(make_model(item))
 
 
 class StrategicReferenceDocxStructureTests(unittest.TestCase):
@@ -389,6 +390,40 @@ class IndependentReviewerTests(unittest.TestCase):
         researched_item["reviewDecision"] = "approve"
         report.validate_report_model(researched)
 
+    def test_weekly_online_research_sends_selected_source_fulltext_to_writer(self) -> None:
+        item = make_item("W001", 1, title="人工选中的原始新闻标题")
+        model = make_model(item)
+        search_rows = [
+            {
+                "id": "W001",
+                "query": item["title"],
+                "provider": "unit",
+                "results": [],
+                "error": "",
+            }
+        ]
+        selected_content = detailed_text("人工选中来源披露完整事实。")
+
+        with (
+            patch.object(report, "run_web_research", return_value=search_rows),
+            patch.object(
+                report,
+                "_fetch_search_result_content",
+                return_value=selected_content,
+            ) as fetch_content,
+        ):
+            researched = report.research_weekly_model_online(
+                model,
+                progress=lambda _message: None,
+            )
+
+        evidence = researched["sections"][0]["items"][0]["webResearch"][
+            "lockedSourceEvidence"
+        ]
+        self.assertEqual(evidence["content"], selected_content)
+        self.assertEqual(evidence["verification"], "selected_direct_source")
+        self.assertTrue(fetch_content.called)
+
     def test_final_review_audit_is_renumbered_after_section_reordering(self) -> None:
         items = [make_item(f"W00{index}", index) for index in range(1, 5)]
         for index, item in enumerate(items, start=1):
@@ -446,7 +481,12 @@ class IndependentReviewerTests(unittest.TestCase):
                 patch.object(report, "research_weekly_model_online", return_value=model),
                 patch.object(
                     report,
-                    "review_weekly_items_with_ai",
+                    "write_weekly_items_once",
+                    return_value=items,
+                ),
+                patch.object(
+                    report,
+                    "edit_weekly_items_once",
                     return_value=(items, audit),
                 ),
             ):
@@ -476,7 +516,7 @@ class IndependentReviewerTests(unittest.TestCase):
         def empty_search(query, _limit):
             return {"query": query, "provider": "", "results": [], "error": "offline"}
 
-        with self.assertRaisesRegex(RuntimeError, "所有搜索均无可用结果"):
+        with self.assertRaisesRegex(RuntimeError, "均无可用结果"):
             report.research_weekly_model_online(
                 model,
                 search_client=empty_search,
@@ -778,7 +818,7 @@ class IndependentReviewerTests(unittest.TestCase):
         self.assertEqual(audit["reviewReplacementCount"], 1)
         self.assertEqual(audit["rejectedItems"], 0)
 
-    def test_repeated_rejection_without_replacement_uses_evidence_repair(self) -> None:
+    def test_repeated_rejection_without_replacement_stops_publication(self) -> None:
         item = make_item("W001", 1, title="人工入选新闻原始标题")
         item["webResearch"] = {
             "query": "人工入选新闻原始标题",
@@ -823,30 +863,16 @@ class IndependentReviewerTests(unittest.TestCase):
                     side_effect=TimeoutError("writer unavailable"),
                 ) as writer_call,
             ):
-                reviewed, audit = report.review_weekly_items_with_ai(
-                    [item],
-                    progress=progress_messages.append,
-                    bypass_cache=True,
-                )
+                with self.assertRaisesRegex(RuntimeError, "停止发布并继续修稿"):
+                    report.review_weekly_items_with_ai(
+                        [item],
+                        progress=progress_messages.append,
+                        bypass_cache=True,
+                    )
 
         self.assertGreaterEqual(reviewer_call.call_count, 2)
         writer_call.assert_called_once()
-        self.assertEqual(len(reviewed), 1)
-        self.assertEqual(reviewed[0]["title"], "人工入选新闻原始标题")
-        self.assertEqual(reviewed[0]["reviewDecision"], "evidence_repair")
-        self.assertEqual(reviewed[0]["writerStatus"], "deterministic_evidence_repair")
-        self.assertEqual(audit["evidenceRepairCount"], 1)
-        self.assertEqual(audit["rejectedItems"], 0)
-        self.assertFalse(report.summary_has_unneeded_scaffolding(reviewed[0]["detail"]))
-        self.assertEqual(
-            report.simplified_chinese(reviewed[0]["detail"]),
-            reviewed[0]["detail"],
-        )
         self.assertIn("最终证据约束修复完成", " ".join(progress_messages))
-        self.assertNotIn("已停止整份周报", " ".join(progress_messages))
-        repaired_model = make_model(reviewed[0])
-        report.validate_review_gate(repaired_model)
-        report.validate_report_model(repaired_model)
 
     def test_unreviewed_or_writer_only_item_cannot_pass_quality_gate(self) -> None:
         item = make_item("W001", 1)
@@ -981,26 +1007,14 @@ class QualitySidecarTests(unittest.TestCase):
         self.assertEqual(repaired["writerStatus"], "validated_cache_recovery")
         report.validate_human_template_content(model)
 
-    def test_prepare_human_template_keeps_irreparable_body_and_logs_warning(self) -> None:
+    def test_prepare_human_template_stops_on_irreparable_body(self) -> None:
         item = make_item("W001", 1, title="测试主体公布网络部署")
         item["detail"] = item["title"]
         item["rawDetail"] = item["title"]
         model = make_model(item)
 
-        prepared = report.prepare_human_template_content(model, progress=lambda _message: None)
-
-        self.assertEqual(len(prepared["sections"][0]["items"]), 1)
-        self.assertTrue(prepared["sections"][0]["items"][0]["detail"])
-        self.assertEqual(len(prepared["humanTemplateQualityWarnings"]), 1)
-        self.assertEqual(prepared["generationLimitations"][-1]["stage"], "human_template_content")
-        with tempfile.TemporaryDirectory() as temp_dir:
-            output_path = Path(temp_dir) / "limited.docx"
-            report.weekly_to_emergency_docx(prepared, output_path, reason="正文受限")
-            payload = json.loads(
-                report.weekly_quality_sidecar_path(output_path).read_text(encoding="utf-8")
-            )
-        self.assertEqual(payload["included"], 1)
-        self.assertEqual(payload["qualityWarnings"][0]["title"], item["title"])
+        with self.assertRaisesRegex(ValueError, "已停止发布"):
+            report.prepare_human_template_content(model, progress=lambda _message: None)
 
     def test_build_weekly_model_recovers_from_untouched_selected_copy(self) -> None:
         item = make_item("W001", 1, title="测试主体公布新业务")
@@ -1235,7 +1249,7 @@ class HumanReferencePromptTests(unittest.TestCase):
         for body in captured_requests:
             self.assertIn(marker, body["messages"][0]["content"])
         self.assertIn("真正重要的变化", captured_requests[0]["messages"][0]["content"])
-        self.assertIn("主次不分", captured_requests[1]["messages"][0]["content"])
+        self.assertIn("像同一位人类编辑", captured_requests[1]["messages"][0]["content"])
 
 
 if __name__ == "__main__":
