@@ -1742,7 +1742,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertIn("已结束", result["summary"])
 
-    def test_single_item_retry_budget_defers_without_unbounded_calls(self):
+    def test_single_item_retry_time_budget_defers_after_deadline(self):
         items = [
             {
                 "module": "基础设施/网络/技术类",
@@ -1764,7 +1764,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 side_effect=lambda path, payload: writes.append((path, payload)),
             ),
             mock.patch.object(briefing, "_call_internal_ai", return_value={}) as call,
-            mock.patch.object(briefing, "AI_EDITOR_SINGLE_RETRY_LIMIT", 0),
+            mock.patch.object(briefing, "AI_EDITOR_SINGLE_RETRY_MAX_SECONDS", 0),
         ):
             result = briefing.polish_candidates_before_review(items)
 
@@ -1776,10 +1776,67 @@ class StrategicBriefingTests(unittest.TestCase):
             if path == briefing.AI_EDITOR_AUDIT_PATH
         )
         self.assertEqual(audit["single_retry_attempt_count"], 0)
-        self.assertEqual(audit["retry_budget_exhausted_count"], 2)
+        self.assertEqual(audit["retry_time_budget_exhausted_count"], 2)
         self.assertEqual(audit["compact_retry_item_count"], 2)
         self.assertEqual(audit["compact_retry_resolved_count"], 0)
         self.assertFalse(audit["write_blocked"])
+
+    def test_single_item_retry_reviews_every_failed_candidate_without_count_cap(self):
+        items = [
+            {
+                "module": "竞争对手",
+                "category": "竞对动态",
+                "title": f"KDDI发布网络计划{i}",
+                "snippet": "KDDI announced a network plan.",
+                "keywords": ["KDDI"],
+                "source": "Example",
+                "url": f"https://example.com/kddi/{i}",
+            }
+            for i in range(13)
+        ]
+
+        def ai_response(system_prompt, user_prompt, **_kwargs):
+            if "字段为title、summary" not in system_prompt:
+                return {}
+            source = json.loads(user_prompt)
+            return {
+                "title": source["title"],
+                "summary": "KDDI公布网络建设计划及后续服务安排。",
+                "should_include": True,
+                "region": "国际/行业",
+                "category": "竞对动态",
+                "keywords": "KDDI",
+                "inclusion_reason": "KDDI公布网络建设计划，影响竞对网络部署。",
+                "region_reason": "事件主体为国际运营商KDDI。",
+                "decision_path": "竞对直通",
+                "signal_type": "竞对经营动作",
+                "business_impact": "网络与运营",
+                "exclusion_code": "",
+            }
+
+        writes = []
+        with (
+            mock.patch.object(briefing, "_read_json", return_value={"items": {}}),
+            mock.patch.object(
+                briefing,
+                "_atomic_write_json",
+                side_effect=lambda path, payload: writes.append((path, payload)),
+            ),
+            mock.patch.object(briefing, "_call_internal_ai", side_effect=ai_response),
+            mock.patch.object(briefing.time, "monotonic", return_value=100.0),
+        ):
+            result = briefing.polish_candidates_before_review(items)
+
+        audit = next(
+            payload
+            for path, payload in writes
+            if path == briefing.AI_EDITOR_AUDIT_PATH
+        )
+        self.assertEqual(len(result), 13)
+        self.assertEqual(audit["single_retry_attempt_count"], 13)
+        self.assertEqual(audit["retry_time_budget_exhausted_count"], 0)
+        self.assertEqual(audit["deferred_count"], 0)
+        self.assertEqual(audit["single_retry_time_budget_seconds"], 1800)
 
     def test_competitor_route_fills_format_only_impact_without_blocking(self):
         result = briefing._validated_ai_copy(

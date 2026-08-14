@@ -68,7 +68,11 @@ def _effective_limit(total_limit: int) -> int:
     return max(1, total_limit - reserve)
 
 
-def wait_for_internal_ai_slot(operation: str = "internal-model") -> float:
+def wait_for_internal_ai_slot(
+    operation: str = "internal-model",
+    *,
+    deadline_monotonic: float | None = None,
+) -> float:
     """Reserve one request in the gateway's shared UTC calendar-minute bucket."""
     total_wait = 0.0
     path = _state_path()
@@ -107,6 +111,11 @@ def wait_for_internal_ai_slot(operation: str = "internal-model") -> float:
             operation,
             wait_seconds,
         )
+        if (
+            deadline_monotonic is not None
+            and time.monotonic() + wait_seconds >= deadline_monotonic
+        ):
+            raise TimeoutError(f"{operation} exceeded its time budget while rate limited")
         time.sleep(wait_seconds)
         total_wait += wait_seconds
 

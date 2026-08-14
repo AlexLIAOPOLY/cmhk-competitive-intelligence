@@ -56,9 +56,12 @@ LEGACY_DDGS_SEARCH_ENABLED = (
     os.environ.get("CMHK_LEGACY_STRATEGIC_DDGS_SEARCH", "0") == "1"
 )
 AI_EDITOR_BATCH_SIZE = max(1, int(os.environ.get("CMHK_STRATEGY_AI_BATCH_SIZE", "4")))
-AI_EDITOR_SINGLE_RETRY_LIMIT = max(
-    0,
-    int(os.environ.get("CMHK_STRATEGY_AI_SINGLE_RETRY_LIMIT", "12")),
+AI_EDITOR_SINGLE_RETRY_MAX_SECONDS = min(
+    30 * 60,
+    max(
+        0,
+        int(os.environ.get("CMHK_STRATEGY_AI_SINGLE_RETRY_MAX_SECONDS", "1800")),
+    ),
 )
 AI_EDITOR_DEFERRED_RETRY_MINUTES = max(
     5,
@@ -2333,6 +2336,7 @@ def _call_internal_ai(
     max_tokens: int = 900,
     model_override: str = "",
     allow_plain_text: bool = False,
+    deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
@@ -2375,8 +2379,19 @@ def _call_internal_ai(
     payload: dict[str, Any] = {}
     for attempt in range(1, attempts + 1):
         try:
-            wait_for_internal_ai_slot("strategic-news-review")
-            with opener.open(request, timeout=timeout_seconds) as response:
+            if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
+                raise TimeoutError("AI逐条补审已达到30分钟上限")
+            wait_for_internal_ai_slot(
+                "strategic-news-review",
+                deadline_monotonic=deadline_monotonic,
+            )
+            request_timeout = timeout_seconds
+            if deadline_monotonic is not None:
+                remaining = deadline_monotonic - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("AI逐条补审已达到30分钟上限")
+                request_timeout = max(0.25, min(timeout_seconds, remaining))
+            with opener.open(request, timeout=request_timeout) as response:
                 payload = json.loads(response.read().decode("utf-8", errors="ignore"))
             break
         except HTTPError as exc:
@@ -2389,6 +2404,10 @@ def _call_internal_ai(
             except (TypeError, ValueError):
                 retry_after = 0
             delay = min(30, max(retry_after, 2 ** attempt * 2))
+            if deadline_monotonic is not None:
+                remaining = deadline_monotonic - time.monotonic()
+                if remaining <= delay:
+                    raise TimeoutError("AI逐条补审已达到30分钟上限") from exc
             logging.warning(
                 "公司内部 AI 返回 HTTP %s，%s 秒后重试 %s/%s",
                 exc.code,
@@ -2398,14 +2417,25 @@ def _call_internal_ai(
             )
             time.sleep(delay)
         except TimeoutError:
-            if attempt >= attempts:
+            if (
+                attempt >= attempts
+                or (
+                    deadline_monotonic is not None
+                    and time.monotonic() >= deadline_monotonic
+                )
+            ):
                 raise
             logging.warning(
                 "公司内部 AI 请求超时，正在重试 %s/%s",
                 attempt + 1,
                 attempts,
             )
-            time.sleep(min(4, 2 ** attempt))
+            delay = min(4, 2 ** attempt)
+            if deadline_monotonic is not None:
+                remaining = deadline_monotonic - time.monotonic()
+                if remaining <= delay:
+                    raise TimeoutError("AI逐条补审已达到30分钟上限")
+            time.sleep(delay)
     message = ((payload.get("choices") or [{}])[0].get("message") or {})
     content = str(
         message.get("content") or message.get("reasoning_content") or ""
@@ -2981,7 +3011,10 @@ def _expanded_compact_decision(
 
 
 def _plain_text_rescue_review(
-    source_item: dict[str, Any], *, model_override: str
+    source_item: dict[str, Any],
+    *,
+    model_override: str,
+    deadline_monotonic: float | None = None,
 ) -> dict[str, Any]:
     """Use an AI-selected line protocol when a provider repeatedly ignores JSON."""
     response = _call_internal_ai(
@@ -3002,6 +3035,7 @@ def _plain_text_rescue_review(
         max_tokens=900,
         model_override=model_override,
         allow_plain_text=True,
+        deadline_monotonic=deadline_monotonic,
     )
     line = _clean_text(response.get("_plain_text"), 4000)
     parts = [part.strip() for part in line.strip("` \n").split("|", 6)]
@@ -3321,7 +3355,9 @@ def polish_candidates_before_review(
     )
 
     single_retry_attempts = 0
-    retry_budget_exhausted_count = 0
+    retry_time_budget_exhausted_count = 0
+    single_retry_started_monotonic: float | None = None
+    single_retry_deadline_monotonic: float | None = None
     compact_retry_batch_count = 0
     compact_retry_item_count = 0
     compact_retry_resolved_count = 0
@@ -3559,8 +3595,17 @@ def polish_candidates_before_review(
                     RuntimeError("公司内部 AI 批量结果缺少候选"),
                 )
                 source = request_map[key[:16]]
-                if single_retry_attempts >= AI_EDITOR_SINGLE_RETRY_LIMIT:
-                    retry_budget_exhausted_count += 1
+                if single_retry_started_monotonic is None:
+                    single_retry_started_monotonic = time.monotonic()
+                    single_retry_deadline_monotonic = (
+                        single_retry_started_monotonic
+                        + AI_EDITOR_SINGLE_RETRY_MAX_SECONDS
+                    )
+                if (
+                    single_retry_deadline_monotonic is not None
+                    and time.monotonic() >= single_retry_deadline_monotonic
+                ):
+                    retry_time_budget_exhausted_count += 1
                     error = _clean_text(batch_validation_error, 240)
                     deferred_reviews.append(
                         {
@@ -3568,7 +3613,7 @@ def polish_candidates_before_review(
                             "id": source["id"],
                             "title": source["title"],
                             "error": (
-                                "批量结果不合格，单轮逐条重试预算已用尽："
+                                "批量结果不合格，单轮逐条复审已达到30分钟上限："
                                 + error
                             ),
                         }
@@ -3615,6 +3660,7 @@ def polish_candidates_before_review(
                         single_system_prompt,
                         single_user_prompt,
                         max_tokens=1200,
+                        deadline_monotonic=single_retry_deadline_monotonic,
                     )
                 except Exception as primary_exc:
                     if (
@@ -3656,6 +3702,7 @@ def polish_candidates_before_review(
                                 single_user_prompt,
                                 max_tokens=1200,
                                 model_override=rescue_model,
+                                deadline_monotonic=single_retry_deadline_monotonic,
                             )
                             rescue_retry_resolved_count += 1
                         except AIUnstructuredResponse as rescue_exc:
@@ -3677,6 +3724,7 @@ def polish_candidates_before_review(
                                     edited = _plain_text_rescue_review(
                                         _item,
                                         model_override=rescue_model,
+                                        deadline_monotonic=single_retry_deadline_monotonic,
                                     )
                                     rescue_retry_resolved_count += 1
                                     unstructured_copy_recovered_count += 1
@@ -3848,9 +3896,9 @@ def polish_candidates_before_review(
         },
         "continued_with_partial_results": bool(deferred_reviews),
         "write_blocked": False,
-        "single_retry_limit": AI_EDITOR_SINGLE_RETRY_LIMIT,
+        "single_retry_time_budget_seconds": AI_EDITOR_SINGLE_RETRY_MAX_SECONDS,
         "single_retry_attempt_count": single_retry_attempts,
-        "retry_budget_exhausted_count": retry_budget_exhausted_count,
+        "retry_time_budget_exhausted_count": retry_time_budget_exhausted_count,
         "compact_retry_batch_count": compact_retry_batch_count,
         "compact_retry_item_count": compact_retry_item_count,
         "compact_retry_resolved_count": compact_retry_resolved_count,
@@ -3859,7 +3907,7 @@ def polish_candidates_before_review(
         "unstructured_copy_recovered_count": unstructured_copy_recovered_count,
         "critic": critic_audit,
         "policy": {
-            "mode": "wide_verbose_review_then_compact_missing_review_then_bounded_item_retry",
+            "mode": "wide_verbose_review_then_compact_missing_review_then_30m_item_retry",
             "batch_blocking": False,
             "ai_soft_priority": "香港政策监管=香港本地运营商>一般国际行业",
             "missing_output_is_not_business_exclusion": True,
@@ -3877,7 +3925,8 @@ def polish_candidates_before_review(
             f"输入 {len(items)} 条，纳入 {len(polished_items)} 条，"
             f"排除 {audit['excluded_count']} 条，延期 {deferred_count} 条；"
             f"紧凑补审 {compact_retry_item_count} 条/成功 {compact_retry_resolved_count} 条，"
-            f"逐条重试 {single_retry_attempts} 次，救援模型 {rescue_retry_attempt_count} 次。"
+            f"逐条复审 {single_retry_attempts} 条，救援模型 {rescue_retry_attempt_count} 次；"
+            f"30分钟到时转下轮 {retry_time_budget_exhausted_count} 条。"
         ),
     )
     if deferred_reviews:
