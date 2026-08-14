@@ -448,10 +448,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", bad, focus))
         one_company_numbers = "HKT收入18,685m及净利润2,153m，并提及3HK，表明两家公司收入与利润结构形成梯队差距。"
         self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", one_company_numbers, focus))
+        swapped_revenue = "HKT收入2,846m，而3HK收入18,685m，表明同期间两家公司收入结构形成梯队差距。"
+        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", swapped_revenue, focus))
+        swapped_profit = "HKT净利润11m，而3HK净利润2,153m，表明同期间两家公司利润转化形成梯队差距。"
+        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", swapped_profit, focus))
         mixed_periods = "HKT收入18,685m与i-CABLE收入1,266m形成差距，说明两家公司跨期间规模呈现梯队。"
         self.assertIn("同期间", pipeline._focus_gate_error("local", "financials", mixed_periods, focus))
         release_frequency = "HKT收入18,685m、净利润2,153m，同时3HK收入2,846m且发布时间更早，说明发布频率与利润分层不同。"
         self.assertIn("发布时间", pipeline._focus_gate_error("local", "financials", release_frequency, focus))
+        contradictory_period = "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明规模与利润分层，不纳入同一期间比较。"
+        self.assertIn("同期间比较矛盾", pipeline._focus_gate_error("local", "financials", contradictory_period, focus))
         good = "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。"
         self.assertEqual(pipeline._focus_gate_error("local", "financials", good, focus), "")
 
@@ -461,6 +467,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         local = next(item for item in summaries if item["domain"] == "local")
         financial = next(item for item in local["focuses"] if item["id"] == "financials")
         financial["headline"] = "财报披露密度分层"
+        with self.assertRaisesRegex(ValueError, "标题不得"):
+            pipeline._validate_model_summaries(summaries, evidence)
+        financial["headline"] = "重要财务指标口径边界显现"
         with self.assertRaisesRegex(ValueError, "标题不得"):
             pipeline._validate_model_summaries(summaries, evidence)
 

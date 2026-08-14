@@ -599,13 +599,38 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         return f"AI分析分类缺少输入数值证据：{domain}.{focus_id}"
     if (domain, focus_id) == ("local", "financials"):
         companies_by_period: dict[str, int] = {}
-        normalized_analysis = analysis.replace(",", "")
-        for item in evidence_focus.get("items") or []:
+        financial_items = [item for item in evidence_focus.get("items") or [] if isinstance(item, dict)]
+        company_mentions: list[tuple[int, int, int]] = []
+        for item_index, item in enumerate(financial_items):
+            company = str(item.get("name") or "").strip()
+            aliases = sorted(
+                {alias for alias in (company, company.split("/")[0].strip()) if alias},
+                key=len,
+                reverse=True,
+            )
+            for alias in aliases:
+                company_mentions.extend(
+                    (match.start(), match.end(), item_index)
+                    for match in re.finditer(re.escape(alias), analysis, flags=re.IGNORECASE)
+                )
+        company_mentions.sort(key=lambda mention: (mention[0], -(mention[1] - mention[0])))
+        distinct_mentions: list[tuple[int, int, int]] = []
+        for mention in company_mentions:
+            if distinct_mentions and mention[0] == distinct_mentions[-1][0]:
+                continue
+            distinct_mentions.append(mention)
+        company_segments: dict[int, list[str]] = {}
+        for mention_index, (start, _, item_index) in enumerate(distinct_mentions):
+            segment_end = (
+                distinct_mentions[mention_index + 1][0]
+                if mention_index + 1 < len(distinct_mentions)
+                else len(analysis)
+            )
+            company_segments.setdefault(item_index, []).append(analysis[start:segment_end].replace(",", ""))
+
+        for item_index, item in enumerate(financial_items):
             if not isinstance(item, dict):
                 continue
-            company = str(item.get("name") or "").strip()
-            aliases = [company, company.split("/")[0].strip()]
-            company_mentioned = company and any(alias and alias in analysis for alias in aliases)
             company_value_mentioned = False
             components = [component for component in item.get("components") or [] if isinstance(component, dict)]
             for component in components:
@@ -619,12 +644,12 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
                 )
                 if value_match:
                     normalized_value = value_match.group().replace(",", "")
-                    if re.search(
-                        rf"(?<![\d.]){re.escape(normalized_value)}(?![\d.])",
-                        normalized_analysis,
+                    if any(
+                        re.search(rf"(?<![\d.]){re.escape(normalized_value)}(?![\d.])", segment)
+                        for segment in company_segments.get(item_index, [])
                     ):
                         company_value_mentioned = True
-            if company_mentioned and company_value_mentioned:
+            if company_segments.get(item_index) and company_value_mentioned:
                 component_period = next(
                     (str(component.get("detail") or "").strip() for component in components if component.get("detail")),
                     "",
@@ -633,6 +658,8 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
                 companies_by_period[period] = companies_by_period.get(period, 0) + 1
         if max(companies_by_period.values(), default=0) < 2:
             return f"财务战略解读必须比较同期间至少两家公司各自的经营数值：{domain}.{focus_id}"
+        if re.search(r"不纳入同一期间|不作同一期间|非同期间", analysis):
+            return f"财务战略解读与已校验的同期间比较矛盾：{domain}.{focus_id}"
         if re.search(r"披露|发布|数量|密度|完整度", analysis):
             return f"财务战略解读不得以发布时间或披露数量代替经营指标：{domain}.{focus_id}"
     if not _has_deep_interpretation(analysis):
@@ -1096,9 +1123,9 @@ def _validate_model_summaries(
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
                 if (domain, focus_id) == ("local", "financials") and any(
                     term in validated_focus["headline"]
-                    for term in ("披露", "发布", "数量", "密度", "完整度")
+                    for term in ("披露", "发布", "数量", "密度", "完整度", "口径", "边界")
                 ):
-                    raise ValueError("财务战略解读标题不得以发布时间或披露数量为结论：local.financials")
+                    raise ValueError("财务战略解读标题不得以披露或口径说明为结论：local.financials")
                 evidence_focus = next(
                     focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
                     if str(focus.get("id") or "") == focus_id
@@ -2273,7 +2300,7 @@ def generate_model_focus_insight(
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
             forbidden_headline_terms = {
                 ("local", "scale"): ("赛道", "月费", "资费", "重叠", "交集"),
-                ("local", "financials"): ("披露", "发布", "数量", "密度", "完整度"),
+                ("local", "financials"): ("披露", "发布", "数量", "密度", "完整度", "口径", "边界"),
             }.get((domain_id, focus_id), ())
             headline = _normalize_fresh_focus_headline(
                 headline,
@@ -2423,11 +2450,20 @@ def generate_model_focus_insight(
         recent_insights=recent_insights,
     )
     if grounded_repair:
-        repaired_headline = _normalize_fresh_focus_headline(
-            "",
-            label=str(focus.get("label") or "当前指标").strip(),
-            recent_headlines=recent_headlines,
-        )
+        if (domain_id, focus_id) == ("local", "financials"):
+            financial_headlines = (
+                "收入规模呈现分层",
+                "收入与利润梯队分化",
+                "规模差距映射利润分层",
+                "同期间业绩形成梯队",
+            )
+            repaired_headline = financial_headlines[(regeneration_index - 1) % len(financial_headlines)]
+        else:
+            repaired_headline = _normalize_fresh_focus_headline(
+                "",
+                label=str(focus.get("label") or "当前指标").strip(),
+                recent_headlines=recent_headlines,
+            )
         return {
             "generated_at_hkt": _now(),
             "model": attempt_models[-1],
