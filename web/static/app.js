@@ -7626,6 +7626,14 @@ document.addEventListener("keydown", (event) => {
   const selectedEntityByDomain = new Map();
   const selectedFocusByDomain = new Map();
   const selectedFinancialMetricByDomain = new Map();
+  const financialMetricDefinitions = [
+    ["revenue", "收入对比", "HK$m"],
+    ["net_profit", "净利润对比", "HK$m"],
+    ["ebitda", "EBITDA", "HK$m"],
+    ["capital_expenditure", "资本开支", "HK$m"],
+    ["dividend", "派息", "港仙"],
+    ["5g_customers", "5G用户", "百万户"],
+  ];
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
   const relationRefreshState = new Map();
@@ -8009,33 +8017,36 @@ document.addEventListener("keydown", (event) => {
       const comparisonPeriod = Object.entries(periodCounts)
         .sort((left, right) => right[1] - left[1])[0]?.[0] || "最新可比期";
       const comparableItems = items.filter((item) => item.period === comparisonPeriod);
+      const selectedMetric = financialMetricDefinitions.some(([key]) => key === selectedFinancialMetricByDomain.get(domain.id))
+        ? selectedFinancialMetricByDomain.get(domain.id)
+        : "revenue";
+      const selectedMetricDefinition = financialMetricDefinitions.find(([key]) => key === selectedMetric) || financialMetricDefinitions[0];
       const excludedPeriodText = items.length > comparableItems.length
-        ? `仅纳入同期可比公司；${items.filter((item) => item.period !== comparisonPeriod).map((item) => `${item.name} ${item.period}`).join("、")}在更多指标内`
-        : "同期可比口径";
-      const selectedMetric = selectedFinancialMetricByDomain.get(domain.id) === "net_profit" ? "net_profit" : "revenue";
+        ? `仅纳入${comparisonPeriod}同期公司；${items.filter((item) => item.period !== comparisonPeriod).map((item) => `${item.name} ${item.period}`).join("、")}因期间不同未混排。未披露指标以“—”显示。`
+        : "仅比较同期数据；未披露指标以“—”显示。";
       const shortCompany = (value) => String(value || "")
         .replace(/\s*\/\s*Hutchison/i, "")
         .replace(/Hutchison Telecommunications Hong Kong/i, "3HK");
-      const comparisonChart = (key, title) => {
+      const comparisonChart = (key, title, unit) => {
         const chartItems = comparableItems
           .map((item) => ({ item, index: items.indexOf(item), value: metricNumber(item, key) }))
-          .filter((entry) => Number.isFinite(entry.value))
-          .sort((left, right) => right.value - left.value);
-        const chartMax = Math.max(...chartItems.map((entry) => Math.abs(entry.value)), 1);
+          .sort((left, right) => (Number.isFinite(right.value) ? right.value : -Infinity) - (Number.isFinite(left.value) ? left.value : -Infinity));
+        const chartMax = Math.max(...chartItems.filter((entry) => Number.isFinite(entry.value)).map((entry) => Math.abs(entry.value)), 1);
         return `
           <section id="intelligence-financial-panel-${safe(domain.id)}-${key}" class="intelligence-financial-chart"
             role="tabpanel" aria-label="${safe(title)}">
-            <header><strong>${safe(title)}</strong><span>${safe(comparisonPeriod)} · HK$m <i title="${safe(excludedPeriodText)}">i</i></span></header>
+            <header><strong>${safe(title)}</strong><span>${safe(comparisonPeriod)} · ${safe(unit)} <i title="${safe(excludedPeriodText)}">i</i></span></header>
             <div class="intelligence-financial-chart-plot">
               ${chartItems.map(({ item, index, value }) => {
-                const width = Math.max(1.5, Math.abs(value) / chartMax * 100);
+                const hasValue = Number.isFinite(value);
+                const width = hasValue ? Math.max(1.5, Math.abs(value) / chartMax * 100) : 0;
                 return `
                   <button type="button" ${entityAttributes(item, index)}
-                    class="intelligence-financial-chart-bar intelligence-viz-entity ${value < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}"
+                    class="intelligence-financial-chart-bar intelligence-viz-entity ${value < 0 ? "is-negative" : ""} ${hasValue ? "" : "is-missing"} ${index === selectedIndex ? "is-selected" : ""}"
                     style="--financial-bar-width:${width.toFixed(2)}%">
                     <span>${safe(shortCompany(item.name))}</span>
                     <i aria-hidden="true"><b></b></i>
-                    <strong>${safe(compactValue(metricValue(item, key)).replace(/^HK\$/, ""))}</strong>
+                    <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : "—"}</strong>
                   </button>
                 `;
               }).join("")}
@@ -8043,38 +8054,20 @@ document.addEventListener("keydown", (event) => {
           </section>
         `;
       };
-      const secondaryKeys = new Set(["revenue", "net_profit"]);
       return `
         <div class="intelligence-viz intelligence-viz-financial" aria-label="本地运营商财务对比">
           <div class="intelligence-financial-toolbar">
             <div class="intelligence-financial-metric-tabs" role="tablist" aria-label="财务对比指标">
-              ${[["revenue", "收入对比"], ["net_profit", "净利润对比"]].map(([key, label]) => `
+              ${financialMetricDefinitions.map(([key, label]) => `
                 <button type="button" role="tab" aria-selected="${selectedMetric === key ? "true" : "false"}"
                   aria-controls="intelligence-financial-panel-${safe(domain.id)}-${key}"
                   class="${selectedMetric === key ? "is-active" : ""}"
                   data-intelligence-financial-metric="${key}" data-intelligence-domain-id="${safe(domain.id)}">${label}</button>
               `).join("")}
             </div>
-            <details class="intelligence-financial-more">
-              <summary><span>更多指标</span><i aria-hidden="true"></i></summary>
-              <div class="intelligence-financial-more-popover">
-                <small>EBITDA · 资本开支 · 派息 · 5G用户</small>
-                <div class="intelligence-financial-more-list">
-                  ${items.map((item) => `
-                    <article>
-                      <header><strong>${safe(item.name)}</strong><span>${safe(item.period)}</span></header>
-                      <div>${(item.components || [])
-                        .filter((metric) => !secondaryKeys.has(metric.metric_key))
-                        .map((metric) => `<span><small>${safe(metric.label)}</small><strong>${safe(compactValue(metric.value))}</strong></span>`)
-                        .join("") || '<span><small>其他指标</small><strong>—</strong></span>'}</div>
-                    </article>
-                  `).join("")}
-                </div>
-              </div>
-            </details>
           </div>
           <div class="intelligence-financial-chart-stage">
-            ${comparisonChart(selectedMetric, selectedMetric === "net_profit" ? "净利润对比" : "收入对比")}
+            ${comparisonChart(...selectedMetricDefinition)}
           </div>
         </div>
       `;
@@ -8331,7 +8324,7 @@ document.addEventListener("keydown", (event) => {
 
   function selectFinancialMetric(domainId, metric, restoreFocus = false) {
     const domain = domainById(domainId);
-    if (!domain || !["revenue", "net_profit"].includes(metric)) return;
+    if (!domain || !financialMetricDefinitions.some(([key]) => key === metric)) return;
     selectedFinancialMetricByDomain.set(domainId, metric);
     manualFocusPauseUntil.set(domainId, Date.now() + 30000);
     replaceDomainCard(domain);
@@ -8655,10 +8648,12 @@ document.addEventListener("keydown", (event) => {
     const financialMetricTrigger = event.target.closest("[data-intelligence-financial-metric]");
     if (financialMetricTrigger && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
       event.preventDefault();
-      const current = financialMetricTrigger.dataset.intelligenceFinancialMetric;
-      const metric = event.key === "Home" || event.key === "ArrowLeft"
-        ? "revenue"
-        : event.key === "End" || event.key === "ArrowRight" ? "net_profit" : current;
+      const keys = financialMetricDefinitions.map(([key]) => key);
+      const currentIndex = Math.max(0, keys.indexOf(financialMetricTrigger.dataset.intelligenceFinancialMetric));
+      const metric = event.key === "Home" ? keys[0]
+        : event.key === "End" ? keys[keys.length - 1]
+          : event.key === "ArrowLeft" ? keys[(currentIndex - 1 + keys.length) % keys.length]
+            : keys[(currentIndex + 1) % keys.length];
       selectFinancialMetric(financialMetricTrigger.dataset.intelligenceDomainId, metric, true);
       return;
     }

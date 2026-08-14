@@ -690,6 +690,10 @@
     justify-self: start;
     width: min(100%, 760px);
   }
+  .intelligence-domain-local .intelligence-focus-tabs {
+    width: fit-content;
+    max-width: 100%;
+  }
   .intelligence-domain-local .intelligence-focus-tabs button {
     flex: 0 0 auto;
     min-width: max-content;
