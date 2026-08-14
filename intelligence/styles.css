@@ -15192,9 +15192,123 @@ body.report-library-open::before {
   font-weight: 620;
 }
 
+/* Financial metrics intentionally use different visual grammars. */
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-plot,
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-plot {
+  grid-template-rows: minmax(112px, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-bar {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 19px minmax(68px, 1fr) 18px;
+  gap: 2px;
+  padding-inline: 3px;
+  text-align: center;
+}
+
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-bar > strong {
+  grid-row: 1;
+  text-align: center;
+}
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-bar > span {
+  grid-row: 3;
+  text-align: center;
+}
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-bar > i {
+  grid-row: 2;
+  width: min(38px, 62%);
+  height: 100%;
+  justify-self: center;
+  border-bottom: 1px solid rgba(109, 174, 195, .18);
+  background: transparent;
+}
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-bar > i > b {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--financial-ratio);
+  min-height: 2px;
+}
+
+.intelligence-financial-chart.is-lollipop .intelligence-financial-chart-bar > i,
+.intelligence-financial-chart.is-dots .intelligence-financial-chart-bar > i {
+  height: 2px;
+  overflow: visible;
+  background: rgba(98, 157, 176, .16);
+}
+.intelligence-financial-chart.is-lollipop .intelligence-financial-chart-bar > i > b,
+.intelligence-financial-chart.is-dots .intelligence-financial-chart-bar > i > b {
+  top: -4px;
+  bottom: auto;
+  left: calc(var(--financial-ratio) - 5px);
+  width: 10px;
+  height: 10px;
+  min-width: 0;
+  border: 2px solid #bfeef6;
+  border-radius: 50%;
+}
+.intelligence-financial-chart.is-dots .intelligence-financial-chart-bar > i {
+  background: repeating-linear-gradient(90deg, rgba(99, 158, 177, .22) 0 2px, transparent 2px 12.5%);
+}
+.intelligence-financial-chart.is-dots .intelligence-financial-chart-bar > i > b {
+  border-color: #ffe0a1;
+  background: #dda842;
+  box-shadow: 0 0 9px rgba(221, 168, 66, .42);
+}
+
+.intelligence-financial-chart.is-intensity .intelligence-financial-chart-bar > i {
+  height: 9px;
+  background: repeating-linear-gradient(90deg, rgba(83, 139, 158, .18) 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
+}
+.intelligence-financial-chart.is-intensity .intelligence-financial-chart-bar > i > b {
+  background: linear-gradient(90deg, #2a758b, #58cbe5 68%, #d5f8ff);
+}
+
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 18px minmax(60px, 1fr) 19px;
+  gap: 3px;
+  padding-inline: 4px;
+  text-align: center;
+}
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar > span {
+  grid-row: 1;
+  text-align: center;
+}
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar > strong {
+  grid-row: 3;
+  text-align: center;
+}
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar > i {
+  grid-row: 2;
+  width: 52px;
+  height: 52px;
+  justify-self: center;
+  border-radius: 50%;
+  background: conic-gradient(var(--domain-accent) var(--financial-ratio), rgba(91, 145, 163, .14) 0);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--domain-accent) 12%, transparent);
+}
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar > i > b {
+  inset: 6px;
+  width: auto;
+  min-width: 0;
+  border-radius: 50%;
+  background: #071c28;
+  box-shadow: inset 0 0 0 1px rgba(129, 188, 205, .14);
+}
+.intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar.is-missing > i {
+  background: rgba(91, 145, 163, .09);
+}
+
 @media (max-width: 560px) {
   .intelligence-financial-chart { grid-template-rows: auto minmax(86px, 1fr); }
   .intelligence-financial-chart-bar { grid-template-columns: 56px minmax(60px, 1fr) 58px; gap: 6px; }
+  .intelligence-financial-chart.is-columns .intelligence-financial-chart-plot,
+  .intelligence-financial-chart.is-gauge .intelligence-financial-chart-plot { gap: 4px; }
+  .intelligence-financial-chart.is-gauge .intelligence-financial-chart-bar > i { width: 42px; height: 42px; }
 }
 
 .intelligence-entity-components li > strong {

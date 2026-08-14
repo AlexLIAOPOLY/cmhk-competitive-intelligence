@@ -26,12 +26,12 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
   const selectedFocusByDomain = new Map();
   const selectedFinancialMetricByDomain = new Map();
   const financialMetricDefinitions = [
-    ["revenue", "收入对比", "HK$m"],
-    ["net_profit", "净利润对比", "HK$m"],
-    ["ebitda", "EBITDA", "HK$m"],
-    ["capital_expenditure", "资本开支", "HK$m"],
-    ["dividend", "派息", "港仙"],
-    ["5g_customers", "5G用户", "百万户"],
+    ["revenue", "收入对比", "HK$m", "columns"],
+    ["net_profit", "净利润对比", "HK$m", "ranking"],
+    ["ebitda", "EBITDA", "HK$m", "lollipop"],
+    ["capital_expenditure", "资本开支", "HK$m", "intensity"],
+    ["dividend", "派息", "港仙", "dots"],
+    ["5g_customers", "5G用户", "百万户", "gauge"],
   ];
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
@@ -426,13 +426,13 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       const shortCompany = (value) => String(value || "")
         .replace(/\s*\/\s*Hutchison/i, "")
         .replace(/Hutchison Telecommunications Hong Kong/i, "3HK");
-      const comparisonChart = (key, title, unit) => {
+      const comparisonChart = (key, title, unit, chartType) => {
         const chartItems = comparableItems
           .map((item) => ({ item, index: items.indexOf(item), value: metricNumber(item, key) }))
           .sort((left, right) => (Number.isFinite(right.value) ? right.value : -Infinity) - (Number.isFinite(left.value) ? left.value : -Infinity));
         const chartMax = Math.max(...chartItems.filter((entry) => Number.isFinite(entry.value)).map((entry) => Math.abs(entry.value)), 1);
         return `
-          <section id="intelligence-financial-panel-${safe(domain.id)}-${key}" class="intelligence-financial-chart"
+          <section id="intelligence-financial-panel-${safe(domain.id)}-${key}" class="intelligence-financial-chart is-${safe(chartType)}"
             role="tabpanel" aria-label="${safe(title)}">
             <header><strong>${safe(title)}</strong><span>${safe(comparisonPeriod)} · ${safe(unit)} <i title="${safe(excludedPeriodText)}">i</i></span></header>
             <div class="intelligence-financial-chart-plot">
@@ -442,7 +442,7 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
                 return `
                   <button type="button" ${entityAttributes(item, index)}
                     class="intelligence-financial-chart-bar intelligence-viz-entity ${value < 0 ? "is-negative" : ""} ${hasValue ? "" : "is-missing"} ${index === selectedIndex ? "is-selected" : ""}"
-                    style="--financial-bar-width:${width.toFixed(2)}%">
+                    style="--financial-bar-width:${width.toFixed(2)}%;--financial-ratio:${width.toFixed(2)}%">
                     <span>${safe(shortCompany(item.name))}</span>
                     <i aria-hidden="true"><b></b></i>
                     <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : "—"}</strong>
