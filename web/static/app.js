@@ -7630,9 +7630,9 @@ document.addEventListener("keydown", (event) => {
     ["revenue", "收入对比", "HK$m", "columns"],
     ["net_profit", "净利润对比", "HK$m", "ranking"],
     ["ebitda", "EBITDA", "HK$m", "lollipop"],
-    ["capital_expenditure", "资本开支", "HK$m", "intensity"],
+    ["capital_expenditure", "资本开支", "HK$m", "disclosure"],
     ["dividend", "派息", "港仙", "dots"],
-    ["5g_customers", "5G用户", "百万户", "gauge"],
+    ["5g_customers", "5G用户", "百万户", "disclosure"],
   ];
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
@@ -8046,7 +8046,7 @@ document.addEventListener("keydown", (event) => {
                     style="--financial-bar-width:${width.toFixed(2)}%;--financial-ratio:${width.toFixed(2)}%">
                     <span>${safe(shortCompany(item.name))}</span>
                     <i aria-hidden="true"><b></b></i>
-                    <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : "—"}</strong>
+                    <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : chartType === "disclosure" ? "未披露" : "—"}</strong>
                   </button>
                 `;
               }).join("")}
