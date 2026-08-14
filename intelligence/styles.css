@@ -14068,6 +14068,7 @@ body.dashboard-page {
   font-size: 10px;
 }
 .dashboard-page #logModal .financial-results-run-meta b { color: var(--log-accent); }
+.dashboard-page #logModal .financial-results-run-meta a { color: var(--log-accent); text-decoration: none; }
 .dashboard-page #logModal .financial-results-run-list article { position: relative; padding: 13px 16px; }
 .dashboard-page #logModal .financial-results-run-company { display: flex; gap: 10px; align-items: baseline; padding-right: 76px; }
 .dashboard-page #logModal .financial-results-run-company strong { color: var(--log-text-strong); font-size: 12px; }
