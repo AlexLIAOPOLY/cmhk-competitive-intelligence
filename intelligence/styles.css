@@ -14741,6 +14741,27 @@ body.report-library-open::before {
   box-shadow: inset 0 -6px 14px color-mix(in srgb, var(--domain-accent) 8%, transparent);
 }
 
+.intelligence-focus-tabs button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.intelligence-financial-chevron {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  flex: none;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+  transition: transform 180ms ease;
+}
+
+.intelligence-focus-tabs button.is-active .intelligence-financial-chevron {
+  transform: translateY(2px) rotate(225deg);
+}
+
 .intelligence-domain-focus-stage {
   position: relative;
   z-index: 1;
@@ -14994,6 +15015,9 @@ body.report-library-open::before {
 }
 
 .intelligence-domain-local .intelligence-focus-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-basis: auto;
   min-width: max-content;
   padding-right: 10px;

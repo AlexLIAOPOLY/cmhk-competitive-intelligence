@@ -139,6 +139,11 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
 
   function selectedFocusIndex(domain) {
     const focuses = domainFocuses(domain);
+    if (
+      !selectedFocusByDomain.has(domain.id)
+      && domain.id === "local"
+      && focuses[0]?.id === "financials"
+    ) return Math.min(1, Math.max(0, focuses.length - 1));
     const selected = Number(selectedFocusByDomain.get(domain.id) || 0);
     return Math.max(0, Math.min(selected, Math.max(0, focuses.length - 1)));
   }
@@ -254,7 +259,10 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
           <button type="button" role="tab" aria-selected="${index === selectedIndex ? "true" : "false"}"
             class="${index === selectedIndex ? "is-active" : ""}"
             data-intelligence-focus="${index}" data-intelligence-domain-id="${safe(domain.id)}"
-            title="切换到${safe(item.label)}">${safe(item.label)}</button>
+            title="切换到${safe(item.label)}">
+            <span>${safe(item.label)}</span>
+            ${item.id === "financials" ? '<i class="intelligence-financial-chevron" aria-hidden="true"></i>' : ""}
+          </button>
         `).join("")}
       </div>
     `;
@@ -683,7 +691,11 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       if (focuses.length < 2 || !card) continue;
       if (card.matches(":hover") || card.contains(document.activeElement)) continue;
       if ((manualFocusPauseUntil.get(domain.id) || 0) > Date.now()) continue;
-      selectFocus(domain.id, (selectedFocusIndex(domain) + 1) % focuses.length, false, false);
+      let nextIndex = (selectedFocusIndex(domain) + 1) % focuses.length;
+      if (domain.id === "local" && focuses[nextIndex]?.id === "financials") {
+        nextIndex = Math.min(1, focuses.length - 1);
+      }
+      selectFocus(domain.id, nextIndex, false, false);
       return;
     }
   }
