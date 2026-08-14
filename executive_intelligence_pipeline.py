@@ -32,7 +32,7 @@ LOCK_PATH = STATE_DIR / ".refresh.lock"
 LOG_PATH = STATE_DIR / "refresh.log"
 WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
-INSIGHT_FORMAT_VERSION = "evidence_relationship_v6"
+INSIGHT_FORMAT_VERSION = "evidence_relationship_v7"
 
 FOCUS_RELATION_FEW_SHOTS = (
     "少样本约束：\n"
@@ -597,6 +597,44 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     analysis_numbers = _numeric_tokens(analysis)
     if focus_numbers and not (focus_numbers & analysis_numbers):
         return f"AI分析分类缺少输入数值证据：{domain}.{focus_id}"
+    if (domain, focus_id) == ("local", "financials"):
+        companies_by_period: dict[str, int] = {}
+        normalized_analysis = analysis.replace(",", "")
+        for item in evidence_focus.get("items") or []:
+            if not isinstance(item, dict):
+                continue
+            company = str(item.get("name") or "").strip()
+            aliases = [company, company.split("/")[0].strip()]
+            company_mentioned = company and any(alias and alias in analysis for alias in aliases)
+            company_value_mentioned = False
+            components = [component for component in item.get("components") or [] if isinstance(component, dict)]
+            for component in components:
+                if not isinstance(component, dict) or str(component.get("metric_key") or "") not in {
+                    "revenue", "net_profit", "ebitda", "capital_expenditure",
+                }:
+                    continue
+                value_match = re.search(
+                    r"[-+]?\d[\d,]*(?:\.\d+)?",
+                    str(component.get("value") or ""),
+                )
+                if value_match:
+                    normalized_value = value_match.group().replace(",", "")
+                    if re.search(
+                        rf"(?<![\d.]){re.escape(normalized_value)}(?![\d.])",
+                        normalized_analysis,
+                    ):
+                        company_value_mentioned = True
+            if company_mentioned and company_value_mentioned:
+                component_period = next(
+                    (str(component.get("detail") or "").strip() for component in components if component.get("detail")),
+                    "",
+                )
+                period = component_period or str(item.get("period") or item.get("detail") or "期间待核").split("·", 1)[0].strip()
+                companies_by_period[period] = companies_by_period.get(period, 0) + 1
+        if max(companies_by_period.values(), default=0) < 2:
+            return f"财务战略解读必须比较同期间至少两家公司各自的经营数值：{domain}.{focus_id}"
+        if re.search(r"披露|发布|数量|密度|完整度", analysis):
+            return f"财务战略解读不得以发布时间或披露数量代替经营指标：{domain}.{focus_id}"
     if not _has_deep_interpretation(analysis):
         return f"AI分析分类缺少结构、驱动或可比性解释：{domain}.{focus_id}"
     restriction_phrases = (
@@ -1056,6 +1094,11 @@ def _validate_model_summaries(
                     validated_focus["origin"] = "evidence_rule"
                 if not validated_focus["analysis"] or not validated_focus["risk"]:
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
+                if (domain, focus_id) == ("local", "financials") and any(
+                    term in validated_focus["headline"]
+                    for term in ("披露", "发布", "数量", "密度", "完整度")
+                ):
+                    raise ValueError("财务战略解读标题不得以发布时间或披露数量为结论：local.financials")
                 evidence_focus = next(
                     focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
                     if str(focus.get("id") or "") == focus_id
@@ -1498,7 +1541,7 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
 
 
 def _deterministic_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
-    """Produce a numerically grounded fallback that must pass the same 16-focus gate."""
+    """Produce a numerically grounded fallback that must pass the full focus gate."""
     return _compact_grounded_focus_analysis(domain, focus)
 
 
@@ -1927,6 +1970,10 @@ def generate_model_focus_insight(
         raise RuntimeError("未配置内网模型密钥")
     focus_id = str(focus.get("id") or "")
     focus_contracts = {
+        ("local", "financials"): (
+            "只分析同一报告期间、同一币种下的收入与净利润关系；必须至少引用两家公司收入或净利润原值。"
+            "披露项数只作样本完整度边界，不能成为标题或主要结论；不得把FY全年与H1半年直接排名。"
+        ),
         ("local", "scale"): "只分析运营商之间去重后在售产品数量的分层与区隔；记录数只作数据质量边界，不能成为标题或主要结论。",
         ("local", "mobile_price"): "只分析个人5G的月费中位数、价格带重合与价格区隔。",
         ("local", "fibre_value"): "只分析家宽每千兆月费及合约期对价格优势的影响。",
@@ -1965,6 +2012,12 @@ def generate_model_focus_insight(
         and any(item.get("record_count") for item in focus.get("items") or [] if isinstance(item, dict))
     )
     focus_angle_options = {
+        ("local", "financials"): (
+            "比较H1 2026同期间收入规模与净利润转化的分层，至少引用两家公司原值",
+            "比较同期间收入较高与净利润较高主体是否一致，不计算输入外比率",
+            "从同期间收入梯队与净利润梯队是否同步切入，并保留缺失指标边界",
+            "说明FY全年与H1半年不可混排，同时用H1 2026至少两家公司原值形成战略判断",
+        ),
         ("local", "mobile_price"): (
             "比较两家月费中位数与价格带重合，判断中位数差异是否形成清晰区隔",
             "比较两家价格带宽度与共同覆盖区间，说明竞争重合范围",
@@ -2095,6 +2148,7 @@ def generate_model_focus_insight(
                 **({"detail": item.get("detail")} if include_item_detail else {}),
                 **({"analysis": item.get("analysis")} if (domain_id, focus_id) == ("local", "overlap") else {}),
                 **({"relationships": item.get("components")} if (domain_id, focus_id) == ("local", "overlap") else {}),
+                **({"metrics": item.get("components")} if (domain_id, focus_id) == ("local", "financials") else {}),
             }
             for item in focus.get("items") or []
             if isinstance(item, dict)
@@ -2110,9 +2164,10 @@ def generate_model_focus_insight(
                 "不得复用旧版标题。只能使用输入数字和事实。"
                 "analysis必须一至两句、120字内，引用输入具体数值，给出结构、集中度、"
                 "口径可比性、市场阶段或指标关系判断；换一个有效分析角度，不能解释指标定义、"
-                "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value，"
-                "禁止自行加总、计算占比或创造衍生数字。结论必须使用表明、说明、意味着、主要来自、"
-                "并非、而非或不能等同中的至少一个连接词。必须严格遵守输入scope，只能总结当前页，"
+                "复述高低增减、给行动建议或编造因果。所有数字必须原样选自metric.value或items.value；"
+                "local.financials还可原样选自items.metrics.value。禁止自行加总、计算占比或创造衍生数字。"
+                "结论必须使用表明、说明、意味着、主要来自、并非、而非或不能等同中的至少一个连接词。"
+                "必须严格遵守输入scope，只能总结当前页，"
                 "不得把相邻页或item附带信息扩展为当前页结论。"
                 "禁止把单项高低直接写成领先、竞争力、定价权或因果；少于3个可比对象时必须明确样本边界。"
                 "禁止使用导致、造成、推动、带来、源于、驱动等因果词；输入scope要求说明驱动时，也只能改写为关系或边界。"
@@ -2218,6 +2273,7 @@ def generate_model_focus_insight(
             analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
             forbidden_headline_terms = {
                 ("local", "scale"): ("赛道", "月费", "资费", "重叠", "交集"),
+                ("local", "financials"): ("披露", "发布", "数量", "密度", "完整度"),
             }.get((domain_id, focus_id), ())
             headline = _normalize_fresh_focus_headline(
                 headline,
@@ -2225,6 +2281,18 @@ def generate_model_focus_insight(
                 recent_headlines=[] if scale_has_record_counts else recent_headlines,
                 forbidden_terms=forbidden_headline_terms,
             )
+            if (domain_id, focus_id) == ("local", "financials") and (
+                "重要财务指标" in headline
+                or "重新" in headline
+                or any(term in headline for term in forbidden_headline_terms)
+            ):
+                financial_headlines = (
+                    "收入规模呈现分层",
+                    "收入与利润梯队分化",
+                    "规模差距映射利润分层",
+                    "同期间业绩形成梯队",
+                )
+                headline = financial_headlines[(regeneration_index - 1 + attempt) % len(financial_headlines)]
             if "分散" in headline and any(term in analysis for term in ("集中", "头部三家", "主要来自头部")):
                 raise ValueError(f"AI洞察标题与正文判断相反：{headline}")
             headline_similarities = [
@@ -2458,11 +2526,13 @@ def generate_model_domain_summaries(
         "每个focus的analysis必须是一至两句、总长不超过120字，并引用至少一个输入具体数值作为证据；"
         "结论必须解释数字背后的结构、驱动因素、集中度、口径可比性、市场阶段或指标关系，不能停留在数字高低、增减或事实复述；"
         "禁止写建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术，也不要告诉读者下一步做什么。"
-        "全部16个focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
+        "全部17个focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
         "focus.headline必须是关系判断，不能照抄页签或指标名称。"
         "每个focus至少比较两个竞对、两个期间或两个指标；无法同口径比较时，结论必须是不可比边界而非强行排名。"
         "禁止无证据写领先、竞争力、定价权、导致、造成、推动、带来、源于或驱动；少于3个可比对象时明确样本边界。"
         "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
+        "local.financials必须比较同期间至少两家公司的收入、净利润、EBITDA或资本开支原值；"
+        "发布日期、披露项数和资料完整度只能写入risk，不能成为headline或analysis的主要结论。"
         "跨期间、代理分部、披露缺口必须明确写入risk；"
         "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
         "source_urls只能从输入中原样选择。只返回JSON数组。"
@@ -2546,7 +2616,7 @@ def generate_model_domain_summaries(
     if summaries is None:
         # Older model deployments sometimes follow the four-domain shape but omit
         # nested focus summaries. Retry one domain at a time so every focus can be
-        # checked explicitly without asking the model to hold all 16 views at once.
+        # checked explicitly without asking the model to hold all views at once.
         per_domain_summaries: list[dict[str, Any]] = []
         for domain_evidence in evidence.get("domains") or []:
             domain_id = str(domain_evidence.get("id") or "")
@@ -3920,14 +3990,29 @@ def run_pipeline(
         if dry_run:
             state["model_analysis"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         else:
-            _task_event(task_run_id, "生成AI洞察", "正在根据四库最新通过事实生成AI洞察，并对16个关注点逐一执行深层解释、简洁度与事实门禁。")
+            current_evidence = _analysis_input_snapshot()
+            expected_focus_count = sum(
+                len(domain.get("focuses") or [])
+                for domain in current_evidence.get("domains") or []
+            )
+            _task_event(
+                task_run_id,
+                "生成AI洞察",
+                f"正在根据四库最新通过事实生成AI洞察，并对{expected_focus_count}个关注点逐一执行深层解释、简洁度与事实门禁。",
+            )
             try:
                 model_analysis = publish_model_domain_summaries()
+                passed_focus_count = sum(
+                    len(summary.get("focuses") or [])
+                    for summary in model_analysis.get("summaries") or []
+                )
                 state["model_analysis"] = {
                     "ok": True,
                     "generated_at_hkt": model_analysis["generated_at_hkt"],
                     "model": model_analysis["model"],
                     "domains": len(model_analysis["summaries"]),
+                    "focuses_expected": expected_focus_count,
+                    "focuses_passed": passed_focus_count,
                     "reused": bool(model_analysis.get("reused")),
                     "fallback_used": bool(model_analysis.get("fallback_used")),
                     "fallback_reason": str(model_analysis.get("fallback_reason") or ""),
@@ -3943,7 +4028,7 @@ def run_pipeline(
                 _task_event(
                     task_run_id,
                     "生成AI洞察",
-                    f"16/16关注点门禁通过；模型：{state['model_analysis']['model']}；"
+                    f"{passed_focus_count}/{expected_focus_count}关注点门禁通过；模型：{state['model_analysis']['model']}；"
                     f"证据哈希：{state['model_analysis']['evidence_hash'][:16]}{fallback_note}。",
                 )
             except Exception as exc:
@@ -3963,7 +4048,8 @@ def run_pipeline(
             _task_event(
                 task_run_id,
                 "更新主页UI",
-                "四库与16个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+                f"四库与{int(state['model_analysis'].get('focuses_passed') or 0)}个AI洞察均已通过，"
+                "正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
             )
             try:
                 pages_publish = _publish_and_verify_github_pages()
@@ -4078,10 +4164,11 @@ def run_pipeline_with_recovery(
         if result.get("skipped"):
             detail = "已有另一条四库任务执行，本次已安全合并。"
         elif (result.get("pages_publish") or {}).get("ok"):
-            detail = f"四库、16个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 {attempts} 次。"
+            focus_count = int((result.get("model_analysis") or {}).get("focuses_passed") or 0)
+            detail = f"四库、{focus_count}个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 {attempts} 次。"
         else:
             detail = (
-                f"四库、16个AI洞察和前端数据源已完成，但GitHub.io发布验证未通过："
+                f"四库、{int((result.get('model_analysis') or {}).get('focuses_passed') or 0)}个AI洞察和前端数据源已完成，但GitHub.io发布验证未通过："
                 f"{(result.get('pages_publish') or {}).get('error') or '未返回原因'}。"
             )
     else:

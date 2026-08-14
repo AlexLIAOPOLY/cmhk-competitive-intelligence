@@ -413,6 +413,57 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["model"], "GLM")
         self.assertNotEqual(result["focus"]["analysis"], focus["insight"])
 
+    def test_financial_focus_refresh_uses_revenue_and_profit_metrics(self):
+        evidence = pipeline._analysis_input_snapshot()
+        local = next(item for item in evidence["domains"] if item["id"] == "local")
+        focus = next(item for item in local["focuses"] if item["id"] == "financials")
+        content = json.dumps({
+            "headline": "规模与利润同步分层",
+            "analysis": "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。",
+        }, ensure_ascii=False)
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            "choices": [{"message": {"content": content}}]
+        }).encode("utf-8")
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
+        ):
+            result = pipeline.generate_model_focus_insight("local", focus)
+
+        prompt = json.loads(request.call_args.args[0].data.decode("utf-8"))["messages"][1]["content"]
+        self.assertIn('"metrics"', prompt)
+        self.assertIn("HK$18,685 million", prompt)
+        self.assertIn("披露项数只作样本完整度边界", prompt)
+        self.assertIn("收入18,685m", result["focus"]["analysis"])
+
+    def test_financial_focus_gate_rejects_publication_and_disclosure_counts(self):
+        evidence = pipeline._analysis_input_snapshot()
+        local = next(item for item in evidence["domains"] if item["id"] == "local")
+        focus = next(item for item in local["focuses"] if item["id"] == "financials")
+        bad = "HKT披露5项且早于3HK的4项发布，说明披露密度形成差距。"
+        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", bad, focus))
+        one_company_numbers = "HKT收入18,685m及净利润2,153m，并提及3HK，表明两家公司收入与利润结构形成梯队差距。"
+        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", one_company_numbers, focus))
+        mixed_periods = "HKT收入18,685m与i-CABLE收入1,266m形成差距，说明两家公司跨期间规模呈现梯队。"
+        self.assertIn("同期间", pipeline._focus_gate_error("local", "financials", mixed_periods, focus))
+        release_frequency = "HKT收入18,685m、净利润2,153m，同时3HK收入2,846m且发布时间更早，说明发布频率与利润分层不同。"
+        self.assertIn("发布时间", pipeline._focus_gate_error("local", "financials", release_frequency, focus))
+        good = "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。"
+        self.assertEqual(pipeline._focus_gate_error("local", "financials", good, focus), "")
+
+    def test_financial_focus_bundle_rejects_disclosure_headline(self):
+        evidence = pipeline._analysis_input_snapshot()
+        summaries = pipeline._deterministic_domain_summaries(evidence)
+        local = next(item for item in summaries if item["domain"] == "local")
+        financial = next(item for item in local["focuses"] if item["id"] == "financials")
+        financial["headline"] = "财报披露密度分层"
+        with self.assertRaisesRegex(ValueError, "标题不得"):
+            pipeline._validate_model_summaries(summaries, evidence)
+
     def test_focus_generation_normalizes_long_title_without_discarding_fresh_analysis(self):
         evidence = pipeline._analysis_input_snapshot()
         macro = next(item for item in evidence["domains"] if item["id"] == "macro")
@@ -728,6 +779,42 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             self.assertEqual(generate.call_args.kwargs["temperature"], 0.25)
             self.assertEqual(progress[0], "正在读取当前证据")
             self.assertEqual(progress[-1], "证据校验通过，正在返回洞察")
+
+    def test_financial_focus_regeneration_is_registered_and_persisted(self):
+        evidence = pipeline._analysis_input_snapshot()
+        financial = next(
+            focus
+            for domain in evidence["domains"] if domain["id"] == "local"
+            for focus in domain["focuses"] if focus["id"] == "financials"
+        )
+        generated_focus = {
+            "id": "financials",
+            "headline": "收入规模与利润转化分层",
+            "analysis": "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。",
+            "risk": "仅比较H1 2026同期间、同币种公开值。",
+            "source_urls": [],
+        }
+        self.assertFalse(pipeline._focus_gate_error("local", "financials", generated_focus["analysis"], financial))
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "analysis.json"
+            path.write_text("{}", encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.generate_model_focus_insight", return_value={
+                    "model": "test-model",
+                    "focus": generated_focus,
+                }),
+            ):
+                result = pipeline.regenerate_model_focus_summary("local", "financials", path=path)
+            saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
+        saved_financial = next(
+            focus
+            for summary in saved["summaries"] if summary["domain"] == "local"
+            for focus in summary["focuses"] if focus["id"] == "financials"
+        )
+        self.assertTrue(result["ok"])
+        self.assertEqual(saved_financial["headline"], generated_focus["headline"])
+        self.assertEqual(saved_financial["analysis"], generated_focus["analysis"])
 
     def test_focus_regeneration_does_not_merge_stale_unrelated_ai_copy(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -1245,7 +1332,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 )
                 self.assertFalse(pipeline._contains_action_advice(analysis))
                 checked += 1
-        self.assertEqual(checked, 16)
+        self.assertEqual(checked, 17)
 
     def test_mobile_price_gate_rejects_false_no_overlap_claim(self):
         focus = {
@@ -1803,7 +1890,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["domains"], ["local", "international", "cloud", "macro"])
         self.assertEqual(
             result["stages"],
-            ["database_refresh", "quality_gate", "16_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"],
+            ["database_refresh", "quality_gate", "17_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"],
         )
 
 

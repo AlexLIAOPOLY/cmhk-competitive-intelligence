@@ -3126,10 +3126,10 @@ function renderCrawlRunArchive(data) {
   if (parsed.fourDomainRefresh) {
     const refresh = parsed.fourDomainRefresh;
     const domainLabels = { local: "本地竞对", international: "内地/国际运营商", cloud: "全球云厂商", macro: "香港市场与宏观政策" };
-    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", "16_focus_analysis": "16项分析", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
+    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", "16_focus_analysis": "16项分析（旧记录）", "17_focus_analysis": "17项战略解读", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
     const domains = (Array.isArray(refresh.domains) && refresh.domains.length ? refresh.domains : ["local", "international", "cloud", "macro"])
       .map((item) => domainLabels[item] || item);
-    const stages = (Array.isArray(refresh.stages) && refresh.stages.length ? refresh.stages : ["database_refresh", "quality_gate", "16_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"])
+    const stages = (Array.isArray(refresh.stages) && refresh.stages.length ? refresh.stages : ["database_refresh", "quality_gate", "17_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"])
       .map((item) => stageLabels[item] || item);
     const refreshAudit = document.createElement("section");
     refreshAudit.className = "financial-results-run-audit four-domain-run-audit";
@@ -7733,7 +7733,8 @@ document.addEventListener("keydown", (event) => {
 
   function domainFocuses(domain) {
     if (Array.isArray(domain?.focuses) && domain.focuses.length) {
-      const financialFocus = domain.id === "local" ? localFinancialFocus(domain) : null;
+      const hasFinancialFocus = domain.focuses.some((focus) => focus?.id === "financials");
+      const financialFocus = domain.id === "local" && !hasFinancialFocus ? localFinancialFocus(domain) : null;
       return financialFocus ? [financialFocus, ...domain.focuses] : domain.focuses;
     }
     return [{
@@ -7791,16 +7792,13 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const isFinancialFocus = focus.id === "financials";
-      const aiAnalysis = isFinancialFocus
-        ? focus.insight
-        : focus.ai_summary?.analysis || domain.ai_summary?.analysis;
+      const aiAnalysis = focus.ai_summary?.analysis || focus.insight || domain.ai_summary?.analysis;
       const hasFreshAi = Boolean(
-        !isFinancialFocus
-        && payload?.ai?.model_analysis_fresh
+        payload?.ai?.model_analysis_fresh
         && aiAnalysis
         && focus.ai_summary?.origin !== "evidence_rule"
       );
-      const interpretationLabel = isFinancialFocus ? "数据口径" : hasFreshAi ? "AI 战略解读" : "数据战略解读";
+      const interpretationLabel = hasFreshAi ? "AI 战略解读" : "数据战略解读";
       const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";

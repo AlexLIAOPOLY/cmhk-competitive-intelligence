@@ -17,7 +17,7 @@ CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendo
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
 AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
-INSIGHT_FORMAT_VERSION = "evidence_relationship_v6"
+INSIGHT_FORMAT_VERSION = "evidence_relationship_v7"
 
 DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
@@ -188,6 +188,105 @@ def _dedupe_components(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         seen.add(label)
         result.append(item)
     return result
+
+
+def _financial_metric(report: dict[str, Any], metric_key: str) -> dict[str, Any] | None:
+    return next(
+        (
+            metric for metric in report.get("metrics") or []
+            if str(metric.get("metric_key") or "") == metric_key
+        ),
+        None,
+    )
+
+
+def _financial_metric_number(report: dict[str, Any], metric_key: str) -> float | None:
+    metric = _financial_metric(report, metric_key)
+    if not metric:
+        return None
+    match = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", str(metric.get("value") or ""))
+    return float(match.group().replace(",", "")) if match else None
+
+
+def _local_financial_focus(reports: list[dict[str, Any]]) -> dict[str, Any] | None:
+    if not reports:
+        return None
+    periods: dict[str, list[dict[str, Any]]] = {}
+    for report in reports:
+        periods.setdefault(str(report.get("period") or "期间待核"), []).append(report)
+    comparison_period, comparable = max(
+        periods.items(),
+        key=lambda entry: (len(entry[1]), _period_rank(entry[0])),
+    )
+    revenues = sorted(
+        (
+            (value, report) for report in comparable
+            if (value := _financial_metric_number(report, "revenue")) is not None
+        ),
+        key=lambda entry: entry[0], reverse=True,
+    )
+    profits = sorted(
+        (
+            (value, report) for report in comparable
+            if (value := _financial_metric_number(report, "net_profit")) is not None
+        ),
+        key=lambda entry: entry[0], reverse=True,
+    )
+    if len(revenues) >= 2 and len(profits) >= 2:
+        revenue_high, revenue_low = revenues[0], revenues[-1]
+        profit_high, profit_low = profits[0], profits[-1]
+        insight = (
+            f"同为{comparison_period}，{revenue_high[1].get('company')}收入{revenue_high[0]:,.0f}m、"
+            f"{revenue_low[1].get('company')}为{revenue_low[0]:,.0f}m；净利润从"
+            f"{profit_high[1].get('company')}的{profit_high[0]:,.0f}m到"
+            f"{profit_low[1].get('company')}的{profit_low[0]:,.0f}m，表明规模差距伴随利润转化明显分层。"
+        )
+    else:
+        insight = (
+            f"已收录{len(reports)}家公司最新官方财报，但同期间收入与净利润可比样本不足，"
+            "披露完整度差异仍是判断本地竞争结构的主要边界。"
+        )
+    return {
+        "id": "financials",
+        "label": "重要财务指标",
+        "visual": "financial",
+        "metric": {"value": len(reports), "unit": "家公司", "label": "已入库最新官方财报"},
+        "context": (
+            f"最新披露 {reports[0].get('publication_date') or '日期待核'}；"
+            "每日 03:00（香港时间）自动检查"
+        ),
+        "headline": "本地业绩呈现规模与盈利分层",
+        "insight": insight,
+        "items": [
+            {
+                "name": report.get("company") or "未标明公司",
+                "value": int(report.get("core_metric_count") or len(report.get("metrics") or [])),
+                "unit": "项核心指标",
+                "period": report.get("period") or "期间待核",
+                "publication_date": report.get("publication_date") or "",
+                "detail": (
+                    f"{report.get('period') or '期间待核'} · "
+                    f"{report.get('publication_date') or '披露日期待核'}"
+                ),
+                "analysis": (
+                    f"{report.get('company') or '该公司'}最新官方财报披露"
+                    f"{len(report.get('metrics') or [])}项核心指标；仅与同期间、同币种和同口径数据比较。"
+                ),
+                "components": [
+                    {
+                        "label": metric.get("metric") or metric.get("metric_key") or "指标",
+                        "value": metric.get("value") or "—",
+                        "detail": report.get("period") or "",
+                        "metric_key": metric.get("metric_key") or "",
+                    }
+                    for metric in report.get("metrics") or []
+                ],
+                "component_count": len(report.get("metrics") or []),
+                "source_url": report.get("source_url") or "",
+            }
+            for report in reports
+        ],
+    }
 
 
 def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -460,6 +559,9 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
         key=lambda report: (str(report.get("publication_date") or ""), _period_rank(report.get("period"))),
         reverse=True,
     )
+    financial_focus = _local_financial_focus(financial_reports)
+    if financial_focus:
+        focuses.insert(0, financial_focus)
     newest_financial = financial_reports[0] if financial_reports else None
     if newest_financial:
         financial_note = (

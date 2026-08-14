@@ -43,11 +43,12 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
             for source in domain["sources"]:
                 self.assertTrue(source["url"].startswith(("https://", "http://")))
 
-    def test_each_domain_exposes_four_distinct_data_backed_focuses(self):
+    def test_each_domain_exposes_expected_distinct_data_backed_focuses(self):
         for domain in self.snapshot["domains"]:
             focuses = domain["focuses"]
-            self.assertEqual(len(focuses), 4, domain["id"])
-            self.assertEqual(len({focus["id"] for focus in focuses}), 4, domain["id"])
+            expected_count = 5 if domain["id"] == "local" else 4
+            self.assertEqual(len(focuses), expected_count, domain["id"])
+            self.assertEqual(len({focus["id"] for focus in focuses}), expected_count, domain["id"])
             signatures = {
                 json.dumps(
                     {
@@ -63,7 +64,7 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
                 )
                 for focus in focuses
             }
-            self.assertEqual(len(signatures), 4, domain["id"])
+            self.assertEqual(len(signatures), expected_count, domain["id"])
             for focus in focuses:
                 self.assertTrue(focus["items"], f"{domain['id']}:{focus['id']}")
                 self.assertTrue(focus["insight"])
@@ -75,6 +76,9 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
     def test_focuses_preserve_their_real_measurement_semantics(self):
         domains = {domain["id"]: domain for domain in self.snapshot["domains"]}
         local = {focus["id"]: focus for focus in domains["local"]["focuses"]}
+        self.assertEqual(local["financials"]["label"], "重要财务指标")
+        self.assertEqual(local["financials"]["visual"], "financial")
+        self.assertGreaterEqual(len(local["financials"]["items"]), 4)
         self.assertEqual(
             [local[key]["label"] for key in ("scale", "mobile_price", "fibre_value", "overlap")],
             ["在售产品组合", "个人5G月费", "家宽每千兆价格", "同类价格重合"],
