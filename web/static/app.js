@@ -3000,7 +3000,7 @@ function renderAgentTrace(trace, options = {}) {
 }
 
 function parseCrawlRunContent(content) {
-  const parsed = { traces: [], raw: [], crawlSummary: null, done: null };
+  const parsed = { traces: [], raw: [], crawlSummary: null, financialResults: null, financialPublish: null, fourDomainRefresh: null, done: null };
   String(content || "").split(/\r?\n/).forEach((line) => {
     if (!line) return;
     const markerIndex = line.indexOf("AGENT_TRACE=");
@@ -3022,6 +3022,18 @@ function parseCrawlRunContent(content) {
         }
         if (payload.type === "crawl_summary") {
           parsed.crawlSummary = payload;
+          return;
+        }
+        if (payload.type === "local_financial_results") {
+          parsed.financialResults = payload;
+          return;
+        }
+        if (payload.type === "financial_frontend_publish") {
+          parsed.financialPublish = payload;
+          return;
+        }
+        if (payload.type === "executive_intelligence_refresh") {
+          parsed.fourDomainRefresh = payload;
           return;
         }
         if (payload.type === "done") {
@@ -3074,6 +3086,66 @@ function renderCrawlRunArchive(data) {
     empty.className = "agent-audit-empty";
     empty.textContent = run.run_status === "running" ? "Agent 审核尚未开始，或日志仍在写入。" : "本轮没有可解析的 Agent 审核事件。";
     els.logBox.appendChild(empty);
+  }
+
+  if (parsed.financialResults) {
+    const finance = parsed.financialResults;
+    const financePublish = parsed.financialPublish || {};
+    const companies = Array.isArray(finance.checkedCompanies) ? finance.checkedCompanies : [];
+    const financeAudit = document.createElement("section");
+    financeAudit.className = "financial-results-run-audit";
+    financeAudit.innerHTML =
+      '<header><div><span>现有定期爬虫 · 次日入库</span><strong>本地竞对财报检查</strong></div>'
+      + '<em class="' + (finance.ok ? "is-pass" : "is-fail") + '">' + (finance.ok ? "门禁通过" : "门禁失败") + '</em></header>'
+      + '<div class="financial-results-run-meta">'
+        + '<span>检查 <b>' + escapeHtml(String(companies.length)) + '</b> 家</span>'
+        + '<span>数据库 ' + (finance.databaseUpdated ? "已写入" : "未写入") + '</span>'
+        + '<span>' + (finance.databaseChanged ? "发现数据变化" : "本次无数据变化") + '</span>'
+        + '<span>前端 ' + (financePublish.ok ? "已发布并验证" : "等待发布验证") + '</span>'
+        + (financePublish.siteVersion ? '<span>版本 ' + escapeHtml(String(financePublish.siteVersion).slice(0, 16)) + '</span>' : '')
+        + (financePublish.publicUrl ? '<a href="' + escapeHtml(String(financePublish.publicUrl)) + '" target="_blank" rel="noopener">公开页面↗</a>' : '')
+        + '<span>' + escapeHtml(String(finance.generatedAtHkt || "")) + '</span>'
+      + '</div>'
+      + '<div class="financial-results-run-list">' + companies.map((item) => {
+        const metrics = Array.isArray(item.metrics) ? item.metrics : [];
+        const status = item.status === "not_applicable" ? "不适用" : (item.status === "official_document_extracted" ? "官方文件已提取" : String(item.status || "待核"));
+        return '<article>'
+          + '<div class="financial-results-run-company"><strong>' + escapeHtml(String(item.company || "")) + '</strong><span>' + escapeHtml(String(item.period || status)) + '</span><em>' + escapeHtml(status) + '</em></div>'
+          + '<dl>'
+            + '<div><dt>披露日</dt><dd>' + escapeHtml(String(item.publicationDate || "未从来源确认")) + '</dd></div>'
+            + '<div><dt>次日截止</dt><dd>' + escapeHtml(String(item.nextDayDeadlineHkt || "不适用")) + '</dd></div>'
+            + '<div><dt>核心指标</dt><dd>' + escapeHtml(String(item.coreMetricCount || 0)) + ' 项</dd></div>'
+          + '</dl>'
+          + (metrics.length ? '<p>' + metrics.map((metric) => '<span>' + escapeHtml(String(metric.label || metric.key || "指标")) + ' <b>' + escapeHtml(String(metric.value || "")) + '</b></span>').join("") + '</p>' : '<p><span>没有可结构化的公开定期财报指标</span></p>')
+          + (item.sourceUrl ? '<a href="' + escapeHtml(String(item.sourceUrl)) + '" target="_blank" rel="noopener">官方来源↗</a>' : '')
+        + '</article>';
+      }).join("") + '</div>';
+    els.logBox.appendChild(financeAudit);
+  }
+
+  if (parsed.fourDomainRefresh) {
+    const refresh = parsed.fourDomainRefresh;
+    const domainLabels = { local: "本地竞对", international: "内地/国际运营商", cloud: "全球云厂商", macro: "香港市场与宏观政策" };
+    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", "16_focus_analysis": "16项分析", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
+    const domains = (Array.isArray(refresh.domains) && refresh.domains.length ? refresh.domains : ["local", "international", "cloud", "macro"])
+      .map((item) => domainLabels[item] || item);
+    const stages = (Array.isArray(refresh.stages) && refresh.stages.length ? refresh.stages : ["database_refresh", "quality_gate", "16_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"])
+      .map((item) => stageLabels[item] || item);
+    const refreshAudit = document.createElement("section");
+    refreshAudit.className = "financial-results-run-audit four-domain-run-audit";
+    refreshAudit.innerHTML =
+      '<header><div><span>同一定期流程 · 联动刷新</span><strong>四域数据与前端更新</strong></div>'
+      + '<em class="' + (refresh.ok ? "is-pass" : "is-fail") + '">' + (refresh.launched ? "已启动" : (refresh.ok ? "已合并" : "启动失败")) + '</em></header>'
+      + '<div class="financial-results-run-meta">'
+        + '<span>覆盖 <b>' + escapeHtml(String(domains.length)) + '</b> 域</span>'
+        + '<span>阶段 <b>' + escapeHtml(String(stages.length)) + '</b> 项</span>'
+        + (refresh.taskRunId ? '<span>关联任务 ' + escapeHtml(String(refresh.taskRunId)) + '</span>' : '')
+        + (refresh.pid ? '<span>进程 ' + escapeHtml(String(refresh.pid)) + '</span>' : '')
+      + '</div>'
+      + '<div class="four-domain-run-lines"><p><b>四域</b>' + domains.map(escapeHtml).join(" · ") + '</p><p><b>完成合同</b>' + stages.map(escapeHtml).join(" → ") + '</p>'
+      + (refresh.error ? '<p class="is-error"><b>失败原因</b>' + escapeHtml(String(refresh.error)) + '</p>' : '')
+      + '</div>';
+    els.logBox.appendChild(refreshAudit);
   }
 
   if (Array.isArray(summary.failed) && summary.failed.length) {
@@ -8035,6 +8107,17 @@ document.addEventListener("keydown", (event) => {
     const focusMetric = selectedFocus.metric || domain.metric || {};
     const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items);
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
+    const latestFinancial = Array.isArray(domain.latest_financial_results)
+      ? domain.latest_financial_results[0]
+      : null;
+    const financialStrip = domain.id === "local" && latestFinancial ? `
+      <button class="intelligence-financial-strip" type="button" data-intelligence-financial-results="local">
+        <span>最新财报</span>
+        <strong>${safe(latestFinancial.company)} · ${safe(latestFinancial.period)}</strong>
+        <em>${safe(latestFinancial.publication_date || "披露日期待核")}</em>
+        <i>查看全部财报指标</i>
+      </button>
+    ` : "";
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
         <span class="intelligence-domain-index">${safe(domain.index)}</span>
@@ -8049,6 +8132,7 @@ document.addEventListener("keydown", (event) => {
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
         <div class="intelligence-domain-focus-stage">
+          ${financialStrip}
           ${visual}
           ${renderEntityFocus(domain, selectedEntity, entityIndex, selectedFocus, items)}
         </div>
@@ -8286,6 +8370,29 @@ document.addEventListener("keydown", (event) => {
     `).join("");
     const verifiedCount = Array.isArray(domain.ai_analysis) ? domain.ai_analysis.length : 0;
     const sourceCount = Array.isArray(domain.sources) ? domain.sources.length : 0;
+    const financialReports = Array.isArray(domain.latest_financial_results) ? domain.latest_financial_results : [];
+    const financialRows = financialReports.map((report) => {
+      const metrics = (report.metrics || []).map((metric) => `
+        <span><small>${safe(metric.metric)}</small><strong>${safe(metric.value)}</strong></span>
+      `).join("");
+      return `
+        <li>
+          <header>
+            <span>${safe(report.company)}</span>
+            <strong>${safe(report.period)}</strong>
+            <time>${safe(report.publication_date || "披露日期待核")}</time>
+          </header>
+          <div>${metrics}</div>
+          ${report.source_url ? `<a href="${safe(report.source_url)}" target="_self">官方财报<span aria-hidden="true">↗</span></a>` : ""}
+        </li>
+      `;
+    }).join("");
+    const financialSection = financialRows ? `
+      <section class="intelligence-detail-section intelligence-financial-results">
+        <h3>最新官方财报</h3>
+        <ul>${financialRows}</ul>
+      </section>
+    ` : "";
 
     drawerKicker.textContent = `${domain.index} · 数据解读`;
     drawerTitle.textContent = domain.title;
@@ -8305,6 +8412,7 @@ document.addEventListener("keydown", (event) => {
         <h3>领导结论</h3>
         <ol class="intelligence-decision-list">${conclusionRows}</ol>
       </section>
+      ${financialSection}
       <section class="intelligence-detail-section">
         <h3>跨渠道联动</h3>
         <div class="intelligence-cross-relations">${crossRelations || "<p>暂无跨库关系</p>"}</div>
@@ -8358,6 +8466,13 @@ document.addEventListener("keydown", (event) => {
   }
 
   grid.addEventListener("click", (event) => {
+    const financialTrigger = event.target.closest("[data-intelligence-financial-results]");
+    if (financialTrigger) {
+      event.preventDefault();
+      event.stopPropagation();
+      openDrawer(financialTrigger.dataset.intelligenceFinancialResults);
+      return;
+    }
     const insightRefresh = event.target.closest("[data-intelligence-insight-refresh]");
     if (insightRefresh) {
       event.preventDefault();

@@ -13,6 +13,7 @@ FEISHU_CACHE_PATH = ROOT / "carrier_performance_feishu.json"
 PERFORMANCE_SOURCES_PATH = ROOT / "carrier_performance_sources.json"
 AI_CACHE_PATH = ROOT / "company_metrics_ai_cache.json"
 VERIFIED_FACTS_PATH = ROOT / "curation_data" / "verified_facts.jsonl"
+LOCAL_FINANCIAL_RESULTS_PATH = ROOT / "agent_knowledge" / "hk_competitor_product_tariffs" / "local_financial_results.json"
 AI_CACHE_SCHEMA_VERSION = 3
 
 CORE_METRICS = ["派息", "资本开支", "战略升级", "券商观点", "市场反应"]
@@ -800,6 +801,54 @@ def _crawl_rows() -> list[dict]:
     return output
 
 
+def _official_financial_result_rows() -> list[dict]:
+    from local_financial_results import financial_database_rows
+
+    output: list[dict] = []
+    metric_aliases = {
+        "收入/总收益": "收益",
+        "EBITDA": "EBITDA / 利润",
+        "净利润": "EBITDA / 利润",
+        "资本开支": "资本开支",
+        "派息/分派": "派息",
+        "5G用户数": "5G用户数",
+    }
+    for item in financial_database_rows(LOCAL_FINANCIAL_RESULTS_PATH):
+        company = str(item.get("company") or "").strip()
+        source_url = str(item.get("source_url") or "").strip()
+        common = {
+            "company": company,
+            "group": "香港本地竞对财报",
+            "disclosure": str(item.get("period") or ""),
+            "disclosure_date": str(item.get("publication_date") or ""),
+            "source_type": "official-financial-results",
+            "sources": [{"label": str(item.get("source_title") or "官方财报"), "url": source_url}],
+            "confidence": 1.0,
+            "row_ref": f"row_{item.get('row')}",
+        }
+        metric = metric_aliases.get(str(item.get("metric") or ""), str(item.get("metric") or ""))
+        output.append(_make_row(metric=metric, value=str(item.get("value") or ""), **common))
+        if metric == "EBITDA / 利润" and item.get("metric_key") == "net_profit":
+            output[-1]["metric"] = "净利润"
+    latest_by_company: dict[str, dict] = {}
+    for item in financial_database_rows(LOCAL_FINANCIAL_RESULTS_PATH):
+        latest_by_company[str(item.get("company") or "")] = item
+    for company, item in latest_by_company.items():
+        source_url = str(item.get("source_url") or "")
+        common = {
+            "company": company,
+            "group": "香港本地竞对财报",
+            "source_type": "official-financial-results",
+            "sources": [{"label": str(item.get("source_title") or "官方财报"), "url": source_url}],
+            "confidence": 1.0,
+            "row_ref": f"row_{item.get('row')}",
+        }
+        output.append(_make_row(metric="最新披露", value=str(item.get("period") or ""), **common))
+        if item.get("publication_date"):
+            output.append(_make_row(metric="披露日期", value=str(item["publication_date"]), **common))
+    return output
+
+
 def _verified_fact_rows() -> list[dict]:
     if not VERIFIED_FACTS_PATH.exists():
         return []
@@ -866,6 +915,14 @@ def _verified_fact_rows() -> list[dict]:
 
 def build_company_metrics_payload(apply_ai_cache: bool = True) -> dict:
     rows = _performance_rows()
+    official_financial_rows = _official_financial_result_rows()
+    official_companies = {row["company"] for row in official_financial_rows}
+    replaced_metrics = set(DISCLOSURE_FIELDS + SUMMARY_METRICS + ["派息", "资本开支", "5G用户数", "净利润"])
+    rows = [
+        row for row in rows
+        if row.get("company") not in official_companies or row.get("metric") not in replaced_metrics
+    ]
+    rows.extend(official_financial_rows)
     verified_fact_rows = _verified_fact_rows() if apply_ai_cache else []
     rows.extend(verified_fact_rows or _crawl_rows())
     candidate_count = len(rows)

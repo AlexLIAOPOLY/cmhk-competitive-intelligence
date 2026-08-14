@@ -3605,6 +3605,23 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
 
 
 class IntelligenceEntityScrollTests(unittest.TestCase):
+    def test_financial_results_are_visible_on_card_drawer_and_run_log(self) -> None:
+        app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (Path(__file__).parent / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn('data-intelligence-financial-results="local"', app)
+        self.assertIn("最新官方财报", app)
+        self.assertIn('payload.type === "local_financial_results"', app)
+        self.assertIn('payload.type === "financial_frontend_publish"', app)
+        self.assertIn('payload.type === "executive_intelligence_refresh"', app)
+        self.assertIn("本地竞对财报检查", app)
+        self.assertIn("四域数据与前端更新", app)
+        self.assertIn("主页UI同步", app)
+        self.assertIn("公开前端发布", app)
+        self.assertIn("nextDayDeadlineHkt", app)
+        self.assertIn("已发布并验证", app)
+        self.assertIn("financial-results-run-audit", styles)
+
     def test_domain_title_is_display_only_and_relation_title_regenerates_discovery(self) -> None:
         app = (Path(__file__).parent / "web/static/app.js").read_text(encoding="utf-8")
         server = (Path(__file__).parent / "web_app.py").read_text(encoding="utf-8")

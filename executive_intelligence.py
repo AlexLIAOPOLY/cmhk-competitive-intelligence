@@ -11,6 +11,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parent
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
+LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_PATH = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json"
 CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json"
 MACRO_PATH = ROOT / "agent_knowledge/cmhk_macro_policy_2026-06-19/macro_policy_metrics.json"
@@ -18,7 +19,7 @@ AI_ANALYSIS_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/ai_ana
 REFRESH_STATE_PATH = ROOT / "agent_knowledge/executive_intelligence_refresh/latest.json"
 INSIGHT_FORMAT_VERSION = "evidence_relationship_v6"
 
-DOMAIN_PATHS = (LOCAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
+DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
 SAFE_VERIFICATION_STATUSES = {
     "official_match",
@@ -450,19 +451,53 @@ def _local_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
             "fibre_value": "家宽折算价格相差近四倍", "overlap": "同类产品月费区间重合",
         }[focus["id"]]
     entities = scale_items
-    sources = _dedupe_sources([_source(item["name"], item["source_url"]) for item in scale_items])
+    financial_payload = _read_json_optional(LOCAL_FINANCIAL_PATH, {})
+    financial_reports = [
+        report for report in financial_payload.get("reports", [])
+        if report.get("verification_status") == "official_document_extracted"
+    ]
+    financial_reports.sort(
+        key=lambda report: (str(report.get("publication_date") or ""), _period_rank(report.get("period"))),
+        reverse=True,
+    )
+    newest_financial = financial_reports[0] if financial_reports else None
+    if newest_financial:
+        financial_note = (
+            f"最新官方财报为{newest_financial['company']} {newest_financial['period']}，"
+            f"披露于{newest_financial.get('publication_date') or '日期待核'}；核心指标已结构化入库。"
+        )
+    else:
+        financial_note = "本地官方财报尚无通过结构化门禁的新记录。"
+    financial_relations = []
+    for report in financial_reports[:4]:
+        metric_text = "、".join(
+            f"{item.get('metric')} {item.get('value')}"
+            for item in (report.get("metrics") or [])[:3]
+        )
+        financial_relations.append(
+            {
+                "title": f"{report.get('company')} {report.get('period')}",
+                "detail": metric_text or "官方财报已入库",
+                "kind": "最新财报",
+            }
+        )
+    sources = _dedupe_sources(
+        [_source(item["name"], item["source_url"]) for item in scale_items]
+        + [_source(f"{report.get('company')} {report.get('period')} 官方财报", report.get("source_url")) for report in financial_reports]
+    )
     return {
         "id": "local",
         "index": "01",
         "title": "本地运营商",
         "kicker": "产品组合与价格区隔",
         "metric": {"value": unique_plan_count, "unit": "个产品", "label": "去重后在售产品"},
-        "context": data_time_note,
+        "context": f"{data_time_note}；{financial_note}",
         "data_time": data_time_note,
+        "latest_financial_results": financial_reports,
         "insight": insight,
         "entities": entities,
         "focuses": focuses,
-        "relations": [
+        "relations": financial_relations + [
             {
                 "title": item["pair"],
                 "detail": f"{len(item['categories'])} 类同类套餐月费区间重合",

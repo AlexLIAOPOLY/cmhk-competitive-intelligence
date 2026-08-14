@@ -59,6 +59,7 @@ DOMAIN_LABELS = {
 }
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
+LOCAL_FINANCIAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
 INTERNATIONAL_DIR = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18"
 INTERNATIONAL_PATH = INTERNATIONAL_DIR / "quarterly_metrics.json"
 CLOUD_DIR = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17"
@@ -3518,6 +3519,24 @@ def validate_database(domain: str, path: Path, previous_path: Path | None = None
         if bad:
             raise ValueError(f"本地竞对存在 {len(bad)} 条未达到双重验证或缺少来源的记录")
         result["verified_rows"] = len(rows)
+        if path.resolve() == LOCAL_PATH.resolve():
+            financial_payload = _read_json(LOCAL_FINANCIAL_PATH, {}) or {}
+            financial_quality = financial_payload.get("quality") or {}
+            reports = [
+                item for item in financial_payload.get("reports", [])
+                if item.get("verification_status") == "official_document_extracted"
+                and int(item.get("core_metric_count") or 0) >= 2
+            ]
+            if not financial_quality.get("ok") or not reports:
+                failures = "；".join(str(item) for item in financial_quality.get("failures") or [])
+                raise ValueError(f"本地竞对官方财报结构化门禁未通过：{failures or '没有已通过记录'}")
+            latest_report = max(
+                reports,
+                key=lambda item: (str(item.get("publication_date") or ""), _period_rank(item.get("period"))),
+            )
+            result["financial_reports"] = len(reports)
+            result["latest_financial_period"] = str(latest_report.get("period") or "")
+            result["latest_financial_publication_date"] = str(latest_report.get("publication_date") or "")
     elif domain in {"international", "cloud"}:
         usable = [row for row in rows if str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES]
         if not usable:
@@ -3852,8 +3871,20 @@ def run_pipeline(
             "validation": validate_database("local", LOCAL_PATH),
             "note": "本地竞对数据库已由本轮 crawl.py 更新；发布桥只复核，不重复抓取。",
         }
-        local_rows = int((state["domains"]["local"].get("validation") or {}).get("rows") or 0)
-        _task_event(task_run_id, "本地竞对", f"本地竞对库校验通过，共 {local_rows} 条记录。")
+        local_validation = state["domains"]["local"].get("validation") or {}
+        local_rows = int(local_validation.get("rows") or 0)
+        financial_reports = int(local_validation.get("financial_reports") or 0)
+        latest_finance = " · ".join(
+            str(local_validation.get(key) or "")
+            for key in ("latest_financial_period", "latest_financial_publication_date")
+            if local_validation.get(key)
+        )
+        _task_event(
+            task_run_id,
+            "本地竞对",
+            f"本地竞对库校验通过，共 {local_rows} 条记录；官方财报 {financial_reports} 份"
+            f"{f'；最新 {latest_finance}' if latest_finance else ''}。",
+        )
         if refresh_builders:
             for domain in ("international", "cloud", "macro"):
                 label = DOMAIN_LABELS[domain]
@@ -3929,32 +3960,37 @@ def run_pipeline(
         if dry_run:
             state["pages_publish"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         elif core_ok:
-            _task_event(task_run_id, "发布GitHub.io", "四库与16个AI洞察均已通过，正在发布并读取公开站点版本进行验证。")
+            _task_event(
+                task_run_id,
+                "更新主页UI",
+                "四库与16个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+            )
             try:
                 pages_publish = _publish_and_verify_github_pages()
                 state["pages_publish"] = pages_publish
                 _task_event(
                     task_run_id,
-                    "发布GitHub.io",
-                    f"公开站点已验证；版本：{pages_publish.get('site_version')}；地址：{pages_publish.get('public_url')}",
+                    "更新主页UI",
+                    f"主页数据源与公开站点已同步并验证；版本：{pages_publish.get('site_version')}；地址：{pages_publish.get('public_url')}",
                 )
             except Exception as exc:
                 state["pages_publish"] = {"ok": False, "error": str(exc)}
                 _append_log(f"github pages publish failed {exc}")
-                _task_event(task_run_id, "发布GitHub.io", f"公开发布或验证失败：{exc}", level="critical")
+                _task_event(task_run_id, "更新主页UI", f"主页同步、公开发布或验证失败：{exc}", level="critical")
         else:
             state["pages_publish"] = {"ok": False, "skipped": True, "reason": "core_gate_failed"}
         pages_ok = bool(state.get("pages_publish", {}).get("ok"))
         used_fallback = bool(state.get("model_analysis", {}).get("fallback_used"))
-        if core_ok and pages_ok and not used_fallback:
+        pipeline_ok = core_ok and pages_ok and not used_fallback
+        if pipeline_ok:
             final_status = "completed"
         elif core_ok and not pages_ok:
-            final_status = "completed_with_publish_warning"
+            final_status = "failed_frontend_publish"
         else:
             final_status = "completed_with_fallback"
         state.update(
             {
-                "ok": core_ok,
+                "ok": pipeline_ok,
                 "status": final_status,
                 "failed_domains": failed,
                 "completed_at_hkt": _now(),

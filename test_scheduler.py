@@ -38,6 +38,45 @@ def _save_registry_record_in_process(
 
 
 class FeishuCliEnvironmentTests(unittest.TestCase):
+    def test_financial_frontend_publish_requires_verified_public_version(self) -> None:
+        completed = subprocess.CompletedProcess(
+            ["publish"],
+            0,
+            stdout=(
+                '{"status":"published","site_version":"version-1",'
+                '"public_url":"https://example.github.io/site/","commit":"abc"}\n'
+            ),
+            stderr="",
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "run.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            with (
+                mock.patch.dict(
+                    scheduler.os.environ,
+                    {"CMHK_FORCE_FINANCIAL_FRONTEND_PUBLISH_FOR_TESTS": "1"},
+                ),
+                mock.patch.object(scheduler.subprocess, "run", return_value=completed),
+            ):
+                result = scheduler._publish_financial_frontend(log_path)
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["site_version"], "version-1")
+        self.assertEqual(result["commit"], "abc")
+
+    def test_json_object_parser_keeps_last_complete_sync_summary(self) -> None:
+        output = (
+            'progress {not json}\n'
+            '{"phase":"partial","ok":true}\n'
+            'done\n'
+            '{"ok":true,"log_sheet_id":"sheet-final","nested":{"rows":4}}\n'
+        )
+
+        self.assertEqual(
+            scheduler._json_object_from_output(output),
+            {"ok": True, "log_sheet_id": "sheet-final", "nested": {"rows": 4}},
+        )
+
     def test_run_cmd_always_disables_proxy(self) -> None:
         completed = subprocess.CompletedProcess(["lark-cli"], 0, stdout="{}", stderr="")
         with (
@@ -432,6 +471,66 @@ class ScheduledAgentAuditTests(unittest.TestCase):
         self.assertEqual(register.call_args.kwargs["crawl_return_code"], 0)
         clear_pending.assert_called_once()
 
+    def test_resume_after_agent_audit_reapplies_financial_and_frontend_gates(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            log_path = Path(temp_dir) / "resume-finance.jsonl"
+            log_path.write_text("", encoding="utf-8")
+            pending = {
+                "stage": "audit_completed",
+                "crawl_run_id": "crawl-finance-resume",
+                "rows": [2],
+                "scope": "定时指定行（第2行）",
+                "started_at_hkt": "2026-08-14T03:00:00+08:00",
+                "stream_log_path": str(log_path),
+                "sync_return_code": 0,
+                "curation": {"agent_run_id": "agent-finance"},
+                "trace_sync": {"ok": True},
+            }
+            refresh = {
+                "generated_at_hkt": "2026-08-14T03:10:00+08:00",
+                "schedule_policy": "next-day",
+                "database_path": "local_financial_results.json",
+                "database_updated": True,
+                "database_changed": False,
+                "quality": {"ok": True, "failures": []},
+                "last_check": [{
+                    "row": 2,
+                    "company": "HKT",
+                    "verification_status": "official_document_extracted",
+                    "period": "H1 2026",
+                    "publication_date": "2026-07-29",
+                    "due_at_hkt": "2026-07-30T03:00:00+08:00",
+                    "source_url": "https://www.hkt.com/report.pdf",
+                    "core_metric_count": 2,
+                    "metrics": [],
+                }],
+            }
+            state: dict[str, object] = {"attempts": {"2": "2026-08-14T03:00:00+08:00"}}
+            with (
+                mock.patch("local_financial_results.rebuild_local_financial_database", return_value=refresh) as rebuild,
+                mock.patch.object(scheduler, "_publish_financial_frontend", return_value={
+                    "ok": True,
+                    "status": "verified",
+                    "site_version": "site-finance",
+                    "public_url": "https://example.github.io/project/",
+                }) as publish,
+                mock.patch.object(scheduler, "_write_pending_run") as write_pending,
+                mock.patch.object(scheduler, "_clear_pending_run"),
+                mock.patch.object(scheduler, "resume_crawl_run"),
+                mock.patch.object(scheduler, "append_crawl_run_event"),
+                mock.patch.object(scheduler, "capture_completed_crawl", return_value={}),
+                mock.patch.object(scheduler, "read_live_schedule", return_value=[{"row": 2, "frequency": "每天 03:00"}]),
+                mock.patch.object(scheduler, "save_state"),
+                mock.patch.object(scheduler, "register_crawl_run"),
+                mock.patch.object(scheduler, "_launch_executive_intelligence_refresh", return_value={"ok": True}),
+            ):
+                ok = scheduler.resume_pending_run(pending, state)
+
+        self.assertTrue(ok)
+        rebuild.assert_called_once_with(rows=[2])
+        publish.assert_called_once_with(log_path)
+        self.assertTrue(any(call.args[0].get("stage") == "financial_completed" for call in write_pending.call_args_list))
+
     def test_pending_attempt_does_not_advance_schedule_from_partial_row_output(self) -> None:
         now = scheduler.datetime(2026, 7, 29, 16, 0, tzinfo=scheduler.HKT)
         attempt = now - scheduler.timedelta(hours=1)
@@ -552,6 +651,26 @@ class ScheduledAgentAuditTests(unittest.TestCase):
 
         self.assertTrue(result["resumed"])
         resume.assert_called_once_with(pending, {})
+
+
+class FinancialResultScheduleTests(unittest.TestCase):
+    def test_weekly_financial_rows_are_overlaid_with_daily_next_day_sla(self) -> None:
+        now = scheduler.datetime(2026, 8, 14, 3, 1, tzinfo=scheduler.HKT)
+        previous = scheduler.datetime(2026, 8, 13, 3, 0, tzinfo=scheduler.HKT)
+        with (
+            mock.patch.object(
+                scheduler,
+                "read_live_schedule",
+                return_value=[{"row": 2, "frequency": "每周一 03:00"}],
+            ),
+            mock.patch.object(scheduler, "last_success", return_value=previous),
+        ):
+            due, audit = scheduler.due_rows(now, {"attempts": {}})
+
+        self.assertEqual(due, [2])
+        self.assertEqual(audit[0]["frequency"], "每天 03:00")
+        self.assertEqual(audit[0]["configured_frequency"], "每周一 03:00")
+        self.assertEqual(audit[0]["schedule_policy"], "financial_results_next_day_sla")
 
 
 class TaskLogScrollTests(unittest.TestCase):

@@ -61,6 +61,15 @@ FETCH_CACHE: Dict[str, Dict[str, Any]] = {}
 FETCH_LOCKS: Dict[str, threading.Lock] = {}
 FETCH_CACHE_LOCK = threading.Lock()
 
+FINANCIAL_RESULT_ROWS = frozenset({2, 5, 8, 11, 15, 17})
+FINANCIAL_IR_INDEX_URLS: Dict[int, List[str]] = {
+    2: ["https://www.hkt.com/en/about-hkt/investor-relations/financial-results/"],
+    5: ["https://www.hthkh.com/en/ir/reports.php"],
+    8: ["https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp"],
+    11: ["https://www.hkbn.net/group/en/investor-engagement/financial-results"],
+    17: ["https://www.i-cablecomm.com/en/annual-interim-reports"],
+}
+
 
 RECOVERABLE_URL_REWRITES: Dict[str, str] = {
     "https://www.netvigator.com/eng/": "https://www.netvigator.com/eng/index.html",
@@ -1004,6 +1013,8 @@ def candidate_targets(
 
     for url in urls_from_sources(sources):
         append_recovered_url(url)
+    for url in FINANCIAL_IR_INDEX_URLS.get(row, []):
+        append_recovered_url(url)
     for url in EXTRA_CANDIDATES.get(row, []):
         append_recovered_url(url)
     for entity in entities or []:
@@ -1159,10 +1170,12 @@ def extract_financial_report_links(
     """Discover report-level links from an official investor-relations index."""
     if not raw or "pdf" in (content_type or "").lower() or raw[:4] == b"%PDF":
         return []
-    soup = BeautifulSoup(raw.decode("utf-8", "replace"), "lxml")
+    decoded = raw.decode("utf-8", "replace")
+    soup = BeautifulSoup(decoded, "lxml")
     markers = re.compile(
-        r"annual report|interim report|quarter(?:ly|[^\n]{0,24}) results?|earnings (?:release|results?)|"
-        r"financial results?|form 10-[qk]|20-f|全年业绩|季度业绩|年度报告|中期报告",
+        r"annual (?:report|results?)|interim (?:report|results?)|quarter(?:ly|[^\n]{0,24}) results?|"
+        r"earnings (?:release|results?)|financial results?|results? (?:announcement|presentation)|"
+        r"form 10-[qk]|20-f|全年业绩|季度业绩|年度报告|中期报告",
         re.I,
     )
     output: List[Dict[str, str]] = []
@@ -1174,6 +1187,16 @@ def extract_financial_report_links(
             or str(anchor.get("aria-label") or "")
         )
         href = str(anchor.get("href") or "").strip()
+        if title.casefold() in {"", "view", "download", "financial report"}:
+            container = anchor.parent
+            for _ in range(5):
+                if container is None:
+                    break
+                contextual_title = normalize_text(container.get_text(" ", strip=True))
+                if 4 <= len(contextual_title) <= 300 and len(contextual_title) > len(title):
+                    title = contextual_title
+                    break
+                container = container.parent
         if not markers.search(f"{title} {href}"):
             continue
         target = urljoin(base_url, href)
@@ -1184,12 +1207,30 @@ def extract_financial_report_links(
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             continue
         normalized = parsed._replace(fragment="").geturl()
-        if normalized in seen:
+        if normalized in seen or normalized.rstrip("/") == base_url.rstrip("/"):
             continue
         seen.add(normalized)
         output.append({"url": normalized, "title": title[:300] or "Financial report"})
         if len(output) >= max(1, limit):
             break
+    if len(output) < max(1, limit):
+        title_matches = list(re.finditer(r'"docTitleText"\s*:\s*\{\s*"en_US"\s*:\s*"([^"]+)"', decoded))
+        for index, title_match in enumerate(title_matches):
+            title = normalize_text(title_match.group(1))
+            if not markers.search(title):
+                continue
+            section_end = title_matches[index + 1].start() if index + 1 < len(title_matches) else title_match.end() + 1800
+            section = decoded[title_match.end() : section_end]
+            for link_match in re.finditer(r'"docLink"\s*:\s*"(https?[^"\\]+)"', section):
+                normalized = link_match.group(1).replace("\\/", "/")
+                if normalized in seen:
+                    continue
+                seen.add(normalized)
+                output.append({"url": normalized, "title": title[:300]})
+                if len(output) >= max(1, limit):
+                    break
+            if len(output) >= max(1, limit):
+                break
     return output
 
 
@@ -1959,7 +2000,7 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             print(f"  -> 抓取完成: {url}", flush=True)
             try:
                 result = future.result()
-                if source_row.get("block") == "云厂商":
+                if source_row.get("block") == "云厂商" or row in FINANCIAL_RESULT_ROWS:
                     report_discoveries.extend(result.get("discovered_report_links") or [])
                 record = raw_record(row, result)
                 if is_successful_fetch(result):
@@ -2009,16 +2050,27 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
             except Exception as e:
                 print(f"    [异常] {url}: {e}", flush=True)
 
-    if source_row.get("block") == "云厂商" and report_discoveries:
+    if (source_row.get("block") == "云厂商" or row in FINANCIAL_RESULT_ROWS) and report_discoveries:
         seen_report_urls = set(urls)
         report_targets: List[str] = []
-        for item in report_discoveries:
+        ranked_discoveries = sorted(
+            report_discoveries,
+            key=lambda item: (
+                int("/tc/" in str(item.get("url") or "").casefold()),
+                0 if re.search(r"announcement|results?", f"{item.get('title', '')} {item.get('url', '')}", re.I)
+                else 2 if re.search(r"presentation", f"{item.get('title', '')} {item.get('url', '')}", re.I)
+                else 1,
+            ),
+        )
+        for item in ranked_discoveries:
             report_url = str(item.get("url") or "").strip()
             if not report_url or report_url in seen_report_urls:
                 continue
+            if not re.search(r"\.pdf(?:$|[?#])|results?|reports?|earnings", report_url, re.I):
+                continue
             seen_report_urls.add(report_url)
             report_targets.append(report_url)
-            if len(report_targets) >= 3:
+            if len(report_targets) >= (4 if row in FINANCIAL_RESULT_ROWS else 3):
                 break
         for report_url in report_targets:
             if time.monotonic() > deadline:

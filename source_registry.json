@@ -398,6 +398,13 @@
       "tos_status": "public_information",
       "notes": "Public HKBN webcast/IR presentation mirror; use low request volume and prefer issuer assets where available."
     },
+    "doc.irasia.com": {
+      "policy": "allow",
+      "type": "listed_company_public_disclosure_mirror",
+      "jurisdiction": "HK",
+      "tos_status": "public_information",
+      "notes": "Public report and presentation host linked directly by listed-company investor-relations pages; use low request volume and retain the issuer index as provenance."
+    },
     "www.media-outreach.com": {
       "policy": "allow",
       "type": "public_news_release",

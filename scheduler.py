@@ -51,6 +51,9 @@ REQUIRED_AGENT_NODES = {
     "编排决策",
     "发布",
 }
+FINANCIAL_RESULT_ROWS = frozenset({2, 5, 8, 11, 15, 17})
+FINANCIAL_RESULT_DAILY_FREQUENCY = "每天 03:00"
+FINANCIAL_FRONTEND_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
 
 
 logging.basicConfig(
@@ -453,7 +456,12 @@ def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[d
     audit: list[dict[str, object]] = []
     for item in read_live_schedule():
         row_no = int(item["row"])
-        frequency = str(item.get("frequency") or "")
+        configured_frequency = str(item.get("frequency") or "")
+        frequency = (
+            FINANCIAL_RESULT_DAILY_FREQUENCY
+            if row_no in FINANCIAL_RESULT_ROWS
+            else configured_frequency
+        )
         schedule = canonical_schedule(frequency)
         last_attempt = parse_datetime(attempts.get(str(row_no)))
         result_success = (
@@ -480,6 +488,12 @@ def due_rows(now: datetime, state: dict[str, object]) -> tuple[list[int], list[d
             {
                 "row": row_no,
                 "frequency": frequency,
+                "configured_frequency": configured_frequency,
+                "schedule_policy": (
+                    "financial_results_next_day_sla"
+                    if row_no in FINANCIAL_RESULT_ROWS
+                    else "feishu_schedule"
+                ),
                 "last_success_hkt": last_run.isoformat(timespec="seconds") if last_run else None,
                 "next_run_hkt": next_run.isoformat(timespec="seconds") if next_run else None,
                 "status": status,
@@ -516,14 +530,16 @@ def _agent_run_ids(output: str) -> list[str]:
 
 
 def _json_object_from_output(output: str) -> dict[str, object]:
-    match = re.search(r"\{.*\}\s*$", output, re.S)
-    if not match:
-        return {}
-    try:
-        value = json.loads(match.group(0))
-    except json.JSONDecodeError:
-        return {}
-    return value if isinstance(value, dict) else {}
+    decoder = json.JSONDecoder()
+    objects: list[tuple[int, int, dict[str, object]]] = []
+    for match in re.finditer(r"\{", output):
+        try:
+            value, end = decoder.raw_decode(output, match.start())
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            objects.append((end, -match.start(), value))
+    return max(objects, key=lambda item: (item[0], item[1]))[2] if objects else {}
 
 
 def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[str]]:
@@ -716,7 +732,15 @@ def _launch_executive_intelligence_refresh(
     stream_log_path: Path,
     curation: dict[str, object],
 ) -> dict[str, object]:
-    """Launch the post-Agent database refresh without changing crawl success semantics."""
+    """Launch the linked four-domain refresh and record its complete coverage contract."""
+    domains = ["local", "international", "cloud", "macro"]
+    stages = [
+        "database_refresh",
+        "quality_gate",
+        "16_focus_analysis",
+        "homepage_ui_refresh",
+        "public_frontend_publish",
+    ]
     if (
         ROOT != Path(__file__).resolve().parent
         or (
@@ -729,6 +753,8 @@ def _launch_executive_intelligence_refresh(
             "launched": False,
             "skipped": True,
             "reason": "non_production_root",
+            "domains": domains,
+            "stages": stages,
         }
     agent_run_id = str(curation.get("agent_run_id") or "").strip()
     if not agent_run_id:
@@ -758,14 +784,54 @@ def _launch_executive_intelligence_refresh(
             "taskRunId": result.get("task_run_id"),
             "taskId": result.get("task_id"),
             "agentRunId": agent_run_id,
+            "domains": domains,
+            "stages": stages,
+            "completionContract": "four_domains_database_quality_16_focus_homepage_ui_public_frontend",
             "error": result.get("error", ""),
         },
     )
+    result = {**result, "domains": domains, "stages": stages}
     if result.get("ok"):
-        logging.info("四库与AI分析后台刷新已启动：%s", result)
+        logging.info("四域数据库、质量门禁、16项分析、主页UI与公开前端刷新已启动：%s", result)
     else:
-        logging.warning("四库与AI分析后台刷新未启动；不影响本轮爬虫完成状态：%s", result)
+        logging.warning("四域数据库与前端刷新未启动；守护进程将依据本轮爬虫日志补跑：%s", result)
     return result
+
+
+def _publish_financial_frontend(stream_log_path: Path) -> dict[str, object]:
+    if (
+        any(name.startswith("test_") for name in sys.modules)
+        and os.environ.get("CMHK_FORCE_FINANCIAL_FRONTEND_PUBLISH_FOR_TESTS") != "1"
+    ):
+        return {"ok": True, "skipped": True, "reason": "test_runtime"}
+    environment = os.environ.copy()
+    environment.setdefault("CMHK_INTELLIGENCE_SOURCE_URL", "http://127.0.0.1:8765/")
+    completed = subprocess.run(
+        [PYTHON, str(FINANCIAL_FRONTEND_PUBLISH_SCRIPT), "--force"],
+        cwd=ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=900,
+    )
+    _append_process_output(stream_log_path, completed.stdout or "", completed.stderr or "")
+    result = _json_object_from_output(completed.stdout or "") if completed.returncode == 0 else {}
+    status = str(result.get("status") or "")
+    ok = (
+        completed.returncode == 0
+        and status in {"published", "verified", "unchanged"}
+        and str(result.get("site_version") or "")
+        and str(result.get("public_url") or "").startswith("https://")
+    )
+    return {
+        "ok": bool(ok),
+        "returnCode": completed.returncode,
+        "status": status or "failed",
+        "site_version": str(result.get("site_version") or ""),
+        "public_url": str(result.get("public_url") or ""),
+        "commit": str(result.get("commit") or ""),
+        "error": "" if ok else (completed.stderr or completed.stdout or "财报前端发布未返回有效结果")[-1200:],
+    }
 
 
 def _monitor_executive_intelligence_refresh(now: datetime) -> dict[str, object]:
@@ -959,6 +1025,114 @@ def run_due_rows(rows: list[int], state: dict[str, object]) -> bool:
         pending_run.pop("trace_sync", None)
         _write_pending_run(pending_run)
         return False
+
+    financial_rows = sorted(set(rows) & FINANCIAL_RESULT_ROWS)
+    if financial_rows:
+        from local_financial_results import rebuild_local_financial_database
+
+        financial_refresh = rebuild_local_financial_database(rows=financial_rows)
+        financial_quality = financial_refresh.get("quality") or {}
+        curation = {**curation, "local_financial_results": financial_refresh}
+        financial_checks = []
+        for item in financial_refresh.get("last_check") or []:
+            metrics = item.get("metrics") or []
+            financial_checks.append(
+                {
+                    "row": item.get("row"),
+                    "company": item.get("company"),
+                    "status": item.get("status") or item.get("verification_status"),
+                    "period": item.get("period", ""),
+                    "publicationDate": item.get("publication_date", ""),
+                    "nextDayDeadlineHkt": item.get("due_at_hkt", ""),
+                    "sourceUrl": item.get("source_url", ""),
+                    "coreMetricCount": item.get("core_metric_count", 0),
+                    "metrics": [
+                        {
+                            "key": metric.get("metric_key", ""),
+                            "label": metric.get("metric", ""),
+                            "value": metric.get("value", ""),
+                        }
+                        for metric in metrics
+                    ],
+                }
+            )
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "local_financial_results",
+                "ok": bool(financial_quality.get("ok")),
+                "checkedRows": financial_rows,
+                "checkedCompanies": financial_checks,
+                "databasePath": financial_refresh.get("database_path", ""),
+                "databaseUpdated": bool(financial_refresh.get("database_updated")),
+                "databaseChanged": bool(financial_refresh.get("database_changed")),
+                "generatedAtHkt": financial_refresh.get("generated_at_hkt", ""),
+                "schedulePolicy": financial_refresh.get("schedule_policy", ""),
+                "failures": financial_quality.get("failures") or [],
+            },
+        )
+        logging.info(
+            "本地竞对财报检查完成：rows=%s companies=%s database_updated=%s database_changed=%s failures=%s",
+            financial_rows,
+            [
+                f"{item.get('company')}:{item.get('period') or item.get('status')}:{item.get('coreMetricCount')}项核心指标"
+                for item in financial_checks
+            ],
+            bool(financial_refresh.get("database_updated")),
+            bool(financial_refresh.get("database_changed")),
+            financial_quality.get("failures") or [],
+        )
+        if not financial_quality.get("ok"):
+            failures = "；".join(str(item) for item in financial_quality.get("failures") or [])
+            register_crawl_run(
+                crawl_return_code=1,
+                duration_ms=round((time.time() - started_monotonic) * 1000),
+                trace_sync=trace_sync,
+                trigger="定时爬虫",
+                scope=env["CMHK_CRAWL_SCOPE"],
+                crawl_run_id=crawl_run_id,
+                started_at_hkt=now.isoformat(timespec="seconds"),
+                stream_log_path=stream_log_path,
+                curation_summary=curation,
+                failure_stage="local_financial_results",
+                progress_detail=f"官方财报已检查，但结构化门禁失败：{failures}；不会把旧数据发布为成功。",
+            )
+            pending_run["last_attempt_at_hkt"] = datetime.now(HKT).isoformat(timespec="seconds")
+            _write_pending_run(pending_run)
+            return False
+
+        financial_frontend_publish = _publish_financial_frontend(stream_log_path)
+        curation = {**curation, "financial_frontend_publish": financial_frontend_publish}
+        append_crawl_run_event(
+            stream_log_path,
+            {
+                "type": "financial_frontend_publish",
+                "ok": bool(financial_frontend_publish.get("ok")),
+                "status": financial_frontend_publish.get("status", ""),
+                "siteVersion": financial_frontend_publish.get("site_version", ""),
+                "publicUrl": financial_frontend_publish.get("public_url", ""),
+                "commit": financial_frontend_publish.get("commit", ""),
+                "error": financial_frontend_publish.get("error", ""),
+            },
+        )
+        if not financial_frontend_publish.get("ok"):
+            publish_error = str(financial_frontend_publish.get("error") or "未返回有效发布结果")
+            register_crawl_run(
+                crawl_return_code=1,
+                duration_ms=round((time.time() - started_monotonic) * 1000),
+                trace_sync=trace_sync,
+                trigger="定时爬虫",
+                scope=env["CMHK_CRAWL_SCOPE"],
+                crawl_run_id=crawl_run_id,
+                started_at_hkt=now.isoformat(timespec="seconds"),
+                stream_log_path=stream_log_path,
+                curation_summary=curation,
+                failure_stage="financial_frontend_publish",
+                progress_detail=f"财报数据库已更新，但前端发布验证失败：{publish_error}；任务保留等待重试。",
+            )
+            pending_run["last_attempt_at_hkt"] = datetime.now(HKT).isoformat(timespec="seconds")
+            _write_pending_run(pending_run)
+            return False
 
     try:
         news_bridge = capture_completed_crawl(
@@ -1170,6 +1344,115 @@ def resume_pending_run(
             if isinstance(pending.get("trace_sync"), dict)
             else {}
         )
+
+    if stage == "audit_completed":
+        financial_rows = sorted(set(rows) & FINANCIAL_RESULT_ROWS)
+        if financial_rows:
+            from local_financial_results import rebuild_local_financial_database
+
+            financial_refresh = rebuild_local_financial_database(rows=financial_rows)
+            financial_quality = financial_refresh.get("quality") or {}
+            curation = {**curation, "local_financial_results": financial_refresh}
+            financial_checks = []
+            for item in financial_refresh.get("last_check") or []:
+                metrics = item.get("metrics") or []
+                financial_checks.append(
+                    {
+                        "row": item.get("row"),
+                        "company": item.get("company"),
+                        "status": item.get("status") or item.get("verification_status"),
+                        "period": item.get("period", ""),
+                        "publicationDate": item.get("publication_date", ""),
+                        "nextDayDeadlineHkt": item.get("due_at_hkt", ""),
+                        "sourceUrl": item.get("source_url", ""),
+                        "coreMetricCount": item.get("core_metric_count", 0),
+                        "metrics": [
+                            {
+                                "key": metric.get("metric_key", ""),
+                                "label": metric.get("metric", ""),
+                                "value": metric.get("value", ""),
+                            }
+                            for metric in metrics
+                        ],
+                    }
+                )
+            append_crawl_run_event(
+                stream_log_path,
+                {
+                    "type": "local_financial_results",
+                    "ok": bool(financial_quality.get("ok")),
+                    "checkedRows": financial_rows,
+                    "checkedCompanies": financial_checks,
+                    "databasePath": financial_refresh.get("database_path", ""),
+                    "databaseUpdated": bool(financial_refresh.get("database_updated")),
+                    "databaseChanged": bool(financial_refresh.get("database_changed")),
+                    "generatedAtHkt": financial_refresh.get("generated_at_hkt", ""),
+                    "schedulePolicy": financial_refresh.get("schedule_policy", ""),
+                    "failures": financial_quality.get("failures") or [],
+                    "resumed": True,
+                },
+            )
+            if not financial_quality.get("ok"):
+                failures = "；".join(str(item) for item in financial_quality.get("failures") or [])
+                pending.update({"curation": curation, "trace_sync": trace_sync})
+                _write_pending_run(pending)
+                register_crawl_run(
+                    crawl_return_code=1,
+                    duration_ms=elapsed_ms(started_at_hkt),
+                    trace_sync=trace_sync,
+                    trigger="定时爬虫",
+                    scope=scope,
+                    crawl_run_id=crawl_run_id,
+                    started_at_hkt=started_at_hkt,
+                    stream_log_path=stream_log_path,
+                    curation_summary=curation,
+                    failure_stage="local_financial_results",
+                    progress_detail=f"续跑财报结构化门禁失败：{failures}；保留旧数据等待重试。",
+                )
+                return False
+
+            financial_frontend_publish = _publish_financial_frontend(stream_log_path)
+            curation = {**curation, "financial_frontend_publish": financial_frontend_publish}
+            append_crawl_run_event(
+                stream_log_path,
+                {
+                    "type": "financial_frontend_publish",
+                    "ok": bool(financial_frontend_publish.get("ok")),
+                    "status": financial_frontend_publish.get("status", ""),
+                    "siteVersion": financial_frontend_publish.get("site_version", ""),
+                    "publicUrl": financial_frontend_publish.get("public_url", ""),
+                    "commit": financial_frontend_publish.get("commit", ""),
+                    "error": financial_frontend_publish.get("error", ""),
+                    "resumed": True,
+                },
+            )
+            if not financial_frontend_publish.get("ok"):
+                publish_error = str(financial_frontend_publish.get("error") or "未返回有效发布结果")
+                pending.update({"curation": curation, "trace_sync": trace_sync})
+                _write_pending_run(pending)
+                register_crawl_run(
+                    crawl_return_code=1,
+                    duration_ms=elapsed_ms(started_at_hkt),
+                    trace_sync=trace_sync,
+                    trigger="定时爬虫",
+                    scope=scope,
+                    crawl_run_id=crawl_run_id,
+                    started_at_hkt=started_at_hkt,
+                    stream_log_path=stream_log_path,
+                    curation_summary=curation,
+                    failure_stage="financial_frontend_publish",
+                    progress_detail=f"续跑财报数据库已更新，但前端发布验证失败：{publish_error}。",
+                )
+                return False
+        pending.update(
+            {
+                "stage": "financial_completed",
+                "curation": curation,
+                "trace_sync": trace_sync,
+            }
+        )
+        _write_pending_run(pending)
+        stage = "financial_completed"
 
     if sync_return_code:
         pending["stage"] = "crawl_completed"

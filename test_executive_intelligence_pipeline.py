@@ -893,6 +893,15 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "https://cdn.example.com/ar2025.pdf",
         ])
 
+    def test_financial_report_link_discovery_uses_sibling_title_for_download_icon(self):
+        html = b'''<html><body><div>
+        <div>2026 Interim Results Announcement</div>
+        <a href="/assets/e-2026.07.29-results.pdf"><img alt="download"></a>
+        </div></body></html>'''
+        links = crawl.extract_financial_report_links(html, "text/html", "https://ir.example.com/results/")
+        self.assertEqual(links[0]["title"], "2026 Interim Results Announcement")
+        self.assertEqual(links[0]["url"], "https://ir.example.com/assets/e-2026.07.29-results.pdf")
+
     def test_cloud_investor_relations_domains_are_ranked_official(self):
         for url in (
             "https://ir.aboutamazon.com/quarterly-results/default.aspx",
@@ -1742,6 +1751,43 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertTrue(result["pages_publish"]["ok"])
         publish_pages.assert_called_once_with()
 
+    def test_frontend_publish_failure_keeps_four_domain_refresh_failed(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            model_result = {
+                "generated_at_hkt": "2026-08-06T04:00:00+08:00",
+                "model": "deepseek-v4",
+                "summaries": [{"domain": item} for item in ("local", "international", "cloud", "macro")],
+                "evidence_hash": "evidence-hash",
+                "fallback_used": False,
+            }
+            with (
+                patch.object(pipeline, "STATE_DIR", root),
+                patch.object(pipeline, "STATE_PATH", root / "latest.json"),
+                patch.object(pipeline, "LOCK_PATH", root / "refresh.lock"),
+                patch.object(pipeline, "LOG_PATH", root / "refresh.log"),
+                patch("executive_intelligence_pipeline.publish_ai_analysis", return_value={
+                    "changed": True, "domain_counts": {}, "path": str(root / "analysis.json")
+                }),
+                patch("executive_intelligence_pipeline.publish_domain_fact_sidecars", return_value={}),
+                patch("executive_intelligence_pipeline.validate_database", return_value={"rows": 1}),
+                patch("executive_intelligence_pipeline.publish_model_domain_summaries", return_value=model_result),
+                patch(
+                    "executive_intelligence_pipeline._publish_and_verify_github_pages",
+                    side_effect=RuntimeError("公开回读失败"),
+                ),
+                patch("executive_intelligence_pipeline._task_event"),
+            ):
+                result = pipeline.run_pipeline(
+                    agent_run_id="agent-test",
+                    refresh_builders=False,
+                    task_run_id="task-test",
+                )
+
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["status"], "failed_frontend_publish")
+        self.assertTrue(result["fallback_preserved"])
+
     def test_scheduler_launch_failure_does_not_raise_or_change_crawl_semantics(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             log = Path(temp_dir) / "run.jsonl"
@@ -1754,6 +1800,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 )
         self.assertFalse(result["ok"])
         self.assertFalse(result["launched"])
+        self.assertEqual(result["domains"], ["local", "international", "cloud", "macro"])
+        self.assertEqual(
+            result["stages"],
+            ["database_refresh", "quality_gate", "16_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"],
+        )
 
 
 if __name__ == "__main__":
