@@ -7625,6 +7625,7 @@ document.addEventListener("keydown", (event) => {
   let pushedDrawerState = false;
   const selectedEntityByDomain = new Map();
   const selectedFocusByDomain = new Map();
+  const selectedFinancialMetricByDomain = new Map();
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
   const relationRefreshState = new Map();
@@ -7740,11 +7741,6 @@ document.addEventListener("keydown", (event) => {
 
   function selectedFocusIndex(domain) {
     const focuses = domainFocuses(domain);
-    if (
-      !selectedFocusByDomain.has(domain.id)
-      && domain.id === "local"
-      && focuses[0]?.id === "financials"
-    ) return Math.min(1, Math.max(0, focuses.length - 1));
     const selected = Number(selectedFocusByDomain.get(domain.id) || 0);
     return Math.max(0, Math.min(selected, Math.max(0, focuses.length - 1)));
   }
@@ -7862,7 +7858,6 @@ document.addEventListener("keydown", (event) => {
             data-intelligence-focus="${index}" data-intelligence-domain-id="${safe(domain.id)}"
             title="切换到${safe(item.label)}">
             <span>${safe(item.label)}</span>
-            ${item.id === "financials" ? '<i class="intelligence-financial-chevron" aria-hidden="true"></i>' : ""}
           </button>
         `).join("")}
       </div>
@@ -7991,16 +7986,15 @@ document.addEventListener("keydown", (event) => {
       aria-label="${index === selectedIndex ? "取消选择并返回AI数据解读" : "查看个体分析"}：${safe(item.name)}"`;
 
     if (visual === "financial") {
-      const financialColumns = [
-        ["revenue", "收入"],
-        ["ebitda", "EBITDA"],
-        ["net_profit", "净利润"],
-        ["capital_expenditure", "资本开支"],
-        ["dividend", "派息"],
-      ];
       const metricValue = (item, key) => {
         const metric = (item.components || []).find((component) => component.metric_key === key);
         return metric?.value || "—";
+      };
+      const metricNumber = (item, key) => {
+        const text = String(metricValue(item, key)).replace(/,/g, "");
+        if (!text || /nil|n\/a|not disclosed|未披露|—/i.test(text)) return null;
+        const match = text.match(/-?\d+(?:\.\d+)?/);
+        return match ? Number(match[0]) : null;
       };
       const compactValue = (value) => String(value || "—")
         .replace(/HK\$\s*/i, "HK$")
@@ -8008,25 +8002,79 @@ document.addEventListener("keydown", (event) => {
         .replace(/\s+HK\s+cents?\b/gi, "¢")
         .replace(/\s+/g, " ")
         .trim();
-      return `
-        <div class="intelligence-viz intelligence-viz-financial" role="table" aria-label="本地运营商重要财务指标">
-          <div class="intelligence-financial-table" role="rowgroup">
-            <div class="intelligence-financial-table-head" role="row">
-              <span role="columnheader">运营商</span>
-              <span role="columnheader">报告期</span>
-              ${financialColumns.map(([, label]) => `<span role="columnheader">${label}</span>`).join("")}
+      const periodCounts = items.reduce((counts, item) => {
+        counts[item.period] = (counts[item.period] || 0) + 1;
+        return counts;
+      }, {});
+      const comparisonPeriod = Object.entries(periodCounts)
+        .sort((left, right) => right[1] - left[1])[0]?.[0] || "最新可比期";
+      const comparableItems = items.filter((item) => item.period === comparisonPeriod);
+      const excludedPeriodText = items.length > comparableItems.length
+        ? `仅纳入同期可比公司；${items.filter((item) => item.period !== comparisonPeriod).map((item) => `${item.name} ${item.period}`).join("、")}在更多指标内`
+        : "同期可比口径";
+      const selectedMetric = selectedFinancialMetricByDomain.get(domain.id) === "net_profit" ? "net_profit" : "revenue";
+      const shortCompany = (value) => String(value || "")
+        .replace(/\s*\/\s*Hutchison/i, "")
+        .replace(/Hutchison Telecommunications Hong Kong/i, "3HK");
+      const comparisonChart = (key, title) => {
+        const chartItems = comparableItems
+          .map((item) => ({ item, index: items.indexOf(item), value: metricNumber(item, key) }))
+          .filter((entry) => Number.isFinite(entry.value))
+          .sort((left, right) => right.value - left.value);
+        const chartMax = Math.max(...chartItems.map((entry) => Math.abs(entry.value)), 1);
+        return `
+          <section id="intelligence-financial-panel-${safe(domain.id)}-${key}" class="intelligence-financial-chart"
+            role="tabpanel" aria-label="${safe(title)}">
+            <header><strong>${safe(title)}</strong><span>${safe(comparisonPeriod)} · HK$m <i title="${safe(excludedPeriodText)}">i</i></span></header>
+            <div class="intelligence-financial-chart-plot">
+              ${chartItems.map(({ item, index, value }) => {
+                const width = Math.max(1.5, Math.abs(value) / chartMax * 100);
+                return `
+                  <button type="button" ${entityAttributes(item, index)}
+                    class="intelligence-financial-chart-bar intelligence-viz-entity ${value < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}"
+                    style="--financial-bar-width:${width.toFixed(2)}%">
+                    <span>${safe(shortCompany(item.name))}</span>
+                    <i aria-hidden="true"><b></b></i>
+                    <strong>${safe(compactValue(metricValue(item, key)).replace(/^HK\$/, ""))}</strong>
+                  </button>
+                `;
+              }).join("")}
             </div>
-            ${items.map((item, index) => `
-              <button type="button" role="row" ${entityAttributes(item, index)}
-                class="intelligence-financial-table-row intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
-                <strong role="cell">${safe(item.name)}</strong>
-                <span role="cell">${safe(item.period)}</span>
-                ${financialColumns.map(([key]) => {
-                  const fullValue = metricValue(item, key);
-                  return `<span role="cell" title="${safe(fullValue)}">${safe(compactValue(fullValue))}</span>`;
-                }).join("")}
-              </button>
-            `).join("")}
+          </section>
+        `;
+      };
+      const secondaryKeys = new Set(["revenue", "net_profit"]);
+      return `
+        <div class="intelligence-viz intelligence-viz-financial" aria-label="本地运营商财务对比">
+          <div class="intelligence-financial-toolbar">
+            <div class="intelligence-financial-metric-tabs" role="tablist" aria-label="财务对比指标">
+              ${[["revenue", "收入对比"], ["net_profit", "净利润对比"]].map(([key, label]) => `
+                <button type="button" role="tab" aria-selected="${selectedMetric === key ? "true" : "false"}"
+                  aria-controls="intelligence-financial-panel-${safe(domain.id)}-${key}"
+                  class="${selectedMetric === key ? "is-active" : ""}"
+                  data-intelligence-financial-metric="${key}" data-intelligence-domain-id="${safe(domain.id)}">${label}</button>
+              `).join("")}
+            </div>
+            <details class="intelligence-financial-more">
+              <summary><span>更多指标</span><i aria-hidden="true"></i></summary>
+              <div class="intelligence-financial-more-popover">
+                <small>EBITDA · 资本开支 · 派息 · 5G用户</small>
+                <div class="intelligence-financial-more-list">
+                  ${items.map((item) => `
+                    <article>
+                      <header><strong>${safe(item.name)}</strong><span>${safe(item.period)}</span></header>
+                      <div>${(item.components || [])
+                        .filter((metric) => !secondaryKeys.has(metric.metric_key))
+                        .map((metric) => `<span><small>${safe(metric.label)}</small><strong>${safe(compactValue(metric.value))}</strong></span>`)
+                        .join("") || '<span><small>其他指标</small><strong>—</strong></span>'}</div>
+                    </article>
+                  `).join("")}
+                </div>
+              </div>
+            </details>
+          </div>
+          <div class="intelligence-financial-chart-stage">
+            ${comparisonChart(selectedMetric, selectedMetric === "net_profit" ? "净利润对比" : "收入对比")}
           </div>
         </div>
       `;
@@ -8281,6 +8329,19 @@ document.addEventListener("keydown", (event) => {
     replaceDomainCard(domain, restoreFocus);
   }
 
+  function selectFinancialMetric(domainId, metric, restoreFocus = false) {
+    const domain = domainById(domainId);
+    if (!domain || !["revenue", "net_profit"].includes(metric)) return;
+    selectedFinancialMetricByDomain.set(domainId, metric);
+    manualFocusPauseUntil.set(domainId, Date.now() + 30000);
+    replaceDomainCard(domain);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => {
+        grid.querySelector(`[data-intelligence-domain-id="${CSS.escape(domainId)}"][data-intelligence-financial-metric="${metric}"]`)?.focus();
+      });
+    }
+  }
+
   function rotateNextFocus() {
     const domains = Array.isArray(payload?.domains) ? payload.domains : [];
     if (!domains.length || document.hidden) return;
@@ -8292,11 +8353,7 @@ document.addEventListener("keydown", (event) => {
       if (focuses.length < 2 || !card) continue;
       if (card.matches(":hover") || card.contains(document.activeElement)) continue;
       if ((manualFocusPauseUntil.get(domain.id) || 0) > Date.now()) continue;
-      let nextIndex = (selectedFocusIndex(domain) + 1) % focuses.length;
-      if (domain.id === "local" && focuses[nextIndex]?.id === "financials") {
-        nextIndex = Math.min(1, focuses.length - 1);
-      }
-      selectFocus(domain.id, nextIndex, false, false);
+      selectFocus(domain.id, (selectedFocusIndex(domain) + 1) % focuses.length, false, false);
       return;
     }
   }
@@ -8553,6 +8610,15 @@ document.addEventListener("keydown", (event) => {
   }
 
   grid.addEventListener("click", (event) => {
+    const financialMetricTrigger = event.target.closest("[data-intelligence-financial-metric]");
+    if (financialMetricTrigger) {
+      selectFinancialMetric(
+        financialMetricTrigger.dataset.intelligenceDomainId,
+        financialMetricTrigger.dataset.intelligenceFinancialMetric,
+        true,
+      );
+      return;
+    }
     const financialTrigger = event.target.closest("[data-intelligence-financial-results]");
     if (financialTrigger) {
       event.preventDefault();
@@ -8586,6 +8652,16 @@ document.addEventListener("keydown", (event) => {
     }
   });
   grid.addEventListener("keydown", (event) => {
+    const financialMetricTrigger = event.target.closest("[data-intelligence-financial-metric]");
+    if (financialMetricTrigger && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+      const current = financialMetricTrigger.dataset.intelligenceFinancialMetric;
+      const metric = event.key === "Home" || event.key === "ArrowLeft"
+        ? "revenue"
+        : event.key === "End" || event.key === "ArrowRight" ? "net_profit" : current;
+      selectFinancialMetric(financialMetricTrigger.dataset.intelligenceDomainId, metric, true);
+      return;
+    }
     if (event.key !== "Enter" && event.key !== " ") return;
     const entityTrigger = event.target.closest('.intelligence-viz-entity[data-intelligence-entity]');
     if (!entityTrigger) return;

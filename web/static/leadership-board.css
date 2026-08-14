@@ -688,11 +688,12 @@
     grid-column: 1 / 5;
     grid-row: 2;
     justify-self: start;
-    width: min(100%, 500px);
+    width: min(100%, 760px);
   }
   .intelligence-domain-local .intelligence-focus-tabs button {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding-inline: 18px;
   }
   .intelligence-domain-focus-stage { grid-row: 3; }
 }
@@ -700,6 +701,13 @@
 .intelligence-domain-focus-stage {
   grid-template-columns: minmax(0, 1.12fr) minmax(320px, .88fr);
   gap: 38px;
+}
+
+@media (min-width: 981px) {
+  .intelligence-domain-local:has(.intelligence-viz-financial) .intelligence-domain-focus-stage {
+    grid-template-columns: minmax(0, 1.42fr) minmax(260px, .58fr);
+    gap: 24px;
+  }
 }
 .intelligence-entity-focus > span { font-size: 14.5px; }
 .intelligence-entity-focus > strong { font-size: 34px; }
