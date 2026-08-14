@@ -1048,8 +1048,13 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         )
         self.assertEqual(starters, web_app.sample_chat_starters())
         self.assertEqual(
-            [item["detail"].split("·", 1)[0] for item in starters],
-            ["简单问数", "复杂趋势", "趋势预测", "政策解读"],
+            [item["detail"] for item in starters],
+            [
+                "例：中国移动收入、三大运营商 ARPU",
+                "例：十年收入、5G 用户与 ARPU 走势",
+                "例：下季收入、用户数与 ARPU",
+                "例：香港频谱、5G 与电信监管",
+            ],
         )
         self.assertNotIn("SystemRandom", web_app.ROOT.joinpath("web_app.py").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/chat-starters", { cache: "no-store" })', app)
