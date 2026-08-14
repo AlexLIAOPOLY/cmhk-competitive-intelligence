@@ -1040,22 +1040,30 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertEqual(
             [item["title"] for item in starters],
             [
-                "查询最新经营数据",
-                "分析长期经营趋势",
-                "预测下季度发展趋势",
-                "解读近期政策影响",
+                "查询香港资费数据",
+                "分析香港电信趋势",
+                "预测香港市场走势",
+                "解读香港政策影响",
             ],
         )
         self.assertEqual(starters, web_app.sample_chat_starters())
         self.assertEqual(
             [item["detail"] for item in starters],
             [
-                "例：中国移动收入、三大运营商 ARPU",
-                "例：十年收入、5G 用户与 ARPU 走势",
-                "例：下季收入、用户数与 ARPU",
-                "例：香港频谱、5G 与电信监管",
+                "例：csl、3HK、SmarTone 5G 月费",
+                "例：移动用户、数据用量与宽频接入",
+                "例：移动数据用量、5G 与宽频趋势",
+                "例：频谱分配、SIM 实名制与消费者保护",
             ],
         )
+        starter_copy = " ".join(
+            str(item.get(field) or "")
+            for item in starters
+            for field in ("title", "detail", "prompt")
+        )
+        for international_example in ("中国联通", "中国电信", "AWS", "Azure", "Google Cloud"):
+            self.assertNotIn(international_example, starter_copy)
+        self.assertTrue(all("香港" in item["title"] for item in starters))
         self.assertNotIn("SystemRandom", web_app.ROOT.joinpath("web_app.py").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/chat-starters", { cache: "no-store" })', app)
         self.assertIn("loadChatStarters({ render: true })", app)
