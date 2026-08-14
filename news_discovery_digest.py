@@ -44,7 +44,6 @@ SCAN_TIMES = tuple(
 POLL_SECONDS = max(30, int(os.environ.get("CMHK_NEWS_DIGEST_POLL_SECONDS", "60")))
 CATCHUP_MINUTES = max(30, int(os.environ.get("CMHK_NEWS_DIGEST_CATCHUP_MINUTES", "120")))
 RESULTS_PER_QUERY = max(10, int(os.environ.get("CMHK_NEWS_RESULTS_PER_QUERY", "30")))
-MAX_RESULTS = max(20, int(os.environ.get("CMHK_NEWS_MAX_RESULTS", "120")))
 PAGE_SIZE = min(10, max(5, int(os.environ.get("CMHK_NEWS_PAGE_SIZE", "8"))))
 SEARCH_WORKERS = min(8, max(2, int(os.environ.get("CMHK_NEWS_SEARCH_WORKERS", "6"))))
 AGENTIC_SEARCH_ENABLED = os.environ.get("CMHK_NEWS_AGENTIC_SEARCH", "1").strip().lower() not in {
@@ -380,9 +379,8 @@ def _select_discovery_results(
     items: list[dict[str, Any]],
     *,
     module_order: dict[str, int],
-    max_results: int,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Keep every recognized competitor item, then fill remaining global slots."""
+    """Order candidates for review without silently truncating any topic."""
     ordered = sorted(
         items,
         key=lambda item: (
@@ -394,7 +392,13 @@ def _select_discovery_results(
     competitor_items: list[dict[str, Any]] = []
     other_items: list[dict[str, Any]] = []
     competitor_counts: dict[str, int] = {}
+    module_counts: dict[str, int] = {}
+    search_origin_counts: dict[str, int] = {}
     for item in ordered:
+        module = _clean_text(item.get("module"), 100) or "其他"
+        origin = _clean_text(item.get("search_origin"), 100) or "未标注"
+        module_counts[module] = module_counts.get(module, 0) + 1
+        search_origin_counts[origin] = search_origin_counts.get(origin, 0) + 1
         entities = _tag_competitor_entities(item)
         if not entities:
             other_items.append(item)
@@ -402,24 +406,22 @@ def _select_discovery_results(
         competitor_items.append(item)
         for entity in entities:
             competitor_counts[entity] = competitor_counts.get(entity, 0) + 1
-    remaining_slots = max(0, int(max_results) - len(competitor_items))
-    selected = competitor_items + other_items[:remaining_slots]
-    selected.sort(
-        key=lambda item: (
-            _competitor_priority(item),
-            module_order.get(str(item.get("module") or "其他"), 999),
-            -datetime.fromisoformat(str(item["published_at"])).timestamp(),
-        )
-    )
+    # The former global 120-item truncation made lower-volume competitors,
+    # modules and monitoring keywords disappear before AI review. Pass every
+    # date-valid, deduplicated candidate to the existing AI/deferred workflow
+    # so overload is explicit and retryable instead of silent loss.
+    selected = ordered
     return selected, {
         "candidate_count": len(items),
-        "configured_cap": int(max_results),
         "result_count": len(selected),
         "recognized_competitor_count": len(competitor_items),
         "recognized_competitor_dropped_count": 0,
-        "non_competitor_kept_count": min(len(other_items), remaining_slots),
-        "cap_expanded_for_competitors": len(competitor_items) > int(max_results),
+        "non_competitor_kept_count": len(other_items),
+        "pre_ai_dropped_count": 0,
+        "full_recall_mode": True,
         "competitor_counts": competitor_counts,
+        "module_counts": module_counts,
+        "search_origin_counts": search_origin_counts,
     }
 
 
@@ -1327,7 +1329,6 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
     selected, selection_trace = _select_discovery_results(
         deduplicated,
         module_order=module_order,
-        max_results=MAX_RESULTS,
     )
     agentic_trace["selection_gate"] = selection_trace
     return selected, errors, spec

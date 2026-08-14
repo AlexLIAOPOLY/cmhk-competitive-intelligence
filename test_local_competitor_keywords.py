@@ -80,15 +80,16 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
         selected, trace = digest._select_discovery_results(
             generic_items + competitor_items,
             module_order={"竞争对手": 0, "科技/技术": 1},
-            max_results=120,
         )
 
         selected_ids = {item["news_id"] for item in selected}
-        self.assertEqual(len(selected), 120)
+        self.assertEqual(len(selected), len(generic_items) + len(competitor_items))
         self.assertTrue(
             {item["news_id"] for item in competitor_items}.issubset(selected_ids)
         )
         self.assertEqual(trace["recognized_competitor_dropped_count"], 0)
+        self.assertEqual(trace["pre_ai_dropped_count"], 0)
+        self.assertTrue(trace["full_recall_mode"])
         self.assertIn("China Mobile", trace["competitor_counts"])
 
     def test_competitor_items_expand_cap_instead_of_being_dropped(self):
@@ -116,7 +117,6 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
         selected, trace = digest._select_discovery_results(
             competitor_items,
             module_order={"竞争对手": 0},
-            max_results=120,
         )
 
         self.assertEqual(len(selected), 122)
@@ -124,7 +124,6 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
             "china-mobile-results",
             {item["news_id"] for item in selected},
         )
-        self.assertTrue(trace["cap_expanded_for_competitors"])
         self.assertEqual(trace["recognized_competitor_dropped_count"], 0)
 
     def test_new_sheet_competitor_is_protected_before_fixed_alias_update(self):
@@ -151,7 +150,6 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
         selected, trace = digest._select_discovery_results(
             generic_items + [future_competitor],
             module_order={"竞争对手": 0, "科技/技术": 1},
-            max_results=120,
         )
 
         self.assertIn("future-tel-result", {item["news_id"] for item in selected})
@@ -160,6 +158,28 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
             ["FutureTel"],
         )
         self.assertEqual(trace["competitor_counts"]["监测词:FutureTel"], 1)
+
+    def test_non_competitor_modules_are_not_silently_truncated(self):
+        items = [
+            {
+                "news_id": f"policy-{index}",
+                "title": f"Policy update {index}",
+                "snippet": "regulatory development",
+                "published_at": "2026-08-14T08:00:00+08:00",
+                "module": "政策/法规类",
+                "search_origin": "monitoring_sheet_keyword_search",
+            }
+            for index in range(145)
+        ]
+
+        selected, trace = digest._select_discovery_results(
+            items,
+            module_order={"政策/法规类": 0},
+        )
+
+        self.assertEqual(len(selected), 145)
+        self.assertEqual(trace["pre_ai_dropped_count"], 0)
+        self.assertEqual(trace["module_counts"]["政策/法规类"], 145)
 
     def test_hkt_fixed_terms_cover_tap_and_go_chinese_and_english(self):
         hkt_terms = {

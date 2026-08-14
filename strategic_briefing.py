@@ -2000,24 +2000,26 @@ def _run_scan_impl(
         ),
     )
     competitor_counts = selection_gate.get("competitor_counts") or {}
+    module_counts = selection_gate.get("module_counts") or {}
     competitor_summary = "、".join(
         f"{_clean_text(name, 80)} {int(count or 0)}条"
         for name, count in competitor_counts.items()
     )
+    module_summary = "、".join(
+        f"{_clean_text(name, 80)} {int(count or 0)}条"
+        for name, count in module_counts.items()
+    )
     _strategic_task_progress(
         crawl_run_id,
         stream_log_path,
-        "竞对候选保留门禁",
+        "全领域候选保留门禁",
         (
-            f"识别竞对候选 {int(selection_gate.get('recognized_competitor_count') or 0)} 条，"
-            f"保留后丢弃 {int(selection_gate.get('recognized_competitor_dropped_count') or 0)} 条；"
-            f"总量上限仅约束非竞对候选"
-            + (
-                "，本轮为完整保留竞对内容已自动扩展总量；"
-                if selection_gate.get("cap_expanded_for_competitors")
-                else "；"
-            )
-            + (f"主体分布：{competitor_summary}。" if competitor_summary else "本轮未识别到竞对候选。")
+            f"日期与去重门禁后 {int(selection_gate.get('candidate_count') or 0)} 条全部进入AI审核/延期流程，"
+            f"预审核静默丢弃 {int(selection_gate.get('pre_ai_dropped_count') or 0)} 条；"
+            f"识别竞对 {int(selection_gate.get('recognized_competitor_count') or 0)} 条，竞对丢弃 "
+            f"{int(selection_gate.get('recognized_competitor_dropped_count') or 0)} 条。"
+            + (f"模块分布：{module_summary}。" if module_summary else "")
+            + (f"竞对分布：{competitor_summary}。" if competitor_summary else "")
         ),
     )
     _strategic_task_progress(
