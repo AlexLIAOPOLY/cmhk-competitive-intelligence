@@ -60,21 +60,9 @@ AI_EDITOR_SINGLE_RETRY_LIMIT = max(
     0,
     int(os.environ.get("CMHK_STRATEGY_AI_SINGLE_RETRY_LIMIT", "12")),
 )
-AI_EDITOR_DEFERRED_MAX_ATTEMPTS = max(
-    2,
-    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_ATTEMPTS", "4")),
-)
-AI_EDITOR_DEFERRED_MAX_AGE_HOURS = max(
-    6,
-    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_AGE_HOURS", "36")),
-)
 AI_EDITOR_DEFERRED_RETRY_MINUTES = max(
     5,
     int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_RETRY_MINUTES", "30")),
-)
-AI_EDITOR_DEFERRED_MAX_ITEMS = max(
-    100,
-    int(os.environ.get("CMHK_STRATEGY_AI_DEFERRED_MAX_ITEMS", "600")),
 )
 SEMANTIC_DEDUPE_BATCH_SIZE = max(
     1,
@@ -2504,8 +2492,6 @@ def _prepare_deferred_ai_candidates(
     if not isinstance(raw_records, list):
         raw_records = []
     records: dict[str, dict[str, Any]] = {}
-    expired_count = 0
-    exhausted_count = 0
     invalid_count = 0
     migrated_count = 0
     for raw_record in raw_records:
@@ -2522,12 +2508,6 @@ def _prepare_deferred_ai_candidates(
         queued_at = _queue_datetime(raw_record.get("queued_at"))
         if not queued_at:
             invalid_count += 1
-            continue
-        if current - queued_at > timedelta(hours=AI_EDITOR_DEFERRED_MAX_AGE_HOURS):
-            expired_count += 1
-            continue
-        if attempts >= AI_EDITOR_DEFERRED_MAX_ATTEMPTS:
-            exhausted_count += 1
             continue
         if editor_version != AI_EDITOR_VERSION:
             migrated_count += 1
@@ -2578,8 +2558,8 @@ def _prepare_deferred_ai_candidates(
         "eligible_count": len(records),
         "retry_loaded_count": retry_loaded_count,
         "cooldown_count": cooldown_count,
-        "expired_count": expired_count,
-        "exhausted_count": exhausted_count,
+        "expired_count": 0,
+        "exhausted_count": 0,
         "invalid_count": invalid_count,
         "migrated_count": migrated_count,
     }
@@ -2601,7 +2581,6 @@ def _persist_deferred_ai_candidates(
     }
     added_count = 0
     resolved_removed_count = 0
-    exhausted_removed_count = 0
     for item in processed_items:
         key = _candidate_editor_key(item)
         deferred = deferred_by_key.get(key)
@@ -2613,10 +2592,6 @@ def _persist_deferred_ai_candidates(
             continue
         previous_attempts = _queue_nonnegative_int((previous or {}).get("attempts"))
         attempts = (previous_attempts or 0) + 1
-        if attempts >= AI_EDITOR_DEFERRED_MAX_ATTEMPTS:
-            records.pop(key, None)
-            exhausted_removed_count += 1
-            continue
         if previous is None:
             added_count += 1
         records[key] = {
@@ -2634,8 +2609,7 @@ def _persist_deferred_ai_candidates(
             str(record.get("queued_at") or ""),
             str(record.get("key") or ""),
         ),
-    )[:AI_EDITOR_DEFERRED_MAX_ITEMS]
-    capped_count = max(0, len(records) - len(ordered))
+    )
     _atomic_write_json(
         AI_EDITOR_DEFERRED_PATH,
         {
@@ -2643,10 +2617,8 @@ def _persist_deferred_ai_candidates(
             "editor_version": AI_EDITOR_VERSION,
             "updated_at": now_text,
             "policy": {
-                "max_attempts": AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
-                "max_age_hours": AI_EDITOR_DEFERRED_MAX_AGE_HOURS,
                 "retry_minutes": AI_EDITOR_DEFERRED_RETRY_MINUTES,
-                "max_items": AI_EDITOR_DEFERRED_MAX_ITEMS,
+                "retention": "until_resolved",
             },
             "items": ordered,
         },
@@ -2655,8 +2627,8 @@ def _persist_deferred_ai_candidates(
         "queued_count": len(ordered),
         "added_count": added_count,
         "resolved_removed_count": resolved_removed_count,
-        "exhausted_removed_count": exhausted_removed_count,
-        "capped_count": capped_count,
+        "exhausted_removed_count": 0,
+        "capped_count": 0,
     }
 
 

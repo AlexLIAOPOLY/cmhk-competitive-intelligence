@@ -2086,7 +2086,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(resolved["resolved_removed_count"], 1)
         self.assertEqual(saved["items"], [])
 
-    def test_deferred_queue_prunes_invalid_expired_and_exhausted_records(self):
+    def test_deferred_queue_prunes_invalid_but_retains_old_and_retried_records(self):
         now = datetime(2026, 8, 9, 12, 0, tzinfo=briefing.HKT)
         base_item = {
             "category": "行业动态",
@@ -2104,12 +2104,12 @@ class StrategicBriefingTests(unittest.TestCase):
                 {
                     "editor_version": briefing.AI_EDITOR_VERSION,
                     "attempts": 1,
-                    "queued_at": (now - timedelta(hours=briefing.AI_EDITOR_DEFERRED_MAX_AGE_HOURS + 1)).isoformat(),
+                    "queued_at": (now - timedelta(days=30)).isoformat(),
                     "item": expired_item,
                 },
                 {
                     "editor_version": briefing.AI_EDITOR_VERSION,
-                    "attempts": briefing.AI_EDITOR_DEFERRED_MAX_ATTEMPTS,
+                    "attempts": 99,
                     "queued_at": now.isoformat(),
                     "item": exhausted_item,
                 },
@@ -2123,11 +2123,43 @@ class StrategicBriefingTests(unittest.TestCase):
             briefing._atomic_write_json(briefing.AI_EDITOR_DEFERRED_PATH, payload)
             items, records, stats = briefing._prepare_deferred_ai_candidates([], now=now)
 
-        self.assertEqual(items, [])
-        self.assertEqual(records, {})
+        self.assertEqual(items, [expired_item, exhausted_item])
+        self.assertEqual(len(records), 2)
         self.assertEqual(stats["invalid_count"], 1)
-        self.assertEqual(stats["expired_count"], 1)
-        self.assertEqual(stats["exhausted_count"], 1)
+        self.assertEqual(stats["expired_count"], 0)
+        self.assertEqual(stats["exhausted_count"], 0)
+
+    def test_deferred_queue_has_no_item_cap_and_retains_until_resolved(self):
+        now = datetime(2026, 8, 9, 12, 0, tzinfo=briefing.HKT)
+        items = [
+            {
+                "category": "行业动态",
+                "title": f"候选 {index}",
+                "snippet": "等待可靠AI审核。",
+                "source": "Example",
+                "url": f"https://example.com/news/{index}",
+            }
+            for index in range(605)
+        ]
+        deferred = [
+            {"key": briefing._candidate_editor_key(item), "error": "temporary AI failure"}
+            for item in items
+        ]
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            briefing,
+            "AI_EDITOR_DEFERRED_PATH",
+            Path(directory) / "deferred.json",
+        ):
+            stats = briefing._persist_deferred_ai_candidates(
+                {}, items, deferred, now=now
+            )
+            saved = briefing._read_json(briefing.AI_EDITOR_DEFERRED_PATH, {})
+
+        self.assertEqual(stats["queued_count"], 605)
+        self.assertEqual(stats["capped_count"], 0)
+        self.assertEqual(len(saved["items"]), 605)
+        self.assertEqual(saved["policy"]["retention"], "until_resolved")
+        self.assertNotIn("max_items", saved["policy"])
 
     def test_deferred_queue_migrates_previous_editor_version(self):
         now = datetime(2026, 8, 10, 10, 0, tzinfo=briefing.HKT)
