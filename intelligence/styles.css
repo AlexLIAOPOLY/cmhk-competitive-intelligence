@@ -14088,6 +14088,28 @@ body.dashboard-page {
   text-decoration: none;
 }
 
+.dashboard-page #logModal .four-domain-run-lines {
+  display: grid;
+  gap: 7px;
+  padding: 12px 16px 14px;
+}
+
+.dashboard-page #logModal .four-domain-run-lines p {
+  margin: 0;
+  color: var(--log-text-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.dashboard-page #logModal .four-domain-run-lines p b {
+  display: inline-block;
+  min-width: 72px;
+  margin-right: 8px;
+  color: var(--log-text-strong);
+}
+
+.dashboard-page #logModal .four-domain-run-lines .is-error { color: #ff958d; }
+
 @media (max-width: 560px) {
   .dashboard-page #logModal .financial-results-run-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dashboard-page #logModal .financial-results-run-list dl { display: grid; grid-template-columns: 1fr; }
