@@ -1794,7 +1794,7 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未播放或下载" ${unread ? "" : "hidden"}></i>${file.name}</span>
+        <span class="file-name-cell file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i>${file.name}</span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
@@ -1951,6 +1951,40 @@ function setReportLibraryNewIndicators(files) {
   };
   setReportCategoryNewDots(unreadByType);
   setReportLibraryNewDot(unreadByType.weekly || unreadByType.performance);
+}
+
+function isReportInCategory(file, reportType) {
+  const isPerformance = file && file.reportType === "carrier-performance";
+  return reportType === "performance" ? isPerformance : !isPerformance;
+}
+
+function activeReportType() {
+  const activeTab = [...els.outputTabs].find((button) => button.classList.contains("is-active"));
+  return activeTab?.dataset.scrollReport === "performance" ? "performance" : "weekly";
+}
+
+function markReportCategoryViewed(reportType) {
+  const consumed = consumedReportKeys();
+  let changed = false;
+  state.outputs.forEach((file) => {
+    if (isReportInCategory(file, reportType) && isReportUnread(file)) {
+      consumed.add(reportConsumptionKey(file));
+      changed = true;
+    }
+  });
+  if (changed) {
+    window.localStorage.setItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY, JSON.stringify([...consumed]));
+  }
+
+  const remainingUnread = state.outputs.some((file) => isReportUnread(file));
+  if (!remainingUnread) {
+    const latest = latestReportMtime();
+    if (latest > 0) {
+      window.localStorage.setItem(REPORT_LIBRARY_SEEN_STORAGE_KEY, String(latest));
+    }
+    window.localStorage.removeItem(REPORT_LIBRARY_CONSUMED_STORAGE_KEY);
+  }
+  renderFileList();
 }
 
 function markReportConsumed(pathStr) {
@@ -6770,6 +6804,7 @@ els.outputTabs.forEach((button) => {
       els.weeklyOutputBlock.hidden = false;
       els.performanceOutputBlock.hidden = true;
     }
+    markReportCategoryViewed(reportType);
   });
 });
 
@@ -6784,6 +6819,7 @@ function openReportLibrary() {
   }
   els.outputArea.hidden = false;
   document.body.classList.add("report-library-open");
+  markReportCategoryViewed(activeReportType());
   window.requestAnimationFrame(() => {
     els.outputArea.classList.add("is-open");
     els.closeReportLibraryButton?.focus();
