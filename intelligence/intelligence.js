@@ -24,6 +24,7 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
   let pushedDrawerState = false;
   const selectedEntityByDomain = new Map();
   const selectedFocusByDomain = new Map();
+  const selectedFinancialMetricByDomain = new Map();
   const manualFocusPauseUntil = new Map();
   const insightRefreshState = new Map();
   const relationRefreshState = new Map();
@@ -407,27 +408,33 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       const comparisonPeriod = Object.entries(periodCounts)
         .sort((left, right) => right[1] - left[1])[0]?.[0] || "最新可比期";
       const comparableItems = items.filter((item) => item.period === comparisonPeriod);
+      const excludedPeriodText = items.length > comparableItems.length
+        ? `仅纳入同期可比公司；${items.filter((item) => item.period !== comparisonPeriod).map((item) => `${item.name} ${item.period}`).join("、")}在更多指标内`
+        : "同期可比口径";
+      const selectedMetric = selectedFinancialMetricByDomain.get(domain.id) === "net_profit" ? "net_profit" : "revenue";
       const shortCompany = (value) => String(value || "")
         .replace(/\s*\/\s*Hutchison/i, "")
         .replace(/Hutchison Telecommunications Hong Kong/i, "3HK");
       const comparisonChart = (key, title) => {
         const chartItems = comparableItems
           .map((item) => ({ item, index: items.indexOf(item), value: metricNumber(item, key) }))
-          .filter((entry) => Number.isFinite(entry.value));
+          .filter((entry) => Number.isFinite(entry.value))
+          .sort((left, right) => right.value - left.value);
         const chartMax = Math.max(...chartItems.map((entry) => Math.abs(entry.value)), 1);
         return `
-          <section class="intelligence-financial-chart" aria-label="${safe(title)}">
-            <header><strong>${safe(title)}</strong><span>${safe(comparisonPeriod)} · HK$m</span></header>
+          <section id="intelligence-financial-panel-${safe(domain.id)}-${key}" class="intelligence-financial-chart"
+            role="tabpanel" aria-label="${safe(title)}">
+            <header><strong>${safe(title)}</strong><span>${safe(comparisonPeriod)} · HK$m <i title="${safe(excludedPeriodText)}">i</i></span></header>
             <div class="intelligence-financial-chart-plot">
               ${chartItems.map(({ item, index, value }) => {
-                const height = Math.max(7, Math.abs(value) / chartMax * 100);
+                const width = Math.max(1.5, Math.abs(value) / chartMax * 100);
                 return `
                   <button type="button" ${entityAttributes(item, index)}
                     class="intelligence-financial-chart-bar intelligence-viz-entity ${value < 0 ? "is-negative" : ""} ${index === selectedIndex ? "is-selected" : ""}"
-                    style="--financial-bar-height:${height.toFixed(2)}%">
-                    <strong>${safe(compactValue(metricValue(item, key)).replace(/^HK\$/, ""))}</strong>
-                    <i aria-hidden="true"><b></b></i>
+                    style="--financial-bar-width:${width.toFixed(2)}%">
                     <span>${safe(shortCompany(item.name))}</span>
+                    <i aria-hidden="true"><b></b></i>
+                    <strong>${safe(compactValue(metricValue(item, key)).replace(/^HK\$/, ""))}</strong>
                   </button>
                 `;
               }).join("")}
@@ -438,29 +445,36 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
       const secondaryKeys = new Set(["revenue", "net_profit"]);
       return `
         <div class="intelligence-viz intelligence-viz-financial" aria-label="本地运营商财务对比">
-          <div class="intelligence-financial-chart-grid">
-            ${comparisonChart("revenue", "收入对比")}
-            ${comparisonChart("net_profit", "净利润对比")}
-          </div>
-          <details class="intelligence-financial-more">
-            <summary>
-              <span>其他财务指标</span>
-              <small>EBITDA · 资本开支 · 派息 · 5G用户</small>
-              <i aria-hidden="true"></i>
-            </summary>
-            <div class="intelligence-financial-more-list">
-              ${items.map((item) => `
-                <article>
-                  <header><strong>${safe(item.name)}</strong><span>${safe(item.period)}</span></header>
-                  <div>${(item.components || [])
-                    .filter((metric) => !secondaryKeys.has(metric.metric_key))
-                    .map((metric) => `<span><small>${safe(metric.label)}</small><strong>${safe(compactValue(metric.value))}</strong></span>`)
-                    .join("") || '<span><small>其他指标</small><strong>—</strong></span>'}</div>
-                </article>
+          <div class="intelligence-financial-toolbar">
+            <div class="intelligence-financial-metric-tabs" role="tablist" aria-label="财务对比指标">
+              ${[["revenue", "收入对比"], ["net_profit", "净利润对比"]].map(([key, label]) => `
+                <button type="button" role="tab" aria-selected="${selectedMetric === key ? "true" : "false"}"
+                  aria-controls="intelligence-financial-panel-${safe(domain.id)}-${key}"
+                  class="${selectedMetric === key ? "is-active" : ""}"
+                  data-intelligence-financial-metric="${key}" data-intelligence-domain-id="${safe(domain.id)}">${label}</button>
               `).join("")}
             </div>
-          </details>
-          ${items.length > comparableItems.length ? `<p class="intelligence-financial-period-note">${safe(comparisonPeriod)}图表只纳入同期可比公司；${safe(items.filter((item) => item.period !== comparisonPeriod).map((item) => `${item.name} ${item.period}`).join("、"))}保留在展开明细中。</p>` : ""}
+            <details class="intelligence-financial-more">
+              <summary><span>更多指标</span><i aria-hidden="true"></i></summary>
+              <div class="intelligence-financial-more-popover">
+                <small>EBITDA · 资本开支 · 派息 · 5G用户</small>
+                <div class="intelligence-financial-more-list">
+                  ${items.map((item) => `
+                    <article>
+                      <header><strong>${safe(item.name)}</strong><span>${safe(item.period)}</span></header>
+                      <div>${(item.components || [])
+                        .filter((metric) => !secondaryKeys.has(metric.metric_key))
+                        .map((metric) => `<span><small>${safe(metric.label)}</small><strong>${safe(compactValue(metric.value))}</strong></span>`)
+                        .join("") || '<span><small>其他指标</small><strong>—</strong></span>'}</div>
+                    </article>
+                  `).join("")}
+                </div>
+              </div>
+            </details>
+          </div>
+          <div class="intelligence-financial-chart-stage">
+            ${comparisonChart(selectedMetric, selectedMetric === "net_profit" ? "净利润对比" : "收入对比")}
+          </div>
         </div>
       `;
     }
@@ -714,6 +728,19 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
     replaceDomainCard(domain, restoreFocus);
   }
 
+  function selectFinancialMetric(domainId, metric, restoreFocus = false) {
+    const domain = domainById(domainId);
+    if (!domain || !["revenue", "net_profit"].includes(metric)) return;
+    selectedFinancialMetricByDomain.set(domainId, metric);
+    manualFocusPauseUntil.set(domainId, Date.now() + 30000);
+    replaceDomainCard(domain);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => {
+        grid.querySelector(`[data-intelligence-domain-id="${CSS.escape(domainId)}"][data-intelligence-financial-metric="${metric}"]`)?.focus();
+      });
+    }
+  }
+
   function rotateNextFocus() {
     const domains = Array.isArray(payload?.domains) ? payload.domains : [];
     if (!domains.length || document.hidden) return;
@@ -873,6 +900,15 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
   }
 
   grid.addEventListener("click", (event) => {
+    const financialMetricTrigger = event.target.closest("[data-intelligence-financial-metric]");
+    if (financialMetricTrigger) {
+      selectFinancialMetric(
+        financialMetricTrigger.dataset.intelligenceDomainId,
+        financialMetricTrigger.dataset.intelligenceFinancialMetric,
+        true,
+      );
+      return;
+    }
     const financialTrigger = event.target.closest("[data-intelligence-financial-results]");
     if (financialTrigger) {
       event.preventDefault();
@@ -906,6 +942,16 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
     }
   });
   grid.addEventListener("keydown", (event) => {
+    const financialMetricTrigger = event.target.closest("[data-intelligence-financial-metric]");
+    if (financialMetricTrigger && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+      event.preventDefault();
+      const current = financialMetricTrigger.dataset.intelligenceFinancialMetric;
+      const metric = event.key === "Home" || event.key === "ArrowLeft"
+        ? "revenue"
+        : event.key === "End" || event.key === "ArrowRight" ? "net_profit" : current;
+      selectFinancialMetric(financialMetricTrigger.dataset.intelligenceDomainId, metric, true);
+      return;
+    }
     if (event.key !== "Enter" && event.key !== " ") return;
     const entityTrigger = event.target.closest('.intelligence-viz-entity[data-intelligence-entity]');
     if (!entityTrigger) return;
