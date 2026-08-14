@@ -5,7 +5,6 @@ import json
 import mimetypes
 import os
 import queue
-import random
 import re
 import subprocess
 import sys
@@ -105,93 +104,37 @@ CHAT_STARTER_POOL = (
     {
         "icon": "performance",
         "tone": "blue",
-        "title": "对比竞对经营表现",
-        "detail": "收入、利润、用户与 ARPU",
-        "prompt": "请对比中国移动、中国联通和中国电信最新季度经营表现，列出收入、利润、用户和 ARPU 变化，并标明来源。",
+        "title": "查询最新经营数据",
+        "detail": "简单问数·指标、对比与来源",
+        "prompt": "请查询中国移动、中国联通和中国电信最新季度的收入、利润、用户数和 ARPU，用表格对比并标明来源。",
     },
     {
         "icon": "performance",
-        "tone": "blue",
-        "title": "分析运营商收入趋势",
-        "detail": "多年数据、增速与拐点",
-        "prompt": "请分析主要电信运营商近十年的收入趋势，比较增速、周期与关键拐点，并用图表展示。",
-    },
-    {
-        "icon": "performance",
-        "tone": "blue",
-        "title": "评估用户价值变化",
-        "detail": "客户规模、5G 与 ARPU",
-        "prompt": "请比较主要运营商近期客户规模、5G 渗透率和 ARPU 变化，说明用户价值提升或承压的原因。",
-    },
-    {
-        "icon": "tariff",
         "tone": "violet",
-        "title": "查看香港产品资费",
-        "detail": "套餐、合约与促销变化",
-        "prompt": "请对比香港主要竞对最新移动与宽频套餐资费，说明月费、数据量、合约期和促销差异。",
-    },
-    {
-        "icon": "tariff",
-        "tone": "violet",
-        "title": "比较 5G 套餐竞争力",
-        "detail": "价格、流量与权益",
-        "prompt": "请比较香港主要运营商当前 5G 套餐的价格、流量、合约和增值权益，指出 CMHK 的优势与短板。",
-    },
-    {
-        "icon": "tariff",
-        "tone": "violet",
-        "title": "追踪家宽促销变化",
-        "detail": "宽频、安装与合约优惠",
-        "prompt": "请追踪香港主要宽频运营商近期资费与促销变化，对比月费、网速、安装费和合约期。",
+        "title": "分析长期经营趋势",
+        "detail": "复杂趋势·多年、增速与拐点",
+        "prompt": "请分析主要电信运营商近十年的收入、利润、用户数和 ARPU 趋势，比较增速、周期和关键拐点，并用图表展示。",
     },
     {
         "icon": "cloud",
         "tone": "teal",
-        "title": "追踪云厂商动态",
-        "detail": "业绩、AI 投入与战略动作",
-        "prompt": "请整理主要云厂商近期业绩与 AI 投入变化，判断对 CMHK 的机会和风险。",
-    },
-    {
-        "icon": "cloud",
-        "tone": "teal",
-        "title": "比较云业务增长",
-        "detail": "AWS、Azure 与 Google Cloud",
-        "prompt": "请比较 AWS、Azure 和 Google Cloud 的完整季度收入趋势、增速与利润表现，联网核验并画图。",
-    },
-    {
-        "icon": "cloud",
-        "tone": "teal",
-        "title": "观察 AI 资本开支",
-        "detail": "算力、数据中心与回报",
-        "prompt": "请比较主要科技公司近年的 AI 与数据中心资本开支趋势，分析投入强度、回报和潜在风险。",
+        "title": "预测下季度发展趋势",
+        "detail": "趋势预测·依据、情景与风险",
+        "prompt": "请基于已核验的历史数据，预测主要电信运营商下季度的收入、用户数和 ARPU 趋势，给出基准、乐观和谨慎情景，并说明预测依据、不确定性和风险。",
     },
     {
         "icon": "policy",
         "tone": "orange",
-        "title": "解读宏观政策影响",
-        "detail": "政策、经济与业务影响",
-        "prompt": "请梳理近期宏观政策与监管变化，并分析其对 CMHK 业务的可能影响。",
-    },
-    {
-        "icon": "policy",
-        "tone": "orange",
-        "title": "梳理频谱政策进展",
-        "detail": "拍卖、分配与网络影响",
-        "prompt": "请梳理香港近期频谱政策、拍卖和分配进展，分析对网络建设、成本与竞争格局的影响。",
-    },
-    {
-        "icon": "policy",
-        "tone": "orange",
-        "title": "研判香港电信监管",
-        "detail": "合规变化与经营风险",
-        "prompt": "请总结香港近期电信监管与消费者保护政策变化，评估对 CMHK 产品、营销和运营的影响。",
+        "title": "解读近期政策影响",
+        "detail": "政策解读·变化、影响与应对",
+        "prompt": "请梳理香港近期宏观政策、电信监管和消费者保护政策的变化，分析对 CMHK 产品、网络、营销和运营的影响，并提出应对建议。",
     },
 )
 
 
 def sample_chat_starters(limit: int = 4) -> list[dict]:
     count = max(1, min(int(limit), len(CHAT_STARTER_POOL)))
-    return [dict(item) for item in random.SystemRandom().sample(CHAT_STARTER_POOL, count)]
+    return [dict(item) for item in CHAT_STARTER_POOL[:count]]
 
 
 def request_runtime_context(handler: BaseHTTPRequestHandler) -> dict:

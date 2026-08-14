@@ -1034,10 +1034,24 @@ class FrontendCitationRenderingTests(unittest.TestCase):
 
         self.assertIn("今天想从哪类竞争情报开始？", markup)
         self.assertEqual(markup.count('class="chat-starter-card"'), 0)
-        self.assertGreaterEqual(len(web_app.CHAT_STARTER_POOL), 8)
+        self.assertEqual(len(web_app.CHAT_STARTER_POOL), 4)
         starters = web_app.sample_chat_starters()
         self.assertEqual(len(starters), 4)
-        self.assertEqual(len({item["title"] for item in starters}), 4)
+        self.assertEqual(
+            [item["title"] for item in starters],
+            [
+                "查询最新经营数据",
+                "分析长期经营趋势",
+                "预测下季度发展趋势",
+                "解读近期政策影响",
+            ],
+        )
+        self.assertEqual(starters, web_app.sample_chat_starters())
+        self.assertEqual(
+            [item["detail"].split("·", 1)[0] for item in starters],
+            ["简单问数", "复杂趋势", "趋势预测", "政策解读"],
+        )
+        self.assertNotIn("SystemRandom", web_app.ROOT.joinpath("web_app.py").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/chat-starters", { cache: "no-store" })', app)
         self.assertIn("loadChatStarters({ render: true })", app)
         self.assertIn("await loadChatStarters()", app)
