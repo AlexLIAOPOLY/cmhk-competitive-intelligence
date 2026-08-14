@@ -445,7 +445,7 @@ window.CMHK_STATIC_INTELLIGENCE = {"ok":true,"domains":[{"id":"local","index":"0
                     style="--financial-bar-width:${width.toFixed(2)}%;--financial-ratio:${width.toFixed(2)}%">
                     <span>${safe(shortCompany(item.name))}</span>
                     <i aria-hidden="true"><b></b></i>
-                    <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : "—"}</strong>
+                    <strong>${hasValue ? safe(compactValue(metricValue(item, key)).replace(/^HK\$/, "")) : chartType === "disclosure" ? "未披露" : "—"}</strong>
                   </button>
                 `;
               }).join("")}
