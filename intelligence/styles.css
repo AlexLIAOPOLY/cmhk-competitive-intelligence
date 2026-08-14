@@ -3150,6 +3150,20 @@ select {
   outline: none;
 }
 
+.citation-source-link {
+  color: var(--blue-dark);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+.citation-source-link:hover,
+.citation-source-link:focus-visible {
+  color: var(--blue);
+  text-decoration-thickness: 2px;
+}
+
 .citation-popover {
   position: absolute;
   z-index: 9999;
@@ -13180,6 +13194,15 @@ body.dashboard-page {
 .dashboard-page .message-body .citation-marker:hover,
 .dashboard-page .message-body .citation-marker:focus-visible {
   background: rgba(25, 143, 168, 0.44);
+  color: #b9edf3;
+}
+
+.dashboard-page .message-body .citation-source-link {
+  color: #8dd7e6;
+}
+
+.dashboard-page .message-body .citation-source-link:hover,
+.dashboard-page .message-body .citation-source-link:focus-visible {
   color: #b9edf3;
 }
 
