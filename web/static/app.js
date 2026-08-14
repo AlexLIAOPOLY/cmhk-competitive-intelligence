@@ -7684,8 +7684,49 @@ document.addEventListener("keydown", (event) => {
     return (payload?.relations || []).filter((item) => item.from === id || item.to === id);
   }
 
+  function localFinancialFocus(domain) {
+    const reports = Array.isArray(domain?.latest_financial_results)
+      ? domain.latest_financial_results
+      : [];
+    if (!reports.length) return null;
+    const latest = reports[0] || {};
+    return {
+      id: "financials",
+      label: "重要财务指标",
+      visual: "financial",
+      metric: {
+        value: reports.length,
+        unit: "家公司",
+        label: "已入库最新官方财报",
+      },
+      context: `最新披露 ${latest.publication_date || "日期待核"}；每日 03:00（香港时间）自动检查`,
+      headline: "最新财报指标集中对照",
+      insight: "这里展示每家运营商最新一期官方披露；指标保留原币种、原期间和原口径，未披露显示“—”，不将半年与全年数据直接排名。",
+      items: reports.map((report) => ({
+        name: report.company || "未标明公司",
+        value: Number(report.core_metric_count) || (report.metrics || []).length,
+        unit: "项核心指标",
+        period: report.period || "期间待核",
+        publication_date: report.publication_date || "",
+        detail: `${report.period || "期间待核"} · ${report.publication_date || "披露日期待核"}`,
+        analysis: "指标来自该公司最新一期官方财报，仅在同期间、同币种和同口径下进行比较。",
+        components: (report.metrics || []).map((metric) => ({
+          label: metric.metric || metric.metric_key || "指标",
+          value: metric.value || "—",
+          detail: report.period || "",
+          metric_key: metric.metric_key || "",
+        })),
+        component_count: (report.metrics || []).length,
+        source_url: report.source_url || "",
+      })),
+    };
+  }
+
   function domainFocuses(domain) {
-    if (Array.isArray(domain?.focuses) && domain.focuses.length) return domain.focuses;
+    if (Array.isArray(domain?.focuses) && domain.focuses.length) {
+      const financialFocus = domain.id === "local" ? localFinancialFocus(domain) : null;
+      return financialFocus ? [financialFocus, ...domain.focuses] : domain.focuses;
+    }
     return [{
       id: "overview",
       label: "重点概览",
@@ -7699,6 +7740,11 @@ document.addEventListener("keydown", (event) => {
 
   function selectedFocusIndex(domain) {
     const focuses = domainFocuses(domain);
+    if (
+      !selectedFocusByDomain.has(domain.id)
+      && domain.id === "local"
+      && focuses[0]?.id === "financials"
+    ) return Math.min(1, Math.max(0, focuses.length - 1));
     const selected = Number(selectedFocusByDomain.get(domain.id) || 0);
     return Math.max(0, Math.min(selected, Math.max(0, focuses.length - 1)));
   }
@@ -7740,13 +7786,17 @@ document.addEventListener("keydown", (event) => {
 
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
-      const aiAnalysis = focus.ai_summary?.analysis || domain.ai_summary?.analysis;
+      const isFinancialFocus = focus.id === "financials";
+      const aiAnalysis = isFinancialFocus
+        ? focus.insight
+        : focus.ai_summary?.analysis || domain.ai_summary?.analysis;
       const hasFreshAi = Boolean(
-        payload?.ai?.model_analysis_fresh
+        !isFinancialFocus
+        && payload?.ai?.model_analysis_fresh
         && aiAnalysis
         && focus.ai_summary?.origin !== "evidence_rule"
       );
-      const interpretationLabel = hasFreshAi ? "AI 战略解读" : "数据战略解读";
+      const interpretationLabel = isFinancialFocus ? "数据口径" : hasFreshAi ? "AI 战略解读" : "数据战略解读";
       const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
@@ -7810,7 +7860,10 @@ document.addEventListener("keydown", (event) => {
           <button type="button" role="tab" aria-selected="${index === selectedIndex ? "true" : "false"}"
             class="${index === selectedIndex ? "is-active" : ""}"
             data-intelligence-focus="${index}" data-intelligence-domain-id="${safe(domain.id)}"
-            title="切换到${safe(item.label)}">${safe(item.label)}</button>
+            title="切换到${safe(item.label)}">
+            <span>${safe(item.label)}</span>
+            ${item.id === "financials" ? '<i class="intelligence-financial-chevron" aria-hidden="true"></i>' : ""}
+          </button>
         `).join("")}
       </div>
     `;
@@ -7936,6 +7989,48 @@ document.addEventListener("keydown", (event) => {
       data-intelligence-domain-id="${safe(domain.id)}"
       aria-pressed="${index === selectedIndex ? "true" : "false"}"
       aria-label="${index === selectedIndex ? "取消选择并返回AI数据解读" : "查看个体分析"}：${safe(item.name)}"`;
+
+    if (visual === "financial") {
+      const financialColumns = [
+        ["revenue", "收入"],
+        ["ebitda", "EBITDA"],
+        ["net_profit", "净利润"],
+        ["capital_expenditure", "资本开支"],
+        ["dividend", "派息"],
+      ];
+      const metricValue = (item, key) => {
+        const metric = (item.components || []).find((component) => component.metric_key === key);
+        return metric?.value || "—";
+      };
+      const compactValue = (value) => String(value || "—")
+        .replace(/HK\$\s*/i, "HK$")
+        .replace(/\s+million\b/gi, "m")
+        .replace(/\s+HK\s+cents?\b/gi, "¢")
+        .replace(/\s+/g, " ")
+        .trim();
+      return `
+        <div class="intelligence-viz intelligence-viz-financial" role="table" aria-label="本地运营商重要财务指标">
+          <div class="intelligence-financial-table" role="rowgroup">
+            <div class="intelligence-financial-table-head" role="row">
+              <span role="columnheader">运营商</span>
+              <span role="columnheader">报告期</span>
+              ${financialColumns.map(([, label]) => `<span role="columnheader">${label}</span>`).join("")}
+            </div>
+            ${items.map((item, index) => `
+              <button type="button" role="row" ${entityAttributes(item, index)}
+                class="intelligence-financial-table-row intelligence-viz-entity ${index === selectedIndex ? "is-selected" : ""}">
+                <strong role="cell">${safe(item.name)}</strong>
+                <span role="cell">${safe(item.period)}</span>
+                ${financialColumns.map(([key]) => {
+                  const fullValue = metricValue(item, key);
+                  return `<span role="cell" title="${safe(fullValue)}">${safe(compactValue(fullValue))}</span>`;
+                }).join("")}
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
 
     if (visual === "network") {
       const points = items.map((item, index) => ({
@@ -8107,17 +8202,6 @@ document.addEventListener("keydown", (event) => {
     const focusMetric = selectedFocus.metric || domain.metric || {};
     const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items);
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
-    const latestFinancial = Array.isArray(domain.latest_financial_results)
-      ? domain.latest_financial_results[0]
-      : null;
-    const financialStrip = domain.id === "local" && latestFinancial ? `
-      <button class="intelligence-financial-strip" type="button" data-intelligence-financial-results="local">
-        <span>最新财报</span>
-        <strong>${safe(latestFinancial.company)} · ${safe(latestFinancial.period)}</strong>
-        <em>${safe(latestFinancial.publication_date || "披露日期待核")}</em>
-        <i>查看全部财报指标</i>
-      </button>
-    ` : "";
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
         <span class="intelligence-domain-index">${safe(domain.index)}</span>
@@ -8132,7 +8216,6 @@ document.addEventListener("keydown", (event) => {
         </span>
         ${renderFocusTabs(domain, focuses, focusIndex)}
         <div class="intelligence-domain-focus-stage">
-          ${financialStrip}
           ${visual}
           ${renderEntityFocus(domain, selectedEntity, entityIndex, selectedFocus, items)}
         </div>
@@ -8209,7 +8292,11 @@ document.addEventListener("keydown", (event) => {
       if (focuses.length < 2 || !card) continue;
       if (card.matches(":hover") || card.contains(document.activeElement)) continue;
       if ((manualFocusPauseUntil.get(domain.id) || 0) > Date.now()) continue;
-      selectFocus(domain.id, (selectedFocusIndex(domain) + 1) % focuses.length, false, false);
+      let nextIndex = (selectedFocusIndex(domain) + 1) % focuses.length;
+      if (domain.id === "local" && focuses[nextIndex]?.id === "financials") {
+        nextIndex = Math.min(1, focuses.length - 1);
+      }
+      selectFocus(domain.id, nextIndex, false, false);
       return;
     }
   }
@@ -8555,6 +8642,7 @@ document.addEventListener("keydown", (event) => {
           aiSummaries: (data.domains || []).map((domain) => [domain.id, domain.ai_summary, (domain.focuses || []).map((focus) => [focus.id, focus.ai_summary])]),
           discoveries: (data.relations || []).map((relation) => [relation.from, relation.to, relation.title, relation.detail]),
           metrics: (data.domains || []).map((domain) => [domain.id, domain.metric, domain.context]),
+          financials: (data.domains || []).map((domain) => [domain.id, domain.latest_financial_results]),
         });
         if (!initial && signature === payloadSignature) return;
         payloadSignature = signature;
