@@ -1523,6 +1523,41 @@ if (!rendered.includes('citation-marker') || rendered.includes('[来源')) {
         )
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
 
+    def test_weekly_report_short_citation_renders_as_clickable_source_link(self) -> None:
+        script = r"""
+const fs = require('fs');
+const app = fs.readFileSync('web/static/app.js', 'utf8');
+const start = app.indexOf('function expandCitationIndexes');
+const end = app.indexOf('function readStoredJson');
+if (start < 0 || end < 0) throw new Error('function slice not found');
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>'"]/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+eval(app.slice(start, end));
+const node = { dataset: { references: JSON.stringify([
+  {
+    index: 5,
+    source: 'weekly_report.md · 片段 2',
+    links: [{ label: 'weekly_report.md · 片段 2', url: '/references/weekly_report.md' }]
+  }
+]) } };
+const rendered = renderCitationMarkers('<td>[周报]</td><p>[未匹配来源]</p>', node);
+if (!rendered.includes('class="citation-source-link"') ||
+    !rendered.includes('href="/references/weekly_report.md"') ||
+    !rendered.includes('>周报</a>') ||
+    !rendered.includes('[未匹配来源]')) {
+  throw new Error(rendered);
+}
+"""
+        result = subprocess.run(
+            ["node", "-e", script],
+            cwd=web_app.ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+
     def test_inline_citation_marker_uses_compact_teal_badge_style(self) -> None:
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
         marker_start = styles.index(".citation-marker {")

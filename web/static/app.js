@@ -4770,6 +4770,23 @@ function citationMarkerHtml(idx, node) {
     return `<sup class="citation-marker" data-ref-id="${idx}" title="${escapeHtml(label)}">${idx}</sup>`;
 }
 
+function citationSourceLinkHtml(label, idx, node) {
+  let href = null;
+  let title = label;
+  if (node.dataset.references) {
+    try {
+      const refs = JSON.parse(node.dataset.references);
+      const ref = refs.find((item) => Number(item.index) === Number(idx));
+      if (ref && ref.links && ref.links.length > 0 && ref.links[0].url) {
+        href = ref.links[0].url;
+        title = ref.links[0].label || ref.source || title;
+      }
+    } catch (e) {}
+  }
+  if (!href) return `[${escapeHtml(label)}]`;
+  return `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" class="citation-source-link" data-ref-id="${idx}" title="${escapeHtml(title)}">${escapeHtml(label)}</a>`;
+}
+
 function normalizeCitationLabel(value) {
   return String(value || "")
     .toLowerCase()
@@ -4797,7 +4814,11 @@ function citationLabelVariants(value) {
   const noQuery = decoded.split(/[?#]/, 1)[0];
   const basename = noQuery.split("/").filter(Boolean).pop() || noQuery;
   const noExtension = basename.replace(/\.[a-z0-9]+$/i, "");
-  return [...new Set([raw, withoutFragment, strippedRef, decoded, noQuery, basename, noExtension])]
+  const variants = [raw, withoutFragment, strippedRef, decoded, noQuery, basename, noExtension];
+  if (/^weekly_report(?:\.[a-z0-9]+)?$/i.test(basename)) {
+    variants.push("周报", "本周周报", "战略部每周周报");
+  }
+  return [...new Set(variants)]
     .filter(Boolean)
     .map(normalizeCitationLabel)
     .filter(Boolean);
@@ -4848,6 +4869,11 @@ function renderCitationMarkers(html, node) {
   rendered = rendered.replace(namedCitationPattern, (match, label) => {
     const idx = citationIndexForSourceLabel(label, node);
     return idx ? citationMarkerHtml(idx, node) : match;
+  });
+  const weeklyCitationPattern = /\[(周报|本周周报|战略部每周周报)\]/g;
+  rendered = rendered.replace(weeklyCitationPattern, (match, label) => {
+    const idx = citationIndexForSourceLabel(label, node);
+    return idx ? citationSourceLinkHtml(label, idx, node) : match;
   });
   return rendered;
 }
