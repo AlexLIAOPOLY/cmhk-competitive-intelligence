@@ -34,12 +34,132 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
                 "3 Hong Kong",
                 "HGC",
                 "i-CABLE",
+                "China Mobile",
                 "China Telecom Global (Hong Kong)",
                 "China Unicom Hong Kong",
             },
         )
         self.assertTrue(all(1 <= len(group["terms"]) <= 5 for group in groups))
         self.assertEqual(competitors.priority_for("HKT"), 0)
+
+    def test_article_content_resolves_every_named_competitor(self):
+        self.assertEqual(
+            competitors.canonical_competitors_for_text(
+                "中国移动公布2026年中期业绩，中国联通同步更新经营数据"
+            ),
+            ("China Mobile", "China Unicom Hong Kong"),
+        )
+
+    def test_global_cap_never_drops_recognized_competitor_items(self):
+        published_at = "2026-08-14T08:00:00+08:00"
+        competitor_items = []
+        for group in competitors.LOCAL_COMPETITORS:
+            canonical = group["canonical"]
+            for index in range(3):
+                competitor_items.append(
+                    {
+                        "news_id": f"{canonical}-{index}",
+                        "title": f"{canonical} results update {index}",
+                        "snippet": "latest operating result",
+                        "published_at": published_at,
+                        "module": "竞争对手",
+                        "canonical_competitor": canonical,
+                    }
+                )
+        generic_items = [
+            {
+                "news_id": f"generic-{index}",
+                "title": f"General technology news {index}",
+                "snippet": "industry update",
+                "published_at": published_at,
+                "module": "科技/技术",
+            }
+            for index in range(150)
+        ]
+
+        selected, trace = digest._select_discovery_results(
+            generic_items + competitor_items,
+            module_order={"竞争对手": 0, "科技/技术": 1},
+            max_results=120,
+        )
+
+        selected_ids = {item["news_id"] for item in selected}
+        self.assertEqual(len(selected), 120)
+        self.assertTrue(
+            {item["news_id"] for item in competitor_items}.issubset(selected_ids)
+        )
+        self.assertEqual(trace["recognized_competitor_dropped_count"], 0)
+        self.assertIn("China Mobile", trace["competitor_counts"])
+
+    def test_competitor_items_expand_cap_instead_of_being_dropped(self):
+        competitor_items = [
+            {
+                "news_id": f"hkt-{index}",
+                "title": f"HKT operating update {index}",
+                "snippet": "HKT result",
+                "published_at": "2026-08-14T08:00:00+08:00",
+                "module": "竞争对手",
+                "canonical_competitor": "HKT",
+            }
+            for index in range(121)
+        ]
+        competitor_items.append(
+            {
+                "news_id": "china-mobile-results",
+                "title": "中国移动公布2026年中期业绩",
+                "snippet": "净利润及派息更新",
+                "published_at": "2026-08-14T08:01:00+08:00",
+                "module": "竞争对手",
+            }
+        )
+
+        selected, trace = digest._select_discovery_results(
+            competitor_items,
+            module_order={"竞争对手": 0},
+            max_results=120,
+        )
+
+        self.assertEqual(len(selected), 122)
+        self.assertIn(
+            "china-mobile-results",
+            {item["news_id"] for item in selected},
+        )
+        self.assertTrue(trace["cap_expanded_for_competitors"])
+        self.assertEqual(trace["recognized_competitor_dropped_count"], 0)
+
+    def test_new_sheet_competitor_is_protected_before_fixed_alias_update(self):
+        future_competitor = {
+            "news_id": "future-tel-result",
+            "title": "FutureTel publishes interim results",
+            "snippet": "FutureTel revenue increased",
+            "published_at": "2026-08-14T08:01:00+08:00",
+            "module": "竞争对手",
+            "keywords": ["FutureTel"],
+            "literal_keyword_match": True,
+        }
+        generic_items = [
+            {
+                "news_id": f"generic-{index}",
+                "title": f"General technology news {index}",
+                "snippet": "industry update",
+                "published_at": "2026-08-14T08:00:00+08:00",
+                "module": "科技/技术",
+            }
+            for index in range(130)
+        ]
+
+        selected, trace = digest._select_discovery_results(
+            generic_items + [future_competitor],
+            module_order={"竞争对手": 0, "科技/技术": 1},
+            max_results=120,
+        )
+
+        self.assertIn("future-tel-result", {item["news_id"] for item in selected})
+        self.assertEqual(
+            future_competitor["monitored_competitor_terms"],
+            ["FutureTel"],
+        )
+        self.assertEqual(trace["competitor_counts"]["监测词:FutureTel"], 1)
 
     def test_hkt_fixed_terms_cover_tap_and_go_chinese_and_english(self):
         hkt_terms = {

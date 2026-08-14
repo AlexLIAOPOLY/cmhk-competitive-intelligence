@@ -1975,6 +1975,7 @@ def _run_scan_impl(
     agentic_search = discovery_result.get("agentic_search") or {}
     fixed_search = agentic_search.get("fixed_search") or {}
     admission_gate = agentic_search.get("admission_gate") or {}
+    selection_gate = agentic_search.get("selection_gate") or {}
     agentic_rounds = agentic_search.get("rounds") or []
     _strategic_task_progress(
         crawl_run_id,
@@ -1996,6 +1997,27 @@ def _run_scan_impl(
             f"{_strategic_log_time(discovery_result.get('window_end'))}（香港时间）；"
             f"时间窗内接纳 {int(admission_gate.get('accepted_count') or 0)} 条，"
             f"窗外或日期无效 {int(admission_gate.get('rejected_count') or 0)} 条。"
+        ),
+    )
+    competitor_counts = selection_gate.get("competitor_counts") or {}
+    competitor_summary = "、".join(
+        f"{_clean_text(name, 80)} {int(count or 0)}条"
+        for name, count in competitor_counts.items()
+    )
+    _strategic_task_progress(
+        crawl_run_id,
+        stream_log_path,
+        "竞对候选保留门禁",
+        (
+            f"识别竞对候选 {int(selection_gate.get('recognized_competitor_count') or 0)} 条，"
+            f"保留后丢弃 {int(selection_gate.get('recognized_competitor_dropped_count') or 0)} 条；"
+            f"总量上限仅约束非竞对候选"
+            + (
+                "，本轮为完整保留竞对内容已自动扩展总量；"
+                if selection_gate.get("cap_expanded_for_competitors")
+                else "；"
+            )
+            + (f"主体分布：{competitor_summary}。" if competitor_summary else "本轮未识别到竞对候选。")
         ),
     )
     _strategic_task_progress(

@@ -124,6 +124,32 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(plans[0]["lookback_days"], 3)
         self.assertEqual(plans[0]["scheduled_crawl_signal_id"], "SCN-HKT-AI")
 
+    def test_scheduled_crawl_uses_headline_entity_over_aggregator_parent(self):
+        signal = {
+            "signal_id": "SCN-CHINA-MOBILE-RESULTS",
+            "crawl_run_id": "crawl-finance",
+            "config_row": "10",
+            "monitor_object": "SmarTone",
+            "monitor_category": "本地竞对财报",
+            "parent_url": "https://www.aastocks.com/en/stocks/news/aafn",
+            "target_url": "https://www.aastocks.com/en/stocks/news/aafn/NOW.1538114/2",
+            "title": "CHINA MOBILE 1H26 Net Profit Drops; Interim DPS Hikes",
+            "keywords": ["SmarTone", "CHINA", "MOBILE"],
+        }
+        with (
+            mock.patch.object(strategic_briefing, "_load_state", return_value={}),
+            mock.patch(
+                "scheduled_crawl_news_bridge.load_pending_signals",
+                return_value={"signals": [signal], "expired_signal_ids": []},
+            ),
+        ):
+            plans, _ = digest._scheduled_crawl_plans(
+                datetime(2026, 8, 14, 9, 0, tzinfo=HKT)
+            )
+
+        self.assertEqual(plans[0]["canonical_competitor"], "China Mobile")
+        self.assertNotEqual(plans[0]["canonical_competitor"], "SmarTone")
+
     def test_search_executor_preserves_scheduled_crawl_provenance(self):
         plan = {
             "module": "重大动态/技术",

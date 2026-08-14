@@ -22,7 +22,11 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import strategic_briefing
-from local_competitor_keywords import mandatory_search_groups, priority_for
+from local_competitor_keywords import (
+    canonical_competitors_for_text,
+    mandatory_search_groups,
+    priority_for,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -327,6 +331,98 @@ def _deduplicate(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return output
 
 
+def _tag_competitor_entities(item: dict[str, Any]) -> tuple[str, ...]:
+    """Attach content-backed competitor identities without trusting broad queries."""
+    existing = [
+        _clean_text(value, 120)
+        for value in (item.get("canonical_competitors") or [])
+        if _clean_text(value, 120)
+    ]
+    primary = _clean_text(item.get("canonical_competitor"), 120)
+    inferred = canonical_competitors_for_text(
+        item.get("title"),
+        item.get("snippet"),
+    )
+    entities = tuple(dict.fromkeys([primary, *existing, *inferred]))
+    entities = tuple(entity for entity in entities if entity)
+    if (
+        not entities
+        and "竞争对手" in _clean_text(item.get("module"), 100)
+        and bool(item.get("literal_keyword_match"))
+    ):
+        monitored_terms = tuple(
+            dict.fromkeys(
+                _clean_text(value, 120)
+                for value in (item.get("keywords") or [])
+                if _clean_text(value, 120)
+            )
+        )
+        if monitored_terms:
+            item["monitored_competitor_terms"] = list(monitored_terms)
+            return tuple(f"监测词:{term}" for term in monitored_terms)
+    if not entities:
+        return ()
+    item["canonical_competitors"] = list(entities)
+    if not primary:
+        item["canonical_competitor"] = entities[0]
+        item["canonical_competitor_source"] = "article_content_alias"
+    return entities
+
+
+def _competitor_priority(item: dict[str, Any]) -> int:
+    entities = _tag_competitor_entities(item)
+    if entities:
+        return min(priority_for(entity) for entity in entities)
+    return 2
+
+
+def _select_discovery_results(
+    items: list[dict[str, Any]],
+    *,
+    module_order: dict[str, int],
+    max_results: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Keep every recognized competitor item, then fill remaining global slots."""
+    ordered = sorted(
+        items,
+        key=lambda item: (
+            _competitor_priority(item),
+            module_order.get(str(item.get("module") or "其他"), 999),
+            -datetime.fromisoformat(str(item["published_at"])).timestamp(),
+        ),
+    )
+    competitor_items: list[dict[str, Any]] = []
+    other_items: list[dict[str, Any]] = []
+    competitor_counts: dict[str, int] = {}
+    for item in ordered:
+        entities = _tag_competitor_entities(item)
+        if not entities:
+            other_items.append(item)
+            continue
+        competitor_items.append(item)
+        for entity in entities:
+            competitor_counts[entity] = competitor_counts.get(entity, 0) + 1
+    remaining_slots = max(0, int(max_results) - len(competitor_items))
+    selected = competitor_items + other_items[:remaining_slots]
+    selected.sort(
+        key=lambda item: (
+            _competitor_priority(item),
+            module_order.get(str(item.get("module") or "其他"), 999),
+            -datetime.fromisoformat(str(item["published_at"])).timestamp(),
+        )
+    )
+    return selected, {
+        "candidate_count": len(items),
+        "configured_cap": int(max_results),
+        "result_count": len(selected),
+        "recognized_competitor_count": len(competitor_items),
+        "recognized_competitor_dropped_count": 0,
+        "non_competitor_kept_count": min(len(other_items), remaining_slots),
+        "cap_expanded_for_competitors": len(competitor_items) > int(max_results),
+        "competitor_counts": competitor_counts,
+    }
+
+
 BENCHMARK_OPERATOR_QUERIES: tuple[tuple[str, ...], ...] = (
     ("Vodafone", "BT Group", "Deutsche Telekom", "Telefonica"),
     ("AT&T", "Verizon", "T-Mobile", "SK Telecom", "Singtel"),
@@ -464,8 +560,13 @@ def _scheduled_crawl_plans(
             if _clean_text(keyword, 100)
         ]
         monitor_object = _clean_text(signal.get("monitor_object"), 200)
-        canonical = strategic_briefing._scheduled_signal_canonical_competitor(
-            monitor_object
+        headline_entities = canonical_competitors_for_text(headline)
+        canonical = (
+            headline_entities[0]
+            if headline_entities
+            else strategic_briefing._scheduled_signal_canonical_competitor(
+                monitor_object
+            )
         )
         plan = {
             "module": _clean_text(signal.get("monitor_category"), 100)
@@ -1219,30 +1320,17 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         "rejected_count": admission_rejected,
     }
     spec = {**spec, "agentic_search": agentic_trace}
+    for item in all_items:
+        _tag_competitor_entities(item)
     deduplicated = _deduplicate(all_items)
     module_order = {str(plan.get("module") or "其他"): index for index, plan in enumerate(plans)}
-    def competitor_priority(item: dict[str, Any]) -> int:
-        canonical = str(item.get("canonical_competitor") or "")
-        if canonical:
-            return priority_for(canonical)
-        text = " ".join(
-            str(item.get(key) or "")
-            for key in ("title", "snippet", "query", "keywords")
-        ).casefold()
-        if any(term in text for term in ("hkt", "hong kong telecommunications", "香港电讯", "香港電訊", "pccw", "电讯盈科", "電訊盈科", "csl", "1o1o")):
-            return 0
-        if any(term in text for term in ("hkbn", "smartone", "hgc", "3 hong kong", "i-cable")):
-            return 1
-        return 2
-
-    deduplicated.sort(
-        key=lambda item: (
-            competitor_priority(item),
-            module_order.get(str(item.get("module") or "其他"), 999),
-            -datetime.fromisoformat(str(item["published_at"])).timestamp(),
-        )
+    selected, selection_trace = _select_discovery_results(
+        deduplicated,
+        module_order=module_order,
+        max_results=MAX_RESULTS,
     )
-    return deduplicated[:MAX_RESULTS], errors, spec
+    agentic_trace["selection_gate"] = selection_trace
+    return selected, errors, spec
 
 
 def _latest_timed_crawl() -> dict[str, Any]:

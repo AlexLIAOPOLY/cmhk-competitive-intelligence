@@ -27,6 +27,8 @@ Official relationship references checked on 2026-07-24:
 
 from __future__ import annotations
 
+import re
+import unicodedata
 from typing import Any
 
 
@@ -39,7 +41,7 @@ LOCAL_COMPETITORS: tuple[dict[str, Any], ...] = (
         "search_groups": (
             ("HKT", "Hong Kong Telecommunications", "香港電訊", "香港电讯"),
             ("PCCW", "電訊盈科", "电讯盈科"),
-            ("csl", "1O1O", "Club SIM", "1O1O HOME"),
+            ("csl", "1O1O", "1010", "Club SIM", "1O1O HOME"),
             ("Tap & Go", "拍住賞", "拍住赏", "HKT Payment", "GoWallet"),
             ("NETVIGATOR", "網上行", "网上行", "Now TV", "Now E"),
             (
@@ -80,6 +82,7 @@ LOCAL_COMPETITORS: tuple[dict[str, Any], ...] = (
                 "和記電訊香港",
                 "和记电讯香港",
             ),
+            ("Hutchison",),
             ("3Business", "3SUPREME", "SoSIM", "MO+", "SUPREME Executive"),
         ),
     },
@@ -93,7 +96,7 @@ LOCAL_COMPETITORS: tuple[dict[str, Any], ...] = (
                 "環球全域電訊",
                 "环球全域电讯",
             ),
-            ("Macroview Telecom", "HGC Macroview", "HGC GlobalCentre"),
+            ("Macroview Telecom", "HGC Macroview", "HGC GlobalCentre", "環電", "环电"),
         ),
     },
     {
@@ -109,6 +112,20 @@ LOCAL_COMPETITORS: tuple[dict[str, Any], ...] = (
                 "周大福媒體娛樂",
             ),
             ("HOY TV", "HOY 76", "HOY 77", "HOY 78"),
+        ),
+    },
+    {
+        "canonical": "China Mobile",
+        "priority": 1,
+        "search_groups": (
+            (
+                "China Mobile",
+                "China Mobile Limited",
+                "中國移動",
+                "中国移动",
+                "中移動",
+            ),
+            ("中移动",),
         ),
     },
     {
@@ -128,6 +145,7 @@ LOCAL_COMPETITORS: tuple[dict[str, Any], ...] = (
                 "CTExcel",
                 "China Telecom CTExcel",
             ),
+            ("CTG", "中國電信", "中国电信"),
         ),
     },
     {
@@ -141,7 +159,8 @@ LOCAL_COMPETITORS: tuple[dict[str, Any], ...] = (
                 "中国联通香港",
                 "香港聯通",
             ),
-            ("CUniq", "MyCUniq", "CUniqSIM", "中國聯通國際", "中国联通国际"),
+            ("CUniq", "CUniq HK", "MyCUniq", "CUniqSIM"),
+            ("中國聯通", "中国联通", "中國聯通國際", "中国联通国际"),
         ),
     },
 )
@@ -176,6 +195,37 @@ def all_aliases() -> tuple[str, ...]:
             for term in group["terms"]
         )
     )
+
+
+def _alias_matches(text: str, alias: str) -> bool:
+    normalized_text = unicodedata.normalize("NFKC", str(text or "")).casefold()
+    normalized_alias = unicodedata.normalize("NFKC", str(alias or "")).casefold().strip()
+    if not normalized_text or not normalized_alias:
+        return False
+    if re.fullmatch(r"[a-z0-9.+& -]+", normalized_alias):
+        return bool(
+            re.search(
+                rf"(?<![a-z0-9]){re.escape(normalized_alias)}(?![a-z0-9])",
+                normalized_text,
+            )
+        )
+    return normalized_alias in normalized_text
+
+
+def canonical_competitors_for_text(*values: Any) -> tuple[str, ...]:
+    """Return every fixed competitor explicitly named in article content."""
+    text = " ".join(str(value or "") for value in values if str(value or "").strip())
+    matches: list[str] = []
+    for competitor in LOCAL_COMPETITORS:
+        canonical = str(competitor["canonical"])
+        aliases = (
+            term
+            for group in competitor.get("search_groups") or ()
+            for term in group
+        )
+        if any(_alias_matches(text, alias) for alias in aliases):
+            matches.append(canonical)
+    return tuple(matches)
 
 
 def priority_for(canonical: str) -> int:
