@@ -1441,7 +1441,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         self.assertIn('class="command-btn btn-library topbar-command" id="reportLibraryButton"', markup)
         topbar = markup[markup.index('<div class="header-tools">'):markup.index('<div class="header-runtime-status">')]
         self.assertNotIn('id="crawlButtonSecondary"', topbar)
-        self.assertIn('class="icon-button nav-link cockpit-link" href="/executive-dashboard-demo.html" title="经营驾驶舱"', topbar)
+        self.assertIn('class="icon-button nav-link cockpit-link" href="/executive-dashboard-demo.html" title="战略监控体系"', topbar)
         self.assertNotIn('href="/company-data.html"', topbar)
         library_header = markup[markup.index('<header class="report-library-header">'):]
         self.assertIn('class="command-btn btn-fetch" id="crawlButtonSecondary"', library_header)
