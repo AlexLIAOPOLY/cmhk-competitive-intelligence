@@ -48,7 +48,7 @@ AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 DEFAULT_STRATEGY_AI_MODEL = "DeepSeek-V4-Pro"
-AI_EDITOR_VERSION = 22
+AI_EDITOR_VERSION = 23
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
@@ -239,6 +239,45 @@ _STRATEGIC_INCLUSION_GUIDANCE = (
     "资本与并购、网络安全、宏观与地缘、无；business_impact只能取收入与需求、成本与效率、"
     "客户与渠道、产品与定价、网络与运营、合规与牌照、资本配置、供应韧性、竞争格局、无；"
     "入选时exclusion_code必须为‘无’，排除时signal_type和business_impact必须为‘无’。"
+)
+_AI_EDITOR_FEW_SHOT_GUIDANCE = (
+    "以下三个完整样例只用于说明字段关系和枚举值，不得照抄样例事实。"
+    "样例一，竞对直通："
+    '{"id":"example-c","title":"T-Mobile上调自由现金流指引",'
+    '"summary":"T-Mobile基于最新经营表现上调年度自由现金流指引。",'
+    '"should_include":true,"region":"国际/行业","category":"竞对动态",'
+    '"keywords":"T-Mobile","inclusion_reason":"T-Mobile上调现金流指引，可用于对标竞对资本配置。",'
+    '"region_reason":"事件主体与主要市场在香港以外。","decision_path":"竞对直通",'
+    '"signal_type":"竞对经营动作","business_impact":"资本配置","exclusion_code":"无"}。'
+    "样例二，战略信号："
+    '{"id":"example-s","title":"香港监管机构公布新一轮频谱安排",'
+    '"summary":"香港监管机构公布新一轮频谱分配时间和申请安排。",'
+    '"should_include":true,"region":"香港本地","category":"政策监管",'
+    '"keywords":"频谱","inclusion_reason":"新频谱安排会影响运营商牌照、投资与网络部署计划。",'
+    '"region_reason":"发布主体与受影响市场均为香港。","decision_path":"战略信号",'
+    '"signal_type":"监管政策","business_impact":"合规与牌照","exclusion_code":"无"}。'
+    "样例三，明显误命中："
+    '{"id":"example-x","title":"日本政府据报支持央行近期加息",'
+    '"summary":"i-CABLE报道日本政府支持央行近期加息，事件主体与有线宽频无关。",'
+    '"should_include":false,"region":"国际/行业",'
+    '"category":"宏观经济&国际形势&地缘政治&其他国际性质关注词汇",'
+    '"keywords":"i-CABLE、有线宽频",'
+    '"inclusion_reason":"i-CABLE仅为来源媒体，事件主体是日本政府与央行。",'
+    '"region_reason":"事件主体与受影响市场在日本。","decision_path":"排除",'
+    '"signal_type":"无","business_impact":"无","exclusion_code":"关键词偶然出现"}。'
+    "注意：历史字段inclusion_reason在should_include=false时必须写具体排除依据，"
+    "不得只写‘无’。exclusion_code只能逐字使用：同名或主体误判、"
+    "体育娱乐或生活噪音、关键词偶然出现、非独立新闻或广告资料页、缺少具体事件、"
+    "无电信战略影响、重复或过期、其他明确噪音、无。"
+)
+_AI_EDITOR_COMPACT_FEW_SHOT_GUIDANCE = (
+    "紧凑样例：竞对财报用"
+    '{"id":"example-c","route":"C","signal":"C","impact":"A","exclude":"0","region":"I"}；'
+    "香港频谱政策用"
+    '{"id":"example-s","route":"S","signal":"R","impact":"L","exclude":"0","region":"H"}；'
+    "i-CABLE仅为媒体名、事件主体无关时用"
+    '{"id":"example-x","route":"X","signal":"0","impact":"0","exclude":"3","region":"I"}。'
+    "样例只说明字段关系，实际输出不得包含example id。"
 )
 _SOFT_PRIORITY_GUIDANCE = (
     "内容组合采用AI软优先级，不是程序硬拦截：香港监管政策、牌照频谱及政府产业政策，与香港本地"
@@ -2866,6 +2905,49 @@ def _validate_temporal_fidelity(source_text: Any, authored_summary: Any) -> None
             )
 
 
+def _normalize_exclusion_code(value: Any) -> str:
+    """Normalize clear natural-language aliases without hiding unknown values."""
+    original = _to_simplified_chinese(value, 80)
+    if original in _EXCLUSION_CODES:
+        return original
+    normalized = re.sub(r"[\s\-_/，。；：、]+", "", original).casefold()
+    alias_patterns = (
+        (
+            "关键词偶然出现",
+            (
+                "媒体名", "媒体名称", "来源媒体", "网址", "域名", "url",
+                "搜索提示", "关键词仅", "关键词只", "偶然提及", "偶然出现",
+            ),
+        ),
+        (
+            "同名或主体误判",
+            ("同名", "主体误判", "主体无关", "非事件主体", "不是事件主体", "缩写误判"),
+        ),
+        (
+            "体育娱乐或生活噪音",
+            ("体育", "娱乐", "生活噪音", "明星", "健康资讯"),
+        ),
+        (
+            "非独立新闻或广告资料页",
+            ("非独立新闻", "广告", "资料页", "产品页", "首页", "导航页"),
+        ),
+        (
+            "缺少具体事件",
+            ("缺少具体事件", "无具体事件", "没有具体事件", "无新变化", "纯评论", "仅为观点"),
+        ),
+        (
+            "无电信战略影响",
+            ("无电信战略影响", "与电信无关", "无电信影响", "无战略影响"),
+        ),
+        ("重复或过期", ("重复", "过期", "旧闻", "已发布")),
+        ("其他明确噪音", ("其他明确噪音", "明确噪音")),
+    )
+    for canonical, patterns in alias_patterns:
+        if any(pattern in normalized for pattern in patterns):
+            return canonical
+    return original
+
+
 def _validated_ai_copy(
     value: dict[str, Any], *, require_review_fields: bool = False,
     require_decision_fields: bool = False, allowed_keywords: Any = None,
@@ -2946,7 +3028,7 @@ def _validated_ai_copy(
     decision_path = _to_simplified_chinese(value.get("decision_path"), 20)
     signal_type = _to_simplified_chinese(value.get("signal_type"), 20)
     business_impact = _to_simplified_chinese(value.get("business_impact"), 20)
-    exclusion_code = _to_simplified_chinese(value.get("exclusion_code"), 30)
+    exclusion_code = _normalize_exclusion_code(value.get("exclusion_code"))
     if require_decision_fields:
         category = _normalize_decision_category(
             category,
@@ -2995,16 +3077,21 @@ def _validated_ai_copy(
     if should_include and not exclusion_code:
         exclusion_code = "无"
     if decision_path == "排除":
-        signal_type = signal_type or "无"
-        business_impact = business_impact or "无"
+        signal_type = "无"
+        business_impact = "无"
+        if exclusion_code in _EXCLUSION_CODES and exclusion_code != "无":
+            if len(inclusion_reason) < 8:
+                inclusion_reason = f"排除依据：{exclusion_code}。"
     if region not in {"香港本地", "国际/行业"}:
         raise RuntimeError("公司内部 AI 未返回有效地域")
     if category not in _ALLOWED_NEWS_CATEGORIES:
         raise RuntimeError("公司内部 AI 未返回分类")
     if should_include and not keywords:
         raise RuntimeError("公司内部 AI 未返回命中关键词")
-    if len(inclusion_reason) < 8:
+    if should_include and len(inclusion_reason) < 8:
         raise RuntimeError("公司内部 AI 未返回有效入池理由")
+    if not should_include and len(inclusion_reason) < 8:
+        raise RuntimeError("公司内部 AI 未返回有效排除依据")
     if len(region_reason) < 4:
         raise RuntimeError("公司内部 AI 未返回有效地域依据")
     if require_decision_fields:
@@ -3562,9 +3649,11 @@ def polish_candidates_before_review(
                     f"{_STRATEGIC_INCLUSION_GUIDANCE}"
                     f"{_SOFT_PRIORITY_GUIDANCE}"
                     f"{_TEMPORAL_FIDELITY_GUIDANCE}"
+                    f"{_AI_EDITOR_FEW_SHOT_GUIDANCE}"
                     "keywords只能从输入matched_keywords中选择"
                     "实际命中的原词，用顿号分隔；严禁新增、改写、翻译或补充任何关键词。"
-                    "inclusion_reason必须写明‘具体事件事实→具体业务影响’，不得只写有或无战略价值。"
+                    "入选时inclusion_reason必须写明‘具体事件事实→具体业务影响’；"
+                    "排除时该历史字段必须写具体排除依据，不得只写‘无’。"
                     "region_reason简述事件地域证据。只依据输入事实，不补造数字、主体、因果或影响，不要Markdown。"
                 ),
                 json.dumps({"items": request_items}, ensure_ascii=False),
@@ -3623,7 +3712,7 @@ def polish_candidates_before_review(
             try:
                 compact_response = _call_internal_ai(
                     (
-                        "你是公司内部战略新闻审核员。上一轮长格式输出漏掉了部分输入。"
+                        "你是公司内部战略新闻审核员。上一轮长格式输出存在缺项或字段未通过校验。"
                         "只输出合法JSON对象，结构为"
                         "{\"items\":[{\"id\":\"输入id\",\"route\":\"C或S或X\","
                         "\"signal\":\"代码\",\"impact\":\"代码\",\"exclude\":\"代码\","
@@ -3647,6 +3736,7 @@ def polish_candidates_before_review(
                         "存在可验证的新动作、数据或变化就选S，影响较间接也不能因此选X。"
                         f"{_SOFT_PRIORITY_GUIDANCE}"
                         f"{_TEMPORAL_FIDELITY_GUIDANCE}"
+                        f"{_AI_EDITOR_COMPACT_FEW_SHOT_GUIDANCE}"
                         "纯评论、观点、形势讨论和没有新变化的分析选X。"
                         "只依据输入事实，不要Markdown。"
                     ),
@@ -3786,8 +3876,10 @@ def polish_candidates_before_review(
                         f"{_STRATEGIC_INCLUSION_GUIDANCE}"
                         f"{_SOFT_PRIORITY_GUIDANCE}"
                         f"{_TEMPORAL_FIDELITY_GUIDANCE}"
+                        f"{_AI_EDITOR_FEW_SHOT_GUIDANCE}"
                         "keywords只能逐字选自输入matched_keywords，禁止新增或改写，"
-                        "并用顿号分隔；inclusion_reason必须写明具体事件事实到具体业务影响；"
+                        "并用顿号分隔；入选时inclusion_reason写明具体事件事实到具体业务影响，"
+                        "排除时该历史字段改写具体排除依据，不得只写无；"
                         "region_reason说明地域证据。仅使用输入已有事实，不补造内容，不要Markdown。"
                     )
                     single_user_prompt = json.dumps(source, ensure_ascii=False)

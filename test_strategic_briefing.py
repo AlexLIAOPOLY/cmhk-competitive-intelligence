@@ -1556,6 +1556,63 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("社区活动", result["summary"])
         self.assertFalse(result["should_include"])
 
+    def test_excluded_media_name_alias_is_normalized_without_retry(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "日本政府据报支持央行近期加息",
+                "summary": "i-CABLE报道日本政府支持央行近期加息，事件主体与有线宽频无关。",
+                "should_include": False,
+                "region": "国际/行业",
+                "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+                "keywords": "i-CABLE、有线宽频",
+                "inclusion_reason": "无",
+                "region_reason": "事件主体与受影响市场在日本。",
+                "decision_path": "排除",
+                "signal_type": "无",
+                "business_impact": "无",
+                "exclusion_code": "关键词仅在媒体名中出现",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords=["i-CABLE", "有线宽频"],
+        )
+
+        self.assertFalse(result["should_include"])
+        self.assertEqual(result["exclusion_code"], "关键词偶然出现")
+        self.assertGreaterEqual(len(result["inclusion_reason"]), 8)
+
+    def test_unknown_exclusion_reason_is_still_rejected(self):
+        with self.assertRaisesRegex(RuntimeError, "有效排除原因代码"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "海外企业发布社区活动简报",
+                    "summary": "该企业介绍社区活动，并在背景材料中偶然提到人工智能。",
+                    "should_include": False,
+                    "region": "国际/行业",
+                    "category": "行业动态",
+                    "keywords": "AI",
+                    "inclusion_reason": "这是一个无法归一的自由文本理由。",
+                    "region_reason": "事件发生在海外市场。",
+                    "decision_path": "排除",
+                    "signal_type": "无",
+                    "business_impact": "无",
+                    "exclusion_code": "模型不喜欢这条新闻",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords=["AI"],
+            )
+
+    def test_editor_prompts_include_three_complete_few_shot_routes(self):
+        guidance = briefing._AI_EDITOR_FEW_SHOT_GUIDANCE
+        self.assertIn('"decision_path":"竞对直通"', guidance)
+        self.assertIn('"decision_path":"战略信号"', guidance)
+        self.assertIn('"decision_path":"排除"', guidance)
+        self.assertIn("不得只写‘无’", guidance)
+        self.assertIn('"route":"C"', briefing._AI_EDITOR_COMPACT_FEW_SHOT_GUIDANCE)
+        self.assertIn('"route":"S"', briefing._AI_EDITOR_COMPACT_FEW_SHOT_GUIDANCE)
+        self.assertIn('"route":"X"', briefing._AI_EDITOR_COMPACT_FEW_SHOT_GUIDANCE)
+
     def test_single_item_retry_accepts_batch_wrapper(self):
         item = {
             "module": "政策/法规类",
