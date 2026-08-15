@@ -1070,6 +1070,33 @@ def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
         _information_flow(item),
     ]
 
+
+def _same_day_semantic_history(
+    history_items: list[dict[str, Any]],
+    *,
+    generated_at: str = "",
+    candidate_items: list[dict[str, Any]] | None = None,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Limit semantic history to the current Hong Kong search day."""
+    search_day = _search_date(generated_at or _now_iso())
+    candidate_days = {
+        _search_date(
+            item.get("search_date")
+            or item.get("searched_at")
+            or item.get("retrieved_at")
+            or generated_at
+        )
+        for item in (candidate_items or [])
+    }
+    candidate_days.discard("")
+    if len(candidate_days) == 1:
+        search_day = next(iter(candidate_days))
+    return search_day, [
+        item
+        for item in history_items
+        if _search_date(item.get("search_date")) == search_day
+    ]
+
 def sync_candidates(
     items: list[dict[str, Any]],
     *,
@@ -1174,21 +1201,30 @@ def sync_candidates(
             if progress_callback is not None
             else polish_candidates_before_review(curated_items)
         )
+        semantic_search_day, semantic_history_items = _same_day_semantic_history(
+            existing_history_items,
+            generated_at=generated_at,
+            candidate_items=curated_items,
+        )
         _progress(
             progress_callback,
             "AI逐条审核",
-            f"AI审核结束，保留 {len(prepared_items)}/{len(curated_items)} 条，即将进入全历史去重。",
+            (
+                f"AI审核结束，保留 {len(prepared_items)}/{len(curated_items)} 条；"
+                f"即将仅对 {semantic_search_day} 当日历史 "
+                f"{len(semantic_history_items)} 条去重。"
+            ),
         )
         semantic_result = (
             agent_semantic_deduplicate_candidates(
                 prepared_items,
-                existing_history_items,
+                semantic_history_items,
                 progress_callback=progress_callback,
             )
             if progress_callback is not None
             else agent_semantic_deduplicate_candidates(
                 prepared_items,
-                existing_history_items,
+                semantic_history_items,
             )
         )
         prepared_items = semantic_result["kept"]
@@ -1369,6 +1405,8 @@ def sync_candidates(
                 "last_semantic_deferred_count": len(semantic_result["deferred"]),
                 "last_semantic_history_count": semantic_result["history_count"],
                 "last_semantic_history_shards": semantic_result["history_shards"],
+                "last_semantic_history_scope": "same_hkt_search_day",
+                "last_semantic_search_day": semantic_search_day,
                 GATE_METADATA_STATE_KEY: candidate_gate_metadata,
                 "last_sync_at": _now_iso(),
                 "group_notifications_paused": _group_notifications_paused(),
@@ -1394,6 +1432,8 @@ def sync_candidates(
             "semantic_deferred_count": len(semantic_result["deferred"]),
             "semantic_history_count": semantic_result["history_count"],
             "semantic_history_shards": semantic_result["history_shards"],
+            "semantic_history_scope": "same_hkt_search_day",
+            "semantic_search_day": semantic_search_day,
         }
 
 def _normalized_status(value: Any) -> str:

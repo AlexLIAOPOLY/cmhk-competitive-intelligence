@@ -287,6 +287,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         writes = []
         read_count = [0]
         progress_events = []
+        semantic_histories = []
 
         def read_rows(_sheet_id):
             read_count[0] += 1
@@ -321,8 +322,9 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             mock.patch.object(
                 strategic_briefing,
                 "agent_semantic_deduplicate_candidates",
-                side_effect=lambda items, history, **_kwargs: self._semantic_keep(
-                    items, history
+                side_effect=lambda items, history, **_kwargs: (
+                    semantic_histories.append(history)
+                    or self._semantic_keep(items, history)
                 ),
             ),
         ):
@@ -354,6 +356,9 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual([cell_range for cell_range, _ in writes], ["A2:N3"])
         self.assertEqual(writes[0][1][0][6], "今日新新闻")
         self.assertEqual(writes[0][1][1], self._existing_row())
+        self.assertEqual(semantic_histories, [[]])
+        self.assertEqual(result["semantic_history_scope"], "same_hkt_search_day")
+        self.assertEqual(result["semantic_search_day"], "2026-07-22")
         progress_phases = [phase for phase, _detail in progress_events]
         for phase in (
             "飞书审核表准备",
@@ -371,6 +376,20 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             metadata["https://example.com/new"]["published_at"],
             "2026-07-22",
         )
+
+    def test_same_day_semantic_history_keeps_morning_and_excludes_prior_days(self):
+        search_day, history = review_sheet._same_day_semantic_history(
+            [
+                {"news_id": "morning", "search_date": "2026-08-15"},
+                {"news_id": "prior", "search_date": "2026-08-14"},
+                {"news_id": "malformed", "search_date": ""},
+            ],
+            generated_at="2026-08-15T15:05:00+08:00",
+            candidate_items=[{"search_date": "2026-08-15"}],
+        )
+
+        self.assertEqual(search_day, "2026-08-15")
+        self.assertEqual([item["news_id"] for item in history], ["morning"])
 
     def test_sync_places_current_batch_first_when_search_dates_match(self):
         writes = []

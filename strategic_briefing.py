@@ -4682,45 +4682,78 @@ def agent_semantic_deduplicate_candidates(
             )
 
     independently_confirmed: list[dict[str, Any]] = []
-    for candidate in candidates:
-        record = aggregate[candidate["id"]]
-        if (
-            record["is_duplicate"]
-            or record["errors"]
-            or record["assessed_shards"] != len(chunks)
-        ):
-            continue
+    confirmation_candidates = [
+        candidate
+        for candidate in candidates
+        if not aggregate[candidate["id"]]["is_duplicate"]
+        and not aggregate[candidate["id"]]["errors"]
+        and aggregate[candidate["id"]]["assessed_shards"] == len(chunks)
+    ]
+    for offset in range(0, len(confirmation_candidates), SEMANTIC_DEDUPE_BATCH_SIZE):
+        confirmation_batch = confirmation_candidates[
+            offset : offset + SEMANTIC_DEDUPE_BATCH_SIZE
+        ]
         _emit_progress(
             progress_callback,
             "去重独立复核",
             (
-                f"正在复核候选 {candidate['order']}/{len(candidates)}"
-                f"（ID {candidate['id'][:20]}）。"
+                f"正在批量复核 {offset + 1}-"
+                f"{offset + len(confirmation_batch)}/{len(confirmation_candidates)} 条候选。"
             ),
         )
         try:
             decisions = _call_semantic_dedupe_agent(
-                [candidate],
+                confirmation_batch,
                 history=[],
-                priority_history=priority_by_id[candidate["id"]],
+                priority_history=list(
+                    {
+                        entry["id"]: entry
+                        for candidate in confirmation_batch
+                        for entry in priority_by_id[candidate["id"]]
+                    }.values()
+                ),
                 earlier_candidates=independently_confirmed,
             )
-            decision = decisions[candidate["id"]]
-        except Exception as exc:
-            record["errors"].append(
-                f"independent confirmation: {_clean_text(exc, 240)}"
+        except Exception as batch_exc:
+            logging.error(
+                "语义去重独立批量复核失败，本批 %s 条当轮全部逐条复审：%s",
+                len(confirmation_batch),
+                _clean_text(batch_exc, 240),
             )
-            continue
-        if decision["is_duplicate"]:
-            record.update(
-                {
-                    "is_duplicate": True,
-                    "duplicate_of": decision["duplicate_of"],
-                    "reason": decision["reason"],
-                }
-            )
-        else:
-            independently_confirmed.append(candidate)
+            decisions = {}
+            for candidate in confirmation_batch:
+                try:
+                    decisions.update(
+                        _call_semantic_dedupe_agent(
+                            [candidate],
+                            history=[],
+                            priority_history=priority_by_id[candidate["id"]],
+                            earlier_candidates=independently_confirmed,
+                        )
+                    )
+                except Exception as exc:
+                    aggregate[candidate["id"]]["errors"].append(
+                        f"independent confirmation: {_clean_text(exc, 240)}"
+                    )
+                    continue
+                decision = decisions[candidate["id"]]
+                if not decision["is_duplicate"]:
+                    independently_confirmed.append(candidate)
+        for candidate in confirmation_batch:
+            record = aggregate[candidate["id"]]
+            decision = decisions.get(candidate["id"])
+            if not decision:
+                continue
+            if decision["is_duplicate"]:
+                record.update(
+                    {
+                        "is_duplicate": True,
+                        "duplicate_of": decision["duplicate_of"],
+                        "reason": decision["reason"],
+                    }
+                )
+            elif candidate not in independently_confirmed:
+                independently_confirmed.append(candidate)
 
     kept: list[dict[str, Any]] = []
     duplicates: list[dict[str, Any]] = []

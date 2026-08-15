@@ -2593,11 +2593,7 @@ class StrategicBriefingTests(unittest.TestCase):
                         "is_duplicate": False,
                         "duplicate_of": "",
                         "reason": "独立复核未发现更早的相同活动。",
-                    }
-                ]
-            },
-            {
-                "items": [
+                    },
                     {
                         "id": "candidate-b",
                         "is_duplicate": True,
