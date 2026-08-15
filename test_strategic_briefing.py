@@ -969,6 +969,62 @@ class StrategicBriefingTests(unittest.TestCase):
             ["Bearer exhausted-key", "Bearer secondary-key"],
         )
 
+    def test_strategic_ai_switches_to_model_bound_fallback(self):
+        access_error = briefing.HTTPError(
+            "http://internal/chat/completions",
+            401,
+            "Unauthorized",
+            {},
+            io.BytesIO(
+                json.dumps(
+                    {
+                        "error": {
+                            "type": "team_model_access_denied",
+                            "code": "401",
+                            "message": "Team not allowed to access model",
+                        }
+                    }
+                ).encode()
+            ),
+        )
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {"message": {"content": json.dumps({"ok": True})}}
+                ]
+            }
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.side_effect = [access_error, response]
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://10.0.62.177:4000/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "v4-key",
+                    "strategy_api_keys": ["v4-key"],
+                    "model_api_keys": {"deepseek-v4-free": ["free-key"]},
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            result = briefing._call_internal_ai("system", "user")
+
+        self.assertEqual(result, {"ok": True})
+        requests = [call.args[0] for call in opener.open.call_args_list]
+        self.assertEqual(
+            [json.loads(request.data)["model"] for request in requests],
+            ["DeepSeek-V4-Pro", "deepseek-v4-free"],
+        )
+        self.assertEqual(
+            [request.get_header("Authorization") for request in requests],
+            ["Bearer v4-key", "Bearer free-key"],
+        )
+
     def _approved_brief(self) -> dict:
         return {
             "id": "NEWS-TEST",

@@ -2514,7 +2514,7 @@ def _call_internal_ai(
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
     configured_keys = config.get("strategy_api_keys")
-    api_keys = [
+    strategy_api_keys = [
         _clean_text(value, 500)
         for value in (
             configured_keys if isinstance(configured_keys, list) else []
@@ -2523,8 +2523,8 @@ def _call_internal_ai(
     ]
     fallback_key = _clean_text(config.get("api_key"), 500)
     if fallback_key:
-        api_keys.append(fallback_key)
-    api_keys = list(dict.fromkeys(api_keys)) or [""]
+        strategy_api_keys.append(fallback_key)
+    strategy_api_keys = list(dict.fromkeys(strategy_api_keys)) or [""]
     configured_model = str(config.get("model") or "")
     # Prefer the higher-quality review model for strategic-news decisions. Speed
     # is secondary here because an incorrect exclusion can hide a useful signal.
@@ -2537,15 +2537,25 @@ def _call_internal_ai(
     )
     if not base_url or not model:
         raise RuntimeError("公司内部 AI 配置不完整")
-    request_body = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        "temperature": 0.1,
-        "max_tokens": max_tokens,
-    }
+    routes: list[tuple[str, str]] = [
+        (model, api_key) for api_key in strategy_api_keys
+    ]
+    model_api_keys = config.get("model_api_keys")
+    if isinstance(model_api_keys, dict):
+        for route_model, route_keys in model_api_keys.items():
+            normalized_model = _clean_text(route_model, 120)
+            if not normalized_model:
+                continue
+            if isinstance(route_keys, str):
+                route_keys = [route_keys]
+            if not isinstance(route_keys, list):
+                continue
+            routes.extend(
+                (normalized_model, normalized_key)
+                for value in route_keys
+                if (normalized_key := _clean_text(value, 500))
+            )
+    routes = list(dict.fromkeys(routes))
     opener = build_opener(ProxyHandler({}))
     timeout_seconds = max(
         30,
@@ -2554,7 +2564,16 @@ def _call_internal_ai(
     attempts = max(1, int(os.environ.get("CMHK_STRATEGY_AI_ATTEMPTS", "4")))
     payload: dict[str, Any] = {}
     request_succeeded = False
-    for key_index, api_key in enumerate(api_keys, start=1):
+    for route_index, (route_model, api_key) in enumerate(routes, start=1):
+        request_body = {
+            "model": route_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": 0.1,
+            "max_tokens": max_tokens,
+        }
         headers = {"Content-Type": "application/json"}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
@@ -2603,19 +2622,26 @@ def _call_internal_ai(
                 key_unavailable = (
                     "budget_exceeded" in {error_type, error_code}
                     or "budget has been exceeded" in error_message
-                    or "key_model_access_denied" in {error_type, error_code}
+                    or error_type
+                    in {"key_model_access_denied", "team_model_access_denied"}
+                    or error_code
+                    in {"key_model_access_denied", "team_model_access_denied"}
+                    or "not allowed to access model" in error_message
+                    or "can only access models" in error_message
                 )
-                if key_unavailable and key_index < len(api_keys):
+                if key_unavailable and route_index < len(routes):
                     logging.warning(
-                        "战略新闻AI密钥 %s/%s 额度耗尽或无模型权限，自动切换下一把。",
-                        key_index,
-                        len(api_keys),
+                        "战略新闻AI路由 %s/%s（%s）额度耗尽或无模型权限，"
+                        "自动切换下一路由。",
+                        route_index,
+                        len(routes),
+                        route_model,
                     )
                     switch_key = True
                     break
                 if key_unavailable:
                     raise RuntimeError(
-                        "战略新闻AI所有配置密钥均额度耗尽或无模型权限"
+                        "战略新闻AI所有配置路由均额度耗尽或无模型权限"
                     ) from exc
                 retryable = exc.code == 429 or 500 <= exc.code < 600
                 if not retryable or attempt >= attempts:

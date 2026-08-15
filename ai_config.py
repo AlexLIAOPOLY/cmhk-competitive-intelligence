@@ -80,6 +80,11 @@ def save_ai_config(payload: dict[str, Any]) -> dict[str, Any]:
         "api_key": api_key,
         "extra_parameters": extra_parameters,
     }
+    # These fields are managed locally because they may contain several secret
+    # keys. Preserve them when the ordinary single-key settings form is saved.
+    for field in ("strategy_api_keys", "model_api_keys"):
+        if field in current:
+            config[field] = current[field]
     AI_CONFIG_PATH.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
     return load_ai_config(include_key=False)
 
