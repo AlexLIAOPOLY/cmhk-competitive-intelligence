@@ -36,6 +36,10 @@
     <string>1</string>
     <key>CMHK_DISABLE_FREQUENCY_SCHEDULER</key>
     <string>1</string>
+    <key>CMHK_STRATEGY_AI_MODEL</key>
+    <string>DeepSeek-V4-Pro</string>
+    <key>CMHK_STRATEGY_AI_RESCUE_MODEL</key>
+    <string>deepseek-v4</string>
     <key>CMHK_STRATEGIC_GROUP_NOTIFICATIONS</key>
     <string>1</string>
     <key>CMHK_DASHBOARD_PAGES_AUTO_PUBLISH</key>
