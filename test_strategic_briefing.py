@@ -17,6 +17,94 @@ class StrategicBriefingTests(unittest.TestCase):
         critic.start()
         self.addCleanup(critic.stop)
 
+    def test_obvious_mismatch_gate_rejects_only_fully_ungrounded_5g_match(self):
+        reason = briefing._obvious_mismatch_exclusion_reason(
+            {
+                "title": "印度三大油企转向美国LPG寻求能源供应多元化",
+                "snippet": "企业计划采购液化石油气以分散能源来源。",
+                "module": "基础设施/网络/技术类",
+                "keywords": "5G-Advanced、5.5G、6G R&D、5G",
+            },
+            {"should_include": True, "keywords": "5G-Advanced、5G"},
+        )
+
+        self.assertIn("移动通信监控词无正文证据", reason)
+
+    def test_obvious_mismatch_gate_preserves_ungrounded_but_plausibly_useful_news(self):
+        cases = [
+            {
+                "title": "FCC称Starlink在美用户超700万",
+                "snippet": "SpaceX卫星互联网订阅用户大幅增长。",
+                "module": "竞争对手",
+                "keywords": "AT&T、Verizon、T-Mobile",
+            },
+            {
+                "title": "An airline leaked my passport online",
+                "snippet": "Passenger passport details were exposed by an airline.",
+                "module": "政策/法规类",
+                "keywords": "Personal Data、跨境数据流动",
+            },
+            {
+                "title": "2026 OCP APAC Summit | Microsoft | From Silicon to Systems",
+                "snippet": "Microsoft discusses infrastructure design at OCP APAC.",
+                "module": "基础设施/网络/技术类",
+                "keywords": "CPU、5G-Advanced",
+            },
+        ]
+
+        for source_item in cases:
+            with self.subTest(title=source_item["title"]):
+                self.assertEqual(
+                    briefing._obvious_mismatch_exclusion_reason(
+                        source_item,
+                        {
+                            "should_include": True,
+                            "keywords": source_item["keywords"],
+                        },
+                    ),
+                    "",
+                )
+
+    def test_obvious_mismatch_gate_preserves_grounded_keyword_edge_news(self):
+        reason = briefing._obvious_mismatch_exclusion_reason(
+            {
+                "title": "DFI集团与GNC扩大合作至新加坡成港澳星独家分销商",
+                "snippet": "合作覆盖港澳及新加坡市场。",
+                "module": "行业动态",
+                "keywords": "港澳",
+            },
+            {"should_include": True, "keywords": "港澳"},
+        )
+
+        self.assertEqual(reason, "")
+
+    def test_obvious_mismatch_gate_preserves_independent_ai_signal(self):
+        reason = briefing._obvious_mismatch_exclusion_reason(
+            {
+                "title": "字节跳动AI工具豆包推荐酒店抽取12%佣金引争议",
+                "snippet": "AI平台商业化佣金模式受到质疑。",
+                "module": "竞争对手",
+                "keywords": "HGC、SmarTone",
+            },
+            {"should_include": True, "keywords": "HGC、SmarTone"},
+        )
+
+        self.assertEqual(reason, "")
+
+    def test_obvious_mismatch_gate_never_removes_confirmed_competitor(self):
+        reason = briefing._obvious_mismatch_exclusion_reason(
+            {
+                "title": "Singtel下周发布财报",
+                "snippet": "新电信将披露最新季度业绩。",
+                "module": "竞争对手",
+                "keywords": "云网融合",
+                "canonical_competitor": "Singtel",
+            },
+            {"should_include": True, "keywords": "云网融合"},
+        )
+
+        self.assertEqual(reason, "")
+
     def test_public_snapshot_exposes_dated_candidate_activity_for_empty_state_charts(self):
         with (
             mock.patch.object(briefing, "_load_state", return_value={}),

@@ -572,6 +572,139 @@ def _split_keywords(value: str) -> list[str]:
     return terms
 
 
+_OBVIOUS_MISMATCH_COMPETITOR_TERMS = (
+    "hkt", "pccw", "csl", "1o1o", "1010", "香港电讯", "香港電訊",
+    "hkbn", "香港宽频", "香港寬頻", "smartone", "数码通", "數碼通",
+    "3 hong kong", "3hk", "hgc", "环球全域电讯", "環球全域電訊",
+    "i-cable", "有线宽频", "有線寬頻", "china mobile", "中国移动", "中國移動",
+    "china telecom", "中国电信", "中國電信", "china unicom", "中国联通", "中國聯通",
+    "at&t", "verizon", "t-mobile", "vodafone", "orange", "telstra", "singtel",
+    "kddi", "ntt docomo", "softbank", "jio", "turkcell", "bsnl",
+)
+_OBVIOUS_MISMATCH_HONG_KONG_TERMS = (
+    "hong kong", "香港", "港府", "特区政府", "特區政府", "港元",
+    "大湾区", "大灣區", "河套", "北部都会区", "北部都會區", "港澳", "深港",
+)
+_OBVIOUS_MISMATCH_TECH_TERMS = (
+    "telecom", "telecommunications", "mobile network", "carrier", "operator", "电信", "電信",
+    "通信", "通訊", "运营商", "運營商", "5g", "6g", "spectrum", "频谱", "頻譜",
+    "broadband", "宽带", "寬頻", "fiber", "光纤", "光纖", "esim", "mvno", "roaming",
+    "satellite", "卫星", "衛星", "data center", "data centre", "数据中心", "數據中心",
+    "cloud", "云计算", "雲計算", "算力", "server", "服务器", "伺服器", "cpu", "gpu",
+    "chip", "semiconductor", "芯片", "晶片", "artificial intelligence", "machine learning",
+    "ai", "人工智能", "人工智慧", "大模型", "iot", "物联网", "物聯網",
+    "cyber", "网络安全", "網絡安全", "data privacy", "personal data", "个人信息",
+    "wifi", "wi-fi", "传感器", "傳感器", "sensor", "digital infrastructure", "数字基础设施",
+)
+_OBVIOUS_MISMATCH_MACRO_TERMS = (
+    "gdp", "cpi", "inflation", "通胀", "利率", "interest rate", "tariff", "关税", "關稅",
+    "sanction", "制裁", "war", "战争", "戰爭", "military", "军事", "軍事", "diplomacy",
+    "外交", "trade", "贸易", "貿易", "exchange rate", "汇率", "匯率", "economic growth",
+    "经济增长", "經濟增長", "geopolit", "地缘政治", "地緣政治",
+)
+_OBVIOUS_MISMATCH_POLICY_TERMS = (
+    "regulation", "regulator", "policy", "law", "license", "licence", "compliance",
+    "政策", "监管", "監管", "法规", "法規", "牌照", "合规", "合規", "政府",
+)
+_OBVIOUS_MISMATCH_NOISE_TERMS = (
+    "football score", "basketball score", "match result", "sports betting", "celebrity gossip",
+    "horoscope", "recipe", "lottery result", "球赛比分", "球賽比分", "足球比赛",
+    "足球比賽", "篮球比赛", "籃球比賽", "明星绯闻", "明星緋聞", "星座运势",
+    "星座運勢", "菜谱", "彩票结果", "彩票結果",
+)
+_OBVIOUS_MISMATCH_ENERGY_ONLY_TERMS = (
+    "lpg", "liquefied petroleum gas", "crude oil", "oil producer", "oil company",
+    "液化石油气", "原油", "石油公司", "油企",
+)
+_OBVIOUS_MISMATCH_MOBILE_GENERATION_TERMS = (
+    "5g", "5g-advanced", "5.5g", "6g", "6g r&d", "6g研发", "6g研發",
+)
+
+
+def _evidence_contains_term(evidence: str, term: str) -> bool:
+    haystack = _clean_text(evidence, 5000).casefold()
+    needle = _clean_text(term, 120).casefold()
+    if not haystack or not needle:
+        return False
+    if re.fullmatch(r"[a-z0-9&+.-]+", needle):
+        return re.search(
+            rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])",
+            haystack,
+        ) is not None
+    return needle in haystack
+
+
+def _obvious_mismatch_exclusion_reason(
+    source_item: dict[str, Any],
+    edited: dict[str, Any],
+) -> str:
+    """Reject only conclusively ungrounded matches; preserve every plausible edge case."""
+    if not edited.get("should_include"):
+        return ""
+    evidence = " ".join(
+        _clean_text(value, 1800)
+        for value in (
+            source_item.get("source_title") or source_item.get("title"),
+            source_item.get("source_summary"),
+            source_item.get("snippet"),
+            source_item.get("summary"),
+            source_item.get("description"),
+        )
+        if _clean_text(value, 1800)
+    )
+    if not evidence:
+        return ""
+    configured_keywords = _split_keywords(source_item.get("keywords") or "")
+    selected_keywords = _split_keywords(edited.get("keywords") or "")
+    grounding_terms = list(dict.fromkeys(selected_keywords + configured_keywords))
+    if any(_evidence_contains_term(evidence, term) for term in grounding_terms):
+        return ""
+    if any(
+        _evidence_contains_term(evidence, term)
+        for term in _OBVIOUS_MISMATCH_COMPETITOR_TERMS
+        + _OBVIOUS_MISMATCH_HONG_KONG_TERMS
+        + _OBVIOUS_MISMATCH_TECH_TERMS
+    ):
+        return ""
+    module = _clean_text(
+        source_item.get("module") or source_item.get("category"), 160
+    )
+    if any(token in module for token in ("宏观", "宏觀", "政治", "国际", "國際", "地缘", "地緣")):
+        if any(
+            _evidence_contains_term(evidence, term)
+            for term in _OBVIOUS_MISMATCH_MACRO_TERMS
+        ):
+            return ""
+    if any(token in module for token in ("政策", "法规", "法規", "监管", "監管")):
+        if any(
+            _evidence_contains_term(evidence, term)
+            for term in _OBVIOUS_MISMATCH_POLICY_TERMS
+        ):
+            return ""
+    if not grounding_terms:
+        return ""
+    if any(
+        _evidence_contains_term(evidence, term)
+        for term in _OBVIOUS_MISMATCH_NOISE_TERMS
+    ):
+        return "监控词无正文证据，且标题或摘要明确属于体育娱乐生活噪音"
+    if (
+        all(
+            any(
+                _evidence_contains_term(keyword, mobile_term)
+                for mobile_term in _OBVIOUS_MISMATCH_MOBILE_GENERATION_TERMS
+            )
+            for keyword in grounding_terms
+        )
+        and any(
+            _evidence_contains_term(evidence, term)
+            for term in _OBVIOUS_MISMATCH_ENERGY_ONLY_TERMS
+        )
+    ):
+        return "移动通信监控词无正文证据，内容明确仅属于石油或LPG能源业务"
+    return ""
+
+
 def read_monitoring_spec() -> dict[str, Any]:
     process = subprocess.run(
         [
@@ -3824,6 +3957,7 @@ def polish_candidates_before_review(
         )
 
     polished_items: list[dict[str, Any]] = []
+    obvious_mismatch_exclusions: list[dict[str, str]] = []
     for source_item in items:
         item = dict(source_item)
         item_key = _candidate_editor_key(item)
@@ -3857,6 +3991,18 @@ def polish_candidates_before_review(
         item["region"] = edited["region"]
         item["category"] = edited["category"]
         if not edited["should_include"]:
+            continue
+        obvious_mismatch_reason = _obvious_mismatch_exclusion_reason(item, edited)
+        if obvious_mismatch_reason:
+            obvious_mismatch_exclusions.append(
+                {
+                    "key": item_key,
+                    "title": _clean_text(
+                        item.get("source_title") or item.get("title"), 240
+                    ),
+                    "reason": obvious_mismatch_reason,
+                }
+            )
             continue
         item["ai_polished_at"] = _now_iso()
         item["ai_editor_version"] = AI_EDITOR_VERSION
@@ -3905,6 +4051,8 @@ def polish_candidates_before_review(
         "rescue_retry_attempt_count": rescue_retry_attempt_count,
         "rescue_retry_resolved_count": rescue_retry_resolved_count,
         "unstructured_copy_recovered_count": unstructured_copy_recovered_count,
+        "obvious_mismatch_removed_count": len(obvious_mismatch_exclusions),
+        "obvious_mismatch_exclusions": obvious_mismatch_exclusions,
         "critic": critic_audit,
         "policy": {
             "mode": "wide_verbose_review_then_compact_missing_review_then_30m_item_retry",
@@ -3912,6 +4060,7 @@ def polish_candidates_before_review(
             "ai_soft_priority": "香港政策监管=香港本地运营商>一般国际行业",
             "missing_output_is_not_business_exclusion": True,
             "business_content_hard_filters": False,
+            "obvious_mismatch_gate": "conclusive_noise_or_cross_domain_only",
             "secondary_delete_enabled": False,
             "default_bias": "宁可多收边缘相关信息，不漏真实竞对和关键词战略事件",
         },
