@@ -2339,7 +2339,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(queue["items"][0]["item"]["url"], item["url"])
         self.assertEqual(audit["deferred_queue"]["queued_count"], 1)
 
-    def test_deferred_queue_honors_cooldown_then_removes_resolved_item(self):
+    def test_deferred_queue_honors_cooldown_then_acks_delivered_item(self):
         item = {
             "module": "竞争对手",
             "category": "竞对动态",
@@ -2385,7 +2385,15 @@ class StrategicBriefingTests(unittest.TestCase):
                 retry_records,
                 retry_items,
                 [],
+                pending_delivery_items=retry_items,
                 now=first_attempt + timedelta(hours=1),
+            )
+            pending = briefing._read_json(
+                briefing.AI_EDITOR_DEFERRED_PATH, {}
+            )
+            acknowledged = briefing.acknowledge_deferred_ai_candidates(
+                retry_items,
+                now=first_attempt + timedelta(hours=1, minutes=1),
             )
             saved = briefing._read_json(briefing.AI_EDITOR_DEFERRED_PATH, {})
 
@@ -2397,8 +2405,89 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(retry_stats["retry_loaded_count"], 1)
         self.assertEqual(source_retry_items, [item])
         self.assertEqual(source_retry_stats["retry_loaded_count"], 1)
-        self.assertEqual(resolved["resolved_removed_count"], 1)
+        self.assertEqual(resolved["resolved_removed_count"], 0)
+        self.assertEqual(resolved["pending_delivery_count"], 1)
+        self.assertEqual(pending["items"][0]["status"], "pending_delivery")
+        self.assertEqual(acknowledged["removed_count"], 1)
         self.assertEqual(saved["items"], [])
+
+    def test_pending_delivery_bypasses_cooldown_and_survives_until_ack(self):
+        item = {
+            "category": "行业动态",
+            "title": "数据中心扩建",
+            "snippet": "A new data centre expansion was announced.",
+            "source": "Example",
+            "url": "https://example.com/data-centre-expansion",
+        }
+        now = datetime(2026, 8, 15, 10, 0, tzinfo=briefing.HKT)
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            briefing,
+            "AI_EDITOR_DEFERRED_PATH",
+            Path(directory) / "deferred.json",
+        ):
+            persisted = briefing._persist_deferred_ai_candidates(
+                {},
+                [item],
+                [],
+                pending_delivery_items=[item],
+                now=now,
+            )
+            loaded, _records, stats = briefing._prepare_deferred_ai_candidates(
+                [],
+                now=now + timedelta(minutes=1),
+            )
+            before_ack = briefing.has_pending_ai_candidates()
+            briefing.acknowledge_deferred_ai_candidates(loaded, now=now)
+            after_ack = briefing.has_pending_ai_candidates()
+
+        self.assertEqual(persisted["pending_delivery_count"], 1)
+        self.assertEqual(loaded, [item])
+        self.assertEqual(stats["cooldown_count"], 0)
+        self.assertTrue(before_ack)
+        self.assertFalse(after_ack)
+
+    def test_deferred_delivery_key_stays_pinned_after_ai_field_rewrites(self):
+        item = {
+            "module": "竞争对手",
+            "category": "行业动态",
+            "title": "KDDI announces a network investment",
+            "snippet": "KDDI announced a concrete network investment.",
+            "source": "Example",
+            "url": "https://example.com/kddi-investment",
+            "keywords": "KDDI",
+        }
+        original_key = briefing._candidate_editor_key(item)
+        rewritten = {
+            **item,
+            "source_title": item["title"],
+            "title": "KDDI宣布网络投资",
+            "category": "竞对动态",
+            "region": "国际/行业",
+            "_ai_editor_queue_key": original_key,
+        }
+
+        with tempfile.TemporaryDirectory() as directory, mock.patch.object(
+            briefing,
+            "AI_EDITOR_DEFERRED_PATH",
+            Path(directory) / "deferred.json",
+        ):
+            persisted = briefing._persist_deferred_ai_candidates(
+                {},
+                [item],
+                [],
+                pending_delivery_items=[rewritten],
+            )
+            queued = briefing._read_json(
+                briefing.AI_EDITOR_DEFERRED_PATH, {}
+            )
+            acknowledged = briefing.acknowledge_deferred_ai_candidates(
+                [rewritten]
+            )
+
+        self.assertEqual(briefing._candidate_editor_key(rewritten), original_key)
+        self.assertEqual(persisted["pending_delivery_count"], 1)
+        self.assertEqual(queued["items"][0]["key"], original_key)
+        self.assertEqual(acknowledged["removed_count"], 1)
 
     def test_deferred_queue_prunes_invalid_but_retains_old_and_retried_records(self):
         now = datetime(2026, 8, 9, 12, 0, tzinfo=briefing.HKT)

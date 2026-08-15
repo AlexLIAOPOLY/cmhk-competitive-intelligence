@@ -288,6 +288,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         read_count = [0]
         progress_events = []
         semantic_histories = []
+        acknowledged_items = []
 
         def read_rows(_sheet_id):
             read_count[0] += 1
@@ -327,6 +328,18 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                     or self._semantic_keep(items, history)
                 ),
             ),
+            mock.patch.object(
+                strategic_briefing,
+                "acknowledge_deferred_ai_candidates",
+                side_effect=lambda items: (
+                    acknowledged_items.extend(items)
+                    or {
+                        "requested_count": len(items),
+                        "removed_count": len(items),
+                        "queued_count": 0,
+                    }
+                ),
+            ),
         ):
             result = review_sheet.sync_candidates(
                 [self._new_item()],
@@ -359,6 +372,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(semantic_histories, [[]])
         self.assertEqual(result["semantic_history_scope"], "same_hkt_search_day")
         self.assertEqual(result["semantic_search_day"], "2026-07-22")
+        self.assertEqual(acknowledged_items, [self._new_item()])
+        self.assertEqual(result["deferred_delivery_ack"]["removed_count"], 1)
         progress_phases = [phase for phase, _detail in progress_events]
         for phase in (
             "飞书审核表准备",
@@ -506,7 +521,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         write.assert_not_called()
 
-    def test_load_curated_latest_propagates_ai_review_failure(self):
+    def test_load_curated_latest_defers_ai_review_to_sync_transaction(self):
         source = {
             "generated_at": "2026-07-27T09:41:27+08:00",
             "items": [self._new_item()],
@@ -527,29 +542,21 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             mock.patch.object(
                 strategic_briefing,
                 "polish_candidates_before_review",
-                side_effect=RuntimeError("AI review deferred"),
-            ),
-        ):
-            with self.assertRaisesRegex(RuntimeError, "AI review deferred"):
-                review_sheet._load_curated_latest()
-
-    def test_load_curated_latest_retries_queue_when_current_source_is_empty(self):
-        queued = self._new_item()
-        queued["title"] = "延期候选已恢复"
-        with (
-            mock.patch.object(review_sheet, "_read_json", return_value={}),
-            mock.patch.object(
-                strategic_briefing,
-                "polish_candidates_before_review",
-                return_value=[queued],
             ) as polish,
         ):
             items, metadata = review_sheet._load_curated_latest()
 
-        polish.assert_called_once_with([])
-        self.assertEqual(items, [queued])
-        self.assertEqual(metadata["input_count"], 0)
+        polish.assert_not_called()
+        self.assertEqual(items, source["items"])
         self.assertEqual(metadata["candidate_count"], 1)
+
+    def test_load_curated_latest_leaves_empty_source_for_sync_queue_replay(self):
+        with mock.patch.object(review_sheet, "_read_json", return_value={}):
+            items, metadata = review_sheet._load_curated_latest()
+
+        self.assertEqual(items, [])
+        self.assertEqual(metadata["input_count"], 0)
+        self.assertEqual(metadata["candidate_count"], 0)
         self.assertEqual(metadata["filtered_count"], 0)
 
     def test_run_cycle_records_failed_ai_review_without_syncing_sheet(self):

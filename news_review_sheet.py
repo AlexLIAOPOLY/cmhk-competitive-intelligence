@@ -1184,6 +1184,7 @@ def sync_candidates(
             if metadata_key and metadata:
                 candidate_gate_metadata[metadata_key] = metadata
         from strategic_briefing import (
+            acknowledge_deferred_ai_candidates,
             agent_semantic_deduplicate_candidates,
             polish_candidates_before_review,
         )
@@ -1228,6 +1229,14 @@ def sync_candidates(
             )
         )
         prepared_items = semantic_result["kept"]
+        finalized_ai_items = [
+            *prepared_items,
+            *[
+                entry["item"]
+                for entry in semantic_result["duplicates"]
+                if isinstance(entry, dict) and isinstance(entry.get("item"), dict)
+            ],
+        ]
         _progress(
             progress_callback,
             "新增候选组装",
@@ -1413,6 +1422,7 @@ def sync_candidates(
             }
         )
         _write_json(STATE_PATH, state)
+        deferred_ack = acknowledge_deferred_ai_candidates(finalized_ai_items)
         return {
             "sheet_id": sheet_id,
             "sheet_url": _sheet_url(sheet_id),
@@ -1434,6 +1444,7 @@ def sync_candidates(
             "semantic_history_shards": semantic_result["history_shards"],
             "semantic_history_scope": "same_hkt_search_day",
             "semantic_search_day": semantic_search_day,
+            "deferred_delivery_ack": deferred_ack,
         }
 
 def _normalized_status(value: Any) -> str:
@@ -2197,20 +2208,6 @@ def _load_curated_latest(
         for item in curated
         if _canonical_news_url(item.get("url"))
     }
-    from strategic_briefing import polish_candidates_before_review
-
-    try:
-        curated = (
-            polish_candidates_before_review(
-                curated,
-                progress_callback=progress_callback,
-            )
-            if progress_callback is not None
-            else polish_candidates_before_review(curated)
-        )
-    except Exception as exc:
-        logging.exception("公司内部 AI 候选审核失败，本轮禁止写表并等待重试: %s", exc)
-        raise
     current_result_count = sum(
         1
         for item in curated
@@ -2336,8 +2333,11 @@ def run_cycle(
             == _text(pending_cycle.get("source_generated_at"), 60)
         ):
             cycle_key = _text(pending_cycle.get("key"), 120)
+        from strategic_briefing import has_pending_ai_candidates
+
         source_unchanged = (
             not force
+            and not has_pending_ai_candidates()
             and bool(source_generated_at)
             and source_generated_at
             == _text(state.get("last_source_generated_at"), 60)

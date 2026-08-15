@@ -2722,6 +2722,9 @@ def _to_simplified_chinese(value: Any, limit: int) -> str:
 
 
 def _candidate_editor_key(item: dict[str, Any]) -> str:
+    pinned_key = _clean_text(item.get("_ai_editor_queue_key"), 80)
+    if re.fullmatch(r"[0-9a-f]{64}", pinned_key):
+        return pinned_key
     payload = {
         "version": AI_EDITOR_VERSION,
         "title": _clean_text(item.get("source_title") or item.get("title"), 500),
@@ -2819,7 +2822,12 @@ def _prepare_deferred_ai_candidates(
         if existing is not None:
             existing["item"] = item
             last_attempt_at = _queue_datetime(existing.get("last_attempt_at"))
-            if last_attempt_at and current - last_attempt_at < cooldown:
+            pending_delivery = existing.get("status") == "pending_delivery"
+            if (
+                not pending_delivery
+                and last_attempt_at
+                and current - last_attempt_at < cooldown
+            ):
                 cooldown_count += 1
                 continue
             retry_loaded_count += 1
@@ -2829,7 +2837,12 @@ def _prepare_deferred_ai_candidates(
         if key in seen:
             continue
         last_attempt_at = _queue_datetime(record.get("last_attempt_at"))
-        if last_attempt_at and current - last_attempt_at < cooldown:
+        pending_delivery = record.get("status") == "pending_delivery"
+        if (
+            not pending_delivery
+            and last_attempt_at
+            and current - last_attempt_at < cooldown
+        ):
             cooldown_count += 1
             continue
         seen.add(key)
@@ -2853,6 +2866,7 @@ def _persist_deferred_ai_candidates(
     processed_items: list[dict[str, Any]],
     deferred_reviews: list[dict[str, str]],
     *,
+    pending_delivery_items: list[dict[str, Any]] | None = None,
     now: datetime | None = None,
 ) -> dict[str, int]:
     current = (now or datetime.now(HKT)).astimezone(HKT)
@@ -2862,24 +2876,45 @@ def _persist_deferred_ai_candidates(
         for entry in deferred_reviews
         if str(entry.get("key") or "")
     }
+    pending_delivery_by_key = {
+        _candidate_editor_key(item): item
+        for item in (pending_delivery_items or [])
+        if isinstance(item, dict)
+    }
     added_count = 0
     resolved_removed_count = 0
+    pending_delivery_count = 0
     for item in processed_items:
         key = _candidate_editor_key(item)
         deferred = deferred_by_key.get(key)
         previous = records.get(key)
-        if not deferred:
+        pending_delivery_item = pending_delivery_by_key.get(key)
+        if not deferred and pending_delivery_item is None:
             if previous is not None:
                 records.pop(key, None)
                 resolved_removed_count += 1
             continue
         previous_attempts = _queue_nonnegative_int((previous or {}).get("attempts"))
-        attempts = (previous_attempts or 0) + 1
+        attempts = (previous_attempts or 0) + (1 if deferred else 0)
         if previous is None:
             added_count += 1
+        if pending_delivery_item is not None:
+            pending_delivery_count += 1
+            records[key] = {
+                "key": key,
+                "editor_version": AI_EDITOR_VERSION,
+                "status": "pending_delivery",
+                "queued_at": str((previous or {}).get("queued_at") or now_text),
+                "last_attempt_at": now_text,
+                "attempts": attempts,
+                "last_error": "",
+                "item": dict(pending_delivery_item),
+            }
+            continue
         records[key] = {
             "key": key,
             "editor_version": AI_EDITOR_VERSION,
+            "status": "ai_review_deferred",
             "queued_at": str((previous or {}).get("queued_at") or now_text),
             "last_attempt_at": now_text,
             "attempts": attempts,
@@ -2910,9 +2945,68 @@ def _persist_deferred_ai_candidates(
         "queued_count": len(ordered),
         "added_count": added_count,
         "resolved_removed_count": resolved_removed_count,
+        "pending_delivery_count": pending_delivery_count,
         "exhausted_removed_count": 0,
         "capped_count": 0,
     }
+
+
+def acknowledge_deferred_ai_candidates(
+    delivered_items: list[dict[str, Any]],
+    *,
+    now: datetime | None = None,
+) -> dict[str, int]:
+    """Remove AI-approved queue entries only after downstream delivery is final.
+
+    A delivery is final when the item was written and read back from Feishu, or
+    semantic dedupe conclusively matched it to an existing/same-batch event.
+    AI review alone is deliberately insufficient to remove the queue entry.
+    """
+    delivered_keys = {
+        _candidate_editor_key(item)
+        for item in delivered_items
+        if isinstance(item, dict)
+    }
+    payload = _read_json(AI_EDITOR_DEFERRED_PATH, {"items": []})
+    raw_records = payload.get("items") if isinstance(payload, dict) else []
+    if not isinstance(raw_records, list):
+        raw_records = []
+    kept: list[dict[str, Any]] = []
+    removed_count = 0
+    for record in raw_records:
+        if not isinstance(record, dict) or not isinstance(record.get("item"), dict):
+            kept.append(record)
+            continue
+        key = str(record.get("key") or _candidate_editor_key(record["item"]))
+        if key in delivered_keys and record.get("status") == "pending_delivery":
+            removed_count += 1
+            continue
+        kept.append(record)
+    current = (now or datetime.now(HKT)).astimezone(HKT)
+    _atomic_write_json(
+        AI_EDITOR_DEFERRED_PATH,
+        {
+            "version": 1,
+            "editor_version": AI_EDITOR_VERSION,
+            "updated_at": _now_iso(current),
+            "policy": {
+                "retry_minutes": AI_EDITOR_DEFERRED_RETRY_MINUTES,
+                "retention": "until_ai_excluded_or_downstream_finalized",
+            },
+            "items": kept,
+        },
+    )
+    return {
+        "requested_count": len(delivered_keys),
+        "removed_count": removed_count,
+        "queued_count": len(kept),
+    }
+
+
+def has_pending_ai_candidates() -> bool:
+    payload = _read_json(AI_EDITOR_DEFERRED_PATH, {"items": []})
+    items = payload.get("items") if isinstance(payload, dict) else []
+    return isinstance(items, list) and bool(items)
 
 
 _TEMPORAL_ACTIONS = (
@@ -4140,6 +4234,9 @@ def polish_candidates_before_review(
         if not edited:
             continue
         item.setdefault("source_title", _clean_text(item.get("title"), 500))
+        # Keep the immutable pre-AI identity through category/region/title
+        # rewrites so queue acknowledgement cannot target a different key.
+        item["_ai_editor_queue_key"] = item_key
         item["ai_title"] = edited["title"]
         item["ai_summary"] = edited["summary"]
         item["ai_should_include"] = edited["should_include"]
@@ -4187,6 +4284,7 @@ def polish_candidates_before_review(
         deferred_queue_records,
         items,
         deferred_reviews,
+        pending_delivery_items=polished_items,
     )
     decision_path_counts = Counter(
         str(item.get("ai_decision_path") or "未分类")
