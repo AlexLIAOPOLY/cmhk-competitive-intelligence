@@ -2513,7 +2513,18 @@ def _call_internal_ai(
 ) -> dict[str, Any]:
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
-    api_key = str(config.get("api_key") or "")
+    configured_keys = config.get("strategy_api_keys")
+    api_keys = [
+        _clean_text(value, 500)
+        for value in (
+            configured_keys if isinstance(configured_keys, list) else []
+        )
+        if _clean_text(value, 500)
+    ]
+    fallback_key = _clean_text(config.get("api_key"), 500)
+    if fallback_key:
+        api_keys.append(fallback_key)
+    api_keys = list(dict.fromkeys(api_keys)) or [""]
     configured_model = str(config.get("model") or "")
     # Prefer the higher-quality review model for strategic-news decisions. Speed
     # is secondary here because an incorrect exclusion can hide a useful signal.
@@ -2535,15 +2546,6 @@ def _call_internal_ai(
         "temperature": 0.1,
         "max_tokens": max_tokens,
     }
-    headers = {"Content-Type": "application/json"}
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
-    request = Request(
-        f"{base_url}/chat/completions",
-        data=json.dumps(request_body, ensure_ascii=False).encode("utf-8"),
-        headers=headers,
-        method="POST",
-    )
     opener = build_opener(ProxyHandler({}))
     timeout_seconds = max(
         30,
@@ -2551,65 +2553,116 @@ def _call_internal_ai(
     )
     attempts = max(1, int(os.environ.get("CMHK_STRATEGY_AI_ATTEMPTS", "4")))
     payload: dict[str, Any] = {}
-    for attempt in range(1, attempts + 1):
-        try:
-            if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
-                raise TimeoutError("AI逐条补审已达到30分钟上限")
-            wait_for_internal_ai_slot(
-                "strategic-news-review",
-                deadline_monotonic=deadline_monotonic,
-            )
-            request_timeout = timeout_seconds
-            if deadline_monotonic is not None:
-                remaining = deadline_monotonic - time.monotonic()
-                if remaining <= 0:
-                    raise TimeoutError("AI逐条补审已达到30分钟上限")
-                request_timeout = max(0.25, min(timeout_seconds, remaining))
-            with opener.open(request, timeout=request_timeout) as response:
-                payload = json.loads(response.read().decode("utf-8", errors="ignore"))
-            break
-        except HTTPError as exc:
-            retryable = exc.code == 429 or 500 <= exc.code < 600
-            if not retryable or attempt >= attempts:
-                raise
-            retry_after = 0
+    request_succeeded = False
+    for key_index, api_key in enumerate(api_keys, start=1):
+        headers = {"Content-Type": "application/json"}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
+        request = Request(
+            f"{base_url}/chat/completions",
+            data=json.dumps(request_body, ensure_ascii=False).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        switch_key = False
+        for attempt in range(1, attempts + 1):
             try:
-                retry_after = int(exc.headers.get("Retry-After") or 0)
-            except (TypeError, ValueError):
-                retry_after = 0
-            delay = min(30, max(retry_after, 2 ** attempt * 2))
-            if deadline_monotonic is not None:
-                remaining = deadline_monotonic - time.monotonic()
-                if remaining <= delay:
-                    raise TimeoutError("AI逐条补审已达到30分钟上限") from exc
-            logging.warning(
-                "公司内部 AI 返回 HTTP %s，%s 秒后重试 %s/%s",
-                exc.code,
-                delay,
-                attempt + 1,
-                attempts,
-            )
-            time.sleep(delay)
-        except TimeoutError:
-            if (
-                attempt >= attempts
-                or (
-                    deadline_monotonic is not None
-                    and time.monotonic() >= deadline_monotonic
-                )
-            ):
-                raise
-            logging.warning(
-                "公司内部 AI 请求超时，正在重试 %s/%s",
-                attempt + 1,
-                attempts,
-            )
-            delay = min(4, 2 ** attempt)
-            if deadline_monotonic is not None:
-                remaining = deadline_monotonic - time.monotonic()
-                if remaining <= delay:
+                if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
                     raise TimeoutError("AI逐条补审已达到30分钟上限")
-            time.sleep(delay)
+                wait_for_internal_ai_slot(
+                    "strategic-news-review",
+                    deadline_monotonic=deadline_monotonic,
+                )
+                request_timeout = timeout_seconds
+                if deadline_monotonic is not None:
+                    remaining = deadline_monotonic - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError("AI逐条补审已达到30分钟上限")
+                    request_timeout = max(0.25, min(timeout_seconds, remaining))
+                with opener.open(request, timeout=request_timeout) as response:
+                    payload = json.loads(
+                        response.read().decode("utf-8", errors="ignore")
+                    )
+                request_succeeded = True
+                break
+            except HTTPError as exc:
+                raw_error = exc.read().decode("utf-8", errors="ignore")
+                try:
+                    error_payload = json.loads(raw_error)
+                except json.JSONDecodeError:
+                    error_payload = {}
+                error = (
+                    error_payload.get("error")
+                    if isinstance(error_payload, dict)
+                    else {}
+                )
+                error = error if isinstance(error, dict) else {}
+                error_type = _clean_text(error.get("type"), 120).casefold()
+                error_code = _clean_text(error.get("code"), 120).casefold()
+                error_message = _clean_text(error.get("message"), 300).casefold()
+                key_unavailable = (
+                    "budget_exceeded" in {error_type, error_code}
+                    or "budget has been exceeded" in error_message
+                    or "key_model_access_denied" in {error_type, error_code}
+                )
+                if key_unavailable and key_index < len(api_keys):
+                    logging.warning(
+                        "战略新闻AI密钥 %s/%s 额度耗尽或无模型权限，自动切换下一把。",
+                        key_index,
+                        len(api_keys),
+                    )
+                    switch_key = True
+                    break
+                if key_unavailable:
+                    raise RuntimeError(
+                        "战略新闻AI所有配置密钥均额度耗尽或无模型权限"
+                    ) from exc
+                retryable = exc.code == 429 or 500 <= exc.code < 600
+                if not retryable or attempt >= attempts:
+                    raise
+                retry_after = 0
+                try:
+                    retry_after = int(exc.headers.get("Retry-After") or 0)
+                except (TypeError, ValueError):
+                    retry_after = 0
+                delay = min(30, max(retry_after, 2 ** attempt * 2))
+                if deadline_monotonic is not None:
+                    remaining = deadline_monotonic - time.monotonic()
+                    if remaining <= delay:
+                        raise TimeoutError("AI逐条补审已达到30分钟上限") from exc
+                logging.warning(
+                    "公司内部 AI 返回 HTTP %s，%s 秒后重试 %s/%s",
+                    exc.code,
+                    delay,
+                    attempt + 1,
+                    attempts,
+                )
+                time.sleep(delay)
+            except TimeoutError:
+                if (
+                    attempt >= attempts
+                    or (
+                        deadline_monotonic is not None
+                        and time.monotonic() >= deadline_monotonic
+                    )
+                ):
+                    raise
+                logging.warning(
+                    "公司内部 AI 请求超时，正在重试 %s/%s",
+                    attempt + 1,
+                    attempts,
+                )
+                delay = min(4, 2 ** attempt)
+                if deadline_monotonic is not None:
+                    remaining = deadline_monotonic - time.monotonic()
+                    if remaining <= delay:
+                        raise TimeoutError("AI逐条补审已达到30分钟上限")
+                time.sleep(delay)
+        if request_succeeded:
+            break
+        if switch_key:
+            continue
+        break
     message = ((payload.get("choices") or [{}])[0].get("message") or {})
     content = str(
         message.get("content") or message.get("reasoning_content") or ""

@@ -1,3 +1,4 @@
+import io
 import json
 import tempfile
 import time
@@ -915,6 +916,58 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_strategic_news_review_defaults_to_deepseek_v4_pro(self):
         self.assertEqual(briefing.DEFAULT_STRATEGY_AI_MODEL, "DeepSeek-V4-Pro")
+
+    def test_strategic_ai_switches_key_after_budget_exceeded(self):
+        budget_error = briefing.HTTPError(
+            "http://internal/chat/completions",
+            400,
+            "Bad Request",
+            {},
+            io.BytesIO(
+                json.dumps(
+                    {
+                        "error": {
+                            "type": "budget_exceeded",
+                            "code": "400",
+                            "message": "Budget has been exceeded",
+                        }
+                    }
+                ).encode()
+            ),
+        )
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {
+                "choices": [
+                    {"message": {"content": json.dumps({"ok": True})}}
+                ]
+            }
+        ).encode()
+        opener = mock.MagicMock()
+        opener.open.side_effect = [budget_error, response]
+        with (
+            mock.patch.object(
+                briefing,
+                "load_ai_config",
+                return_value={
+                    "base_url": "http://10.0.62.177:4000/v1",
+                    "model": "deepseek-v4",
+                    "api_key": "secondary-key",
+                    "strategy_api_keys": ["exhausted-key", "secondary-key"],
+                },
+            ),
+            mock.patch.object(briefing, "build_opener", return_value=opener),
+            mock.patch.object(briefing, "wait_for_internal_ai_slot"),
+        ):
+            result = briefing._call_internal_ai("system", "user")
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(opener.open.call_count, 2)
+        requests = [call.args[0] for call in opener.open.call_args_list]
+        self.assertEqual(
+            [request.get_header("Authorization") for request in requests],
+            ["Bearer exhausted-key", "Bearer secondary-key"],
+        )
 
     def _approved_brief(self) -> dict:
         return {
