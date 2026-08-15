@@ -913,6 +913,9 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(result["history_count"], 1)
         self.assertEqual(result["history_shards"], 0)
 
+    def test_strategic_news_review_defaults_to_deepseek_v4_pro(self):
+        self.assertEqual(briefing.DEFAULT_STRATEGY_AI_MODEL, "DeepSeek-V4-Pro")
+
     def _approved_brief(self) -> dict:
         return {
             "id": "NEWS-TEST",

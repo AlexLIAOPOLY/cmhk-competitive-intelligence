@@ -47,7 +47,8 @@ AI_EDITOR_CACHE_PATH = DATA_DIR / "candidate_ai_editor_cache.json"
 AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
-AI_EDITOR_VERSION = 21
+DEFAULT_STRATEGY_AI_MODEL = "DeepSeek-V4-Pro"
+AI_EDITOR_VERSION = 22
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
@@ -2475,12 +2476,13 @@ def _call_internal_ai(
     base_url = str(config.get("base_url") or "").rstrip("/")
     api_key = str(config.get("api_key") or "")
     configured_model = str(config.get("model") or "")
-    # Keep the structured pipeline on the JSON-stable instruction model while
-    # allowing selected stages (notably the independent critic) to override it.
+    # Prefer the higher-quality review model for strategic-news decisions. Speed
+    # is secondary here because an incorrect exclusion can hide a useful signal.
+    # Selected stages (notably the independent critic) may still override it.
     model = (
         _clean_text(model_override, 120)
         or os.environ.get("CMHK_STRATEGY_AI_MODEL", "").strip()
-        or "Qwen3-30B-A3B-Instruct-2507"
+        or DEFAULT_STRATEGY_AI_MODEL
         or configured_model
     )
     if not base_url or not model:
@@ -3817,7 +3819,7 @@ def polish_candidates_before_review(
                         )
                         primary_model = _clean_text(
                             os.environ.get("CMHK_STRATEGY_AI_MODEL")
-                            or "Qwen3-30B-A3B-Instruct-2507",
+                            or DEFAULT_STRATEGY_AI_MODEL,
                             120,
                         )
                         if not rescue_model or rescue_model == primary_model:
