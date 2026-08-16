@@ -14,6 +14,88 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 
 
 class AgenticNewsSearchTests(unittest.TestCase):
+    def test_morning_window_rechecks_previous_afternoon_for_late_indexing(self):
+        start_at, end_at = digest._window(
+            datetime(2026, 8, 16, 9, 0, tzinfo=HKT),
+            True,
+        )
+
+        self.assertEqual(start_at, datetime(2026, 8, 15, 8, 0, tzinfo=HKT))
+        self.assertEqual(end_at, datetime(2026, 8, 16, 9, 0, tzinfo=HKT))
+
+    def test_late_index_retry_unions_results_until_reliable_minimum(self):
+        def item(index):
+            return {
+                "news_id": f"NEWS-{index}",
+                "title": f"晚到新闻{index}",
+                "url": f"https://example.com/late/{index}",
+                "published_at": f"2026-08-16T08:0{index}:00+08:00",
+                "module": "基础设施/网络/技术类",
+            }
+
+        specs = [
+            {
+                "agentic_search": {
+                    "fixed_query_count": 75,
+                    "fixed_result_count": count,
+                }
+            }
+            for count in (0, 1, 2)
+        ]
+        with (
+            mock.patch.object(
+                digest,
+                "collect_news",
+                side_effect=[
+                    ([], [], specs[0]),
+                    ([item(1)], [], specs[1]),
+                    ([item(2), item(3)], [], specs[2]),
+                ],
+            ) as collect,
+            mock.patch.object(
+                digest,
+                "_late_index_retry_delays",
+                return_value=(300, 600),
+            ),
+            mock.patch.object(digest.time, "sleep") as sleep,
+        ):
+            items, errors, spec = digest._collect_news_with_late_index_retry(
+                datetime(2026, 8, 16, 8, 0, tzinfo=HKT),
+                datetime(2026, 8, 16, 15, 0, tzinfo=HKT),
+            )
+
+        self.assertEqual(collect.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [300, 600])
+        self.assertEqual(len(items), 3)
+        self.assertEqual(errors, [])
+        retry = spec["agentic_search"]["late_index_retry"]
+        self.assertTrue(retry["triggered"])
+        self.assertFalse(retry["exhausted"])
+        self.assertEqual(retry["recovered_count"], 3)
+
+    def test_send_digest_persists_explicit_empty_pool(self):
+        now = datetime(2026, 8, 16, 15, 0, tzinfo=HKT)
+        with (
+            mock.patch.object(
+                digest,
+                "_collect_news_with_late_index_retry",
+                return_value=([], [], {"agentic_search": {}}),
+            ),
+            mock.patch.object(digest, "_latest_timed_crawl", return_value={}),
+            mock.patch.object(digest, "_build_cards", return_value=[]),
+            mock.patch.object(digest, "_write_json") as write_json,
+            mock.patch.dict(
+                digest.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "0"},
+            ),
+        ):
+            payload = digest.send_digest(now=now, morning=False)
+
+        self.assertEqual(payload["items"], [])
+        self.assertNotIn("preserved_previous_news_pool", payload)
+        self.assertEqual(write_json.call_args.args[0], digest.LATEST_PATH)
+        self.assertEqual(write_json.call_args.args[1]["items"], [])
+
     def test_digest_card_is_sent_to_both_report_groups(self):
         responses = [
             {"data": {"message_id": "om_primary"}, "_identity": "bot"},

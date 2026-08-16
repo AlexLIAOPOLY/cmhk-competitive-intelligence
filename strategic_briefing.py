@@ -1405,7 +1405,9 @@ def _send_scan_message(
     )
     input_count = int(review.get("input_count") or 0)
     qualified_count = int(
-        review.get("source_candidate_count")
+        review.get("ai_included_count")
+        if "ai_included_count" in review
+        else review.get("source_candidate_count")
         if "source_candidate_count" in review
         else review.get("batch_count") or 0
     )
@@ -1981,7 +1983,7 @@ def _run_scan(
         summary = {
             "slot": slot_key,
             "discovered": int((result.get("news_discovery") or {}).get("result_count") or 0),
-            "ai_retained": int(review.get("batch_count") or 0),
+            "ai_retained": int(review.get("ai_included_count") or 0),
             "history_duplicates": int(review.get("semantic_duplicate_count") or 0),
             "new_count": int(review.get("new_count") or 0),
             "readback_verified": review.get("readback_verified") is True,
@@ -2132,6 +2134,7 @@ def _run_scan_impl(
         discovery_result = news_discovery_vote_digest.send_digest(
             now=now,
             morning=slot_label == "晨间扫描",
+            progress_callback=task_progress,
         )
     except Exception as exc:
         discovery_result = {"error": _clean_text(exc, 300)}
@@ -2270,7 +2273,7 @@ def _run_scan_impl(
         "AI审核结果",
         (
             f"输入候选 {int(review_result.get('source_candidate_count') or discovery_result.get('result_count') or 0)} 条，"
-            f"AI确认保留 {int(review_result.get('batch_count') or 0)} 条；"
+            f"AI确认保留 {int(review_result.get('ai_included_count') or 0)} 条；"
             "单条审核异常已隔离，不影响其余候选。"
         ),
     )

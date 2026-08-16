@@ -46,6 +46,10 @@ CATCHUP_MINUTES = max(30, int(os.environ.get("CMHK_NEWS_DIGEST_CATCHUP_MINUTES",
 RESULTS_PER_QUERY = max(10, int(os.environ.get("CMHK_NEWS_RESULTS_PER_QUERY", "30")))
 PAGE_SIZE = min(10, max(5, int(os.environ.get("CMHK_NEWS_PAGE_SIZE", "8"))))
 SEARCH_WORKERS = min(8, max(2, int(os.environ.get("CMHK_NEWS_SEARCH_WORKERS", "6"))))
+LATE_INDEX_MIN_RESULTS = max(
+    1,
+    int(os.environ.get("CMHK_NEWS_LATE_INDEX_MIN_RESULTS", "3")),
+)
 AGENTIC_SEARCH_ENABLED = os.environ.get("CMHK_NEWS_AGENTIC_SEARCH", "1").strip().lower() not in {
     "0",
     "false",
@@ -1353,10 +1357,10 @@ def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
         # Retain one hour of overlap for articles indexed shortly after the 09:00 run.
         # Downstream URL/title deduplication prevents overlap from becoming new rows.
         return today.replace(hour=8), now
-    # The morning run covers the period after the previous 15:00 run, with one
-    # hour of overlap. Search plans may retrieve older context, but the admission
-    # gate above never lets that wider lookback become a writable candidate.
-    return (today - timedelta(days=1)).replace(hour=14), now
+    # Keep the previous afternoon's full 08:00-15:00 publication window as a
+    # next-morning backstop. News indexes can expose an article hours after its
+    # publication time; exact URL/ID dedupe downstream prevents re-insertion.
+    return (today - timedelta(days=1)).replace(hour=8), now
 
 
 def _send_card(card: dict[str, Any]) -> list[str]:
@@ -1478,12 +1482,112 @@ def _build_cards(
     return cards
 
 
-def send_digest(now: datetime | None = None, *, morning: bool | None = None) -> dict[str, Any]:
+def _late_index_retry_delays() -> tuple[int, ...]:
+    raw = os.environ.get(
+        "CMHK_NEWS_LATE_INDEX_RETRY_DELAYS_SECONDS",
+        "300,600,900",
+    )
+    delays: list[int] = []
+    for value in raw.split(","):
+        try:
+            delay = int(value.strip())
+        except ValueError:
+            continue
+        if delay > 0:
+            delays.append(delay)
+    return tuple(delays)
+
+
+def _collect_news_with_late_index_retry(
+    start_at: datetime,
+    end_at: datetime,
+    *,
+    progress_callback: Any = None,
+) -> tuple[list[dict[str, Any]], list[str], dict[str, Any]]:
+    """Retry an abnormally small discovery window and union late-indexed rows."""
+    merged_items: list[dict[str, Any]] = []
+    merged_errors: list[str] = []
+    latest_spec: dict[str, Any] = {}
+    attempt_audits: list[dict[str, Any]] = []
+    delays = _late_index_retry_delays()
+    scheduled_delays = (0, *delays)
+    for attempt_index, delay_seconds in enumerate(scheduled_delays, start=1):
+        if delay_seconds:
+            if progress_callback is not None:
+                progress_callback(
+                    "新闻索引延迟复查",
+                    (
+                        f"当前仅发现 {len(merged_items)} 条，低于 "
+                        f"{LATE_INDEX_MIN_RESULTS} 条可靠完成线；"
+                        f"等待 {delay_seconds // 60} 分钟后执行第 {attempt_index} 次检索。"
+                    ),
+                )
+            time.sleep(delay_seconds)
+        items, errors, spec = collect_news(start_at, end_at)
+        merged_items = _deduplicate([*merged_items, *items])
+        merged_errors = list(dict.fromkeys([*merged_errors, *errors]))
+        latest_spec = spec
+        trace = spec.get("agentic_search") or {}
+        attempt_audits.append(
+            {
+                "attempt": attempt_index,
+                "delay_seconds": delay_seconds,
+                "result_count": len(items),
+                "merged_result_count": len(merged_items),
+                "fixed_query_count": int(trace.get("fixed_query_count") or 0),
+                "fixed_result_count": int(trace.get("fixed_result_count") or 0),
+                "query_error_count": len(errors),
+            }
+        )
+        if len(merged_items) >= LATE_INDEX_MIN_RESULTS:
+            break
+    latest_trace = dict(latest_spec.get("agentic_search") or {})
+    _, selection_trace = _select_discovery_results(
+        merged_items,
+        module_order={},
+    )
+    latest_trace["selection_gate"] = selection_trace
+    latest_trace["late_index_retry"] = {
+        "triggered": len(attempt_audits) > 1,
+        "minimum_result_count": LATE_INDEX_MIN_RESULTS,
+        "maximum_wait_seconds": sum(delays),
+        "attempt_count": len(attempt_audits),
+        "attempts": attempt_audits,
+        "final_result_count": len(merged_items),
+        "recovered_count": max(
+            0,
+            len(merged_items) - int(attempt_audits[0].get("result_count") or 0),
+        ),
+        "exhausted": len(merged_items) < LATE_INDEX_MIN_RESULTS,
+    }
+    latest_spec = {**latest_spec, "agentic_search": latest_trace}
+    if progress_callback is not None and len(attempt_audits) > 1:
+        progress_callback(
+            "新闻索引延迟复查",
+            (
+                f"共执行 {len(attempt_audits)} 次检索，合并得到 "
+                f"{len(merged_items)} 条；晚到补回 "
+                f"{latest_trace['late_index_retry']['recovered_count']} 条。"
+            ),
+        )
+    return merged_items, merged_errors, latest_spec
+
+
+def send_digest(
+    now: datetime | None = None,
+    *,
+    morning: bool | None = None,
+    progress_callback: Any = None,
+) -> dict[str, Any]:
     now = (now or datetime.now(HKT)).astimezone(HKT)
     morning = (now.hour < 12) if morning is None else morning
     slot_label = "上午全量" if morning else "下午全量"
     start_at, end_at = _window(now, morning)
-    items, errors, spec = collect_news(start_at, end_at)
+    items, errors, spec = _collect_news_with_late_index_retry(
+        start_at,
+        end_at,
+        progress_callback=progress_callback,
+    )
     crawl = _latest_timed_crawl()
     cards = _build_cards(
         now=now,
@@ -1515,10 +1619,10 @@ def send_digest(now: datetime | None = None, *, morning: bool | None = None) -> 
         "message_ids": message_ids,
         "items": items,
     }
-    if items:
-        _write_json(LATEST_PATH, payload)
-    else:
-        payload["preserved_previous_news_pool"] = True
+    # Persist an explicit empty pool too. Keeping the previous non-empty file
+    # makes a zero-result afternoon rerun the morning candidates and falsely
+    # report them as fresh AI confirmations and same-day duplicates.
+    _write_json(LATEST_PATH, payload)
     return payload
 
 

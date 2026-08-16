@@ -843,6 +843,7 @@ class StrategicBriefingTests(unittest.TestCase):
                     "new_source_count": 1,
                     "input_count": 120,
                     "source_candidate_count": 22,
+                    "ai_included_count": 18,
                     "semantic_duplicate_count": 16,
                     "sheet_url": "https://example.com/sheet",
                 },
@@ -855,7 +856,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertIn("香港竞对动态5", rendered)
         self.assertNotIn("香港竞对动态6", rendered)
         self.assertIn("另有 1 条候选", rendered)
-        self.assertIn("检索发现 **120** → AI确认 **22**", rendered)
+        self.assertIn("检索发现 **120** → AI确认 **18**", rendered)
         self.assertIn("审核本轮6条新闻", rendered)
         self.assertIn("香港竞对 5", rendered)
         self.assertIn("国际竞对 1", rendered)

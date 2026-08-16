@@ -1202,6 +1202,7 @@ def sync_candidates(
             if progress_callback is not None
             else polish_candidates_before_review(curated_items)
         )
+        ai_included_count = len(prepared_items)
         semantic_search_day, semantic_history_items = _same_day_semantic_history(
             existing_history_items,
             generated_at=generated_at,
@@ -1409,6 +1410,7 @@ def sync_candidates(
                 "last_new_category_counts": dict(new_category_counts),
                 "last_new_region_counts": dict(new_region_counts),
                 "last_new_source_count": len(new_sources),
+                "last_ai_included_count": ai_included_count,
                 "last_ai_processed_count": len(prepared_items),
                 "last_semantic_duplicate_count": len(semantic_result["duplicates"]),
                 "last_semantic_deferred_count": len(semantic_result["deferred"]),
@@ -1429,6 +1431,7 @@ def sync_candidates(
             "readback_verified": True,
             "candidate_count": candidate_count,
             "batch_count": len(items),
+            "ai_included_count": ai_included_count,
             "archived_count": archived_count,
             "gate_filtered_count": len(items) - len(curated_items),
             "gate_filtered_reasons": dict(gate_reasons),

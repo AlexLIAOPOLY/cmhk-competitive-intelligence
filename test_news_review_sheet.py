@@ -349,6 +349,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             )
 
         self.assertEqual(result["candidate_count"], 2)
+        self.assertEqual(result["ai_included_count"], 1)
         self.assertEqual(
             result["new_items"],
             [
