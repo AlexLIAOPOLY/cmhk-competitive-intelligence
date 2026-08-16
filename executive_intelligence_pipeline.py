@@ -1232,6 +1232,44 @@ def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
     return urls
 
 
+def _repair_discovery_conciseness(raw: Any) -> Any:
+    """Fit otherwise valid model discoveries into the published card contract."""
+    if not isinstance(raw, list):
+        return raw
+
+    def clip(value: Any, limit: int) -> str:
+        text = re.sub(r"\s+", " ", str(value or "")).strip()
+        if len(text) <= limit:
+            return text
+        clauses = [part.strip() for part in re.split(r"(?<=[。！？；;])", text) if part.strip()]
+        kept: list[str] = []
+        for clause in clauses:
+            candidate = "".join([*kept, clause])
+            if len(candidate) > limit:
+                break
+            kept.append(clause)
+        if kept:
+            return "".join(kept).strip()
+        return text[:limit].rstrip("，、；;：: ")
+
+    repaired: list[Any] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            repaired.append(item)
+            continue
+        title = clip(item.get("title"), 28)
+        detail = clip(item.get("detail"), 110)
+        if not any(term in f"{title}。{detail}" for term in _INTERPRETIVE_CONNECTORS):
+            detail = clip(f"这表明{detail}", 110)
+        repaired.append({
+            **item,
+            "title": title,
+            "detail": detail,
+            "kind": clip(item.get("kind") or "AI综合研判", 12),
+        })
+    return repaired
+
+
 def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw, list) or len(raw) != 4:
         raise ValueError("AI跨库发现必须恰好返回四项")
@@ -2983,6 +3021,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         "不要逐库摘要，不要写论文，不要复述发生了什么；标题写数据关系结论，detail只解释背后的结构、驱动、"
         "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
         "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
+        "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
         "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON数组。"
     )
     user_prompt = (
@@ -3027,7 +3066,10 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         message = (payload.get("choices") or [{}])[0].get("message") or {}
         content = message.get("content") or message.get("reasoning_content") or ""
         try:
-            discoveries = _validate_model_discoveries(_extract_json_payload(content), evidence)
+            discoveries = _validate_model_discoveries(
+                _repair_discovery_conciseness(_extract_json_payload(content)),
+                evidence,
+            )
             used_model = discovery_model
             break
         except (ValueError, json.JSONDecodeError) as exc:
@@ -3039,7 +3081,8 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
                         "role": "user",
                         "content": (
                             f"上一版未通过跨库门禁：{exc}。请改成有数字锚点的深层数据关系结论，只解释结构、驱动、"
-                            "集中度、口径或市场阶段，不写发生了什么，不提建议或下一步；仍只返回四项JSON数组。"
+                            "集中度、口径或市场阶段；每条detail必须含表明、说明、意味着、并非、而非或不能等同之一，"
+                            "不写发生了什么，不提建议或下一步；仍只返回四项JSON数组。"
                         ),
                     },
                 ])

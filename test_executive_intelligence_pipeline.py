@@ -1691,6 +1691,59 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(len(result["discoveries"]), 4)
         self.assertEqual(open_url.call_count, 2)
 
+    def test_discovery_generation_repairs_overlong_card_copy_before_gate(self):
+        evidence = {
+            "domains": [
+                {
+                    "id": domain,
+                    "focuses": [{"items": [{"value": 10, "source_url": f"https://example.com/{domain}"}]}],
+                    "agent_verified_facts": [],
+                }
+                for domain in ("local", "international", "cloud", "macro")
+            ],
+            "relations": [],
+        }
+        discoveries = [
+            {
+                "from": source,
+                "to": target,
+                "title": title + "的跨领域关系结构出现显著分层变化",
+                "detail": (
+                    "两域均为10项，说明增长结构同步，差异并非来自证据数量。"
+                    "这一句只是模型额外展开的重复说明，不应让整轮降级。" * 4
+                ),
+                "kind": "AI综合研判",
+                "source_urls": [f"https://example.com/{source}", f"https://example.com/{target}"],
+            }
+            for source, target, title in (
+                ("local", "international", "本地与国际联动"),
+                ("international", "cloud", "国际与云联动"),
+                ("local", "cloud", "本地与云联动"),
+                ("macro", "local", "宏观与本地联动"),
+            )
+        ]
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({
+            "choices": [{"message": {"content": json.dumps(discoveries, ensure_ascii=False)}}]
+        }, ensure_ascii=False).encode("utf-8")
+        with (
+            patch("ai_config.load_ai_config", return_value={
+                "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
+            }),
+            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as open_url,
+        ):
+            result = pipeline.generate_model_discoveries(evidence)
+
+        self.assertEqual(open_url.call_count, 1)
+        self.assertEqual(len(result["discoveries"]), 4)
+        self.assertTrue(all(len(item["title"]) <= 28 for item in result["discoveries"]))
+        self.assertTrue(all(len(item["detail"]) <= 110 for item in result["discoveries"]))
+        self.assertTrue(all(
+            any(term in item["detail"] for term in pipeline._INTERPRETIVE_CONNECTORS)
+            for item in result["discoveries"]
+        ))
+
     def test_discovery_prompt_uses_compact_metrics_without_entity_components(self):
         evidence = {"domains": [{
             "id": "cloud", "title": "云厂商", "deterministic_insight": "增长分化。",
