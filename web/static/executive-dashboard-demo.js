@@ -74,7 +74,9 @@
   }
 
   function setupMotion() {
-    document.querySelectorAll(".panel").forEach((panel, index) => {
+    const panels = Array.from(document.querySelectorAll(".panel"));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    panels.forEach((panel, index) => {
       panel.style.setProperty("--panel-delay", `${index * 70}ms`);
       panel.addEventListener("pointermove", (event) => {
         const rect = panel.getBoundingClientRect();
@@ -82,6 +84,23 @@
         panel.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`);
       });
     });
+    if (reducedMotion) {
+      panels.forEach((panel) => panel.classList.add("is-visible"));
+      return;
+    }
+    document.body.classList.add("motion-enabled");
+    if (!("IntersectionObserver" in window)) {
+      window.requestAnimationFrame(() => panels.forEach((panel) => panel.classList.add("is-visible")));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12 });
+    panels.forEach((panel) => observer.observe(panel));
   }
 
   renderNetwork();

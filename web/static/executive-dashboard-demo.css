@@ -2998,3 +2998,309 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
   .reach-primary .monitor-kpi > span,
   .finance-primary .monitor-kpi > span { font-size: 13px; }
 }
+
+/* Visual polish: restrained hierarchy, direct labels and functional motion. */
+.topbar {
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(58, 205, 255, .1), transparent 42%),
+    linear-gradient(90deg, transparent, rgba(17, 69, 96, .12), transparent);
+}
+
+.cockpit-title { position: relative; }
+.cockpit-title::before,
+.cockpit-title::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  width: clamp(70px, 9vw, 150px);
+  height: 1px;
+  opacity: .58;
+  background: linear-gradient(90deg, transparent, rgba(100, 218, 250, .7));
+}
+.cockpit-title::before { right: calc(100% + 28px); }
+.cockpit-title::after { left: calc(100% + 28px); transform: scaleX(-1); }
+
+.panel {
+  border-color: rgba(96, 198, 237, .3);
+  background: rgba(3, 18, 31, .92);
+  box-shadow:
+    inset 0 1px rgba(220, 249, 255, .045),
+    inset 0 0 38px rgba(41, 157, 207, .025),
+    0 14px 34px rgba(0, 0, 0, .22);
+}
+
+.panel-heading {
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(12, 54, 82, .92), rgba(5, 28, 47, .58) 64%, rgba(5, 22, 38, .18)),
+    linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+}
+
+.panel-heading::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: -1px;
+  width: 22%;
+  height: 2px;
+  opacity: .42;
+  background: linear-gradient(90deg, transparent, #54d8ff, transparent);
+  box-shadow: 0 0 10px rgba(74, 211, 255, .42);
+}
+
+.panel-heading > span {
+  min-width: 48px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(101, 210, 246, .28);
+  color: #7bdcff;
+  text-shadow: 0 0 16px rgba(53, 217, 255, .36);
+}
+
+.section-label {
+  position: relative;
+  min-height: 30px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(103, 205, 240, .13);
+}
+
+.section-label::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  width: 34%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(88, 218, 255, .76));
+  box-shadow: 0 0 8px rgba(79, 211, 255, .3);
+}
+
+.visual-stage,
+.business-card,
+.reach-primary,
+.finance-primary,
+.monitor-kpi {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.visual-stage,
+.business-card,
+.reach-primary,
+.finance-primary {
+  position: relative;
+  box-shadow:
+    inset 0 1px rgba(226, 250, 255, .06),
+    inset 0 -26px 46px rgba(0, 5, 12, .14),
+    0 10px 24px rgba(0, 0, 0, .09);
+}
+
+.visual-stage {
+  background:
+    linear-gradient(rgba(74, 166, 202, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 166, 202, .04) 1px, transparent 1px),
+    linear-gradient(145deg, rgba(8, 44, 71, .8), rgba(5, 22, 39, .58));
+  background-size: 42px 42px, 42px 42px, auto;
+}
+
+.bar-column > b::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.22) 48%, transparent 72%);
+  transform: translateX(-120%);
+}
+.bar-column > b { overflow: hidden; }
+
+.business-card header { position: relative; }
+.business-card header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  opacity: .75;
+  background: linear-gradient(90deg, rgba(100, 219, 255, .82), transparent 74%);
+}
+.business-card.green header::after { background: linear-gradient(90deg, rgba(94, 226, 183, .86), transparent 74%); }
+.business-card.amber header::after { background: linear-gradient(90deg, rgba(247, 189, 91, .88), transparent 74%); }
+
+.visual-stage::after,
+.business-card::after,
+.reach-primary::after,
+.finance-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 24%, rgba(143, 229, 255, .055) 43%, transparent 60%);
+  transform: translateX(-115%);
+}
+
+.monitor-kpi {
+  transition: border-color .28s ease, background-color .28s ease, transform .28s cubic-bezier(.2, .8, .2, 1);
+}
+
+.monitor-kpi::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+  height: 1px;
+  opacity: .5;
+  background: linear-gradient(90deg, transparent, rgba(83, 218, 255, .7), transparent);
+  transform: scaleX(.32);
+  transition: opacity .28s ease, transform .28s ease;
+}
+
+.monitor-kpi > strong {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  text-shadow: 0 0 16px rgba(121, 222, 255, .1);
+}
+
+.monitor-kpi > em {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 650;
+  letter-spacing: .015em;
+}
+.monitor-kpi > em::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #5ce4ba;
+  box-shadow: 0 0 8px rgba(92, 228, 186, .7);
+}
+
+.reach-signal::before,
+.reach-signal::after { z-index: 2; }
+.reach-signal i {
+  z-index: 3;
+  border-radius: 2px 2px 0 0;
+}
+.reach-signal i::before,
+.reach-signal i::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid rgba(173, 239, 255, .9);
+  border-radius: 50%;
+  background: #123d5a;
+  box-shadow: 0 0 12px rgba(76, 214, 255, .7);
+}
+.reach-signal i::before { left: 26%; }
+.reach-signal i::after { right: 10%; top: -38px; }
+
+.finance-pulse { position: relative; }
+.finance-pulse::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: -1px;
+  left: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(104, 218, 250, .65), transparent);
+  box-shadow: 0 0 8px rgba(76, 205, 247, .28);
+}
+
+.business-card.green .monitor-kpi::before,
+.finance-primary-2 .monitor-kpi::before { background: linear-gradient(90deg, transparent, rgba(91, 225, 180, .72), transparent); }
+.business-card.amber .monitor-kpi::before,
+.finance-primary-3 .monitor-kpi::before { background: linear-gradient(90deg, transparent, rgba(246, 187, 91, .72), transparent); }
+
+@media (hover: hover) and (pointer: fine) {
+  .monitor-kpi:hover {
+    z-index: 2;
+    border-color: rgba(102, 220, 255, .42);
+    background-color: rgba(15, 60, 82, .18);
+    transform: translateY(-2px);
+  }
+  .monitor-kpi:hover::before { opacity: .9; transform: scaleX(1); }
+}
+
+.motion-enabled .panel.is-visible .visual-stage::after,
+.motion-enabled .panel.is-visible .business-card::after,
+.motion-enabled .panel.is-visible .reach-primary::after,
+.motion-enabled .panel.is-visible .finance-primary::after {
+  animation: surface-sheen 1.05s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: calc(var(--panel-delay, 0ms) + .2s);
+}
+
+.motion-enabled .panel.is-visible .bar-column > b {
+  transform-origin: bottom;
+  animation: strategic-bar-rise .78s cubic-bezier(.16, 1, .3, 1) both;
+}
+.motion-enabled .panel.is-visible .bar-column > b::after {
+  animation: data-column-sheen 1.2s cubic-bezier(.2, .8, .2, 1) .48s both;
+}
+.motion-enabled .panel.is-visible .bar-column:nth-child(2) > b { animation-delay: .09s; }
+.motion-enabled .panel.is-visible .bar-column:nth-child(3) > b { animation-delay: .18s; }
+
+.motion-enabled .panel.is-visible .business-card,
+.motion-enabled .panel.is-visible .reach-primary,
+.motion-enabled .panel.is-visible .finance-primary,
+.motion-enabled .panel.is-visible .kpi-grid > .monitor-kpi {
+  animation: strategic-card-enter .56s cubic-bezier(.2, .8, .2, 1) both;
+}
+.motion-enabled .panel.is-visible .business-card:nth-child(2),
+.motion-enabled .panel.is-visible .reach-primary:nth-child(2),
+.motion-enabled .panel.is-visible .finance-primary:nth-child(2),
+.motion-enabled .panel.is-visible .kpi-grid > .monitor-kpi:nth-child(2) { animation-delay: .08s; }
+.motion-enabled .panel.is-visible .business-card:nth-child(3),
+.motion-enabled .panel.is-visible .finance-primary:nth-child(3),
+.motion-enabled .panel.is-visible .kpi-grid > .monitor-kpi:nth-child(3) { animation-delay: .16s; }
+
+.motion-enabled .panel.is-visible .finance-pulse span {
+  transform-origin: bottom;
+  animation: pulse-column-rise .66s cubic-bezier(.16, 1, .3, 1) both;
+}
+.motion-enabled .panel.is-visible .finance-pulse span:nth-child(2) { animation-delay: .05s; }
+.motion-enabled .panel.is-visible .finance-pulse span:nth-child(3) { animation-delay: .1s; }
+.motion-enabled .panel.is-visible .finance-pulse span:nth-child(4) { animation-delay: .15s; }
+.motion-enabled .panel.is-visible .finance-pulse span:nth-child(5) { animation-delay: .2s; }
+
+.motion-enabled .panel.is-visible .reach-signal::before,
+.motion-enabled .panel.is-visible .reach-signal::after {
+  animation: signal-line-reveal .72s cubic-bezier(.2, .8, .2, 1) both;
+}
+.motion-enabled .panel.is-visible .reach-signal::after { animation-delay: .14s; }
+
+@keyframes surface-sheen {
+  from { transform: translateX(-115%); }
+  to { transform: translateX(115%); }
+}
+@keyframes strategic-bar-rise {
+  from { opacity: .1; transform: scaleY(.06); filter: saturate(.4); }
+  to { opacity: 1; transform: scaleY(1); filter: saturate(1); }
+}
+@keyframes strategic-card-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes data-column-sheen {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(130%); }
+}
+@keyframes pulse-column-rise {
+  from { opacity: .15; transform: scaleY(.08); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+@keyframes signal-line-reveal {
+  from { opacity: 0; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual-stage::after,
+  .business-card::after,
+  .reach-primary::after,
+  .finance-primary::after { display: none; }
+}
