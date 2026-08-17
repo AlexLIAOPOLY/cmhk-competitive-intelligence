@@ -1,15 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-08-17T17:58:38+08:00",
+  "generated_at": "2026-08-17T18:09:10+08:00",
   "items": [
-    {
-      "id": "NEWS-8026108AFE5032",
-      "title": "广东推出大陆首个词元经济专项金融产品“Token贷”",
-      "summary": "广东推出大陆首个词元经济专项金融产品“Token贷”，为相关企业提供融资支持。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5Jc0htZWdza1FjSnFCX3czbUJzejRqbk9Cc1hIR1VFQm5rUWpnOERDV2d2cEFPaGlkTjJwNGs4NjFERUZ4a0dqWHlDNGk2c0dYYkNhT2xRTnRYZTAxRW1MWjUzSTNfZTY3eWVTcFY3ZG9Hdw?oc=5",
-      "published_at": "2026-08-17T02:59:03+08:00"
-    },
     {
       "id": "NEWS-1A335E93057BCB",
       "title": "中国移动2026年上半年营收5380亿，算力智能服务成新动能",
@@ -65,7 +57,15 @@
       "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1Mbmo5OElwUUk2Q1YxaTlWMlRORTBEdkJxTng4eVBxcDVveDNwd3Bya25ZdUg2dHNQVUl6bVlSVWdpZ0JmcXZVY09aZ2JZR2JVcTlwVy1fbTZkTC05dmE1bTc1TDBfWTZMWl8xbElUUGE4aFk3?oc=5",
       "published_at": "2026-08-15T16:54:54+08:00"
+    },
+    {
+      "id": "NEWS-F72A73AB64FB34",
+      "title": "香港中文大学研发AI气象预报系统“风乌”",
+      "summary": "香港中文大学研发名为“风乌”的AI气象预报系统，旨在提升极端天气预测的准确度和时效性。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9OY2VOel9RUUw2azhrX0xuRHVFMnc5RUhHUFpqTkh4aWl2VnNsME5TVFU3TzBZZDNRYTNMOElIakwyemNhMDB5Qi01Ung1eEFUem9IMFBHVEdUTHo2UHJ6SlNpdXFoYVlsZnlONEFOZzI2RFNNQXh3?oc=5",
+      "published_at": "2026-08-15T15:57:31+08:00"
     }
   ],
-  "site_version": "7691aa6c5a962f9fb79d7bd7e95668efd9d0970a07a942cb04ddb65ad6f60fb5"
+  "site_version": "90a0583a603d955d864d9a08f3916724fa9c0a9d008c4c67bc3b1c36922a62cd"
 }
