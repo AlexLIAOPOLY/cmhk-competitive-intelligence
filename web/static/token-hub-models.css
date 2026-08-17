@@ -1,0 +1,488 @@
+/* ═══════════════════════════════════════════════════════════════
+   模型治理页面特有样式
+   基于 token-hub-client.css 设计系统扩展
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 页面标题区链路状态（小号字体） */
+.page-balance-value-small {
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font);
+  line-height: 1.4;
+}
+
+/* 面板描述行（左右布局） */
+.panel-desc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 12px 0 16px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 8px;
+}
+
+.panel-desc-row p {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.panel-desc-row span {
+  color: var(--text-3);
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.panel-desc {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* 任务路由列表 */
+.route-list {
+  border-top: 1px solid var(--border-light);
+}
+
+.route-row {
+  display: grid;
+  grid-template-columns: minmax(180px, .9fr) minmax(220px, 1.1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.route-row:hover {
+  background: var(--bg-soft);
+}
+
+.route-name {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.route-desc {
+  color: var(--text-3);
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.route-select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-white);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+
+.route-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,116,185,.1);
+}
+
+/* 模型登记布局 */
+.register-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  padding-top: 8px;
+}
+
+.register-intro {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.register-intro span {
+  display: block;
+  margin-top: 12px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+/* 表单 */
+.model-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.model-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.model-form small {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.model-form input,
+.model-form textarea,
+.model-form select,
+.calculator-inputs input,
+.calculator-inputs select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-white);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.model-form input:focus,
+.model-form textarea:focus,
+.model-form select:focus,
+.calculator-inputs input:focus,
+.calculator-inputs select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,116,185,.1);
+}
+
+.model-form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.form-two-up {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.model-form button {
+  justify-self: start;
+  min-width: 140px;
+  padding: 10px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.model-form button:hover {
+  background: var(--primary-dark);
+}
+
+.model-form button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.form-message {
+  min-height: 20px;
+  margin-top: 10px;
+  color: var(--success);
+  font-size: 13px;
+}
+
+/* 峰谷成本 */
+.tariff-list {
+  border-top: 1px solid var(--border-light);
+  margin-bottom: 16px;
+}
+
+.tariff-row {
+  display: grid;
+  grid-template-columns: minmax(120px, .7fr) minmax(0, 1.3fr);
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+  align-items: center;
+}
+
+.tariff-row-name {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tariff-row-window {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.tariff-row-note {
+  color: var(--text-3);
+  font-size: 12px;
+  text-align: right;
+}
+
+.tariff-row.is-current {
+  border-left: 3px solid var(--primary);
+  padding-left: 12px;
+  background: linear-gradient(90deg, #f0f7fb, transparent);
+}
+
+.tariff-form {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.tariff-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.band-input {
+  display: grid;
+  grid-template-columns: 80px 120px 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.band-input strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.band-input > span {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.band-input label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.band-input input {
+  padding: 7px 9px;
+  font-size: 12px;
+}
+
+/* 紧急算力 */
+.provider-status {
+  margin: 12px 0 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.provider-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.provider-line b { color: var(--text); }
+.provider-line span { color: var(--text-3); }
+.provider-line strong { font-size: 11px; font-weight: 600; }
+
+.is-ready { color: var(--success); }
+.is-blocked { color: var(--warning); }
+
+.provider-status p {
+  margin: 8px 0 0;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.provider-status a {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--primary);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.provider-status a:hover {
+  text-decoration: underline;
+}
+
+.provider-boundary {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.check-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.check-line input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* 价格参考表格 */
+.price-table {
+  min-width: 780px;
+}
+
+.price-table td small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.price-table td a {
+  color: var(--primary);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.price-note {
+  min-width: 200px;
+  max-width: 320px;
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 经济性计算器 */
+.calculator-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.calculator-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.calc-result {
+  margin-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+
+.calc-row > span {
+  min-width: 0;
+  color: var(--text-2);
+}
+
+.calc-row strong {
+  flex-shrink: 0;
+  color: var(--primary);
+  font-size: 13px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.calc-row small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+/* 风险边界 */
+.risk-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.risk-list li {
+  margin-bottom: 10px;
+}
+
+.assumption-text {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 1024px) {
+  .register-layout { grid-template-columns: 180px minmax(0, 1fr); gap: 20px; }
+  .band-input { grid-template-columns: 70px 100px 1fr 1fr; }
+  .calculator-inputs { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .panel-desc-row { flex-direction: column; gap: 8px; }
+  .panel-desc-row span { white-space: normal; }
+
+  .route-row { grid-template-columns: 1fr; gap: 10px; }
+
+  .register-layout { grid-template-columns: 1fr; gap: 14px; }
+
+  .form-two-up,
+  .calculator-inputs { grid-template-columns: 1fr; }
+
+  .band-input { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .band-input strong,
+  .band-input > span { grid-column: 1 / -1; }
+
+  .tariff-row { grid-template-columns: 1fr; gap: 4px; }
+
+  .provider-line { grid-template-columns: 1fr; gap: 4px; }
+
+  .calc-row { flex-direction: column; gap: 6px; }
+  .calc-row strong { text-align: left; }
+
+  .price-table { min-width: 0; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  .calculator-inputs { grid-template-columns: 1fr; }
+}

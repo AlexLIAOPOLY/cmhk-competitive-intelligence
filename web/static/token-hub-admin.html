@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMHK AI Token Hub · 运营管理</title>
+  <link rel="stylesheet" href="token-hub.css?v=1">
+  <link rel="stylesheet" href="token-hub-client.css?v=5">
+  <link rel="stylesheet" href="token-hub-admin.css?v=2">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <a href="./token-hub.html" class="brand">CMHK AI TOKEN HUB</a>
+      <span class="brand-sep">/</span>
+      <span class="brand-page">运营管理</span>
+    </div>
+    <nav class="client-nav">
+      <a href="./token-hub.html">服务入口</a>
+      <a href="./token-hub-models.html">模型治理</a>
+      <a class="is-active" href="./token-hub-admin.html">运营管理</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-title">OPERATIONS</div>
+      <nav class="client-section-nav">
+        <a class="is-active" href="#overview">总览</a>
+        <a href="#leadsPanel">客户线索</a>
+        <a href="#ordersPanel">订单</a>
+        <a href="#runsPanel">爬虫运行</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-label">数据隔离</div>
+        <div class="sidebar-footer-note">线索爬虫只写 Token Hub 数据库，不触发现有 CMHK 爬虫、飞书写回或群消息。</div>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="page-header">
+        <div class="page-header-text">
+          <div class="page-label">OPERATIONS CONSOLE</div>
+          <h1>运营管理</h1>
+          <p class="page-desc">查看账户消耗、套餐订单、客户线索和隔离爬虫运行状态；所有数据均来自 Token Hub 服务端。</p>
+        </div>
+        <div class="page-balance page-balance-alt">
+          <div class="page-balance-label">下一次线索爬虫</div>
+          <div class="page-balance-value" id="nextCrawl">—</div>
+          <div class="page-balance-unit">Asia/Hong_Kong · 只写入 Token Hub</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <span id="adminMessage">正在读取运营数据……</span>
+        <button id="refresh" type="button">刷新数据</button>
+      </div>
+
+      <section id="stats" class="stats-grid" aria-label="运营摘要"></section>
+
+      <div class="content-grid">
+        <section id="leadsPanel" class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-label">01 / LEADS</div>
+              <h2>高意向客户线索</h2>
+            </div>
+            <span class="panel-header-note">状态更新会写入服务端</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>公司</th><th>行业</th><th>来源</th><th>评分</th><th>状态</th></tr>
+              </thead>
+              <tbody id="leads"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="side-stack">
+          <section id="ordersPanel" class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-label">02 / ORDERS</div>
+                <h2>最近订单</h2>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr><th>订单</th><th>套餐</th><th>金额</th><th>状态</th></tr>
+                </thead>
+                <tbody id="orders"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="runsPanel" class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-label">03 / CRAWL LOG</div>
+                <h2>运行记录</h2>
+              </div>
+            </div>
+            <div id="runs" class="runs-list"></div>
+          </section>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="./token-hub-admin.js?v=3"></script>
+</body>
+</html>

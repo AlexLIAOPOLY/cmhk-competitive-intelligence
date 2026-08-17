@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CMHK AI Token Hub · 模型治理</title>
+  <link rel="stylesheet" href="token-hub.css?v=1">
+  <link rel="stylesheet" href="token-hub-client.css?v=5">
+  <link rel="stylesheet" href="token-hub-models.css?v=3">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <a href="./token-hub.html" class="brand">CMHK AI TOKEN HUB</a>
+      <span class="brand-sep">/</span>
+      <span class="brand-page">模型治理</span>
+    </div>
+    <nav class="client-nav">
+      <a href="./token-hub.html">服务入口</a>
+      <a href="./token-hub-admin.html">运营管理</a>
+      <a class="is-active" href="./token-hub-models.html">模型治理</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-title">CONTROL CENTER</div>
+      <nav class="client-section-nav">
+        <a class="is-active" href="#routes">任务路由</a>
+        <a href="#catalog">模型目录</a>
+        <a href="#costs">成本时段</a>
+        <a href="#overflow">紧急算力</a>
+        <a href="#prices">价格参考</a>
+        <a href="#economics">经济性</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-label">数据边界</div>
+        <div class="sidebar-footer-note">模型调用仍由公司内网网关统一审计。外部算力策略默认关闭。</div>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="page-header">
+        <div class="page-header-text">
+          <div class="page-label">AI MODEL OPERATIONS</div>
+          <h1>模型治理</h1>
+          <p class="page-desc">集中管理任务路由、分时成本和应急算力边界。公开 API 仅作价格参照，不代表已经接入。</p>
+        </div>
+        <div class="page-balance page-balance-alt">
+          <div class="page-balance-label">当前链路</div>
+          <div class="page-balance-value page-balance-value-small" id="labStatus">正在读取链路配置……</div>
+          <div class="page-balance-unit">服务入口会按任务读取最新配置</div>
+        </div>
+      </div>
+
+      <section class="stats-grid" aria-label="模型治理摘要">
+        <div class="stat-card">
+          <div class="stat-card-label">任务路由</div>
+          <div class="stat-card-value" id="routeCount">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">内部模型</div>
+          <div class="stat-card-value" id="modelCount">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">香港当前时段</div>
+          <div class="stat-card-value" id="currentBand">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">外部故障转移</div>
+          <div class="stat-card-value" id="externalState">—</div>
+        </div>
+      </section>
+
+      <section id="routes" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-label">01 / ROUTING</div>
+            <h2>任务路由</h2>
+          </div>
+          <span class="panel-header-note">只调用内网模型</span>
+        </div>
+        <div class="panel-desc-row">
+          <p>每个任务独立绑定内部模型。修改后立即保存，服务入口下次调用会按任务读取最新链路。</p>
+          <span>配置变更 · 即时生效</span>
+        </div>
+        <div id="routeTable" class="route-list" aria-live="polite"></div>
+      </section>
+
+      <section id="catalog" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-label">02 / CATALOG</div>
+            <h2>内部模型目录</h2>
+          </div>
+          <span class="panel-header-note">只接受内网 model ID</span>
+        </div>
+        <div class="register-layout">
+          <div class="register-intro">
+            <p>登记已部署在公司内网网关的模型。系统不会接受外部 Base URL，也不会把密钥存进浏览器。</p>
+            <span>成本可以稍后补录</span>
+          </div>
+          <div>
+            <form id="modelForm" class="model-form">
+              <label>模型 ID<input id="modelId" name="model_id" required maxlength="100" placeholder="例如 DeepSeek-V4-Pro" pattern="[A-Za-z0-9][A-Za-z0-9._:-]{0,99}"></label>
+              <label>显示名称<input id="displayName" name="display_name" maxlength="120" placeholder="例如 公司内网 · DeepSeek Pro"></label>
+              <div class="form-two-up">
+                <label>输入成本 <small>USD / 1M tokens，可留空</small><input id="inputCost" name="input_cost_usd_per_million" type="number" min="0" step="0.000001" placeholder="待录入"></label>
+                <label>输出成本 <small>USD / 1M tokens，可留空</small><input id="outputCost" name="output_cost_usd_per_million" type="number" min="0" step="0.000001" placeholder="待录入"></label>
+              </div>
+              <label>备注<textarea id="modelNote" name="note" rows="2" maxlength="240" placeholder="例如：已完成内网压测；成本由平台团队确认。"></textarea></label>
+              <button type="submit">保存内部模型</button>
+            </form>
+            <div id="modelFormMessage" class="form-message" role="status"></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="content-grid">
+        <section id="costs" class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-label">03 / COST WINDOWS</div>
+              <h2>峰谷成本</h2>
+            </div>
+            <span id="currentBandBadge" class="panel-header-note">读取当前时段</span>
+          </div>
+          <p class="panel-desc">按香港时间显示运营规划的谷／平／峰窗口。只有录入平台或财务确认的 USD / 1M tokens，计算器才会比较内部经济性。</p>
+          <div id="tariffRows" class="tariff-list"></div>
+          <form id="tariffForm" class="model-form tariff-form">
+            <label>内部模型<select id="tariffModel" required aria-label="选择要设置峰谷成本的内部模型"></select></label>
+            <div id="tariffInputs" class="tariff-inputs"></div>
+            <button type="submit">保存分时成本</button>
+          </form>
+          <div id="tariffMessage" class="form-message" role="status"></div>
+        </section>
+
+        <section id="overflow" class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-label">04 / RESILIENCE</div>
+              <h2>紧急外部算力</h2>
+            </div>
+            <span id="overflowStatus" class="panel-header-note">读取策略</span>
+          </div>
+          <p class="panel-desc">只允许获批适配器、服务器端密钥和官方 HTTPS 域名。默认要求公开／脱敏内容；策略未生效时，任何外发请求都会被拒绝。</p>
+          <div id="providerStatus" class="provider-status"></div>
+          <form id="overflowForm" class="model-form overflow-form">
+            <label class="check-line"><input id="overflowEnabled" type="checkbox"> <span>启用内网失败后的自动故障转移</span></label>
+            <div class="form-two-up">
+              <label>队列阈值 <small>需接入可信网关队列指标</small><input id="queueDepth" type="number" min="1"></label>
+              <label>延迟阈值（毫秒）<small>需接入可信网关延迟指标</small><input id="latencyMs" type="number" min="100"></label>
+            </div>
+            <div class="form-two-up">
+              <label>每月预算上限（HKD）<input id="monthlyBudget" type="number" min="0" step="0.01"></label>
+              <label>单次 token 上限<input id="requestTokenLimit" type="number" min="0"></label>
+            </div>
+            <button type="submit">保存紧急算力策略</button>
+          </form>
+          <div id="overflowMessage" class="form-message" role="status"></div>
+        </section>
+      </div>
+
+      <section id="prices" class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-label">05 / MARKET REFERENCE</div>
+            <h2>外部 API 价格参考</h2>
+          </div>
+          <span id="priceVerified" class="panel-header-note">官方页面核对中</span>
+        </div>
+        <p class="panel-desc">单位为 USD / 1M tokens，按标准输入与输出计算。价格会变，最终采购前应重新核对供应商条款；以下不是已经接入的外部供应商。</p>
+        <div class="table-wrap">
+          <table class="data-table price-table">
+            <thead><tr><th>供应商 / 模型</th><th>输入</th><th>输出</th><th>缓存输入</th><th>限制与备注</th><th>官方来源</th></tr></thead>
+            <tbody id="priceRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div id="economics" class="content-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-label">06 / UNIT ECONOMICS</div>
+              <h2>经济性比较</h2>
+            </div>
+            <span class="panel-header-note">同一请求量 · 仅作规划</span>
+          </div>
+          <p class="panel-desc">比较选定内部模型的分时成本、紧急适配器和公开价格参考。内部成本待录入时不作结论。</p>
+          <div class="calculator-inputs">
+            <label>内部模型<select id="calcModel" aria-label="选择经济性比较的内部模型"></select></label>
+            <label>时段<select id="calcBand" aria-label="选择经济性比较的峰谷时段"></select></label>
+            <label>每月请求次数<input id="calcRequests" type="number" min="1" value="10000"></label>
+            <label>每次输入 tokens<input id="calcInputTokens" type="number" min="0" value="1200"></label>
+            <label>每次输出 tokens<input id="calcOutputTokens" type="number" min="0" value="400"></label>
+            <label>汇率假设 USD/HKD<input id="calcRate" type="number" min="0.01" step="0.01" value="7.8"></label>
+          </div>
+          <div id="calcResult" class="calc-result" aria-live="polite"></div>
+        </section>
+
+        <section class="panel panel-alt">
+          <div class="panel-header">
+            <div>
+              <div class="panel-label">07 / GUARDRAILS</div>
+              <h2>经济性边界</h2>
+            </div>
+          </div>
+          <ul class="risk-list">
+            <li>内部成本应包含 GPU 折旧、峰值容量、运维、人力、SLA 和失败重试；本页只是 token 成本输入。</li>
+            <li>自动故障转移目前以"内网调用失败"为可执行触发；队列／延迟阈值接入可信指标后才可自动使用。</li>
+            <li>外部请求只接受公开／脱敏标记，并按实际 usage 记录 USD、HKD、供应商、时段和故障原因。</li>
+          </ul>
+          <div id="assumptionText" class="assumption-text"></div>
+        </section>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="./token-hub-models.js?v=3"></script>
+</body>
+</html>
