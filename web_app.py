@@ -48,20 +48,6 @@ from tts_service import (
     rename_audio_for_report,
     synthesize_report_audio,
 )
-from token_hub import chat as token_hub_chat
-from token_hub import get_plans as token_hub_plans
-from token_hub import get_user as token_hub_user
-from token_hub import list_crawl_runs as token_hub_crawl_runs
-from token_hub import list_leads as token_hub_leads
-from token_hub import list_orders as token_hub_orders
-from token_hub import get_model_lab as token_hub_model_lab
-from token_hub import register_internal_model as token_hub_register_internal_model
-from token_hub import set_model_route as token_hub_set_model_route
-from token_hub import update_model_tariff_costs as token_hub_update_model_tariff_costs
-from token_hub import update_overflow_policy as token_hub_update_overflow_policy
-from token_hub import subscribe as token_hub_subscribe
-from token_hub import summary as token_hub_summary
-from token_hub import update_lead_status as token_hub_update_lead_status
 
 
 ROOT = Path(__file__).resolve().parent
@@ -3430,15 +3416,6 @@ class AppHandler(BaseHTTPRequestHandler):
         if path in {"/executive-dashboard-demo", "/executive-dashboard-demo.html"}:
             self.serve_file(STATIC_DIR / "executive-dashboard-demo.html")
             return
-        if path in {"/token-hub", "/token-hub.html"}:
-            self.serve_file(STATIC_DIR / "token-hub.html")
-            return
-        if path in {"/token-hub-admin", "/token-hub-admin.html"}:
-            self.serve_file(STATIC_DIR / "token-hub-admin.html")
-            return
-        if path in {"/token-hub-models", "/token-hub-models.html"}:
-            self.serve_file(STATIC_DIR / "token-hub-models.html")
-            return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
             return
@@ -3614,33 +3591,6 @@ class AppHandler(BaseHTTPRequestHandler):
         if path == "/api/ai-config":
             json_response(self, {"ok": True, "config": load_ai_config(include_key=False)})
             return
-        if path == "/api/token-hub/plans":
-            json_response(self, {"ok": True, "plans": token_hub_plans()})
-            return
-        if path == "/api/token-hub/user":
-            query = parse_qs(parsed.query)
-            json_response(self, {"ok": True, "user": token_hub_user(str(query.get("id", ["demo-user"])[0] or "demo-user"))})
-            return
-        if path == "/api/token-hub/summary":
-            json_response(self, {"ok": True, "summary": token_hub_summary()})
-            return
-        if path == "/api/token-hub/leads":
-            query = parse_qs(parsed.query)
-            try:
-                limit = int(query.get("limit", ["50"])[0])
-            except Exception:
-                limit = 50
-            json_response(self, {"ok": True, "leads": token_hub_leads(limit)})
-            return
-        if path == "/api/token-hub/crawl-runs":
-            json_response(self, {"ok": True, "runs": token_hub_crawl_runs()})
-            return
-        if path == "/api/token-hub/orders":
-            json_response(self, {"ok": True, "orders": token_hub_orders()})
-            return
-        if path == "/api/token-hub/model-lab":
-            json_response(self, {"ok": True, "lab": token_hub_model_lab()})
-            return
         if path.startswith("/outputs/"):
             name = Path(unquote(path.removeprefix("/outputs/"))).name
             target = ROOT / name
@@ -3685,93 +3635,6 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
-        if parsed.path == "/api/token-hub/chat":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_chat(
-                    str(payload.get("user_id") or "demo-user"),
-                    str(payload.get("question") or "").strip(),
-                    str(payload.get("task_id") or "customer_service"),
-                    str(payload.get("model_id") or "").strip() or None,
-                    bool(payload.get("allow_external")),
-                    str(payload.get("data_classification") or "internal"),
-                    bool(payload.get("force_external")),
-                )
-                json_response(self, result)
-            except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 503)
-            return
-        if parsed.path == "/api/token-hub/model-lab/routes":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_set_model_route(str(payload.get("task_id") or ""), str(payload.get("model_id") or ""))
-                json_response(self, result)
-            except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
-        if parsed.path == "/api/token-hub/model-lab/models":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_register_internal_model(
-                    str(payload.get("model_id") or ""),
-                    str(payload.get("display_name") or ""),
-                    payload.get("input_cost_usd_per_million"),
-                    payload.get("output_cost_usd_per_million"),
-                    str(payload.get("note") or ""),
-                )
-                json_response(self, result)
-            except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
-        if parsed.path == "/api/token-hub/model-lab/costs":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_update_model_tariff_costs(
-                    str(payload.get("model_id") or ""),
-                    payload.get("costs") if isinstance(payload.get("costs"), dict) else {},
-                )
-                json_response(self, result)
-            except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
-        if parsed.path == "/api/token-hub/model-lab/overflow":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_update_overflow_policy(payload if isinstance(payload, dict) else {})
-                json_response(self, result)
-            except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
-        if parsed.path == "/api/token-hub/subscribe":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_subscribe(str(payload.get("user_id") or "demo-user"), str(payload.get("plan_id") or ""))
-                json_response(self, result)
-            except ValueError as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
-        if parsed.path == "/api/token-hub/leads/status":
-            try:
-                payload = read_request_json(self)
-                result = token_hub_update_lead_status(int(payload.get("lead_id")), str(payload.get("status") or ""))
-                json_response(self, result)
-            except (TypeError, ValueError) as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 400)
-            except Exception as exc:
-                json_response(self, {"ok": False, "error": str(exc)}, 500)
-            return
         if parsed.path == "/api/executive-intelligence/regenerate-discovery":
             if not INTELLIGENCE_INSIGHT_REFRESH_LOCK.acquire(timeout=60):
                 json_response(self, {"ok": False, "error": "数据解读服务仍在处理上一项任务，请稍后重试。"}, 409)
