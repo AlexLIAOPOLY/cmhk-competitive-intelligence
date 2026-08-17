@@ -23,6 +23,8 @@ class FakeCommandRunner:
         self.fail_send_chats: set[str] = set()
         self.fail_readback = False
         self.fail_ledger = False
+        self.fail_ledger_styles = False
+        self.ledger_append_row_shift = 0
         self.bot_app_id = "cli_a9575e70ae799cb2"
         self.ledger_rows: list[list[str]] = []
         self.chat_names = {
@@ -108,8 +110,12 @@ class FakeCommandRunner:
                         "data": {
                             "revision": 100,
                             "sheets": [
-                                {"sheet_id": "9c638d", "sheet_name": "主表"},
-                                {"sheet_id": "j1AY6G", "sheet_name": "项目错误告警"},
+                                {"sheet_id": "9c638d", "sheet_name": "主表", "row_count": 200},
+                                {
+                                    "sheet_id": "j1AY6G",
+                                    "sheet_name": "项目错误告警",
+                                    "row_count": 200,
+                                },
                             ],
                         },
                     },
@@ -117,7 +123,12 @@ class FakeCommandRunner:
                 ),
                 "",
             )
-        if len(args) >= 3 and args[1:3] == ["sheets", "+table-get"]:
+        if len(args) >= 3 and args[1:3] == ["sheets", "+cells-get"]:
+            all_rows = [list(project_monitor.ERROR_LEDGER_COLUMNS), *self.ledger_rows]
+            cells = [
+                [[{"value": value} if value != "" else {} for value in row][index] for index in range(17)]
+                for row in all_rows
+            ]
             return subprocess.CompletedProcess(
                 args,
                 0,
@@ -126,12 +137,15 @@ class FakeCommandRunner:
                         "ok": True,
                         "identity": "bot",
                         "data": {
-                            "sheets": [
+                            "has_more": False,
+                            "ranges": [
                                 {
-                                    "name": "项目错误告警",
-                                    "columns": list(project_monitor.ERROR_LEDGER_COLUMNS),
-                                    "data": [list(row) for row in self.ledger_rows],
-                                    "range": f"A1:Q{len(self.ledger_rows) + 1}",
+                                    "actual_range": f"A1:Q{len(all_rows)}",
+                                    "range": f"A1:Q{len(all_rows)}",
+                                    "cells": cells,
+                                    "row_indices": list(range(1, len(all_rows) + 1)),
+                                    "col_indices": [chr(ord("A") + index) for index in range(17)],
+                                    "truncated": False,
                                 }
                             ]
                         },
@@ -150,6 +164,9 @@ class FakeCommandRunner:
                 )
             payload = json.loads(args[args.index("--sheets") + 1])
             new_rows = [list(row) for row in payload["sheets"][0]["data"]]
+            for _ in range(self.ledger_append_row_shift):
+                self.ledger_rows.append([""] * 17)
+            self.ledger_append_row_shift = 0
             start_row = len(self.ledger_rows) + 2
             self.ledger_rows.extend(new_rows)
             end_row = len(self.ledger_rows) + 1
@@ -172,6 +189,20 @@ class FakeCommandRunner:
                     },
                     ensure_ascii=False,
                 ),
+                "",
+            )
+        if len(args) >= 3 and args[1:3] == ["sheets", "+styles-put"]:
+            if self.fail_ledger_styles:
+                return subprocess.CompletedProcess(
+                    args,
+                    1,
+                    "",
+                    json.dumps({"ok": False, "error": {"message": "simulated style failure"}}),
+                )
+            return subprocess.CompletedProcess(
+                args,
+                0,
+                json.dumps({"ok": True, "identity": "bot", "data": {"styled": True}}),
                 "",
             )
         if len(args) >= 3 and args[1:3] == ["sheets", "+cells-set"]:
@@ -808,6 +839,54 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertIn("simulated ledger failure", result["error_ledger"]["last_error"])
         events = self.state_dir.joinpath("events.jsonl").read_text()
         self.assertIn("error_ledger_sync_failed_local_only", events)
+
+    def test_error_ledger_append_uses_actual_range_when_remote_row_moves(self):
+        self.runner.ledger_append_row_shift = 1
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        result = monitor.run_cycle()
+        self.assertIsNone(result["error_ledger"]["last_error"])
+        self.assertEqual(len(self.runner.send_calls()), 2)
+        incident_id = result["active_incidents"][0]["incident_id"]
+        matching_rows = [row for row in self.runner.ledger_rows if row[0] == incident_id]
+        self.assertEqual(len(matching_rows), 1)
+        style_call = next(call for call in self.runner.calls if "+styles-put" in call)
+        styles = json.loads(style_call[style_call.index("--styles") + 1])
+        self.assertEqual(styles["styles"][0]["cell_styles"][0]["range"], "A3:Q3")
+
+    def test_alert_waits_for_ledger_row_when_append_fails(self):
+        self.runner.fail_ledger = True
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        result = monitor.run_cycle()
+        self.assertEqual(self.runner.send_calls(), [])
+        self.assertEqual(
+            result["active_incidents"][0].get("delivery_states"),
+            {},
+        )
+
+    def test_style_failure_does_not_block_incident_row_or_delivery(self):
+        self.runner.fail_ledger_styles = True
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        result = monitor.run_cycle()
+        self.assertEqual(len(self.runner.ledger_rows), 1)
+        self.assertEqual(len(self.runner.send_calls()), 2)
+        events = self.state_dir.joinpath("events.jsonl").read_text()
+        self.assertIn("error_ledger_style_failed_local_only", events)
+
+    def test_duplicate_incident_rows_prefer_the_human_handled_row(self):
+        incident_id = "1234567890abcdef12345678"
+        first = [incident_id, *([""] * 16)]
+        first[13] = "待处理"
+        second = [incident_id, *([""] * 16)]
+        second[12] = "李四"
+        second[13] = "已处理"
+        self.runner.ledger_rows = [first, [""] * 17, second]
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+        rows, mapping = monitor._read_error_ledger()
+        self.assertEqual(mapping[incident_id], 4)
+        self.assertEqual(rows[mapping[incident_id] - 2][12], "李四")
 
     def test_sensitive_values_are_redacted_before_incident_storage(self):
         monitor = self._monitor()

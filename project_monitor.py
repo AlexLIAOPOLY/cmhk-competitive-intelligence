@@ -2075,17 +2075,21 @@ class ProjectMonitor:
         )
         if not isinstance(main_sheet, dict) or str(main_sheet.get("sheet_name") or "") != "主表":
             raise RuntimeError("目标工作簿的主表身份校验失败")
-
-        table = self._json_from_process(
+        row_count = max(2, int(ledger_sheet.get("row_count") or 0))
+        cells_payload = self._json_from_process(
             self._run(
                 [
                     "lark-cli",
                     "sheets",
-                    "+table-get",
+                    "+cells-get",
                     "--spreadsheet-token",
                     token,
                     "--sheet-id",
                     sheet_id,
+                    "--range",
+                    f"A1:Q{row_count}",
+                    "--include",
+                    "value",
                     "--as",
                     "bot",
                     "--profile",
@@ -2096,27 +2100,60 @@ class ProjectMonitor:
                 timeout=30,
             )
         )
-        table_data = table.get("data") if isinstance(table.get("data"), dict) else {}
-        tables = table_data.get("sheets") if isinstance(table_data.get("sheets"), list) else []
-        if len(tables) != 1 or not isinstance(tables[0], dict):
-            raise RuntimeError("错误台账回读未返回唯一子表")
-        result = tables[0]
-        if str(result.get("name") or "") != sheet_name:
-            raise RuntimeError("错误台账回读名称不一致")
-        if tuple(str(item) for item in result.get("columns") or []) != ERROR_LEDGER_COLUMNS:
+        cells_data = (
+            cells_payload.get("data") if isinstance(cells_payload.get("data"), dict) else {}
+        )
+        if cells_data.get("has_more"):
+            raise RuntimeError("错误台账单元格回读被截断")
+        ranges = cells_data.get("ranges") if isinstance(cells_data.get("ranges"), list) else []
+        if len(ranges) != 1 or not isinstance(ranges[0], dict):
+            raise RuntimeError("错误台账单元格回读未返回唯一范围")
+        result = ranges[0]
+        if result.get("truncated"):
+            raise RuntimeError("错误台账单元格回读范围被截断")
+        row_indices = result.get("row_indices") if isinstance(result.get("row_indices"), list) else []
+        col_indices = result.get("col_indices") if isinstance(result.get("col_indices"), list) else []
+        raw_cells = result.get("cells") if isinstance(result.get("cells"), list) else []
+        if col_indices != [chr(ord("A") + index) for index in range(17)]:
+            raise RuntimeError("错误台账单元格回读列范围不一致")
+        rows_by_number: dict[int, list[str]] = {}
+        for index, raw_row in enumerate(raw_cells):
+            if index >= len(row_indices):
+                break
+            row_number = int(row_indices[index])
+            cells = raw_row if isinstance(raw_row, list) else []
+            values: list[str] = []
+            for column in range(17):
+                cell = cells[column] if column < len(cells) and isinstance(cells[column], dict) else {}
+                values.append(str(cell.get("value") or ""))
+            rows_by_number[row_number] = values
+        header = rows_by_number.get(1, [])
+        if tuple(header) != ERROR_LEDGER_COLUMNS:
             raise RuntimeError("错误台账表头被修改，自动写入已停止")
-        raw_rows = result.get("data") if isinstance(result.get("data"), list) else []
+        last_nonempty_row = max(
+            (row_number for row_number, values in rows_by_number.items() if any(values)),
+            default=1,
+        )
         rows: list[list[str]] = []
         row_by_incident: dict[str, int] = {}
-        for offset, raw_row in enumerate(raw_rows, start=2):
-            values = list(raw_row) if isinstance(raw_row, list) else []
-            normalized = [str(values[index] or "") if index < len(values) else "" for index in range(17)]
+        for offset in range(2, last_nonempty_row + 1):
+            normalized = rows_by_number.get(offset, [""] * 17)
             rows.append(normalized)
             incident_id = normalized[0].strip()
             if not incident_id:
                 continue
             if incident_id in row_by_incident:
-                raise RuntimeError(f"错误台账存在重复告警ID：{incident_id}")
+                existing_row_number = row_by_incident[incident_id]
+                existing_values = rows[existing_row_number - 2]
+                existing_handled = bool(existing_values[12].strip()) or existing_values[13] == "已处理"
+                current_handled = bool(normalized[12].strip()) or normalized[13] == "已处理"
+                # A previous failed append may have left a duplicate row. Keep
+                # the human-owned handled row if one exists; otherwise retain
+                # the earliest row. Never let a duplicate make all callbacks
+                # for that incident unusable.
+                if current_handled and not existing_handled:
+                    row_by_incident[incident_id] = offset
+                continue
             row_by_incident[incident_id] = offset
         return rows, row_by_incident
 
@@ -2216,17 +2253,11 @@ class ProjectMonitor:
             "vertical_alignment": "middle",
         }
 
-    def _append_error_ledger_rows(
-        self,
-        rows: list[list[str]],
-        *,
-        expected_start_row: int,
-    ) -> tuple[int, int]:
+    def _append_error_ledger_rows(self, rows: list[list[str]]) -> tuple[int, int]:
         config = self._error_ledger_config()
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = str(bot.get("profile") or "")
         sheet_name = str(config.get("sheet_name") or "")
-        expected_end_row = expected_start_row + len(rows) - 1
         table_payload = {
             "sheets": [
                 {
@@ -2240,33 +2271,6 @@ class ProjectMonitor:
                 }
             ]
         }
-        cell_styles: list[dict[str, Any]] = [
-            {
-                "range": f"A{expected_start_row}:Q{expected_end_row}",
-                "font_size": 12,
-                "vertical_alignment": "top",
-                "word_wrap": "auto-wrap",
-                "border": {"style": "solid", "weight": "thin", "color": "#E4E7EC"},
-            }
-        ]
-        for offset, values in enumerate(rows):
-            cell_styles.append(
-                {
-                    "range": f"D{expected_start_row + offset}",
-                    **self._ledger_severity_style(values[3]),
-                }
-            )
-        style_payload = {
-            "styles": [
-                {
-                    "name": sheet_name,
-                    "cell_styles": cell_styles,
-                    "row_sizes": [
-                        {"range": f"{expected_start_row}:{expected_end_row}", "type": "auto"}
-                    ],
-                }
-            ]
-        }
         payload = self._json_from_process(
             self._run(
                 [
@@ -2277,8 +2281,6 @@ class ProjectMonitor:
                     str(config.get("spreadsheet_token") or ""),
                     "--sheets",
                     json.dumps(table_payload, ensure_ascii=False),
-                    "--styles",
-                    json.dumps(style_payload, ensure_ascii=False),
                     "--as",
                     "bot",
                     "--profile",
@@ -2296,10 +2298,76 @@ class ProjectMonitor:
         if not match:
             raise RuntimeError("错误台账追加后未返回有效范围")
         start_row, end_row = int(match.group(1)), int(match.group(2))
-        if start_row != expected_start_row or end_row != expected_end_row:
+        if start_row < 2 or end_row - start_row + 1 != len(rows):
             raise RuntimeError(
-                f"错误台账追加范围不符合预期：expected={expected_start_row}:{expected_end_row}; "
+                f"错误台账追加范围不符合写入行数：expected_rows={len(rows)}; "
                 f"actual={start_row}:{end_row}"
+            )
+
+        # Append positioning is decided by Feishu at execution time. Another
+        # writer (or a trailing formatted row) can move the actual start after
+        # our read, so styles must be applied only after the returned range is
+        # known. Supplying a precomputed style range to +table-put makes the
+        # whole append fail when that range shifts by even one row.
+        cell_styles: list[dict[str, Any]] = [
+            {
+                "range": f"A{start_row}:Q{end_row}",
+                "font_size": 12,
+                "vertical_alignment": "top",
+                "word_wrap": "auto-wrap",
+                "border": {"style": "solid", "weight": "thin", "color": "#E4E7EC"},
+            }
+        ]
+        for offset, values in enumerate(rows):
+            cell_styles.append(
+                {
+                    "range": f"D{start_row + offset}",
+                    **self._ledger_severity_style(values[3]),
+                }
+            )
+        style_payload = {
+            "styles": [
+                {
+                    "name": sheet_name,
+                    "cell_styles": cell_styles,
+                    "row_sizes": [
+                        {"range": f"{start_row}:{end_row}", "type": "auto"}
+                    ],
+                }
+            ]
+        }
+        try:
+            self._json_from_process(
+                self._run(
+                    [
+                        "lark-cli",
+                        "sheets",
+                        "+styles-put",
+                        "--spreadsheet-token",
+                        str(config.get("spreadsheet_token") or ""),
+                        "--styles",
+                        json.dumps(style_payload, ensure_ascii=False),
+                        "--as",
+                        "bot",
+                        "--profile",
+                        profile,
+                        "--format",
+                        "json",
+                    ],
+                    timeout=45,
+                )
+            )
+        except Exception as exc:
+            # The data append has already committed. Styling is secondary and
+            # must never make the incident row unavailable to card callbacks.
+            _append_jsonl(
+                self.events_path,
+                {
+                    "type": "error_ledger_style_failed_local_only",
+                    "at_hkt": _iso(self.now()),
+                    "range": f"A{start_row}:Q{end_row}",
+                    "error": _redact(f"{type(exc).__name__}: {exc}", 700),
+                },
             )
         return start_row, end_row
 
@@ -2399,13 +2467,7 @@ class ProjectMonitor:
             missing_ids = [incident_id for incident_id in desired if incident_id not in row_by_incident]
             if missing_ids:
                 append_values = [desired[incident_id] for incident_id in missing_ids]
-                start_row, end_row = self._append_error_ledger_rows(
-                    append_values,
-                    expected_start_row=len(remote_rows) + 2,
-                )
-                for offset, incident_id in enumerate(missing_ids):
-                    row_by_incident[incident_id] = start_row + offset
-                    remote_rows.append(append_values[offset])
+                start_row, end_row = self._append_error_ledger_rows(append_values)
                 _append_jsonl(
                     self.events_path,
                     {
@@ -2415,6 +2477,13 @@ class ProjectMonitor:
                         "range": f"A{start_row}:Q{end_row}",
                     },
                 )
+                # Re-read instead of assuming contiguous row positions from a
+                # stale pre-append snapshot. This also covers another writer
+                # appending between our read and write.
+                remote_rows, row_by_incident = self._read_error_ledger()
+                for incident_id in missing_ids:
+                    if incident_id not in row_by_incident:
+                        raise RuntimeError(f"错误台账追加后未回读到告警ID：{incident_id}")
 
             updates: list[tuple[int, list[str]]] = []
             for incident_id, values in desired.items():
@@ -2584,13 +2653,23 @@ class ProjectMonitor:
         self.state["notifications_enabled_last"] = enabled
         issues = self.collect_issues()
         _, active = self._upsert_incidents(issues)
+        # A card must never be delivered before its incident row exists. The
+        # callback can be clicked immediately, so syncing after delivery leaves
+        # a race where the click cannot resolve the incident ID.
+        self._sync_error_ledger()
         # The user explicitly requires errors only and AI-before-send.  There is
         # no delivery path for healthy or resolved records.
         for incident in active:
+            ledger_rows = (self.state.get("error_ledger") or {}).get("rows") or {}
+            ledger_row = ledger_rows.get(str(incident.get("incident_id") or ""))
+            if self.error_ledger_enabled and not (
+                isinstance(ledger_row, dict) and int(ledger_row.get("row") or 0) >= 2
+            ):
+                incident["delivery_suppressed"] = "awaiting_error_ledger_sync"
+                continue
             self._deliver_incident(incident)
-        # Error ledger writes are independent from the group-notification gate.
-        # They contain incidents only; healthy and recovery states never create
-        # rows. M/N (处理人员/处理状态) are never touched by this path after append.
+        # Sync again so notification status is reflected after successful sends.
+        # M/N (处理人员/处理状态) are never touched by this path after append.
         self._sync_error_ledger()
         self.state["last_cycle_at_hkt"] = _iso(self.now())
         self.state["cycles"] = int(self.state.get("cycles") or 0) + 1
