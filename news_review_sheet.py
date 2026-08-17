@@ -628,6 +628,27 @@ def _write(sheet_id: str, cell_range: str, values: list[list[Any]]) -> None:
     )
 
 
+def _insert_rows(sheet_id: str, count: int, *, start_index: int = 1) -> None:
+    if count <= 0:
+        return
+    _lark(
+        "sheets",
+        "+insert-dimension",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--sheet-id",
+        sheet_id,
+        "--dimension",
+        "ROWS",
+        "--start-index",
+        str(start_index),
+        "--end-index",
+        str(start_index + count),
+        "--inherit-style",
+        "AFTER",
+    )
+
+
 def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) -> list[Any]:
     if format_version <= 5:
         width = 10
@@ -1102,80 +1123,88 @@ HUMAN_DECISION_COLUMNS = (0, 1, 2)
 STATUS_PRIORITY = {"接受": 4, "不接受": 3, "暂缓": 2, "待审核": 1}
 
 
-def _rescue_concurrent_review_decisions(
+def _index_review_rows(rows: list[list[Any]]) -> dict[str, list[Any]]:
+    rows_by_id: dict[str, list[Any]] = {}
+    for index, row in enumerate(rows, start=2):
+        if not row or not any(_text(value, 80) for value in row):
+            continue
+        padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+        news_id = _row_dict(padded, index)["news_id"]
+        if not news_id:
+            continue
+        previous = rows_by_id.get(news_id)
+        if previous is not None and STATUS_PRIORITY.get(
+            _normalized_status(padded[0]), 0
+        ) <= STATUS_PRIORITY.get(_normalized_status(previous[0]), 0):
+            continue
+        rows_by_id[news_id] = padded
+    return rows_by_id
+
+
+def _refresh_live_review_sheet(
     sheet_id: str,
     existing_rows_by_id: dict[str, list[Any]],
     existing_status: dict[str, tuple[str, str]],
     *,
     progress_callback: ProgressCallback | None = None,
-) -> list[dict[str, str]]:
-    """Refresh reviewer-owned columns from the live sheet before rewriting it.
+) -> dict[str, Any]:
+    """Re-read the live sheet before mutating it.
 
-    ``sync_candidates`` snapshots the whole worksheet before the crawl and AI
-    passes, then writes that snapshot back. Any decision a reviewer records in
-    between is inside the snapshot's blind spot and would be reverted. Reading
-    the decision columns again here keeps the human edit and only lets the
-    pipeline own the content columns.
+    Existing rows are never rewritten. This refresh only decides which new
+    rows are truly absent, and records concurrent human edits for monitoring.
     """
 
     rescued: list[dict[str, str]] = []
     try:
         latest_rows = _read_rows(sheet_id)
     except Exception:
-        logging.exception("写回前重新读取审核表失败，本轮沿用开始时的人工审核状态")
+        logging.exception("写回前重新读取审核表失败，本轮只追加新行、不改已有行")
         _progress(
             progress_callback,
             "人工审核状态保护",
-            "写回前重新读取审核表失败，已跳过并发人工审核状态保护。",
+            "写回前重新读取审核表失败，已改为只追加新行，不覆盖已有审核结果。",
         )
-        return rescued
+        return {
+            "rescued": rescued,
+            "rows": list(existing_rows_by_id.values()),
+            "rows_by_id": dict(existing_rows_by_id),
+            "physical_count": len(existing_rows_by_id),
+        }
 
-    latest_decisions: dict[str, tuple[str, str, str]] = {}
-    for index, row in enumerate(latest_rows, start=2):
-        if not row or not any(_text(value, 80) for value in row):
-            continue
-        padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
-        parsed = _row_dict(padded, index)
-        news_id = parsed["news_id"]
-        if not news_id:
-            continue
-        candidate = tuple(
-            _text(padded[column], 40) for column in HUMAN_DECISION_COLUMNS
-        )
-        previous = latest_decisions.get(news_id)
-        if previous is not None and STATUS_PRIORITY.get(
-            _normalized_status(candidate[0]), 0
-        ) <= STATUS_PRIORITY.get(_normalized_status(previous[0]), 0):
-            continue
-        latest_decisions[news_id] = candidate
-
+    latest_by_id = _index_review_rows(latest_rows)
+    physical_count = sum(
+        1
+        for row in latest_rows
+        if row and any(_text(value, 80) for value in row)
+    )
     for news_id, stored_row in existing_rows_by_id.items():
-        latest = latest_decisions.get(news_id)
+        latest = latest_by_id.get(news_id)
         if latest is None:
             continue
         before = tuple(
             _text(stored_row[column], 40) for column in HUMAN_DECISION_COLUMNS
         )
-        if before == latest:
+        after = tuple(
+            _text(latest[column], 40) for column in HUMAN_DECISION_COLUMNS
+        )
+        if before == after:
             continue
-        for position, column in enumerate(HUMAN_DECISION_COLUMNS):
-            stored_row[column] = latest[position]
         existing_status[news_id] = (
-            _normalized_status(latest[0]),
-            latest[2] or "未同步",
+            _normalized_status(after[0]),
+            after[2] or "未同步",
         )
         rescued.append(
             {
                 "news_id": news_id,
-                "title": _text(stored_row[6], 240),
+                "title": _text(latest[6], 240),
                 "before": " / ".join(before),
-                "after": " / ".join(latest),
+                "after": " / ".join(after),
             }
         )
 
     if rescued:
         logging.warning(
-            "写回前发现 %s 条候选的人工审核状态在本轮运行期间被修改，已保留最新人工结果：%s",
+            "写回前发现 %s 条候选的人工审核状态在本轮运行期间被修改，已有行不会被覆盖：%s",
             len(rescued),
             "；".join(
                 f"{entry['title'][:40]}（{entry['before']} → {entry['after']}）"
@@ -1186,11 +1215,16 @@ def _rescue_concurrent_review_decisions(
         progress_callback,
         "人工审核状态保护",
         (
-            f"写回前重新核对 {len(latest_decisions)} 条候选的人工审核列，"
-            f"保留本轮运行期间新增的 {len(rescued)} 条人工决策。"
+            f"写回前重新读取 {physical_count} 行，"
+            f"本轮运行期间有 {len(rescued)} 条人工决策变化；已有行将保持不动。"
         ),
     )
-    return rescued
+    return {
+        "rescued": rescued,
+        "rows": latest_rows,
+        "rows_by_id": latest_by_id,
+        "physical_count": physical_count,
+    }
 
 
 def sync_candidates(
@@ -1384,6 +1418,13 @@ def sync_candidates(
         new_items: list[dict[str, Any]] = []
         for item in prepared_items:
             news_id = _text(item.get("news_id"), 80)
+            if not news_id:
+                news_id = _news_item_id(
+                    item.get("url") or item.get("source_url"),
+                    item.get("ai_title") or item.get("title"),
+                )
+            if news_id in existing_rows_by_id:
+                continue
             value = _candidate_row(item, generated_at)
             new_count += 1
             new_category_counts[_text(item.get("category") or "未分类", 80)] += 1
@@ -1430,90 +1471,108 @@ def sync_candidates(
             new_values.append(value)
             existing_status[news_id] = (value[0], value[2])
         new_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
-        candidate_count = len(existing_rows_by_id) + len(new_values)
-        if candidate_count > MAX_SHEET_ROWS - 1:
-            raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
-        # The crawl and AI review phases above take tens of minutes, and people
-        # keep reviewing the sheet the whole time. Rewriting the snapshot taken
-        # when this run started would silently revert every decision made since
-        # then, so re-read the three human-owned columns and let the sheet win.
-        rescued_decisions = _rescue_concurrent_review_decisions(
+        live_sheet = _refresh_live_review_sheet(
             sheet_id,
             existing_rows_by_id,
             existing_status,
             progress_callback=progress_callback,
         )
-        existing_values = list(existing_rows_by_id.values())
-        ordered_values = new_values + existing_values
-        ordered_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
-        active_metadata_keys = {
-            _gate_metadata_key(row[10])
-            for row in ordered_values
-            if _gate_metadata_key(row[10])
-        }
-        candidate_gate_metadata = {
-            key: metadata
-            for key, metadata in candidate_gate_metadata.items()
-            if key in active_metadata_keys and isinstance(metadata, dict)
-        }
-        if len(ordered_values) > MAX_SHEET_ROWS - 1:
-            raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 行数据上限")
-        _validate_sheet_rows(ordered_values, context="待写入飞书审核表")
-        total_chunks = (len(ordered_values) + 39) // 40
-        for offset in range(0, len(ordered_values), 40):
-            chunk = ordered_values[offset : offset + 40]
-            start_row = 2 + offset
-            end_row = start_row + len(chunk) - 1
+        rescued_decisions = live_sheet["rescued"]
+        live_ids = set(live_sheet["rows_by_id"])
+        committed_new_values: list[list[Any]] = []
+        committed_new_items: list[dict[str, Any]] = []
+        for value, item in zip(new_values, new_items):
+            news_id = _text(item.get("news_id"), 80) or _row_dict(value, 2)["news_id"]
+            if not news_id or news_id in live_ids:
+                continue
+            committed_new_values.append(value)
+            committed_new_items.append(item)
+            live_ids.add(news_id)
+        dropped_already_present = len(new_values) - len(committed_new_values)
+        new_values = committed_new_values
+        new_items = committed_new_items
+        new_count = len(new_values)
+        if dropped_already_present:
+            logging.warning(
+                "增量写入前跳过 %s 条已在审核表中的候选，避免覆盖人工审核",
+                dropped_already_present,
+            )
+        candidate_count = live_sheet["physical_count"] + new_count
+        if candidate_count > MAX_SHEET_ROWS - 1:
+            raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
+        _validate_sheet_rows(new_values, context="待追加飞书审核表")
+        if new_values:
+            if live_sheet["physical_count"] > 0:
+                _progress(
+                    progress_callback,
+                    "飞书分批写入",
+                    f"在表头下插入 {len(new_values)} 行，不改动已有 {live_sheet['physical_count']} 行。",
+                )
+                _insert_rows(sheet_id, len(new_values), start_index=1)
+            total_chunks = (len(new_values) + 39) // 40
+            for offset in range(0, len(new_values), 40):
+                chunk = new_values[offset : offset + 40]
+                start_row = 2 + offset
+                chunk_end = start_row + len(chunk) - 1
+                _progress(
+                    progress_callback,
+                    "飞书分批写入",
+                    (
+                        f"写入第 {offset // 40 + 1}/{total_chunks} 批新增，"
+                        f"范围 A{start_row}:N{chunk_end}，共 {len(chunk)} 行。"
+                    ),
+                )
+                _write(sheet_id, f"A{start_row}:N{chunk_end}", chunk)
+        else:
             _progress(
                 progress_callback,
                 "飞书分批写入",
-                (
-                    f"写入第 {offset // 40 + 1}/{total_chunks} 批，"
-                    f"范围 A{start_row}:N{end_row}，共 {len(chunk)} 行。"
-                ),
+                "本轮无新增候选，跳过写表以保护已有人工审核结果。",
             )
-            _write(sheet_id, f"A{start_row}:N{end_row}", chunk)
-        if len(ordered_values) < existing_row_count:
-            clear_start = 2 + len(ordered_values)
-            clear_count = existing_row_count - len(ordered_values)
-            _write(
-                sheet_id,
-                f"A{clear_start}:N{clear_start + clear_count - 1}",
-                [[""] * len(HEADERS) for _ in range(clear_count)],
-            )
-        expected_rows = [_comparable_sheet_row(row) for row in ordered_values]
-        actual_rows: list[list[str]] = []
-        # Feishu Sheets can acknowledge a batch write before every chunk is
-        # visible to the following read. Keep the strict cell-by-cell check,
-        # but allow a short eventual-consistency window before declaring a
-        # real mismatch.
+        expected_new_rows = [_comparable_sheet_row(row) for row in new_values]
+        actual_new_rows: list[list[str]] = []
+        written_rows: list[list[Any]] = []
         for readback_attempt in range(1, 5):
             _progress(
                 progress_callback,
                 "飞书逐格回读",
                 (
-                    f"第 {readback_attempt}/4 次回读，校验 "
-                    f"{len(ordered_values)} 行 x {len(HEADERS)} 列。"
+                    f"第 {readback_attempt}/4 次回读，校验新增 "
+                    f"{len(new_values)} 行，并确认已有候选仍在表中。"
                 ),
             )
             written_rows = _read_rows(sheet_id)
-            actual_rows = [
+            actual_new_rows = [
                 _comparable_sheet_row(row)
-                for row in written_rows[: len(ordered_values)]
+                for row in written_rows[: len(new_values)]
             ]
-            if actual_rows == expected_rows:
+            written_ids = {
+                _row_dict(row, index)["news_id"]
+                for index, row in enumerate(written_rows, start=2)
+                if row and any(_text(value, 80) for value in row)
+            }
+            existing_still_present = live_sheet["rows_by_id"].keys() <= written_ids
+            if actual_new_rows == expected_new_rows and existing_still_present:
                 _progress(
                     progress_callback,
                     "飞书逐格回读",
-                    f"第 {readback_attempt} 次回读通过，所有 {len(ordered_values) * len(HEADERS)} 个单元格一致。",
+                    (
+                        f"第 {readback_attempt} 次回读通过：新增 {len(new_values)} 行一致，"
+                        f"已有 {len(live_sheet['rows_by_id'])} 条候选仍在表中。"
+                    ),
                 )
                 break
             if readback_attempt < 4:
                 time.sleep(readback_attempt)
-        if actual_rows != expected_rows:
-            first_difference = "行数不一致"
+        written_ids = {
+            _row_dict(row, index)["news_id"]
+            for index, row in enumerate(written_rows, start=2)
+            if row and any(_text(value, 80) for value in row)
+        }
+        if actual_new_rows != expected_new_rows:
+            first_difference = "新增行数不一致"
             for row_index, (expected, actual) in enumerate(
-                zip(expected_rows, actual_rows),
+                zip(expected_new_rows, actual_new_rows),
                 start=2,
             ):
                 if expected == actual:
@@ -1530,9 +1589,34 @@ def sync_candidates(
                         break
                 break
             raise RuntimeError(
-                "飞书审核表写入后逐格回读不一致，已停止后续处理并保留错误现场："
+                "飞书审核表新增行回读不一致，已停止后续处理并保留错误现场："
                 + first_difference
             )
+        missing_existing = [
+            news_id
+            for news_id in live_sheet["rows_by_id"]
+            if news_id not in written_ids
+        ]
+        if missing_existing:
+            raise RuntimeError(
+                "飞书审核表增量写入后丢失已有候选，已停止后续处理并保留错误现场："
+                f"缺失 {len(missing_existing)} 条"
+            )
+        candidate_count = sum(
+            1
+            for row in written_rows
+            if row and any(_text(value, 80) for value in row)
+        )
+        active_metadata_keys = {
+            _gate_metadata_key(row[10])
+            for row in written_rows
+            if row and _gate_metadata_key(row[10])
+        }
+        candidate_gate_metadata = {
+            key: metadata
+            for key, metadata in candidate_gate_metadata.items()
+            if key in active_metadata_keys and isinstance(metadata, dict)
+        }
         state.update(
             {
                 "sheet_id": sheet_id,
@@ -1548,6 +1632,7 @@ def sync_candidates(
                 "last_dirty_copy_blocked": blocked_dirty_copy[:10],
                 "last_rescued_decision_count": len(rescued_decisions),
                 "last_rescued_decisions": rescued_decisions[:10],
+                "last_existing_rows_untouched": True,
                 "last_new_count": new_count,
                 "last_new_category_counts": dict(new_category_counts),
                 "last_new_region_counts": dict(new_region_counts),
@@ -1581,6 +1666,7 @@ def sync_candidates(
             "dirty_copy_blocked": blocked_dirty_copy[:10],
             "rescued_decision_count": len(rescued_decisions),
             "rescued_decisions": rescued_decisions[:10],
+            "existing_rows_untouched": True,
             "new_count": new_count,
             "new_category_counts": dict(new_category_counts),
             "new_region_counts": dict(new_region_counts),

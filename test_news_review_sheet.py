@@ -238,6 +238,38 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertTrue(keep)
         self.assertEqual(reason, "待AI审核")
 
+    class _LiveSheet:
+        def __init__(self, rows):
+            self.rows = [list(row) for row in rows]
+            self.writes = []
+            self.inserts = []
+
+        def read(self, _sheet_id):
+            return [
+                list(row)
+                for row in self.rows
+                if any(cell not in (None, "") for cell in row)
+            ]
+
+        def insert(self, _sheet_id, count, *, start_index=1):
+            self.inserts.append({"start_index": start_index, "count": count})
+            position = max(0, int(start_index) - 1)
+            blanks = [[""] * len(review_sheet.HEADERS) for _ in range(count)]
+            self.rows = self.rows[:position] + blanks + self.rows[position:]
+
+        def write(self, _sheet_id, cell_range, values):
+            self.writes.append((cell_range, values))
+            start = int("".join(character for character in cell_range.split(":")[0] if character.isdigit()))
+            for offset, row in enumerate(values):
+                index = start - 2 + offset
+                while len(self.rows) <= index:
+                    self.rows.append([""] * len(review_sheet.HEADERS))
+                self.rows[index] = (
+                    list(row) + [""] * len(review_sheet.HEADERS)
+                )[: len(review_sheet.HEADERS)]
+            while self.rows and not any(cell not in (None, "") for cell in self.rows[-1]):
+                self.rows.pop()
+
     def _existing_row(self):
         return [
             "接受",
@@ -284,30 +316,16 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         }
 
     def test_sync_places_new_rows_above_history_and_preserves_history(self):
-        writes = []
-        read_count = [0]
+        sheet = self._LiveSheet([self._existing_row()])
         progress_events = []
         semantic_histories = []
         acknowledged_items = []
 
-        def read_rows(_sheet_id):
-            read_count[0] += 1
-            return writes[0][1] if writes else [self._existing_row()]
-
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
-            mock.patch.object(
-                review_sheet,
-                "_read_rows",
-                side_effect=read_rows,
-            ),
-            mock.patch.object(
-                review_sheet,
-                "_write",
-                side_effect=lambda _sheet_id, cell_range, values: writes.append(
-                    (cell_range, values)
-                ),
-            ),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=sheet.read),
+            mock.patch.object(review_sheet, "_write", side_effect=sheet.write),
+            mock.patch.object(review_sheet, "_insert_rows", side_effect=sheet.insert),
             mock.patch.object(review_sheet, "_read_json", return_value={}),
             mock.patch.object(review_sheet, "_write_json") as write_json,
             mock.patch.object(
@@ -350,6 +368,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         self.assertEqual(result["candidate_count"], 2)
         self.assertEqual(result["ai_included_count"], 1)
+        self.assertTrue(result["existing_rows_untouched"])
         self.assertEqual(
             result["new_items"],
             [
@@ -367,9 +386,10 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 }
             ],
         )
-        self.assertEqual([cell_range for cell_range, _ in writes], ["A2:N3"])
-        self.assertEqual(writes[0][1][0][6], "今日新新闻")
-        self.assertEqual(writes[0][1][1], self._existing_row())
+        self.assertEqual(sheet.inserts, [{"start_index": 1, "count": 1}])
+        self.assertEqual([cell_range for cell_range, _ in sheet.writes], ["A2:N2"])
+        self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
+        self.assertEqual(sheet.rows[1], self._existing_row())
         self.assertEqual(semantic_histories, [[]])
         self.assertEqual(result["semantic_history_scope"], "same_hkt_search_day")
         self.assertEqual(result["semantic_search_day"], "2026-07-22")
@@ -410,25 +430,15 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual([item["news_id"] for item in history], ["morning"])
 
     def test_sync_places_current_batch_first_when_search_dates_match(self):
-        writes = []
         existing = self._existing_row()
         existing[3] = "2026-07-22"
-        read_count = [0]
-
-        def read_rows(_sheet_id):
-            read_count[0] += 1
-            return writes[0][1] if writes else [existing]
+        sheet = self._LiveSheet([existing])
 
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
-            mock.patch.object(review_sheet, "_read_rows", side_effect=read_rows),
-            mock.patch.object(
-                review_sheet,
-                "_write",
-                side_effect=lambda _sheet_id, cell_range, values: writes.append(
-                    (cell_range, values)
-                ),
-            ),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=sheet.read),
+            mock.patch.object(review_sheet, "_write", side_effect=sheet.write),
+            mock.patch.object(review_sheet, "_insert_rows", side_effect=sheet.insert),
             mock.patch.object(review_sheet, "_read_json", return_value={}),
             mock.patch.object(review_sheet, "_write_json"),
             mock.patch.object(
@@ -449,10 +459,10 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             review_sheet.sync_candidates([self._new_item()])
 
-        self.assertEqual(writes[0][1][0][6], "今日新新闻")
-        self.assertEqual(writes[0][1][1][6], "历史新闻")
+        self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
+        self.assertEqual(sheet.rows[1][6], "历史新闻")
 
-    def test_sync_collapses_existing_rich_link_duplicates_and_keeps_manual_decision(self):
+    def test_sync_does_not_rewrite_existing_duplicate_rows(self):
         pending = self._existing_row()
         pending[0] = "待审核"
         pending[10] = [
@@ -465,27 +475,13 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         rejected = list(pending)
         rejected[0] = "不接受"
         rejected[6] = "同一事件的人工拒绝记录"
-        writes = []
-        read_count = [0]
-
-        def read_rows(_sheet_id):
-            read_count[0] += 1
-            return writes[0][1] if writes else [pending, rejected]
+        sheet = self._LiveSheet([pending, rejected])
 
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
-            mock.patch.object(
-                review_sheet,
-                "_read_rows",
-                side_effect=read_rows,
-            ),
-            mock.patch.object(
-                review_sheet,
-                "_write",
-                side_effect=lambda _sheet_id, cell_range, values: writes.append(
-                    (cell_range, values)
-                ),
-            ),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=sheet.read),
+            mock.patch.object(review_sheet, "_write", side_effect=sheet.write),
+            mock.patch.object(review_sheet, "_insert_rows", side_effect=sheet.insert),
             mock.patch.object(review_sheet, "_read_json", return_value={}),
             mock.patch.object(review_sheet, "_write_json"),
             mock.patch.object(
@@ -496,42 +492,30 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             result = review_sheet.sync_candidates([])
 
-        self.assertEqual(result["candidate_count"], 1)
-        self.assertEqual(writes[0][0], "A2:N2")
-        self.assertEqual(writes[0][1][0][0], "不接受")
-        self.assertEqual(writes[0][1][0][6], "同一事件的人工拒绝记录")
-        self.assertEqual(writes[1][0], "A3:N3")
-        self.assertEqual(writes[1][1], [[""] * len(review_sheet.HEADERS)])
+        self.assertEqual(result["candidate_count"], 2)
+        self.assertEqual(sheet.writes, [])
+        self.assertEqual(sheet.inserts, [])
+        self.assertEqual(sheet.rows[1][0], "不接受")
+        self.assertEqual(sheet.rows[1][6], "同一事件的人工拒绝记录")
 
     def test_sync_keeps_review_decisions_made_during_ai_pass(self):
         pending = self._existing_row()
         pending[0] = "待审核"
         pending[1] = "待审核"
         pending[2] = "未同步"
-        live = [list(pending)]
-        writes = []
-
-        def read_rows(_sheet_id):
-            if writes:
-                return writes[0][1]
-            return [list(live[0])]
+        sheet = self._LiveSheet([pending])
 
         def polish(items, **_kwargs):
-            live[0][0] = "接受"
-            live[0][1] = "接受"
-            live[0][2] = "未同步"
+            sheet.rows[0][0] = "接受"
+            sheet.rows[0][1] = "接受"
+            sheet.rows[0][2] = "未同步"
             return items
 
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
-            mock.patch.object(review_sheet, "_read_rows", side_effect=read_rows),
-            mock.patch.object(
-                review_sheet,
-                "_write",
-                side_effect=lambda _sheet_id, cell_range, values: writes.append(
-                    (cell_range, values)
-                ),
-            ),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=sheet.read),
+            mock.patch.object(review_sheet, "_write", side_effect=sheet.write),
+            mock.patch.object(review_sheet, "_insert_rows", side_effect=sheet.insert),
             mock.patch.object(review_sheet, "_read_json", return_value={}),
             mock.patch.object(review_sheet, "_write_json"),
             mock.patch.object(
@@ -552,14 +536,16 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             result = review_sheet.sync_candidates([self._new_item()])
 
-        history_row = next(row for row in writes[0][1] if row[6] == "历史新闻")
-        self.assertEqual(history_row[:3], ["接受", "接受", "未同步"])
+        written_titles = [row[6] for _range, rows in sheet.writes for row in rows]
+        self.assertNotIn("历史新闻", written_titles)
+        self.assertEqual(sheet.rows[1][:3], ["接受", "接受", "未同步"])
         self.assertEqual(result["rescued_decision_count"], 1)
         self.assertEqual(result["rescued_decisions"][0]["before"], "待审核 / 待审核 / 未同步")
         self.assertEqual(result["rescued_decisions"][0]["after"], "接受 / 接受 / 未同步")
 
     def test_sync_stops_when_sheet_returns_fewer_rows_than_last_sync(self):
         write = mock.Mock()
+        insert = mock.Mock()
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
             mock.patch.object(
@@ -568,6 +554,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 return_value=[self._existing_row()],
             ),
             mock.patch.object(review_sheet, "_write", write),
+            mock.patch.object(review_sheet, "_insert_rows", insert),
             mock.patch.object(
                 review_sheet,
                 "_read_json",
@@ -578,6 +565,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 review_sheet.sync_candidates([])
 
         write.assert_not_called()
+        insert.assert_not_called()
 
     def test_load_curated_latest_defers_ai_review_to_sync_transaction(self):
         source = {
