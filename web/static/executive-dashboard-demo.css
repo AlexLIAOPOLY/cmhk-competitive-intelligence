@@ -2703,7 +2703,6 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
 .horizontal-bars > div { display: grid; grid-template-columns: 90px 1fr 38px; gap: 8px; align-items: center; }
 .horizontal-bars span { color: #aacbd8; font-size: 12px; }.horizontal-bars i { height: 9px; overflow: hidden; background: rgba(83, 151, 177, .16); }.horizontal-bars b { display: block; width: var(--bar); height: 100%; background: linear-gradient(90deg, #397ce6, #5edcff); box-shadow: 0 0 12px rgba(60, 201, 255, .3); }.horizontal-bars strong { font-size: 13px; }
 
-.mock-footnote { z-index: 6; align-self: end; padding-top: 6px; color: rgba(143, 187, 204, .66); font-size: 10px; text-align: center; letter-spacing: .08em; }
 
 @media (max-width: 1366px) {
   .cockpit { padding-right: 12px; padding-left: 12px; }
@@ -3599,7 +3598,7 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
 
 /* Stronger command-screen hierarchy without adding decorative copy. */
 .cockpit {
-  grid-template-rows: 92px minmax(0, 1fr) 22px;
+  grid-template-rows: 76px minmax(0, 1fr);
   padding: 0 12px 6px;
 }
 
@@ -3615,10 +3614,10 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
   content: "";
   position: absolute;
   z-index: -1;
-  top: 11px;
+  top: 8px;
   left: 50%;
   width: min(700px, 72vw);
-  height: 70px;
+  height: 58px;
   transform: translateX(-50%);
   clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%);
   background:
@@ -3634,10 +3633,10 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
   box-shadow: 0 0 18px rgba(53, 217, 255, .84);
 }
 
-.cockpit-title { gap: 9px; }
+.cockpit-title { gap: 6px; }
 .cockpit-title::before,
 .cockpit-title::after {
-  top: 24px;
+  top: 20px;
   width: clamp(110px, 13vw, 230px);
   height: 2px;
   opacity: .86;
@@ -3649,7 +3648,7 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
 
 h1 {
   position: relative;
-  font-size: clamp(38px, 3vw, 54px);
+  font-size: clamp(34px, 2.65vw, 48px);
   font-weight: 760;
   letter-spacing: .18em;
   text-indent: .18em;
@@ -3726,8 +3725,8 @@ h1 {
 }
 
 @media (max-width: 1024px) {
-  .cockpit { grid-template-rows: 82px auto 24px; }
-  h1 { font-size: clamp(34px, 5vw, 46px); }
+  .cockpit { grid-template-rows: 70px auto; }
+  h1 { font-size: clamp(32px, 4.7vw, 42px); }
   .cockpit-title::before,
   .cockpit-title::after { width: clamp(64px, 9vw, 110px); }
   .panel-heading { min-height: 62px; }
@@ -3736,21 +3735,21 @@ h1 {
 
 @media (max-width: 900px) {
   .topbar {
-    height: 86px;
-    min-height: 86px;
+    height: 70px;
+    min-height: 70px;
     padding-bottom: 0;
   }
 }
 
 @media (max-width: 700px) {
-  .cockpit { grid-template-rows: 82px auto 26px; }
-  .topbar { height: 82px; min-height: 82px; }
-  .topbar::before { width: 94vw; height: 62px; }
+  .cockpit { grid-template-rows: 64px auto; }
+  .topbar { height: 64px; min-height: 64px; }
+  .topbar::before { top: 7px; width: 94vw; height: 50px; }
   .topbar::after { width: 72vw; }
-  h1 { font-size: 31px; letter-spacing: .12em; text-indent: .12em; }
+  h1 { font-size: 28px; letter-spacing: .12em; text-indent: .12em; }
   .cockpit-title > span { font-size: 8px; letter-spacing: .3em; text-indent: .3em; }
   .cockpit-title::before,
-  .cockpit-title::after { top: 18px; width: 38px; }
+  .cockpit-title::after { top: 16px; width: 38px; }
   .cockpit-title::before { right: calc(100% + 17px); }
   .cockpit-title::after { left: calc(100% + 17px); }
   .dashboard-grid::before,
@@ -3762,7 +3761,7 @@ h1 {
 }
 
 @media (max-width: 400px) {
-  h1 { font-size: 28px; }
+  h1 { font-size: 26px; }
   .cockpit-title::before,
   .cockpit-title::after { width: 24px; }
   .cockpit-title::before { right: calc(100% + 11px); }

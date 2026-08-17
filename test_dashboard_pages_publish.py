@@ -125,10 +125,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
             style = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=29"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=30"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
-                'href="./executive-responsive-hardening.css?v=5"',
+                'href="./executive-responsive-hardening.css?v=6"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
@@ -150,7 +150,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertIn("资源与基础设施层", html)
             self.assertIn("客户与业务对标层", html)
             self.assertIn("渠道与品牌触达层", html)
-            self.assertIn("数据为模拟展示，仅用于界面演示", html)
+            self.assertNotIn("数据为模拟展示，仅用于界面演示", html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
             self.assertNotIn('class="news-rail"', html)
