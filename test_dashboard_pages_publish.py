@@ -122,46 +122,30 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            style = (first / "executive-dashboard-demo.css").read_text(
-                encoding="utf-8"
-            )
-            self.assertIn('href="./executive-dashboard-demo.css?v=32"', html)
-            self.assertIn("strategy-command-grid-v2.webp", html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=41"', html)
             self.assertIn(
-                '<a class="dashboard-brand" href="/" aria-label="返回主页面"',
+                'href="./executive-responsive-hardening.css?v=12"',
                 html,
             )
             self.assertIn('src="./assets/china-mobile-blue-logo.png"', html)
-            self.assertIn(
-                'href="./executive-responsive-hardening.css?v=7"',
-                html,
-            )
-            self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=16"', html)
-            self.assertIn("store-context-v1.webp", style)
-            for asset in (
-                "store-context-v1.webp",
-                "network-context-v1.webp",
-                "business-context-v1.webp",
-                "mobile-context-v1.webp",
-                "finance-context-v1.webp",
-            ):
-                self.assertIn(asset, style)
-                self.assertTrue(
-                    (first / "assets" / "executive-dashboard" / asset).is_file()
-                )
+            self.assertIn('src="./executive-dashboard-demo.js?v=24"', html)
+            self.assertIn('class="brand" href="./"', html)
             self.assertTrue((first / "assets" / "china-mobile-blue-logo.png").is_file())
-            self.assertIn("战略监控", html)
-            self.assertNotIn("战略监控体系</h1>", html)
-            self.assertNotIn("STRATEGIC MONITORING SYSTEM", html)
+            self.assertTrue(
+                (first / "assets" / "executive-dashboard" / "network-hong-kong.webp").is_file()
+            )
+            self.assertIn("战略监控体系", html)
+            self.assertIn("STRATEGIC MONITORING SYSTEM", html)
             self.assertIn("资源与基础设施层", html)
             self.assertIn("客户与业务对标层", html)
             self.assertIn("渠道与品牌触达层", html)
+            self.assertIn("财务成果", html)
             self.assertNotIn("数据为模拟展示，仅用于界面演示", html)
             self.assertNotIn("executive-dashboard-relations.js", html)
             self.assertNotIn("executive-dashboard-drilldown.js", html)
             self.assertNotIn('class="news-rail"', html)
             self.assertNotIn('class="panel-tabs', html)
+            self.assertNotIn('class="cockpit"', html)
             self.assertNotIn('role="tablist"', html)
             self.assertNotIn('role="tab"', html)
             self.assertNotIn("data-benchmark-url", html)
@@ -170,20 +154,32 @@ class DashboardPagesPublishTests(unittest.TestCase):
                 self.assertNotIn(company, html)
                 self.assertNotIn(company, script)
             selected_metrics = (
-                "基站总数（4G）",
-                "基站总数（5G）",
-                "智算能力 PFLOPS",
+                "基站总数",
                 "总移动用户数",
-                "移动综合ARPU",
+                "移动综合 ARPU",
                 "家庭宽带用户数",
-                "家庭户均收益（ARPU）",
-                "客户数（大中型企业/中小企业-参考政府公布的分类）",
+                "家庭户均收益",
+                "大中型企业 / 中小企业 · 参考政府公布的分类",
                 "项目签约额",
                 "全港实体门市数量",
-                "官方手机应用程式 (如MyLink) 活跃用户数",
+                "官方手机应用程式活跃用户数",
                 "营运收入",
-                "EBITDA率",
+                "EBITDA 率",
                 "净利润",
+                "6,880",
+                "3,700",
+                "4,860",
+                "342.8",
+                "138.6",
+                "86.4",
+                "198.2",
+                "38,200",
+                "28.6",
+                "138",
+                "218",
+                "96.8",
+                "35.9",
+                "12.4",
             )
             for metric in selected_metrics:
                 self.assertIn(metric, script)
@@ -206,12 +202,12 @@ class DashboardPagesPublishTests(unittest.TestCase):
             css = (first / "executive-dashboard-demo.css").read_text(
                 encoding="utf-8"
             )
-            self.assertIn("Sheet-filtered CMHK view", css)
-            self.assertIn(".business-pair", css)
-            self.assertIn(".scene-network", css)
-            self.assertIn(".scene-business", css)
-            self.assertIn(".scene-reach", css)
-            self.assertIn(".scene-finance", css)
+            self.assertIn(".masthead", css)
+            self.assertIn(".board", css)
+            self.assertIn(".business-grid", css)
+            self.assertIn(".reach-card", css)
+            self.assertIn(".finance-hero", css)
+            self.assertNotIn(".scene-network", css)
             self.assertFalse((first / "executive-company-benchmarks.json").exists())
             self.assertTrue((first / "executive-responsive-hardening.css").exists())
             intelligence_html = (first / "intelligence" / "index.html").read_text(

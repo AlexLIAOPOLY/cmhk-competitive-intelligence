@@ -173,6 +173,10 @@ def _build_site(
         'src="/static/executive-dashboard-demo.js',
         'src="./executive-dashboard-demo.js',
     )
+    html = html.replace(
+        'class="brand" href="/"',
+        'class="brand" href="./"',
+    )
     (destination / "index.html").write_text(html, encoding="utf-8")
     shutil.copy2(
         STATIC_DIR / "executive-dashboard-demo.css",
