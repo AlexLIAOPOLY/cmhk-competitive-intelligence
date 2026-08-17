@@ -629,6 +629,96 @@ def _sanitize_agentic_query(value: Any) -> str:
     return re.sub(r"\s+", " ", query).strip()
 
 
+def _deterministic_gap_query(aliases: list[str]) -> str:
+    names = [
+        _clean_text(alias, 40).strip('"')
+        for alias in aliases
+        if _clean_text(alias, 40).strip('"')
+    ][:3]
+    if not names:
+        return ""
+    return (
+        " OR ".join(names)
+        + " (资费 OR 促销 OR 5G OR 网络建设 OR 合作 OR 业绩)"
+    )
+
+
+def _compact_agentic_query(query: str, keywords: list[str] | None = None) -> str:
+    """Rewrite AND-heavy planner queries into alias OR + a few intent ORs."""
+    query = _sanitize_agentic_query(query)
+    if not query:
+        return query
+    or_count = len(re.findall(r"\bOR\b", query, flags=re.I))
+    tokens = [
+        token.strip('"()')
+        for token in re.split(r"\s+", query)
+        if token.strip('"()') and token.upper() != "OR"
+    ]
+    if or_count >= 2 and len(query) <= 180:
+        return query
+    if len(tokens) <= 6:
+        return query
+    aliases = [
+        _clean_text(keyword, 40).strip('"')
+        for keyword in (keywords or [])
+        if _clean_text(keyword, 40).strip('"')
+    ][:3]
+    if not aliases:
+        aliases = tokens[:2]
+    alias_keys = {alias.casefold() for alias in aliases}
+    intents: list[str] = []
+    for token in tokens:
+        if token.casefold() in alias_keys:
+            continue
+        if any(_term_matches(token, alias) or _term_matches(alias, token) for alias in aliases):
+            continue
+        if token not in intents:
+            intents.append(token)
+        if len(intents) >= 3:
+            break
+    if not intents:
+        return _deterministic_gap_query(aliases) or query
+    compacted = f"{' OR '.join(aliases)} ({' OR '.join(intents)})"
+    return compacted[:180]
+
+
+def _agentic_zero_result_retry_plan(plan: dict[str, Any]) -> dict[str, Any] | None:
+    origin = _clean_text(plan.get("search_origin"), 100)
+    if not origin.startswith("agentic_"):
+        return None
+    canonical = _clean_text(plan.get("canonical_competitor"), 120)
+    aliases = [
+        _clean_text(keyword, 40)
+        for keyword in (plan.get("keywords") or [])
+        if _clean_text(keyword, 40)
+    ]
+    if canonical:
+        for group in mandatory_search_groups():
+            if str(group["canonical"]) == canonical:
+                aliases = list(
+                    dict.fromkeys(
+                        [*aliases, *[str(term) for term in group["terms"]]]
+                    )
+                )[:3]
+                break
+    retry_query = _deterministic_gap_query(aliases) or _compact_agentic_query(
+        str(plan.get("query") or ""),
+        aliases,
+    )
+    original = _normalized_query(plan.get("fallback_query") or plan.get("query"))
+    if not retry_query or _normalized_query(retry_query) == original:
+        compacted = _compact_agentic_query(str(plan.get("query") or ""), aliases)
+        if not compacted or _normalized_query(compacted) == original:
+            return None
+        retry_query = compacted
+    return {
+        **plan,
+        "query": retry_query,
+        "fallback_query": retry_query,
+        "agentic_zero_result_retry": True,
+    }
+
+
 def _coverage_digest(
     items: list[dict[str, Any]],
     *,
@@ -727,16 +817,6 @@ def _normalize_agentic_plans(
     for raw in raw_queries:
         if not isinstance(raw, dict):
             continue
-        raw_query = _sanitize_agentic_query(raw.get("query"))
-        # A useful Agentic query is intentionally narrow. Reject runaway
-        # all-operator queries instead of silently truncating them into an
-        # invalid or misleading search expression.
-        if len(raw_query) > 180:
-            continue
-        query = _clean_text(raw_query, 180)
-        normalized = _normalized_query(query)
-        if len(query) < 4 or not normalized or normalized in existing_queries:
-            continue
         raw_keywords = raw.get("keywords") or raw.get("monitoring_terms") or []
         if isinstance(raw_keywords, str):
             raw_keywords = re.split(r"[,，、;；|\n]+", raw_keywords)
@@ -748,6 +828,18 @@ def _normalize_agentic_plans(
             )
         )[:8]
         if not keywords:
+            continue
+        sanitized = _sanitize_agentic_query(raw.get("query"))
+        # Reject runaway queries before compaction so a 180-character flood
+        # cannot be silently rewritten into a misleading short search.
+        if len(sanitized) > 180:
+            continue
+        raw_query = _compact_agentic_query(sanitized, keywords)
+        if len(raw_query) > 180:
+            continue
+        query = _clean_text(raw_query, 180)
+        normalized = _normalized_query(query)
+        if len(query) < 4 or not normalized or normalized in existing_queries:
             continue
         module = _clean_text(raw.get("module"), 100) or "其他"
         competitor_evidence = " ".join([query, *keywords])
@@ -832,6 +924,8 @@ def _call_agentic_search_agent(
         "管理层、监管和资本市场等任何有明确时效的竞对动态都值得检索。"
         "查询应组合主体/别名与事件意图，例如业绩指引、网络建设、资费调整、合作并购、监管影响、"
         "AI/云/数据中心投资、管理层变化；可使用中英文同义词，但不要只是原关键词逐字重排。"
+        "query必须用OR连接别名，再用括号OR连接最多3个事件意图词；"
+        "禁止把业绩、财报、营收、资费、合作、管理层等词用空格做成AND查询，否则搜索引擎会零结果。"
         "竞对查询必须同时包含主体和至少一个事件意图词；政策或香港本地查询必须包含香港机构、"
         "政策领域或本地市场对象，并组合发布、签署、实施、咨询、牌照、频谱、投资等事件意图。"
         "禁止仅罗列公司或品牌别名做综合监测，"
@@ -932,18 +1026,14 @@ def _call_agentic_search_agent(
                 last_error,
             )
     if target_competitor and target_aliases:
-        fallback_aliases = list(dict.fromkeys(target_aliases))[:3]
-        fallback_query = (
-            " OR ".join(fallback_aliases)
-            + " (资费 OR 促销 OR 5G OR 网络建设 OR 合作 OR 业绩)"
-        )
+        fallback_query = _deterministic_gap_query(target_aliases)
         fallback_plans = _normalize_agentic_plans(
             {
                 "queries": [
                     {
                         "module": "竞争对手",
                         "query": fallback_query,
-                        "keywords": fallback_aliases,
+                        "keywords": list(dict.fromkeys(target_aliases))[:3],
                         "intent": "竞对经营动态兜底补搜",
                         "reason": "Agent补搜计划连续失败，使用正式竞对别名执行确定性补搜",
                     }
@@ -1055,59 +1145,89 @@ def _execute_search_plans(
     items: list[dict[str, Any]] = []
     errors: list[str] = []
     zero_result_queries: list[str] = []
+    retry_count = 0
+    retry_result_count = 0
+
+    def _search(plan: dict[str, Any]) -> list[dict[str, Any]]:
+        return _google_news_search(
+            plan,
+            end_at - timedelta(days=int(plan.get("lookback_days") or 0))
+            if int(plan.get("lookback_days") or 0) > 0
+            else start_at,
+            end_at,
+            # A fixed-page signal can arrive after the article was indexed.
+            # Retrieve its lookback here; the shared admission gate below
+            # still limits final rows to this scan's publication window.
+            admission_start_at=(
+                end_at
+                - timedelta(days=int(plan.get("lookback_days") or 0))
+                if plan.get("search_origin") == "scheduled_crawl_reference"
+                and int(plan.get("lookback_days") or 0) > 0
+                else start_at
+            ),
+            admission_end_at=end_at,
+        )
+
+    def _attach_provenance(
+        plan: dict[str, Any], found: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        provenance_fields = (
+            "scheduled_crawl_signal_id",
+            "scheduled_crawl_run_id",
+            "scheduled_crawl_config_row",
+            "scheduled_crawl_parent_url",
+            "scheduled_crawl_target_url",
+        )
+        for item in found:
+            for field in provenance_fields:
+                if plan.get(field):
+                    item[field] = plan[field]
+        return found
+
     with ThreadPoolExecutor(max_workers=SEARCH_WORKERS) as executor:
         future_map = {
-            executor.submit(
-                _google_news_search,
-                plan,
-                end_at - timedelta(days=int(plan.get("lookback_days") or 0))
-                if int(plan.get("lookback_days") or 0) > 0
-                else start_at,
-                end_at,
-                # A fixed-page signal can arrive after the article was indexed.
-                # Retrieve its lookback here; the shared admission gate below
-                # still limits final rows to this scan's publication window.
-                admission_start_at=(
-                    end_at
-                    - timedelta(days=int(plan.get("lookback_days") or 0))
-                    if plan.get("search_origin") == "scheduled_crawl_reference"
-                    and int(plan.get("lookback_days") or 0) > 0
-                    else start_at
-                ),
-                admission_end_at=end_at,
-            ): plan
+            executor.submit(_search, plan): plan
             for plan in plans
         }
+        pending_retries: list[dict[str, Any]] = []
         for future in as_completed(future_map):
             plan = future_map[future]
             try:
-                found = future.result()
-                provenance_fields = (
-                    "scheduled_crawl_signal_id",
-                    "scheduled_crawl_run_id",
-                    "scheduled_crawl_config_row",
-                    "scheduled_crawl_parent_url",
-                    "scheduled_crawl_target_url",
-                )
-                for item in found:
-                    for field in provenance_fields:
-                        if plan.get(field):
-                            item[field] = plan[field]
+                found = _attach_provenance(plan, future.result())
                 items.extend(found)
-                if not found:
-                    zero_result_queries.append(
-                        _clean_text(plan.get("query"), 300)
-                    )
+                if found:
+                    continue
+                zero_result_queries.append(_clean_text(plan.get("query"), 300))
+                retry_plan = _agentic_zero_result_retry_plan(plan)
+                if retry_plan is not None:
+                    pending_retries.append(retry_plan)
             except Exception as exc:
                 errors.append(
                     f"{_clean_text(plan.get('module'), 80)}: "
                     f"{type(exc).__name__}: {_clean_text(exc, 160)}"
                 )
+    for retry_plan in pending_retries:
+        retry_count += 1
+        try:
+            found = _attach_provenance(retry_plan, _search(retry_plan))
+            items.extend(found)
+            retry_result_count += len(found)
+            if not found:
+                zero_result_queries.append(
+                    "retry:" + _clean_text(retry_plan.get("query"), 280)
+                )
+        except Exception as exc:
+            errors.append(
+                f"{_clean_text(retry_plan.get('module'), 80)}: "
+                f"{type(exc).__name__}: {_clean_text(exc, 160)}"
+            )
     return items, errors, {
         "query_count": len(plans),
         "result_count": len(items),
         "zero_result_count": len(zero_result_queries),
         "zero_result_queries": zero_result_queries[:30],
+        "retry_count": retry_count,
+        "retry_result_count": retry_result_count,
     }
 
 

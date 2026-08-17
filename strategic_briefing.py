@@ -48,7 +48,7 @@ AI_EDITOR_AUDIT_PATH = DATA_DIR / "candidate_ai_editor_audit.json"
 AI_EDITOR_DEFERRED_PATH = DATA_DIR / "candidate_ai_editor_deferred.json"
 SEMANTIC_DEDUPE_AUDIT_PATH = DATA_DIR / "semantic_dedupe_audit.json"
 DEFAULT_STRATEGY_AI_MODEL = "DeepSeek-V4-Pro"
-AI_EDITOR_VERSION = 23
+AI_EDITOR_VERSION = 24
 AI_EDITOR_CRITIC_ENABLED = (
     os.environ.get("CMHK_STRATEGY_AI_CRITIC_ENABLED", "0") == "1"
 )
@@ -681,6 +681,19 @@ def _obvious_mismatch_exclusion_reason(
     """Reject only conclusively ungrounded matches; preserve every plausible edge case."""
     if not edited.get("should_include"):
         return ""
+    source_title = _clean_text(
+        source_item.get("source_title") or source_item.get("title"), 240
+    )
+    edited_title = _clean_text(edited.get("title"), 240)
+    edited_summary = _clean_text(edited.get("summary"), 240)
+    if _is_program_listing_title(source_title) or _is_program_listing_title(
+        edited_title
+    ):
+        return "标题为广播电视节目单或栏目名，不是可审核新闻事件"
+    if _text_has_model_artifact(edited_title) or _text_has_model_artifact(
+        edited_summary
+    ):
+        return "标题或摘要含模型提示词，不可写入审核表"
     evidence = " ".join(
         _clean_text(value, 1800)
         for value in (
@@ -2716,7 +2729,102 @@ _META_SUMMARY_PREFIX = re.compile(
     r"^(?:这条|该条|这则|该则|本条|本新闻|该新闻|本报道|该报道|本文|此文|"
     r"当前来源|这项内容|该内容|这项动态|该动态)"
 )
+_MODEL_ARTIFACT_MARKERS = (
+    "合法json",
+    "需要判断",
+    "输入新闻",
+    "只输出",
+    "should_include",
+    "候选新闻审核结果",
+    "你是公司内部",
+    "不要markdown",
+    "字段为title",
+    "我们需要回答",
+)
+_MODEL_ARTIFACT_PREFIX_RE = re.compile(
+    r"^(?:我们需要回答)?合法JSON[。.\s]*需要判断[。.\s]*输入新闻[：:]\s*"
+    r"|^输入新闻[：:]\s*",
+    re.I,
+)
+_PROGRAM_LISTING_DATE_RE = re.compile(r"\d{1,2}/\d{1,2}(?:/\d{2,4})?")
 _SIMPLIFIED_CHINESE_CONVERTER = OpenCC("t2s")
+
+
+def _text_has_model_artifact(value: Any) -> bool:
+    text = str(value or "")
+    if not text.strip():
+        return False
+    lowered = text.casefold()
+    return any(marker in lowered for marker in _MODEL_ARTIFACT_MARKERS)
+
+
+def _is_program_listing_title(value: Any) -> bool:
+    text = _clean_text(value, 240)
+    if not text:
+        return False
+    if "太阳底下新鲜事" in text or text.startswith("第一台|"):
+        return True
+    return text.count("|") >= 2 and bool(_PROGRAM_LISTING_DATE_RE.search(text))
+
+
+def _strip_model_artifact_prefix(value: Any) -> str:
+    return _clean_text(_MODEL_ARTIFACT_PREFIX_RE.sub("", str(value or "")), 240)
+
+
+def _recover_publishable_copy(
+    title: str,
+    summary: str,
+    source_item: dict[str, Any] | None,
+) -> tuple[str, str]:
+    source = source_item if isinstance(source_item, dict) else {}
+    source_title = _to_simplified_chinese(
+        source.get("source_title") or source.get("title"), 48
+    )
+    source_summary = _to_simplified_chinese(
+        source.get("source_summary")
+        or source.get("snippet")
+        or source.get("summary")
+        or source.get("description")
+        or source.get("why"),
+        96,
+    )
+
+    def _usable_title(candidate: str) -> str:
+        cleaned = _to_simplified_chinese(candidate, 48)
+        if (
+            cleaned
+            and re.search(r"[\u4e00-\u9fff]", cleaned)
+            and not _text_has_model_artifact(cleaned)
+            and not _is_program_listing_title(cleaned)
+        ):
+            return cleaned
+        return ""
+
+    if _text_has_model_artifact(title):
+        recovered = _usable_title(_strip_model_artifact_prefix(title)) or _usable_title(
+            source_title
+        )
+        if not recovered:
+            raise RuntimeError("公司内部 AI 标题含提示词，不可发布")
+        title = recovered
+    if _text_has_model_artifact(summary):
+        recovered_summary = _strip_model_artifact_prefix(summary)
+        recovered_summary = _to_simplified_chinese(recovered_summary, 96)
+        if (
+            len(recovered_summary) >= 16
+            and re.search(r"[\u4e00-\u9fff]", recovered_summary)
+            and not _text_has_model_artifact(recovered_summary)
+        ):
+            summary = recovered_summary
+        elif (
+            len(source_summary) >= 16
+            and re.search(r"[\u4e00-\u9fff]", source_summary)
+            and not _text_has_model_artifact(source_summary)
+        ):
+            summary = source_summary
+        else:
+            raise RuntimeError("公司内部 AI 摘要含提示词，不可发布")
+    return title, summary
 
 
 def _to_simplified_chinese(value: Any, limit: int) -> str:
@@ -3163,9 +3271,9 @@ def _validated_ai_copy(
             1800,
         )
         _validate_temporal_fidelity(source_summary, summary)
-    result = {"title": title, "summary": summary}
     if not require_review_fields:
-        return result
+        title, summary = _recover_publishable_copy(title, summary, source_item)
+        return {"title": title, "summary": summary}
     raw_should_include = value.get("should_include")
     if isinstance(raw_should_include, bool):
         should_include = raw_should_include
@@ -3175,6 +3283,9 @@ def _validated_ai_copy(
         should_include = False
     else:
         raise RuntimeError("公司内部 AI 未返回是否入选")
+    if should_include:
+        title, summary = _recover_publishable_copy(title, summary, source_item)
+    result = {"title": title, "summary": summary}
     region = _to_simplified_chinese(value.get("region"), 20)
     category = _to_simplified_chinese(value.get("category"), 40)
     if isinstance(allowed_keywords, (list, tuple, set)):
@@ -3814,7 +3925,10 @@ def polish_candidates_before_review(
                     "竞对的产品与资费、促销、客户服务、经营数据、网络建设、技术、合作、投资并购、"
                     "管理层、监管和资本市场信息均应纳入，不得以‘战略价值不够大、只是常规经营、"
                     "只是产品信息’为由淘汰。"
-                    "title须为简洁准确的简体中文标题，品牌名和必要缩写可保留。"
+                    "title须为简洁准确的简体中文标题，品牌名和必要缩写可保留；"
+                    "严禁把合法JSON、需要判断、输入新闻、候选新闻审核结果等审核指令写进标题或摘要。"
+                    "广播电视节目单、栏目名、‘第一台|节目名|日期’这类导视标题必须should_include=false，"
+                    "exclusion_code用体育娱乐或生活噪音。"
                     "summary须用简体中文写一至两句、最多96个中文字符直接说明发生了什么，"
                     "不得以‘这条、该新闻、本文、本报道、当前来源、该动态’等元话术开头，"
                     "不得写‘可点击原文、值得关注、反映了、涉及’等空泛提示。"
@@ -4026,7 +4140,9 @@ def polish_candidates_before_review(
                         "你是公司内部战略新闻审核员。只输出合法JSON对象，字段为title、summary、should_include、"
                         "region、category、keywords、inclusion_reason、region_reason、decision_path、"
                         "signal_type、business_impact、exclusion_code。"
-                        "title必须是简洁准确的简体中文标题。summary必须用简体中文写一至两句、16至96个中文字符"
+                        "title必须是简洁准确的简体中文标题，严禁复述合法JSON、需要判断、输入新闻等审核指令。"
+                        "广播电视节目单和栏目导视必须should_include=false。"
+                        "summary必须用简体中文写一至两句、16至96个中文字符"
                         "直接陈述新闻事实，不得以‘这条、该新闻、本文、本报道、当前来源、该动态’开头，"
                         "不得写点击原文、值得关注、反映了、涉及等空泛提示。"
                         "region只能是香港本地或国际/行业，必须根据事件主体、发生地和受影响市场判断，"

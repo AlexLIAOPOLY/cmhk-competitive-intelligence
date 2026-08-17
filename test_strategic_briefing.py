@@ -31,6 +31,78 @@ class StrategicBriefingTests(unittest.TestCase):
 
         self.assertIn("移动通信监控词无正文证据", reason)
 
+    def test_prompt_leak_title_recovers_chinese_news_fragment(self):
+        result = briefing._validated_ai_copy(
+            {
+                "title": "我们需要回答合法JSON。需要判断。输入新闻：中国移动上半年营收增长",
+                "summary": "中国移动公布上半年经营数据，算力与智能服务成为增长动能。",
+                "should_include": True,
+                "region": "国际/行业",
+                "category": "竞对动态",
+                "keywords": "China Mobile",
+                "inclusion_reason": "中国移动发布半年报，可对标竞对经营表现。",
+                "region_reason": "事件主体位于内地市场。",
+                "decision_path": "竞对直通",
+                "signal_type": "竞对经营动作",
+                "business_impact": "竞争格局",
+                "exclusion_code": "无",
+            },
+            require_review_fields=True,
+            require_decision_fields=True,
+            allowed_keywords=["China Mobile"],
+            source_item={
+                "source_title": "China Mobile first-half results",
+                "source_summary": "China Mobile reported first-half revenue growth.",
+            },
+        )
+        self.assertEqual(result["title"], "中国移动上半年营收增长")
+        self.assertNotIn("合法JSON", result["title"])
+        self.assertNotIn("输入新闻", result["title"])
+
+    def test_english_prompt_leak_title_is_rejected_instead_of_published(self):
+        with self.assertRaisesRegex(RuntimeError, "标题含提示词"):
+            briefing._validated_ai_copy(
+                {
+                    "title": "我们需要回答合法JSON。需要判断。输入新闻：PLDT eyes Southern Luzon",
+                    "summary": "我们需要回答合法JSON。需要判断。输入新闻：PLDT eyes Southern Luzon for largest data center.",
+                    "should_include": True,
+                    "region": "国际/行业",
+                    "category": "基础设施/网络/技术类",
+                    "keywords": "data center",
+                    "inclusion_reason": "涉及数据中心投资。",
+                    "region_reason": "事件发生在菲律宾。",
+                    "decision_path": "战略信号",
+                    "signal_type": "关键技术",
+                    "business_impact": "资本配置",
+                    "exclusion_code": "无",
+                },
+                require_review_fields=True,
+                require_decision_fields=True,
+                allowed_keywords=["data center"],
+                source_item={
+                    "source_title": "PLDT eyes Southern Luzon for largest data center amid AI boom",
+                    "source_summary": "PLDT is considering Southern Luzon for a data center.",
+                },
+            )
+
+    def test_program_listing_title_is_excluded_from_review_sheet(self):
+        reason = briefing._obvious_mismatch_exclusion_reason(
+            {
+                "source_title": "第一台|太阳底下新鲜事|16/08/2026",
+                "title": "第一台|太阳底下新鲜事|16/08/2026",
+                "snippet": "香港电台节目时间表。",
+                "module": "竞争对手",
+                "keywords": "HKT、香港电讯",
+            },
+            {
+                "should_include": True,
+                "title": "第一台|太阳底下新鲜事|16/08/2026",
+                "summary": "香港电台节目介绍。",
+                "keywords": "HKT",
+            },
+        )
+        self.assertIn("节目单", reason)
+
     def test_obvious_mismatch_gate_preserves_ungrounded_but_plausibly_useful_news(self):
         cases = [
             {

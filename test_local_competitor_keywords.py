@@ -365,13 +365,13 @@ class LocalCompetitorKeywordTests(unittest.TestCase):
             1,
         )
 
-    def test_morning_window_only_overlaps_previous_afternoon_run(self):
+    def test_morning_window_covers_previous_afternoon_publication_window(self):
         start_at, end_at = digest._window(
             datetime(2026, 7, 27, 9, 16, tzinfo=HKT),
             True,
         )
 
-        self.assertEqual(start_at, datetime(2026, 7, 26, 14, 0, tzinfo=HKT))
+        self.assertEqual(start_at, datetime(2026, 7, 26, 8, 0, tzinfo=HKT))
         self.assertEqual(end_at, datetime(2026, 7, 27, 9, 16, tzinfo=HKT))
 
 

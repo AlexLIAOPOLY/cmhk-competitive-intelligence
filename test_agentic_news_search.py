@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -95,6 +96,58 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertNotIn("preserved_previous_news_pool", payload)
         self.assertEqual(write_json.call_args.args[0], digest.LATEST_PATH)
         self.assertEqual(write_json.call_args.args[1]["items"], [])
+
+    def test_digest_card_only_covers_this_run_and_skips_deferred_backfill(self):
+        now = datetime(2026, 8, 17, 15, 0, tzinfo=HKT)
+        fresh_item = {
+            "news_id": "NEWS-FRESH",
+            "title": "本轮检索到的新闻",
+            "url": "https://example.com/fresh",
+            "source": "Example",
+            "published_at": "2026-08-17T10:00:00+08:00",
+            "module": "竞争对手",
+            "keywords": ["HKT"],
+            "snippet": "本轮新增。",
+        }
+
+        def _deferred_must_not_load(*args, **kwargs):
+            raise AssertionError("digest 通报不得读取补审队列")
+
+        with (
+            mock.patch.object(
+                digest,
+                "_collect_news_with_late_index_retry",
+                return_value=([fresh_item], [], {"agentic_search": {}}),
+            ),
+            mock.patch.object(digest, "_latest_timed_crawl", return_value={}),
+            mock.patch.object(digest, "_write_json"),
+            mock.patch.object(digest, "_send_card") as send_card,
+            mock.patch.object(
+                strategic_briefing,
+                "_prepare_deferred_ai_candidates",
+                side_effect=_deferred_must_not_load,
+            ),
+            mock.patch.dict(
+                digest.os.environ,
+                {"CMHK_STRATEGIC_GROUP_NOTIFICATIONS": "0"},
+            ),
+        ):
+            payload = digest.send_digest(now=now, morning=False)
+            cards = digest._build_cards(
+                now=now,
+                slot_label="下午全量",
+                start_at=datetime(2026, 8, 17, 8, 0, tzinfo=HKT),
+                end_at=now,
+                items=[fresh_item],
+                errors=[],
+                crawl={},
+            )
+
+        card_text = json.dumps(cards, ensure_ascii=False)
+        self.assertEqual(payload["message_ids"], [])
+        self.assertEqual(send_card.call_count, 0)
+        self.assertEqual([item["news_id"] for item in payload["items"]], ["NEWS-FRESH"])
+        self.assertIn("本轮检索到的新闻", card_text)
 
     def test_digest_card_is_sent_to_both_report_groups(self):
         responses = [
@@ -382,6 +435,71 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertTrue(plans[0]["semantic_relevance"])
         self.assertIn("subscriber growth", plans[0]["query"])
         self.assertEqual(plans[0]["canonical_competitor"], "HKT")
+        self.assertEqual(plans[0]["lookback_days"], 0)
+
+    def test_agentic_and_query_is_rewritten_to_or_intents(self):
+        plans = digest._normalize_agentic_plans(
+            {
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": (
+                            "HGC 环球全域电讯 环电 业绩 财报 营收 利润 亏损 "
+                            "裁员 重组 投资 数据中心 云 合作 并购 管理层 人事"
+                        ),
+                        "keywords": ["HGC", "环球全域电讯", "环电"],
+                        "intent": "经营动态",
+                    }
+                ]
+            },
+            phase="expansion",
+            existing_queries=set(),
+            limit=6,
+        )
+
+        self.assertEqual(len(plans), 1)
+        query = plans[0]["query"]
+        self.assertIn(" OR ", query)
+        self.assertIn("HGC", query)
+        self.assertLessEqual(query.count(" "), 16)
+        self.assertNotIn("亏损 裁员 重组", query)
+
+    def test_zero_result_agentic_plan_retries_simpler_query(self):
+        calls = []
+
+        def fake_search(plan, start_at, end_at, **kwargs):
+            calls.append(plan["query"])
+            if plan.get("agentic_zero_result_retry"):
+                return [
+                    {
+                        "title": "HGC expands enterprise network",
+                        "url": "https://example.com/hgc",
+                    }
+                ]
+            return []
+
+        with mock.patch.object(digest, "_google_news_search", side_effect=fake_search):
+            items, errors, stats = digest._execute_search_plans(
+                [
+                    {
+                        "module": "竞争对手",
+                        "query": "HGC 业绩 财报 营收 利润 亏损 裁员 重组",
+                        "fallback_query": "HGC 业绩 财报 营收 利润 亏损 裁员 重组",
+                        "keywords": ["HGC", "环球全域电讯"],
+                        "canonical_competitor": "HGC",
+                        "search_origin": "agentic_followup",
+                    }
+                ],
+                start_at=datetime(2026, 8, 17, 9, 0, tzinfo=HKT),
+                end_at=datetime(2026, 8, 17, 15, 0, tzinfo=HKT),
+            )
+
+        self.assertEqual(errors, [])
+        self.assertEqual(len(items), 1)
+        self.assertEqual(stats["retry_count"], 1)
+        self.assertEqual(stats["retry_result_count"], 1)
+        self.assertGreaterEqual(len(calls), 2)
+        self.assertIn(" OR ", calls[1])
 
     def test_agentic_plan_rejects_runaway_all_operator_query(self):
         plans = digest._normalize_agentic_plans(
