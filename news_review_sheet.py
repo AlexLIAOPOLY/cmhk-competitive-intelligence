@@ -1097,6 +1097,102 @@ def _same_day_semantic_history(
         if _search_date(item.get("search_date")) == search_day
     ]
 
+
+HUMAN_DECISION_COLUMNS = (0, 1, 2)
+STATUS_PRIORITY = {"接受": 4, "不接受": 3, "暂缓": 2, "待审核": 1}
+
+
+def _rescue_concurrent_review_decisions(
+    sheet_id: str,
+    existing_rows_by_id: dict[str, list[Any]],
+    existing_status: dict[str, tuple[str, str]],
+    *,
+    progress_callback: ProgressCallback | None = None,
+) -> list[dict[str, str]]:
+    """Refresh reviewer-owned columns from the live sheet before rewriting it.
+
+    ``sync_candidates`` snapshots the whole worksheet before the crawl and AI
+    passes, then writes that snapshot back. Any decision a reviewer records in
+    between is inside the snapshot's blind spot and would be reverted. Reading
+    the decision columns again here keeps the human edit and only lets the
+    pipeline own the content columns.
+    """
+
+    rescued: list[dict[str, str]] = []
+    try:
+        latest_rows = _read_rows(sheet_id)
+    except Exception:
+        logging.exception("写回前重新读取审核表失败，本轮沿用开始时的人工审核状态")
+        _progress(
+            progress_callback,
+            "人工审核状态保护",
+            "写回前重新读取审核表失败，已跳过并发人工审核状态保护。",
+        )
+        return rescued
+
+    latest_decisions: dict[str, tuple[str, str, str]] = {}
+    for index, row in enumerate(latest_rows, start=2):
+        if not row or not any(_text(value, 80) for value in row):
+            continue
+        padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+        parsed = _row_dict(padded, index)
+        news_id = parsed["news_id"]
+        if not news_id:
+            continue
+        candidate = tuple(
+            _text(padded[column], 40) for column in HUMAN_DECISION_COLUMNS
+        )
+        previous = latest_decisions.get(news_id)
+        if previous is not None and STATUS_PRIORITY.get(
+            _normalized_status(candidate[0]), 0
+        ) <= STATUS_PRIORITY.get(_normalized_status(previous[0]), 0):
+            continue
+        latest_decisions[news_id] = candidate
+
+    for news_id, stored_row in existing_rows_by_id.items():
+        latest = latest_decisions.get(news_id)
+        if latest is None:
+            continue
+        before = tuple(
+            _text(stored_row[column], 40) for column in HUMAN_DECISION_COLUMNS
+        )
+        if before == latest:
+            continue
+        for position, column in enumerate(HUMAN_DECISION_COLUMNS):
+            stored_row[column] = latest[position]
+        existing_status[news_id] = (
+            _normalized_status(latest[0]),
+            latest[2] or "未同步",
+        )
+        rescued.append(
+            {
+                "news_id": news_id,
+                "title": _text(stored_row[6], 240),
+                "before": " / ".join(before),
+                "after": " / ".join(latest),
+            }
+        )
+
+    if rescued:
+        logging.warning(
+            "写回前发现 %s 条候选的人工审核状态在本轮运行期间被修改，已保留最新人工结果：%s",
+            len(rescued),
+            "；".join(
+                f"{entry['title'][:40]}（{entry['before']} → {entry['after']}）"
+                for entry in rescued[:3]
+            ),
+        )
+    _progress(
+        progress_callback,
+        "人工审核状态保护",
+        (
+            f"写回前重新核对 {len(latest_decisions)} 条候选的人工审核列，"
+            f"保留本轮运行期间新增的 {len(rescued)} 条人工决策。"
+        ),
+    )
+    return rescued
+
+
 def sync_candidates(
     items: list[dict[str, Any]],
     *,
@@ -1117,7 +1213,7 @@ def sync_candidates(
         existing_rows_by_id: dict[str, list[Any]] = {}
         existing_history_items: list[dict[str, Any]] = []
         existing_row_count = 0
-        status_priority = {"接受": 4, "不接受": 3, "暂缓": 2, "待审核": 1}
+        status_priority = STATUS_PRIORITY
         for index, row in enumerate(rows, start=2):
             if not row or not any(_text(value, 80) for value in row):
                 continue
@@ -1337,6 +1433,16 @@ def sync_candidates(
         candidate_count = len(existing_rows_by_id) + len(new_values)
         if candidate_count > MAX_SHEET_ROWS - 1:
             raise RuntimeError(f"审核表超过 {MAX_SHEET_ROWS - 1} 条候选上限")
+        # The crawl and AI review phases above take tens of minutes, and people
+        # keep reviewing the sheet the whole time. Rewriting the snapshot taken
+        # when this run started would silently revert every decision made since
+        # then, so re-read the three human-owned columns and let the sheet win.
+        rescued_decisions = _rescue_concurrent_review_decisions(
+            sheet_id,
+            existing_rows_by_id,
+            existing_status,
+            progress_callback=progress_callback,
+        )
         existing_values = list(existing_rows_by_id.values())
         ordered_values = new_values + existing_values
         ordered_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
@@ -1440,6 +1546,8 @@ def sync_candidates(
                 "last_gate_filtered_reasons": dict(gate_reasons),
                 "last_dirty_copy_blocked_count": len(blocked_dirty_copy),
                 "last_dirty_copy_blocked": blocked_dirty_copy[:10],
+                "last_rescued_decision_count": len(rescued_decisions),
+                "last_rescued_decisions": rescued_decisions[:10],
                 "last_new_count": new_count,
                 "last_new_category_counts": dict(new_category_counts),
                 "last_new_region_counts": dict(new_region_counts),
@@ -1471,6 +1579,8 @@ def sync_candidates(
             "gate_filtered_reasons": dict(gate_reasons),
             "dirty_copy_blocked_count": len(blocked_dirty_copy),
             "dirty_copy_blocked": blocked_dirty_copy[:10],
+            "rescued_decision_count": len(rescued_decisions),
+            "rescued_decisions": rescued_decisions[:10],
             "new_count": new_count,
             "new_category_counts": dict(new_category_counts),
             "new_region_counts": dict(new_region_counts),

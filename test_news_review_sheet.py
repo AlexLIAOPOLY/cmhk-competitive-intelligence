@@ -292,7 +292,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         def read_rows(_sheet_id):
             read_count[0] += 1
-            return [self._existing_row()] if read_count[0] == 1 else writes[0][1]
+            return writes[0][1] if writes else [self._existing_row()]
 
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
@@ -382,10 +382,12 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "候选确定性门禁",
             "AI逐条审核",
             "新增候选组装",
+            "人工审核状态保护",
             "飞书分批写入",
             "飞书逐格回读",
         ):
             self.assertIn(phase, progress_phases)
+        self.assertEqual(result["rescued_decision_count"], 0)
         saved_state = write_json.call_args.args[1]
         metadata = saved_state[review_sheet.GATE_METADATA_STATE_KEY]
         self.assertEqual(
@@ -415,7 +417,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         def read_rows(_sheet_id):
             read_count[0] += 1
-            return [existing] if read_count[0] == 1 else writes[0][1]
+            return writes[0][1] if writes else [existing]
 
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
@@ -468,7 +470,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         def read_rows(_sheet_id):
             read_count[0] += 1
-            return [pending, rejected] if read_count[0] == 1 else writes[0][1]
+            return writes[0][1] if writes else [pending, rejected]
 
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
@@ -500,6 +502,61 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(writes[0][1][0][6], "同一事件的人工拒绝记录")
         self.assertEqual(writes[1][0], "A3:N3")
         self.assertEqual(writes[1][1], [[""] * len(review_sheet.HEADERS)])
+
+    def test_sync_keeps_review_decisions_made_during_ai_pass(self):
+        pending = self._existing_row()
+        pending[0] = "待审核"
+        pending[1] = "待审核"
+        pending[2] = "未同步"
+        live = [list(pending)]
+        writes = []
+
+        def read_rows(_sheet_id):
+            if writes:
+                return writes[0][1]
+            return [list(live[0])]
+
+        def polish(items, **_kwargs):
+            live[0][0] = "接受"
+            live[0][1] = "接受"
+            live[0][2] = "未同步"
+            return items
+
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=read_rows),
+            mock.patch.object(
+                review_sheet,
+                "_write",
+                side_effect=lambda _sheet_id, cell_range, values: writes.append(
+                    (cell_range, values)
+                ),
+            ),
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "curate_news_items",
+                side_effect=lambda items: (items, {}),
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "polish_candidates_before_review",
+                side_effect=polish,
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "agent_semantic_deduplicate_candidates",
+                side_effect=self._semantic_keep,
+            ),
+        ):
+            result = review_sheet.sync_candidates([self._new_item()])
+
+        history_row = next(row for row in writes[0][1] if row[6] == "历史新闻")
+        self.assertEqual(history_row[:3], ["接受", "接受", "未同步"])
+        self.assertEqual(result["rescued_decision_count"], 1)
+        self.assertEqual(result["rescued_decisions"][0]["before"], "待审核 / 待审核 / 未同步")
+        self.assertEqual(result["rescued_decisions"][0]["after"], "接受 / 接受 / 未同步")
 
     def test_sync_stops_when_sheet_returns_fewer_rows_than_last_sync(self):
         write = mock.Mock()
