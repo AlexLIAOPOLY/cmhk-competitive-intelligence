@@ -122,14 +122,14 @@ class DashboardPagesPublishTests(unittest.TestCase):
             script = (first / "executive-dashboard-demo.js").read_text(
                 encoding="utf-8"
             )
-            self.assertIn('href="./executive-dashboard-demo.css?v=24"', html)
+            self.assertIn('href="./executive-dashboard-demo.css?v=25"', html)
             self.assertIn("strategy-command-grid-v2.webp", html)
             self.assertIn(
                 'href="./executive-responsive-hardening.css?v=4"',
                 html,
             )
             self.assertIn('src="./assets/executive-dashboard/', html)
-            self.assertIn('src="./executive-dashboard-demo.js?v=15"', html)
+            self.assertIn('src="./executive-dashboard-demo.js?v=16"', html)
             self.assertIn("战略监控体系", html)
             self.assertIn("STRATEGIC MONITORING SYSTEM", html)
             self.assertIn("资源与基础设施层", html)
