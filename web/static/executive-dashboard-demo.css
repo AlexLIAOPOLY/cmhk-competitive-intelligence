@@ -2785,3 +2785,216 @@ h1 { font-size: clamp(30px, 2vw, 38px); font-weight: 650; }
   .finance-hero strong { grid-row: 1 / 3; grid-column: 2; font-size: 32px; }
   .horizontal-bars { gap: 10px; }
 }
+
+/* Sheet-filtered CMHK view: only metrics marked “大屏展示指标 = 是”. */
+.cockpit {
+  grid-template-rows: 78px minmax(0, 1fr) 24px;
+}
+
+.panel-heading {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.panel-heading h2 { white-space: normal; }
+
+.network-monitor {
+  grid-template-columns: minmax(0, 1.35fr) minmax(250px, .65fr);
+}
+
+.bar-visual { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.kpi-grid { grid-template-columns: 1fr; }
+
+.business-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.business-card {
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr);
+  padding-bottom: 10px;
+}
+
+.business-card header {
+  grid-template-columns: 1fr;
+  margin-bottom: 10px;
+}
+
+.business-card header strong {
+  color: #f1fbff;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.business-pair {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.business-pair .monitor-kpi {
+  padding: 12px;
+  border: 1px solid rgba(94, 203, 244, .2);
+  background: rgba(6, 29, 50, .4);
+}
+
+.business-pair .monitor-kpi::after { display: block; }
+.business-pair .monitor-kpi > strong { font-size: clamp(23px, 1.6vw, 31px); }
+
+.reach-content > div {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.reach-primary,
+.finance-primary {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: minmax(70px, .75fr) minmax(0, 1.25fr);
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(94, 203, 244, .24);
+  background: linear-gradient(145deg, rgba(8, 40, 66, .72), rgba(8, 24, 43, .52));
+  box-shadow: inset 0 1px rgba(197, 242, 255, .06);
+}
+
+.reach-primary:nth-child(2) {
+  border-color: rgba(85, 222, 181, .28);
+  background: linear-gradient(145deg, rgba(12, 61, 64, .66), rgba(8, 30, 45, .52));
+}
+
+.reach-signal {
+  position: relative;
+  min-height: 70px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(119, 213, 243, .17);
+  background: repeating-linear-gradient(to right, transparent 0 48px, rgba(93, 188, 222, .06) 49px);
+}
+
+.reach-signal::before,
+.reach-signal::after {
+  content: "";
+  position: absolute;
+  right: 8%;
+  bottom: 0;
+  left: 8%;
+  height: 42%;
+  border-top: 2px solid #5edcff;
+  transform: skewY(-7deg);
+  filter: drop-shadow(0 0 7px rgba(73, 216, 255, .52));
+}
+
+.reach-signal::after {
+  height: 64%;
+  border-color: #61e1b5;
+  opacity: .56;
+  transform: skewY(5deg);
+}
+
+.reach-signal i {
+  position: absolute;
+  bottom: 0;
+  left: 8%;
+  width: var(--signal);
+  height: 8px;
+  background: linear-gradient(90deg, #347ae5, #59dcff);
+  box-shadow: 0 0 14px rgba(66, 209, 255, .34);
+}
+
+.reach-primary .monitor-kpi,
+.finance-primary .monitor-kpi {
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.reach-primary .monitor-kpi::after,
+.finance-primary .monitor-kpi::after { display: none; }
+.reach-primary .monitor-kpi > span { font-size: 15px; }
+.reach-primary .monitor-kpi > strong { font-size: clamp(30px, 2.2vw, 44px); }
+
+.finance-content > div {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.finance-primary { grid-template-rows: minmax(72px, .8fr) minmax(0, 1.2fr); }
+.finance-primary-2 { border-color: rgba(85, 222, 181, .28); }
+.finance-primary-3 { border-color: rgba(245, 177, 73, .3); }
+
+.finance-pulse {
+  min-height: 72px;
+  display: flex;
+  gap: 8px;
+  align-items: end;
+  padding: 8px 10px 0;
+  border-bottom: 1px solid rgba(119, 213, 243, .17);
+}
+
+.finance-pulse span {
+  flex: 1;
+  height: 46%;
+  background: linear-gradient(#5edcff, rgba(49, 116, 231, .36));
+  box-shadow: 0 0 10px rgba(63, 201, 255, .18);
+}
+.finance-pulse span:nth-child(2) { height: 58%; }
+.finance-pulse span:nth-child(3) { height: 52%; }
+.finance-pulse span:nth-child(4) { height: 74%; }
+.finance-pulse span:nth-child(5) { height: 88%; }
+.finance-primary-2 .finance-pulse span { background: linear-gradient(#61e1b5, rgba(39, 139, 139, .34)); }
+.finance-primary-3 .finance-pulse span { background: linear-gradient(#f5c064, rgba(176, 106, 24, .34)); }
+.finance-primary .monitor-kpi > span { font-size: 15px; }
+.finance-primary .monitor-kpi > strong { font-size: clamp(28px, 2vw, 40px); }
+
+@media (max-width: 1366px) {
+  .panel-heading { grid-template-columns: auto minmax(0, 1fr); }
+  .business-card header strong { font-size: 14px; }
+  .business-pair .monitor-kpi { padding: 10px; }
+  .reach-primary,
+  .finance-primary { padding: 10px; }
+}
+
+@media (max-width: 1024px) {
+  .cockpit { grid-template-rows: 72px auto 26px; }
+  .panel { min-height: 350px; }
+  .panel-business { min-height: 390px; }
+  .panel-heading { grid-template-columns: auto minmax(0, 1fr); }
+  .business-pair .monitor-kpi > span { font-size: 13px; }
+}
+
+@media (max-width: 700px) {
+  .cockpit { grid-template-rows: 68px auto 28px; }
+  .panel { min-height: 500px; }
+  .panel-business { min-height: 900px; }
+  .panel-reach { min-height: 500px; }
+  .panel-finance { min-height: 660px; }
+  .panel-heading {
+    min-height: 60px;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: 1fr;
+  }
+  .monitor-content { height: calc(100% - 60px); }
+  .network-monitor { grid-template-columns: 1fr; grid-template-rows: 235px minmax(0, 1fr); }
+  .business-cards { grid-template-columns: 1fr; }
+  .business-card { min-height: 185px; }
+  .business-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 1fr; }
+  .reach-content > div,
+  .finance-content > div { grid-template-columns: 1fr; }
+  .reach-primary { grid-template-columns: minmax(90px, .65fr) minmax(0, 1.35fr); grid-template-rows: 1fr; }
+  .finance-primary { grid-template-columns: minmax(100px, .75fr) minmax(0, 1.25fr); grid-template-rows: 1fr; }
+}
+
+@media (max-width: 400px) {
+  .panel { min-height: 520px; }
+  .panel-business { min-height: 900px; }
+  .panel-reach { min-height: 540px; }
+  .panel-finance { min-height: 680px; }
+  .panel-heading h2 { font-size: 18px; }
+  .business-pair { grid-template-columns: 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .business-card { min-height: 205px; }
+  .reach-primary,
+  .finance-primary { grid-template-columns: 1fr; grid-template-rows: 72px minmax(0, 1fr); }
+  .reach-primary .monitor-kpi > span,
+  .finance-primary .monitor-kpi > span { font-size: 13px; }
+}

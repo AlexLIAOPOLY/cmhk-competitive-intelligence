@@ -14,7 +14,7 @@
     width: 100%;
     height: auto;
     min-height: 100vh;
-    grid-template-rows: 72px 64px auto;
+    grid-template-rows: 72px auto 24px;
     overflow: visible;
   }
 
@@ -40,7 +40,7 @@
 
   .cockpit {
     /* Do not stop at .80: browser chrome can leave a 600–650px viewport on a 13-inch screen. */
-    --fit-scale: clamp(.44, calc(100vh / 892px), 1);
+    --fit-scale: clamp(.5, calc(100vh / 828px), 1);
     transform: scale(var(--fit-scale));
     transform-origin: top left;
     width: calc(100% / var(--fit-scale));
@@ -51,20 +51,20 @@
 /* Keep the stacked business panel from clipping its third comparison row on narrow screens. */
 @media (max-width: 900px) {
   .panel-business {
-    min-height: 450px;
+    min-height: 900px;
   }
 
   .panel-business .business-content {
-    height: 410px;
+    height: calc(100% - 60px);
   }
 }
 
 @media (max-width: 520px) {
   .panel-business {
-    min-height: 540px;
+    min-height: 900px;
   }
 
   .panel-business .business-content {
-    height: 450px;
+    height: calc(100% - 60px);
   }
 }

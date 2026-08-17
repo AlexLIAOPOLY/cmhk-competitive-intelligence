@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>中国移动香港｜战略监控体系</title>
-  <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=22">
-  <link rel="stylesheet" href="/static/executive-responsive-hardening.css?v=3">
+  <link rel="stylesheet" href="/static/executive-dashboard-demo.css?v=23">
+  <link rel="stylesheet" href="/static/executive-responsive-hardening.css?v=4">
 </head>
 <body>
   <main class="cockpit">
@@ -14,29 +14,14 @@
       <div class="cockpit-title"><h1>战略监控体系</h1><span>STRATEGIC MONITORING SYSTEM</span></div>
     </header>
 
-    <section class="news-rail" aria-label="战略监控主题">
-      <div class="news-track"><div class="news-set">
-        <a class="news-item" href="/#strategyTickerList"><div><span>宏观与国际</span></div><h3>港元利率、汇率与香港经济环境</h3><p>持续监测宏观变化对通信需求和经营节奏的影响。</p></a>
-        <a class="news-item" href="/#strategyTickerList"><div><span>政策法规</span></div><h3>频谱、牌照与网络安全政策</h3><p>跟踪监管要求、跨境数据及关键基础设施规则。</p></a>
-        <a class="news-item" href="/#strategyTickerList"><div><span>基础设施与技术</span></div><h3>5G-A、6G、数据中心与算力演进</h3><p>观察网络能力、云资源和前沿技术发展进度。</p></a>
-        <a class="news-item" href="/#strategyTickerList"><div><span>市场与产品</span></div><h3>云网融合、eSIM与物联网机会</h3><p>识别个人、家庭及政企业务的产品增长空间。</p></a>
-      </div></div>
-    </section>
-
     <section class="dashboard-grid" aria-label="CMHK战略监控四层体系">
       <article class="panel panel-network">
         <img class="scene scene-network" src="/static/assets/executive-dashboard/strategy-command-grid-v2.webp" alt="" aria-hidden="true">
         <div class="panel-glass"></div>
         <header class="panel-heading">
           <span>01</span><h2>资源与基础设施层</h2>
-          <nav class="panel-tabs network-tabs" aria-label="资源与基础设施专题" role="tablist">
-            <button type="button" role="tab" aria-selected="false" data-network-view="fixed">固定网络</button>
-            <button class="is-active" type="button" role="tab" aria-selected="true" data-network-view="mobile">移动网络</button>
-            <button type="button" role="tab" aria-selected="false" data-network-view="cloud">数据中心与云</button>
-            <button type="button" role="tab" aria-selected="false" data-network-view="research">研发能力</button>
-          </nav>
         </header>
-        <div class="monitor-content network-monitor panel-switch-content" id="network-detail" role="tabpanel" aria-live="polite">
+        <div class="monitor-content network-monitor" id="network-detail">
           <div class="visual-stage" data-network-visual></div>
           <div class="kpi-grid" data-network-metrics></div>
         </div>
@@ -47,13 +32,8 @@
         <div class="panel-glass"></div>
         <header class="panel-heading">
           <span>02</span><h2>客户与业务对标层</h2>
-          <nav class="panel-tabs business-tabs" aria-label="客户与业务专题" role="tablist">
-            <button class="is-active" type="button" role="tab" aria-selected="true" data-business-view="toc">移动业务</button>
-            <button type="button" role="tab" aria-selected="false" data-business-view="toh">家庭业务</button>
-            <button type="button" role="tab" aria-selected="false" data-business-view="tob">政企与数字化业务</button>
-          </nav>
         </header>
-        <div class="monitor-content business-content panel-switch-content" id="business-detail" role="tabpanel" aria-live="polite">
+        <div class="monitor-content business-content" id="business-detail">
           <div class="business-cards" data-business-cards></div>
         </div>
       </article>
@@ -63,12 +43,8 @@
         <div class="panel-glass"></div>
         <header class="panel-heading">
           <span>03</span><h2>渠道与品牌触达层</h2>
-          <nav class="panel-tabs reach-tabs" aria-label="渠道与品牌专题" role="tablist">
-            <button class="is-active" type="button" role="tab" aria-selected="true" data-reach-view="brand">品牌触达</button>
-            <button type="button" role="tab" aria-selected="false" data-reach-view="channel">渠道触达</button>
-          </nav>
         </header>
-        <div class="monitor-content reach-content panel-switch-content" id="reach-detail" role="tabpanel" aria-live="polite"><div data-reach-content></div></div>
+        <div class="monitor-content reach-content" id="reach-detail"><div data-reach-content></div></div>
       </article>
 
       <article class="panel panel-finance">
@@ -76,19 +52,13 @@
         <div class="panel-glass"></div>
         <header class="panel-heading">
           <span>04</span><h2>财务成果</h2>
-          <nav class="panel-tabs finance-tabs" aria-label="财务成果专题" role="tablist">
-            <button class="is-active" type="button" role="tab" aria-selected="true" data-finance-view="income">收入规模与结构</button>
-            <button type="button" role="tab" aria-selected="false" data-finance-view="margin">盈利能力</button>
-            <button type="button" role="tab" aria-selected="false" data-finance-view="cost">成本与效率</button>
-            <button type="button" role="tab" aria-selected="false" data-finance-view="investment">资本开支与投资</button>
-          </nav>
         </header>
-        <div class="monitor-content finance-content panel-switch-content" id="finance-detail" role="tabpanel" aria-live="polite"><div data-finance-content></div></div>
+        <div class="monitor-content finance-content" id="finance-detail"><div data-finance-content></div></div>
       </article>
     </section>
 
     <footer class="mock-footnote">数据为模拟展示，仅用于界面演示</footer>
   </main>
-  <script src="/static/executive-dashboard-demo.js?v=13"></script>
+  <script src="/static/executive-dashboard-demo.js?v=14"></script>
 </body>
 </html>
